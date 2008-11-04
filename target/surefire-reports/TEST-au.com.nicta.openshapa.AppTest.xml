@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="1" time="0.015" errors="0" skipped="0" tests="2" name="au.com.nicta.openshapa.AppTest">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc."/>
+    <property name="localRepository" value="C:\Documents and Settings\cfreeman\.m2\repository"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
+    <property name="env.PROMPT" value="$P$G"/>
+    <property name="os.name" value="Windows XP"/>
+    <property name="env.FP_NO_HOST_CHECK" value="NO"/>
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jdk1.6.0_10\jre\lib\resources.jar;C:\Program Files\Java\jdk1.6.0_10\jre\lib\rt.jar;C:\Program Files\Java\jdk1.6.0_10\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.6.0_10\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.6.0_10\jre\lib\jce.jar;C:\Program Files\Java\jdk1.6.0_10\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.6.0_10\jre\classes"/>
+    <property name="env.COMPUTERNAME" value="QRL-3HR9Y1S"/>
+    <property name="env.ALLUSERSPROFILE" value="C:\Documents and Settings\All Users"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.runtime.version" value="1.6.0_10-b33"/>
+    <property name="env.HOMEPATH" value="\Documents and Settings\cfreeman"/>
+    <property name="user.name" value="cfreeman"/>
+    <property name="user.language" value="en"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.6.0_10\jre\bin"/>
+    <property name="classworlds.conf" value="C:\NICTA\Tools\apache-maven-2.0.9\bin\m2.conf"/>
+    <property name="java.version" value="1.6.0_10"/>
+    <property name="env.PROCESSOR_IDENTIFIER" value="x86 Family 6 Model 15 Stepping 11, GenuineIntel"/>
+    <property name="user.timezone" value="Australia/Brisbane"/>
+    <property name="env.TEMP" value="C:\DOCUME~1\cfreeman\LOCALS~1\Temp"/>
+    <property name="sun.arch.data.model" value="32"/>
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.6.0_10\jre\lib\endorsed"/>
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
+    <property name="env.HOMEDRIVE" value="C:"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="user.country" value="AU"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk1.6.0_10\jre"/>
+    <property name="env.APPDATA" value="C:\Documents and Settings\cfreeman\Application Data"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="env.ComSpec" value="C:\WINDOWS\system32\cmd.exe"/>
+    <property name="env.OS" value="Windows_NT"/>
+    <property name="env.CommonProgramFiles" value="C:\Program Files\Common Files"/>
+    <property name="os.version" value="5.1"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.version" value="11.0-b15"/>
+    <property name="user.variant" value=""/>
+    <property name="env.USERPROFILE" value="C:\Documents and Settings\cfreeman"/>
+    <property name="env.JAVA_HOME" value="C:\Program Files\Java\jdk1.6.0_10"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="env.TMP" value="C:\DOCUME~1\cfreeman\LOCALS~1\Temp"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="user.home" value="C:\Documents and Settings\cfreeman"/>
+    <property name="env.SESSIONNAME" value="Console"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="test" value="AppTest"/>
+    <property name="env.M2_HOME" value="C:\NICTA\Tools\apache-maven-2.0.9"/>
+    <property name="env.NUMBER_OF_PROCESSORS" value="2"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.6.0_10\bin;.;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
+    <property name="java.vendor.url" value="http://java.sun.com/"/>
+    <property name="env.USERDNSDOMAIN" value="IN.NICTA.COM.AU"/>
+    <property name="env.MAVEN_CMD_LINE_ARGS" value="-Dtest=AppTest test-compile surefire:test"/>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
+    <property name="maven.home" value="C:\NICTA\Tools\apache-maven-2.0.9"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.class.path" value="C:\NICTA\Tools\apache-maven-2.0.9\boot\classworlds-1.1.jar"/>
+    <property name="env.MAVEN_JAVA_EXE" value="&quot;C:\Program Files\Java\jdk1.6.0_10\bin\java.exe&quot;"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="env.LOGONSERVER" value="\\ATP-DC1"/>
+    <property name="env.windir" value="C:\WINDOWS"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="env.PROCESSOR_ARCHITECTURE" value="x86"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.os.patch.level" value="Service Pack 3"/>
+    <property name="env.HOME" value="C:\Documents and Settings\cfreeman"/>
+    <property name="env.ProgramFiles" value="C:\Program Files"/>
+    <property name="surefire.test.class.path" value="C:\NICTA\maven\openshapa\target\test-classes;C:\NICTA\maven\openshapa\target\classes;C:\Documents and Settings\cfreeman\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;"/>
+    <property name="java.io.tmpdir" value="C:\DOCUME~1\cfreeman\LOCALS~1\Temp\"/>
+    <property name="env.PROCESSOR_REVISION" value="0f0b"/>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
+    <property name="env.SystemRoot" value="C:\WINDOWS"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="os.arch" value="x86"/>
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jdk1.6.0_10\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext"/>
+    <property name="user.dir" value="C:\NICTA\maven\openshapa"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
+    <property name="env.CLASSWORLDS_JAR" value="&quot;C:\NICTA\Tools\apache-maven-2.0.9\boot\classworlds-1.1.jar&quot;"/>
+    <property name="env.PATHEXT" value=".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH"/>
+    <property name="env.Path" value="C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
+    <property name="basedir" value="C:\NICTA\maven\openshapa"/>
+    <property name="env.ERROR_CODE" value="0"/>
+    <property name="env.USERNAME" value="cfreeman"/>
+    <property name="env.SystemDrive" value="C:"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="env.USERDOMAIN" value="NICTA"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="env.PROCESSOR_LEVEL" value="6"/>
+  </properties>
+  <testcase time="0" classname="au.com.nicta.openshapa.AppTest" name="testApp"/>
+  <testcase time="0" classname="au.com.nicta.openshapa.AppTest" name="testMoo">
+    <failure type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError
+	at junit.framework.Assert.fail(Assert.java:47)
+	at junit.framework.Assert.assertTrue(Assert.java:20)
+	at junit.framework.Assert.assertTrue(Assert.java:27)
+	at au.com.nicta.openshapa.AppTest.testMoo(AppTest.java:40)
+</failure>
+  </testcase>
+</testsuite>
