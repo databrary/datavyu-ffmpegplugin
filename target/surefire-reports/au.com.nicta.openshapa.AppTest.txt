@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: au.com.nicta.openshapa.AppTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.031 sec <<< FAILURE!
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.063 sec <<< FAILURE!
 testMoo(au.com.nicta.openshapa.AppTest)  Time elapsed: 0 sec  <<< FAILURE!
 junit.framework.AssertionFailedError
 	at junit.framework.Assert.fail(Assert.java:47)
