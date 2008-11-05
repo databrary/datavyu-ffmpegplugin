@@ -1,0 +1,312 @@
+/*
+ * Timestamp.java
+ *
+ * Created on November 9, 2006, 3:41 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ * This is the timestamp primitive class.
+ *
+ * @author FGA
+ */
+public class Timestamp extends DataValue
+{
+  /** Number formatters **/
+  private final static NumberFormatter NUMFORM = new NumberFormatter();
+  
+  /** The number of frames per second for this timestamp **/
+  private int  fps  = 0;
+
+  /** The value of the timestamp **/
+  private long time = 0;
+
+  /**
+   * Creates a new instance of Timestamp with the given frames per second and the given time.
+   * @param fps  Frames per second.
+   * @param time The value of the timestamp.
+   */
+  public Timestamp(int fps, long time)
+  {
+    this.setFPS(fps);
+    this.setTime(time);
+  } //End of Timestamp() constructor
+  
+  /**
+   * Creates a new instance of Timestamp with the given frames per second defaults timestamp to 0 frames;
+   * @param fps Frames per second.
+   */
+  public Timestamp(int fps)
+  {
+    this(fps, 0);
+  } //End of Timestamp() constructor
+  
+  /**
+   * Returns the timestamp value.
+   * @return the timestamp.
+   */
+   public long getTime()
+   {
+     return (this.time);
+   } //End of getTime() method
+
+   /**
+   * Sets the current timestamp value.
+   * @param time The timestamp value in frames.
+   */
+   public void setTime(long time)
+   {
+     this.time = time;
+    // Notify the listeners of the value change
+    this.notifyListeners();
+   } //End of setTime() method
+
+  /**
+   * Returns the timestamp timescale in frames per second.
+   * @return the timescale in fps.
+   */
+   public int getFPS()
+   {
+     return (this.fps);
+   } //End of getFPS() method
+
+   /**
+   * Sets the timestamps timescale in frames per second.
+   * <br/>
+   * This will also force a conversion of the current timestamp value
+   * to the new frame scale.
+   * <br/><br/>
+   * <em><b>This could cause loss of precision or rounding errors!</b></em>
+   *
+   *  @param fps Frames per second.
+    * @see #convertTime(long time, int origFPS, int newFPS)
+   */
+   public void setFPS(int fps)
+   {
+     long newTime = convertTime(this.time, this.fps, fps);
+     this.setTime(newTime);
+     this.fps = fps;
+    // Notify the listeners of the value change
+    this.notifyListeners();
+   } //End of setFPS() method
+
+  /**
+   * Converts the timestamp value from one timescale to another.
+   * <br/><br/>
+   * <em><b>This could cause loss of precision or rounding errors!</b></em>
+   *
+   *  @param time     Timestamp value.
+   *  @param origFPS  Original timescale frames per second.
+   *  @param newFPS   New timescale frames per second.
+    * @return the converted timestamp.
+   */
+   public final static long convertTime(long time, int origFPS, int newFPS)
+   {
+     double d = ((double)time*newFPS)/((double)origFPS);
+     return (Math.round(d));
+   } //End of convertTime() method
+
+
+   /**
+    * Returns the number of whole hours.
+    *
+    * @param time The time in frames.
+    * @param fps The framerate in frames per second.
+    * @return the number of whole hours.
+    */
+   public final static int getHours(int fps, long time)
+   {
+     return ((int)((time/fps)/3600));
+   } //End of getHours() method
+
+   /**
+    * Returns the number of whole hours.
+    * <br/>
+    * Uses static methods to compute values.
+    * @return the number of whole hours.
+    * @see #getHours(int fps, long time)
+    */
+   public int getHours()
+   {
+     return (getHours(this.fps, this.time));
+   } //End of getHours() method
+
+
+   /**
+    * Returns the number of whole minutes.
+    *
+    * @param time The time in frames.
+    * @param fps The framerate in frames per second.
+    * @return the numbre of whole minutes
+    */
+   public final static int getMinutes(int fps, long time)
+   {
+     int hh = getHours(fps, time);
+     return ((int)(((time-(3600*hh*fps))/fps)/60));
+   } //End of getMinutes() method
+
+   /**
+    * Returns the number of whole minutes.
+    * <br/>
+    * Uses static methods to compute values.
+    * @return the number of whole minutes.
+    * @see #getMinutes(int fps, long time)
+    */
+   public int getMinutes()
+   {
+     return (getMinutes(this.fps, this.time));
+   } //End of getMinutes() method
+
+   /**
+    * Returns the number of whole seconds.
+    *
+    * @param time The time in frames.
+    * @param fps The framerate in frames per second.
+    * @return the number of whole seconds.
+    */
+   public final static int getSeconds(int fps, long time)
+   {
+    int hh = getHours(fps, time);
+    int mm = getMinutes(fps, time);
+    return ((int)((time-(3600*hh*fps)-(60*mm*fps))/fps));
+   } //End of getSeconds() method
+
+   /**
+    * Returns the number of whole seconds.
+    * <br/>
+    * Uses static methods to compute values.
+    * @return the number of whole seconds.
+    * @see #getSeconds(int fps, long time)
+    */
+   public int getSeconds()
+   {
+     return (getSeconds(this.fps, this.time));
+   } //End of getSeconds() method
+
+   /**
+    * Returns the number of frames (0-(fps-1)).
+    *
+    * @param time The time in frames.
+    * @param fps The framerate in frames per second.
+    * @return the number of frames (0-(fps-1)).
+    */
+   public final static int getFrames(int fps, long time)
+   {
+     return ((int)(time%fps));
+   } //End of getFrames() method
+
+   /**
+    * Returns the number of frames (0-(fps-1)).
+    * <br/>
+    * Uses static methods to compute values.
+    * @return the number of frames (0-(fps-1)).
+    * @see #getFrames(int fps, long time)
+    */
+   public int getFrames()
+   {
+     return (getFrames(this.fps, this.time));
+   } //End of getFrames() method
+
+
+   /**
+    * Returns a string representation of the timestamp in hh:mm:ss:fff format.
+    *
+    * @param time The time in frames.
+    * @param fps The framerate in frames per second.
+    * @return a string representation of the timestamp in hh:mm:ss:fff format.
+    */
+   public final static String toHMSFString(int fps, long time)
+   {
+     int hh  = getHours(fps, time);
+     int mm  = getMinutes(fps, time);
+     int ss  = getSeconds(fps, time);
+     int fff = getFrames(fps, time);
+
+     return (NUMFORM.numF2.format(hh) + ":" + NUMFORM.numF2.format(mm) + ":" +
+         NUMFORM.numF2.format(ss) + ":" + NUMFORM.numF3.format(fff));
+   } //End of toHMSFString() method
+
+
+   /**
+    * Returns a string representation of the timestamp in hh:mm:ss:fff format.
+    * <br/>
+    * Uses static methods to compute values.
+    * @return a string representation of the timestamp in hh:mm:ss:fff format.
+    * @see #toHMSFString(int fps, long time)
+    */
+   public String toHMSFString()
+   {
+     return (toHMSFString(this.fps, this.time));
+   } //End of toHMSFString() method
+
+
+   /**
+    * Returns a string representation of the timestamp.
+    * @return string representation of timestamp
+    */
+   public String toString()
+   {
+     return (this.time + " @ " + this.fps);
+   } // End of toString() method
+
+
+  /**
+   * Returns a database String representation of the DBValue for comparison against
+   * the database's expected value.<br>
+   * <i>This function is floatended for debugging purposses.</i>
+   * @return the string value.
+   */
+  public String toDBString()
+  {
+    return ("("+this.fps+","+this.toHMSFString()+")");
+  } //End of toDBString() method
+
+   /**
+    * Main method for testing purposes.
+    */
+   public final static void main (String[] argv)
+   {
+     Timestamp t1 = new Timestamp(30, 333);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+     t1.setFPS(60);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+     t1.setFPS(25);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+     t1.setFPS(30);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+     t1.setFPS(120);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+     t1.setFPS(1000);
+     System.out.println(t1 + "\t" + t1.toHMSFString());
+   } //End of main() method
+
+} //End of Timestamp class definition
+
+/**
+ * This internal class is used to hold the number formatting
+ * classes used by all instances of timestamp.
+ *
+ * @author FGA
+ */
+class NumberFormatter
+{
+  /** Static instances for use accross classes **/
+  public static java.text.NumberFormat numF2 = java.text.NumberFormat.getInstance();
+  public static java.text.NumberFormat numF3 = java.text.NumberFormat.getInstance();  
+
+  /**
+   * Creates a new instance of NumberFormatter
+   */
+  public NumberFormatter()
+  {
+    numF2.setMaximumFractionDigits(0);
+    numF2.setMaximumIntegerDigits(2);
+    numF2.setMinimumIntegerDigits(2);
+    numF3.setMaximumFractionDigits(0);
+    numF3.setMaximumIntegerDigits(3);
+    numF3.setMinimumIntegerDigits(3);
+  } //End of NumberFormatter() constructor
+
+} //End of NumberFormatter class definition

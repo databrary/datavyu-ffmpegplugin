@@ -1,0 +1,255 @@
+/*
+ * FormalArgument.java
+ *
+ * Created on December 14, 2006, 6:24 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+
+import java.util.Vector;
+
+/**
+ *
+ * @author FGA
+ */
+public class FormalArgument extends DataValue
+{
+  /** No specified data type */
+  public final static int DATATYPE_NONE       = 0;
+  /** Integer data type */
+  public final static int DATATYPE_INTEGER    = 1;
+  /** Float data type */
+  public final static int DATATYPE_FLOAT      = 2;
+  /** String data type */
+  public final static int DATATYPE_STRING     = 3;
+  /** Nominal data type */
+  public final static int DATATYPE_NOMINAL    = 4;
+  /** Timestamp data type */
+  public final static int DATATYPE_TIMESTAMP  = 5;
+  /** Predicate data type */
+  public final static int DATATYPE_PREDICATE  = 6;
+  /** Matrix data type */
+  public final static int DATATYPE_MATRIX     = 7;
+
+  /**
+   * The arguments name
+   */
+  private String name = null;
+
+  /**
+   * The default data value
+   */
+  private DataValue defaultValue = null;
+
+  /**
+   * Whether the argument is typed
+   */
+  private boolean typed = false;
+
+  /**
+   * Data Type (if typed)
+   */
+  private int type = DATATYPE_NONE;
+
+  /**
+   * Hidden flag
+   */
+  private boolean visible = true;
+
+  /**
+   * Change listeners
+   */
+  Vector<FormalArgumentChangeListener> changeListeners = new Vector<FormalArgumentChangeListener>();
+
+  /**
+   * Creates a new instance of FormalArgument
+   * @param name the name of the formal argument
+   */
+  public FormalArgument(String name)
+  {
+    this(name, null);
+  } //End of FormalArguement() constructor
+  
+  /**
+   * Creates a new instance of FormalArgument
+   * @param name the name of the formal argument
+   * @param defaultValue the default value of the formal argument
+   */
+  public FormalArgument(String name, DataValue defaultValue)
+  {
+    this.setName(name);
+    this.setDefaultValue(defaultValue);
+  } //End of FormalArguement() constructor
+  
+  /**
+   * Sets the arguments name
+   * @param name the new arguments name
+   */
+  public void setName(String name)
+  {
+    this.name = new String(name);
+    this.notifyArgumentChangeListeners();
+  } //End of setName() method
+
+  /**
+   * Gets the arguments name
+   * @return the arguments name
+   */
+  public String getName()
+  {
+    return (new String(this.name));
+  } //End of getName() method
+
+  /**
+   * Sets the default value of the formal argument
+   * @param defValue the default value for the argument
+   */
+  public void setDefaultValue(DataValue defValue)
+  {
+    this.defaultValue = defValue;
+    this.notifyArgumentChangeListeners();
+  } //End of setDefaultValue() method
+
+  /**
+   * Get the argument's default value
+   * @return the formal argument's default value
+   */
+  public DataValue getDefaultValue()
+  {
+    return (this.defaultValue);
+  } //End of getDefaultValue() method
+
+  /**
+   * Sets the argument as typed and sets the type
+   * @param type the argument type
+   */
+  public void setTyped(int type)
+  {
+    switch(type) {
+      case
+        DATATYPE_INTEGER:
+        DATATYPE_FLOAT:
+        DATATYPE_STRING:
+        DATATYPE_NOMINAL:
+        DATATYPE_TIMESTAMP:
+        DATATYPE_PREDICATE:
+        DATATYPE_MATRIX:
+        {
+          break;
+        }
+      default:
+      {
+        return;
+      }
+    } //End of switch(type)
+    this.typed = true;
+    this.type = type;
+    this.notifyArgumentChangeListeners();
+  } //End of setTyped() method
+
+  /**
+   * Sets the formal argument as untyped and clears the type
+   */
+  public void setUntyped()
+  {
+    this.typed = false;
+    this.type = DATATYPE_NONE;
+    this.notifyArgumentChangeListeners();
+  } //End of setUntyped() method
+
+  /**
+   * Returns whether or not the argument is typed
+   * @return true if the formal argument is typed
+   */
+  public boolean isTyped()
+  {
+    return (this.typed);
+  } //End of isTyped() method
+
+  /**
+   * Gets the formal argument type
+   * @return If the the formal argument is typed the the type
+   *  otherwise DATATYPE_NONE
+   */
+  public int getType()
+  {
+    if (!this.typed) {
+      return (DATATYPE_NONE);
+    }
+
+    return (this.type);
+  } //End of getType() method
+
+  /**
+   * Sets the visibility flag
+   * @param visible whether the formal argumet is visible
+   */
+  public void setVisible(boolean visible)
+  {
+    this.visible = visible;
+    this.notifyArgumentChangeListeners();
+  } //End of setVisible() method
+  
+  /**
+   * Gets the visible flag
+   * @return true if the argument is visible
+   */
+  public boolean isVisible()
+  {
+    return (this.visible);
+  } //End of isVisible() method
+  
+  /**
+   * Returns a String representation of the DBValue for display.
+   * @return the string value.
+   */
+  public String toString()
+  {
+    return ("<" + this.getName() + ">");
+  } //End of toString() method
+
+  /**
+   * Returns a database String representation of the DBValue for comparison against
+   * the database's expected value.<br>
+   * <i>This function is intended for debugging purposses.</i>
+   * @return the string value.
+   */
+  public String toDBString()
+  {
+    return ("(<" + this.getName() + ">)");
+  } //End of toDBString() method
+
+
+  /**
+   * Adds an argument change listener reference to cell
+   * @param changeListener The argument change listener to add
+   */
+  public void addArgumentChangeListener(FormalArgumentChangeListener changeListener)
+  {
+    if (this.changeListeners != null) {
+      this.changeListeners.add(changeListener);
+    }
+  } //End of addArgumentChangeListener() method
+  
+  /**
+   * Removes an argument change listener reference from a cell
+   */
+  public void removeArgumentChangeListener(FormalArgumentChangeListener changeListener)
+  {
+    if (this.changeListeners != null) {
+      this.changeListeners.remove(changeListener);
+    }
+  } //End of removeArgumentChangeListener() method
+
+  /**
+   * Notifies change listeners that a change has occurred
+   */
+  private void notifyArgumentChangeListeners()
+  {
+    for (int i=0; i<this.changeListeners.size(); i++) {
+      ((FormalArgumentChangeListener)this.changeListeners.elementAt(i)).argumentChanged(this);
+    }
+  } //End of notifyArgumentChangeListeners() method
+} //End of FormalArgument class definition

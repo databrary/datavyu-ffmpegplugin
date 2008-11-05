@@ -1,0 +1,69 @@
+/*
+ * DBString.java
+ *
+ * Created on November 9, 2006, 5:27 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ * Database String Class
+ * @author FGA
+ */
+public class DBString extends DataValue
+{
+ /** The float value of the element **/
+  protected StringBuffer value;
+
+  /**
+   * Creates a new instance of DBString.
+   *
+   * @param value   The value of the DBString.
+   */
+  public DBString(String value)
+  {
+    this.value = new StringBuffer(value);
+  }
+
+  /**
+   * Returns the value of the DBString.
+   * @return the string value.
+   */
+  public String getValue()
+  {
+    return (this.value.toString());
+  }
+
+  /**
+   * Sets the value of the DBString
+   */
+  public void setValue(String value)
+  {
+    this.value.delete(0, this.value.length());
+    this.value.append(value);
+    // Notify the listeners of the value change
+    this.notifyListeners();
+  }
+
+ /**
+   * Returns a String representation of the DBValue for display.
+   * @return the string value.
+   */
+  public String toString()
+  {
+    return (""+this.value.toString());
+  } //End of toString() method
+
+  /**
+   * Returns a database String representation of the DBValue for comparison against
+   * the database's expected value.<br>
+   * <i>This function is floatended for debugging purposses.</i>
+   * @return the string value.
+   */
+  public String toDBString()
+  {
+    return ("("+this.value.toString()+")");
+  } //End of toDBString() method
+
+} //End of DBString class definition

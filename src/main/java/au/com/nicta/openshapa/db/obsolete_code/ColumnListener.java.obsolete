@@ -1,0 +1,21 @@
+/*
+ * ColumnListener.java
+ *
+ * Created on December 14, 2006, 7:35 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ *
+ * @author FGA
+ */
+public interface ColumnListener
+{
+  public void ColumnCellAdded(Column col, Cell cell);
+  public void ColumnCellRemoved(Column col, Cell cell);
+  public void ColumnDefChanged(Column col);
+} //End of ColumnListener interface definition

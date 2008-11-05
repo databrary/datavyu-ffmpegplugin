@@ -1,0 +1,23 @@
+/*
+ * DataValueChangeListener.java
+ *
+ * Created on December 12, 2006, 11:59 AM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ *
+ * @author FGA
+ */
+public interface DataValueChangeListener
+{
+  /**
+   * Called when a data value has been modified
+   * @param value the DataValue changed
+   */
+  public void dataValueChanged(DataValue value);
+}

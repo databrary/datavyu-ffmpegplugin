@@ -1,0 +1,30 @@
+/*
+ * MatrixVocabElement.java
+ *
+ * Created on December 14, 2006, 5:58 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ *
+ * @author FGA
+ */
+public class MatrixVocabElement extends VocabElement
+{
+  /** Creates a new instance of MatrixVocabElement */
+  public MatrixVocabElement()
+  {
+    super();
+  } //End of MatrixVocabElement()
+
+  /**
+   * Gets the number of elements in the Matrix
+   */
+  public int getNumElements()
+  {
+    return (this.formalArguments.size());
+  } //End of getNumElements() method
+
+} //End of MatrixVocabElement class definition

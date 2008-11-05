@@ -1,0 +1,33 @@
+/*
+ * DatabaseChangeListener.java
+ *
+ * Created on December 12, 2006, 12:56 PM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ *
+ * @author FGA
+ */
+public interface DatabaseChangeListener
+{
+  /**
+   * Called when the database ticks per second value has changed
+   * @param db the database that has been modified
+   * @param oldTPS the previous ticks per second value
+   */
+  public void databaseTicksChanged(Database db, int oldTPS)
+    throws SystemErrorException;
+
+  /**
+   * Called when the database start time value has changed
+   * @param db the database that has been modified
+   * @param oldST the previous startTime value
+   */
+  public void databaseStartTimeChanged(Database db, long oldST);
+
+} //End of DatabaseChangeListener class definition

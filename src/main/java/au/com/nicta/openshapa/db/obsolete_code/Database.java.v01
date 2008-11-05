@@ -1,0 +1,3603 @@
+/*
+ * Database.java
+ *
+ * Created on December 12, 2006, 12:37 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ * Abstract database class
+ * @author FGA
+ */
+public abstract class Database
+{
+    
+    /*************************************************************************/
+    /*************************** Constants: **********************************/
+    /*************************************************************************/
+    
+    /** Constant type for Data Column Creation */
+    public final static int COLUMN_TYPE_DATA = 1;
+      
+    /** Constant type for Reference Column Creation */
+    public final static int COLUMN_TYPE_REFERENCE = 2;
+
+    /** Default Ticks per second from MacSHAPA */
+    public final static int DEFAULT_TPS = 60;
+
+    /** Default start time */
+    public final static long DEFAULT_START_TIME = 0;
+  
+    
+    /*************************************************************************/
+    /***************************** Fields: ***********************************/
+    /*************************************************************************/
+    
+    /** Database name */
+    String name = "Undefined";
+    
+    /** Database description */
+    String description = null;
+    
+    /** Start time flag */
+    protected boolean useStartTime = false;
+
+    /** Start time value */
+    long startTime = DEFAULT_START_TIME;
+
+    /** Ticks per second */
+    int tps = DEFAULT_TPS;
+
+    /** Database change listeners */
+    java.util.Vector<DatabaseChangeListener> changeListeners =
+            new java.util.Vector<DatabaseChangeListener>();
+    
+    /** Current database user UID */
+    int curUID = 0;
+    
+    /** Index of all DBElements in the database */
+    DBIndex idx = null;
+    
+    /** List of all vocab elements in the database */
+    VocabList vl = null;
+
+    
+    /*************************************************************************/
+    /*************************** Constructors: *******************************/
+    /*************************************************************************/
+    
+    /**
+     * Database()
+     *
+     * Constructor for Database.  Sets up data structures used by all flavors
+     * of databases.
+     *                                              JRM -- 4/30/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public Database()
+        throws SystemErrorException
+    {
+        super();
+        
+        this.idx = new DBIndex(this);
+        
+        this.vl = new VocabList(this);
+        
+        return;
+        
+    } /* Database::Database() */
+   
+        
+    /*************************************************************************/
+    /******************* Abstract Method Declarations: ***********************/
+    /*************************************************************************/
+
+    /*** Version Reporting ***/
+    
+    /**
+     * getType()
+     *
+     * Gets the database type string<br>
+     * (eg ODB File)
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public abstract String getType();
+
+    /**
+     * getVersion()
+     *
+     * Gets the database version number<br>
+     * (eg 2.1)
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public abstract float getVersion();
+
+
+    /*** Database element management ***/
+    
+    /**
+     * getCell() -- by column ID and cell ID
+     *
+     * Gets the cell associated with the given id in the given column
+     * @param columnID the id of the column the cell is in
+     * @param cellID the id of the cell
+     * @return the cell associated with the given cell id
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+ 
+    public abstract Cell getCell(long columnID, long cellID);
+
+    
+    /**
+     * getColumn() -- by column ID 
+     *
+     * Gets the column associated with the given id
+     * @param columnID the id of the column
+     * @return the column associated with the given column id
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public abstract Column getColumn(long columnID);
+
+  
+    /**
+     * getFormalArgument() -- by formal argument ID
+     * 
+     * Gets the argument associated with the given id
+     * 
+     * @param argumentID the id of the argument
+     * @return the argument associated with the given argument id
+     * 
+     * Changes:
+     * 
+     *    - Used to be called getArgument().  Changed the name to avoid
+     *      confusion.  Also changed type to AFormalArgumentto 
+     *      reflect changes in class structure.
+     * 
+     *                                      -- JRM - 3/03/07
+     */
+  
+    public abstract FormalArgument getFormalArgument(long argumentID); 
+
+    
+    /**
+     * getVocabElement() -- by vocab element ID
+     *
+     * Gets the vocab element associated with the given id
+     * @param vocabID the id of the vocab
+     * @return the vocab associated with the given vocab id
+     *
+     * Changes:
+     *
+     *    - Used to be called getVocab().  Changed the name to avoid
+     *      confusion.  Also changed type of return to match revised 
+     *      vocab related class definitions.
+     *
+     *                                      -- JRM - 3/03/07
+     */
+  
+    public abstract VocabElement getVocabElement(long vocabID);
+
+  
+    /**
+     * createColumn()
+     *
+     * Creates a Column of the given type in the database.
+     * @param columnType the type of column to create:<br>
+     * Must be either:
+     * <UL>
+     * <LI>COLUMN_TYPE_DATA</LI> or
+     * <LI>COLUMN_TYPE_REFERENCE</LI>
+     * </UL>
+     * @return the newly created column object 
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public abstract Column createColumn(int columnType);
+
+    
+    /**
+     * createCell()
+     *
+     * Creates a new cell in the given column.
+     * @param columnID the id of the column in which to create the cell
+     * @return the newly created cell
+     *
+     * Changes:
+     * 
+     *    - None.
+     */
+  
+    public abstract Cell createCell(long columnID);
+
+
+    /**
+     * createFormalArgument()
+     *
+     *      NOTE: We must support many types of formal arguments.  Thus this
+     *            method makes little sense.  Expect that I will rework this
+     *            completely.
+     *                                  -- JRM - 3/03/07
+     *
+     * Creates a new formal argument.
+     * @return the newly created formal argument
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public abstract FormalArgument createFormalArgument();
+
+    /**
+     * createMatrixVocabElement()
+     *
+     * Creates a new matrix vocab element.
+     * @return the newly created matrix vocab element
+     *
+     * Changes:
+     *
+     *    - Changed return type to match changes in class structure for 
+     *      vocab elements.
+     *                                          -- JRM - 3/03/07
+     */
+  
+    public abstract VocabElement createMatrixVocabElement();
+
+    /**
+     * createPredicateVocabElement()
+     *
+     * Creates a new predicate vocab element.
+     * @return the newly created predicate vocab element
+     *
+     * Changes
+     *
+     *    - Changed return type to match changes in class structure for 
+     *      vocab elements.
+     *                                          -- JRM - 3/03/07
+     */
+  
+    public abstract VocabElement createPredicateVocabElement();
+
+        
+    /*************************************************************************/
+    /***************************** Accessors: ********************************/
+    /*************************************************************************/
+    
+    /**
+     * getCurUID()
+     *
+     * Get the current user ID.
+     *
+     *               JRM -- 4/11/07
+     *
+     * @return  ID of the user who is currently working on the database.
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public int getCurUID()
+    {
+        return this.curUID;
+        
+    } /* Database::getCurUID() */
+    
+    
+    /**
+     * getDescription()
+     *
+     * Get the description of the database.
+     *
+     *                    JRM -- 4/10/07
+     *
+     * @return  A copy of the description field of the instance of Database, or 
+     *          null if the description is undefined.
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public String getDescription()
+    {
+        String descriptionCopy = null;
+        
+        if ( this.description != null )
+        {
+            descriptionCopy = new String(this.description);
+        }
+        
+        return descriptionCopy;
+        
+    } /* Database::geDescription() */
+    
+    /**
+     * getName()
+     *
+     * Get the name of the database.
+     *
+     *                    JRM -- 4/10/07
+     *
+     * @return  A copy of the name field of the instance of Database, or null
+     *          if the name is undefined.
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public String getName()
+    {
+        String nameCopy = null;
+        
+        if ( this.name != null )
+        {
+            nameCopy = new String(this.name);
+        }
+        
+        return nameCopy;
+        
+    } /* Database::getName() */
+     
+
+    /**
+     * getTicks()
+     *
+     * Gets the ticks per second
+     *
+     * @return ticks per second
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public int getTicks()
+    {
+        return (this.tps);
+        
+    } /* Datebase::getTicks() */
+    
+    /**
+     * setDescription()
+     *
+     * Set the description of the database.  Note that null is a valid 
+     * new description, as the database description is optional.
+     *
+     *                                  JRM -- 4/10/07
+     *
+     * @return  void
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    void setDescription(String newDescription)
+    {
+        if ( newDescription != null )
+        {
+            this.description = new String(newDescription);
+        }
+        else
+        {
+            this.description = null;
+        }
+         
+        return;
+        
+    } /* Database::seDescription() */
+     
+    
+    /**
+     * setName()
+     *
+     * Set the description of the database.  Note that null is a valid 
+     * new description, as the database description is optional.
+     *
+     *                                  JRM -- 4/10/07
+     *
+     * @return  void
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    void setName(String newName)
+        throws SystemErrorException
+    {
+        final String mName = "Databaset::setName(): ";
+        
+        if ( ( newName != null ) ||
+             ( newName.isEmpty() ) )
+        {
+            throw new SystemErrorException(mName + "null or empty name");
+        }
+        else 
+        {
+            this.name = new String(newName);
+        }
+         
+        return;
+        
+    } /* Database::setName() */
+   
+
+    /**
+     * setTicks()
+     *
+     * Sets the ticks per second
+     *
+     * @param tps ticks per second
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public void setTicks(int tps)
+    {
+        int prevTPS = this.tps;
+        this.tps = tps;
+
+        // Notify all listeners of TPS change
+        for (int i=0; i<this.changeListeners.size(); i++) {
+            ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseTicksChanged(this, prevTPS);
+        }
+        
+        return;
+        
+    } /* Datebase::setTicks() */
+
+
+    /**
+     * useStartTime()
+     *
+     * Gets the use start time flag
+     *
+     * @return true if we are to use a start time
+     *
+     * Changes:
+     *
+     *      - None.
+     */
+  
+    public boolean useStartTime()
+    {
+        return (this.useStartTime);
+        
+    } /* Database::useStartTime() */
+    
+    /**
+     * setUseStartTime()
+     *
+     * Sets the start time flag
+     *
+     * @param useStartTime the use start time flag value
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public void setUseStartTime(boolean useStartTime)
+    {
+        this.useStartTime = useStartTime; 
+    
+    } /* Database::useStartTime() */
+
+
+    /**
+     * getStartTime()
+     *
+     * Gets the start time
+     * @return the start time value
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public long getStartTime()
+    {
+        return (this.startTime);
+        
+    } /* Database::getStarTime() */
+
+    /**
+     * setStartTime()
+     *
+     * Sets the start time
+     * @param startTime the start time
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public void setStartTime(long startTime)
+    {
+        long prevST = this.startTime;
+        this.startTime = startTime;
+
+        // Notify all listeners of TPS change
+        for (int i=0; i<this.changeListeners.size(); i++) 
+        {
+            ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseStartTimeChanged(this, prevST);
+        }
+        
+        return;
+        
+    } /* Database::setStarTime() */
+
+        
+    /*************************************************************************/
+    /*************************** Methods: ************************************/
+    /*************************************************************************/
+    
+    /*************************************************************************/
+    /********************** Vocab List Management ****************************/
+    /*                                                                       */
+    /* The Vocab list is implemented as a single class, as both matricies    */
+    /* (i.e. column variables) and predicates are vocab elements, and share  */
+    /* a name space.                                                         */
+    /*                                                                       */
+    /* This shared name space is necessary for the old MacSHAPA query        */
+    /* language, but we shouldn't need it elsewhere.                         */
+    /*                                                                       */
+    /* Thus, while I have implemented query list management methods that     */
+    /* deal with instances of VocabElement, we shouldn't have to use them    */
+    /* outside a possible implementation of the old MacSHAPA query language  */
+    /* and associated editors.                                               */
+    /*                                                                       */
+    /* For all other purposes, I have implemented methods that deal with     */
+    /* PredicateVocabElements or MatrixVocabElements.  Use these unless the  */
+    /* more general methods are absolutely necessary.  This will make it     */
+    /* easier to put predicates and matricies (i.e. column variables) in     */
+    /* separate name spaces should we ever wish to.                          */
+    /*                                                  JRM -- 6/11/07       */
+    /*                                                                       */
+    /*************************************************************************/
+    
+    
+    /*** UID management ***/
+    
+    /**
+     * isValidUID()
+     *
+     * Determine whether a user ID is valid.  Return true if it is, and
+     * false otherwise.
+     *
+     * @param   uid:    User ID to be tested for validity
+     *
+     * @return  true if uid id valid, and false otherwise
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public boolean isValidUID(int uid)
+    {
+        boolean isValid = true;
+    
+        /* TODO:
+         *
+         * For now, return true if the uid is non-negative.  
+         *
+         * Once we get the user table set up, return true iff uid is zero
+         * or the uid appears in the user table.
+         */
+        
+        if ( uid < 0 )
+        {
+            isValid = false;
+        }
+        
+        return isValid;
+        
+    } /* Database::isValidUID(uid) */
+    
+
+    /*** Database element management ***/
+    
+    /**
+     * createCell()
+     *
+     * Creates a new cell in the given column.
+     * @param column the column in which to create the cell
+     * @return the newly created cell
+     */
+
+    public Cell createCell(Column column)
+    {
+        return (this.createCell(column.getID()));
+        
+    } /*  Database::createCell() */
+
+    
+    /**
+     * getCell() -- by column reference and cell ID
+     *
+     * Gets the cell associated with the given id in the given column
+     * @param column the column the cell is in
+     * @param cellID the id of the cell
+     * @return the cell associated with the given cell id
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public Cell getCell(Column column, long cellID)
+    {
+        return (this.getCell(column.getID(), cellID));
+    
+    } /* Database::getCell() -- by column reference and cell ID */
+
+     
+    /*** Listener Management ***/
+  
+    /**
+     * addChangeListener()
+     *
+     * Adds a database change listener
+     * @param listener the change listener to add
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public void addChangeListener(DatabaseChangeListener listener)
+    {
+        this.changeListeners.add(listener);
+        
+        return;
+        
+    } /* Database::addChangeListener() */
+
+    /**
+     * removeChangeListener()
+     *
+     * Removes a database change listener
+     * @param listener the change listener to remove
+     *
+     * Changes:
+     *
+     *    - None
+     */
+    
+    public void removeChangeListener(DatabaseChangeListener listener)
+    {
+        this.changeListeners.remove(listener);
+        
+        return;
+        
+    } /* Database::removeChangeListener() */
+
+
+    /*** Version String Construction ***/
+    
+    /**
+     * getDBVersionString()
+     *
+     * Gets the database type and version string<br>
+     * (eg ODB File v2.1)
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+  
+    public String getDBVersionString()
+    {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getType());
+        sb.append(" v");
+        sb.append(this.getVersion());
+    
+        return (sb.toString());
+    
+    } /* Database::getDBVersionString() */
+        
+    /*************************************************************************/
+    /************************ Class Methods: *********************************/
+    /*************************************************************************/
+      
+    /**
+     * IsGraphicalChar
+     *
+     * Test to see if the character passed in as a parameter is a graphical
+     * character.  Return true if it is, and false otherwise.
+     *
+     * Eventually we will need to extend this method to work nicely with 
+     * unicode, but for now, we will take a stict ASCII view of the issue.
+     * Thus, for present purposes, a graphical character is a character with 
+     * ASCII code 0x21 - 0x7E inclusive.
+     *                                          JRM -- 1/23/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    protected static boolean IsGraphicalChar(char ch) {
+        
+        boolean retVal = false;
+    
+        if ( ( ch >= 0x21 ) && ( ch <= 0x7E ) ) {
+            
+            retVal = true;
+        
+        }
+            
+        return(retVal);
+            
+    } /* Database::IsGraphicalChar() */
+    
+    
+    /**
+     * IsValidFargName()
+     * 
+     * Test to see if a formal argument name is valid.  Return true if it
+     * is, and false if it isn't.
+     *
+     * For now, use the old MacSHAPA definition of a formal argument name:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *  <formal_arg_char> -->
+     *      <graphic_char> - ( '(' | ')' | '<' | '>' | ',' | '"' )
+     *
+     *  <formal_arg> --> '<' (<formal_arg_char>)+ '>'
+     *
+     * At some point we will need to extend this to work nicely with unicode,
+     * but we will stay with the old MacSHAPA definitions for now.  Anything
+     * we do here will be an extension, so we shouldn't introduce any 
+     * incompatibilities.
+     *                                      JRM -- 1/23/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+
+    public static boolean IsValidFargName(String name)
+        throws SystemErrorException 
+    {
+   
+        final String mName = "Database::IsValidFargName(): ";
+        char ch;
+        int i;
+        int len;
+        
+        if ( name == null ) {
+            
+            throw new SystemErrorException(mName + "name null on entry.");
+            
+        } else if ( ! ( name instanceof String ) ) { 
+        
+            throw new SystemErrorException(mName + "name is not a string.");
+
+        }
+               
+        len = name.length();
+        
+        if ( len <= 2 ) {
+            
+            // string is too short to be a valid formal argument name
+            return false;
+            
+        } else if ( ( name.charAt(0) != '<' ) || 
+                    ( name.charAt(len - 1) != '>' ) ) {
+            
+            // string either doesn't start with a '<' or doesn't end with '>'
+            // Thus it is not a valid formal argument name.
+            return false;
+            
+        } else {
+            
+            for ( i = 1; i < len - 1; i++ ) {
+             
+                ch = name.charAt(i);
+                
+                if ( ( ! IsGraphicalChar(ch)) ||
+                     ( ch == '(' ) ||
+                     ( ch == ')' ) ||
+                     ( ch == '<' ) ||
+                     ( ch == '>' ) ||
+                     ( ch == ',' ) ||
+                     ( ch == '"' ) ) {
+                
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidFargName() */
+    
+    
+    /**
+     * IsValidFloat()
+     *
+     * Test to see if the object passed in as a parameter is a Double that can
+     * be used to replace a formal argument.
+     *
+     * Return true if it is, and false otherwise.
+     *
+     * The method name "IsValidFloat()" is a historical hold over from MacSHAPA.
+     * Were it not for that issue, "IsValidDouble()" would make much more
+     * sense.
+     *
+     *                                          JRM -- 2/7/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidFloat(Object o)
+        throws SystemErrorException
+    {
+        final String mName = "Database::IsValidFoat(): ";
+        
+        if ( o == null ) 
+        {
+            throw new SystemErrorException(mName + "o null on entry.");
+        }   
+        
+        if ( o instanceof Double )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    } /* Database::IsValidFloat() */
+    
+     
+    /**
+     * IsValidInt()
+     *
+     * Test to see if the object passed in as a parameter is a Long that can
+     * be used to replace a formal argument.
+     *
+     * Return true if it is, and false otherwise.
+     *
+     *                                          JRM -- 2/7/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidInt(Object o)
+        throws SystemErrorException
+    {
+        final String mName = "Database::IsValidInt(): ";
+        
+        if ( o == null ) 
+        {
+            throw new SystemErrorException(mName + "o null on entry."); 
+        }   
+        
+        if ( o instanceof Long )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    } /* Database::IsValidInt() */
+
+    
+    /**
+     * IsValidNominal()
+     * 
+     * Test to see if a string contains a valid nominal.  Return true if it
+     * is, and false if it isn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a nominal:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *  <nominal_char> --> 
+     *      ( ( <graphic_char> - ( '(' | ')' | '<' | '>' | ',' | '"' ) ) | ' '
+     *
+     *	<non_ws_nominal_char> --> <nominal_char> - ' '
+     *
+     *	<nominal> --> 
+     *      <non_ws_nominal_char> [(<nominal_char>)* <non_ws_nominal_char>]
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                          JRM -- 1/24/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidNominal(Object obj)
+        throws SystemErrorException
+    {
+   
+        final String mName = "Database::IsValidNominal(): ";
+        int len;
+        
+        
+        if ( obj == null ) 
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        } 
+        else if ( ! ( obj instanceof String ) ) 
+        { 
+            return false;
+        }
+        
+        String s = (String)obj;
+               
+        len = s.length();
+        
+        if ( len < 1 ) {
+            
+            // s is too short to be a valid nominal
+            return false;
+            
+        } else if ( ( Character.isSpaceChar(s.charAt(0)) ) || 
+                    ( Character.isSpaceChar(s.charAt(len - 1)) ) ) {
+            
+            // s either starts or ends with white space, and thus is 
+            // not a valid nominal.
+            return false;
+            
+        } else {
+            
+            char ch;
+            int i;
+            
+            for ( i = 0; i < len; i++ ) {
+             
+                ch = s.charAt(i);
+                
+                if ( ! ( ( ch == ' ' ) 
+                         ||
+                         ( ( IsGraphicalChar(ch) ) 
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' ) 
+                           &&
+                           ( ch != '>' ) 
+                           &&
+                           ( ch != ',' ) 
+                           &&
+                           ( ch != '"' ) 
+                         )
+                       )
+                   ) {
+                
+                    // s contains a character that can't appear in a 
+                    // nominal.
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidNominal() */
+ 
+    
+    /**
+     * IsValidPredName()
+     * 
+     * Test to see if a string contains a valid predicate name.  Return true 
+     * if it does, and false if it isn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a predicate name:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *  <pred_name_char> --> 
+     *      <graphic_char> - ( '(' | ')' | '<' | '>' | ',' | '"' )
+     *
+     *	<pred_name> --> (pred_name_char>)+
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                          JRM -- 1/24/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidPredName(String name)
+        throws SystemErrorException 
+    {
+   
+        final String mName = "Database::IsValidPredName(): ";
+        int len;
+        
+        if ( name == null ) 
+        {
+            throw new SystemErrorException(mName + "name null on entry.");
+        } 
+        else if ( ! ( name instanceof String ) ) 
+        { 
+            throw new SystemErrorException(mName + "name is not a string.");
+        }
+               
+        len = name.length();
+        
+        if ( len < 1 ) {
+            
+            // string is too short to be a valid predicate name
+            return false;
+                        
+        } else {
+            
+            char ch;
+            int i;
+            
+            for ( i = 0; i < len; i++ ) {
+             
+                ch = name.charAt(i);
+                
+                if ( ! ( ( IsGraphicalChar(ch) ) 
+                         &&
+                         ( ch != '(' )
+                         &&
+                         ( ch != ')' )
+                         &&
+                         ( ch != '<' ) 
+                         &&
+                         ( ch != '>' ) 
+                         &&
+                         ( ch != ',' ) 
+                         &&
+                         ( ch != '"' ) 
+                       )
+                   ) {
+                
+                    // string contains a character that can't appear in a 
+                    // predicate name.
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidPredName() */
+    
+    /**
+     * IsValidSVarName()
+     * 
+     * Test to see if a string contains a valid spreadsheet variable name.  
+     * Return true if it does, and false if it doesn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a spreadsheet
+     * variable name:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *  <s_var_name_char> --> 
+     *      ( ( <graphic_char> - ( '(' | ')' | '<' | '>' | ',' | '"' ) ) | ' '
+     *
+     *	<non_ws_s_var_name_char> --> <s_var_name_char> - ' '
+     *
+     *	<s_var_name> --> <non_ws_s_var_namel_char> 
+     *                   [(<s_var_name_char>)* <non_ws_s_var_name_char>]
+     *
+     * Note that the definition of a spreadsheet variable name is identical
+     * to that of a nominal.  However that may change, so we will maintain
+     * a separate function to test for correctness.
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                          JRM -- 1/24/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidSVarName(String name)
+        throws SystemErrorException 
+    {
+   
+        final String mName = "Database::IsValidSVarName(): ";
+        int len;
+        
+        if ( name == null ) {
+            
+            throw new SystemErrorException(mName + "name null on entry.");
+            
+        } else if ( ! ( name instanceof String ) ) { 
+        
+            throw new SystemErrorException(mName + "name is not a string.");
+
+        }
+               
+        len = name.length();
+        
+        if ( len < 1 ) {
+            
+            // string is too short to be a valid spreadsheet variable name
+            return false;
+            
+        } else if ( ( Character.isSpaceChar(name.charAt(0)) ) || 
+                    ( Character.isSpaceChar(name.charAt(len - 1)) ) ) {
+            
+            // string either starts or ends with white space, and thus is 
+            // not a valid spreadsheet variable name.
+            return false;
+            
+        } else {
+            
+            char ch;
+            int i;
+            
+            for ( i = 0; i < len; i++ ) {
+             
+                ch = name.charAt(i);
+                
+                if ( ! ( ( ch == ' ' ) 
+                         ||
+                         ( ( IsGraphicalChar(ch) ) 
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' ) 
+                           &&
+                           ( ch != '>' ) 
+                           &&
+                           ( ch != ',' ) 
+                           &&
+                           ( ch != '"' ) 
+                         )
+                       )
+                   ) {
+                
+                    // string contains a character that can't appear in a 
+                    // spreadsheet variable name.
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidSVarName() */
+     
+    
+    /**
+     * IsValidTextString()
+     * 
+     * Test to see if a string contains a valid text string -- that is a string
+     * that can appear as the value of a cell in a text column variable.  
+     * Return true if it does, and false if it doesn't.
+     *
+     * The old MacSHAPA definition of a text string is as follows:
+     *
+     *  <char> --> Any character in the standard roman character set,
+     *		   hexadecimal values 0x00 to 0xFF.
+     *
+     *  <bs> --> back space (i.e. ASCII code 0x08)
+     *
+     *  <text_string_char> --> ( <char> - ( <bs> ) )
+     *
+     *  <text_string> --> (<text_string_char>)*
+     *
+     * Note that the MacSHAPA definition of the text string makes used of 
+     * characters beyond 0x7F (the end point of the ASCII character set).
+     * 
+     * While we can hope that Java will use characters beyond the ASCII
+     * character set uniformly across different platforms, at present I 
+     * don't know how these characters will be managed.  Thus to begin with
+     * I will redefine <char> as follows:
+     *
+     *   <char> --> Any character in the ASCII character set (hexadecimal
+     *              values 0x00 to 0x7F)
+     *
+     * It is worth noting that the old MacSHAPA definition of a text string 
+     * was driven by the character set used by the TextEdit utility provided
+     * by MacOS.  I suspect that similar considerations will ultimately drive 
+     * the definition of a text string in OpenSHAPA.
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                          JRM -- 1/25/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidTextString(Object obj)
+        throws SystemErrorException 
+    {
+   
+        final String mName = "Database::IsValidTextString(): ";
+        char ch;
+        int i;
+        int len;
+        
+        if ( obj == null ) 
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        } 
+        else if ( ! ( obj instanceof String ) ) 
+        { 
+            return false;
+        }
+        
+        /* If we get this far, we know that obj is a String */
+        
+        String s = (String)obj;
+               
+        len = s.length();
+            
+        for ( i = 0; i < len; i++ ) {
+             
+            ch = s.charAt(i);
+            
+            if ( ( ch < 0 ) || ( ch > 0x7F ) || ( ch == '\b') )
+            {
+                // string contains a character that can't appear in a 
+                // text string.
+                return false;
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidTextString() */
+    
+    
+    /** 
+     * IsValidTimeStamp()
+     *
+     * Test to see if the object is a valid time stamp.  For now that means
+     * checking to see if it is an instance of Timestamp, verifying that the
+     * number of ticks is non-negative, and that the number of ticks per 
+     * second is positive.
+     *
+     *                                              JRM -- 2/11/07
+     * 
+     * Changes;
+     *
+     *    - None.
+     *
+     */
+    
+    public static boolean IsValidTimeStamp(Object obj)
+        throws SystemErrorException
+    {
+        final String mName = "Database::IsValidTimeStamp(): ";
+
+        if ( obj == null )
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        }
+        else if ( ! ( obj instanceof TimeStamp ) )
+        {
+            return false ;
+        }
+        
+        TimeStamp s = (TimeStamp)obj;
+        
+        if ( ( s.getTime() < TimeStamp.MIN_TICKS ) || 
+             ( s.getTime() > TimeStamp.MAX_TICKS ) ||
+             ( s.getTPS() < TimeStamp.MIN_TPS ) ||
+             ( s.getTPS() > TimeStamp.MAX_TPS ) )
+            /* JRM */ 
+            /* add a check to verify that the tps matches the db tps */
+        {
+            return false;
+        }
+        
+        return true;
+        
+    } /* Database::IsValidTimeStamp() */
+
+     
+    /**
+     * IsValidQuoteString()
+     * 
+     * Test to see if a object contains a valid quote string -- that is a 
+     * string that can appear as an argument in a matrix or predicate.
+     * Return true if it does, and false if it doesn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a quote string:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *	<quote_string_char> --> ( <graphic_char> - ( '"' ) ) | ( ' ' )
+     *
+     *	<quote_string> --> (<quote_string_char>)*
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                          JRM -- 1/25/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    public static boolean IsValidQuoteString(Object obj)
+        throws SystemErrorException
+    {
+   
+        final String mName = "Database::IsValidQuoteString(): ";
+        char ch;
+        int i;
+        int len;
+        
+        if ( obj == null ) 
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        } 
+        else if ( ! ( obj instanceof String ) ) 
+        { 
+            return false;
+        }
+        
+        String s = (String)obj;
+               
+        len = s.length();
+            
+        for ( i = 0; i < len; i++ ) {
+             
+            ch = s.charAt(i);
+            
+            /* recall that 0x20 is space -- thus the lower end of
+             * the following test is 0x20, not 0x21.
+             */
+            if ( ( ch < 0x20 ) || ( ch > 0x7E ) || ( ch == '\"' ) ) 
+            { 
+                    // string contains a character that can't appear in a 
+                    // quote string.
+                    return false;
+            }
+        }
+        
+        return true;
+        
+    } /* Database::IsValidQuoteString() */
+
+    
+    /*************************************************************************/
+    /**************************** Test Code: *********************************/
+    /*************************************************************************/
+    
+    /**
+     * The following test methods should probably go somewhere else.  However 
+     * here will do for now.
+     *
+     * Since Database is an abstract class, the test code tests only the 
+     * class methods.
+     *
+     *                                          JRM 3/05/07
+     */
+
+    /**
+     * TestClassDatabase()
+     *
+     * Main routine for all test code for the Database class proper.
+     *
+     *                                          JRM 3/03/05
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public static boolean TestClassDatabase(java.io.PrintStream outStream,
+                                            boolean verbose)
+        throws SystemErrorException
+    {
+        boolean pass = true;
+        int failures = 0;
+        
+        outStream.print("Testing class Database:\n");
+        
+        if ( ! TestIsValidFargName(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! TestIsValidFloat(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidInt(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidNominal(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidPredName(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidSVarName(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidTextString(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidTimeStamp(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( ! TestIsValidQuoteString(outStream, verbose) )
+        {
+            failures++;
+        }       
+        
+        if ( failures > 0 )
+        {
+            pass = false;
+            outStream.printf("%d failures in tests for class Database.\n\n",
+                              failures);
+        }
+        else
+        {
+            outStream.print("All tests passed for class Database.\n\n");
+        }
+        
+        return pass;
+        
+    } /* Database::TestDatabase() */
+    
+    /**
+     * TestDatabase()
+     *
+     * Main routine for all OpenSHAPA database test code.
+     *
+     *                                          JRM 3/03/05
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public static boolean TestDatabase(java.io.PrintStream outStream)
+        throws SystemErrorException
+    {
+        boolean pass = true;
+        boolean verbose = false;
+        int failures = 0;
+        
+        outStream.print("Testing OpenSHAPA database:\n\n");
+        
+        if ( ! TestClassDatabase(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! UnTypedFormalArg.TestClassUnTypedFormalArg(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! IntFormalArg.TestClassIntFormalArg(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! FloatFormalArg.TestClassFloatFormalArg(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! TimeStampFormalArg.TestClassTimeStampFormalArg(outStream, 
+                                                              verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! TextStringFormalArg.TestClassTextStringFormalArg(outStream, 
+                                                                verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! QuoteStringFormalArg.TestClassQuoteStringFormalArg(outStream, 
+                                                                  verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! NominalFormalArg.TestClassNominalFormalArg(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! PredicateVocabElement.TestClassPredicateVocabElement(outStream, 
+                                                                    verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! MatrixVocabElement.TestClassMatrixVocabElement(outStream, 
+                                                              verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! VocabList.TestClassVocabList(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! DBIndex.TestClassDBIndex(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( failures > 0 )
+        {
+            pass = false;
+            outStream.printf("%d groups of tests failed for OpenSHAPA database.\n",
+                             failures);
+        }
+        else
+        {
+            outStream.print("All tests passed for OpenSHAPA database.\n");
+        }
+        return pass;
+        
+    } /* Database::TestDatabase() */
+
+
+    /**
+     * testIsValidFargName
+     *
+     * Run a variety of valid and invalid strings past IsValidFArgName, and
+     * see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidFargName(java.io.PrintStream outStream,
+                                              boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidFargName()                                        ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestStrings = 15;
+        String[] testStrings = new String[]
+        {
+            /* test  0 -- should return false */ "<>",
+            /* test  1 -- should return false */ "<",
+            /* test  2 -- should return true  */ "<a>",
+            /* test  3 -- should return false */ "<a(b>",
+            /* test  4 -- should return false */ "<)a>",
+            /* test  5 -- should return false */ "<a<b>",
+            /* test  6 -- should return false */ "<>>",
+            /* test  7 -- should return false */ "<a,b>",
+            /* test  8 -- should return false */ "<\"a>",
+            /* test  9 -- should return true  */ "<!#$%&'*+-./>",
+            /* test 10 -- should return true  */ "<0123456789\072;=?>",
+            /* test 11 -- should return true  */ "<@ABCDEFGHIJKLMNO>",
+            /* test 12 -- should return true  */ "<PQRSTUVWXYZ[\\]^_>",
+            /* test 13 -- should return true  */ "<`abcdefghijklmno>",
+            /* test 14 -- should return true  */ "<pqrstuvwxyz{\174}~>"
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ false,
+            /* test  1 should return */ false,
+            /* test  2 should return */ true,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ true,
+            /* test 10 should return */ true,
+            /* test 11 should return */ true,
+            /* test 12 should return */ true,
+            /* test 13 should return */ true,
+            /* test 14 should return */ true,
+        };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestStrings )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidFargName(\"%s\") --> %b: ",
+                        testNum, testStrings[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidFargName(testStrings[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidFargName is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidFargName(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidFargName(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+
+        /* It seems that the compiler will not let me pass a non-string
+         * to IsValidFargName(), so we will not bother to test that way
+         * of generating a system error.
+         */
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidFarg() */
+
+    
+    /**
+     * TestIsValidFloat
+     *
+     * Run a variety of valid and invalid objects past IsValidFloat, and 
+     * see if it gets the right answer.  
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public static boolean TestIsValidFloat(java.io.PrintStream outStream,
+                                           boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidFloat()                                           ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 10;
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return false */ new String("a string"),
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return true  */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return false */ "new String(\"a string\")",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return true  */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return false */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ false,
+            /* test  1 should return */ false,
+            /* test  2 should return */ true,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+        };
+        
+        outStream.print(testBanner);
+        
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+        
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidFloat(%s) --> %b: ",
+                        testNum, testDesc[testNum], 
+                        expectedResult[testNum]);
+            }
+            
+            threwException = false;
+            result = false;
+            
+            try
+            {
+                result = IsValidFloat(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true; 
+            }
+            
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+            
+            testNum++;
+        }
+        
+        /* Now verify that we throw a system error exception when 
+         * IsValidFloat is called with a null parameter.
+         */
+        
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidFloat(null) --> exception: ",
+                    testNum);
+        }
+        
+        try
+        {
+            result = IsValidFloat(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true; 
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+            
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+        
+        testNum++;
+         
+        /* It seems that the compiler will not let me pass a non-string 
+         * to IsValidFargName(), so we will not bother to test that way 
+         * of generating a system error.
+         */
+
+        if ( failures > 0 )
+        {
+            pass = false;
+            
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+        
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+        
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+        
+        return pass;
+        
+    } /* Database::TestIsValidFloat() */
+
+    
+    /**
+     * TestIsValidInt
+     *
+     * Run a variety of valid and invalid objects past IsValidInt, and 
+     * see if it gets the right answer.  
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    
+    public static boolean TestIsValidInt(java.io.PrintStream outStream,
+                                         boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidInt()                                             ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 10;
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return false */ new String("a string"),
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return true  */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return false */ "new String(\"a string\")",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return false */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return true  */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ false,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ true,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+        };
+        
+        outStream.print(testBanner);
+        
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+        
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidInt(%s) --> %b: ",
+                        testNum, testDesc[testNum], 
+                        expectedResult[testNum]);
+            }
+            
+            threwException = false;
+            result = false;
+            
+            try
+            {
+                result = IsValidInt(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true; 
+            }
+            
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+            
+            testNum++;
+        }
+        
+        /* Now verify that we throw a system error exception when 
+         * IsValidFloat is called with a null parameter.
+         */
+        
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidInt(null) --> exception: ",
+                    testNum);
+        }
+        
+        try
+        {
+            result = IsValidInt(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true; 
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+            
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+        
+        testNum++;
+         
+        /* It seems that the compiler will not let me pass a non-string 
+         * to IsValidFargName(), so we will not bother to test that way 
+         * of generating a system error.
+         */
+
+        if ( failures > 0 )
+        {
+            pass = false;
+            
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+        
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+        
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+        
+        return pass;
+        
+    } /* Database::TestIsValidInt() */
+
+
+    /**
+     * testIsValidNominal
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidNominal, and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidNominal(java.io.PrintStream outStream,
+                                             boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidNominal()                                         ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 29;
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return true  */ "A Valid Nominal",
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return false */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+            /* test 10 -- should return false */ "(",
+            /* test 11 -- should return false */ ")",
+            /* test 12 -- should return false */ "<",
+            /* test 13 -- should return false */ ">",
+            /* test 14 -- should return false */ ",",
+            /* test 15 -- should return false */ " leading white space",
+            /* test 16 -- should return false */ "trailing while space ",
+            /* test 17 -- should return true  */ "!#$%&'*+-./",
+            /* test 18 -- should return true  */ "0123456789\072;=?",
+            /* test 19 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 20 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 21 -- should return true  */ "`abcdefghijklmno",
+            /* test 22 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 23 -- should return false */ "horizontal\ttab",
+            /* test 24 -- should return false */ "embedded\bback space",
+            /* test 25 -- should return false */ "embedded\nnew line",
+            /* test 26 -- should return false */ "embedded\fform feed",
+            /* test 27 -- should return false */ "embedded\rcarriage return",
+            /* test 28 -- should return true  */ "a",
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return true  */ "A Valid Nominal",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return false */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return false */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+            /* test 10 -- should return false */ "(",
+            /* test 11 -- should return false */ ")",
+            /* test 12 -- should return false */ "<",
+            /* test 13 -- should return false */ ">",
+            /* test 14 -- should return false */ ",",
+            /* test 15 -- should return false */ " leading white space",
+            /* test 16 -- should return false */ "trailing while space ",
+            /* test 17 -- should return true  */ "!#$%&'*+-./",
+            /* test 18 -- should return true  */ "0123456789\072;=?",
+            /* test 19 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 20 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 21 -- should return true  */ "`abcdefghijklmno",
+            /* test 22 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 23 -- should return false */ "horizontal\ttab",
+            /* test 24 -- should return false */ "embedded\bback space",
+            /* test 25 -- should return false */ "embedded\nnew line",
+            /* test 26 -- should return false */ "embedded\fform feed",
+            /* test 27 -- should return false */ "embedded\rcarriage return",
+            /* test 28 -- should return true  */ "a",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ true,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+            /* test 10 should return */ false,
+            /* test 11 should return */ false,
+            /* test 12 should return */ false,
+            /* test 13 should return */ false,
+            /* test 14 should return */ false,
+            /* test 15 should return */ false,
+            /* test 16 should return */ false,
+            /* test 17 should return */ true,
+            /* test 18 should return */ true,
+            /* test 19 should return */ true,
+            /* test 20 should return */ true,
+            /* test 21 should return */ true,
+            /* test 22 should return */ true,
+            /* test 23 should return */ false,
+            /* test 24 should return */ false,
+            /* test 25 should return */ false,
+            /* test 26 should return */ false,
+            /* test 27 should return */ false,
+            /* test 28 should return */ true,
+       };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidNominal(\"%s\") --> %b: ",
+                        testNum, testDesc[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidNominal(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidNominal is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidNominal(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidNominal(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidNominal() */
+
+
+    /**
+     * testIsValidPredName
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidPredName, and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidPredName(java.io.PrintStream outStream,
+                                              boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidPredName()                                        ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestStrings = 21;
+        String[] testStrings = new String[]
+        {
+            /* test  0 -- should return true  */ "A_Valid_Predicate_Name",
+            /* test  1 -- should return false */ "(",
+            /* test  2 -- should return false */ ")",
+            /* test  3 -- should return false */ "<",
+            /* test  4 -- should return false */ ">",
+            /* test  5 -- should return false */ ",",
+            /* test  6 -- should return false */ " leading white space",
+            /* test  7 -- should return false */ "trailing while space ",
+            /* test  8 -- should return true  */ "!#$%&'*+-./",
+            /* test  9 -- should return true  */ "0123456789\072;=?",
+            /* test 10 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 11 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 12 -- should return true  */ "`abcdefghijklmno",
+            /* test 13 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 14 -- should return true  */ "a",
+            /* test 15 -- should return false */ "embedded space",
+            /* test 16 -- should return false */ "horizontal\ttab",
+            /* test 17 -- should return false */ "embedded\bback_space",
+            /* test 18 -- should return false */ "embedded\nnew_line",
+            /* test 19 -- should return false */ "embedded\fform_feed",
+            /* test 20 -- should return false */ "embedded\rcarriage_return",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ true,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ true,
+            /* test  9 should return */ true,
+            /* test 10 should return */ true,
+            /* test 11 should return */ true,
+            /* test 12 should return */ true,
+            /* test 13 should return */ true,
+            /* test 14 should return */ true,
+            /* test 15 should return */ false,
+            /* test 16 should return */ false,
+            /* test 17 should return */ false,
+            /* test 18 should return */ false,
+            /* test 19 should return */ false,
+            /* test 20 should return */ false,
+        };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestStrings )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidPredName(\"%s\") --> %b: ",
+                        testNum, testStrings[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidPredName(testStrings[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidPredName is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidPredName(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidPredName(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+         
+        /* It seems that the compiler will not let me pass a non-string 
+         * to IsValidPredName(), so we will not bother to test that way 
+         * of generating a system error.
+         */
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidPredName() */
+
+
+    /**
+     * testIsValidSVarName
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidSVarName, and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidSVarName(java.io.PrintStream outStream,
+                                              boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidSVarName()                                        ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestStrings = 21;
+        String[] testStrings = new String[]
+        {
+            /* test  0 -- should return true  */ "A Valid S-Var Name",
+            /* test  1 -- should return false */ "(",
+            /* test  2 -- should return false */ ")",
+            /* test  3 -- should return false */ "<",
+            /* test  4 -- should return false */ ">",
+            /* test  5 -- should return false */ ",",
+            /* test  6 -- should return false */ " leading white space",
+            /* test  7 -- should return false */ "trailing while space ",
+            /* test  8 -- should return true  */ "!#$%&'*+-./",
+            /* test  9 -- should return true  */ "0123456789\072;=?",
+            /* test 10 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 11 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 12 -- should return true  */ "`abcdefghijklmno",
+            /* test 13 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 14 -- should return true  */ "a",
+            /* test 15 -- should return true  */ "embedded space",
+            /* test 16 -- should return false */ "horizontal\ttab",
+            /* test 17 -- should return false */ "embedded\bback_space",
+            /* test 18 -- should return false */ "embedded\nnew_line",
+            /* test 19 -- should return false */ "embedded\fform_feed",
+            /* test 20 -- should return false */ "embedded\rcarriage_return",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ true,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ true,
+            /* test  9 should return */ true,
+            /* test 10 should return */ true,
+            /* test 11 should return */ true,
+            /* test 12 should return */ true,
+            /* test 13 should return */ true,
+            /* test 14 should return */ true,
+            /* test 15 should return */ true,
+            /* test 16 should return */ false,
+            /* test 17 should return */ false,
+            /* test 18 should return */ false,
+            /* test 19 should return */ false,
+            /* test 20 should return */ false,
+        };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestStrings )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidSVarName(\"%s\") --> %b: ",
+                        testNum, testStrings[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidSVarName(testStrings[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidPredName is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidSVarName(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidSVarName(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+         
+        /* It seems that the compiler will not let me pass a non-string 
+         * to IsValidSVarName(), so we will not bother to test that way 
+         * of generating a system error.
+         */
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidSVarName() */
+
+
+    /**
+     * testIsValidTextString
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidTextString(), and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidTextString(java.io.PrintStream outStream,
+                                                boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidTextString()                                      ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 23;
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return true  */ "A Valid Text String",
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return false */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+            /* test 10 -- should return false */ "an invalid text \b string",
+            /* test 11 -- should return true  */ "",
+            /* test 12 -- should return true  */ "/0/1/2/3/4/5/6/7/11/12/13",
+            /* test 13 -- should return true  */ "/14/15/16/17/20/21/22/23",
+            /* test 14 -- should return true  */ "/24/25/26/27/30/31/32/33",
+            /* test 15 -- should return true  */ "/34/35/36/37 ",
+            /* test 16 -- should return true  */ "!\"#$%&\'()*+,-./",
+            /* test 17 -- should return true  */ "0123456789\072;<=>?",
+            /* test 18 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 19 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 20 -- should return true  */ "`abcdefghijklmno",
+            /* test 21 -- should return true  */ "pqrstuvwxyz{\174}~\177",
+            /* test 22 -- should return false */ "\200",
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return true  */ "A Valid Text String",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return false */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return false */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+            /* test 10 -- should return false */ "an invalid text \b string",
+            /* test 11 -- should return true  */ "",
+            /* test 12 -- should return true  */ "/0/1/2/3/4/5/6/7/11/12/13",
+            /* test 13 -- should return true  */ "/14/15/16/17/20/21/22/23",
+            /* test 14 -- should return true  */ "/24/25/26/27/30/31/32/33",
+            /* test 15 -- should return true  */ "/34/35/36/37 ",
+            /* test 16 -- should return true  */ "!\"#$%&\'()*+,-./",
+            /* test 17 -- should return true  */ "0123456789\072;<=>?",
+            /* test 18 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 19 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 20 -- should return true  */ "`abcdefghijklmno",
+            /* test 21 -- should return true  */ "pqrstuvwxyz{\174}~\177",
+            /* test 22 -- should return false */ "\200",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ true,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+            /* test 10 should return */ false,
+            /* test 11 should return */ true,
+            /* test 12 should return */ true,
+            /* test 13 should return */ true,
+            /* test 14 should return */ true,
+            /* test 15 should return */ true,
+            /* test 16 should return */ true,
+            /* test 17 should return */ true,
+            /* test 18 should return */ true,
+            /* test 19 should return */ true,
+            /* test 20 should return */ true,
+            /* test 21 should return */ true,
+            /* test 22 should return */ false,
+       };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidTextString(\"%s\") --> %b: ",
+                        testNum, testDesc[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidTextString(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidTextString is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidTextString(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidTextString(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidTextString() */
+
+
+    /**
+     * testIsValidTimeStamp
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidTextString(), and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidTimeStamp(java.io.PrintStream outStream,
+                                               boolean verbose)
+        throws SystemErrorException
+    {
+        String testBanner =
+            "Testing IsValidTimeStamp()                                       ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 12;
+        
+        /* the tests with a TimeStamp object are a bit slim, but the 
+         * TimeStamp class is supposed to prevent creation of an invalid
+         * time stamp.
+         */
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return false */ new String("a string"),
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return false */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+            /* test 10 -- should return true  */ new TimeStamp(60),
+            /* test 11 -- should return true  */ new TimeStamp(60,120),
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return false */ "new String(\"a string\")",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return false */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return false */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+            /* test 10 -- should return true  */ "new TimeStamp(60)",
+            /* test 11 -- should return true  */ "new TimeStamp(60,120)",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ false,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+            /* test 10 should return */ true,
+            /* test 11 should return */ true,
+        };
+        
+        outStream.print(testBanner);
+        
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+        
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidTimeStamp(%s) --> %b: ",
+                        testNum, testDesc[testNum], 
+                        expectedResult[testNum]);
+            }
+            
+            threwException = false;
+            result = false;
+            
+            try
+            {
+                result = IsValidTimeStamp(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true; 
+            }
+            
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+            
+            testNum++;
+        }
+        
+        /* Now verify that we throw a system error exception when 
+         * IsValidFloat is called with a null parameter.
+         */
+        
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidTimeStamp(null) --> exception: ",
+                    testNum);
+        }
+        
+        try
+        {
+            result = IsValidTimeStamp(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true; 
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+            
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+        
+        testNum++;
+         
+        if ( failures > 0 )
+        {
+            pass = false;
+            
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+        
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+        
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+        
+        return pass;
+        
+    } /* Database::TestIsValidTimeStamp() */
+
+
+    /**
+     * testIsValidQuoteString
+     *
+     * Run a variety of objects and valid and invalid strings past 
+     * IsValidQuoteString, and see it it gets the right answer.
+     *
+     *                                          JRM -- 3/03/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestIsValidQuoteString(java.io.PrintStream outStream,
+                                                 boolean verbose)
+    {
+        String testBanner =
+            "Testing IsValidQuoteString()                                     ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        boolean pass = true;
+        boolean result;
+        boolean threwException;
+        int failures = 0;
+        int testNum = 0;
+        final int numTestObjects = 30;
+        Object[] testObjects = new Object[]
+        {
+            /* test  0 -- should return true  */ "A Valid Quote String",
+            /* test  1 -- should return false */ new Float(0.0),
+            /* test  2 -- should return false */ new Double(0.0),
+            /* test  3 -- should return false */ new Integer(0),
+            /* test  4 -- should return false */ new Long(0),
+            /* test  5 -- should return false */ new Boolean(false),
+            /* test  6 -- should return false */ new Character('c'),
+            /* test  7 -- should return false */ new Byte((byte)'b'),
+            /* test  8 -- should return false */ new Short((short)0),
+            /* test  9 -- should return false */ new Double[] {0.0, 1.0},
+            /* test 10 -- should return true  */ "(",
+            /* test 11 -- should return true  */ ")",
+            /* test 12 -- should return true  */ "<",
+            /* test 13 -- should return true  */ ">",
+            /* test 14 -- should return true  */ ",",
+            /* test 15 -- should return true  */ " leading white space",
+            /* test 16 -- should return true  */ "trailing while space ",
+            /* test 17 -- should return true  */ "!#$%&\'()*+,-./",
+            /* test 18 -- should return true  */ "0123456789\072;<=>?",
+            /* test 19 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 20 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 21 -- should return true  */ "`abcdefghijklmno",
+            /* test 22 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 23 -- should return false */ "\177",
+            /* test 24 -- should return false */ "horizontal\ttab",
+            /* test 25 -- should return false */ "embedded\bback space",
+            /* test 26 -- should return false */ "embedded\nnew line",
+            /* test 27 -- should return false */ "embedded\fform feed",
+            /* test 28 -- should return false */ "embedded\rcarriage return",
+            /* test 29 -- should return true  */ "a",
+        };
+        String[] testDesc = new String[]
+        {
+            /* test  0 -- should return true  */ "A Valid Nominal",
+            /* test  1 -- should return false */ "new Float(0.0)",
+            /* test  2 -- should return false */ "new Double(0.0)",
+            /* test  3 -- should return false */ "new Integer(0)",
+            /* test  4 -- should return false */ "new Long(0)",
+            /* test  5 -- should return false */ "new Boolean(false)",
+            /* test  6 -- should return false */ "new Character('c')",
+            /* test  7 -- should return false */ "new Byte((byte)'b')",
+            /* test  8 -- should return false */ "new Short((short)0)",
+            /* test  9 -- should return false */ "new Double[] {0.0, 1.0}",
+            /* test 10 -- should return true  */ "(",
+            /* test 11 -- should return true  */ ")",
+            /* test 12 -- should return true  */ "<",
+            /* test 13 -- should return true  */ ">",
+            /* test 14 -- should return true  */ ",",
+            /* test 15 -- should return true  */ " leading white space",
+            /* test 16 -- should return true  */ "trailing while space ",
+            /* test 17 -- should return true  */ "!#$%&\'()*+,-./",
+            /* test 18 -- should return true  */ "0123456789\072;<=>?",
+            /* test 19 -- should return true  */ "@ABCDEFGHIJKLMNO",
+            /* test 20 -- should return true  */ "PQRSTUVWXYZ[\\]^_",
+            /* test 21 -- should return true  */ "`abcdefghijklmno",
+            /* test 22 -- should return true  */ "pqrstuvwxyz{\174}~",
+            /* test 23 -- should return false */ "\177",
+            /* test 24 -- should return false */ "horizontal\ttab",
+            /* test 25 -- should return false */ "embedded\bback space",
+            /* test 26 -- should return false */ "embedded\nnew line",
+            /* test 27 -- should return false */ "embedded\fform feed",
+            /* test 28 -- should return false */ "embedded\rcarriage return",
+            /* test 29 -- should return true  */ "a",
+        };
+        boolean[] expectedResult = new boolean[]
+        {
+            /* test  0 should return */ true,
+            /* test  1 should return */ false,
+            /* test  2 should return */ false,
+            /* test  3 should return */ false,
+            /* test  4 should return */ false,
+            /* test  5 should return */ false,
+            /* test  6 should return */ false,
+            /* test  7 should return */ false,
+            /* test  8 should return */ false,
+            /* test  9 should return */ false,
+            /* test 10 should return */ true,
+            /* test 11 should return */ true,
+            /* test 12 should return */ true,
+            /* test 13 should return */ true,
+            /* test 14 should return */ true,
+            /* test 15 should return */ true,
+            /* test 16 should return */ true,
+            /* test 17 should return */ true,
+            /* test 18 should return */ true,
+            /* test 19 should return */ true,
+            /* test 20 should return */ true,
+            /* test 21 should return */ true,
+            /* test 22 should return */ true,
+            /* test 23 should return */ false,
+            /* test 24 should return */ false,
+            /* test 25 should return */ false,
+            /* test 26 should return */ false,
+            /* test 27 should return */ false,
+            /* test 28 should return */ false,
+            /* test 29 should return */ true,
+       };
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        while ( testNum < numTestObjects )
+        {
+            if ( verbose )
+            {
+                outStream.printf("test %d: IsValidQuoteString(\"%s\") --> %b: ",
+                        testNum, testDesc[testNum],
+                        expectedResult[testNum]);
+            }
+
+            threwException = false;
+            result = false;
+
+            try
+            {
+                result = IsValidQuoteString(testObjects[testNum]);
+            }
+            catch (SystemErrorException e)
+            {
+                threwException = true;
+            }
+
+            if ( ( threwException ) ||
+                 ( result != expectedResult[testNum] ) )
+            {
+                failures++;
+                if ( verbose )
+                {
+                    if ( threwException )
+                    {
+                        outStream.print("failed -- unexpected exception.\n");
+                    }
+                    else
+                    {
+                        outStream.print("failed.\n");
+                    }
+                }
+            }
+            else if ( verbose )
+            {
+                outStream.print("passed.\n");
+            }
+
+            testNum++;
+        }
+
+        /* Now verify that we throw a system error exception when
+         * IsValidQuoteString is called with a null parameter.
+         */
+
+        result = true;
+        threwException = false;
+
+        if ( verbose )
+        {
+            outStream.printf("test %d: IsValidQuoteString(null) --> exception: ",
+                    testNum);
+        }
+
+        try
+        {
+            result = IsValidQuoteString(null);
+        }
+
+        catch (SystemErrorException e)
+        {
+            threwException = true;
+        }
+
+        if ( ( ! result ) || ( ! threwException ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                if ( threwException )
+                {
+                    outStream.print("failed - threw exception and returned/n");
+                }
+                else
+                {
+                    outStream.print("failed - didn't threw exception./n");
+                }
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("passes.\n");
+        }
+
+        testNum++;
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestIsValidQuoteString() */
+
+} /* class Database */

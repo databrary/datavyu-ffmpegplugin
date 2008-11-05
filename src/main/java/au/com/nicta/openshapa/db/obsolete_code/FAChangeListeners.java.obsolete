@@ -1,0 +1,365 @@
+/*
+ * FAChangeListeners.java
+ *
+ * Created on February 4, 2008, 3:39 AM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ * Class VEChangeListeners
+ *
+ * Instances of this class are used to manage the mechanics registering and
+ * de-registering internal and external listeners for changes in formal 
+ * arguments of Vocab Elements, and notifying the registered listeners when 
+ * changes occur.
+ *
+ *                                              JRM -- 2/4/08 
+ *
+ * @author mainzer
+ */
+/**
+ *
+ * @author mainzer
+ */
+public class FAChangeListeners extends Listeners
+{
+    /*************************************************************************/
+    /***************************** Fields: ***********************************/
+    /*************************************************************************/
+
+    /**
+     * itsFA: Reference to the instance of FormalArgument for which this 
+     *      instance of FAChangeListeners is managing change listeners.
+     *
+     * itsFAID: Long containing the ID assigned to itsFA.
+     *
+     * itsFAType: Type of itsFA.
+     *
+     * itsVEID: Long containing the ID assigned to the VocabElement with 
+     *      which its ForamlArgument is associated.
+     */
+    
+    FormalArgument itsFA = null;
+    
+    long itsFAID = DBIndex.INVALID_ID;
+    
+    FormalArgument.fArgType itsFAType;
+    
+    long itsVEID = DBIndex.INVALID_ID;
+
+  
+    
+    /*************************************************************************/
+    /*************************** Constructors: *******************************/
+    /*************************************************************************/
+    
+    /**
+     * FAChangeListeners
+     *
+     * For now at least, only one constructors:
+     *
+     * The initial constructor takes a db, and a reference to a FormalArgument, 
+     * and sets up the new instance to start managing change listeners for the 
+     * instance of Vocab element.
+     *
+     * No copy constructor, as the plan is to use the same instance of 
+     * FAChangeListeners to manage listeners for all incarnations of a given
+     * FormalArgument.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public FAChangeListeners(Database db,
+                             FormalArgument fa)
+        throws SystemErrorException
+    {
+        super(db);
+        
+        final String mName = "FAChangeListeners::FAChangeListeners(db, fa)";
+        
+        if ( fa == null )
+        {
+            throw new SystemErrorException(mName + ": fa null on entry.");
+        }
+        
+        if ( ! ( fa instanceof FormalArgument ) )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa not a FormalArgument.");
+        }
+        
+        if ( fa.getDB() != db )
+        {
+             throw new SystemErrorException(mName + ": fa.getDB() != db.");
+        }
+        
+        if ( fa.getID() == DBIndex.INVALID_ID )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa.getID() is invalid.");
+        }
+        
+        if ( fa.getItsVocabElementID() == DBIndex.INVALID_ID )
+        {
+             throw new SystemErrorException(mName + 
+                     ": fa.getItsVocabElementID() is invalid.");
+        }
+        
+        if ( fa.getFargType() == FormalArgument.fArgType.UNDEFINED )
+        {
+             throw new SystemErrorException(mName + 
+                     ": fa.getFargType() is UNDEFINED.");
+        }
+        
+        this.itsFA = fa;
+        this.itsFAID = fa.getID();
+        this.itsFAType = fa.getFargType();
+        this.itsVEID = fa.getItsVocabElementID();
+        
+    } /* FAChangeListeners::FAChangeListeners(db, ve) */
+     
+        
+    /*************************************************************************/
+    /***************************** Accessors: ********************************/
+    /*************************************************************************/
+  
+    /**
+     * UpdateItsFA()
+     *
+     * Update the itsFA field for a new incarnation of the target 
+     * FormalArgument.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void UpdateItsFA(FormalArgument fa)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::UpdateItsVE()";
+        
+        
+        if ( fa == null )
+        {
+            throw new SystemErrorException(mName + ": fa null on entry.");
+        }
+        
+        if ( ! ( fa instanceof FormalArgument ) )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa not a FormalArgument.");
+        }
+        
+        if ( fa.getDB() != this.db )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa.getDB() != this.db.");
+        }
+        
+        if ( fa.getID() != this.itsFAID )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa.getID() != itsFAID.");
+        }
+        
+        if ( fa.getFargType() != this.itsFAType )
+        {
+             throw new SystemErrorException(mName + 
+                                            ": fa.getID() != itsFAType.");
+        }
+        
+        if ( fa.getItsVocabElementID() != this.itsVEID )
+        {
+             throw new SystemErrorException(mName + 
+                     ": fa.getItsVocabElementID() != itsVEID.");
+        }
+        
+        this.itsFA = fa;
+        
+        return;
+        
+    } /* FAChangeListeners::UpdateItsFA() */
+    
+    
+    /*************************************************************************/
+    /************************** Change Logging: ******************************/
+    /*************************************************************************/
+    
+    /** 
+     * NotifyListenersOfChanges()
+     *
+     * If any reportable changes are observed between the supplied oldFarg and 
+     * newFarg, call the listeners to advise them of the changes.
+     *
+     *                                                  JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void NotifyListenersOfChanges(FormalArgument oldFarg,
+                                            FormalArgument newFarg)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::NotifyListenersOfChanges()";
+        
+        return;
+        
+    } /* FAChangeListeners::NotifyListenersOfChanges() */
+    
+    
+    /** 
+     * NotifyListenersOfDeletion()
+     *
+     * Advise any listeners of the deletion of the associated FormalArgument.
+     *
+     *                                                  JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void NotifyListenersOfDeletion()
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::NotifyListenersOfDeletion()";
+        
+        return;
+        
+    } /* FAChangeListeners::NotifyListenersOfDeletion() */
+
+    
+    /*************************************************************************/
+    /*********************** Listener Management: ****************************/
+    /*************************************************************************/
+    
+    /**
+     * DeregisterExternalListener()
+     *
+     * Deregister an external listener.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void DeregisterExternalListener(Object el)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::DeregisterExternalListener()";
+        
+        throw new SystemErrorException(mName + 
+                "external listeners not supported at present.");
+        
+        // return; /* commented out to keep the compiler happy */
+        
+    } /* VEChangeListeners::DeregisterExternalListener() */
+    
+    
+    /**
+     * DeregisterInternalListener()
+     *
+     * Deregister an external listener.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void DeregisterInternalListener(long ID)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::DeregisterInternalListener()";
+        
+        if ( ID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + ": ID is invalid on entry.");
+        }
+        
+        this.DeleteInternalListener(ID);
+        
+        return;
+        
+    } /* FAChangeListeners::DeregisterInternalListener() */
+    
+    
+    /**
+     * RegisterExternalListener()
+     *
+     * Register an external listener.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void RegisterExternalListener(Object el)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::RegisterExternalListener()";
+        
+        throw new SystemErrorException(mName + 
+                ": external listeners not supported at present.");
+        
+        // return; /* commented out to keep the compiler happy */
+        
+    } /* FAChangeListeners::RegisterExternalListener() */
+    
+    
+    /**
+     * RegisterInternalListener()
+     *
+     * Register an internal listener.
+     *
+     *                                              JRM -- 2/2/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void RegisterInternalListener(long ID)
+        throws SystemErrorException
+    {
+        final String mName = "FAChangeListeners::RegisterInternalListener()";
+        DBElement dbe = null;
+        
+        if ( ID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + ": ID is invalid on entry.");
+        }
+        
+        dbe = this.db.idx.getElement(ID); // throws system error on failure
+        
+        if ( ! ( dbe instanceof InternalFAChangeListener ) )
+        {
+            throw new SystemErrorException(mName + 
+                    ": dbe not a InternalVEChangeListener.");
+        }
+        
+        this.AddInternalListener(ID);
+        
+        return;
+        
+    } /* FAChangeListeners::RegisterExternalListener() */
+
+} /* class FAChangeListeners */

@@ -1,0 +1,172 @@
+/*
+ * VocabElement.java
+ *
+ * Created on December 11, 2006, 6:34 PM
+ *
+ */
+package au.com.nicta.openshapa.db;
+
+
+import java.util.Vector;
+
+
+/**
+ *
+ * @author FGA
+ */
+public abstract class VocabElement
+{
+  /**
+   * Vocabulary Change Listeners
+   */
+  protected Vector<VocabChangeListener> changeListeners = new Vector<VocabChangeListener>();
+ 
+  /**
+   * Variable length flag
+   */
+  protected boolean variableLength = false;
+
+  /**
+   * Show unused parameters flag
+   */
+  protected boolean showUnusedParams = false;
+
+  /**
+   * Formal Arguments list
+   */
+  protected Vector<FormalArgument> formalArguments = new Vector<FormalArgument>();
+
+
+  /** Creates a new instance of VocabElement */
+  public VocabElement()
+  {
+  } //End of VocabElement() constructor
+
+  /**
+   * Adds a change listener to this VocabElement
+   * @param listener the change listener to be added
+   */
+  public void addChangeListener(VocabChangeListener listener)
+  {
+    this.changeListeners.add(listener);
+  } //End of addChangeListener() method
+
+  /**
+   * Removes a change listener from this VocabElement
+   * @param listener the change listener to be removed
+   */
+  public void removeChangeListener(VocabChangeListener listener)
+  {
+    this.changeListeners.remove(listener);
+  } //End of removeChangeListener() method
+
+  /**
+   * Sets the variable length flag
+   * @param varLength whether or not the matrix is variable length
+   */
+  public void setVariableLength(boolean varLength)
+  {
+    this.variableLength = varLength;
+    this.notifyListeners();
+  } //End of setVariableLength() method
+
+  /**
+   * Gets the variable length flag
+   * @return true if the matrix is variable length
+   */
+  public boolean isVariableLength()
+  {
+    return (this.variableLength);
+  } //End of isVariableLength() method
+
+  /**
+   * Sets the show unused parameters flag
+   * @param showUnused whether unsed parameters should be shown
+   */
+  public void setShowUnusedParams(boolean showUnused)
+  {
+    this.showUnusedParams = showUnused;
+    this.notifyListeners();
+  } //End of setShowUnusedParams() method
+
+  /**
+   * Gets the show unused parameters flag
+   * @return true is unused parameters should be shown
+   */
+  public boolean showUnusedParams()
+  {
+    return (this.showUnusedParams);
+  } //End of showUnusedParams() method
+
+  /**
+   * Adds an argument to the formal argument to the end of the list
+   * @param argument the formal argument to add
+   */
+  public void addArgument(FormalArgument argument)
+  {
+    this.addArgument(argument, this.formalArguments.size());
+  } //End of addArgument() method
+
+  /**
+   * Adds an argument to the formal argument list
+   * @param argument the formal argument to add
+   * @param location the location to add the argument
+   */
+  public void addArgument(FormalArgument argument, int location)
+  {
+    this.formalArguments.add(location, argument);
+    this.notifyListeners();
+  } //End of addArgument() method
+
+  /**
+   * Gets the formal arguments list
+   * @return ann array of the formal arrguments
+   */
+  public FormalArgument[] getArguments()
+  {
+    if (this.formalArguments.size() <= 0) {
+      return (null);
+    }
+
+    FormalArgument[] fa = new FormalArgument[this.formalArguments.size()];
+    for (int i=0; i<fa.length; i++) {
+      fa[i] = (FormalArgument)this.formalArguments.elementAt(i);
+    }
+
+    return (fa);
+  } //End of getArguments() method
+
+  /**
+   * Gets the formal argument at the specific location
+   * @param location the location of the argument
+   */
+  public FormalArgument getArgumentAt(int location)
+  {
+    if (location >= this.formalArguments.size()) {
+      return (null);
+    }
+
+    return ((FormalArgument)this.formalArguments.elementAt(location));
+  } //End of getArgumentAt() method
+
+  /**
+   * Removes a formal argument from the Vocab Element
+   * @param arg the formal argument to remove
+   */
+  public void removeArgument(FormalArgument arg)
+  {
+    this.formalArguments.remove(arg);
+    this.notifyListeners();
+  } //End of removeArgument() method
+
+  /**
+   * Notifies all listeners that this Vocabulary Element has been modified
+   */
+  private void notifyListeners()
+  {
+    // Notify change listeners
+    for (int i=0; i<this.changeListeners.size(); i++) {
+      ((VocabChangeListener)this.changeListeners.elementAt(i)).vocabModified(this);
+    }
+  } //End of notifyListeners() method
+} //End of VocabElement class definition

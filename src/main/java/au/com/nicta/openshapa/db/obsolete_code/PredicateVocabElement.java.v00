@@ -1,0 +1,49 @@
+/*
+ * PredicateVocabElement.java
+ *
+ * Created on December 14, 2006, 6:10 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+/**
+ *
+ * @author FGA
+ */
+public class PredicateVocabElement extends MatrixVocabElement
+{
+  /**
+   * The predicate name
+   */
+  private String name;
+
+  /**
+   * Creates a new instance of PredicateVocabElement
+   * @param name the name for the new predicate
+   */
+  public PredicateVocabElement(String name)
+  {
+    super();
+    this.setName(name);
+  } //End of PredicateVocabElement constructor
+
+  /**
+   * Sets the predicate name
+   * @param name the new predicate name
+   */
+  public void setName(String name)
+  {
+    this.name = new String(name);
+  } //End of setName() method
+
+  /**
+   * Gets the predicate name
+   * @return the predicates name
+   */
+  public String getName()
+  {
+    return (new String(this.name));
+  } //End of getName() method
+
+} //End of PredicateVocabElement class definition

@@ -1,0 +1,110 @@
+/*
+ * ReferenceColumn.java
+ *
+ * Created on December 14, 2006, 7:06 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+import java.util.Vector;
+
+/**
+ *
+ * @author FGA
+ */
+public class ReferenceColumn extends Column
+{
+  /**
+   * The cells in this column
+   */
+  private Vector<Cell> cells = new Vector<Cell>();
+  
+  /**
+   * Creates a new instance of ReferenceColumn
+   * @param db The database this Column belongs to
+   * @param id The id value of this Column
+   */
+  public ReferenceColumn(Database db, long id)
+  {
+    super(db, id);
+  } //End of ReferenceColumn() constructor
+
+  /**
+   * Creates a new instance of ReferenceColumn
+   * @param db The database this Column belongs to
+   */
+  public ReferenceColumn(Database db)
+  {
+    this(db, DEFAULT_ID);
+  } //End of ReferenceColumn() constructor
+
+  /**
+   * Adds a cell to the column
+   * @param newCell the new cell to add
+   * @param location where to add the cell
+   */
+  public void addCell(Cell newCell, int location)
+  {
+    this.cells.add(location, newCell);
+
+    // Notify listeners that a cell has been added
+    for (int i=0; i<this.changeListeners.size(); i++) {
+      ((ColumnChangeListener)this.changeListeners.elementAt(i)).ColumnCellAdded(this, newCell);
+    }
+  } //End of addCell() method
+
+  /**
+   * Adds a cell to the end of the column
+   * @param newCell the new cell to add
+   */
+  public void addCell(Cell newCell)
+  {
+    this.addCell(newCell, this.cells.size());
+  } //End of addCell() method
+
+  /**
+   * Removes a cell from the column
+   * @param oldCell the cell to remove from the column
+   */
+  public void removeCell(Cell oldCell)
+  {
+    this.cells.remove(oldCell);
+
+    // Notify listeners that a cell has been removed
+    for (int i=0; i<this.changeListeners.size(); i++) {
+      ((ColumnChangeListener)this.changeListeners.elementAt(i)).ColumnCellRemoved(this, oldCell);
+    }
+  } //End of removeCell() method
+
+  /**
+   * Creates a new cell in the column.
+   * @return the newly created cell
+   */
+  public Cell createCell()
+  {
+    return (null);
+  } //End of createCell() method
+
+  /**
+   * Gets the cells in the column
+   */
+  public Cell[] getCells()
+  {
+    if (this.cells == null) {
+      return (null);
+    }
+
+    if (this.cells.size() <= 0) {
+      return (null);
+    }
+
+    Cell[] ca = new Cell[this.cells.size()];
+    for (int i=0; i<ca.length; i++) {
+      ca[i] = (Cell)this.cells.elementAt(i);
+    }
+
+    return (ca);
+  } //End of getCells() method
+
+} // End of ReferenceColumn class definition

@@ -1,0 +1,268 @@
+/*
+ * DataCell.java
+ *
+ * Created on December 7, 2006, 5:25 PM
+ *
+ */
+
+package au.com.nicta.openshapa.db;
+
+import java.util.Vector;
+
+/**
+ * Regular cell definition
+ * @author FGA
+ */
+public class DataCell extends Cell implements DatabaseChangeListener, VocabChangeListener, DataValueChangeListener
+{
+  /****************************** Constant decarations ************************/
+  public final static int DB_TYPE_INTEGER   = 1;
+  public final static int DB_TYPE_FLOAT     = 2;
+  public final static int DB_TYPE_STRING    = 3;
+  public final static int DB_TYPE_NOMINAL   = 4;
+  public final static int DB_TYPE_MATRIX    = 5;
+  public final static int DB_TYPE_PREDICATE = 6;
+  public final static int DB_TYPE_TIMESTAMP = 7;
+
+  /**
+   * Default timestamp value
+   */
+  public final static long DEFAULT_TIMESTAMP = 0;
+  
+  /**
+   * Data type
+   */
+  int type = 0;
+
+  /**
+   * Vocabulary Element
+   */
+  VocabElement vocab = null;
+  
+  /**
+   * Onset value
+   */
+  private long onset = DEFAULT_TIMESTAMP;
+
+  /**
+   * Offset value
+   */
+  private long offset = DEFAULT_TIMESTAMP;
+  
+  /**
+   * Data Values
+   */
+  Vector<DataValue> dataValues = new Vector<DataValue>();
+
+  /**
+   * Creates a new instance of DataCell
+   * @param column the column the cell is a part of
+   * @param type the data type for this cell<br>
+   *   <UL>
+   *    <LI>DB_TYPE_INTEGER</LI>
+   *    <LI>DB_TYPE_FLOAT</LI>
+   *    <LI>DB_TYPE_STRING</LI>
+   *    <LI>DB_TYPE_NOMINAL</LI>
+   *    <LI>DB_TYPE_MATRIX</LI>
+   *    <LI>DB_TYPE_PREDICATE</LI>
+   *    <LI>DB_TYPE_TIMESTAMP</LI>
+   *   </UL>
+   * @param vocab the vocabulary definition for this cell
+   * @param onset the onset time of this cell
+   * @param offset the offset time of this cell
+   */
+  public DataCell(Database db, Column column, int type, VocabElement vocab, long onset, long offset)
+    throws SystemErrorException
+  {
+    super(db, column);
+    this.type = type;
+    this.vocab = vocab;
+    this.onset = onset;
+    this.offset = offset;
+    //if (this.vocab != null) {
+    //  this.vocab.addChangeListener(this);
+    //}
+  } //End of DataCell() constructor
+  
+  /**
+   * Creates a new instance of DataCell
+   * @param column the column the cell is a part of
+   * @param type the data type for this cell<br>
+   *   <UL>
+   *    <LI>DB_TYPE_INTEGER</LI>
+   *    <LI>DB_TYPE_FLOAT</LI>
+   *    <LI>DB_TYPE_STRING</LI>
+   *    <LI>DB_TYPE_NOMINAL</LI>
+   *    <LI>DB_TYPE_MATRIX</LI>
+   *    <LI>DB_TYPE_PREDICATE</LI>
+   *    <LI>DB_TYPE_TIMESTAMP</LI>
+   *   </UL>
+   * @param vocab the vocabulary definition for this cell
+   */
+  public DataCell(Database db, Column column, int type, VocabElement vocab)
+    throws SystemErrorException
+  {
+    this(db, column, type, vocab, DEFAULT_TIMESTAMP, DEFAULT_TIMESTAMP);
+  } //End of DataCell() constructor
+
+  /**
+   * Returns the Cell data type
+   * @return the cell type
+   */
+  public int getType()
+  {
+    return (this.type);
+  } //End of getType() method
+
+  /**
+   * Returns the Cell's vocabulary element
+   * @return the vocab element for this cell
+   */
+  public VocabElement getVocabElement()
+  {
+    return (this.vocab);
+  } //End of getVocabElement() method
+
+  /**
+   * Returns the cell's onset value
+   * @return the onset value
+   */
+  public long getOnset()
+  {
+    return (this.onset);
+  } //End of getOnset() method
+
+  /**
+   * Returns the cell's offset value
+   * @return the offset value
+   */
+  public long getOffset()
+  {
+    return (this.offset);
+  } //End of getOffset() method
+
+  /**
+   * Returns the data values of this cell
+   * @return datavalues as an array
+   */
+  public DataValue[] getData()
+  {
+    // Check to make sure we've got data values
+    int len = this.dataValues.size();
+    if (len <= 0) {
+      return (null);
+    }
+
+    // Copy values to array
+    DataValue[] dvs = new DataValue[len];
+    for (int i=0; i<len; i++) {
+      dvs[i] = (DataValue)this.dataValues.elementAt(i);
+    }
+
+    return (dvs);
+  } //End of getData() method
+
+  /**
+   * Called when the vocabulary element has been modified
+   * @param vocab the modified vocabulary element
+   */
+  public void vocabModified(VocabElement vocab)
+  {
+    // To Do
+  } //End of vocabModified() method
+
+  /**
+   * Called when a data value has been modified
+   * @param value the DataValue changed
+   */
+  public void dataValueChanged(DataValue value)
+  {
+    // To Do
+
+    // Send change notices up the queue
+    for (int i=0; i<this.cellListeners.size(); i++) {
+      ((CellChangeListener)this.cellListeners.elementAt(i)).cellModified(this);
+    }
+  } // End of dataValueChanged() method
+
+  /**
+   * Returns a string representation of the cell
+   * @return a string representation of the cell
+   */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    DataValue[] dvs = this.getData();
+    for (int i=0; i<dvs.length; i++) {
+      if (i>0) {
+        sb.append(",");
+      }
+      sb.append(dvs[i].toString());
+    }
+
+    return (sb.toString());
+  } //End of toString() method
+
+  /**
+   * Returns a database string representation of the cell
+   * @return a string representation of the cell
+   */
+  public String toDBString()
+    throws SystemErrorException
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append("(");
+    sb.append(TimeStamp.toHMSFString(60, this.onset));
+    sb.append("(");
+    sb.append(TimeStamp.toHMSFString(60, this.offset));
+    DataValue[] dvs = this.getData();
+    for (int i=0; i<dvs.length; i++) {
+      sb.append(",");
+      sb.append(dvs[i].toString());
+    }
+    sb.append(")");
+
+    return (sb.toString());
+  } //End of toString() method
+
+  /**
+   * Called when the database ticks per second value has changed
+   * @param db the database that has been modified
+   * @param oldTPS the previous ticks per second value
+   */
+  public void databaseTicksChanged(Database db, int oldTPS)
+  {
+    // Modify onset and offset with new tcs value
+    this.onset = TimeStamp.convertTime(this.onset, oldTPS, db.getTicks());
+    this.offset = TimeStamp.convertTime(this.offset, oldTPS, db.getTicks());
+
+    // Send change notices up the queue
+    for (int i=0; i<this.cellListeners.size(); i++) {
+      ((CellChangeListener)this.cellListeners.elementAt(i)).cellModified(this);
+    }
+  } //End of dataTicksChanges() method
+
+  /**
+   * Called when the database start time value has changed
+   * @param db the database that has been modified
+   * @param oldST the previous startTime value
+   */
+  public void databaseStartTimeChanged(Database db, long oldST)
+  {
+    // To Do
+  } //End of databaseStartTimeChanged() method
+
+  /**
+   * Deletes the cell and notifies all listeners of deletion
+   */
+  public void delete()
+  {
+    // To do
+
+    // Send change notices up the queue
+    for (int i=0; i<this.cellListeners.size(); i++) {
+      ((CellChangeListener)this.cellListeners.elementAt(i)).cellDeleted(this);
+    }
+  } //End of delete() method
+
+} //End of DataCell class definition
