@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="1" time="0.047" errors="0" skipped="0" tests="2" name="au.com.nicta.openshapa.AppTest">
+<testsuite failures="0" time="0.016" errors="0" skipped="0" tests="1" name="au.com.nicta.openshapa.AppTest">
   <properties>
     <property name="java.vendor" value="Sun Microsystems Inc."/>
     <property name="localRepository" value="C:\Documents and Settings\cfreeman\.m2\repository"/>
@@ -16,6 +16,7 @@
     <property name="java.runtime.version" value="1.6.0_10-b33"/>
     <property name="env.HOMEPATH" value="\Documents and Settings\cfreeman"/>
     <property name="user.name" value="cfreeman"/>
+    <property name="env.QTJAVA" value="C:\Program Files\Java\jre1.6.0_07\lib\ext\QTJava.zip"/>
     <property name="user.language" value="en"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.6.0_10\jre\bin"/>
     <property name="classworlds.conf" value="C:\NICTA\Tools\apache-maven-2.0.9\bin\m2.conf"/>
@@ -52,20 +53,20 @@
     <property name="user.home" value="C:\Documents and Settings\cfreeman"/>
     <property name="env.SESSIONNAME" value="Console"/>
     <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
-    <property name="test" value="AppTest"/>
+    <property name="env.CLASSPATH" value=".;C:\Program Files\Java\jre1.6.0_07\lib\ext\QTJava.zip"/>
     <property name="env.M2_HOME" value="C:\NICTA\Tools\apache-maven-2.0.9"/>
     <property name="env.NUMBER_OF_PROCESSORS" value="2"/>
-    <property name="java.library.path" value="C:\Program Files\Java\jdk1.6.0_10\bin;.;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Git\cmd;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.6.0_10\bin;.;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Git\cmd;C:\Program Files\QuickTime\QTSystem\;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
     <property name="java.vendor.url" value="http://java.sun.com/"/>
     <property name="env.USERDNSDOMAIN" value="IN.NICTA.COM.AU"/>
-    <property name="env.MAVEN_CMD_LINE_ARGS" value="-Dtest=AppTest test-compile surefire:test"/>
+    <property name="env.MAVEN_CMD_LINE_ARGS" value="package"/>
     <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
     <property name="maven.home" value="C:\NICTA\Tools\apache-maven-2.0.9"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.class.path" value="C:\NICTA\Tools\apache-maven-2.0.9\boot\classworlds-1.1.jar"/>
     <property name="env.MAVEN_JAVA_EXE" value="&quot;C:\Program Files\Java\jdk1.6.0_10\bin\java.exe&quot;"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="env.LOGONSERVER" value="\\ATP-DC1"/>
+    <property name="env.LOGONSERVER" value="\\CRL-DC1"/>
     <property name="env.windir" value="C:\WINDOWS"/>
     <property name="java.vm.specification.version" value="1.0"/>
     <property name="env.PROCESSOR_ARCHITECTURE" value="x86"/>
@@ -73,7 +74,7 @@
     <property name="sun.os.patch.level" value="Service Pack 3"/>
     <property name="env.HOME" value="C:\Documents and Settings\cfreeman"/>
     <property name="env.ProgramFiles" value="C:\Program Files"/>
-    <property name="surefire.test.class.path" value="C:\NICTA\maven\openshapa\target\test-classes;C:\NICTA\maven\openshapa\target\classes;C:\Documents and Settings\cfreeman\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Documents and Settings\cfreeman\.m2\repository\net\java\dev\swing-layout\swing-layout\1.0.2\swing-layout-1.0.2.jar;"/>
+    <property name="surefire.test.class.path" value="C:\NICTA\maven\openshapa\target\test-classes;C:\NICTA\maven\openshapa\target\classes;C:\Documents and Settings\cfreeman\.m2\repository\junit\junit\3.8.1\junit-3.8.1.jar;C:\Documents and Settings\cfreeman\.m2\repository\net\java\dev\swing-layout\swing-layout\1.0.2\swing-layout-1.0.2.jar;C:\Documents and Settings\cfreeman\.m2\repository\javax\media\jmf\2.1.1e\jmf-2.1.1e.jar;C:\Documents and Settings\cfreeman\.m2\repository\fobs4jmf\fobs4jmf\0.4.1_win\fobs4jmf-0.4.1_win.jar;"/>
     <property name="java.io.tmpdir" value="C:\DOCUME~1\cfreeman\LOCALS~1\Temp\"/>
     <property name="env.PROCESSOR_REVISION" value="0f0b"/>
     <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
@@ -88,7 +89,7 @@
     <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
     <property name="env.CLASSWORLDS_JAR" value="&quot;C:\NICTA\Tools\apache-maven-2.0.9\boot\classworlds-1.1.jar&quot;"/>
     <property name="env.PATHEXT" value=".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH"/>
-    <property name="env.Path" value="C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Git\cmd;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
+    <property name="env.Path" value="C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Git\cmd;C:\Program Files\QuickTime\QTSystem\;C:\NICTA\Tools\apache-maven-2.0.9\bin"/>
     <property name="basedir" value="C:\NICTA\maven\openshapa"/>
     <property name="env.ERROR_CODE" value="0"/>
     <property name="env.USERNAME" value="cfreeman"/>
@@ -99,12 +100,4 @@
     <property name="env.PROCESSOR_LEVEL" value="6"/>
   </properties>
   <testcase time="0" classname="au.com.nicta.openshapa.AppTest" name="testApp"/>
-  <testcase time="0" classname="au.com.nicta.openshapa.AppTest" name="testMoo">
-    <failure type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError
-	at junit.framework.Assert.fail(Assert.java:47)
-	at junit.framework.Assert.assertTrue(Assert.java:20)
-	at junit.framework.Assert.assertTrue(Assert.java:27)
-	at au.com.nicta.openshapa.AppTest.testMoo(AppTest.java:40)
-</failure>
-  </testcase>
 </testsuite>

@@ -35,8 +35,4 @@ public class AppTest
     {
         assertTrue( true );
     }
-
-    public void testMoo() {
-        assertTrue(false);
-    }
 }

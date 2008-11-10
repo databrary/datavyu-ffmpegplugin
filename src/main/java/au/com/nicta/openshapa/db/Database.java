@@ -8,21 +8,20 @@
 package au.com.nicta.openshapa.db;
 
 /**
- * Abstract database class
+ * Abstract database class.
  * @author FGA
  */
-public abstract class Database
-{
-    
+public abstract class Database {
+
     /*************************************************************************/
     /*************************** Constants: **********************************/
     /*************************************************************************/
-    
-    /** Constant type for Data Column Creation */
-    public final static int COLUMN_TYPE_DATA = 1;
-      
-    /** Constant type for Reference Column Creation */
-    public final static int COLUMN_TYPE_REFERENCE = 2;
+
+    /** Constant type for Data Column Creation. */
+    public static final int COLUMN_TYPE_DATA = 1;
+
+    /** Constant type for Reference Column Creation. */
+    public static final int COLUMN_TYPE_REFERENCE = 2;
 
     /** Default Ticks per second from MacSHAPA */
     public final static int DEFAULT_TPS = 60;

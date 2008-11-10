@@ -7,12 +7,17 @@
 
 package au.com.nicta.openshapa.util;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import org.xml.sax.Attributes;
 
+/*
 import java.io.*;
 import java.util.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 import javax.xml.parsers.*;
+ */
 
 
 /**

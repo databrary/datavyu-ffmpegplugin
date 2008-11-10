@@ -3,20 +3,27 @@
  *
  * Created on June 14, 2008, 10:02 PM
  */
-
 package au.com.nicta.openshapa.cont;
-import java.io.*;
-import au.com.nicta.openshapa.*;
+
+import au.com.nicta.openshapa.Executive;
+import java.io.File;
+
 /**
  *
  * @author  FGA
  */
 public class QTVideoViewer
         extends javax.swing.JPanel
-        implements ContinuousDataViewer
-{
-    
-    /** Creates new form QTVideoViewer */
+        implements ContinuousDataViewer {
+
+    /**
+     * Constructor.
+     *
+     * Creates a new form of QTVideoViewer.
+     *
+     * @param exec
+     * @param cont
+     */
     public QTVideoViewer(Executive exec, ContinuousDataController cont)
     {
         initComponents();

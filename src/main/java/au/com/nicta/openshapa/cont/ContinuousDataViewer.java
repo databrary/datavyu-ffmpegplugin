@@ -8,7 +8,8 @@
  */
 
 package au.com.nicta.openshapa.cont;
-import au.com.nicta.openshapa.*;
+
+//import au.com.nicta.openshapa.*;
 
 /**
  * Default interface for all Continuous Data Viewers

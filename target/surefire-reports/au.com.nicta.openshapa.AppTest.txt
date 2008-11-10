@@ -1,11 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: au.com.nicta.openshapa.AppTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.063 sec <<< FAILURE!
-testMoo(au.com.nicta.openshapa.AppTest)  Time elapsed: 0 sec  <<< FAILURE!
-junit.framework.AssertionFailedError
-	at junit.framework.Assert.fail(Assert.java:47)
-	at junit.framework.Assert.assertTrue(Assert.java:20)
-	at junit.framework.Assert.assertTrue(Assert.java:27)
-	at au.com.nicta.openshapa.AppTest.testMoo(AppTest.java:40)
-
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 sec
