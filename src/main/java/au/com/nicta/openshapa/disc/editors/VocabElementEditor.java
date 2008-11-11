@@ -53,6 +53,7 @@ public class VocabElementEditor extends javax.swing.JPanel
     }
   }
 
+  /*
   public final static void main(String[] argv)
   {
     try {
@@ -79,6 +80,7 @@ public class VocabElementEditor extends javax.swing.JPanel
       e.printStackTrace();
     }
   }
+   */
   
   /** This method is called from within the constructor to
    * initialize the form.

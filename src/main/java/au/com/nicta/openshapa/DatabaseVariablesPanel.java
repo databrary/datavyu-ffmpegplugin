@@ -593,7 +593,8 @@ public class DatabaseVariablesPanel
     this.dialog.getContentPane().add(this, BorderLayout.CENTER);
     this.dialog.setVisible(true);
   }
-  
+
+  /*
   public final static void main(String[] argv)
   {
     try {
@@ -608,6 +609,7 @@ public class DatabaseVariablesPanel
       e.printStackTrace();
     }
   }
+   */
   
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox borrowComboBox;

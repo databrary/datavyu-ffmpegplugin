@@ -433,7 +433,8 @@ public class SpreadsheetCell
                            long      cellID)
   {
   }
-  
+
+  /*
   public final static void main(String[] args)
   {
     try {
@@ -515,6 +516,7 @@ public class SpreadsheetCell
       System.exit(-1);
     }
   }
+   */
 
 
   /** This method is called from within the constructor to

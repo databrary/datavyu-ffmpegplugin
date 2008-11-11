@@ -493,9 +493,11 @@ public class Executive implements KeyListener {
       }
   }
 
+  /*
   public final static void main(String argv[])
   {
-    Executive e = new Executive();
+    
   } //End of main() method
+   */
 
 } //End of Executive class definition

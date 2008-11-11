@@ -438,6 +438,7 @@ public class Configuration extends DefaultHandler
   /**
    * Main method used for testing purposes
    */
+  /*
   public final static void main(String[] argv)
   {
     Configuration conf = Configuration.loadConfiguration();
@@ -487,5 +488,6 @@ public class Configuration extends DefaultHandler
     }
     
   } //End of main() method
+   */
 
 } //End of Configuration class definition

@@ -164,6 +164,7 @@ public class VocabEditorPanel extends javax.swing.JPanel
   // End of variables declaration//GEN-END:variables
   
 
+  /*
   public final static void main(String argv[])
   {
     JFrame jf = new JFrame("Testing Vocab Editor");
@@ -175,4 +176,5 @@ public class VocabEditorPanel extends javax.swing.JPanel
     cp.add(veb, BorderLayout.CENTER);
     jf.setVisible(true);
   }
+   */
 }

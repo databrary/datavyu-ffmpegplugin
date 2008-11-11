@@ -226,7 +226,8 @@ public class DataViewLabel
   {
     return (this.timeStampEditor);
   }
-  
+
+  /*
   public final static void main(String[] args)
   {
     try {
@@ -251,4 +252,6 @@ public class DataViewLabel
       System.exit(-1);
     }
   }
+   */
+
 } //End of DataViewLabel class definition

@@ -229,7 +229,7 @@ public class QTVideoController
         gridButtonPanel.setBackground(java.awt.Color.white);
         gridButtonPanel.setLayout(new java.awt.GridLayout(4, 4));
 
-        syncCtrlButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/openshapa/cont/QTVideoController/eng/syncCtrlButton.png"))); // NOI18N
+        syncCtrlButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncCtrlButton.png"))); // NOI18N
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(32, 32));
@@ -558,6 +558,7 @@ public class QTVideoController
     /**
      * @param args the command line arguments
      */
+    /*
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -567,6 +568,7 @@ public class QTVideoController
             }
         });
     }
+     */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;

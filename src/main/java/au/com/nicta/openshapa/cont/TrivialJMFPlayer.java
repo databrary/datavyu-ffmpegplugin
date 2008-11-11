@@ -11,6 +11,7 @@ import java.awt.*;
 
 public class TrivialJMFPlayer extends Frame {
 
+    /*
     public static void main (String[] args) {
         try {
             Frame f = new TrivialJMFPlayer();
@@ -19,7 +20,8 @@ public class TrivialJMFPlayer extends Frame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
+
     public TrivialJMFPlayer()
         throws java.io.IOException,
                java.net.MalformedURLException,
