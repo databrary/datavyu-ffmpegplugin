@@ -47,16 +47,22 @@ import javax.swing.*;
  * All exceptions not caught earlier are handled here.
  * @author FGA
  */
-public class Executive implements KeyListener
-{
-  /**
-   * Configuration paths
-   */
-  public final static String DEFAULT_CONFIG_FILE = "openshapa/defaults/default.oscfg.xml";
-  public final static String USER_CONFIG_FILE = ".oscfg.xml";
-  public final static String CRASH_DUMP_FILE  = "os.crashdump.log";
-  public final static String LANG_TAG = "OpenSHAPAConfig.language";
-  public final static String LANG_PATH = "openshapa/defaults/lang/";
+public class Executive implements KeyListener {
+
+  /** The path to the configuration file. */
+  public static final String DEFAULT_CONFIG_FILE = "defaults/default.oscfg.xml";
+
+  /** The user configuration file. */
+  public static final String USER_CONFIG_FILE = ".oscfg.xml";
+
+  /** Dump log file. */
+  public static final String CRASH_DUMP_FILE  = "os.crashdump.log";
+
+  /** Tag that defines the default language. */
+  public static final String LANG_TAG = "OpenSHAPAConfig.language";
+
+  /** Path to internationalisation texts. */
+  public static final String LANG_PATH = "defaults/lang/";
 
   protected Configuration   config     = null;
   protected Configuration   langConfig = null;
@@ -87,12 +93,11 @@ public class Executive implements KeyListener
   protected Vector<Component> keyListenerParents =
           new Vector<Component>();
 
-  
+
   /**
-   * Creates a new instance of Executive
+   * Creates a new instance of Executive.
    */
-  public Executive()
-  {
+  public Executive() {
     // Final last chance catch block,
     // in case anything slips by uncaught
     try {
@@ -150,7 +155,7 @@ public class Executive implements KeyListener
           System.exit(-2);
         }
       }
-      
+
       // Parse the configuration file for gui values
       this.uiconfig.parseConfiguration(this.config);
 
@@ -160,8 +165,8 @@ public class Executive implements KeyListener
         lang = (this.config.getElements(LANG_TAG))[0].getValue();
       }
       ClassLoader cl = this.getClass().getClassLoader();
-      InputStream is = cl.getResourceAsStream(LANG_PATH + lang + ".xml");
-      this.langConfig = new Configuration(is);
+      //InputStream is = cl.getResourceAsStream(LANG_PATH + lang + ".xml");
+      //this.langConfig = new Configuration(is);
 
       // Initialize the menu bar
       this.mainFrame = new ExecutiveFrame(this);
@@ -171,12 +176,13 @@ public class Executive implements KeyListener
       ConfigurationObject[] coa;
 
       // Load Menus
-      coa = this.config.getDiscreteManagers();
+/*      coa = this.config.getDiscreteManagers();
       if (coa != null) {
         for (int i=0; i<coa.length; i++) {
           this.mainFrame.addMenuItem(coa[i]);
         }
       }
+ */
       coa = this.config.getDiscreteViewers();
       if (coa != null) {
         for (int i=0; i<coa.length; i++) {

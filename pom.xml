@@ -7,28 +7,48 @@
   <version>0.1</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
-   <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.com/maven2</url>
-        </repository>
-        <repository>
-            <id>mvnsearch</id>
-            <url>http://mvnsearch.org/maven2/</url>
-        </repository>
+  <organization>
+    <name>NICTA</name>
+    <url>http://www.nicta.com.au</url>
+  </organization>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.com/maven2</url>
+    </repository>
+
+    <repository>
+      <id>mvnsearch</id>
+      <url>http://mvnsearch.org/maven2/</url>
+    </repository>
   </repositories>
+
   <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -36,20 +56,23 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-        <dependency>
-            <groupId>net.java.dev.swing-layout</groupId>
-            <artifactId>swing-layout</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jmf</artifactId>
-            <version>2.1.1e</version>
-        </dependency>
-        <dependency>
-            <groupId>fobs4jmf</groupId>
-            <artifactId>fobs4jmf</artifactId>
-            <version>0.4.1_win</version>
-        </dependency>
+
+    <dependency>
+      <groupId>net.java.dev.swing-layout</groupId>
+      <artifactId>swing-layout</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.media</groupId>
+      <artifactId>jmf</artifactId>
+      <version>2.1.1e</version>
+    </dependency>
+
+    <dependency>
+      <groupId>fobs4jmf</groupId>
+      <artifactId>fobs4jmf</artifactId>
+      <version>0.4.1_win</version>
+    </dependency>
   </dependencies>
 </project>
