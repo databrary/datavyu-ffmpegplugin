@@ -7,6 +7,7 @@
   <version>0.1</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
+
   <organization>
     <name>NICTA</name>
     <url>http://www.nicta.com.au</url>
@@ -25,6 +26,7 @@
     </plugins>
   </reporting>
 
+  <!-- External repositories - where to find third-party dependancies. -->
   <repositories>
     <repository>
       <id>jboss</id>
@@ -37,8 +39,21 @@
     </repository>
   </repositories>
 
+  <!-- Build properties. -->
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.0.2</version>
@@ -49,6 +64,14 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Where to obtain our source. -->
+  <scm>
+    <connection>scm:git:git://152.98.217.46/Share/maven/openshapa</connection>
+    <url>scm:git:git://152.98.217.46/Share/maven/openshapa</url>
+  </scm>
+
+  <!-- Third party dependancies. -->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
