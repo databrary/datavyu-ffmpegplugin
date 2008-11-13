@@ -59,6 +59,17 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+		<configuration>
+            <archive>
+                <manifest>
+                    <mainClass>au.com.nicta.openshapa.Main</mainClass>
+                </manifest>
+            </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
