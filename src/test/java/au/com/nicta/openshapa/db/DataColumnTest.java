@@ -219,7 +219,9 @@ public final class DataColumnTest extends TestCase {
         assertTrue(f_col.readOnly == false);
         assertTrue(f_col.numCells == 0);
         assertTrue(f_col.name.equals("f_col"));
-        //assertTrue(f_col.itsCell == null);
+        assertTrue(f_col.getItsCells() == null);
+        assertTrue(f_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .FLOAT);
 
         assertTrue(i_col != null);
         assertTrue(i_col.db == db0);
@@ -227,6 +229,9 @@ public final class DataColumnTest extends TestCase {
         assertTrue(i_col.readOnly == false);
         assertTrue(i_col.numCells == 0);
         assertTrue(i_col.name.equals("i_col"));
+        assertTrue(i_col.getItsCells() == null);
+        assertTrue(i_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .INTEGER);
 
         assertTrue(m_col != null);
         assertTrue(m_col.db == db0);
@@ -234,6 +239,9 @@ public final class DataColumnTest extends TestCase {
         assertTrue(m_col.readOnly == false);
         assertTrue(m_col.numCells == 0);
         assertTrue(m_col.name.equals("m_col"));
+        assertTrue(m_col.getItsCells() == null);
+        assertTrue(m_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .MATRIX);
 
         assertTrue(n_col != null);
         assertTrue(n_col.db == db0);
@@ -241,6 +249,9 @@ public final class DataColumnTest extends TestCase {
         assertTrue(n_col.readOnly == false);
         assertTrue(n_col.numCells == 0);
         assertTrue(n_col.name.equals("n_col"));
+        assertTrue(n_col.getItsCells() == null);
+        assertTrue(n_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .NOMINAL);
 
         assertTrue(p_col != null);
         assertTrue(p_col.db == db0);
@@ -248,6 +259,9 @@ public final class DataColumnTest extends TestCase {
         assertTrue(p_col.readOnly == false);
         assertTrue(p_col.numCells == 0);
         assertTrue(p_col.name.equals("p_col"));
+        assertTrue(p_col.getItsCells() == null);
+        assertTrue(p_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .PREDICATE);
 
         assertTrue(t_col != null);
         assertTrue(t_col.db == db0);
@@ -255,6 +269,67 @@ public final class DataColumnTest extends TestCase {
         assertTrue(t_col.readOnly == false);
         assertTrue(t_col.numCells == 0);
         assertTrue(t_col.name.equals("t_col"));
+        assertTrue(t_col.getItsCells() == null);
+        assertTrue(t_col.getItsMveType() == MatrixVocabElement.matrixType
+                                                              .TEXT);
+    }
+
+    public void test3ArgConstructorFailure0() {
+        try {
+            DataColumn dc = new DataColumn(null, "f_col",
+                                           MatrixVocabElement.matrixType.FLOAT);
+            fail("DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test3ArgConstructorFailure1() {
+        try {
+            DataColumn dc = new DataColumn(db, "",
+                                           MatrixVocabElement.matrixType.FLOAT);
+            fail("DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test3ArgConstructorFailure2() {
+        try {
+            DataColumn dc = new DataColumn(db, " invalid ",
+                                           MatrixVocabElement.matrixType.FLOAT);
+            fail("DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test3ArgConstructorFailure3() {
+        try {
+            DataColumn fc = new DataColumn(db, "f_col",
+                                           MatrixVocabElement.matrixType.FLOAT);
+            long fc_ID = db.addColumn(fc);
+            fc = db.getDataColumn(fc_ID);
+            long f_mveID = fc.getItsMveID();
+            MatrixVocabElement f_mve = db.getMatrixVE(f_mveID);
+
+            DataColumn dc = new DataColumn(db, "f_col",
+                                           MatrixVocabElement.matrixType.FLOAT);
+
+            fail("DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test3ArgConstructorFailure4() {
+        try {
+            DataColumn dc = new DataColumn(db, "valid",
+                                           MatrixVocabElement.matrixType.UNDEFINED);
+            fail("DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
     }
 
     public void test5ArgConstructor() throws SystemErrorException {
