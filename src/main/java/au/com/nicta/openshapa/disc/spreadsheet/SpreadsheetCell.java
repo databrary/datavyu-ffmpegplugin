@@ -413,9 +413,11 @@ public class SpreadsheetCell
         this.setOffset(newOffset);
       }
 
+      /* getArg is now protected in the database.
       if (valChanged) {
         this.value.setValue(newVal.getArg(0));
       }
+       */
 
       if (selectedChanged) {
         this.selected = newSelected;

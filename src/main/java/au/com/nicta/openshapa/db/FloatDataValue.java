@@ -1225,7 +1225,7 @@ public class FloatDataValue extends DataValue
         }
          
         /* verify that the constructor fails when given an ID that does not
-         *refer to a formal argument.
+         * refer to a formal argument.
          */
         if ( failures == 0 )
         {
@@ -2486,7 +2486,7 @@ public class FloatDataValue extends DataValue
                                     "(maxVal 1000.0))";
         String testString1 = "2000.0";
         String testDBString1 = "(FloatDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 501) " +
                                     "(itsValue 2000.0) " +

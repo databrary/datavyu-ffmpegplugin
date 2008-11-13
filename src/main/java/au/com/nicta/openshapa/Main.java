@@ -19,10 +19,10 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) 
-        //throws au.com.nicta.openshapa.db.SystemErrorException
+        throws au.com.nicta.openshapa.db.SystemErrorException
     {
         // TODO code application logic here
-        //au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
-        Executive e = new Executive();
+        au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
+        //Executive e = new Executive();
     }
 }

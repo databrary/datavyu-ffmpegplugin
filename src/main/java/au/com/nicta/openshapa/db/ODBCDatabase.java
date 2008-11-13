@@ -116,38 +116,38 @@ public class ODBCDatabase extends Database
   } //End of getStartTime() method
 
 
-  /**
-   * Gets the cell associated with the given id in the given column
-   * @param columnID the id of the column the cell is in
-   * @param cellID the id of the cell
-   * @return the cell associated with the given cell id
-   */
-  public Cell getCell(long columnID, long cellID)
-  {
-    return (null);
-  } //End of getCell() method
+//  /**
+//   * Gets the cell associated with the given id in the given column
+//   * @param columnID the id of the column the cell is in
+//   * @param cellID the id of the cell
+//   * @return the cell associated with the given cell id
+//   */
+//  public Cell getCell(long columnID, long cellID)
+//  {
+//    return (null);
+//  } //End of getCell() method
 
-  /**
-   * Gets the cell associated with the given id in the given column
-   * @param column the column the cell is in
-   * @param cellID the id of the cell
-   * @return the cell associated with the given cell id
-   */
-  public Cell getCell(Column column, long cellID)
-  {
-    return (this.getCell(column.getID(), cellID));
-  } //End of getCell() method
+//  /**
+//   * Gets the cell associated with the given id in the given column
+//   * @param column the column the cell is in
+//   * @param cellID the id of the cell
+//   * @return the cell associated with the given cell id
+//   */
+//  public Cell getCell(Column column, long cellID)
+//  {
+//    return (this.getCell(column.getID(), cellID));
+//  } //End of getCell() method
 
   
-  /**
-   * Gets the column associated with the given id
-   * @param columnID the id of the column
-   * @return the column associated with the given column id
-   */
-  public Column getColumn(long columnID)
-  {
-    return (null);
-  } //End of getColumn() method
+//  /**
+//   * Gets the column associated with the given id
+//   * @param columnID the id of the column
+//   * @return the column associated with the given column id
+//   */
+//  public Column getColumn(long columnID)
+//  {
+//    return (null);
+//  } //End of getColumn() method
 
   /**
    * Gets the argument associated with the given id

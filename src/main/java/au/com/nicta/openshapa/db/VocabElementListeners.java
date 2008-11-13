@@ -115,29 +115,29 @@ public class VocabElementListeners extends Listeners
      *      argument list, and thus has been inserted.
      */
     
-    VocabElement itsVE = null;
-    long itsVEID = DBIndex.INVALID_ID;
+    protected VocabElement itsVE = null;
+    protected long itsVEID = DBIndex.INVALID_ID;
     
-    boolean changeNoted = false;
+    protected boolean changeNoted = false;
     
-    boolean nameChanged = false;
-    String oldName = null;
-    String newName = null;
+    protected boolean nameChanged = false;
+    protected String oldName = null;
+    protected String newName = null;
     
-    boolean varLenChanged = false;
-    boolean oldVarLen = false;
-    boolean newVarLen = false;
+    protected boolean varLenChanged = false;
+    protected boolean oldVarLen = false;
+    protected boolean newVarLen = false;
     
-    boolean fargListChanged = false;
-    java.util.Vector<FormalArgument> oldFargList = null;
-    java.util.Vector<FormalArgument> newFargList = null;
-    long[] n2o = null;
-    long[] o2n = null;
-    boolean[] fargNameChanged = null;
-    boolean[] fargSubRangeChanged = null;
-    boolean[] fargRangeChanged = null;
-    boolean[] fargDeleted = null;
-    boolean[] fargInserted = null;
+    protected boolean fargListChanged = false;
+    protected java.util.Vector<FormalArgument> oldFargList = null;
+    protected java.util.Vector<FormalArgument> newFargList = null;
+    protected long[] n2o = null;
+    protected long[] o2n = null;
+    protected boolean[] fargNameChanged = null;
+    protected boolean[] fargSubRangeChanged = null;
+    protected boolean[] fargRangeChanged = null;
+    protected boolean[] fargDeleted = null;
+    protected boolean[] fargInserted = null;
   
     
     /*************************************************************************/
@@ -252,6 +252,39 @@ public class VocabElementListeners extends Listeners
     /*************************************************************************/
     
     /**
+     * discardChangeNotes()
+     * 
+     * Discard all notes on changes that should be reported to the listeners.
+     * 
+     *                                                  JRM -- 8/26/08
+     * 
+     * Changes:
+     * 
+     *    - None.
+     */
+    
+    protected void discardChangeNotes()
+    {
+        this.changeNoted = false;
+        this.nameChanged = false;
+        this.oldName = null;
+        this.newName = null;
+        this.varLenChanged = false;
+        this.fargListChanged = false;
+        this.oldFargList = null;
+        this.newFargList = null;
+        this.n2o = null;
+        this.o2n = null;
+        this.fargNameChanged = null;
+        this.fargSubRangeChanged = null;
+        this.fargRangeChanged = null;
+        this.fargDeleted = null;
+        this.fargInserted = null;
+    
+        return;
+    }
+    
+    /**
      * noteChange()
      * 
      * Given references to the old and new versions of the target VocabElement,
@@ -265,7 +298,7 @@ public class VocabElementListeners extends Listeners
      */
     
     protected boolean noteChange(VocabElement oldVE,
-                                  VocabElement newVE)
+                                 VocabElement newVE)
         throws SystemErrorException
     {
         final String mName = "VEChangeListeners::noteChanges()";
@@ -525,6 +558,116 @@ public class VocabElementListeners extends Listeners
     
     /**
      * 
+     * notifyExternalListenersOfChange()
+     * 
+     * Call the external listeners to advise them of changes.
+     * 
+     *                                              JRM -- 8/26/08
+     * 
+     * Changes:
+     * 
+     *    - None.
+     */
+    
+    protected void notifyExternalListenersOfChange()
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VEChangeListener::NotifyExternalListenersOfChanges()";
+        DBElement dbe;
+        ExternalVocabElementListener el;
+        
+        if ( ! this.changeNoted )
+        {
+            throw new SystemErrorException(mName + "no changes?!?");
+        }
+        
+        for ( Object o : this.els )
+        {
+            el = (ExternalVocabElementListener)o;
+            el.VEChanged(this.db,
+                         this.itsVEID,
+                         this.nameChanged,
+                         this.oldName,
+                         this.newName,
+                         this.varLenChanged,
+                         this.oldVarLen,
+                         this.newVarLen,
+                         this.fargListChanged,
+                         this.oldFargList,
+                         this.newFargList);
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::notifyExternalListenersOfChange() */
+    
+    
+    /**
+     * 
+     * notifyInternalListenersOfChange()
+     * 
+     * Call the internal listeners to advise them of changes.
+     * 
+     *                                          JRM -- 8/26/08
+     * 
+     * Changes:
+     * 
+     *    - None.
+     */
+    
+    protected void notifyInternalListenersOfChange()
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VEChangeListener::NotifyInternalListenersOfChanges()";
+        DBElement dbe;
+        InternalVocabElementListener il;
+        
+        if ( ! this.changeNoted )
+        {
+            throw new SystemErrorException(mName + "no changes?!?");
+        }
+        
+        for ( Long id : this.ils )
+        {
+            dbe = this.db.idx.getElement(id); // throws system error on failure
+
+            if ( ! ( dbe instanceof InternalVocabElementListener ) )
+            {
+                throw new SystemErrorException(mName + 
+                        ": dbe not a InternalVEChangeListener.");
+            }
+
+            il = (InternalVocabElementListener)dbe;
+
+            il.VEChanged(this.db,
+                         this.itsVEID,
+                         this.nameChanged,
+                         this.oldName,
+                         this.newName,
+                         this.varLenChanged,
+                         this.oldVarLen,
+                         this.newVarLen,
+                         this.fargListChanged,
+                         this.n2o,
+                         this.o2n,
+                         this.fargNameChanged,
+                         this.fargSubRangeChanged,
+                         this.fargRangeChanged,
+                         this.fargDeleted,
+                         this.fargInserted,
+                         this.oldFargList,
+                         this.newFargList);
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::notifyInternalListenersOfChange() */
+    
+    
+    /**
+     * 
      * notifyListenersOfChange()
      * 
      * If any notable changes have been noted since the last call to 
@@ -549,77 +692,99 @@ public class VocabElementListeners extends Listeners
         if ( this.changeNoted )
         {
             // first, notify the intenal listeners...
-            for ( Long id : this.ils )
-            {
-                dbe = this.db.idx.getElement(id); // throws system error on failure
-
-                if ( ! ( dbe instanceof InternalVocabElementListener ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            ": dbe not a InternalVEChangeListener.");
-                }
-                
-                il = (InternalVocabElementListener)dbe;
-                
-                il.VEChanged(this.db,
-                             this.itsVEID,
-                             this.nameChanged,
-                             this.oldName,
-                             this.newName,
-                             this.varLenChanged,
-                             this.oldVarLen,
-                             this.newVarLen,
-                             this.fargListChanged,
-                             this.n2o,
-                             this.o2n,
-                             this.fargNameChanged,
-                             this.fargSubRangeChanged,
-                             this.fargRangeChanged,
-                             this.fargDeleted,
-                             this.fargInserted,
-                             this.oldFargList,
-                             this.newFargList);
-            }
-            
+            this.notifyInternalListenersOfChange();
             
             // then notify the external listeners...
-            for ( Object o : this.els )
-            {
-                el = (ExternalVocabElementListener)o;
-                el.VEChanged(this.db,
-                             this.itsVEID,
-                             this.nameChanged,
-                             this.oldName,
-                             this.newName,
-                             this.varLenChanged,
-                             this.oldVarLen,
-                             this.newVarLen,
-                             this.fargListChanged,
-                             this.oldFargList,
-                             this.newFargList);
-            }
+            this.notifyExternalListenersOfChange();
             
             // and finally, discard the old change notes.
-            this.changeNoted = false;
-            this.nameChanged = false;
-            this.oldName = null;
-            this.newName = null;
-            this.varLenChanged = false;
-            this.fargListChanged = false;
-            this.oldFargList = null;
-            this.newFargList = null;
-            this.n2o = null;
-            this.o2n = null;
-            this.fargNameChanged = null;
-            this.fargSubRangeChanged = null;
-            this.fargRangeChanged = null;
-            this.fargDeleted = null;
-            this.fargInserted = null;
+            
+            this.discardChangeNotes();
         }
         
         return;
         
     } /* VocabElementListeners::notifyListenersOfChange() */
+    
+    
+    /** 
+     * notifyExternalListenersOfDeletion()
+     *
+     * Advise any external listeners of the deletion of the associated 
+     * VocabElement.
+     *
+     *                                                  JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void notifyExternalListenersOfDeletion()
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VocabElementListeners::notifyExternalListenersOfDeletion()";
+        DBElement dbe;
+        ExternalVocabElementListener el;
+
+        for ( Object o : this.els )
+        {
+            if ( ! ( o instanceof ExternalVocabElementListener ) )
+            {
+                throw new SystemErrorException(mName + 
+                        ": o not a ExternalVEChangeListener.");
+            }
+
+            el = (ExternalVocabElementListener)o;
+            
+            el.VEDeleted(this.db, this.itsVEID);
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::notifyExternalListenersOfDeletion() */
+    
+    
+    /** 
+     * notifyInternalListenersOfDeletion()
+     *
+     * Advise any internal listeners of the deletion of the associated 
+     * VocabElement.
+     *
+     *                                                  JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void notifyInternalListenersOfDeletion()
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VocabElementListeners::notifyInternalListenersOfDeletion()";
+        DBElement dbe;
+        InternalVocabElementListener il;
+        
+        for ( Long id : this.ils )
+        {
+            dbe = this.db.idx.getElement(id); // throws system error on failure
+
+            if ( ! ( dbe instanceof InternalVocabElementListener ) )
+            {
+                throw new SystemErrorException(mName + 
+                        ": dbe not a InternalVEChangeListener.");
+            }
+
+            il = (InternalVocabElementListener)dbe;
+
+            il.VEDeleted(this.db, this.itsVEID);
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::notifyInternalListenersOfDeletion() */
     
     
     /** 
@@ -638,40 +803,12 @@ public class VocabElementListeners extends Listeners
         throws SystemErrorException
     {
         final String mName = "VEChangeListeners::notifyListenersOfDeletion()";
-        DBElement dbe;
-        ExternalVocabElementListener el;
-        InternalVocabElementListener il;
         
         // first, notify the intenal listeners...
-        for ( Long id : this.ils )
-        {
-            dbe = this.db.idx.getElement(id); // throws system error on failure
-
-            if ( ! ( dbe instanceof InternalVocabElementListener ) )
-            {
-                throw new SystemErrorException(mName + 
-                        ": dbe not a InternalVEChangeListener.");
-            }
-
-            il = (InternalVocabElementListener)dbe;
-
-            il.VEDeleted(this.db, this.itsVEID);
-        }
-
+        this.notifyInternalListenersOfDeletion();
         
         // then notify the external listeners...
-        for ( Object o : this.els )
-        {
-            if ( ! ( o instanceof ExternalVocabElementListener ) )
-            {
-                throw new SystemErrorException(mName + 
-                        ": o not a ExternalVEChangeListener.");
-            }
-
-            el = (ExternalVocabElementListener)o;
-            
-            el.VEDeleted(this.db, this.itsVEID);
-        }
+        this.notifyExternalListenersOfDeletion();
         
         return;
         
@@ -681,7 +818,69 @@ public class VocabElementListeners extends Listeners
     /*************************************************************************/
     /*********************** Listener Management: ****************************/
     /*************************************************************************/
+
+    /**
+     * checkExternalListenerType()
+     *
+     * Given a reference to an external listener, check to see if it is 
+     * correctly typed.  If it is, do nothing.  If it isn't, throw a system
+     * error with the appropriate diagnostic message.
+     *
+     *                                              JRM -- 8/26/98
+     *
+     * Changes:
+     *
+     *    - None.
+     */
     
+    protected void checkExternalListenerType(Object el)
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VocabElementListeners::checkExternalListenerType():";
+        
+        if ( ! ( el instanceof ExternalVocabElementListener ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "el is not an ExternalVEChangeListener");
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::checkExternalListenerType() */
+    
+ 
+    /**
+     * checkInternalListenerType()
+     *
+     * Given a reference to an internal listener, check to see if it is 
+     * correctly typed.  If it is, do nothing.  If it isn't, throw a system
+     * error with the appropriate diagnostic message.
+     *
+     *                                              JRM -- 8/26/98
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void checkInternalListenerType(Object il)
+        throws SystemErrorException
+    {
+        final String mName = 
+                "VocabElementListeners::checkInternalListenerType():";
+        
+        if ( ! ( il instanceof InternalVocabElementListener ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "il is not an InternalVocabElementListener");
+        }
+        
+        return;
+        
+    } /* VocabElementListeners::checkInternalListenerType() */
+    
+ 
     /**
      * deregisterExternalListener()
      *
@@ -704,11 +903,7 @@ public class VocabElementListeners extends Listeners
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
         
-        if ( ! ( el instanceof ExternalVocabElementListener ) )
-        {
-            throw new SystemErrorException(mName + 
-                     ": el not an ExternalVEChangeListener.");
-        }
+        this.checkExternalListenerType(el);
         
         this.DeleteExternalListener(el);
         
@@ -767,12 +962,8 @@ public class VocabElementListeners extends Listeners
         {
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
-        
-        if ( ! ( el instanceof ExternalVocabElementListener ) )
-        {
-            throw new SystemErrorException(mName + 
-                    ": el not an ExternalVEChangeListener.");
-        }
+
+        this.checkExternalListenerType(el);
         
         this.AddExternalListener(el);
         
@@ -805,12 +996,8 @@ public class VocabElementListeners extends Listeners
         }
         
         dbe = this.db.idx.getElement(ID); // throws system error on failure
-        
-        if ( ! ( dbe instanceof InternalVocabElementListener ) )
-        {
-            throw new SystemErrorException(mName + 
-                    ": dbe not a InternalVEChangeListener.");
-        }
+
+        this.checkInternalListenerType(dbe);
         
         this.AddInternalListener(ID);
         

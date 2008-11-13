@@ -1297,6 +1297,17 @@ public class PredicateVocabElement extends VocabElement
                         
                     }
                     
+                    if ( base_ve.fArgList == copy_ve.fArgList )
+                    {
+                        failures++;
+                        
+                        if ( verbose )
+                        {
+                            outStream.printf("base_ve.fArgList == " +
+                                             "copy_ve.fArgList)\n");
+                        }
+                    }
+                    
                     if ( base_ve.getFormalArg(i) == copy_ve.getFormalArg(i) )
                     {
                         failures++;

@@ -2487,7 +2487,7 @@ public class IntDataValue extends DataValue
                                     "(maxVal 1000))";
         String testString1 = "2000";
         String testDBString1 = "(IntDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 501) " +
                                     "(itsValue 2000) " +

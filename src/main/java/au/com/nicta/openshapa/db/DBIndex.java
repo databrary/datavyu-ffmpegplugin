@@ -214,7 +214,7 @@ public class DBIndex
     public DBElement getElement(long targetID)
        throws SystemErrorException
     {
-        final String mName = "DBIndex::removeElement(targetID): ";
+        final String mName = "DBIndex::getElement(targetID): ";
         DBElement dbe = null;
           
         if ( targetID == INVALID_ID )

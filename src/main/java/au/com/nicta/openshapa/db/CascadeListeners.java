@@ -35,7 +35,7 @@ public class CascadeListeners extends Listeners
      *      method increments refcount.
      *
      *      Similarly, the end cascade messages are sent iff refCOunt is one
-     *      on entry to notifyListenersOfCascadeEnd().  In andy case, this
+     *      on entry to notifyListenersOfCascadeEnd().  In any case, this
      *      method decrements refCount.
      */
 

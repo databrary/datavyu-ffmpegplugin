@@ -20,6 +20,19 @@ package au.com.nicta.openshapa.db;
  * The methods specified in this interface will be called when appropriate.
  * 
  *                                                  JRM -- 2/2/08
+ *
+ * Note:  When this interface was defined, it was possible to handle listeners
+ *        for changes to both MatrixVocabElements and PredicateVocabElements
+ *        with the same listener interface.
+ *
+ *        Since then, it has become necessary to send more information to the
+ *        listeners for changes to MatrixVocabElements, and thus an
+ *        InternalMatrixVocabElementListener interface has been created.
+ *
+ *        Thus pending further modifications, this interface will be used
+ *        only by listeners for changes to PredicateVocabElements.
+ *
+ *                                                  JRM -- 8/26/08
  * 
  * 
  * @author mainzer

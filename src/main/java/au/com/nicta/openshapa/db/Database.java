@@ -8,20 +8,21 @@
 package au.com.nicta.openshapa.db;
 
 /**
- * Abstract database class.
+ * Abstract database class
  * @author FGA
  */
-public abstract class Database {
-
+public abstract class Database
+{
+    
     /*************************************************************************/
     /*************************** Constants: **********************************/
     /*************************************************************************/
-
-    /** Constant type for Data Column Creation. */
-    public static final int COLUMN_TYPE_DATA = 1;
-
-    /** Constant type for Reference Column Creation. */
-    public static final int COLUMN_TYPE_REFERENCE = 2;
+    
+    /** Constant type for Data Column Creation */
+    public final static int COLUMN_TYPE_DATA = 1;
+      
+    /** Constant type for Reference Column Creation */
+    public final static int COLUMN_TYPE_REFERENCE = 2;
 
     /** Default Ticks per second from MacSHAPA */
     public final static int DEFAULT_TPS = 60;
@@ -2550,6 +2551,28 @@ public abstract class Database {
     
     
     /*************************************************************************/
+    /*********************** Supported Features: *****************************/
+    /*************************************************************************/
+    /*                                                                       */
+    /* The supported features methods are used to indicate which database    */
+    /* features are supported by each subclass of Database.  Subclasses      */
+    /* must override these methods as required.                              */
+    /*                                                                       */
+    /* Expect this set of methods to expand as the set of subclasses of      */
+    /* Database expands.                                                     */
+    /*                                                                       */
+    /*************************************************************************/
+    
+    public boolean floatSubrangeSupported()         { return true; }
+    public boolean integerSubrangeSupported()       { return true; }
+    public boolean nominalSubrangeSupported()       { return true; }
+    public boolean predSubrangeSupported()          { return true; }
+    public boolean readOnly()                       { return false; }
+    public boolean tickSizeAgjustmentSupported()    { return true; }
+    public boolean typedFormalArgsSupported()       { return true; }
+    
+    
+    /*************************************************************************/
     /********************** Vocab List Management ****************************/
     /*************************************************************************/
     /*                                                                       */
@@ -3831,6 +3854,7 @@ public abstract class Database {
         return true;
         
     } /* Database::IsValidPredName() */
+ 
     
     /**
      * IsValidSVarName()
@@ -4160,16 +4184,7 @@ public abstract class Database {
      *
      *    - None.
      */
-
-    /**
-     *
-     *
-     *
-     * @param outStream
-     * @param verbose
-     * @return
-     * @throws openshapa.db.SystemErrorException
-     */
+    
     public static boolean TestClassDatabase(java.io.PrintStream outStream,
                                             boolean verbose)
         throws SystemErrorException
@@ -4394,6 +4409,11 @@ public abstract class Database {
             failures++;
         }
         
+        if ( ! ColPredFormalArg.TestClassColPredFormalArg(outStream, verbose) )
+        {
+            failures++;
+        }
+        
         if ( ! PredicateVocabElement.TestClassPredicateVocabElement(outStream, 
                                                                     verbose) )
         {
@@ -4416,12 +4436,22 @@ public abstract class Database {
             failures++;
         }
         
+        if ( ! ColPred.TestClassColPred(outStream, verbose) )
+        {
+            failures++;
+        }
+        
         if ( ! Predicate.TestClassPredicate(outStream, verbose) )
         {
             failures++;
         }
         
         if ( ! Matrix.TestClassMatrix(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! ColPredDataValue.TestClassColPredDataValue(outStream, verbose) )
         {
             failures++;
         }
@@ -8015,7 +8045,7 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -8077,7 +8107,7 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -8136,14 +8166,14 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
                 if ( verbose )
                 {
-                    outStream.printf("Uexpected vl string(2): \"%s\"\n",
+                    outStream.printf("Uexpected vl string(3): \"%s\"\n",
                             db.vl.toString());
                 }
             }
@@ -8346,7 +8376,7 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -8666,7 +8696,7 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -8747,9 +8777,8 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), " +
-                    "mod_matrix(<bravo>, <delta>), " +
-                    "s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (mod_matrix(<bravo>, <delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -8801,9 +8830,8 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), " +
-                    "mod_matrix(<bravo>, <delta>), " +
-                    "s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (mod_matrix(<bravo>, <delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -10402,8 +10430,8 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -10464,8 +10492,8 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -10523,14 +10551,14 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
                 if ( verbose )
                 {
-                    outStream.printf("Uexpected vl string(2): \"%s\"\n",
+                    outStream.printf("Uexpected vl string(3): \"%s\"\n",
                             db.vl.toString());
                 }
             }
@@ -10732,7 +10760,7 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -11051,7 +11079,7 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (pred(<charlie>), matrix(<bravo>), " +
+                    "(vl_contents: (matrix(<bravo>), pred(<charlie>), " +
                     "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
@@ -11132,8 +11160,9 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (mod_pred(<charlie>, <delta>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), " +
+                    "mod_pred(<charlie>, <delta>), " +
+                    "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -11186,14 +11215,15 @@ public abstract class Database {
             }
 
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (mod_pred(<charlie>, <delta>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), " +
+                    "mod_pred(<charlie>, <delta>), " +
+                    "s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
                 if ( verbose )
                 {
-                    outStream.printf("Uexpected vl string(2): \"%s\"\n",
+                    outStream.printf("Uexpected vl string(3): \"%s\"\n",
                             db.vl.toString());
                 }
             }
@@ -11917,8 +11947,8 @@ public abstract class Database {
                 }
             }            
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -11979,8 +12009,8 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
@@ -12038,14 +12068,14 @@ public abstract class Database {
                 }
             }
             else if ( db.vl.toString().compareTo("((VocabList) " +
-                    "(vl_contents: (s-pred(<delta>), pred(<charlie>), " +
-                    "matrix(<bravo>), s-matrix(<alpha>))))") != 0 )
+                    "(vl_contents: (matrix(<bravo>), s-pred(<delta>), " +
+                    "pred(<charlie>), s-matrix(<alpha>))))") != 0 )
             {
                 failures++;
                 
                 if ( verbose )
                 {
-                    outStream.printf("Uexpected vl string(2): \"%s\"\n",
+                    outStream.printf("Uexpected vl string(3): \"%s\"\n",
                             db.vl.toString());
                 }
             }
@@ -12547,7 +12577,7 @@ public abstract class Database {
             outStream.print("\n");
         }
 
-        // run tests here
+        failures += TestMVEModListeners__test_01(outStream, verbose);
         
         if ( failures > 0 )
         {
@@ -12578,13 +12608,1823 @@ public abstract class Database {
             outStream.print(failBanner);
         }
         
-        outStream.printf("          --- TEST NOT IMPLEMENTED ---\n");
-        
         return pass;
 
     } /* Database::TestMVEModListeners() */
+    
+    
+    /**
+     * TestPVEModListeners__test_01()
+     *
+     * Initial smoke check on the PVE mod listeners:
+     *
+     * Allocate a data base, and create several predicates and matrix data 
+     * columns.  Insert a selection of cells in the columns with various 
+     * predicate values.
+     *
+     * Add, & delete formal arguments in the matrix vocab elements associated
+     * with the matrix data columns.  Verify that the changes are reflected 
+     * correctly in the cells.  
+     * 
+     * Re-arrange formal arguemnst and verify that the changes are reflected 
+     * correctly in the cells.  
+     * 
+     * Combine the above and verify the expected results.
+     *
+     * Return the number of failures.
+     *
+     *                                              JRM -- 4/25/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
 
+    private static int TestMVEModListeners__test_01(
+            java.io.PrintStream outStream,
+            boolean verbose)
+        throws SystemErrorException
+    {
+        final String header = "test 01: ";
+        String systemErrorExceptionString = "";
+        String expectedString0 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+        String expectedString1 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "<arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+        String expectedString2 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " + 
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(<arg-1>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(<arg-1>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(<arg-1>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(<arg-1>, " +
+                      "pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "<arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>))))))))))";
+        String expectedString3 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg0.5>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(<arg-1>, " +
+                      "<arg0.5>, " +
+                      "pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "<arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+        String expectedString4 =  
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg0.5>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(<arg-1>, " +
+                      "<arg0.5>, " +
+                      "pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "<arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(pve2(alpha, bravo, charlie), " +
+                      "0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "0.0, 0, , (), \"\", 00:00:00:000, <arg7>))))))))";
+        String expectedString5 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg0.5>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                     "(<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(<arg-1>, " +
+                      "<arg0.5>, " +
+                      "pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "<arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(pve1(alpha, bravo), " +
+                       "0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(pve2(alpha, bravo, charlie), " +
+                       "0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "0.0, 0, , (), \"\", 00:00:00:000, <arg7>))))))))";
+        String expectedString6 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg0.5>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, " +
+                     "(pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                     "(pve2(alpha, bravo, charlie), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                      "0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                     "(11, 10.0, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, " +
+                     "(TWENTY-ONE, 20.0, 20, TWENTY, " +
+                      "pve1(<arg0>, <arg1>), " +
+                      "\"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString7 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg0.5>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (11, 10.0, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (TWENTY-ONE, 20.0, 20, TWENTY, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString8 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg-1>, <arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (11, 10.0, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (TWENTY-ONE, 20.0, 20, TWENTY, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString9 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>, <arg1>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1), <arg1>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2), <arg1>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3), <arg1>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (11, 10.0, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (TWENTY-ONE, 20.0, 20, TWENTY, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString10 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), 0.0, 0, , (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (11, 10.0, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (TWENTY-ONE, 20.0, 20, TWENTY, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString11 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg>, <arg1>, <arg2>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), 0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), 0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), 0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), 0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (11, 10.0, 10, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (TWENTY-ONE, 20.0, 20, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString12 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg1>, <arg2>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.0, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (10.0, 10, pve0(<arg0>), \"ten\", 00:01:00:000, 11.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (20.0, 20, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString13 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg1>, <arg2>, <arg4>, <arg5>, <arg6>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.0, 0, (), \"\", 00:00:00:000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.0, 0, (), \"\", 00:00:00:000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.0, 0, (), \"\", 00:00:00:000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.0, 0, (), \"\", 00:00:00:000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (10.0, 10, pve0(<arg0>), \"ten\", 00:01:00:000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (20.0, 20, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000))))))))";
+        String expectedString14 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg4>, <arg1>, <arg2>, <arg5>, <arg6>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, ((), 0.0, 0, \"\", 00:00:00:000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, ((), 0.0, 0, \"\", 00:00:00:000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, ((), 0.0, 0, \"\", 00:00:00:000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, ((), 0.0, 0, \"\", 00:00:00:000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (pve0(<arg0>), 10.0, 10, \"ten\", 00:01:00:000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (pve1(<arg0>, <arg1>), 20.0, 20, \"twenty\", 00:02:00:000))))))))";
+        String expectedString15 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg6>, <arg5>, <arg2>, <arg4>, <arg1>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 2.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.0, 0, , (), \"\", 00:00:00:000, <arg>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.0, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.0)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.0, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (00:01:00:000, \"ten\", 10, pve0(<arg0>), 10.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (00:02:00:000, \"twenty\", 20, pve1(<arg0>, <arg1>), 20.0))))))))";
+        String expectedString16 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<arg>), " +
+                 "mdc3(<arg>), " +
+                 "mdc1(<arg6>, <arg5>, <arg2>, <arg4>, <arg1>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg1>, <arg2>, <new_arg>, <arg4>, <arg5>, <arg6>, <arg3>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (0.0, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (100.0, 100, , pve0(<arg0>), \"hundred\", 00:10:00:000, HUNDRED)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (200.0, 200, , pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, TWO-HUNDRED)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (00:00:00:000, \"\", 0, (), 0.0)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (00:01:00:000, \"ten\", 10, pve0(<arg0>), 10.0)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (00:02:00:000, \"twenty\", 20, pve1(<arg0>, <arg1>), 20.0))))))))";
+        String testStringA = null;
+        String testStringB = null;
+        String testStringC = null;
+        boolean completed;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long mdc0ID = DBIndex.INVALID_ID;
+        long mdc1ID = DBIndex.INVALID_ID;
+        long mdc2ID = DBIndex.INVALID_ID;
+        long mdc3ID = DBIndex.INVALID_ID;
+        long mdc0_mveID = DBIndex.INVALID_ID;
+        long mdc1_mveID = DBIndex.INVALID_ID;
+        long mdc2_mveID = DBIndex.INVALID_ID;
+        long mdc3_mveID = DBIndex.INVALID_ID;
+        long pve0ID = DBIndex.INVALID_ID;
+        long pve1ID = DBIndex.INVALID_ID;
+        long pve2ID = DBIndex.INVALID_ID;
+        Database db = null;
+        DataColumn mdc0 = null;
+        DataColumn mdc1 = null;
+        DataColumn mdc2 = null;
+        DataColumn mdc3 = null;
+        MatrixVocabElement mve0 = null;
+        MatrixVocabElement mve1 = null;
+        MatrixVocabElement mve2 = null;
+        MatrixVocabElement mve3 = null;
+        PredicateVocabElement pve0 = null;
+        PredicateVocabElement pve1 = null;
+        PredicateVocabElement pve2 = null;
+        FormalArgument farg = null;
+        DataCell m_cell0 = null;
+        DataCell p_cell0 = null;
 
+        /* setup test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                // allocate a new database
+                
+                db = new ODBCDatabase();
+                
+                
+                // create a selection of predicates
+                
+                pve0 = new PredicateVocabElement(db, "pve0");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve0.appendFormalArg(farg);
+                pve0ID = db.addPredVE(pve0);
+                pve0 = db.getPredVE(pve0ID);
+                
+                pve1 = new PredicateVocabElement(db, "pve1");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve1.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve1.appendFormalArg(farg);
+                pve1ID = db.addPredVE(pve1);
+                pve1 = db.getPredVE(pve1ID);
+                
+                pve2 = new PredicateVocabElement(db, "pve2");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg2>");
+                pve2.appendFormalArg(farg);
+                pve2ID = db.addPredVE(pve2);
+                pve2 = db.getPredVE(pve2ID);
+                
+                
+                // create Data columns
+                
+                mdc0 = new DataColumn(db, "mdc0", 
+                                     MatrixVocabElement.matrixType.MATRIX);
+                mdc0ID = db.addColumn(mdc0);
+                mdc0 = db.getDataColumn(mdc0ID);
+                mdc0_mveID = mdc0.getItsMveID();
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                mdc1 = new DataColumn(db, "mdc1", 
+                                     MatrixVocabElement.matrixType.MATRIX);
+                mdc1ID = db.addColumn(mdc1);
+                mdc1 = db.getDataColumn(mdc1ID);
+                mdc1_mveID = mdc1.getItsMveID();
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                
+                mdc2 = new DataColumn(db, "mdc2", 
+                                     MatrixVocabElement.matrixType.MATRIX);
+                mdc2ID = db.addColumn(mdc2);
+                mdc2 = db.getDataColumn(mdc2ID);
+                mdc2_mveID = mdc2.getItsMveID();
+                mve2 = db.getMatrixVE(mdc2_mveID);
+                
+                mdc3 = new DataColumn(db, "mdc3", 
+                                     MatrixVocabElement.matrixType.MATRIX);
+                mdc3ID = db.addColumn(mdc3);
+                mdc3 = db.getDataColumn(mdc3ID);
+                mdc3_mveID = mdc3.getItsMveID();
+                mve3 = db.getMatrixVE(mdc3_mveID);
+                                
+                
+                // create a selection of cells
+                
+                // cells for mdc0
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc0ID, 
+                        mdc0_mveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mdc0_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 1))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc0ID, 
+                        mdc0_mveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mdc0_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc0ID, 
+                        mdc0_mveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mdc0_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2),
+                                    IntDataValue.Construct(db, 3))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc0ID, 
+                        mdc0_mveID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mdc0_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+                
+                
+                // cells for mdc1
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    NominalDataValue.Construct(db, "alpha"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"),
+                                    NominalDataValue.Construct(db, "charlie"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+                
+                
+                // cells for mdc2
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            IntDataValue.Construct(db, 1))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            FloatDataValue.Construct(db, 2.0))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            NominalDataValue.Construct(db, "THREE"))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 4))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            QuoteStringDataValue.Construct(db, "five"))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        300,
+                        360,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            TimeStampDataValue.Construct(db, 3600))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            UndefinedDataValue.Construct(db))));
+                
+                
+                // cells for mdc3 -- none or now
+                
+                
+                // create the test string
+                testStringA = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( expectedString0.compareTo(testStringA) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test setup failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( db == null )
+                    {
+                        outStream.printf(
+                                "%s new ODBCDatabase() returned null.\n",
+                                header);
+                    }
+                    
+                    if ( expectedString0.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString0.\n" +
+                             "testString = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test setup: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* try adding some arguments -- all untyped for now */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                mve0.appendFormalArg(new UnTypedFormalArg(db, "<arg1>"));
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                // create the test string
+                testStringA = db.toString();
+
+                mve0.insertFormalArg(new UnTypedFormalArg(db, "<arg-1>"), 0);
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                // create the test string
+                testStringB = db.toString();
+                
+                mve0.insertFormalArg(new UnTypedFormalArg(db, "<arg0.5>"), 1);
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                testStringC = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString1.compareTo(testStringA) != 0 ) ||
+                 ( expectedString2.compareTo(testStringB) != 0 ) ||
+                 ( expectedString3.compareTo(testStringC) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 1 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString1.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString1.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString2.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString2.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( expectedString3.compareTo(testStringC) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringC doesn't match expectedString3.\n" +
+                             "testStringC = \"%s\".\n", header, testStringC);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 1: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* add some more arguments -- this time typed. */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                mve1.appendFormalArg(new FloatFormalArg(db, "<arg1>"));
+                mve1.appendFormalArg(new IntFormalArg(db, "<arg2>"));
+                mve1.appendFormalArg(new NominalFormalArg(db, "<arg3>"));
+                mve1.appendFormalArg(new PredFormalArg(db, "<arg4>"));
+                mve1.appendFormalArg(new QuoteStringFormalArg(db, "<arg5>"));
+                mve1.appendFormalArg(new TimeStampFormalArg(db, "<arg6>"));
+                mve1.appendFormalArg(new UnTypedFormalArg(db, "<arg7>"));
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+
+                // create the test string
+                testStringA = db.toString();
+
+                
+                mve2.insertFormalArg(new UnTypedFormalArg(db, "<arg0>"), 0);
+                mve2.insertFormalArg(new FloatFormalArg(db, "<arg1>"), 1);
+                mve2.insertFormalArg(new IntFormalArg(db, "<arg2>"), 2);
+                mve2.insertFormalArg(new NominalFormalArg(db, "<arg3>"), 3);
+                mve2.insertFormalArg(new PredFormalArg(db, "<arg4>"), 4);
+                mve2.insertFormalArg(new QuoteStringFormalArg(db, "<arg5>"), 5);
+                mve2.insertFormalArg(new TimeStampFormalArg(db, "<arg6>"), 6);
+                
+                db.replaceMatrixVE(mve2);
+                mve2 = db.getMatrixVE(mdc2_mveID);
+                
+                // create the test string
+                testStringB = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString4.compareTo(testStringA) != 0 ) ||
+                 ( expectedString5.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 2 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString4.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString4.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString5.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString5.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 2: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+         
+        
+        /* In preparation for further tests, create some new cells and
+         * insert them in the data columns.
+         */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                /* add some cells to mdc1 */
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            IntDataValue.Construct(db, 11),
+                            FloatDataValue.Construct(db, 10.0),
+                            IntDataValue.Construct(db, 10),
+                            NominalDataValue.Construct(db, "TEN"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "ten"),
+                            TimeStampDataValue.Construct(db, 3600),
+                            FloatDataValue.Construct(db, 11.0))));
+                
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc1ID, 
+                        mdc1_mveID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mdc1_mveID,
+                            NominalDataValue.Construct(db, "TWENTY-ONE"),
+                            FloatDataValue.Construct(db, 20.0),
+                            IntDataValue.Construct(db, 20),
+                            NominalDataValue.Construct(db, "TWENTY"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    null,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "twenty"),
+                            TimeStampDataValue.Construct(db, 7200),
+                            QuoteStringDataValue.Construct(db, "twentry-one"))));
+                
+                // create the test string
+                testStringA = db.toString();
+                
+                
+                /* add some cells to mdc2 */
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            IntDataValue.Construct(db, 110),
+                            FloatDataValue.Construct(db, 100.0),
+                            IntDataValue.Construct(db, 100),
+                            NominalDataValue.Construct(db, "HUNDRED"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "hundred"),
+                            TimeStampDataValue.Construct(db, 36000),
+                            FloatDataValue.Construct(db, 110.0))));
+                
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdc2ID, 
+                        mdc2_mveID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mdc2_mveID,
+                            NominalDataValue.Construct(db, "TWO-HUNDRED-ONE"),
+                            FloatDataValue.Construct(db, 200.0),
+                            IntDataValue.Construct(db, 200),
+                            NominalDataValue.Construct(db, "TWO-HUNDRED"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    null,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "two-hundred"),
+                            TimeStampDataValue.Construct(db, 72000),
+                            QuoteStringDataValue.Construct(db, "two-hundred-one"))));
+                
+                // create the test string
+                testStringB = db.toString();
+
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString6.compareTo(testStringA) != 0 ) ||
+                 ( expectedString7.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 3 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString6.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString6.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString7.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString7.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 3: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* try deleting some arguments -- all untyped and all unset */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                mve0.deleteFormalArg(1);
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                // create the test string
+                testStringA = db.toString();
+                                
+                mve0.deleteFormalArg(0);
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                // create the test string
+                testStringB = db.toString();
+
+                mve0.deleteFormalArg(1);
+                db.replaceMatrixVE(mve0);
+                mve0 = db.getMatrixVE(mdc0_mveID);
+                
+                // create the test string
+                testStringC = db.toString();
+                                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString8.compareTo(testStringA) != 0 ) ||
+                 ( expectedString9.compareTo(testStringB) != 0 ) ||
+                 ( expectedString10.compareTo(testStringC) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 4 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString8.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString8.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString9.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString9.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( expectedString10.compareTo(testStringC) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringC doesn't match expectedString10.\n" +
+                             "testStringC = \"%s\".\n", header, testStringC);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 4: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* try deleting more arguments -- all typed and/or set */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                mve1.deleteFormalArg(3);
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                
+                // create the test string
+                testStringA = db.toString();
+                                
+                mve1.deleteFormalArg(0);
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                
+                // create the test string
+                testStringB = db.toString();
+
+                mve1.deleteFormalArg(5);
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                
+                // create the test string
+                testStringC = db.toString();
+                                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString11.compareTo(testStringA) != 0 ) ||
+                 ( expectedString12.compareTo(testStringB) != 0 ) ||
+                 ( expectedString13.compareTo(testStringC) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 5 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString11.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString11.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString12.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString12.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( expectedString13.compareTo(testStringC) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringC doesn't match expectedString13.\n" +
+                             "testStringC = \"%s\".\n", header, testStringC);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 5: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* try moving some arguments around */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                farg = mve1.getFormalArg(2);
+                mve1.deleteFormalArg(2);
+                mve1.insertFormalArg(farg, 0);
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                
+                // create the test string
+                testStringA = db.toString();
+                
+
+                farg = mve1.getFormalArg(4);
+                mve1.deleteFormalArg(4);
+                mve1.insertFormalArg(farg, 0);
+                farg = mve1.getFormalArg(4);
+                mve1.deleteFormalArg(4);
+                mve1.insertFormalArg(farg, 1);
+                farg = mve1.getFormalArg(4);
+                mve1.deleteFormalArg(4);
+                mve1.insertFormalArg(farg, 2);
+                db.replaceMatrixVE(mve1);
+                mve1 = db.getMatrixVE(mdc1_mveID);
+                                 
+                // create the test string
+                testStringB = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString14.compareTo(testStringA) != 0 ) ||
+                 ( expectedString15.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 6 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString14.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString14.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString15.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString15.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                     
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 6: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* finally, mix things up a bit and see if we get confused */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                /* move arg 3 to the end of the argument list */
+                farg = mve2.getFormalArg(3);
+                mve2.deleteFormalArg(3);
+                mve2.insertFormalArg(farg, 7);
+                
+                /* insert an argument into the list */
+                mve2.insertFormalArg(new NominalFormalArg(db, "<new_arg>"), 3);
+                
+                /* delete the old first & final arguments in the matrix */
+                mve2.deleteFormalArg(7);
+                mve2.deleteFormalArg(0);
+                
+                // apply the modified version to the db
+                db.replaceMatrixVE(mve2);
+                mve2 = db.getMatrixVE(mdc2_mveID);
+                 
+                // create the test string
+                testStringA = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString16.compareTo(testStringA) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 7 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString16.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString16.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                     
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 7: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        return failures;
+        
+    } /* Datavase::TestMVEModListeners__test_01() */
+    
+    
     /**
      * TestPVEDeletionListeners()
      *
@@ -12618,7 +14458,8 @@ public abstract class Database {
             outStream.print("\n");
         }
 
-        // run tests here
+
+        failures += TestPVEDeletionListeners__test_01(outStream, verbose);
         
         if ( failures > 0 )
         {
@@ -12649,11 +14490,1029 @@ public abstract class Database {
             outStream.print(failBanner);
         }
         
-        outStream.printf("          --- TEST NOT IMPLEMENTED ---\n");
-        
         return pass;
 
     } /* Database::TestPVEDeletionListeners() */
+    
+    
+    /**
+     * TestPVEDeletionListeners__test_01()
+     *
+     * Initial smoke check on the PVE deletion listeners:
+     *
+     * Allocate a data base, create a predicate column and a matrix column,
+     * several predicates, and a selection of cells in the column with various 
+     * predicate values.
+     *
+     * Delete several predicates to see if the deletions are reflected
+     * correctly in the cells.
+     *
+     * Return the number of failures.
+     *
+     *                                              JRM -- 4/18/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    private static int TestPVEDeletionListeners__test_01(
+            java.io.PrintStream outStream,
+            boolean verbose)
+        throws SystemErrorException
+    {
+        final String header = "test 01: ";
+        String systemErrorExceptionString = null;
+        String expectedString0 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc(<arg>), " +
+                 "pve3(<arg0>, <arg1>, <arg2>, <arg4>), " +
+                 "pdc(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve4(<arg0>, <arg1>, <arg2>, <arg4>, <arg5>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                     "(pve4(pve0(1.0), " +
+                           "pve1(2.0, 2), " +
+                           "pve2(3.0, 3, THREE), " +
+                           "pve3(4.0, 4, FOUR, \"quarte\"), " +
+                           "\"quint\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, " +
+                     "(pve0(pve0(pve1(pve0(<arg0>), " +
+                           "pve1(pve0(<arg0>), <arg1>)))))), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                     "(pve2(pve0(pve1(pve0(<arg0>), " +
+                                "pve1(pve0(<arg0>), " +
+                                "<arg1>))), " +
+                           "pve1(pve0(pve1(pve0(<arg0>), " +
+                                     "pve1(pve0(<arg0>), <arg1>))), " +
+                                "pve1(pve0(<arg0>), <arg1>)), " +
+                           "\"septime\"))))), " +
+                "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                     "(pve4(pve0(10.0), " +
+                           "pve1(20.0, 20), " +
+                           "pve2(30.0, 30, THIRTY), " +
+                           "pve3(40.0, 40, FOURTY, \"forty\"), " +
+                           "\"fifty\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, " +
+                     "(pve0(pve0(pve1(pve0(<arg0>), pve1(pve0(<arg0>), <arg1>)))))), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                     "(pve2(pve0(pve1(pve0(<arg0>), pve1(pve0(<arg0>), <arg1>))), " +
+                           "pve1(pve0(pve1(pve0(<arg0>), pve1(pve0(<arg0>), <arg1>))), " +
+                                "pve1(pve0(<arg0>), <arg1>)), " +
+                           "\"seventy\")))))))))";
+        String expectedString1 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc(<arg>), " +
+                 "pve3(<arg0>, <arg1>, <arg2>, <arg4>), " +
+                 "pdc(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve4(<arg0>, <arg1>, <arg2>, <arg4>, <arg5>), " +
+                 "pve1(<arg0>, <arg1>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(<arg0>, " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "pve1(2.0, 2), " +
+                          "pve2(3.0, 3, THREE), " +
+                          "pve3(4.0, 4, FOUR, \"quarte\"), " +
+                          "\"quint\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg>)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(pve2(<arg0>, " +
+                          "pve1(<arg0>, pve1(<arg0>, <arg1>)), " +
+                          "\"septime\"))))), " +
+                "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(<arg0>, " +
+                          "pve1(<arg0>, <arg1>), " +
+                          "pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "pve1(20.0, 20), " +
+                          "pve2(30.0, 30, THIRTY), " +
+                          "pve3(40.0, 40, FOURTY, \"forty\"), " +
+                          "\"fifty\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (())), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(pve2(<arg0>, " +
+                          "pve1(<arg0>, pve1(<arg0>, <arg1>)), " +
+                          "\"seventy\")))))))))";
+        String expectedString2 = 
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc(<arg>), " +
+                 "pve3(<arg0>, <arg1>, <arg2>, <arg4>), " +
+                 "pdc(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve4(<arg0>, <arg1>, <arg2>, <arg4>, <arg5>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(<arg0>, <arg1>, pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "<arg1>, " +
+                          "pve2(3.0, 3, THREE), " +
+                          "pve3(4.0, 4, FOUR, \"quarte\"), " +
+                          "\"quint\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg>)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(pve2(<arg0>, <arg1>, \"septime\"))))), " +
+                "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (())), " +
+                   "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(<arg0>, <arg1>, pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "<arg1>, " +
+                          "pve2(30.0, 30, THIRTY), " +
+                          "pve3(40.0, 40, FOURTY, \"forty\"), " +
+                          "\"fifty\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (())), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(pve2(<arg0>, <arg1>, \"seventy\")))))))))";
+        String expectedString3 = 
+          "(Undefined " +
+            "((VocabList) " +
+                "(vl_contents: " +
+                  "(mdc(<arg>), " +
+                   "pdc(<arg>), " +
+                   "pve2(<arg0>, <arg1>, <arg2>), " +
+                   "pve4(<arg0>, <arg1>, <arg2>, <arg4>, <arg5>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(<arg0>, <arg1>, pve2(<arg0>, <arg1>, <arg2>)))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "<arg1>, " +
+                          "pve2(3.0, 3, THREE), " +
+                          "<arg4>, " +
+                          "\"quint\"))), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg>)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(pve2(<arg0>, <arg1>, \"septime\"))))), " +
+                "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (())), " +
+                  "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(pve2(alpha, bravo, charlie))), " +
+                  "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(<arg0>, <arg1>, pve2(<arg0>, <arg1>, <arg2>)))), " +
+                  "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(pve4(<arg0>, " +
+                          "<arg1>, " +
+                          "pve2(30.0, 30, THIRTY), " +
+                          "<arg4>, " +
+                         "\"fifty\"))), " +
+                  "(6, 00:00:05:000, 00:00:06:000, (())), " +
+                  "(7, 00:00:06:000, 00:00:07:000, " +
+                   "(pve2(<arg0>, <arg1>, \"seventy\")))))))))";
+        String testStringA = null;
+        String testStringB = null;
+        String testStringC = null;
+        boolean completed;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long mdcID = DBIndex.INVALID_ID;
+        long mdc_mveID = DBIndex.INVALID_ID;
+        long pdcID = DBIndex.INVALID_ID;
+        long pdc_mveID = DBIndex.INVALID_ID;
+        long pve0ID = DBIndex.INVALID_ID;
+        long pve1ID = DBIndex.INVALID_ID;
+        long pve2ID = DBIndex.INVALID_ID;
+        long pve3ID = DBIndex.INVALID_ID;
+        long pve4ID = DBIndex.INVALID_ID;
+        Database db = null;
+        DataColumn mdc = null;
+        DataColumn pdc = null;
+        PredicateVocabElement pve0 = null;
+        PredicateVocabElement pve1 = null;
+        PredicateVocabElement pve2 = null;
+        PredicateVocabElement pve3 = null;
+        PredicateVocabElement pve4 = null;
+        FormalArgument farg = null;
+        DataCell m_cell0 = null;
+        DataCell p_cell0 = null;
+
+        /* setup test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                // allocate a new database
+                
+                db = new ODBCDatabase();
+                
+                
+                // create a selection of predicates
+                
+                pve0 = new PredicateVocabElement(db, "pve0");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve0.appendFormalArg(farg);
+                pve0ID = db.addPredVE(pve0);
+                pve0 = db.getPredVE(pve0ID);
+                
+                pve1 = new PredicateVocabElement(db, "pve1");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve1.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve1.appendFormalArg(farg);
+                pve1ID = db.addPredVE(pve1);
+                pve1 = db.getPredVE(pve1ID);
+                
+                pve2 = new PredicateVocabElement(db, "pve2");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg2>");
+                pve2.appendFormalArg(farg);
+                pve2ID = db.addPredVE(pve2);
+                pve2 = db.getPredVE(pve2ID);
+                
+                pve3 = new PredicateVocabElement(db, "pve3");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve3.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve3.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg2>");
+                pve3.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg4>");
+                pve3.appendFormalArg(farg);
+                pve3ID = db.addPredVE(pve3);
+                pve3 = db.getPredVE(pve3ID);
+                
+                pve4 = new PredicateVocabElement(db, "pve4");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve4.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve4.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg2>");
+                pve4.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg4>");
+                pve4.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg5>");
+                pve4.appendFormalArg(farg);
+                pve4ID = db.addPredVE(pve4);
+                pve4 = db.getPredVE(pve4ID);
+                
+                
+                // create a couple of Data columns
+                
+                mdc = new DataColumn(db, "mdc", 
+                                     MatrixVocabElement.matrixType.MATRIX);
+                mdcID = db.addColumn(mdc);
+                mdc = db.getDataColumn(mdcID);
+                mdc_mveID = mdc.getItsMveID();
+                
+                pdc = new DataColumn(db, "pdc", 
+                                     MatrixVocabElement.matrixType.PREDICATE);
+                pdcID = db.addColumn(pdc);
+                pdc = db.getDataColumn(pdcID);
+                pdc_mveID = pdc.getItsMveID();
+                
+                
+                // create a selection of cells
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 1))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2),
+                                    IntDataValue.Construct(db, 3))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve4ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            FloatDataValue.Construct(db, 1.0))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            FloatDataValue.Construct(db, 2.0),
+                                            IntDataValue.Construct(db, 2))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            FloatDataValue.Construct(db, 3.0),
+                                            IntDataValue.Construct(db, 3),
+                                            NominalDataValue.Construct(
+                                                db, 
+                                                "THREE"))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve3ID,
+                                            FloatDataValue.Construct(db, 4.0),
+                                            IntDataValue.Construct(db, 4),
+                                            NominalDataValue.Construct(
+                                                db, 
+                                                "FOUR"),
+                                            QuoteStringDataValue.Construct(
+                                                db, "quarte"))),
+                                    QuoteStringDataValue.Construct(
+                                        db, "quint"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        300,
+                        360,
+                        Matrix.Construct(
+                          db,
+                          mdc_mveID,
+                          PredDataValue.Construct(
+                            db,
+                            Predicate.Construct(
+                              db,
+                              pve0ID,
+                              PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                  db,
+                                  pve0ID,
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          null)),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))))))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        mdcID, 
+                        mdc_mveID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                          db,
+                          mdc_mveID,
+                          PredDataValue.Construct(
+                            db,
+                            Predicate.Construct(
+                              db,
+                              pve2ID,
+                              PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                  db,
+                                  pve0ID,
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          null)),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))))),
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                              db,
+                                              pve1ID,
+                                              PredDataValue.Construct(
+                                                db,
+                                                Predicate.Construct(
+                                                  db,
+                                                  pve0ID,
+                                                  null)),
+                                              PredDataValue.Construct(
+                                                db,
+                                                Predicate.Construct(
+                                                  db,
+                                                  pve1ID,
+                                                 PredDataValue.Construct(
+                                                    db,
+                                                    Predicate.Construct(
+                                                    db,
+                                                    pve0ID,
+                                                    null)),
+                                                  null)))))),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))),
+                                  QuoteStringDataValue.Construct(
+                                    db, "septime"))))));
+                
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            pdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    NominalDataValue.Construct(db, "alpha"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            pdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            pdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"),
+                                    NominalDataValue.Construct(db, "charlie"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            pdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            pdc_mveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve4ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            FloatDataValue.Construct(
+                                                db, 
+                                                10.0))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            FloatDataValue.Construct(db, 20.0),
+                                            IntDataValue.Construct(db, 20))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            FloatDataValue.Construct(db, 30.0),
+                                            IntDataValue.Construct(db, 30),
+                                            NominalDataValue.Construct(
+                                                db, 
+                                                "THIRTY"))),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve3ID,
+                                            FloatDataValue.Construct(db, 40.0),
+                                            IntDataValue.Construct(db, 40),
+                                            NominalDataValue.Construct(
+                                                db, 
+                                                "FOURTY"),
+                                            QuoteStringDataValue.Construct(
+                                                db, "forty"))),
+                                    QuoteStringDataValue.Construct(
+                                        db, "fifty"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        300,
+                        360,
+                        Matrix.Construct(
+                          db,
+                          pdc_mveID,
+                          PredDataValue.Construct(
+                            db,
+                            Predicate.Construct(
+                              db,
+                              pve0ID,
+                              PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                  db,
+                                  pve0ID,
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          null)),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))))))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db, 
+                        pdcID, 
+                        pdc_mveID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                          db,
+                          pdc_mveID,
+                          PredDataValue.Construct(
+                            db,
+                            Predicate.Construct(
+                              db,
+                              pve2ID,
+                              PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                  db,
+                                  pve0ID,
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          null)),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))))),
+                                  PredDataValue.Construct(
+                                    db,
+                                    Predicate.Construct(
+                                      db,
+                                      pve1ID,
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve0ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                              db,
+                                              pve1ID,
+                                              PredDataValue.Construct(
+                                                db,
+                                                Predicate.Construct(
+                                                  db,
+                                                  pve0ID,
+                                                  null)),
+                                              PredDataValue.Construct(
+                                                db,
+                                                Predicate.Construct(
+                                                  db,
+                                                  pve1ID,
+                                                 PredDataValue.Construct(
+                                                    db,
+                                                    Predicate.Construct(
+                                                    db,
+                                                    pve0ID,
+                                                    null)),
+                                                  null)))))),
+                                      PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                          db,
+                                          pve1ID,
+                                          PredDataValue.Construct(
+                                            db,
+                                            Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                          null)))),
+                                  QuoteStringDataValue.Construct(
+                                    db, "seventy"))))));
+                
+                // create the test string
+                testStringA = db.toString();
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( expectedString0.compareTo(testStringA) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test setup failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( db == null )
+                    {
+                        outStream.printf(
+                                "%s new ODBCDatabase() returned null.\n",
+                                header);
+                    }
+                    
+                    if ( expectedString0.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString0.\n" +
+                             "testString = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test setup: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+        
+        
+        /* Now delete some predicate vocab elements */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+            
+            try
+            {
+                db.removePredVE(pve0ID);
+                
+                // create the test string
+                testStringA = db.toString();
+                
+
+                db.removePredVE(pve1ID);;
+                
+                // create the test string
+                testStringB = db.toString();
+                
+
+                db.removePredVE(pve3ID);;
+                
+                // create the test string
+                testStringC = db.toString();
+                
+                
+                completed = true;
+            }
+        
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ! completed ) ||
+                 ( expectedString1.compareTo(testStringA) != 0 ) ||
+                 ( expectedString2.compareTo(testStringB) != 0 ) ||
+                 ( expectedString3.compareTo(testStringC) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 1 failed to complete.\n",
+                                         header);
+                    }
+                    
+                    if ( expectedString1.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString1.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+                    
+                    if ( expectedString2.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString2.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+                    
+                    if ( expectedString3.compareTo(testStringC) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringC doesn't match expectedString3.\n" +
+                             "testStringC = \"%s\".\n", header, testStringC);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 1: \"%s\".\n", 
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+                
+        return failures;
+        
+    } /* Datavase::TestPVEDeletionListeners__test_01() */
 
 
     /**
@@ -12769,83 +15628,77 @@ public abstract class Database {
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg1>, <arg2>), " +
                  "pve1(<arg0>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>)))) " +
-              "((ColumnList) " +
-                "(cl_contents: " +
-                  "((pdc, " +
-                    "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
-                     "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
-                     "(3, 00:00:02:000, 00:00:03:000, " +
-                       "(pve2(alpha, bravo, charlie))), " +
-                     "(4, 00:00:03:000, 00:00:04:000, " +
-                       "(pve2(pve0(<arg0>), " +
-                       "pve1(<arg0>, <arg1>), " +
-                       "pve2(<arg0>, <arg1>, <arg2>)))))), " +
-                  "(mdc, " +
-                     "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                      "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
-                      "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
-                      "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), " +
                         "pve1(<arg0>, <arg1>), " +
-                        "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+                        "pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                 "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>))))))))))";
         String expectedString1 =  
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg1>, <arg2>), " +
                  "pve1(<arg0>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>, <arg1>)))) " +
-              "((ColumnList) " +
-                "(cl_contents: " +
-                  "((pdc, " +
-                    "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha, <arg1>))), " +
-                     "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
-                     "(3, 00:00:02:000, 00:00:03:000, " +
-                       "(pve2(alpha, bravo, charlie))), " +
-                     "(4, 00:00:03:000, 00:00:04:000, " +
-                       "(pve2(pve0(<arg0>, <arg1>), " +
-                        "pve1(<arg0>, <arg1>), " +
-                        "pve2(<arg0>, <arg1>, <arg2>)))))), " +
-                  "(mdc, " +
-                    "((1, 00:00:00:000, 00:00:01:000, (pve0(1, <arg1>))), " +
-                     "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
-                     "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
-                     "(4, 00:00:03:000, 00:00:04:000, " +
-                       "(pve2(pve0(<arg0>, <arg1>), " +
-                        "pve1(<arg0>, <arg1>), " +
-                        "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>, <arg1>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                 "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>, <arg1>), " +
+                           "pve1(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg1>, <arg2>))))))))))";
         String expectedString2 =  
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg1>, <arg2>), " +
                  "pve1(<arg0>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg-1>, <arg0>, <arg1>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, " +
-                     "(pve0(<arg-1>, alpha, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, " +
-                     "(pve1(alpha, bravo))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, " +
-                     "(pve2(alpha, bravo, charlie))), " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, 1, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
                            "pve1(<arg0>, <arg1>), " +
                            "pve2(<arg0>, <arg1>, <arg2>)))))), " +
-                 "(mdc, " +
-                   "((1, 00:00:00:000, 00:00:01:000, " +
-                      "(pve0(<arg-1>, 1, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                 "(pdc, " +
+                   "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, alpha, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
                            "pve1(<arg0>, <arg1>), " +
@@ -12854,57 +15707,51 @@ public abstract class Database {
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
-                "(mdc(<arg>), pve2(<arg0>, <arg1>, <arg2>), " +
-                 "pve1(<arg0>, <arg0.5>, <arg1>), " +
+                "(mdc(<arg>), " +
                  "pdc(<arg>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg0.5>, <arg1>), " +
                  "pve0(<arg-1>, <arg0>, <arg1>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, " +
-                     "(pve0(<arg-1>, alpha, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, " +
-                     "(pve1(alpha, <arg0.5>, bravo))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, " +
-                     "(pve2(alpha, bravo, charlie))), " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, 1, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
                            "pve1(<arg0>, <arg0.5>, <arg1>), " +
                            "pve2(<arg0>, <arg1>, <arg2>)))))), " +
-                 "(mdc, " +
-                   "((1, 00:00:00:000, 00:00:01:000, " +
-                      "(pve0(<arg-1>, 1, <arg1>))), " +
-                    "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
-                    "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
-                    "(4, 00:00:03:000, 00:00:04:000, " +
-                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
-                            "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                            "pve2(<arg0>, <arg1>, <arg2>))))))))))";
+                 "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, alpha, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, <arg0.5>, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
+                          "pve1(<arg0>, <arg0.5>, <arg1>), " +
+                          "pve2(<arg0>, <arg1>, <arg2>))))))))))";
         String expectedString4 =  
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg2>), " +
                  "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg-1>, <arg0>, <arg1>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, " +
-                     "(pve0(<arg-1>, alpha, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, " +
-                     "(pve1(alpha, <arg0.5>, bravo))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie))), " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, 1, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
                            "pve2(<arg0>, <arg2>)))))), " +
-                "(mdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, " +
-                     "(pve0(<arg-1>, 1, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3))), " +
+                 "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(<arg-1>, alpha, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, <arg0.5>, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg-1>, <arg0>, <arg1>), " +
                            "pve2(<arg0>, <arg2>))))))))))";
@@ -12913,46 +15760,47 @@ public abstract class Database {
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg2>), " +
                  "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>, <arg1>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha, <arg1>))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, " +
-                     "(pve1(alpha, <arg0.5>, bravo))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie))), " +
-                   "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(pve0(<arg0>, <arg1>), pve2(<arg0>, <arg2>)))))), " +
-                "(mdc, " +
+                "((mdc, " +
                   "((1, 00:00:00:000, 00:00:01:000, (pve0(1, <arg1>))), " +
                    "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
                    "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(pve0(<arg0>, <arg1>), pve2(<arg0>, <arg2>))))))))))";
+                     "(pve2(pve0(<arg0>, <arg1>), " +
+                           "pve2(<arg0>, <arg2>)))))), " +
+                 "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha, <arg1>))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, <arg0.5>, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(pve0(<arg0>, <arg1>), pve2(<arg0>, <arg2>))))))))))";
         String expectedString6 =
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
-                  "pve2(<arg0>, <arg2>), " +
-                  "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                  "pdc(<arg>), pve0(<arg0>)))) " +
+                 "pdc(<arg>), " +
+                 "pve2(<arg0>, <arg2>), " +
+                 "pve1(<arg0>, <arg0.5>, <arg1>), " +
+                 "pve0(<arg0>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), pve2(<arg0>, <arg2>)))))), " +
+                 "(pdc, " +
                   "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
                    "(2, 00:00:01:000, 00:00:02:000, " +
                      "(pve1(alpha, <arg0.5>, bravo))), " +
                    "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie))), " +
-                   "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(pve0(<arg0>), pve2(<arg0>, <arg2>)))))), " +
-                "(mdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg0>), pve2(<arg0>, <arg2>))))))))))";
         String expectedString7 = 
@@ -12960,26 +15808,26 @@ public abstract class Database {
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg1>, <arg2>), " +
                  "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, <arg1>, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(pve0(<arg0>), " +
+                          "<arg1>, " +
+                          "pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(pdc, " +
                   "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
                    "(2, 00:00:01:000, 00:00:02:000, " +
                      "(pve1(alpha, <arg0.5>, bravo))), " +
                    "(3, 00:00:02:000, 00:00:03:000, " +
                      "(pve2(alpha, <arg1>, charlie))), " +
-                   "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(pve0(<arg0>), " +
-                           "<arg1>, " +
-                           "pve2(<arg0>, <arg1>, <arg2>)))))), " +
-                "(mdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, <arg1>, 3))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg0>), " +
                            "<arg1>, " +
@@ -12989,56 +15837,54 @@ public abstract class Database {
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg2>, <arg1>), " +
                  "pve1(<arg0>, <arg0.5>, <arg1>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>)))) " +
-             "((ColumnList) " +
-                 "(cl_contents: " +
-                   "((pdc, " +
-                     "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
-                      "(2, 00:00:01:000, 00:00:02:000, " +
-                        "(pve1(alpha, <arg0.5>, bravo))), " +
-                      "(3, 00:00:02:000, 00:00:03:000, " +
-                        "(pve2(alpha, charlie, <arg1>))), " +
-                      "(4, 00:00:03:000, 00:00:04:000, " +
-                        "(pve2(pve0(<arg0>), " +
-                              "pve2(<arg0>, <arg2>, <arg1>), " +
-                              "<arg1>))))), " +
-                   "(mdc, " +
-                     "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                      "(2, 00:00:01:000, 00:00:02:000, " +
-                        "(pve1(1, <arg0.5>, 2))), " +
-                      "(3, 00:00:02:000, 00:00:03:000, " +
-                        "(pve2(1, 3, <arg1>))), " +
-                      "(4, 00:00:03:000, 00:00:04:000, " +
-                        "(pve2(pve0(<arg0>), " +
-                              "pve2(<arg0>, <arg2>, <arg1>), " +
-                              "<arg1>)))))))))";
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                    "(2, 00:00:01:000, 00:00:02:000, (pve1(1, <arg0.5>, 2))), " +
+                    "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3, <arg1>))), " +
+                    "(4, 00:00:03:000, 00:00:04:000, " +
+                      "(pve2(pve0(<arg0>), " +
+                            "pve2(<arg0>, <arg2>, <arg1>), " +
+                            "<arg1>))))), " +
+                "(pdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, " +
+                     "(pve1(alpha, <arg0.5>, bravo))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, charlie, <arg1>))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve2(<arg0>, <arg2>, <arg1>), " +
+                           "<arg1>)))))))))";
         String expectedString9 = 
           "(Undefined " +
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg0>, <arg2>, <arg1>), " +
                  "pve1(<arg0.5>, <arg1>, <arg0>), " +
-                 "pdc(<arg>), pve0(<arg0>)))) " +
+                 "pve0(<arg0>)))) " +
             "((ColumnList) " +
-              "(cl_contents: "+
-                "((pdc, " +
+              "(cl_contents: " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0.5>, 2, 1))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3, <arg1>))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(pve0(<arg0>), " +
+                           "pve2(<arg0>, <arg2>, <arg1>), " +
+                           "<arg1>))))), " +
+                "(pdc, " +
                   "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
                    "(2, 00:00:01:000, 00:00:02:000, " +
                      "(pve1(<arg0.5>, bravo, alpha))), " +
                    "(3, 00:00:02:000, 00:00:03:000, " +
                      "(pve2(alpha, charlie, <arg1>))), " +
-                   "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(pve0(<arg0>), " +
-                           "pve2(<arg0>, <arg2>, <arg1>), " +
-                           "<arg1>))))), " +
-                "(mdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0.5>, 2, 1))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 3, <arg1>))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(pve0(<arg0>), " +
                            "pve2(<arg0>, <arg2>, <arg1>), " +
@@ -13048,25 +15894,24 @@ public abstract class Database {
             "((VocabList) " +
               "(vl_contents: " +
                 "(mdc(<arg>), " +
+                 "pdc(<arg>), " +
                  "pve2(<arg3>, <arg1>, <arg0>), " +
                  "pve1(<arg0.5>, <arg1>, <arg0>), " +
-                 "pdc(<arg>), " +
                  "pve0(<arg0>)))) " +
             "((ColumnList) " +
               "(cl_contents: " +
-                "((pdc, " +
+                "((mdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0.5>, 2, 1))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(<arg3>, <arg1>, 1))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, " +
+                     "(pve2(<arg3>, <arg1>, pve0(<arg0>)))))), " +
+                "(pdc, " +
                   "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
                    "(2, 00:00:01:000, 00:00:02:000, " +
                      "(pve1(<arg0.5>, bravo, alpha))), " +
                    "(3, 00:00:02:000, 00:00:03:000, " +
                      "(pve2(<arg3>, <arg1>, alpha))), " +
-                   "(4, 00:00:03:000, 00:00:04:000, " +
-                     "(pve2(<arg3>, <arg1>, pve0(<arg0>)))))), " +
-                "(mdc, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0.5>, 2, 1))), " +
-                   "(3, 00:00:02:000, 00:00:03:000, " +
-                     "(pve2(<arg3>, <arg1>, 1))), " +
                    "(4, 00:00:03:000, 00:00:04:000, " +
                      "(pve2(<arg3>, <arg1>, pve0(<arg0>))))))))))";
         String testStringA = null;
@@ -13537,7 +16382,7 @@ public abstract class Database {
                     if ( expectedString6.compareTo(testStringC) != 0 )
                     {
                         outStream.printf(
-                             "%s testStringC doesn't match expectedString3.\n" +
+                             "%s testStringC doesn't match expectedString6.\n" +
                              "testStringC = \"%s\".\n", header, testStringC);
                     }
                     

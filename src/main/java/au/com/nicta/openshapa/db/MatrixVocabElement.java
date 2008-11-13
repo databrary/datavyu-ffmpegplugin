@@ -7,6 +7,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import java.util.Vector;
+
 
 /**
  * Class MatrixVocabElement
@@ -56,6 +58,21 @@ public class MatrixVocabElement extends VocabElement
      *
      * itsColID:   ID to the column variable with which this matrix
      *      vocab element is associated.
+     *
+     * cpfArgList:  Vector containing the formal argument list of the 
+     *      column predicate implied by the matrix vocab element and the
+     *      associated DataColumn.
+     * 
+     *      This argument list is simply a duplicate of the regular formal
+     *      argument list, with <ord>, <onset>, and <offset> prepended.  At 
+     *      present, these arguments are instances  IntFormalArg, 
+     *      TimeStampFormalArg, and TimeStampFormalArg respectively -- but
+     *      we may wish to change this in the future.
+     * 
+     *      While the column predicate formal argument list must be visible 
+     *      to the outside world, there are no facilites for editing it -- 
+     *      instead all edits to the regular formal argument list are mirrored
+     *      in the column pred formal argument list.
      */
     
     /** type of the matrix vocab element and its associate column */
@@ -63,7 +80,11 @@ public class MatrixVocabElement extends VocabElement
     
     /** DataColumn which this matrix vocab element describes. */
     long itsColID = DBIndex.INVALID_ID;
-    
+     
+    /** column predicate formal argument list */
+    protected Vector<FormalArgument> cpfArgList = 
+            new Vector<FormalArgument>();
+   
     
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -92,6 +113,8 @@ public class MatrixVocabElement extends VocabElement
         
         super(db);
         
+        this.constructInitCPfArgList();
+        
     } /* MatrixVocabElement::MatrixVocabElement(db) */
     
     
@@ -111,6 +134,8 @@ public class MatrixVocabElement extends VocabElement
         }
                       
         this.name = (new String(name));
+        
+        this.constructInitCPfArgList();
         
     } /* MatrixVocabElement::MatrixVocabElement(db, name) */
     
@@ -142,6 +167,8 @@ public class MatrixVocabElement extends VocabElement
         this.type = ve.type;
 
         this.itsColID = ve.itsColID;
+        
+        this.cpfArgList = ve.copyCPFormalArgList();
         
     } /* MatrixVocabElement::MatrixVocabElement(ve) */
      
@@ -428,8 +455,12 @@ public class MatrixVocabElement extends VocabElement
      * 
      * Changes:
      * 
-     *    - None.
+     *    - Modified function to append a copy of the newArg to the 
+     *      column predicate formal argument list.
+     *
+     *                                          JRM -- 8/09/08
      */
+    
     public void appendFormalArg(FormalArgument newArg)
         throws SystemErrorException
     {
@@ -456,6 +487,10 @@ public class MatrixVocabElement extends VocabElement
         {
             throw new SystemErrorException(mName + "too many arguments.");
         }
+        else if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + "newArg is null on entry");
+        }
         
         switch ( this.type )
         {
@@ -468,6 +503,13 @@ public class MatrixVocabElement extends VocabElement
                 
             case INTEGER:
                 if ( ! ( newArg instanceof IntFormalArg ) )
+                {
+                    typeMisMatch = true;
+                }
+                break;
+                
+            case MATRIX:
+                if ( newArg instanceof TextStringFormalArg )
                 {
                     typeMisMatch = true;
                 }
@@ -501,7 +543,14 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName + "type miss match.");
         }
         
+        if ( ! cpfArgNameIsUnique(newArg.getFargName()) )
+        {
+            throw new SystemErrorException(mName + "newArg name not unique.");
+        }
+        
         super.appendFormalArg(newArg);
+
+        this.appendCPFormalArg(FormalArgument.CopyFormalArg(newArg, true, true));
         
         return;
         
@@ -518,25 +567,29 @@ public class MatrixVocabElement extends VocabElement
      * 
      * Changes:
      * 
-     *    - None.
+     *    - Updated to support maintenance of the column predicate 
+     *      formal argument list.
+     *                                          JRM -- 8/9/08
      */  
     
     public void deleteFormalArg(int n)
         throws SystemErrorException
     {
         final String mName = "MatrixVocabElement::deleteFormalArg(): ";
+        FormalArgument fa = null;
+        FormalArgument cpfa = null;
 
-        if ( system )
+        if ( this.system )
         {
             throw new SystemErrorException(mName +
                     "can't modify system formal argument.");
         }
-        else if ( type == matrixType.UNDEFINED )
+        else if ( this.type == matrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "must set type before deleting arguments.");
         }
-        else if ( fArgList == null )
+        else if ( this.fArgList == null )
         {
             /* fArgList hasn't been instantiated yet -- scream and die */
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
@@ -546,8 +599,38 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName + 
                "can't delete formal args from non matrix type vocab elements.");
         }
+        else if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n >= fArgList.size() )
+        {
+            throw new SystemErrorException(mName + "no nth formal argument");
+        }
+        else if ( (fArgList.size() + 3) != cpfArgList.size() )
+        {
+            throw new SystemErrorException(mName + 
+                    "unexpected cpfArgList.size()");
+        }
+        
+        fa = this.getFormalArg(n);
+        cpfa = this.getCPFormalArg(n + 3);
+        
+        if ( ! FormalArgument.FormalArgsAreEquivalent(fa, cpfa) )
+        {
+            System.out.printf("  fa = %s\n", fa.toDBString());
+            System.out.printf("cpfa = %s\n", cpfa.toDBString());
+            System.out.printf("  fArgList = %s\n", this.fArgListToDBString());
+            System.out.printf("cpfArgList = %s\n", this.cpfArgListToDBString());
+            
+            throw new SystemErrorException(mName + 
+                    "target fArg & cpfArg aren't equivalent.");
+        }
         
         super.deleteFormalArg(n);
+        
+        this.deleteCPFormalArg(n + 3);
         
         return;
         
@@ -620,18 +703,20 @@ public class MatrixVocabElement extends VocabElement
         
     } /* MatrixVocabElement::getNumFormalArgs() */
 
+    
     /**
      * insertFormalArg()
      * 
      * 
-     * Make VocabElement::insertFormalArgs() public with some additional
+     * Make VocabElement::insertFormalArg() public with some additional
      * error checking.
      * 
      *                                          JRM -- 3/04/07
      * 
      * Changes:
      * 
-     *    - None.
+     *    - Updated function to insert a copy of the supplied formal argument
+     *      in the column predicate formal argument list.
      */
     
     public void insertFormalArg(FormalArgument newArg, 
@@ -664,7 +749,17 @@ public class MatrixVocabElement extends VocabElement
         else if ( ( type != matrixType.MATRIX ) && 
                   ( n != 0 ) )
         {
-            throw new SystemErrorException(mName + "insertion point must be 0.");
+            throw new SystemErrorException(mName + 
+                    "insertion point must be 0.");
+        }
+        else if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + "newArg null on entry.");
+        }
+        else if ( ! this.cpfArgNameIsUnique(newArg.getFargName()) )
+        {
+            throw new SystemErrorException(mName + 
+                    "newArg.getFargName() isn't unique.");
         }
         
         switch ( type )
@@ -719,6 +814,9 @@ public class MatrixVocabElement extends VocabElement
         }
         
         super.insertFormalArg(newArg, n);
+        
+        this.insertCPFormalArg(FormalArgument.CopyFormalArg(newArg, true, true), 
+                                                            n + 3);
                 
         return;        
         
@@ -927,10 +1025,60 @@ public class MatrixVocabElement extends VocabElement
     } /* MatrixVocabElement::isWellFormed() */
     
     
+     /**
+      * propagateID() -- Override
+      *
+      * Propagate the id assigned to the MatrixVocabElement to all current 
+      * formal arguments, if any.  This method should be called after the 
+      * MatrixVocabElement is assigned an ID and inserted into the vocab list.
+      *
+      *                                         JRM -- 8/31/07
+      *
+      * Changes:
+      *
+      *   - None.
+      */
+
+    public void propagateID()
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::propagateID(): ";
+        int i;
+        int numCPFArgs;
+        FormalArgument fArg;
+
+        super.propagateID();
+        
+        if ( cpfArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
+        }
+        
+        numCPFArgs = cpfArgList.size();
+        
+        if ( numCPFArgs > 0 )
+        {
+            i = 0;
+            
+            while ( i <= (numCPFArgs - 1) )
+            {
+                fArg = getCPFormalArg(i);
+                fArg.setItsVocabElementID(this.id);
+                i++;
+            }
+        }
+         
+        return;
+         
+    } /* MatrixVocabElement::propagateID() */
+    
+    
     /**
      * replaceFormalArg()
      * 
-     * Make VocabElement::replaceFormalArg() public.
+     * Rewrite of the inherited method to deal with the peculiarities of 
+     * matrix vocab elements.
      * 
      *                                          JRM -- 3/04/07
      * 
@@ -943,7 +1091,136 @@ public class MatrixVocabElement extends VocabElement
                                  int n)
         throws SystemErrorException
     {
-        super.replaceFormalArg(newArg, n);
+        final String mName = "MatrixVocabElement::replaceFormalArg()";
+        boolean unique = true;
+        FormalArgument oldArg;
+        FormalArgument newCPArg;
+        FormalArgument oldCPArg;
+        
+        if ( fArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
+        }
+        
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        
+        if ( this.system )
+        {
+            /* this is a system vocab element, and thus is read only. */
+            throw new SystemErrorException(mName + 
+                    "attempt to modify a system matrix vocab element.");
+        }
+        
+        if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + "newArg null on entry.");
+        }
+        
+        if ( n < 0 )
+        {
+            throw new SystemErrorException(mName + "negative index supplied.");
+        }
+        
+        if ( n >= this.fArgList.size() )
+        {
+            throw new SystemErrorException(mName + "no n-th formal argument.");
+        }
+        
+        assert( (this.fArgList.size() + 3) == this.cpfArgList.size() );
+        
+        oldArg = this.getFormalArg(n);
+        
+        if ( ( this.type != matrixType.MATRIX ) &&
+             ( newArg.getFargType() != oldArg.getFargType() ) )
+        {
+            throw new SystemErrorException(mName + "In non matrix MVEs, " +
+                    "formal arguments may only be replaced with formal " +
+                    "arguments of the same type.");
+        }
+        
+        if ( ( this.type == matrixType.MATRIX ) &&
+             ( newArg instanceof TextStringFormalArg ) )
+        {
+            throw new SystemErrorException(mName + "Text formal arguments, " +
+                    "may not appear in MATRIX mve's.");
+        }
+
+        for ( FormalArgument t : this.fArgList )
+        {
+            if ( ( oldArg != t ) &&
+                 ( newArg.getFargName().compareTo(t.getFargName()) == 0 ) )
+            {
+                unique = false;
+            }
+        }
+        
+        if ( ! unique )
+        {
+            throw new SystemErrorException(mName + 
+                    "new arg name not unique in fArgList");
+        }
+
+        oldCPArg = this.getCPFormalArg(n + 3);
+       
+        if ( ( oldArg.getID() == newArg.getID() ) &&
+             ( oldArg.getID() != DBIndex.INVALID_ID ) )
+        {
+            if ( oldArg.getFargType() != newArg.getFargType() )
+            {
+                throw new SystemErrorException(mName + "Attempt to replace " +
+                        "old fArg with new fArg with the same ID but of " +
+                        "different type.");
+            }
+
+            newCPArg = FormalArgument.CopyFormalArg(newArg, true, true);
+            
+            assert( oldCPArg.getFargType() == newCPArg.getFargType() );
+            
+            if ( oldCPArg.getID() != DBIndex.INVALID_ID )
+            {
+                newCPArg.setID(oldCPArg.getID());
+            }
+        }
+        else
+        {
+            newCPArg = FormalArgument.CopyFormalArg(newArg, true, true);
+        }
+
+        for ( FormalArgument t : this.cpfArgList )
+        {
+            if ( ( oldCPArg != t ) &&
+                 ( newArg.getFargName().compareTo(t.getFargName()) == 0 ) )
+            {
+                unique = false;
+            }
+        }
+        
+        if ( ! unique )
+        {
+            throw new SystemErrorException(mName + 
+                    "new arg name not unique in cpfArgList");
+        }
+        
+        newArg.setItsVocabElement(this);
+        newArg.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
+        
+        newCPArg.setItsVocabElement(this);
+        newCPArg.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
+        
+        if ( this.fArgList.set(n, newArg) != oldArg )
+        {
+            throw new SystemErrorException(mName + "arg replace failed.");
+        }
+        
+        if ( this.cpfArgList.set(n + 3, newCPArg) != oldCPArg )
+        {
+            throw new SystemErrorException(mName + "cp arg replace failed.");
+        }
         
         return;
         
@@ -953,7 +1230,609 @@ public class MatrixVocabElement extends VocabElement
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
+    
+    /** 
+     * appendCPFormalArg()
+     *
+     * Append the supplied formal argument to the end of the column predicate
+     * formal argument list.
+     *
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+    
+    private void appendCPFormalArg(FormalArgument newArg)
+        throws SystemErrorException
+    {
+        final String mName = "VocabElement::appendCPFormalArg(): ";
 
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        
+        if ( this.system )
+        {
+            /* this is a system vocab element, and thus is read only. */
+            throw new SystemErrorException(mName + 
+                    "attempt to modify a system vocab element.");
+        }
+        
+        if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + 
+                    "Attempt to insert null formal argument");
+        }
+        else if ( ! ( newArg instanceof FormalArgument ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "newArg not a formal argument");
+        }
+        else if ( ! cpfArgNameIsUnique(newArg.getFargName()) )
+        {
+            throw new SystemErrorException(mName + "newArg name not unique.");
+        }
+        
+        cpfArgList.add(newArg);
+        
+        newArg.setItsVocabElement(this);
+        newArg.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
+        
+        return;
+        
+    } /* VocabElement::appendCPFormalArg() */
+    
+    
+    /**
+     * constructInitCPfArgList()
+     * 
+     * Construct the formal argument list for the column predicate implied
+     * by the MatrixVocabElement.  This method is called at construction time
+     * only, and should not be called otherwise.
+     * 
+     * Note that the method presumes that this.db has been initialized prior
+     * to the method's invocation.
+     * 
+     *                                          JRM -- 8/9/08
+     * 
+     * Changes:
+     * 
+     *    - None.
+     */
+    
+    private void constructInitCPfArgList()
+        throws SystemErrorException
+    {
+        final String mName = 
+                "MatrixVocabElement::constructInitCPfArgList(): ";
+        FormalArgument fa = null;
+        
+        if ( this.db == null )
+        {
+            throw new SystemErrorException(mName + "this.db null on entry.");
+        }
+        
+        if ( this.cpfArgList == null )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.colPredFormalArgList == null?!?");
+        }
+        
+        if ( this.cpfArgList.size() != 0 )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.colPredFormalArgList.size() != 0?!?");
+        }
+        
+        fa = new IntFormalArg(this.db, "<ord>");
+        fa.setItsVocabElement(this);
+        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+        this.cpfArgList.add(fa);
+        
+        fa = new TimeStampFormalArg(this.db, "<onset>");
+        fa.setItsVocabElement(this);
+        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+        this.cpfArgList.add(fa);
+        
+        fa = new TimeStampFormalArg(this.db, "<offset>");
+        fa.setItsVocabElement(this);
+        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+        this.cpfArgList.add(fa);
+        
+        if ( this.cpfArgList.size() != 3 )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.colPredFormalArgList.size() != 3");
+        }
+        
+        return;
+        
+    } /* "MatrixVocabElement::constructInitCPfArgList() */
+    
+
+    /**
+     * cpfArgListIsValid()
+     *
+     * Verify that the column predicate formal argument list is valid.  Return
+     * true if it is, and false otherwise.
+     *
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+
+    private boolean cpfArgListIsValid()
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::cpfArgListIsValid()";
+        boolean valid = true;
+        int i;
+        FormalArgument cpfa = null;
+        FormalArgument fa = null;
+        
+        if ( ( this.cpfArgList.size() < 4 ) ||
+             ( this.cpfArgList.size() != ( this.fArgList.size() + 3 ) ) )
+        {
+            return false;
+        }
+
+        cpfa = cpfArgList.get(0);
+        if ( ( cpfa == null ) ||
+             ( ! ( cpfa instanceof IntFormalArg ) ) ||
+             ( cpfa.getFargName().compareTo("<ord>") != 0 ) )
+        {
+            return false;
+        }
+
+        cpfa = cpfArgList.get(1);
+        if ( ( cpfa == null ) ||
+             ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
+             ( cpfa.getFargName().compareTo("<onset>") != 0 ) )
+        {
+            return false;
+        }
+
+        cpfa = cpfArgList.get(2);
+        if ( ( cpfa == null ) ||
+             ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
+             ( cpfa.getFargName().compareTo("<offset>") != 0 ) )
+        {
+            return false;
+        }
+        
+        i = 3;
+        
+        while ( i < cpfArgList.size() )
+        {
+            fa = fArgList.get(i - 3);
+            cpfa = cpfArgList.get(i);
+            
+            if ( ( fa == null ) || ( cpfa == null ) )
+            {
+                return false;
+            }
+            else if ( ! FormalArgument.FormalArgsAreEquivalent(fa, cpfa) )
+            {
+                return false;
+            }
+            
+            i++;
+        }
+        
+        return true;
+        
+    } /* MatrixVocabElement::cpfArgListIsValid() */
+    
+    
+    /**
+     * cpfArgListToDBString()
+     *
+     * Construct a string containing the names of the formal arguments in 
+     * the column predicate implied by this MatrixVocabElement in a
+     * format that displays the full status of the formal arguments and 
+     * facilitates debugging.  
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    private String cpfArgListToDBString()
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::cpfArgListToDBString(): ";
+        int i = 0;
+        int numCPFArgs = 0;
+        String s = new String("(");
+
+        if ( cpfArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + 
+                    "cpfArgList unitialized?!?!");
+        }
+        
+        numCPFArgs = cpfArgList.size();
+        
+        if ( numCPFArgs < 3 )
+        {
+            throw new SystemErrorException(mName + "numCPFArgs < 3");
+        }
+        
+        if ( numCPFArgs > 0 )
+        {
+            while ( i < (numCPFArgs - 1) )
+            {
+                s += getCPFormalArg(i).toDBString() + ", ";
+                i++;
+            }
+            s += getCPFormalArg(i).toDBString();
+        }
+        
+        s += ")";
+        
+        return s;
+        
+    } /* MatrixVocabElement::cpfArgListToDBString() */
+        
+    
+    /**
+     * cpfArgListToString()
+     *
+     * Construct a string containing the names of the formal arguments of the
+     * column predicate implied by the MatrixVocabElement in the 
+     * format: (<ord>, <onset>, <offset>, <arg0>, <arg1>, ... <argn>). 
+     * 
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    
+    private String cpfArgListToString()
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::cpfArgListToString(): ";
+        int i = 0;
+        int numCPFArgs = 0;
+        String s = new String("(");
+
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+
+        numCPFArgs = cpfArgList.size();
+        
+        if ( numCPFArgs < 3 )
+        {
+            throw new SystemErrorException(mName + "numCPFArgs < 3");
+        }
+        
+        if ( numCPFArgs > 0 )
+        {
+            while ( i < (numCPFArgs - 1) )
+            {
+                s += getCPFormalArg(i).toString() + ", ";
+                i++;
+            }
+            s += getCPFormalArg(i).toString();
+        }
+        
+        s += ")";
+        
+        return s;
+        
+    } /* MatrixVocabElement::cpfArgListToString() */
+
+    
+    /**
+     * cpfArgNameIsUnique()
+     *
+     * Scan the column predicate formal argument list, and test to see if the 
+     * supplied formal argument list is unique.  Return true if it is, and 
+     * false otherwise.
+     *
+     *                                      JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    private boolean cpfArgNameIsUnique(String fArgName)
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::cpfArgNameIsUnique(): ";
+        boolean unique = true;
+        
+        if ( fArgName == null )
+        {
+            throw new SystemErrorException(mName + "fArgName null on entry.");
+        }
+        else if ( ! Database.IsValidFargName(fArgName) )
+        {
+            throw new SystemErrorException(mName + 
+                    "fArgName not a valid formal arg name.");
+        }
+        else if ( this.cpfArgList == null )
+        {
+            throw new SystemErrorException(mName + "this.cpfArgList null??");
+        }
+    
+        for ( FormalArgument t : this.cpfArgList )
+        {
+            if ( fArgName.compareTo(t.getFargName()) == 0 )
+            {
+                unique = false;
+            }
+        }
+        
+        return unique;
+        
+    } /* MatrixVocabElement::cpfArgNameIsUnique() */
+    
+    
+    /**
+     * copyCPFormalArg()
+     *
+     * Returns a copy of the n-th column predicate formal argument, or null 
+     * if there is no such argument.  
+     *                                          JRM -- 8/10/08
+     *
+     * Changes:
+     *
+     *   - None.
+     *
+     */
+    
+    protected FormalArgument copyCPFormalArg(int n)
+        throws SystemErrorException
+    {
+        final String mName = "VocabElement::copyCPFormalArg(): ";
+        FormalArgument fArg = null;
+        FormalArgument fArgCopy = null;
+
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        else if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n >= cpfArgList.size() )
+        {
+            /* n-th formal argument doesn't exist -- return null */
+            return null;
+        }
+
+        fArg = cpfArgList.get(n);
+        
+        fArgCopy = FormalArgument.CopyFormalArg(fArg, false, false);
+        
+        if ( fArgCopy == null )
+        {
+            throw new SystemErrorException(mName + "fArgcopy is null");
+        }
+
+        return fArgCopy;
+
+    } /* VocabElement::copyCPFormalArg() */
+    
+    
+    /**
+     * copyCPFormalArgList()
+     *
+     * Construct and return a vector containing a copy of the column predicate
+     * formal argument list.  
+     *                                          JRM -- 8/10/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected java.util.Vector<FormalArgument> copyCPFormalArgList()
+        throws SystemErrorException
+    {
+        final String mName = "VocabElement::copyCPFormalArgList()";
+        int i;
+        java.util.Vector<FormalArgument> copy = 
+                new java.util.Vector<FormalArgument>();
+        
+        if ( this.cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        
+        for ( i = 0; i < this.cpfArgList.size(); i++)
+        { 
+            copy.add(this.copyCPFormalArg(i));
+        }
+        
+        return copy;
+        
+    } /* VocabElement::copyCPFormalArgList() */
+    
+       
+    /**
+     * deleteCPFormalArg()
+     *
+     * Delete the n-th formal argument from the column predicate formal 
+     * argument list.  Throw a system error exception if there is no n-th 
+     * formal argument.
+     *
+     *                                          JRM -- 8/09/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */  
+    
+    private void deleteCPFormalArg(int n)
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::deleteCPFormalArg(): ";
+        FormalArgument deletedArg = null;
+
+        if ( cpfArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + 
+                    "cpfArgList unitialized?!?!");
+        }
+        else if ( this.system )
+        {
+            /* this is a system vocab element, and thus is read only. */
+            throw new SystemErrorException(mName + 
+                    "attempt to modify a system vocab element.");
+        }
+        else if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n >= cpfArgList.size() )
+        {
+            throw new SystemErrorException(mName + "no nth formal argument");
+        }
+        
+        deletedArg = cpfArgList.remove(n);
+        
+        if ( deletedArg == null )
+        {
+            throw new SystemErrorException(mName + "deleted arg is null");
+        }
+        
+        deletedArg.setItsVocabElement(null);
+        deletedArg.setItsVocabElementID(DBIndex.INVALID_ID);
+        
+        return;
+        
+    } /* MatrixVocabElement::deleteCPFormalArg() */
+    
+    
+    /**
+     * getCPFormalArg() 
+     *
+     * Returns a reference to the n-th formal argument in the column predicate 
+     * implied by the MatrixVoacabElement, or null if there is no such argument.
+     *
+     * N.B. The formal argument whose referene is returned is the formal 
+     *      argument that appears in the column predicate formal argument 
+     *      list.  Thus the caller must be careful not to alter it.
+     *
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     */
+
+    protected FormalArgument getCPFormalArg(int n)
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::getCPFormalArg(): ";
+        FormalArgument cpfArg = null;
+
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        else if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n >= cpfArgList.size() )
+        {
+            /* n-th formal argument doesn't exist -- return null */
+            return null;
+        }
+        
+        cpfArg = cpfArgList.get(n);
+        
+        if ( cpfArg == null )
+        {
+            throw new SystemErrorException(mName + "cpfArg is null?!?");
+        }
+        if ( ! ( ( cpfArg instanceof UnTypedFormalArg ) ||
+                 ( cpfArg instanceof ColPredFormalArg ) ||
+                 ( cpfArg instanceof IntFormalArg ) ||
+                 ( cpfArg instanceof FloatFormalArg ) ||
+                 ( cpfArg instanceof TimeStampFormalArg ) ||
+                 ( cpfArg instanceof QuoteStringFormalArg ) ||
+                 ( cpfArg instanceof TextStringFormalArg ) ||
+                 ( cpfArg instanceof NominalFormalArg ) ||
+                 ( cpfArg instanceof PredFormalArg ) ) )
+        {
+            throw new SystemErrorException(mName + "cpfArg of unknown type");
+        }
+        
+        return cpfArg;
+        
+    } /* MatrixVocabElement::getCPFormalArg() */
+    
+    
+    /**
+     * getNumCPFormalArgs()
+     *
+     * Return the number of formal arguments in the column predicate implied
+     * by the MatrixVocabElement.
+     *
+     *                                      JRM 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public int getNumCPFormalArgs()
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::getNumCPFormalArgs(): ";
+        int cpfArgListLen;
+        int fArgListLen;
+
+        if ( cpfArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + 
+                    "cpfArgList unitialized?!?!");
+        }
+        
+        cpfArgListLen = this.cpfArgList.size();
+        fArgListLen = this.fArgList.size();
+
+        if ( cpfArgListLen != ( fArgListLen + 3 ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "cpfArgListLen != ( fArgListLen + 3 )!?!");
+        }
+        
+        return cpfArgList.size(); 
+        
+    } /* MatrixVocabElement::getNumCPFormalArgs() */
+    
+        
     /**
      * getNumElements()
      *
@@ -970,6 +1849,190 @@ public class MatrixVocabElement extends VocabElement
         return (this.getNumFormalArgs());
     
     } /* MatrixFormalArgument::getNumElements() */
+    
+
+    /**
+     * insertCPFormalArg()
+     *
+     * Insert the supplied formal argument in the n-th position in the 
+     * column predicate formal argument list.  If n is not zero, there must 
+     * be at least n-1 formal arguments in the list to begin with.  Any 
+     * existing arguments with index greater than or equal to n have their 
+     * indicies increased by 1.
+     *
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+    
+    private void insertCPFormalArg(FormalArgument newArg, 
+                                     int n)
+        throws SystemErrorException
+    {
+        final String mName = "VocabElement::insertCPFormalArg(): ";
+        
+        if ( cpfArgList == null )
+        {
+            /* cpfArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "cpfArgList unitialized?!?!");
+        }
+        else if ( system )
+        {
+            /* attempt to insert an argument in a system (and thus read only)
+             * vocab element.
+             */
+            throw new SystemErrorException(mName + 
+                    "attempt to modify a system vocab element.");
+        }
+        else if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + 
+                    "Attempt to insert null formal argument");
+        }
+        else if ( ! ( newArg instanceof FormalArgument ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "newArg not a formal argument");
+        } 
+        else if ( ! cpfArgNameIsUnique(newArg.getFargName()) )
+        {
+            throw new SystemErrorException(mName + "newArg name not unique.");
+        }
+        else  if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n > cpfArgList.size() )
+        {
+            /* n-1-th formal argument doesn't exist -- scream and die */
+            throw new SystemErrorException(mName + "n > cp arg list len");
+        }
+        
+        cpfArgList.insertElementAt(newArg, n);
+        
+        newArg.setItsVocabElement(this);
+        newArg.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
+        
+        return;        
+        
+    } /* MatrixVocabElement::insertCPFormalArg() */
+    
+
+// delete this eventually -- JRM
+//    /**
+//     * replaceCPFormalArg()
+//     *
+//     * If the n-th column predicate formal argument exists, replace it with 
+//     * the supplied formal argument.
+//     * 
+//     * Throw a system error exception if there is no n-th formal column
+//     * predicate argument to begin with.
+//     *
+//     *                                          JRM -- 2/27/07
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     *
+//     */
+//    
+//    protected void replaceCPFormalArg(FormalArgument newCPArg, 
+//                                      int n)
+//        throws SystemErrorException
+//    {
+//        final String mName = "MatrixVocabElement::replaceCPFormalArg()";
+//        
+//        deleteCPFormalArg(n);
+//        insertCPFormalArg(newCPArg, n);
+//        
+//        return;
+//        
+//    } /* MatrixVocabElement::replaceCPFormalArg() */
+    
+
+    /**
+     * toCPDBString()
+     * 
+     * Returns a String representation of the column predicate implied by
+     * the instance of MatrixVocabElement for comparison against the 
+     * database's expected value.<br>
+     *
+     * <i>This function is intended for debugging purposses.</i>
+     *
+     * @return the string value.
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    public String toCPDBString()         
+    {
+        String s;
+        
+        try
+        {
+            s = "((ColumnPredicate: ";
+            s += getID();
+            s += " ";
+            s += getName();
+            s += ") (system: ";
+            s += system;
+            s += ") (type: ";
+            s += type;
+            s += ") (varLen: ";
+            s += varLen;
+            s += ") (fArgList: ";
+            s += cpfArgListToDBString();
+            s += ")";
+        }
+        
+        catch (SystemErrorException e)
+        {
+             s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+        }
+       
+        return s;
+        
+    } /* MatrixVocabElement::toDBString() */
+
+    
+    /**
+     * toCPString()
+     *
+     * Returns a String representation of the column predicate that is 
+     * implied by the instance of MatrixVocabElement.
+     *
+     * @return the string value.
+     *
+     * Changes:
+     *
+     *    - None.
+     *      
+     */
+    public String toCPString() 
+    {
+        String s;
+        
+        try
+        {
+            s = getName();
+            s += cpfArgListToString();
+        }
+
+        catch (SystemErrorException e)
+        {
+             s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+        }
+               
+        return (s);
+        
+    } /* toString() */
+    
 
     
     /*************************************************************************/
@@ -3947,6 +5010,7 @@ public class MatrixVocabElement extends VocabElement
         boolean pass = true;
         int i;
         int failures = 0;
+        int progress = 0;
         String s = null;
         IntFormalArg alpha = null;
         FloatFormalArg bravo = null;
@@ -3971,6 +5035,7 @@ public class MatrixVocabElement extends VocabElement
             /* Start by creating a base matrix vocab element, and loading it
              * with a variety of formal arguments.
              */
+            progress = 0;
             completed = false;
             threwSystemErrorException = false;
 
@@ -3981,6 +5046,8 @@ public class MatrixVocabElement extends VocabElement
                  */
 
                 db = new ODBCDatabase();
+                
+                progress++;
 
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new FloatFormalArg(db, "<bravo>");
@@ -3989,9 +5056,15 @@ public class MatrixVocabElement extends VocabElement
                 echo = new TimeStampFormalArg(db, "<echo>");
                 foxtrot = new UnTypedFormalArg(db, "<foxtrot>");
 
+                progress++;
+                
                 base_ve = new MatrixVocabElement(db, "matrix");
 
+                progress++;
+                
                 base_ve.setType(matrixType.MATRIX);
+                
+                progress++;
                 
                 base_ve.appendFormalArg(alpha);
                 base_ve.appendFormalArg(bravo);
@@ -4000,12 +5073,16 @@ public class MatrixVocabElement extends VocabElement
                 base_ve.appendFormalArg(echo);
                 base_ve.appendFormalArg(foxtrot);
 
+                progress++;
+                
                 /* set other fields to non-default values just to make
                  * sure they get copied.
                  */
                 base_ve.lastModUID = 2;
                 base_ve.varLen = true;
                 base_ve.system = true;
+                
+                progress++;
                 
                 /* add the base_ve to the vocab list to assign an id */
                 db.vl.addElement(base_ve); 
@@ -4036,8 +5113,8 @@ public class MatrixVocabElement extends VocabElement
                 {
                     if ( ! completed )
                     {
-                        outStream.print(
-                                "base_ve initialization didn't complete(1).\n");
+                        outStream.printf("base_ve initialization didn't " +
+                                "complete(1).  progress = %d\n", progress);
                     }
 
                     if ( ( db == null ) ||

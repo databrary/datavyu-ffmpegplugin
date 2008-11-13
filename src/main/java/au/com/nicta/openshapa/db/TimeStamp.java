@@ -381,7 +381,6 @@ public class TimeStamp
    /**
     * Main method for testing purposes.
     */
-  /*
    public final static void main (String[] argv)
         throws SystemErrorException
    {
@@ -398,7 +397,7 @@ public class TimeStamp
      t1.setTPS(1000);
      System.out.println(t1 + "\t" + t1.toHMSFString());
    } //End of main() method
-   */
+
      
         
     /*************************************************************************/

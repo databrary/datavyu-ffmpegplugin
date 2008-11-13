@@ -183,6 +183,34 @@ public class PredDataValue extends DataValue
         return new Predicate(this.itsValue, true);
     
     } /* PredDataValue::getItsValueBlind() */
+    
+    
+    /**
+     * getItsValuePveID()
+     *
+     * If itsValue is an instance of a predicate vocab element, return the 
+     * ID assigned to that pve, or the INVALID_ID if it is not.
+     *
+     *                                      JRM -- 4/24/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected long getItsValuePveID()
+        throws SystemErrorException
+    {
+        long pveID = DBIndex.INVALID_ID;
+        
+        if ( this.itsValue != null )
+        {
+            pveID = this.itsValue.getPveID();
+        }
+        
+        return pveID;
+        
+    } /* PredDataValue::getItsValuePveID() */
 
     
     /**
@@ -386,14 +414,25 @@ public class PredDataValue extends DataValue
     
     protected void replaceInIndex(DataValue old_dv,
                                   long DCID,
-                                  boolean pveMod,
-                                  long pveModID)
+                                  boolean cascadeMveMod,
+                                  boolean cascadeMveDel,
+                                  long cascadeMveID,
+                                  boolean cascadePveMod,
+                                  boolean cascadePveDel,
+                                  long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::replaceInIndex(): ";
         PredDataValue old_pdv;
         
-        super.replaceInIndex(old_dv, DCID, pveMod, pveModID);
+        super.replaceInIndex(old_dv, 
+                             DCID, 
+                             cascadeMveMod,
+                             cascadeMveDel,
+                             cascadeMveID,
+                             cascadePveMod, 
+                             cascadePveDel, 
+                             cascadePveID);
         
         if ( this.itsValue == null )
         {
@@ -413,8 +452,14 @@ public class PredDataValue extends DataValue
                     "old_pdv.itsValue is null?!?");
         }
         
-        this.itsValue.updateIndexForReplacement(old_pdv.itsValue, DCID, 
-                                                pveMod, pveModID);
+        this.itsValue.updateIndexForReplacement(old_pdv.itsValue, 
+                                                DCID, 
+                                                cascadeMveMod, 
+                                                cascadeMveDel,
+                                                cascadeMveID, 
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
 
         return;
         
@@ -492,11 +537,151 @@ public class PredDataValue extends DataValue
     
     
     /**
+     * updateForMVEDefChange()
+     *
+     * Scan the list of data values in the matrix, and pass an update for 
+     * matrix vocab element definition change message to the predicate
+     * (if defined).
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDefChange(
+                                 Database db,
+                                 long mveID,
+                                 boolean nameChanged,
+                                 String oldName,
+                                 String newName,
+                                 boolean varLenChanged,
+                                 boolean oldVarLen,
+                                 boolean newVarLen,
+                                 boolean fargListChanged,
+                                 long[] n2o,
+                                 long[] o2n,
+                                 boolean[] fargNameChanged,
+                                 boolean[] fargSubRangeChanged,
+                                 boolean[] fargRangeChanged,
+                                 boolean[] fargDeleted,
+                                 boolean[] fargInserted,
+                                 java.util.Vector<FormalArgument> oldFargList,
+                                 java.util.Vector<FormalArgument> newFargList,
+                                 long[] cpn2o,
+                                 long[] cpo2n,
+                                 boolean[] cpFargNameChanged,
+                                 boolean[] cpFargSubRangeChanged,
+                                 boolean[] cpFargRangeChanged,
+                                 boolean[] cpFargDeleted,
+                                 boolean[] cpFargInserted,
+                                 java.util.Vector<FormalArgument> oldCPFargList,
+                                 java.util.Vector<FormalArgument> newCPFargList)
+        throws SystemErrorException
+    {
+        final String mName = "PredDataValue::updateForMVEDefChange(): ";
+        DBElement dbe = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        dbe = this.db.idx.getElement(mveID);
+        
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName + 
+                                           "mveID doesn't refer to a pve.");
+        }
+        
+        
+        if ( this.itsValue != null )
+        {
+            this.itsValue.updateForMVEDefChange(db,
+                                                mveID,
+                                                nameChanged,
+                                                oldName,
+                                                newName,
+                                                varLenChanged,
+                                                oldVarLen,
+                                                newVarLen,
+                                                fargListChanged,
+                                                n2o,
+                                                o2n,
+                                                fargNameChanged,
+                                                fargSubRangeChanged,
+                                                fargRangeChanged,
+                                                fargDeleted,
+                                                fargInserted,
+                                                oldFargList,
+                                                newFargList,
+                                                cpn2o,
+                                                cpo2n,
+                                                cpFargNameChanged,
+                                                cpFargSubRangeChanged,
+                                                cpFargRangeChanged,
+                                                cpFargDeleted,
+                                                cpFargInserted,
+                                                oldCPFargList,
+                                                newCPFargList);
+        }
+        
+        return;
+        
+    } /* PredDataValue::updateForMVEDefChange() */
+    
+    
+    /**
+     * updateForMVEDeletion()
+     *
+     * Scan the list of data values in the matrix, and pass an update for 
+     * matrix vocab element definition change message to any column predicate
+     * or predicate data values.
+     *                                          JRM -- 8/30/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDeletion(Database db,
+                                        long mveID)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::updateForMVEDeletion(): ";
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        if ( this.itsValue != null )
+        {
+            this.itsValue.updateForMVEDeletion(db, mveID);
+        }
+        
+        return;
+        
+    } /* PredDataValue::updateForPVEDeletion() */
+    
+    
+    /**
      * updateForPVEDefChange()
      *
      * Scan the list of data values in the matrix, and pass an update for 
-     * predicate vocab element definition change message to any predicate 
-     * data values.
+     * predicate vocab element definition change message to the predicate
+     * (if defined). 
      *                                          JRM -- 3/23/08
      *
      * Changes:
@@ -603,8 +788,7 @@ public class PredDataValue extends DataValue
             throw new SystemErrorException(mName + "pveID invalid.");
         }
         
-        if ( ( this.itsValue != null ) &&
-             ( this.itsValue.getPveID() == pveID ) )
+        if ( this.itsValue != null )
         {
             this.itsValue.updateForPVEDeletion(db, pveID);
         }
@@ -823,8 +1007,8 @@ public class PredDataValue extends DataValue
      *
      * If this.itsValue isn't null, call its deregisterWithPve() method to 
      * cause it to deregister with its associated PVE (if any), and pass
-     * the message down to any predicates that may appear in its argument
-     * list.
+     * the message down to any column predicates or predicates that may 
+     * appear in its argument list.
      *                                              JRM -- 3/24/08
      *
      * Changes:
@@ -832,12 +1016,18 @@ public class PredDataValue extends DataValue
      *    - None.
      */
     
-    protected void deregisterPreds()
+    protected void deregisterPreds(boolean cascadeMveDel,
+                                   long cascadeMveID,
+                                   boolean cascadePveDel,
+                                   long cascadePveID)
         throws SystemErrorException
     {
         if ( this.itsValue != null )
         {
-            this.itsValue.deregisterWithPve();
+            this.itsValue.deregisterWithPve(cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveDel, 
+                                            cascadePveID);
         }
         
         return;
@@ -4642,7 +4832,7 @@ public class PredDataValue extends DataValue
         String testString1 = "pve3(<arg1>)";
         String testDBString1 = 
                 "(PredDataValue (id 101) " +
-                            "(itsFargID 16) " +
+                            "(itsFargID 20) " +
                             "(itsFargType UNTYPED) " +
                             "(itsCellID 501) " +
                             "(itsValue " +

@@ -27,6 +27,16 @@ public class NominalDataValue extends DataValue
      *
      * itsValue:   Long containing the value assigned to the formal argument.
      *
+     * queryVar: Boolean that is set to true iff the the value of the nominal
+     *      is a valid query variable -- that is if the nominal starts with a 
+     *      '?', and is at least two characters long.
+     *
+     *      The concept of a query variable is a hold over from MacSHAPA, that
+     *      I was hoping to get rid of in OpenSHAPA -- but it seems that I am
+     *      stuck with it afterall.  However, by implementing it in this way,
+     *      we make it easy to ignore it in contexts other than the MacSHAPA
+     *      query column variable.
+     *
      * minVal & maxVal don't appear in NominalDataValue as a subrange of 
      *      nominals is expressed as a set of allowed values.  Given the
      *      potential size of this set, we don't keep a copy of it here -- 
@@ -39,6 +49,11 @@ public class NominalDataValue extends DataValue
     
     /** the value assigned to the associated formal argument in this case */
     String itsValue = ItsDefault;
+    
+    /** whether the value currently assigned to the Nominal is a valid query
+     *  variable name.
+     */
+    boolean queryVar = false;
       
     
     /*************************************************************************/
@@ -165,7 +180,7 @@ public class NominalDataValue extends DataValue
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to maintain this.isQueryVar. JRM -- 10/20/08
      */
     
     public void setItsValue(String value)
@@ -228,6 +243,17 @@ public class NominalDataValue extends DataValue
             {
                 this.itsValue = null;
             }
+        }
+        
+        if ( ( this.itsValue != null ) &&
+             ( this.itsValue.length() >= 1 ) &&
+             ( this.itsValue.charAt(0) == '?' ) )
+        {
+            this.queryVar = true;
+        }
+        else
+        {
+            this.queryVar = false;
         }
         
         return;
@@ -513,6 +539,28 @@ public class NominalDataValue extends DataValue
         return value;
         
     } /* NominalDataValue::coerceToRange() */
+    
+    
+    /**
+     * isQueryVar()
+     *
+     * Return true if the current value of the nominal is a valid MacSHAPA 
+     * style query variable name, and false otherwise.
+     *
+     *                                              JRM -- 10/20/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public boolean isQueryVar()
+    
+    {
+        
+        return this.queryVar;
+        
+    } /* NominalDataValue::isQueryVar() */
   
     
     /*************************************************************************/
@@ -1862,7 +1910,9 @@ public class NominalDataValue extends DataValue
      * 
      * Changes:
      * 
-     *    - None.
+     *    - Added test code for the new isQueryVar() method.
+     *
+     *                                              JRM -- 10/20/08
      */
     
     public static boolean TestAccessors(java.io.PrintStream outStream,
@@ -1887,6 +1937,9 @@ public class NominalDataValue extends DataValue
         NominalDataValue ndv0 = null;
         NominalDataValue ndv1 = null;
         NominalDataValue ndv2 = null;
+        NominalDataValue ndv3 = null;
+        NominalDataValue ndv4 = null;
+        NominalDataValue ndv5 = null;
 
         outStream.print(testBanner);
 
@@ -1926,6 +1979,9 @@ public class NominalDataValue extends DataValue
 
             ndv1 = new NominalDataValue(db, ufa.getID(), "delta");
             ndv2 = new NominalDataValue(db, ufa.getID(), "charlie");
+            ndv3 = new NominalDataValue(db, ufa.getID(), "?query_var");
+            ndv4 = new NominalDataValue(db, ufa.getID(), "!?query_var");
+            ndv5 = new NominalDataValue(db, ufa.getID(), "?");
             
             completed = true;
         }
@@ -1944,6 +2000,9 @@ public class NominalDataValue extends DataValue
              ( ufa == null ) ||
              ( ndv1 == null ) ||
              ( ndv2 == null ) ||
+             ( ndv3 == null ) ||
+             ( ndv4 == null ) ||
+             ( ndv5 == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) ) 
         {
@@ -1993,6 +2052,24 @@ public class NominalDataValue extends DataValue
                 {
                     outStream.print("new NominalDataValue(db, ufa.getID(), " +
                                     "\"charlie\") returned null.\n");
+                }
+
+                if ( ndv3 == null )
+                {
+                    outStream.print("new NominalDataValue(db, ufa.getID(), " +
+                                    "\"?query_var\") returned null.\n");
+                }
+
+                if ( ndv4 == null )
+                {
+                    outStream.print("new NominalDataValue(db, ufa.getID(), " +
+                                    "\"!?query_var\") returned null.\n");
+                }
+
+                if ( ndv5 == null )
+                {
+                    outStream.print("new NominalDataValue(db, ufa.getID(), " +
+                                    "\"?\") returned null.\n");
                 }
 
                 if ( ! completed )
@@ -2153,6 +2230,105 @@ public class NominalDataValue extends DataValue
                 if ( verbose )
                 {
                     outStream.printf("ndv2.getItsValue() != \"charlie\".\n");
+                }
+            }
+        }
+        
+        if ( failures == 0 )
+        {
+            if ( ( ndv3.isQueryVar() != true ) ||
+                 ( ndv4.isQueryVar() != false ) ||
+                 ( ndv5.isQueryVar() != true ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( ndv3.isQueryVar() != true )
+                    {
+                        outStream.printf(
+                                "ndv3.isQueryVar() != true for val = \"%s\"\n",
+                                ndv3.getItsValue());
+                    }
+                    
+                    if ( ndv4.isQueryVar() != false )
+                    {
+                        outStream.printf(
+                                "ndv4.isQueryVar() != false for val = \"%s\"\n",
+                                ndv4.getItsValue());
+                    }
+                    
+                    if ( ndv5.isQueryVar() != true )
+                    {
+                        outStream.printf(
+                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
+                                ndv5.getItsValue());
+                    }
+                }
+            }
+            
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                ndv3.setItsValue("charlie");
+                ndv4.setItsValue("?ord");
+                ndv5.setItsValue("?1");
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+            
+            if ( ( ndv3.isQueryVar() != false ) ||
+                 ( ndv4.isQueryVar() != true ) ||
+                 ( ndv5.isQueryVar() != true ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) ) 
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ndv3.isQueryVar() != false )
+                    {
+                        outStream.printf(
+                                "ndv3.isQueryVar() != false for val = \"%s\"\n",
+                                ndv3.getItsValue());
+                    }
+                    
+                    if ( ndv4.isQueryVar() != true )
+                    {
+                        outStream.printf(
+                                "ndv4.isQueryVar() != true for val = \"%s\"\n",
+                                ndv4.getItsValue());
+                    }
+                    
+                    if ( ndv5.isQueryVar() != true )
+                    {
+                        outStream.printf(
+                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
+                                ndv5.getItsValue());
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.printf("Query var setItsValue test " +
+                                         "failed to complete.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("Query var setItsValue test threw " +
+                                "a system error exception: \"%s\"",
+                                systemErrorExceptionString);
+                    }
                 }
             }
         }
@@ -2546,7 +2722,7 @@ public class NominalDataValue extends DataValue
                                     "(subRange true))";
         String testString1 = "nero";
         String testDBString1 = "(NominalDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 501) " +
                                     "(itsValue nero) " +

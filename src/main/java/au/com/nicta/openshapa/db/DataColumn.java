@@ -20,7 +20,7 @@ import java.util.Vector;
  * @author FGA
  */
 public class DataColumn extends Column 
-        implements InternalVocabElementListener
+        implements InternalMatrixVocabElementListener
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/
@@ -1947,7 +1947,7 @@ public class DataColumn extends Column
                             mName, systemErrorExceptionString);
                     System.out.flush();
                     
-                    int i = 1/0; // to force an arithmatic exception.
+                    // int i = 1/0; // to force an arithmatic exception.
                 }
                 
                 return result;
@@ -2048,9 +2048,9 @@ public class DataColumn extends Column
     /*************************************************************************/
     
     /**
-     * VEChanged()
+     * MVEChanged()
      *
-     * Needed to implement the InternalVocabElementListener interface.
+     * Needed to implement the InternalMatrixVocabElementListener interface.
      *
      * Handle the various housekeeping required to process a change in the 
      * MatrixVocabElement associated with this DataColumn.
@@ -2067,34 +2067,43 @@ public class DataColumn extends Column
      *    - None.
      */
         
-    public void VEChanged(Database db,
-                         long VEID,
-                         boolean nameChanged,
-                         String oldName,
-                         String newName,
-                         boolean varLenChanged,
-                         boolean oldVarLen,
-                         boolean newVarLen,
-                         boolean fargListChanged,
-                         long[] n2o,
-                         long[] o2n,
-                         boolean[] fargNameChanged,
-                         boolean[] fargSubRangeChanged,
-                         boolean[] fargRangeChanged,
-                         boolean[] fargDeleted,
-                         boolean[] fargInserted,
-                         java.util.Vector<FormalArgument> oldFargList,
-                         java.util.Vector<FormalArgument> newFargList)
+    public void MVEChanged(Database db,
+                           long MVEID,
+                           boolean nameChanged,
+                           String oldName,
+                           String newName,
+                           boolean varLenChanged,
+                           boolean oldVarLen,
+                           boolean newVarLen,
+                           boolean fargListChanged,
+                           long[] n2o,
+                           long[] o2n,
+                           boolean[] fargNameChanged,
+                           boolean[] fargSubRangeChanged,
+                           boolean[] fargRangeChanged,
+                           boolean[] fargDeleted,
+                           boolean[] fargInserted,
+                           java.util.Vector<FormalArgument> oldFargList,
+                           java.util.Vector<FormalArgument> newFargList,
+                           long[] cpn2o,
+                           long[] cpo2n,
+                           boolean[] cpFargNameChanged,
+                           boolean[] cpFargSubRangeChanged,
+                           boolean[] cpFargRangeChanged,
+                           boolean[] cpFargDeleted,
+                           boolean[] cpFargInserted,
+                           java.util.Vector<FormalArgument> oldCPFargList,
+                           java.util.Vector<FormalArgument> newCPFargList)
         throws SystemErrorException
     {
-        final String mName = "DataColumn::VEChanged(): ";
+        final String mName = "DataColumn::MVEChanged(): ";
         
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
         
-        if ( this.itsMveID != VEID )
+        if ( this.itsMveID != MVEID )
         {
             throw new SystemErrorException(mName + "mveID mismatch.");
         }
@@ -2148,19 +2157,28 @@ public class DataColumn extends Column
                                                              fargDeleted,
                                                              fargInserted,
                                                              oldFargList,
-                                                             newFargList);
+                                                             newFargList,
+                                                             cpn2o,
+                                                             cpo2n,
+                                                             cpFargNameChanged,
+                                                             cpFargSubRangeChanged,
+                                                             cpFargRangeChanged,
+                                                             cpFargDeleted,
+                                                             cpFargInserted,
+                                                             oldCPFargList,
+                                                             newCPFargList);
             }
         }
         
         return;
         
-    } /* DataColumn::VEChanged() */
+    } /* DataColumn::MVEChanged() */
  
     
     /**
      * VEDeleted()
      *
-     * Needed to implement the InternalVocabElementListener interface.
+     * Needed to implement the InternalMatrixVocabElementListener interface.
      *
      * This method should never be called, as the DataColumn should have 
      * de-registered before the MatrixVocabElement is deleted.
@@ -2174,11 +2192,13 @@ public class DataColumn extends Column
      *    - None.
      */
         
-    public void VEDeleted(Database db,
-                   long VEID)
+    public void MVEDeleted(Database db,
+                           long MVEID)
         throws SystemErrorException
     {
-        final String mName = "DataColumn::VEDeleted(): ";
+        final String mName = "DataColumn::MVEDeleted(): ";
+        
+        throw new SystemErrorException(mName + "should be un-reachable");
         
     } /* DataColumn::VEDeleted() */
 
@@ -5483,8 +5503,8 @@ public class DataColumn extends Column
                      "(3, 00:00:01:000, 00:00:02:000, (0.0)))";
             String expectedDBString = 
                     "(itsCells " +
-                        "((DataCell (id 19) " +
-                            "(itsColID 3) " +
+                        "((DataCell (id 43) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 1) " +
@@ -5494,16 +5514,16 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 20) " +
+                                        "((FloatDataValue (id 44) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 19) " +
+                                            "(itsCellID 43) " +
                                             "(itsValue 2.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 21) " +
-                            "(itsColID 3) " +
+                        "(DataCell (id 45) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 2) " +
@@ -5513,16 +5533,16 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 22) " +
+                                        "((FloatDataValue (id 46) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 21) " +
+                                            "(itsCellID 45) " +
                                             "(itsValue 1.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 23) " +
-                            "(itsColID 3) " +
+                        "(DataCell (id 47) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 3) " +
@@ -5532,10 +5552,10 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 24) " +
+                                        "((FloatDataValue (id 48) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 23) " +
+                                            "(itsCellID 47) " +
                                             "(itsValue 0.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
@@ -5692,8 +5712,8 @@ public class DataColumn extends Column
                      "(4, 00:00:11:000, 00:00:12:000, (5.0)))";
             String expectedDBString = 
                     "(itsCells " +
-                        "((DataCell (id 27) " +
-                            "(itsColID 3) " +
+                        "((DataCell (id 51) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 1) " +
@@ -5703,16 +5723,16 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 28) " +
+                                        "((FloatDataValue (id 52) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 27) " +
+                                            "(itsCellID 51) " +
                                             "(itsValue 4.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 25) " +
-                            "(itsColID 3) " +
+                        "(DataCell (id 49) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 2) " +
@@ -5722,16 +5742,16 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 26) " +
+                                        "((FloatDataValue (id 50) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 25) " +
+                                            "(itsCellID 49) " +
                                             "(itsValue 3.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 31) " +
-                            "(itsColID 3) " +
+                        "(DataCell (id 55) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 3) " +
@@ -5741,16 +5761,16 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 32) " +
+                                        "((FloatDataValue (id 56) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 31) " +
+                                            "(itsCellID 55) " +
                                             "(itsValue 6.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 29) " +
-                            "(itsColID 3) " +
+                        "(DataCell (id 53) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 4) " +
@@ -5760,10 +5780,10 @@ public class DataColumn extends Column
                                 "(Matrix (mveID 1) " +
                                     "(varLen false) " +
                                     "(argList " +
-                                        "((FloatDataValue (id 30) " +
+                                        "((FloatDataValue (id 54) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 29) " +
+                                            "(itsCellID 53) " +
                                             "(itsValue 5.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
@@ -8719,7 +8739,7 @@ public class DataColumn extends Column
             String expected_f_col0_DBstring =
                 "(DataColumn " +
                     "(name f_col0) " +
-                    "(id 3) " +
+                    "(id 7) " +
                     "(hidden false) " +
                     "(readOnly false) " +
                     "(itsMveID 1) " +
@@ -8728,8 +8748,8 @@ public class DataColumn extends Column
                     "(numCells 9) " +
                     "(itsCells " +
                         "((DataCell " +
-                            "(id 22) " +
-                            "(itsColID 3) " +
+                            "(id 50) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 1) " +
@@ -8741,17 +8761,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 23) " +
+                                            "(id 51) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 22) " +
+                                            "(itsCellID 50) " +
                                             "(itsValue 0.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 24) " +
-                            "(itsColID 3) " +
+                            "(id 52) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 2) " +
@@ -8763,17 +8783,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 25) " +
+                                            "(id 53) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 24) " +
+                                            "(itsCellID 52) " +
                                             "(itsValue 1.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 26) " +
-                            "(itsColID 3) " +
+                            "(id 54) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 3) " +
@@ -8785,17 +8805,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 27) " +
+                                            "(id 55) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 26) " +
+                                            "(itsCellID 54) " +
                                             "(itsValue 2.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 28) " +
-                            "(itsColID 3) " +
+                            "(id 56) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 4) " +
@@ -8807,17 +8827,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 29) " +
+                                            "(id 57) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 28) " +
+                                            "(itsCellID 56) " +
                                             "(itsValue 3.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 30) " +
-                            "(itsColID 3) " +
+                            "(id 58) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 5) " +
@@ -8829,17 +8849,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 31) " +
+                                            "(id 59) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 30) " +
+                                            "(itsCellID 58) " +
                                             "(itsValue 4.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 32) " +
-                            "(itsColID 3) " +
+                            "(id 60) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 6) " +
@@ -8851,17 +8871,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 33) " +
+                                            "(id 61) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 32) " +
+                                            "(itsCellID 60) " +
                                             "(itsValue 5.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 34) " +
-                            "(itsColID 3) " +
+                            "(id 62) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 7) " +
@@ -8873,17 +8893,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 35) " +
+                                            "(id 63) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 34) " +
+                                            "(itsCellID 62) " +
                                             "(itsValue 6.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 36) " +
-                            "(itsColID 3) " +
+                            "(id 64) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 8) " +
@@ -8895,17 +8915,17 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 37) " +
+                                            "(id 65) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 36) " +
+                                            "(itsCellID 64) " +
                                             "(itsValue 7.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
                                             "(maxVal 0.0)))))))), " +
                         "(DataCell " +
-                            "(id 38) " +
-                            "(itsColID 3) " +
+                            "(id 66) " +
+                            "(itsColID 7) " +
                             "(itsMveID 1) " +
                             "(itsMveType FLOAT) " +
                             "(ord 9) " +
@@ -8917,10 +8937,10 @@ public class DataColumn extends Column
                                     "(varLen false) " +
                                     "(argList " +
                                         "((FloatDataValue " +
-                                            "(id 39) " +
+                                            "(id 67) " +
                                             "(itsFargID 2) " +
                                             "(itsFargType FLOAT) " +
-                                            "(itsCellID 38) " +
+                                            "(itsCellID 66) " +
                                             "(itsValue 8.0) " +
                                             "(subRange false) " +
                                             "(minVal 0.0) " +
@@ -8930,32 +8950,32 @@ public class DataColumn extends Column
             String expected_i_col0_DBstring = 
                 "(DataColumn " +
                     "(name i_col0) " +
-                    "(id 6) " +
+                    "(id 14) " +
                     "(hidden false) " +
                     "(readOnly false) " +
-                    "(itsMveID 4) " +
+                    "(itsMveID 8) " +
                     "(itsMveType INTEGER) " +
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
                         "((DataCell " +
-                            "(id 40) " +
-                            "(itsColID 6) " +
-                            "(itsMveID 4) " +
+                            "(id 68) " +
+                            "(itsColID 14) " +
+                            "(itsMveID 8) " +
                             "(itsMveType INTEGER) " +
                             "(ord 1) " +
                             "(onset (60,00:00:00:000)) " +
                             "(offset (60,00:00:00:000)) " +
                             "(val " +
                                 "(Matrix " +
-                                    "(mveID 4) " +
+                                    "(mveID 8) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((IntDataValue " +
-                                            "(id 41) " +
-                                            "(itsFargID 5) " +
+                                            "(id 69) " +
+                                            "(itsFargID 9) " +
                                             "(itsFargType INTEGER) " +
-                                            "(itsCellID 40) " +
+                                            "(itsCellID 68) " +
                                             "(itsValue 0) " +
                                             "(subRange false) " +
                                             "(minVal 0) " +
@@ -8965,32 +8985,32 @@ public class DataColumn extends Column
             String expected_m_col0_DBstring = 
                 "(DataColumn " +
                     "(name m_col0) " +
-                    "(id 9) " +
+                    "(id 21) " +
                     "(hidden false) " +
                     "(readOnly false) " +
-                    "(itsMveID 7) " +
+                    "(itsMveID 15) " +
                     "(itsMveType MATRIX) " +
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
                         "((DataCell " +
-                            "(id 42) " +
-                            "(itsColID 9) " +
-                            "(itsMveID 7) " +
+                            "(id 70) " +
+                            "(itsColID 21) " +
+                            "(itsMveID 15) " +
                             "(itsMveType MATRIX) " +
                             "(ord 1) " +
                             "(onset (60,00:00:00:000)) " +
                             "(offset (60,00:00:00:000)) " +
                             "(val " +
                                 "(Matrix " +
-                                    "(mveID 7) " +
+                                    "(mveID 15) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((UndefinedDataValue " +
-                                            "(id 43) " +
-                                            "(itsFargID 8) " +
+                                            "(id 71) " +
+                                            "(itsFargID 16) " +
                                             "(itsFargType UNTYPED) " +
-                                            "(itsCellID 42) " +
+                                            "(itsCellID 70) " +
                                             "(itsValue <arg>) " +
                                             "(subRange false))))))))))))";
             String expected_m_col1_string = 
@@ -8998,10 +9018,10 @@ public class DataColumn extends Column
             String expected_m_col1_DBstring = 
                 "(DataColumn " +
                     "(name m_col1) " +
-                    "(id 12) " +
+                    "(id 28) " +
                     "(hidden true) " +
                     "(readOnly false) " +
-                    "(itsMveID 10) " +
+                    "(itsMveID 22) " +
                     "(itsMveType MATRIX) " +
                     "(varLen true) " +
                     "(numCells 0) " +
@@ -9011,32 +9031,32 @@ public class DataColumn extends Column
             String expected_n_col0_DBstring = 
                 "(DataColumn " +
                     "(name n_col0) " +
-                    "(id 15) " +
+                    "(id 35) " +
                     "(hidden false) " +
                     "(readOnly false) " +
-                    "(itsMveID 13) " +
+                    "(itsMveID 29) " +
                     "(itsMveType NOMINAL) " +
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
                         "((DataCell " +
-                            "(id 44) " +
-                            "(itsColID 15) " +
-                            "(itsMveID 13) " +
+                            "(id 72) " +
+                            "(itsColID 35) " +
+                            "(itsMveID 29) " +
                             "(itsMveType NOMINAL) " +
                             "(ord 1) " +
                             "(onset (60,00:00:00:000)) " +
                             "(offset (60,00:00:00:000)) " +
                             "(val " +
                                 "(Matrix " +
-                                    "(mveID 13) " +
+                                    "(mveID 29) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((NominalDataValue " +
-                                            "(id 45) " +
-                                            "(itsFargID 14) " +
+                                            "(id 73) " +
+                                            "(itsFargID 30) " +
                                             "(itsFargType NOMINAL) " +
-                                            "(itsCellID 44) " +
+                                            "(itsCellID 72) " +
                                             "(itsValue <null>) " +
                                             "(subRange false))))))))))))";
             String expected_p_col0_string = 
@@ -9044,32 +9064,32 @@ public class DataColumn extends Column
             String expected_p_col0_DBstring = 
                 "(DataColumn " +
                     "(name p_col0) " +
-                    "(id 18) " +
+                    "(id 42) " +
                     "(hidden false) " +
                     "(readOnly false) " +
-                    "(itsMveID 16) " +
+                    "(itsMveID 36) " +
                     "(itsMveType PREDICATE) " +
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
                         "((DataCell " +
-                            "(id 46) " +
-                            "(itsColID 18) " +
-                            "(itsMveID 16) " +
+                            "(id 74) " +
+                            "(itsColID 42) " +
+                            "(itsMveID 36) " +
                             "(itsMveType PREDICATE) " +
                             "(ord 1) " +
                             "(onset (60,00:00:00:000)) " +
                             "(offset (60,00:00:00:000)) " +
                             "(val " +
                                 "(Matrix " +
-                                    "(mveID 16) " +
+                                    "(mveID 36) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((PredDataValue " +
-                                            "(id 47) " +
-                                            "(itsFargID 17) " +
+                                            "(id 75) " +
+                                            "(itsFargID 37) " +
                                             "(itsFargType PREDICATE) " +
-                                            "(itsCellID 46) " +
+                                            "(itsCellID 74) " +
                                             "(itsValue ()) " +
                                             "(subRange false))))))))))))";
             String expected_t_col0_string = 
@@ -9077,32 +9097,32 @@ public class DataColumn extends Column
             String expected_t_col0_DBstring = 
                 "(DataColumn " +
                     "(name t_col0) " +
-                    "(id 21) " +
+                    "(id 49) " +
                     "(hidden false) " +
                     "(readOnly false) " +
-                    "(itsMveID 19) " +
+                    "(itsMveID 43) " +
                     "(itsMveType TEXT) " +
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
                     "((DataCell " +
-                        "(id 49) " +
-                        "(itsColID 21) " +
-                        "(itsMveID 19) " +
+                        "(id 77) " +
+                        "(itsColID 49) " +
+                        "(itsMveID 43) " +
                         "(itsMveType TEXT) " +
                         "(ord 1) " +
                         "(onset (60,00:00:00:000)) " +
                         "(offset (60,00:00:00:000)) " +
                         "(val " +
                             "(Matrix " +
-                                "(mveID 19) " +
+                                "(mveID 43) " +
                                 "(varLen false) " +
                                 "(argList " +
                                     "((TextStringDataValue " +
-                                        "(id 50) " +
-                                        "(itsFargID 20) " +
+                                        "(id 78) " +
+                                        "(itsFargID 44) " +
                                         "(itsFargType TEXT) " +
-                                        "(itsCellID 49) " +
+                                        "(itsCellID 77) " +
                                         "(itsValue <null>) " +
                                         "(subRange false))))))))))))";
             

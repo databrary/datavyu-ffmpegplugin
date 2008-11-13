@@ -67,7 +67,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Since a database can contain a huge number of cells, and the vast 
      * majority will not participate in any single cascade, we don't make 
      * data cells internalCascadeListeners.  Instead they are recruited 
-     * into the cascade as necessary by their host DataColumns.
+     * into the cascade as necessary by their host DataColumns and/or 
+     * constituent data values.
      *
      * It is possible that a given cell will be modified several times in
      * a given cascade.  This is a bit of a problem, as we want to minimize
@@ -108,6 +109,28 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *      is not the current incarnation.  Further, it should only be 
      *      non-null during a cascade of changes 
      *
+     * cascadeMveMod:  Boolean flag indicating whether the cascade was entered
+     *      to update the cell value for a change in the definition of the 
+     *      mve defining the column in which the cell resides, and/or possibly  
+     *      for a change in an mve which implies a column predicate that appears
+     *      in the cells value.
+     *
+     * cascadeMveID: If the DataCell has entered a cascade to update for 
+     *      changes to or deletion of a matrixvocab element, the ID of 
+     *      the mve is stored here, so that we will allow multiple calls
+     *      for the update.
+     *
+     *      This field should be set to  DBIndex.INVALID_ID except when part 
+     *      of a cascade triggered by modificaiton/deletion of a mve. 
+     *
+     * cascadeMveDel: Boolean flag indicating whether the cascade was entered
+     *      to update the cell value for the deletion of a mve from the vocab
+     *      list.  In all other cases, this field should be set to false.
+     *
+     * cascadePveMod:  Boolean flag indicating whether the cascade was entered
+     *      to update the cell value for a change in the definition of a pve.
+     *      In all other cases, the field should be set to false.
+     *
      * cascadePveID:  If the DataCell has entered a cascade to update for 
      *      changes to or deletion of a predicate vocab element, the ID of 
      *      the pve is stored here, so that we will allow multiple calls
@@ -116,9 +139,9 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *      This field should be set to DBIndex.INVALID_ID except when part 
      *      of a cascade triggered by modificaiton/deletion of a pve.
      *
-     * cascadePveMod:  Boolean flag indicating whether the cascade was entered
-     *      to update the cell value for a change in the definition of a pve.
-     *      In all other cases, the field should be set to false.
+     * cascadePveDel: Boolean flag indicating whetehr the cascade was entered
+     *      to update the cell value for the deletion of a pve from the vocab
+     *      list.  In all other cases, this field should be set to false.
      */
     
     /** ID of associated matrix VE */
@@ -163,11 +186,27 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     private DataCell pending = null;
     
     /**
+     * If in a cascade triggered by a modification to the formal argument 
+     * list of the matrix vocab element defining the structure of cells in 
+     * the host data column, this field should be set to true.  Should be
+     * set to false under all other circumstances.
+     */
+    
+    private boolean cascadeMveMod = false;
+    
+    /**
      * If in a cascade triggered by a modification to the definition of a 
-     * predicate vocab element, this field will contain the ID of the pve.
+     * matrix vocab element, this field will contain the ID of the mve.
      * Should be set to DBIndex.INVALID_ID at all other times.
      */
-    private long cascadePveID = DBIndex.INVALID_ID;
+    private long cascadeMveID = DBIndex.INVALID_ID;
+    
+    /**
+     * if in a cascade triggered by the deletion of a matrix vocab element,
+     * this field should be set of true.  Should be set to false under all 
+     * other circumstances.
+     */
+    private boolean cascadeMveDel = false;
     
     /**
      * If in a cascade triggered by a modification to the definiton of a 
@@ -176,6 +215,19 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      */
     private boolean cascadePveMod = false;
     
+    /**
+     * If in a cascade triggered by a modification to the definition of a 
+     * predicate vocab element, this field will contain the ID of the pve.
+     * Should be set to DBIndex.INVALID_ID at all other times.
+     */
+    private long cascadePveID = DBIndex.INVALID_ID;
+    
+    /**
+     * if in a cascade triggered by the deletion of a predicate vocab element,
+     * this field should be set of true.  Should be set to false under all 
+     * other circumstances.
+     */
+    private boolean cascadePveDel = false;
   
     
     /*************************************************************************/
@@ -1110,7 +1162,9 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Changes:
      *
-     *    - None.
+     *    - Added the column predicate related parameters to the method's
+     *      argument list.
+     *                                              JRM -- 8/26/08
      */
     
     protected void cascadeUpdateForFargListChange(
@@ -1122,7 +1176,16 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                 boolean[] fargDeleted,
                                 boolean[] fargInserted,
                                 java.util.Vector<FormalArgument> oldFargList,
-                                java.util.Vector<FormalArgument> newFargList)
+                                java.util.Vector<FormalArgument> newFargList,
+                                long[] cpn2o,
+                                long[] cpo2n,
+                                boolean[] cpFargNameChanged,
+                                boolean[] cpFargSubRangeChanged,
+                                boolean[] cpFargRangeChanged,
+                                boolean[] cpFargDeleted,
+                                boolean[] cpFargInserted,
+                                java.util.Vector<FormalArgument> oldCPFargList,
+                                java.util.Vector<FormalArgument> newCPFargList)
         throws SystemErrorException
     {
         final String mName = "DataCell::cascadeUpdateForFargListChange(): ";
@@ -1137,6 +1200,19 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         {
             throw new SystemErrorException(mName + "Already in cascade.");
         }
+        
+        this.enterCascade();
+        
+        this.cascadeMveMod = true;
+        this.cascadeMveDel = false;
+        this.cascadeMveID = this.itsMveID;
+        this.cascadePveMod = false;
+        this.cascadePveDel = false;
+        this.cascadePveID = DBIndex.INVALID_ID;
+        
+        // since we have a change in the formal argument list of the mve,
+        // don't use createPending() -- instead create an empty cell and 
+        // copy over arguments as appropriate.
         
         dc = new DataCell(this.db, this.itsColID, this.itsMveID);
         dc.setID(this.id);
@@ -1176,6 +1252,286 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         return;
         
     } /* DataCell::cascadeUpdateForFargListChange() */
+
+    
+    /**
+     * cascadeUpdateForMVEDefChange()
+     *
+     * Update the value of the cell for a change in the definition of the 
+     * specified matrix vocab element.  
+     * 
+     * This call should be triggered either by an instance of column predicate 
+     * somewhere in the value of the cell receiving an MVEChanged() message 
+     * from the matrix vocab element that implies the column predicate, or 
+     * from the data column in which the cell resides, if the data column is
+     * defined by the MVE in question.
+     *
+     * On entry, test to see if we are in a cascade.
+     *
+     * If we are not, enter the cascade, create the pending copy, and tell 
+     * it to update for the matrix vocab element change.  Note that we create
+     * the pending copy whether or not the formal argument list has changed --
+     * as the host data column will only call this method if it has, and a 
+     * component data value will only call if it contains a column predicate
+     * that has changed due to the mve definition change.  
+     * 
+     * Make note of the supplied mveID, and of the fact that we entered the 
+     * cascade due to a mve modification.
+     *
+     * If we are already in a cascade, throw a system error unless the 
+     * we have already made note of our being in the cascade due to a change
+     * in the MVE indicated by the mveID parameter.  In this latter case, 
+     * exit without taking any action.
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void cascadeUpdateForMVEDefChange(
+                                 Database db,
+                                 long mveID,
+                                 boolean nameChanged,
+                                 String oldName,
+                                 String newName,
+                                 boolean varLenChanged,
+                                 boolean oldVarLen,
+                                 boolean newVarLen,
+                                 boolean fargListChanged,
+                                 long[] n2o,
+                                 long[] o2n,
+                                 boolean[] fargNameChanged,
+                                 boolean[] fargSubRangeChanged,
+                                 boolean[] fargRangeChanged,
+                                 boolean[] fargDeleted,
+                                 boolean[] fargInserted,
+                                 java.util.Vector<FormalArgument> oldFargList,
+                                 java.util.Vector<FormalArgument> newFargList,
+                                 long[] cpn2o,
+                                 long[] cpo2n,
+                                 boolean[] cpFargNameChanged,
+                                 boolean[] cpFargSubRangeChanged,
+                                 boolean[] cpFargRangeChanged,
+                                 boolean[] cpFargDeleted,
+                                 boolean[] cpFargInserted,
+                                 java.util.Vector<FormalArgument> oldCPFargList,
+                                 java.util.Vector<FormalArgument> newCPFargList)
+        throws SystemErrorException
+    {
+        final String mName = "DataCell::cascadeUpdateForPVEDefChange(): ";
+        DBElement dbe = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        dbe = this.db.idx.getElement(mveID);
+        
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName + 
+                                           "mveID doesn't refer to a mve.");
+        }
+        
+        if ( ! this.inCascade )
+        {
+            this.enterCascade();
+            
+            if ( ( this.itsMveID == mveID ) && ( fargListChanged ) )
+            {
+                int i;
+                int j;
+                int numOldArgs;
+                int numNewArgs;
+                DataCell dc = null;
+                DataValue dv = null;
+
+                // since we have a change in the formal argument list of the mve,
+                // don't use createPending() -- instead create an empty cell and 
+                // copy over arguments as appropriate.
+
+                dc = new DataCell(this.db, this.itsColID, this.itsMveID);
+                dc.setID(this.id);
+                dc.setOrd(this.ord);
+                dc.setOnset(this.onset);
+                dc.setOffset(this.offset);
+
+                numOldArgs = oldFargList.size();
+                numNewArgs = newFargList.size();
+
+                for ( i = 0; i < numOldArgs; i++ )
+                {
+                    if ( ! fargDeleted[i] )
+                    {
+                        dv = DataValue.Copy(this.val.getArg(i), false);
+
+                        j = (int)o2n[i];
+
+                        if ( ( fargNameChanged[j] ) ||
+                             ( fargSubRangeChanged[j]) ||
+                             ( fargRangeChanged[j] ) )
+                        {
+                            // Update the data value for the formal argument change
+                            dv.updateForFargChange(fargNameChanged[j],
+                                                   fargSubRangeChanged[j],
+                                                   fargRangeChanged[j],
+                                                   oldFargList.get(i),
+                                                   newFargList.get(j));
+                        }
+
+                        dc.val.replaceArg((int)o2n[i], dv);
+                    }
+                }
+
+                this.pending = dc;
+            }
+            else
+            {
+                this.createPending(true);
+            }
+            this.cascadeMveMod = true;
+            this.cascadeMveID = mveID;
+            this.cascadeMveDel = false;
+            this.cascadePveMod = false;
+            this.cascadePveID = DBIndex.INVALID_ID;
+            this.cascadePveDel = false;
+            // todo: delete this eventually
+//            System.out.printf("cascade mve mod/del/id = %s/%s/%d.\n", 
+//                              ((Boolean)(this.cascadeMveMod)).toString(),
+//                              ((Boolean)(this.cascadeMveDel)).toString(),
+//                              this.cascadeMveID);
+//            System.out.printf("cascade pve mod/del/id = %s/%s/%d.\n", 
+//                           ((Boolean)(this.cascadePveMod)).toString(),
+//                           ((Boolean)(this.cascadePveDel)).toString(),
+//                           this.cascadePveID);
+//            System.out.flush();
+
+            this.pending.updateForMVEDefChange(db,
+                                               mveID,
+                                               nameChanged,
+                                               oldName,
+                                               newName,
+                                               varLenChanged,
+                                               oldVarLen,
+                                               newVarLen,
+                                               fargListChanged,
+                                               n2o,
+                                               o2n,
+                                               fargNameChanged,
+                                               fargSubRangeChanged,
+                                               fargRangeChanged,
+                                               fargDeleted,
+                                               fargInserted,
+                                               oldFargList,
+                                               newFargList,
+                                               cpn2o,
+                                               cpo2n,
+                                               cpFargNameChanged,
+                                               cpFargSubRangeChanged,
+                                               cpFargRangeChanged,
+                                               cpFargDeleted,
+                                               cpFargInserted,
+                                               oldCPFargList,
+                                               newCPFargList);
+        }
+        else if ( ( this.cascadeMveMod != true ) ||
+                  ( this.cascadePveID != mveID ) ||
+                  ( this.cascadePveMod != false ) ||
+                  ( this.cascadePveID != DBIndex.INVALID_ID ) ||
+                  ( this.cascadePveDel != false ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "already in cascade for other reasons?!?");
+        }
+        
+        return;
+        
+    } /* DataCell::cascadeUpdateForMVEDefChange() */
+    
+    
+    /**
+     * cascadeUpdateForMVEDeletion()
+     *
+     * Update the value of the cell for the deletion of the indicated matrix
+     * vocab element.  
+     * 
+     * This call should be triggered by an instance of co;umn predicate 
+     * somewhere in the value of the cell receiving a MVEDeleted()
+     * message from the matrix vocab element in question.
+     *
+     * On entry, test to see if we are in a cascade.
+     *
+     * If we are not, enter the cascade, create the pending copy, and tell 
+     * it to update for the predicate vocab element deletion.  Make note of the 
+     * supplied mveID, and of the fact that we entered the cascade due to a 
+     * pve deletion.
+     *
+     * If we are already in a cascade, throw a system error unless the 
+     * we have already made note of our being in the cascade due to the 
+     * deletion the MVE indicated by the pveID parameter.  In this latter case, 
+     * exit without taking any action.
+     *
+     * Note that this method should never be called if the supplied mveID
+     * is equal to this.itsMveID.  If this ever happens, throw a system 
+     * error excpetion.
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void cascadeUpdateForMVEDeletion(Database db,
+                                               long mveID)
+        throws SystemErrorException
+    {
+        final String mName = "DataCell::cascadeUpdateForMVEDeletion(): ";
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        if ( mveID == this.itsMveID )
+        {
+            throw new SystemErrorException(mName + "mveID == this.itsMveID");
+        }
+
+        if ( ! this.inCascade )
+        {
+            this.enterCascade();
+            this.createPending(true);
+            this.cascadeMveMod = false;
+            this.cascadeMveDel = true;
+            this.cascadeMveID = mveID;
+            this.cascadePveMod = false;
+            this.cascadePveDel = false;
+            this.pending.updateForMVEDeletion(db, mveID);
+        }
+        else if ( ( this.cascadeMveMod != false ) ||
+                  ( this.cascadeMveDel != true ) ||
+                  ( this.cascadeMveID != mveID ) ||
+                  ( this.cascadePveMod != false ) ||
+                  ( this.cascadePveDel != false ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "already in cascade for other reasons?!?");
+        }
+
+        return;
+        
+    } /* DataCell::cascadeUpdateForMVEDeletion() */
 
     
     /**
@@ -1249,8 +1605,11 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         {
             this.enterCascade();
             this.createPending(true);
+            this.cascadeMveMod = false;
+            this.cascadeMveDel = false;
             this.cascadePveID = pveID;
             this.cascadePveMod = true;
+            this.cascadePveDel = false;
             this.pending.updateForPVEDefChange(db,
                                                pveID,
                                                nameChanged,
@@ -1270,8 +1629,11 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                                oldFargList,
                                                newFargList);
         }
-        else if ( ( this.cascadePveID != pveID ) ||
-                  ( this.cascadePveMod != true ) )
+        else if ( ( this.cascadeMveMod != false ) ||
+                  ( this.cascadeMveDel = false ) ||
+                  ( this.cascadePveID != pveID ) ||
+                  ( this.cascadePveMod != true ) ||
+                  ( this.cascadePveDel != false ) )
         {
             throw new SystemErrorException(mName + 
                     "already in cascade for other reasons?!?");
@@ -1322,23 +1684,28 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-                
+
         if ( ! this.inCascade )
         {
             this.enterCascade();
             this.createPending(true);
+            this.cascadeMveMod = false;
+            this.cascadeMveDel = false;
             this.cascadePveID = pveID;
             this.cascadePveMod = false;
+            this.cascadePveDel = true;
             this.pending.updateForPVEDeletion(db, pveID);
         }
-        else if ( ( this.cascadePveID != pveID ) ||
-                  ( this.cascadePveMod != false ) )
+        else if ( ( this.cascadeMveMod != false ) ||
+                  ( this.cascadeMveDel = false ) ||
+                  ( this.cascadePveID != pveID ) ||
+                  ( this.cascadePveMod != false ) ||
+                  ( this.cascadePveDel != true ) )
         {
             throw new SystemErrorException(mName + 
                     "already in cascade for other reasons?!?");
         }
-        
-        
+
         return;
         
     } /* DataCell::cascadeUpdateForPVEDeletion() */
@@ -1447,10 +1814,13 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                     "this.oldOrd != 0 on cascade entry?!?!?");
         }
         
-        if ( ( this.cascadePveID != DBIndex.INVALID_ID ) ||
-             ( this.cascadePveMod != false ) ) 
+        if ( ( this.cascadeMveMod != false ) || 
+             ( this.cascadePveID != DBIndex.INVALID_ID ) ||
+             ( this.cascadePveMod != false ) ||
+             ( this.cascadePveDel != false ) ) 
         {
-            throw new SystemErrorException(mName + "pve ID/mod already set?!?");
+            throw new SystemErrorException(mName + 
+                    "mve mod/(pve ID/mod/deli) already set?!?");
         }
         
         dc = this.lookupDataCol(this.itsColID);
@@ -1533,8 +1903,12 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         
         this.inCascade = false;
         
-        this.cascadePveID = DBIndex.INVALID_ID;
+        this.cascadeMveID  = DBIndex.INVALID_ID;
+        this.cascadeMveMod = false;
+        this.cascadeMveDel = false;
+        this.cascadePveID  = DBIndex.INVALID_ID;
         this.cascadePveMod = false;
+        this.cascadePveDel = false;
         
         return;
         
@@ -1680,6 +2054,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         
         this.listeners.noteChange(oldDC, 
                                   newDC, 
+                                  oldDC.cascadeMveMod,
+                                  oldDC.cascadePveDel,
                                   oldDC.cascadePveMod, 
                                   oldDC.cascadePveID);
         
@@ -1882,8 +2258,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     /**
      * deregisterPreds()
      *
-     * If the DataCell has mve type MATRIX, pass a deregister predicates message
-     * to this.val.
+     * If the DataCell has mve type MATRIX or PREDICATE, pass a deregister 
+     * predicates message to this.val.
      *
      * The objective is to get all instances of Predicate that may appear in 
      * the value of the cell to deregister as internal vocab element listeners 
@@ -1901,7 +2277,10 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
              ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
         {
-            this.val.deregisterPreds();
+            this.val.deregisterPreds(this.cascadeMveDel,
+                                     this.cascadeMveID,
+                                     this.cascadePveDel,
+                                     this.cascadePveID);
         }
         
         return;
@@ -2186,14 +2565,191 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         {
             throw new SystemErrorException(mName + "oldCell.val is null?!?");
         }
+
+        // TODO: delete this eventually
+//        System.out.printf("oldCell cascade mve mod/del/id = %s/%s/%d.\n", 
+//                          ((Boolean)(oldCell.cascadeMveMod)).toString(),
+//                          ((Boolean)(oldCell.cascadeMveDel)).toString(),
+//                          oldCell.cascadeMveID);
+//        System.out.printf("oldCell cascade pve mod/del/id = %s/%s/%d.\n", 
+//                       ((Boolean)(oldCell.cascadePveMod)).toString(),
+//                       ((Boolean)(oldCell.cascadePveDel)).toString(),
+//                       oldCell.cascadePveID);
+//        
+//        System.out.printf("newCell cascade mve mod/del/id = %s/%s/%d.\n", 
+//                          ((Boolean)(this.cascadeMveMod)).toString(),
+//                          ((Boolean)(this.cascadeMveDel)).toString(),
+//                          this.cascadeMveID);
+//        System.out.printf("newCell cascade pve mod/del/id = %s/%s/%d.\n", 
+//                       ((Boolean)(this.cascadePveMod)).toString(),
+//                       ((Boolean)(this.cascadePveDel)).toString(),
+//                       this.cascadePveID);
         
         this.val.validateReplacementMatrix(oldCell.val, 
+                                           oldCell.cascadeMveMod,
+                                           oldCell.cascadeMveDel,
+                                           oldCell.cascadeMveID,
                                            oldCell.cascadePveMod,
+                                           oldCell.cascadePveDel,
                                            oldCell.cascadePveID);
         
         return;
         
     } /* DataCell::validateReplacementCell() */
+
+    
+    /**
+     * updateForMVEDefChange()
+     *
+     * Update the value of the cell for a change in the definition of the 
+     * specified matrix vocab element.  This call should be triggered by 
+     * either the host data column or an instance of column predicate somewhere
+     * in the value of this cell receiving a MVEChanged() message from the 
+     * matrix vocab element in question.
+     *
+     * In either case, we should already be in a cascade, and this cell should
+     * be the pending cell that will be used to replace the old cell upon 
+     * cascade termination.
+     *
+     *                                              JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDefChange(
+                                 Database db,
+                                 long mveID,
+                                 boolean nameChanged,
+                                 String oldName,
+                                 String newName,
+                                 boolean varLenChanged,
+                                 boolean oldVarLen,
+                                 boolean newVarLen,
+                                 boolean fargListChanged,
+                                 long[] n2o,
+                                 long[] o2n,
+                                 boolean[] fargNameChanged,
+                                 boolean[] fargSubRangeChanged,
+                                 boolean[] fargRangeChanged,
+                                 boolean[] fargDeleted,
+                                 boolean[] fargInserted,
+                                 java.util.Vector<FormalArgument> oldFargList,
+                                 java.util.Vector<FormalArgument> newFargList,
+                                 long[] cpn2o,
+                                 long[] cpo2n,
+                                 boolean[] cpFargNameChanged,
+                                 boolean[] cpFargSubRangeChanged,
+                                 boolean[] cpFargRangeChanged,
+                                 boolean[] cpFargDeleted,
+                                 boolean[] cpFargInserted,
+                                 java.util.Vector<FormalArgument> oldCPFargList,
+                                 java.util.Vector<FormalArgument> newCPFargList)
+        throws SystemErrorException
+    {
+        final String mName = "DataCell::updateForMVEDefChange(): ";
+        DBElement dbe = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        dbe = this.db.idx.getElement(mveID);
+        
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName + 
+                                           "mveID doesn't refer to a mve.");
+        }
+        
+        this.val.updateForMVEDefChange(db,
+                                       mveID,
+                                       nameChanged,
+                                       oldName,
+                                       newName,
+                                       varLenChanged,
+                                       oldVarLen,
+                                       newVarLen,
+                                       fargListChanged,
+                                       n2o,
+                                       o2n,
+                                       fargNameChanged,
+                                       fargSubRangeChanged,
+                                       fargRangeChanged,
+                                       fargDeleted,
+                                       fargInserted,
+                                       oldFargList,
+                                       newFargList,
+                                       cpn2o,
+                                       cpo2n,
+                                       cpFargNameChanged,
+                                       cpFargSubRangeChanged,
+                                       cpFargRangeChanged,
+                                       cpFargDeleted,
+                                       cpFargInserted,
+                                       oldCPFargList,
+                                       newCPFargList);
+        
+        return;
+        
+    } /* DataCell::updateForMVEDefChange() */
+    
+    
+    /**
+     * updateForMVEDeletion()
+     *
+     * Update the value of the cell for the deletion of the specified matrix
+     * vocab element.  
+     * 
+     * This call should be triggered by an instance of column predicate 
+     * somewhere in the value of the cell receiving an MVEDeleted()
+     * message from the matrix vocab element in question.
+     *
+     * On entry, test to see if we are in a cascade.
+     *
+     * If we are not, enter the cascade, create the pending copy, and tell 
+     * it to update for the matrix vocab element deletion.  Make note of the 
+     * supplied mveID, and of the fact that we entered the cascade due to a 
+     * mve deletion.
+     *
+     * If we are already in a cascade, throw a system error unless the 
+     * we have already made note of our being in the cascade due to the 
+     * deletion the MVE indicated by the mveID parameter.  In this latter case, 
+     * exit without taking any action.
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDeletion(Database db,
+                                        long mveID)
+        throws SystemErrorException
+    {
+        final String mName = "DataCell::updateForMVEDeletion(): ";
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        this.val.updateForMVEDeletion(db, mveID);
+        
+        return;
+        
+    } /* DataCell::updateForMVEDeletion() */
 
     
     /**
@@ -2204,17 +2760,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * instance of predicate somewhere in the value of the cell receiving a 
      * VEChanged() message from the predicate vocab element in question.
      *
-     * On entry, test to see if we are in a cascade.
-     *
-     * If we are not, enter the cascade, create the pending copy, and tell 
-     * it to update for the predicate vocab element change.  Make note of the 
-     * supplied pveID, and of the fact that we entered the cascade due to a 
-     * pve modification.
-     *
-     * If we are already in a cascade, throw a system error unless the 
-     * we have already made note of our being in the cascade due to a change
-     * in the PVE indicated by the pveID parameter.  In this latter case, 
-     * exit without taking any action.
+     *                                          JRM -- 8/26/08     
      *
      * Changes:
      *
@@ -2395,8 +2941,13 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "oldCell.val is null?!?");
         }
         
-        this.val.updateIndexForReplacementVal(oldCell.val, this.id, 
-                                              oldCell.cascadePveMod, 
+        this.val.updateIndexForReplacementVal(oldCell.val, 
+                                              this.id, 
+                                              oldCell.cascadeMveMod,
+                                              oldCell.cascadeMveDel,
+                                              oldCell.cascadeMveID,
+                                              oldCell.cascadePveMod,
+                                              oldCell.cascadePveDel, 
                                               oldCell.cascadePveID);
         
         return;
@@ -8903,7 +9454,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             String f_cell0_DBstring = 
                 "(DataCell (id 0) " +
-                        "(itsColID 13) " +
+                        "(itsColID 17) " +
                         "(itsMveID 11) " +
                         "(itsMveType FLOAT) " +
                         "(ord -1) " +
@@ -8922,7 +9473,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(maxVal 0.0))))))))";
             String f_cell1_DBstring =
                 "(DataCell (id 0) " +
-                        "(itsColID 13) " +
+                        "(itsColID 17) " +
                         "(itsMveID 11) " +
                         "(itsMveType FLOAT) " +
                         "(ord -1) " +
@@ -8941,7 +9492,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(maxVal 0.0))))))))";
             String f_cell2_DBstring =
                 "(DataCell (id 0) " +
-                        "(itsColID 13) " +
+                        "(itsColID 17) " +
                         "(itsMveID 11) " +
                         "(itsMveType FLOAT) " +
                         "(ord -1) " +
@@ -8961,17 +9512,17 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     
             String i_cell0_DBstring = 
                 "(DataCell (id 0) " +
-                        "(itsColID 16) " +
-                        "(itsMveID 14) " +
+                        "(itsColID 24) " +
+                        "(itsMveID 18) " +
                         "(itsMveType INTEGER) " +
                         "(ord -1) " +
                         "(onset (60,00:00:00:000)) " +
                         "(offset (60,00:00:00:000)) " +
-                        "(val (Matrix (mveID 14) " +
+                        "(val (Matrix (mveID 18) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((IntDataValue (id 0) " +
-                                            "(itsFargID 15) " +
+                                            "(itsFargID 19) " +
                                             "(itsFargType INTEGER) " +
                                             "(itsCellID 0) " +
                                             "(itsValue 0) " +
@@ -8980,17 +9531,17 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(maxVal 0))))))))";
             String i_cell1_DBstring = 
                 "(DataCell (id 0) " +
-                        "(itsColID 16) " +
-                        "(itsMveID 14) " +
+                        "(itsColID 24) " +
+                        "(itsMveID 18) " +
                         "(itsMveType INTEGER) " +
                         "(ord -1) " +
                         "(onset (60,00:00:00:000)) " +
                         "(offset (60,00:00:00:000)) " +
-                        "(val (Matrix (mveID 14) " +
+                        "(val (Matrix (mveID 18) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((IntDataValue (id 0) " +
-                                            "(itsFargID 15) " +
+                                            "(itsFargID 19) " +
                                             "(itsFargType INTEGER) " +
                                             "(itsCellID 0) " +
                                             "(itsValue 0) " +
@@ -8999,17 +9550,17 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(maxVal 0))))))))";
             String i_cell2_DBstring = 
                 "(DataCell (id 0) " +
-                        "(itsColID 16) " +
-                        "(itsMveID 14) " +
+                        "(itsColID 24) " +
+                        "(itsMveID 18) " +
                         "(itsMveType INTEGER) " +
                         "(ord -1) " +
                         "(onset (60,00:00:03:000)) " +
                         "(offset (60,00:00:04:000)) " +
-                        "(val (Matrix (mveID 14) " +
+                        "(val (Matrix (mveID 18) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((IntDataValue (id 0) " +
-                                            "(itsFargID 15) " +
+                                            "(itsFargID 19) " +
                                             "(itsFargType INTEGER) " +
                                             "(itsCellID 0) " +
                                             "(itsValue 22) " +
@@ -9019,53 +9570,53 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     
             String m_cell0_DBstring = 
                 "(DataCell (id 0) " +
-                        "(itsColID 19) " +
-                        "(itsMveID 17) " +
+                        "(itsColID 31) " +
+                        "(itsMveID 25) " +
                         "(itsMveType MATRIX) " +
                         "(ord -1) " +
                         "(onset (60,00:00:00:000)) " +
                         "(offset (60,00:00:00:000)) " +
-                        "(val (Matrix (mveID 17) " +
+                        "(val (Matrix (mveID 25) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((UndefinedDataValue (id 0) " +
-                                            "(itsFargID 18) " +
+                                            "(itsFargID 26) " +
                                             "(itsFargType UNTYPED) " +
                                             "(itsCellID 0) " +
                                             "(itsValue <arg>) " +
                                             "(subRange false))))))))";
             String m_cell1_DBstring =
                 "(DataCell (id 0) " +
-                        "(itsColID 19) " +
-                        "(itsMveID 17) " +
+                        "(itsColID 31) " +
+                        "(itsMveID 25) " +
                         "(itsMveType MATRIX) " +
                         "(ord -1) " +
                         "(onset (60,00:00:00:000)) " +
                         "(offset (60,00:00:00:000)) " +
-                        "(val (Matrix (mveID 17) " +
+                        "(val (Matrix (mveID 25) " +
                                     "(varLen false) " +
                                     "(argList " +
                                         "((UndefinedDataValue (id 0) " +
-                                            "(itsFargID 18) " +
+                                            "(itsFargID 26) " +
                                             "(itsFargType UNTYPED) " +
                                             "(itsCellID 0) " +
                                             "(itsValue <arg>) " +
                                             "(subRange false))))))))";
             String m_cell2_DBstring =
                 "(DataCell (id 0) " +
-                  "(itsColID 19) " +
-                  "(itsMveID 17) " +
+                  "(itsColID 31) " +
+                  "(itsMveID 25) " +
                   "(itsMveType MATRIX) " +
                   "(ord -1) " +
                   "(onset (60,00:00:05:000)) " +
                   "(offset (60,00:00:06:000)) " +
                   "(val " +
                     "(Matrix " +
-                      "(mveID 17) " +
+                      "(mveID 25) " +
                       "(varLen false) " +
                       "(argList " +
                         "((PredDataValue (id 0) " +
-                          "(itsFargID 18) " +
+                          "(itsFargID 26) " +
                           "(itsFargType UNTYPED) " +
                           "(itsCellID 0) " +
                           "(itsValue " +
@@ -9112,54 +9663,54 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     
             String n_cell0_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 22) (" +
-                    "itsMveID 20) " +
+                    "(itsColID 38) (" +
+                    "itsMveID 32) " +
                     "(itsMveType NOMINAL) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 20) " +
+                        "(Matrix (mveID 32) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 33) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))))";
             String n_cell1_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 22) (" +
-                    "itsMveID 20) " +
+                    "(itsColID 38) (" +
+                    "itsMveID 32) " +
                     "(itsMveType NOMINAL) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 20) " +
+                        "(Matrix (mveID 32) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 33) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))))";
             String n_cell2_DBstring = 
                 "(DataCell (id 0) " +
-                    "(itsColID 22) (" +
-                    "itsMveID 20) " +
+                    "(itsColID 38) (" +
+                    "itsMveID 32) " +
                     "(itsMveType NOMINAL) " +
                     "(ord -1) " +
                     "(onset (60,00:00:07:000)) " +
                     "(offset (60,00:00:08:000)) " +
                     "(val " +
-                        "(Matrix (mveID 20) " +
+                        "(Matrix (mveID 32) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 33) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a_nominal) " +
@@ -9167,54 +9718,54 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     
             String p_cell0_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 25) " +
-                    "(itsMveID 23) " +
+                    "(itsColID 45) " +
+                    "(itsMveID 39) " +
                     "(itsMveType PREDICATE) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 23) " +
+                        "(Matrix (mveID 39) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 24) " +
+                                    "(itsFargID 40) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))))";
             String p_cell1_DBstring = 
                 "(DataCell (id 0) " +
-                    "(itsColID 25) " +
-                    "(itsMveID 23) " +
+                    "(itsColID 45) " +
+                    "(itsMveID 39) " +
                     "(itsMveType PREDICATE) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 23) " +
+                        "(Matrix (mveID 39) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 24) " +
+                                    "(itsFargID 40) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))))";
             String p_cell2_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 25) " +
-                    "(itsMveID 23) " +
+                    "(itsColID 45) " +
+                    "(itsMveID 39) " +
                     "(itsMveType PREDICATE) " +
                     "(ord -1) " +
                     "(onset (60,00:00:09:000)) " +
                     "(offset (60,00:00:10:000)) " +
                     "(val " +
-                        "(Matrix (mveID 23) " +
+                        "(Matrix (mveID 39) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 24) " +
+                                    "(itsFargID 40) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -9239,54 +9790,54 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     
             String t_cell0_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 28) " +
-                    "(itsMveID 26) " +
+                    "(itsColID 52) " +
+                    "(itsMveID 46) " +
                     "(itsMveType TEXT) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 26) " +
+                        "(Matrix (mveID 46) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 47) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))))";
             String t_cell1_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 28) " +
-                    "(itsMveID 26) " +
+                    "(itsColID 52) " +
+                    "(itsMveID 46) " +
                     "(itsMveType TEXT) " +
                     "(ord -1) " +
                     "(onset (60,00:00:00:000)) " +
                     "(offset (60,00:00:00:000)) " +
                     "(val " +
-                        "(Matrix (mveID 26) " +
+                        "(Matrix (mveID 46) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 47) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))))";
             String t_cell2_DBstring =
                 "(DataCell (id 0) " +
-                    "(itsColID 28) " +
-                    "(itsMveID 26) " +
+                    "(itsColID 52) " +
+                    "(itsMveID 46) " +
                     "(itsMveType TEXT) " +
                     "(ord -1) " +
                     "(onset (60,00:00:11:000)) " +
                     "(offset (60,00:00:12:000)) " +
                     "(val " +
-                        "(Matrix (mveID 26) " +
+                        "(Matrix (mveID 46) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 47) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +

@@ -136,6 +136,7 @@ public abstract class VocabElement extends DBElement
         final String mName = "VocabElement::VocabElement(ve): ";
         int i;
         int fArgCount;
+        FormalArgument fa;
         
         if ( ( ve == null ) || ( ! ( ve instanceof VocabElement) ) )
         {
@@ -184,10 +185,27 @@ public abstract class VocabElement extends DBElement
         {
             fArgCount = ve.getNumFormalArgs();
         }
-        
+
+        // copy over the arguments.  Don't use appendFormalArg(), as this 
+        // method is overridden by at least one subclass, and the data 
+        // structures it depends on will not have been initialized yet.
         for ( i = 0; i < fArgCount; i++ )
         {
-            this.appendFormalArg(ve.copyFormalArg(i));
+            fa = ve.copyFormalArg(i);
+
+            if ( fa == null )
+            {
+                throw new SystemErrorException(mName + "fa is null???");
+            }
+            else if ( ! fArgNameIsUnique(fa.getFargName()) )
+            {
+                throw new SystemErrorException(mName + "fa name not unique??.");
+            }
+
+            fArgList.add(fa);
+
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
         }
         
         this.system = ve.system;
@@ -360,7 +378,8 @@ public abstract class VocabElement extends DBElement
     /******************** Argument List Manipulation: ************************/
     /*************************************************************************/
     
-    /** appendFormalArg()
+    /** 
+     * appendFormalArg()
      *
      * Append the supplied formal argument to the end of the formal argument
      * list.
@@ -430,10 +449,11 @@ public abstract class VocabElement extends DBElement
      *                                          JRM -- 6/15/07
      *
      */
+    
     protected FormalArgument copyFormalArg(int n)
         throws SystemErrorException
     {
-        final String mName = "VocabElement::getFormalArg(): ";
+        final String mName = "VocabElement::copyFormalArg(): ";
         FormalArgument fArg = null;
         FormalArgument fArgCopy = null;
 
@@ -454,55 +474,13 @@ public abstract class VocabElement extends DBElement
         }
 
         fArg = fArgList.get(n);
-
-        if ( fArg == null )
-        {
-            throw new SystemErrorException(mName + "fArg is null?!?");
-        }
-        if ( fArg instanceof UnTypedFormalArg )
-        {
-            fArgCopy = new UnTypedFormalArg((UnTypedFormalArg)fArg);
-        }
-        else if ( fArg instanceof IntFormalArg )
-        {
-            fArgCopy = new IntFormalArg((IntFormalArg)fArg);
-        }
-        else if ( fArg instanceof FloatFormalArg )
-        {
-            fArgCopy = new FloatFormalArg((FloatFormalArg)fArg);
-        }
-        else if ( fArg instanceof TimeStampFormalArg )
-        {
-            fArgCopy = new TimeStampFormalArg((TimeStampFormalArg)fArg);
-        }
-        else if ( fArg instanceof QuoteStringFormalArg )
-        {
-            fArgCopy = new QuoteStringFormalArg((QuoteStringFormalArg)fArg);
-        }
-        else if ( fArg instanceof TextStringFormalArg )
-        {
-            fArgCopy = new TextStringFormalArg((TextStringFormalArg)fArg);
-        }
-        else if ( fArg instanceof NominalFormalArg )
-        {
-            fArgCopy = new NominalFormalArg((NominalFormalArg)fArg);
-        }
-        else if ( fArg instanceof PredFormalArg )
-        {
-            fArgCopy = new PredFormalArg((PredFormalArg)fArg);
-        }
-        else /* unknown formal argument type */
-        {
-            throw new SystemErrorException(mName + "fArg of unknown type");
-        }
+        
+        fArgCopy = FormalArgument.CopyFormalArg(fArg, false, true);
         
         if ( fArgCopy == null )
         {
             throw new SystemErrorException(mName + "fArgcopy is null");
         }
-        
-        fArgCopy.setItsVocabElement(null);
-        fArgCopy.setItsVocabElementID(DBIndex.INVALID_ID);
 
         return fArgCopy;
 
@@ -779,7 +757,8 @@ public abstract class VocabElement extends DBElement
         {
             throw new SystemErrorException(mName + "fArg is null?!?");
         }
-        if ( ! ( ( fArg instanceof UnTypedFormalArg ) ||
+        if ( ! ( ( fArg instanceof ColPredFormalArg ) ||
+                 ( fArg instanceof UnTypedFormalArg ) ||
                  ( fArg instanceof IntFormalArg ) ||
                  ( fArg instanceof FloatFormalArg ) ||
                  ( fArg instanceof TimeStampFormalArg ) ||
@@ -892,6 +871,7 @@ public abstract class VocabElement extends DBElement
         return;        
         
     } /* VocabElement::insertFormalArg() */
+
     
      /**
       * propagateID()

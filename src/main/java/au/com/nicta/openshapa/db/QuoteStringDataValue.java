@@ -2277,7 +2277,7 @@ public class QuoteStringDataValue extends DataValue
                                     "(subRange false))";
         String testString1 = "\"nero\"";
         String testDBString1 = "(QuoteStringDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 501) " +
                                     "(itsValue nero) " +

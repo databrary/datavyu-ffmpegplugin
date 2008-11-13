@@ -2873,7 +2873,7 @@ public class TimeStampDataValue extends DataValue
                                     "(maxVal (60,01:00:00:000)))";
         String testString1 = "12:10:05:012";
         String testDBString1 = "(TimeStampDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 501) " +
                                     "(itsValue (60,12:10:05:012)) " +

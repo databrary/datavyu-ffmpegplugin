@@ -319,6 +319,13 @@ public class TimeStampFormalArg extends FormalArgument
                                        new TimeStamp(db.getTicks(), 
                                        ((IntDataValue)salvage).getItsValue()));
         }
+        else if ( ( salvage instanceof TimeStampDataValue ) &&
+                  ( this.db.IsValidTimeStamp(
+                            ((TimeStampDataValue)salvage).getItsValue()) ) )
+        {
+            retVal = new TimeStampDataValue(this.db, this.id, 
+                            ((TimeStampDataValue)salvage).getItsValue());
+        }
         else
         {
             retVal = new TimeStampDataValue(this.db, this.id); 

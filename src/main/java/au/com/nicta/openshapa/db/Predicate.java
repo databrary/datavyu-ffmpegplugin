@@ -499,7 +499,7 @@ public class Predicate extends DBElement
   
     
     /*************************************************************************/
-    /********************* MVE Change Management: ****************************/
+    /********************** VE Change Management: ****************************/
     /*************************************************************************/
     
     /**
@@ -1233,6 +1233,16 @@ public class Predicate extends DBElement
             
             switch (fa.getFargType())
             {
+                case COL_PREDICATE:
+                    if ( ! ( dv instanceof ColPredDataValue ) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + 
+                                ": column predicate expected.");
+                    }
+                    cdv = new ColPredDataValue((ColPredDataValue)dv);
+                    break;
+
                 case FLOAT:
                     if ( ! ( dv instanceof FloatDataValue ) )
                     {
@@ -1304,6 +1314,10 @@ public class Predicate extends DBElement
                     break;
 
                 case UNTYPED:
+                    if ( dv instanceof ColPredDataValue )
+                    {
+                        cdv = new ColPredDataValue((ColPredDataValue)dv);
+                    }
                     if ( dv instanceof FloatDataValue )
                     {
                         cdv = new FloatDataValue((FloatDataValue)dv);
@@ -1328,13 +1342,15 @@ public class Predicate extends DBElement
                     {
                         cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
-                    else if ( dv instanceof TextStringDataValue )
-                    {
-                        cdv = new TextStringDataValue((TextStringDataValue)dv);
-                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( dv instanceof TextStringDataValue )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "A TextStringDataValue may not be used to " +
+                                "replace an untyped formal argument");
                     }
                     else
                     {
@@ -1395,7 +1411,7 @@ public class Predicate extends DBElement
      * argument list.
      *
      * This method should only be called if this instance of the predicate
-     * is the cannonical instance -- that is the instanced listed in the 
+     * is the cannonical instance -- that is the instance listed in the 
      * index.
      *                                              JRM -- 3/24/08
      *
@@ -1404,17 +1420,15 @@ public class Predicate extends DBElement
      *    - None.
      */
     
-    protected void deregisterWithPve()
+    protected void deregisterWithPve(boolean cascadeMveDel,
+                                     long cascadeMveID,
+                                     boolean cascadePveDel,
+                                     long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "Predicate::deregisterWithPve(): ";
         DBElement dbe = null;
         PredicateVocabElement pve = null;
-        
-        if ( this.id == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName + "id not set?!?");
-        }
         
         if ( this.db == null )
         {
@@ -1427,30 +1441,45 @@ public class Predicate extends DBElement
                     "not the cannonical incarnation of the predicate");
         }
         
-        if ( this.pveID != DBIndex.INVALID_ID ) // we have work to do
+        if ( this.pveID != DBIndex.INVALID_ID ) 
         {
-        
-            dbe = this.db.idx.getElement(this.pveID);
-        
-            if ( ! ( dbe instanceof PredicateVocabElement ) )
+            if ( ( ! cascadePveDel ) || 
+                 ( cascadePveID != this.pveID ) ) // must de-register
             {
-                throw new SystemErrorException(mName + 
-                                               "pveID doesn't refer to a pve.");
-            }
 
-            pve = (PredicateVocabElement)dbe;
-            
-            pve.deregisterInternalListener(this.id);
+                dbe = this.db.idx.getElement(this.pveID);
+
+                if ( ! ( dbe instanceof PredicateVocabElement ) )
+                {
+                    throw new SystemErrorException(mName + 
+                                                   "pveID doesn't refer to a pve.");
+                }
+
+                pve = (PredicateVocabElement)dbe;
+
+                pve.deregisterInternalListener(this.id);
+            }
         
-        
+            // pass the deregister message to the argument list regardless
             for ( DataValue dv : this.argList )
             {
-                if ( dv instanceof PredDataValue )
+                if ( dv instanceof ColPredDataValue )
                 {
-                    ((PredDataValue)dv).deregisterPreds();
+                    ((ColPredDataValue)dv).deregisterPreds(cascadeMveDel,
+                                                           cascadeMveID,
+                                                           cascadePveDel, 
+                                                           cascadePveID);
+                }
+                else if ( dv instanceof PredDataValue )
+                {
+                    ((PredDataValue)dv).deregisterPreds(cascadeMveDel,
+                                                        cascadeMveID,
+                                                        cascadePveDel, 
+                                                        cascadePveID);
                 }
             }
         }
+             
         
         return;
         
@@ -1501,7 +1530,8 @@ public class Predicate extends DBElement
                 throw new SystemErrorException(mName + "arg is null?!?");
             }
             
-            if ( ! ( ( arg instanceof FloatDataValue ) ||
+            if ( ! ( ( arg instanceof ColPredDataValue ) ||
+                     ( arg instanceof FloatDataValue ) ||
                      ( arg instanceof IntDataValue ) ||
                      ( arg instanceof NominalDataValue ) ||
                      ( arg instanceof PredDataValue ) ||
@@ -1629,7 +1659,11 @@ public class Predicate extends DBElement
         
             for ( DataValue dv : this.argList )
             {
-                if ( dv instanceof PredDataValue )
+                if ( dv instanceof ColPredDataValue )
+                {
+                    ((ColPredDataValue)dv).registerPreds();
+                }
+                else if ( dv instanceof PredDataValue )
                 {
                     ((PredDataValue)dv).registerPreds();
                 }
@@ -1724,6 +1758,14 @@ public class Predicate extends DBElement
 
         switch (fa.getFargType())
         {
+            case COL_PREDICATE:
+                if ( ! ( newArg instanceof ColPredDataValue ) )
+                {
+                    throw new SystemErrorException(mName +
+                            "Type mismatch: column predicate expected.");
+                }
+                break;
+                
             case FLOAT:
                 if ( ! ( newArg instanceof FloatDataValue ) )
                 {
@@ -1779,7 +1821,8 @@ public class Predicate extends DBElement
                 // break;
  
             case UNTYPED:
-                if ( ! ( ( newArg instanceof FloatDataValue ) ||
+                if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                         ( newArg instanceof FloatDataValue ) ||
                          ( newArg instanceof IntDataValue ) ||
                          ( newArg instanceof NominalDataValue ) ||
                          ( newArg instanceof PredDataValue ) ||
@@ -1832,9 +1875,218 @@ public class Predicate extends DBElement
     
     
     /**
+     * updateForMVEDefChange()
+     *
+     * Scan the list of data values in the predicate, and pass an update for 
+     * matrix vocab element definition change message to any column predicate
+     * or predicate data values.
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDefChange(
+                                 Database db,
+                                 long mveID,
+                                 boolean nameChanged,
+                                 String oldName,
+                                 String newName,
+                                 boolean varLenChanged,
+                                 boolean oldVarLen,
+                                 boolean newVarLen,
+                                 boolean fargListChanged,
+                                 long[] n2o,
+                                 long[] o2n,
+                                 boolean[] fargNameChanged,
+                                 boolean[] fargSubRangeChanged,
+                                 boolean[] fargRangeChanged,
+                                 boolean[] fargDeleted,
+                                 boolean[] fargInserted,
+                                 java.util.Vector<FormalArgument> oldFargList,
+                                 java.util.Vector<FormalArgument> newFargList,
+                                 long[] cpn2o,
+                                 long[] cpo2n,
+                                 boolean[] cpFargNameChanged,
+                                 boolean[] cpFargSubRangeChanged,
+                                 boolean[] cpFargRangeChanged,
+                                 boolean[] cpFargDeleted,
+                                 boolean[] cpFargInserted,
+                                 java.util.Vector<FormalArgument> oldCPFargList,
+                                 java.util.Vector<FormalArgument> newCPFargList)
+        throws SystemErrorException
+    {
+        final String mName = "Predicate::updateForMVEDefChange(): ";
+        DBElement dbe = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        dbe = this.db.idx.getElement(mveID);
+        
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName + 
+                                           "mveID doesn't refer to a pve.");
+        }
+        
+        for ( DataValue dv : this.argList )
+        {
+            if ( dv instanceof ColPredDataValue )
+            {
+                ((ColPredDataValue)dv).updateForMVEDefChange(db,
+                                                          mveID,
+                                                          nameChanged,
+                                                          oldName,
+                                                          newName,
+                                                          varLenChanged,
+                                                          oldVarLen,
+                                                          newVarLen,
+                                                          fargListChanged,
+                                                          n2o,
+                                                          o2n,
+                                                          fargNameChanged,
+                                                          fargSubRangeChanged,
+                                                          fargRangeChanged,
+                                                          fargDeleted,
+                                                          fargInserted,
+                                                          oldFargList,
+                                                          newFargList,
+                                                          cpn2o,
+                                                          cpo2n,
+                                                          cpFargNameChanged,
+                                                          cpFargSubRangeChanged,
+                                                          cpFargRangeChanged,
+                                                          cpFargDeleted,
+                                                          cpFargInserted,
+                                                          oldCPFargList,
+                                                          newCPFargList);
+            }
+            else if ( dv instanceof PredDataValue )
+            {
+                ((PredDataValue)dv).updateForMVEDefChange(db,
+                                                          mveID,
+                                                          nameChanged,
+                                                          oldName,
+                                                          newName,
+                                                          varLenChanged,
+                                                          oldVarLen,
+                                                          newVarLen,
+                                                          fargListChanged,
+                                                          n2o,
+                                                          o2n,
+                                                          fargNameChanged,
+                                                          fargSubRangeChanged,
+                                                          fargRangeChanged,
+                                                          fargDeleted,
+                                                          fargInserted,
+                                                          oldFargList,
+                                                          newFargList,
+                                                          cpn2o,
+                                                          cpo2n,
+                                                          cpFargNameChanged,
+                                                          cpFargSubRangeChanged,
+                                                          cpFargRangeChanged,
+                                                          cpFargDeleted,
+                                                          cpFargInserted,
+                                                          oldCPFargList,
+                                                          newCPFargList);
+            }
+        }
+        
+        return;
+        
+    } /* Predicate::updateForMVEDefChange() */
+    
+    
+    /**
+     * updateForMVEDeletion()
+     *
+     * If the predicate is defined, scan its argument list and
+     * pass the update for mve deletion message to any column predicates or
+     * predicates that may appear in the argument list.
+     * 
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDeletion(Database db,
+                                        long deletedMveID)
+        throws SystemErrorException
+    {
+        final String mName = "Predicate::updateForMVEDeletion(): ";
+        int i;
+        int numArgs;
+        DBElement dbe = null;
+        PredicateVocabElement pve = null;
+        FormalArgument fa = null;
+        DataValue dv = null;
+        PredDataValue pdv = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( deletedMveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "deletedPveID invalid.");
+        }
+        
+        if ( this.pveID != DBIndex.INVALID_ID )
+        {
+            numArgs = this.argList.size();
+
+            if ( numArgs <= 0 )
+            {
+                throw new SystemErrorException(mName + "numArgs <= 0");
+            }
+
+            i = 0;
+
+            while ( i < numArgs )
+            {
+                dv = this.getArg(i);
+
+                if ( dv == null )
+                {
+                    throw new SystemErrorException(mName + "arg " + i + 
+                                                   " is null?!?!");
+                }
+
+                if ( dv instanceof PredDataValue )
+                {
+                    ((PredDataValue)dv).updateForPVEDeletion(db, deletedMveID);
+                }
+                else if ( dv instanceof ColPredDataValue )
+                {
+                    ((ColPredDataValue)dv).updateForPVEDeletion(db, deletedMveID);
+                }
+
+                i++;
+            }
+        }
+        
+        return;
+        
+    } /* Predicate::updateForMVEDeletion() */
+    
+    
+    /**
      * updateForPVEDefChange()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
+     * Scan the list of data values in the predicate, and pass an update for 
      * predicate vocab element definition change message to any predicate 
      * data values.
      *                                          JRM -- 3/23/08
@@ -1989,8 +2241,9 @@ public class Predicate extends DBElement
      * It the supplied pveID mathes this.pveID, set this.pveID to INVALID_ID.
      *
      * Otherwise, if the predicate is defined, scan its argument list and
-     * pass the update for pve deletion message to any predicate vocab elements
-     * that may appear in the argument list. 
+     * pass the update for pve deletion message to any column predicates or
+     * predicates that may appear in the argument list.
+     * 
      *                                          JRM -- 3/23/08
      *
      * Changes:
@@ -1999,33 +2252,103 @@ public class Predicate extends DBElement
      */
     
     protected void updateForPVEDeletion(Database db,
-                                        long pveID)
+                                        long deletedPveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForPVEDeletion(): ";
+        int i;
+        int numArgs;
+        DBElement dbe = null;
+        PredicateVocabElement pve = null;
+        FormalArgument fa = null;
+        DataValue dv = null;
+        PredDataValue pdv = null;
         
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
         
-        if ( pveID == DBIndex.INVALID_ID )
+        if ( deletedPveID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "pveID invalid.");
+            throw new SystemErrorException(mName + "deletedPveID invalid.");
         }
         
-        if ( this.pveID == pveID )
+        if ( this.pveID == deletedPveID )
         {
             this.setPredID(DBIndex.INVALID_ID, false);
         }
         else if ( this.pveID != DBIndex.INVALID_ID )
         {
-            for ( DataValue dv : this.argList )
+            numArgs = this.argList.size();
+
+            if ( numArgs <= 0 )
             {
+                throw new SystemErrorException(mName + "numArgs <= 0");
+            }
+            
+            i = 0;
+            
+            while ( i < numArgs )
+            {
+                dv = this.getArg(i);
+
+                if ( dv == null )
+                {
+                    throw new SystemErrorException(mName + "arg " + i + 
+                                                   " is null?!?!");
+                }
+
                 if ( dv instanceof PredDataValue )
                 {
-                    ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
+                    pdv = (PredDataValue)dv;
+                    
+                    if ( pdv.getItsValuePveID() == deletedPveID )
+                    {
+                        if ( dv.getItsFargType() == 
+                                FormalArgument.fArgType.UNTYPED )
+                        {
+                            if ( pve == null )
+                            {
+                                pve = this.lookupPredicateVE(this.pveID);
+                            }
+
+                            fa = pve.getFormalArg(i);
+
+                            if ( fa == null )
+                            {
+                                throw new SystemErrorException(mName + "no " +
+                                        i + "th formal argument?!?!");
+                            }
+
+                            dv = fa.constructEmptyArg();
+                            
+                            dv.setItsPredID(this.id);
+
+                            this.replaceArg(i, dv);
+                        }
+                        else if ( dv.getItsFargType() == 
+                                FormalArgument.fArgType.PREDICATE )
+                        {
+                            ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName + "arg " + i + 
+                                    " has unexpected fArgType.");
+                        }
+                    }
+                    else
+                    {
+                        pdv.updateForPVEDeletion(db, deletedPveID);
+                    }
                 }
+                else if ( dv instanceof ColPredDataValue )
+                {
+                    ((ColPredDataValue)dv).updateForPVEDeletion(db, deletedPveID);
+                }
+                
+                i++;
             }
         }
         
@@ -2038,39 +2361,73 @@ public class Predicate extends DBElement
      * updateIndexForReplacement()
      *
      * When the old incarnation of the canonnical version of a DataCell is 
-     * replaced with the new, we must update the index so that DataValues and
-     * predicates that don't appear in the new incarnation are removed from
-     * the index, DataValues and Predicates that are introduced in the 
-     * new incarnation are inserted in the index, and the index is updated 
-     * to point to the new versions of DataValues and Predicates that appear
-     * in both.
+     * replaced with the new, we must update the index so that DataValues,
+     * column predicates, and predicates that don't appear in the new 
+     * incarnation are removed from the index, DataValues, column predicates,
+     * and Predicates that are introduced in the new incarnation are inserted 
+     * in the index, and the index is updated to point to the new versions of 
+     * DataValues, column predicates, and Predicates that appear in both.
      *
-     * Doing this in the general case is quite a chore, so we make some 
-     * simplifying assumptions:
+     * If there is no structural change in the underlying mve's and pve's,
+     * this task relatively straight forward, as continuing objects will 
+     * reside in the same location in the old and new argument lists, and 
+     * will share IDs.  New items will reside in the new version, and have
+     * invalid IDs, and items that will cease to exist will reside in the
+     * old version, and not have a cognate with the same ID in the same
+     * location in the new verson.
      *
-     * 1) The underlying MatrixVocabElement has not changed.
+     * If there is structural change, things get much more complicated -- 
+     * however we limit the complexity by allowing at most one mve or pve
+     * to be modified or deleted in any one cycle.  Thus we are given that 
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * cascadePveDel parameters will be true.
      *
-     * 2) DataValues do not change location in the val matrix (or in predicate
-     *    argument lists unless the pve is changed) -- they are are either 
-     *    modified or replaced with new DataValues (that is, instances of 
-     *    DataValue with invalid ID and probably different type).
      *
-     * 3) If a new PredDataValue appears in the val matrix, then its value
-     *    is a new Predicate -- i.e. an instance of Predicate with invalid id. 
+     * 1) cascadeMveMod == true
      *
-     * 4) If a new Predicate appears in the val matrix, then only new DataValues
-     *    and Predicates may appear in its argument list.
+     * If cascadeMveMod is true, then a mve has been modified, and the ID of
+     * the modified mve is in cascadeMveID.
      *
-     * 5) If a Predicate changes its target PVE, then all its arguments must
-     *    be new.
+     * Proceed as per the no structural change case.
      *
-     * Violations of these assumptions should be detected before we get this far,
-     * but we should still check for violations where convienient, and throw a 
-     * system error if one is detected.
      *
-     * This method is called when a PredDataValue is replaced with another 
-     * PredDataValue with identical ID.  Its job is to update the index for 
-     * the old and new versions of the predicate, and their arguments.
+     * 2) cascadeMveDel == true
+     *
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * the deleted mve is in cascadeMveID.
+     *
+     * Proceed as per the no structural change case.
+     *
+     *
+     * 3) cascadePveMod == true
+     *
+     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * the modified pve is in cascadeMveID.
+     *
+     * If cascadePveID == this.pveID, then the definition of the pve that 
+     * defines the predicate represented by this instance of Predicate
+     * has changed.  
+     * 
+     * Thus it is possible that formal arguments have been deleted and/or 
+     * re-arranged.  Thus instead of looking just in the corresponding location
+     * in the old argument list for the old version of an argument in the new
+     * list, we must scan the entire old argument list for the old version.
+     * Similarly for each item in the old argument list, we must scan the 
+     * new argument list to verify that there is no new version, and the 
+     * old argument (and all its descendants -- if any) must be removed from 
+     * the index.
+     *
+     * If cascadePveID != this.pveID, then we can proceed as per the no 
+     * structural change case -- for this predicate at least.
+     *
+     *
+     * 4) cascadePveDel == true
+     *
+     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * the deleted pve is in cascadePveID.
+     *
+     * In this case, verify that this.pveID != cascadePveID, and then proceed
+     * as per the no structural change case.
      *
      *                                      JRM -- 2/20/08
      *
@@ -2081,8 +2438,12 @@ public class Predicate extends DBElement
     
     public void updateIndexForReplacement(Predicate oldPred,
                                           long DCID,
-                                          boolean pveMod,
-                                          long pveModID)
+                                          boolean cascadeMveMod,
+                                          boolean cascadeMveDel,
+                                          long cascadeMveID,
+                                          boolean cascadePveMod,
+                                          boolean cascadePveDel,
+                                          long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "Predicate::updateIndexForReplacement(): ";
@@ -2091,6 +2452,31 @@ public class Predicate extends DBElement
         FormalArgument fa;
         DataValue oldArg = null;
         DataValue newArg = null;
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        new_cpdv;
+        FloatDataValue          new_fdv;
+        IntDataValue            new_idv;
+        NominalDataValue        new_ndv;
+        PredDataValue           new_pdv;
+        TimeStampDataValue      new_tsdv;
+        QuoteStringDataValue    new_qsdv;
+        TextStringDataValue     new_tdv;
+        ColPredDataValue        old_cpdv;
+        FloatDataValue          old_fdv;
+        IntDataValue            old_idv;
+        NominalDataValue        old_ndv;
+        PredDataValue           old_pdv;
+        TimeStampDataValue      old_tsdv;
+        QuoteStringDataValue    old_qsdv;
+        TextStringDataValue     old_tdv;
         
         if ( oldPred == null )
         {
@@ -2144,6 +2530,11 @@ public class Predicate extends DBElement
                 throw new SystemErrorException(mName + 
                         "undefined pred with incorrect values");
             }
+        }
+        else if ( ( cascadePveDel ) && ( this.pveID == cascadePveID ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.pveID == deleted pve ID?!?!?");
         }
         else if ( this.argList == null )
         {
@@ -2253,7 +2644,7 @@ public class Predicate extends DBElement
                 dv.insertInIndex(DCID);
             }
         }
-        else if ( ( ! pveMod ) || ( pveModID != this.pveID ) )
+        else if ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) )
             // note that from previous if statements, we also have:
             // ( this.id == oldPred.id ) &&
             // ( this.pveID == oldPred.pveID ) && 
@@ -2340,11 +2731,54 @@ public class Predicate extends DBElement
 
                 switch (fa.getFargType())
                 {
-                    case FLOAT:
-                        FloatFormalArg ffa;
-                        FloatDataValue new_fdv;
-                        FloatDataValue old_fdv;
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Predicate expected.");
+                        }
 
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+                        old_cpdv = (ColPredDataValue)oldArg;
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        break;
+
+                    case FLOAT:
                         if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                              ( ! ( oldArg instanceof FloatDataValue ) ) )
                         {
@@ -2376,10 +2810,6 @@ public class Predicate extends DBElement
                         break;
 
                     case INTEGER:
-                        IntFormalArg ifa;
-                        IntDataValue new_idv;
-                        IntDataValue old_idv;
-
                         if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                              ( ! ( oldArg instanceof IntDataValue ) ) )
                         {
@@ -2411,10 +2841,6 @@ public class Predicate extends DBElement
                         break;
 
                     case NOMINAL:
-                        NominalFormalArg nfa;
-                        NominalDataValue new_ndv;
-                        NominalDataValue old_ndv;
-
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ! ( oldArg instanceof NominalDataValue ) ) )
                         {
@@ -2444,10 +2870,6 @@ public class Predicate extends DBElement
                         break;
 
                     case PREDICATE:
-                        PredFormalArg pfa;
-                        PredDataValue new_pdv;
-                        PredDataValue old_pdv;
-
                         if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                              ( ! ( oldArg instanceof PredDataValue ) ) )
                         {
@@ -2481,19 +2903,36 @@ public class Predicate extends DBElement
                         {
                             new_pdv.getItsValue().validatePredicate(true);
                         }
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
                         else
                         {
                             new_pdv.getItsValue().
                                     validateReplacementPredicate(
-                                    old_pdv.getItsValue(), pveMod, pveModID);
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
                         }
                         break;
 
                     case TIME_STAMP:
-                        TimeStampFormalArg tsfa;
-                        TimeStampDataValue new_tsdv;
-                        TimeStampDataValue old_tsdv;
-
                         if ( ( ! ( newArg instanceof 
                                     TimeStampDataValue ) ) ||
                              ( ! ( oldArg instanceof 
@@ -2543,9 +2982,10 @@ public class Predicate extends DBElement
                         {
                             throw new SystemErrorException(mName +
                                     "Type mismatch: Text String can't be " +
-                                    "substituted for untyped arguments.");
+                                    "substituted for untyped formal arguments.");
                         }
-                        else if ( ! ( ( newArg instanceof FloatDataValue ) ||
+                        else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                                      ( newArg instanceof FloatDataValue ) ||
                                       ( newArg instanceof IntDataValue ) ||
                                       ( newArg instanceof NominalDataValue ) ||
                                       ( newArg instanceof PredDataValue ) ||
@@ -2564,7 +3004,47 @@ public class Predicate extends DBElement
                                     "dv type change and id set");
                         }
 
-                        if ( newArg instanceof PredDataValue )
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
+
+                            if ( oldArg instanceof ColPredDataValue )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValueBlind(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValue(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
                         {
                             new_pdv = (PredDataValue)newArg;
 
@@ -2572,21 +3052,30 @@ public class Predicate extends DBElement
                             {
                                 old_pdv = (PredDataValue)oldArg;
 
-                                if ( pveMod )
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
                                                 old_pdv.getItsValueBlind(), 
-                                                pveMod, 
-                                                pveModID);
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
                                 }
                                 else
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
                                                 old_pdv.getItsValue(), 
-                                                pveMod, 
-                                                pveModID);
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
                                 }
                             }
                             else
@@ -2622,7 +3111,14 @@ public class Predicate extends DBElement
                 // Otherwise, remove the old from the index, and insert the new.
                 if ( newArg.getID() == oldArg.getID() )
                 {
-                    newArg.replaceInIndex(oldArg, DCID, pveMod, pveModID);
+                    newArg.replaceInIndex(oldArg, 
+                                          DCID, 
+                                          cascadeMveMod, 
+                                          cascadeMveDel, 
+                                          cascadeMveID,
+                                          cascadePveMod, 
+                                          cascadePveDel, 
+                                          cascadePveID);
                 }
                 else /* new_fdv.getID() == DBIndex.INVALID_ID */
                 {
@@ -2635,14 +3131,14 @@ public class Predicate extends DBElement
             } /* while */
         }
         else // From previous if statements, we have that:
-             // ( pveMod ) && 
-             // ( pveModID == this.pveID ) &&
+             // ( cascadePveMod ) && 
+             // ( cascadePveID == this.pveID ) &&
              // ( this.id == oldPred.id ) &&
              // ( this.pveID == oldPred.pveID ) && 
              // ( this.pveID != DBIndex.INVALID_ID )
        {
-            assert( pveMod );
-            assert( pveModID == this.pveID );
+            assert( cascadePveMod );
+            assert( cascadePveID == this.pveID );
             assert( this.id == oldPred.id );
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
@@ -2657,7 +3153,7 @@ public class Predicate extends DBElement
             // 1) If the formal argument associated with an argument has been
             //    removed, then the new version of the predicate will contain
             //    no argument with the same ID as that associated with the 
-            //    formal argument that has been inserted.
+            //    formal argument that has been removed.
             //
             // 2) If a formal argument has been added, then the argument 
             //    associated with the formal argument in the new predicate
@@ -2812,10 +3308,53 @@ public class Predicate extends DBElement
                                 
                 switch (fa.getFargType())
                 {
-                    case FLOAT:
-                        FloatFormalArg ffa;
-                        FloatDataValue new_fdv;
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "Type mismatch: Column Predicate(s) expected.");
+                        }
 
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+
+                        if ( oldArg != null )
+                        {
+                            old_cpdv = (ColPredDataValue)oldArg;
+                        }
+                        else
+                        {
+                            old_cpdv = null;
+                        }
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( old_cpdv != null )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName +
+                            "new_cpdv has valid ID but old_cpdv is null?!?");
+                        }
+                        break;
+
+                    case FLOAT:
                         if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof FloatDataValue ) ) ) )
@@ -2847,9 +3386,6 @@ public class Predicate extends DBElement
                         break;
 
                     case INTEGER:
-                        IntFormalArg ifa;
-                        IntDataValue new_idv;
-
                         if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof IntDataValue ) ) ) )
@@ -2881,9 +3417,6 @@ public class Predicate extends DBElement
                         break;
 
                     case NOMINAL:
-                        NominalFormalArg nfa;
-                        NominalDataValue new_ndv;
-
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof NominalDataValue ) ) 
@@ -2915,10 +3448,6 @@ public class Predicate extends DBElement
                         break;
 
                     case PREDICATE:
-                        PredFormalArg pfa;
-                        PredDataValue new_pdv;
-                        PredDataValue old_pdv;
-
                         if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof PredDataValue ) ) ) )
@@ -2965,8 +3494,13 @@ public class Predicate extends DBElement
                         {
                             new_pdv.getItsValue().
                                     validateReplacementPredicate(
-                                    old_pdv.getItsValueBlind(),
-                                    pveMod, pveModID);
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
                         }
                         else
                         {
@@ -2976,11 +3510,8 @@ public class Predicate extends DBElement
                         break;
 
                     case TIME_STAMP:
-                        TimeStampFormalArg tsfa;
-                        TimeStampDataValue new_tsdv;
-
                         if ( ( ! ( newArg instanceof 
-                                    TimeStampDataValue ) ) ||
+                                   TimeStampDataValue ) ) ||
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof 
                                       TimeStampDataValue ) ) ) )
@@ -3033,6 +3564,8 @@ public class Predicate extends DBElement
                                 "substituted for untyped arguments.");
                         }
                         else if ( ! ( ( newArg instanceof 
+                                        ColPredDataValue ) ||
+                                      ( newArg instanceof 
                                         FloatDataValue ) ||
                                       ( newArg instanceof 
                                         IntDataValue ) ||
@@ -3061,8 +3594,35 @@ public class Predicate extends DBElement
                             throw new SystemErrorException(mName + 
                                     "dv type change and id set(2)");
                         }
+                        
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
 
-                        if ( newArg instanceof PredDataValue )
+                            if ( ( oldArg != null ) &&
+                                 ( oldArg instanceof ColPredDataValue ) )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                assert( cascadeMveMod );
+
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                            old_cpdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
                         {
                             new_pdv = (PredDataValue)newArg;
 
@@ -3071,12 +3631,17 @@ public class Predicate extends DBElement
                             {
                                 old_pdv = (PredDataValue)oldArg;
 
-                                assert(pveMod);
+                                assert( cascadeMveMod );
 
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                        old_pdv.getItsValueBlind(), 
-                                        pveMod, pveModID);
+                                            old_pdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
                             }
                             else
                             {
@@ -3112,7 +3677,10 @@ public class Predicate extends DBElement
                 {
                     assert( newArg.getID() == oldArg.getID() );
                     
-                    newArg.replaceInIndex(oldArg, DCID, pveMod, pveModID);
+                    newArg.replaceInIndex(oldArg, DCID, cascadeMveMod,
+                                          cascadeMveDel, cascadeMveID,
+                                          cascadePveMod, cascadePveDel, 
+                                          cascadePveID);
                 }
                 else
                 {
@@ -3255,6 +3823,18 @@ public class Predicate extends DBElement
         int i = 0;
         FormalArgument fa;
         DataValue arg = null;
+        ColPredFormalArg cpfa;
+        FloatFormalArg ffa;
+        IntFormalArg ifa;
+        NominalFormalArg nfa;
+        PredFormalArg pfa;
+        TimeStampFormalArg tsfa;
+        ColPredDataValue cpdv;
+        FloatDataValue fdv;
+        IntDataValue idv;
+        NominalDataValue ndv;
+        PredDataValue pdv;
+        TimeStampDataValue tsdv;
                 
         if ( argList == null )
         {
@@ -3317,10 +3897,20 @@ public class Predicate extends DBElement
 
             switch (fa.getFargType())
             {
-                case FLOAT:
-                    FloatFormalArg ffa;
-                    FloatDataValue fdv;
+                case COL_PREDICATE:
+                    if ( ! ( arg instanceof ColPredDataValue ) )
+                    {
+                        throw new SystemErrorException(mName +
+                                "Type mismatch: col pred expected");
+                    }
+                    
+                    cpfa = (ColPredFormalArg)fa;
+                    cpdv = (ColPredDataValue)arg;
 
+                    cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
+                    break;
+                    
+                case FLOAT:
                     if ( ! ( arg instanceof FloatDataValue ) )
                     {
                        throw new SystemErrorException(mName + 
@@ -3348,9 +3938,6 @@ public class Predicate extends DBElement
                     break;
 
                 case INTEGER:
-                    IntFormalArg ifa;
-                    IntDataValue idv;
-
                     if ( ! ( arg instanceof IntDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -3378,9 +3965,6 @@ public class Predicate extends DBElement
                     break;
 
                 case NOMINAL:
-                    NominalFormalArg nfa;
-                    NominalDataValue ndv;
-
                     if ( ! ( arg instanceof NominalDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -3408,9 +3992,6 @@ public class Predicate extends DBElement
                     break;
 
                 case PREDICATE:
-                    PredFormalArg pfa;
-                    PredDataValue pdv;
-
                     if ( ! ( arg instanceof PredDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -3435,15 +4016,11 @@ public class Predicate extends DBElement
                                 "pdv.getItsValue() out of range.");
                     }
 
-                    pdv.getItsValue().validatePredicate(
-                            arg.getID() == DBIndex.INVALID_ID);
+                    pdv.getItsValue().validatePredicate(idMustBeInvalid);
 
                     break;
 
                 case TIME_STAMP:
-                    TimeStampFormalArg tsfa;
-                    TimeStampDataValue tsdv;
-
                     if ( ! ( arg instanceof TimeStampDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -3485,7 +4062,8 @@ public class Predicate extends DBElement
                                 "Type mismatch: Text String can't be " +
                                 "substituted for untyped arguments.");
                     }
-                    else if ( ! ( ( arg instanceof FloatDataValue ) ||
+                    else if ( ! ( ( arg instanceof ColPredDataValue ) ||
+                                  ( arg instanceof FloatDataValue ) ||
                                   ( arg instanceof IntDataValue ) ||
                                   ( arg instanceof NominalDataValue ) ||
                                   ( arg instanceof PredDataValue ) ||
@@ -3497,12 +4075,18 @@ public class Predicate extends DBElement
                                 "Unknown subtype of DataValue");
                     }
 
-                    if ( arg instanceof PredDataValue )
+                    if ( arg instanceof ColPredDataValue )
+                    {
+                        cpdv = (ColPredDataValue)arg;
+
+                        cpdv.getItsValue().validateColumnPredicate(
+                                idMustBeInvalid);
+                    }
+                    else if ( arg instanceof PredDataValue )
                     {
                         pdv = (PredDataValue)arg;
 
-                        pdv.getItsValue().validatePredicate(
-                            arg.getID() == DBIndex.INVALID_ID);
+                        pdv.getItsValue().validatePredicate(idMustBeInvalid);
                     }
                     break;
 
@@ -3535,37 +4119,65 @@ public class Predicate extends DBElement
     /**
      * validateReplacementPredicate()
      *
-     * Verify that the arguments of the predicate are of type and value 
-     * consistant with the target PredicateVocabElement.  This is purely
-     * a sanity checking routine.  The test should always pass.
+     * Verify that this Predicate is a valid replacement for the supplied 
+     * old Predicate.  This method is called when a new version of a 
+     * DataCell is about to replace an old version as the cannonical incarnation 
+     * of the DataCell.  This is purely a sanity checking routine.  The test 
+     * should always pass.
      *
-     * Verify that this Predicate is a valid replacement for the supplied old
-     * Predicate.  This method is called when a new version of a DataCell is 
-     * about to replace an old version as the cannonical incarnation of the
-     * DataCell.  This is purely a sanity checking routine.  The test should 
-     * always pass.
+     * In all cases, this requires that we verify that if the predicate
+     * is defined, the argument list of the predicate is congruent with 
+     * the predicate formal argument list supplied by the target pveID.
      *
-     * Note that the test assumes that there have been no changes in the 
-     * definitions on any predicate vocab elements.  Either the target pve
-     * remains the same and at most some arguments have changed, or the 
-     * target pve has changed between the old and new predicates.
+     * Further, if oldPred is defined, has this same ID as this, and has the 
+     * same target pve as this, verify that all arguments either have invalid ID, 
+     * or have an argument of matching type in oldPred with the same ID.  
+     * Unless the target pve has been modified (i.e. cascadePveMod == true and 
+     * cascadePveID == this.pveID), these matching arguments must be in the same 
+     * location in oldPred's argument list.
+     *
+     * If oldPred is either undefined, or has a different ID or target ve, 
+     * verify that the column predicate and all its arguments have invalid ID.
+     *
+     * Further processing depends on the values of the remaining arguments:
      * 
-     * If the target pve remains the same, the following must hold:
+     * The test assumes that at most one of the cascadeMveMod, cascadeMveDel,
+     * cascadePveMod, and cascadePveDel parameters will be true.
      *
-     * 1) DataValues do not change location in the new pred argument list --  
-     *    they are either modified or replaced with new DataValues (that is, 
-     *    instances of DataValue with invalid ID and probably different
-     *    type).
      *
-     * 2) If a new PredDataValue appears in the new pred argument list, then its 
-     *    value is a new Predicate -- i.e. an instance of Predicate with 
-     *    invalid id. 
+     * 1) cascadeMveMod == true
      *
-     * 3) If a new Predicate appears in the pred argument list, then only new 
-     *    DataValues and Predicates may appear in the new argument list.
+     * If cascadeMveMod is true, then a mve has been modified, and the ID of
+     * the modified mve is in cascadeMveID.
      *
-     * If the target pve has changed, then only new DataValues and Predicates
-     * may appear in the new argument list
+     * Proceed as above.
+     *
+     *
+     * 2) cascadeMveDel == true
+     *
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * the deleted mve is in cascadeMveID.
+     *
+     * Proceed as above.
+     *
+     *
+     * 3) cascadePveMod == true
+     *
+     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * the modified pve is in cascadeMveID.
+     *
+     * If cascadePveID == this.pveID, then the definition of the pve that 
+     * definses the predicate represented by this instance of Predicate
+     * has changed.  Processing is as described above.
+     *
+     *
+     * 4) cascadePveDel == true
+     *
+     * If cascadePveDel is true, then a pve has been deleted, and the ID of 
+     * the deleted pve is in cascadePveID.
+     *
+     * In this case, verify that this.pveID != cascadePveID, and then proceed
+     * as above.
      *
      *                                              JRM -- 2/19/08
      *
@@ -3575,8 +4187,12 @@ public class Predicate extends DBElement
      */
     
     public void validateReplacementPredicate(Predicate oldPred,
-                                             boolean pveMod,
-                                             long pveModID)
+                                             boolean cascadeMveMod,
+                                             boolean cascadeMveDel,
+                                             long cascadeMveID,
+                                             boolean cascadePveMod,
+                                             boolean cascadePveDel,
+                                             long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "Predicate::validateReplacementPredicate(): ";
@@ -3586,6 +4202,41 @@ public class Predicate extends DBElement
         FormalArgument fa;
         DataValue oldArg = null;
         DataValue newArg = null;
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        new_cpdv;
+        FloatDataValue          new_fdv;
+        IntDataValue            new_idv;
+        NominalDataValue        new_ndv;
+        PredDataValue           new_pdv;
+        TimeStampDataValue      new_tsdv;
+        QuoteStringDataValue    new_qsdv;
+        TextStringDataValue     new_tdv;
+        ColPredDataValue        old_cpdv;
+        FloatDataValue          old_fdv;
+        IntDataValue            old_idv;
+        NominalDataValue        old_ndv;
+        PredDataValue           old_pdv;
+        TimeStampDataValue      old_tsdv;
+        QuoteStringDataValue    old_qsdv;
+        TextStringDataValue     old_tdv;
+
+// todo:  delete this eventually
+//        System.out.printf("ValidateReplacementPredicate: cascade mve mod/del/id = %s/%s/%d.\n", 
+//                          ((Boolean)cascadeMveMod).toString(),
+//                          ((Boolean)cascadeMveDel).toString(),
+//                          cascadeMveID);
+//        System.out.printf("ValidateReplacementPredicate: cascade pve mod/del/id = %s/%s/%d.\n", 
+//                          ((Boolean)cascadePveMod).toString(),
+//                          ((Boolean)cascadePveDel).toString(),
+//                          cascadePveID);
         
         if ( oldPred == null )
         {
@@ -3612,7 +4263,6 @@ public class Predicate extends DBElement
         {
             idMustBeInvalid = true;
         }
-        
                 
         if ( this.pveID == DBIndex.INVALID_ID )
         {
@@ -3626,6 +4276,11 @@ public class Predicate extends DBElement
                 throw new SystemErrorException(mName + 
                         "undefined pred with incorrect values");
             }
+        }
+        else if ( ( cascadePveDel ) && ( this.pveID == cascadePveID ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.pveID == deleted pve ID?!?!?");
         }
         else 
         {
@@ -3642,9 +4297,19 @@ public class Predicate extends DBElement
             if ( oldPred.pveID == this.pveID )
             {
                  if ( ( oldPred.getNumArgs() != this.getNumArgs() ) &&
-                      ( ( ! pveMod ) || ( pveModID != this.pveID ) ) )
+                      ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) ) )
                  {
-                     throw new SystemErrorException(mName + "num args mismatch");
+                    // todo: delete this eventually
+//                     System.out.printf("cascade mve mod/del/id = %s/%s/%d.\n", 
+//                                       ((Boolean)cascadeMveMod).toString(),
+//                                       ((Boolean)cascadeMveDel).toString(),
+//                                       cascadeMveID);
+//                     System.out.printf("cascade pve mod/del/id = %s/%s/%d.\n", 
+//                                       ((Boolean)cascadePveMod).toString(),
+//                                       ((Boolean)cascadePveDel).toString(),
+//                                       cascadePveID);
+//                     int q = 1/0;
+                     throw new SystemErrorException(mName + "num args mismatch*");
                  }
             }
             else // target pve changed
@@ -3678,7 +4343,7 @@ public class Predicate extends DBElement
             {
                 this.validatePredicateArgList(pve, true);
             }
-            else if ( ( ! pveMod ) || ( pveModID != this.pveID ) )
+            else if ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) )
             {
                 while ( i < this.getNumArgs() )
                 {
@@ -3753,11 +4418,52 @@ public class Predicate extends DBElement
 
                     switch (fa.getFargType())
                     {
-                        case FLOAT:
-                            FloatFormalArg ffa;
-                            FloatDataValue new_fdv;
-                            FloatDataValue old_fdv;
+                        case COL_PREDICATE:
+                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                                 ( ! ( oldArg instanceof ColPredDataValue ) ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                    "Type mismatch: Column Predicate expected.");
+                            }
 
+                            cpfa = (ColPredFormalArg)fa;
+                            new_cpdv = (ColPredDataValue)newArg;
+                            old_cpdv = (ColPredDataValue)oldArg;
+
+                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                                 ( new_cpdv.getItsValue().getID() == 
+                                    DBIndex.INVALID_ID ) )
+                            {
+                                new_cpdv.getItsValue().validateColumnPredicate(true);
+                            }
+                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                      ( cascadePveMod ) || ( cascadePveDel ) )
+                            {
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                                old_cpdv.getItsValueBlind(),
+                                                cascadeMveMod, 
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod, 
+                                                cascadePveDel, 
+                                                cascadePveID);
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                                old_cpdv.getItsValue(),
+                                                cascadeMveMod, 
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod, 
+                                                cascadePveDel, 
+                                                cascadePveID);
+                            }
+                            break;
+                                
+                        case FLOAT:
                             if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                                  ( ! ( oldArg instanceof FloatDataValue ) ) )
                             {
@@ -3789,10 +4495,6 @@ public class Predicate extends DBElement
                             break;
 
                         case INTEGER:
-                            IntFormalArg ifa;
-                            IntDataValue new_idv;
-                            IntDataValue old_idv;
-
                             if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                                  ( ! ( oldArg instanceof IntDataValue ) ) )
                             {
@@ -3824,10 +4526,6 @@ public class Predicate extends DBElement
                             break;
 
                         case NOMINAL:
-                            NominalFormalArg nfa;
-                            NominalDataValue new_ndv;
-                            NominalDataValue old_ndv;
-
                             if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                                  ( ! ( oldArg instanceof NominalDataValue ) ) )
                             {
@@ -3857,10 +4555,6 @@ public class Predicate extends DBElement
                             break;
 
                         case PREDICATE:
-                            PredFormalArg pfa;
-                            PredDataValue new_pdv;
-                            PredDataValue old_pdv;
-
                             if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                                  ( ! ( oldArg instanceof PredDataValue ) ) )
                             {
@@ -3894,20 +4588,34 @@ public class Predicate extends DBElement
                             {
                                 new_pdv.getItsValue().validatePredicate(true);
                             }
+                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                      ( cascadePveMod ) || ( cascadePveDel ) )
+                            {
+                                new_pdv.getItsValue().
+                                        validateReplacementPredicate(
+                                                old_pdv.getItsValueBlind(),
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveMod, 
+                                                cascadePveID);
+                            }
                             else
                             {
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                        old_pdv.getItsValue(),
-                                        pveMod, pveModID);
+                                                old_pdv.getItsValue(),
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveMod, 
+                                                cascadePveID);
                             }
                             break;
 
                         case TIME_STAMP:
-                            TimeStampFormalArg tsfa;
-                            TimeStampDataValue new_tsdv;
-                            TimeStampDataValue old_tsdv;
-
                             if ( ( ! ( newArg instanceof 
                                         TimeStampDataValue ) ) ||
                                  ( ! ( oldArg instanceof 
@@ -3960,6 +4668,8 @@ public class Predicate extends DBElement
                                         "substituted for untyped arguments.");
                             }
                             else if ( ! ( ( newArg instanceof 
+                                            ColPredDataValue ) ||
+                                          ( newArg instanceof 
                                             FloatDataValue ) ||
                                           ( newArg instanceof 
                                             IntDataValue ) ||
@@ -3984,8 +4694,50 @@ public class Predicate extends DBElement
                                 throw new SystemErrorException(mName + 
                                         "dv type change and id set");
                             }
+                            
+                            if ( newArg instanceof ColPredDataValue )
+                            {
+                                new_cpdv = (ColPredDataValue)newArg;
 
-                            if ( newArg instanceof PredDataValue )
+                                if ( oldArg instanceof ColPredDataValue )
+                                {
+                                    old_cpdv = (ColPredDataValue)oldArg;
+                                    
+                                    if ( ( ! cascadeMveMod ) && 
+                                         ( ! cascadeMveDel ) &&
+                                         ( ! cascadePveMod ) &&
+                                         ( ! cascadePveDel ) )
+                                    {
+                                        new_cpdv.getItsValue().
+                                                validateReplacementColPred(
+                                                    old_cpdv.getItsValue(),
+                                                    cascadeMveMod,
+                                                    cascadeMveDel,
+                                                    cascadeMveID,
+                                                    cascadePveMod, 
+                                                    cascadePveDel, 
+                                                    cascadePveID);
+                                    }
+                                    else 
+                                    {
+                                        new_cpdv.getItsValue().
+                                                validateReplacementColPred(
+                                                    old_cpdv.getItsValueBlind(),
+                                                    cascadeMveMod,
+                                                    cascadeMveDel,
+                                                    cascadeMveID,
+                                                    cascadePveMod, 
+                                                    cascadePveDel, 
+                                                    cascadePveID);
+                                    }
+                                }
+                                else
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateColumnPredicate(true);
+                                }
+                            }
+                            else if ( newArg instanceof PredDataValue )
                             {
                                 new_pdv = (PredDataValue)newArg;
 
@@ -3993,19 +4745,32 @@ public class Predicate extends DBElement
                                 {
                                     old_pdv = (PredDataValue)oldArg;
                                     
-                                    if ( ! pveMod )
+                                    if ( ( ! cascadeMveMod ) &&
+                                         ( ! cascadeMveDel ) &&
+                                         ( ! cascadePveMod ) && 
+                                         ( ! cascadePveDel ) )
                                     {
                                         new_pdv.getItsValue().
                                                 validateReplacementPredicate(
-                                                old_pdv.getItsValue(), 
-                                                pveMod, pveModID);
+                                                    old_pdv.getItsValue(),
+                                                    cascadeMveMod,
+                                                    cascadeMveDel,
+                                                    cascadeMveID,
+                                                    cascadePveMod, 
+                                                    cascadePveDel, 
+                                                    cascadePveID);
                                     }
                                     else 
                                     {
                                         new_pdv.getItsValue().
                                                 validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(), 
-                                                pveMod, pveModID);
+                                                    old_pdv.getItsValueBlind(),
+                                                    cascadeMveMod,
+                                                    cascadeMveDel,
+                                                    cascadeMveID,
+                                                    cascadePveMod, 
+                                                    cascadePveDel, 
+                                                    cascadePveID);
                                     }
                                 }
                                 else
@@ -4026,7 +4791,6 @@ public class Predicate extends DBElement
 
                         default:
                             throw new SystemErrorException(mName + 
-                                                           
                                     "Unknown Formal Arg Type");
                             /* break statement commented out to keep the 
                              * compiler happy 
@@ -4132,10 +4896,55 @@ public class Predicate extends DBElement
 
                     switch (fa.getFargType())
                     {
-                        case FLOAT:
-                            FloatFormalArg ffa;
-                            FloatDataValue new_fdv;
+                        case COL_PREDICATE:
+                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                                 ( ( oldArg != null ) &&
+                                   ( ! ( oldArg instanceof ColPredDataValue ) ) 
+                                 )
+                               )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "Type mismatch: col pred(s) expected.");
+                            }
 
+                            cpfa = (ColPredFormalArg)fa;
+                            new_cpdv = (ColPredDataValue)newArg;
+                            
+                            if ( oldArg != null )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+                            }
+                            else
+                            {
+                                old_cpdv = null;
+                            }
+
+                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                                 ( new_cpdv.getItsValue().getID() == 
+                                    DBIndex.INVALID_ID ) )
+                            {
+                                new_cpdv.getItsValue().validateColumnPredicate(true);
+                            }
+                            else if ( old_cpdv != null )
+                            {
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                            old_cpdv.getItsValueBlind(),
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
+                            }
+                            else
+                            {
+                                throw new SystemErrorException(mName +
+                                "new_cpdv has valid ID but old_cpdv is null?!?");
+                            }
+                            break;
+
+                        case FLOAT:
                             if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                                  ( ( oldArg != null ) &&
                                    ( ! ( oldArg instanceof FloatDataValue ) ) ) )
@@ -4167,9 +4976,6 @@ public class Predicate extends DBElement
                             break;
 
                         case INTEGER:
-                            IntFormalArg ifa;
-                            IntDataValue new_idv;
-
                             if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                                  ( ( oldArg != null ) &&
                                    ( ! ( oldArg instanceof IntDataValue ) ) ) )
@@ -4201,9 +5007,6 @@ public class Predicate extends DBElement
                             break;
 
                         case NOMINAL:
-                            NominalFormalArg nfa;
-                            NominalDataValue new_ndv;
-
                             if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                                  ( ( oldArg != null ) &&
                                    ( ! ( oldArg instanceof NominalDataValue ) ) 
@@ -4235,10 +5038,6 @@ public class Predicate extends DBElement
                             break;
 
                         case PREDICATE:
-                            PredFormalArg pfa;
-                            PredDataValue new_pdv;
-                            PredDataValue old_pdv;
-
                             if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                                  ( ( oldArg != null ) &&
                                    ( ! ( oldArg instanceof PredDataValue ) ) ) )
@@ -4285,8 +5084,13 @@ public class Predicate extends DBElement
                             {
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                        old_pdv.getItsValueBlind(),
-                                        pveMod, pveModID);
+                                            old_pdv.getItsValueBlind(),
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
                             }
                             else
                             {
@@ -4296,9 +5100,6 @@ public class Predicate extends DBElement
                             break;
 
                         case TIME_STAMP:
-                            TimeStampFormalArg tsfa;
-                            TimeStampDataValue new_tsdv;
-
                             if ( ( ! ( newArg instanceof 
                                         TimeStampDataValue ) ) ||
                                  ( ( oldArg != null ) &&
@@ -4353,6 +5154,8 @@ public class Predicate extends DBElement
                                     "substituted for untyped arguments.");
                             }
                             else if ( ! ( ( newArg instanceof 
+                                            ColPredDataValue ) ||
+                                          ( newArg instanceof 
                                             FloatDataValue ) ||
                                           ( newArg instanceof 
                                             IntDataValue ) ||
@@ -4381,8 +5184,35 @@ public class Predicate extends DBElement
                                 throw new SystemErrorException(mName + 
                                         "dv type change and id set(2)");
                             }
+                            
+                            if ( newArg instanceof ColPredDataValue )
+                            {
+                                new_cpdv = (ColPredDataValue)newArg;
 
-                            if ( newArg instanceof PredDataValue )
+                                if ( ( oldArg != null ) &&
+                                     ( oldArg instanceof ColPredDataValue ) )
+                                {
+                                    old_cpdv = (ColPredDataValue)oldArg;
+                                    
+                                    assert(cascadeMveMod);
+                                    
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValueBlind(),
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateColumnPredicate(true);
+                                }
+                            }
+                            else if ( newArg instanceof PredDataValue )
                             {
                                 new_pdv = (PredDataValue)newArg;
 
@@ -4391,12 +5221,17 @@ public class Predicate extends DBElement
                                 {
                                     old_pdv = (PredDataValue)oldArg;
                                     
-                                    assert(pveMod);
+                                    assert(cascadeMveMod);
                                     
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(), 
-                                            pveMod, pveModID);
+                                                old_pdv.getItsValueBlind(),
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
                                 }
                                 else
                                 {

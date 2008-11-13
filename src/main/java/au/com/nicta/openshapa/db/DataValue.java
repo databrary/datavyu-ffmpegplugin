@@ -52,9 +52,10 @@ public abstract class DataValue extends DBElement
      *      with a cell.  Note that this field exists primarily for sanity
      *      checking.
      *
-     * itsPredID:  Long containing the ID of the predicate in whose argument
-     *      list this data value appears (if any).  When the DatavValue doesn't
-     *      appear in any predicate, the field is set to DBIndex.INVALID_ID.
+     * itsPredID:  Long containing the ID of the predicate or column predicate
+     *      in whose argument list this data value appears (if any).  When the 
+     *      DatavValue doesn't appear in any predicate, the field is set to 
+     *      DBIndex.INVALID_ID.
      */
 
     /** ID of associated formal argument */
@@ -384,6 +385,7 @@ public abstract class DataValue extends DBElement
 
             if ( ! matchFound )
             {
+                // todo: delete the following line eventually
                 int j = 1/0;
                 throw new SystemErrorException(mName + 
                         "Target cell's mve does not contain itsFarg");
@@ -473,6 +475,7 @@ public abstract class DataValue extends DBElement
         
         switch ( fargType )
         {
+            case COL_PREDICATE:
             case FLOAT:
             case INTEGER:
             case NOMINAL:
@@ -713,8 +716,12 @@ public abstract class DataValue extends DBElement
     
     protected void replaceInIndex(DataValue old_dv,
                                   long DCID,
-                                  boolean pveMod,
-                                  long pveModID)
+                                  boolean cascadeMveMod,
+                                  boolean cascadeMveDel,
+                                  long cascadeMveID,
+                                  boolean cascadePveMod,
+                                  boolean cascadePveDel,
+                                  long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "DataValue::replaceInIndex(): ";
@@ -827,15 +834,20 @@ public abstract class DataValue extends DBElement
                                  boolean blindCopy)
         throws SystemErrorException
     {
-        final String mName = "DataValue::CopyDataValue()";
+        final String mName = "DataValue::CopyDataValue(): ";
         DataValue copy = null;
         
         if ( dv == null )
         {
+            int i = 1/0;
             throw new SystemErrorException(mName + "dv null on entry.");
         }
         
-        if ( dv instanceof FloatDataValue )
+        if ( dv instanceof ColPredDataValue )
+        {
+            copy = new ColPredDataValue((ColPredDataValue)dv);
+        }
+        else if ( dv instanceof FloatDataValue )
         {
             copy = new FloatDataValue((FloatDataValue)dv);
         }
@@ -1542,12 +1554,12 @@ public abstract class DataValue extends DBElement
      *    - None
      */
     
-    public static int VerifyDVCopy(DataValue base,
-                                   DataValue copy,
-                                   java.io.PrintStream outStream,
-                                   boolean verbose,
-                                   String baseDesc,
-                                   String copyDesc)
+    protected static int VerifyDVCopy(DataValue base,
+                                      DataValue copy,
+                                      java.io.PrintStream outStream,
+                                      boolean verbose,
+                                      String baseDesc,
+                                      String copyDesc)
     {
         int failures = 0;
         
@@ -1636,7 +1648,32 @@ public abstract class DataValue extends DBElement
         }
         else
         {
-            if ( base instanceof FloatDataValue )
+            if ( base instanceof ColPredDataValue )
+            {
+                if ( ! ( copy instanceof ColPredDataValue ) )
+                {
+                    failures++;
+                    
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "%s is a ColPredDataValue but %s is not.\n", 
+                                baseDesc, copyDesc);
+                    }
+                }
+                else 
+                {
+                    failures += 
+                        ColPredDataValue.
+                            VerifyColPredDVCopy((ColPredDataValue)base,
+                                                (ColPredDataValue)copy,
+                                                outStream,
+                                                verbose,
+                                                baseDesc,
+                                                copyDesc);    
+                }
+            }
+            else if ( base instanceof FloatDataValue )
             {
                 if ( ! ( copy instanceof FloatDataValue ) )
                 {

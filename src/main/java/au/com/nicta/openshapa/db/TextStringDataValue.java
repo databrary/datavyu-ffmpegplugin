@@ -1285,7 +1285,7 @@ public class TextStringDataValue extends DataValue
             db = new ODBCDatabase();
             
             txt_mve = new MatrixVocabElement(db, "txt_mve");
-            txt_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            txt_mve.setType(MatrixVocabElement.matrixType.TEXT);
             tfa = new TextStringFormalArg(db);
             txt_mve.appendFormalArg(tfa);
             db.vl.addElement(txt_mve);
@@ -2005,7 +2005,7 @@ public class TextStringDataValue extends DataValue
             tdv0 = new TextStringDataValue(db);
             
             txt_mve = new MatrixVocabElement(db, "txt_mve");
-            txt_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            txt_mve.setType(MatrixVocabElement.matrixType.TEXT);
             tfa = new TextStringFormalArg(db);
             txt_mve.appendFormalArg(tfa);
             db.vl.addElement(txt_mve);
@@ -2276,7 +2276,7 @@ public class TextStringDataValue extends DataValue
                                     "(subRange false))";
         String testString1 = "nero";
         String testDBString1 = "(TextStringDataValue (id 101) " +
-                                    "(itsFargID 4) " +
+                                    "(itsFargID 8) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 501) " +
                                     "(itsValue nero) " +

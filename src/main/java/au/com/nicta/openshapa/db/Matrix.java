@@ -26,6 +26,19 @@ import java.util.Vector;
  */
 public class Matrix
 {
+    
+    /*************************************************************************/
+    /************************** Type Definitions: ****************************/
+    /*************************************************************************/
+    
+    /**
+     * expectedResult:  Private enumerated type used to specify the expected
+     *      result of a test.
+     */
+    
+    private enum expectedResult 
+        {succeed, system_error, return_null};
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
@@ -919,6 +932,16 @@ public class Matrix
             
             switch (fa.getFargType())
             {
+                case COL_PREDICATE:
+                    if ( ! ( dv instanceof ColPredDataValue ) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + 
+                                ": col pred expected.");
+                    }
+                    cdv = new ColPredDataValue((ColPredDataValue)dv);
+                    break;
+
                 case FLOAT:
                     if ( ! ( dv instanceof FloatDataValue ) )
                     {
@@ -1014,13 +1037,15 @@ public class Matrix
                     {
                         cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
-                    else if ( dv instanceof TextStringDataValue )
-                    {
-                        cdv = new TextStringDataValue((TextStringDataValue)dv);
-                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( dv instanceof TextStringDataValue )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Text String(s) can't be " +
+                                "substituted for untyped arguments.");
                     }
                     else
                     {
@@ -1069,26 +1094,43 @@ public class Matrix
     /**
      * deregisterPreds()
      *
-     * Call the deregister preds method on any instances of predicate data value
-     * that appear in the matrix.  The objective is to get any instance of 
-     * predicate that appear in the Matrix to deregister as internal vocab
-     * element listeners with its associated predicate vocab element.
+     * Call the deregister preds method on any instances of column predicate or 
+     * predicate data value that appear in the matrix.  
+     * 
+     * The objective is to get any instance of column predicate or predicate 
+     * that appears in the Matrix to deregister as internal (matrix) vocab
+     * element listeners with its associated matrix or predicate vocab element.
      *
      *                                              JRM -- 3/24/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified method to work with column predicates as well.
+     *
+     *                                              JRM -- 8/31/08
      */
     
-    protected void deregisterPreds()
+    protected void deregisterPreds(boolean cascadeMveDel,
+                                   long cascadeMveID,
+                                   boolean cascadePveDel, 
+                                   long cascadePveID)
         throws SystemErrorException
     {
         for ( DataValue dv : this.argList )
         {
-            if ( dv instanceof PredDataValue )
+            if ( dv instanceof ColPredDataValue )
             {
-                ((PredDataValue)dv).deregisterPreds();
+                ((ColPredDataValue)dv).deregisterPreds(cascadeMveDel, 
+                                                       cascadeMveID,
+                                                       cascadePveDel, 
+                                                       cascadePveID);
+            }
+            else if ( dv instanceof PredDataValue )
+            {
+                ((PredDataValue)dv).deregisterPreds(cascadeMveDel, 
+                                                    cascadeMveID,
+                                                    cascadePveDel, 
+                                                    cascadePveID);
             }
         }
         
@@ -1106,7 +1148,7 @@ public class Matrix
      *                                      JRM -- 8/23/07
      */
 
-    public DataValue getArg(int n)
+    protected DataValue getArg(int n)
         throws SystemErrorException
     {
         final String mName = "Matrix::getArg(): ";
@@ -1142,6 +1184,7 @@ public class Matrix
             }
             
             if ( ! ( ( arg instanceof FloatDataValue ) ||
+                     ( arg instanceof FloatDataValue ) ||
                      ( arg instanceof IntDataValue ) ||
                      ( arg instanceof NominalDataValue ) ||
                      ( arg instanceof PredDataValue ) ||
@@ -1156,7 +1199,38 @@ public class Matrix
 
         return arg;
         
-    } /* VocabElement::getArg() */
+    } /* Matrix::getArg() */
+    
+    
+    /**
+     * getArgCopy()
+     *
+     * Return a reference to a copy of the n-th argument if it exists, or 
+     * null if it doesn't.
+     *                                      JRM -- 5/23/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public DataValue getArgCopy(int n)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::getArgCopy(): ";
+        DataValue arg = null;
+        DataValue argCopy = null;
+        
+        arg = this.getArg(n);
+        
+        if ( arg != null )
+        {
+            argCopy = DataValue.Copy(arg, false);
+        }
+        
+        return argCopy;
+        
+    } /* Matrix::getArgCopy() */
     
     
     /**
@@ -1201,16 +1275,21 @@ public class Matrix
     /**
      * registerPreds()
      *
-     * Call the register preds method on any instances of predicate data value
-     * that appear in the matrix.  The objective is to get any instance of 
-     * predicate that appear in the Matrix to register as internal vocab
-     * element listeners with its associated predicate vocab element.
+     * Call the register preds method on any instances of column predicate or
+     * predicate data value that appears in the matrix.  
+     * 
+     * The objective is to get any instance of column predicate or 
+     * predicate that appears in the Matrix to register as internal (matrix)
+     * vocab element listeners with its associated matrix or predicate vocab 
+     * element.
      *
      *                                              JRM -- 3/24/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified to work with column predicates as well.
+     *
+     *                                              JRM -- 8/31/08
      */
     
     protected void registerPreds()
@@ -1218,7 +1297,11 @@ public class Matrix
     {
         for ( DataValue dv : this.argList )
         {
-            if ( dv instanceof PredDataValue )
+            if ( dv instanceof ColPredDataValue )
+            {
+                ((ColPredDataValue)dv).registerPreds();
+            }
+            else if ( dv instanceof PredDataValue )
             {
                 ((PredDataValue)dv).registerPreds();
             }
@@ -1314,6 +1397,14 @@ public class Matrix
 
         switch (fa.getFargType())
         {
+            case COL_PREDICATE:
+                if ( ! ( newArg instanceof ColPredDataValue ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "Type mismatch: col pred expected.");
+                }
+                break;
+
             case FLOAT:
                 if ( ! ( newArg instanceof FloatDataValue ) )
                 {
@@ -1377,7 +1468,8 @@ public class Matrix
                             "Type mismatch: Text String can't be " +
                             "substituted for untyped arguments.");
                 }
-                else if ( ! ( ( newArg instanceof FloatDataValue ) ||
+                else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                              ( newArg instanceof FloatDataValue ) ||
                               ( newArg instanceof IntDataValue ) ||
                               ( newArg instanceof NominalDataValue ) ||
                               ( newArg instanceof PredDataValue ) ||
@@ -1420,6 +1512,264 @@ public class Matrix
         return;
         
     } /* Matrix::replaceArg(n, newArg) */
+
+    
+    /**
+     * updateForMVEDefChange()
+     *
+     * Scan the list of data values in the matrix, and pass an update for 
+     * matrix vocab element definition change message to any predicate 
+     * or column predicate data values.
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDefChange(
+                                 Database db,
+                                 long mveID,
+                                 boolean nameChanged,
+                                 String oldName,
+                                 String newName,
+                                 boolean varLenChanged,
+                                 boolean oldVarLen,
+                                 boolean newVarLen,
+                                 boolean fargListChanged,
+                                 long[] n2o,
+                                 long[] o2n,
+                                 boolean[] fargNameChanged,
+                                 boolean[] fargSubRangeChanged,
+                                 boolean[] fargRangeChanged,
+                                 boolean[] fargDeleted,
+                                 boolean[] fargInserted,
+                                 java.util.Vector<FormalArgument> oldFargList,
+                                 java.util.Vector<FormalArgument> newFargList,
+                                 long[] cpn2o,
+                                 long[] cpo2n,
+                                 boolean[] cpFargNameChanged,
+                                 boolean[] cpFargSubRangeChanged,
+                                 boolean[] cpFargRangeChanged,
+                                 boolean[] cpFargDeleted,
+                                 boolean[] cpFargInserted,
+                                 java.util.Vector<FormalArgument> oldCPFargList,
+                                 java.util.Vector<FormalArgument> newCPFargList)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::updateForMVEDefChange(): ";
+        DBElement dbe = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mveID invalid.");
+        }
+        
+        dbe = this.db.idx.getElement(mveID);
+        
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName + 
+                                           "mveID doesn't refer to a mve.");
+        }
+        
+        for ( DataValue dv : this.argList )
+        {
+            if ( dv instanceof PredDataValue )
+            {
+                ((PredDataValue)dv).updateForMVEDefChange(db,
+                                                          mveID,
+                                                          nameChanged,
+                                                          oldName,
+                                                          newName,
+                                                          varLenChanged,
+                                                          oldVarLen,
+                                                          newVarLen,
+                                                          fargListChanged,
+                                                          n2o,
+                                                          o2n,
+                                                          fargNameChanged,
+                                                          fargSubRangeChanged,
+                                                          fargRangeChanged,
+                                                          fargDeleted,
+                                                          fargInserted,
+                                                          oldFargList,
+                                                          newFargList,
+                                                          cpn2o,
+                                                          cpo2n,
+                                                          cpFargNameChanged,
+                                                          cpFargSubRangeChanged,
+                                                          cpFargRangeChanged,
+                                                          cpFargDeleted,
+                                                          cpFargInserted,
+                                                          oldCPFargList,
+                                                          newCPFargList);
+            }
+            else if ( dv instanceof ColPredDataValue )
+            {
+                ((ColPredDataValue)dv).updateForMVEDefChange(
+                                                          db,
+                                                          mveID,
+                                                          nameChanged,
+                                                          oldName,
+                                                          newName,
+                                                          varLenChanged,
+                                                          oldVarLen,
+                                                          newVarLen,
+                                                          fargListChanged,
+                                                          n2o,
+                                                          o2n,
+                                                          fargNameChanged,
+                                                          fargSubRangeChanged,
+                                                          fargRangeChanged,
+                                                          fargDeleted,
+                                                          fargInserted,
+                                                          oldFargList,
+                                                          newFargList,
+                                                          cpn2o,
+                                                          cpo2n,
+                                                          cpFargNameChanged,
+                                                          cpFargSubRangeChanged,
+                                                          cpFargRangeChanged,
+                                                          cpFargDeleted,
+                                                          cpFargInserted,
+                                                          oldCPFargList,
+                                                          newCPFargList);
+            }
+        }
+        
+        return;
+        
+    } /* Matrix::updateForMVEDefChange() */
+    
+    
+    /**
+     * updateForMVEDeletion()
+     *
+     * Scan the list of data values in the matrix, and pass an update for 
+     * matrix vocab element deletion message to any column predicate or 
+     * predicate data values.
+     *                                          JRM -- 8/26/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    protected void updateForMVEDeletion(Database db,
+                                        long mveID)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::updateForMVEDeletion(): ";
+        int i;
+        int numArgs;
+        DBElement dbe = null;
+        MatrixVocabElement mve = null;
+        FormalArgument fa = null;
+        DataValue dv = null;
+        ColPredDataValue cpdv = null;
+        PredDataValue pdv = null;
+        
+        if ( this.db != db )
+        {
+            throw new SystemErrorException(mName + "db mismatch.");
+        }
+        
+        if ( mveID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "pveID invalid.");
+        }
+        
+        numArgs = this.argList.size();
+
+        if ( numArgs <= 0 )
+        {
+            throw new SystemErrorException(mName + "numArgs <= 0");
+        }
+            
+        i = 0;
+        
+        while ( i < numArgs )
+        {
+            dv = this.getArg(i);
+            
+            if ( dv == null )
+            {
+                throw new SystemErrorException(mName + "arg " + i + 
+                                               " is null?!?!");
+            }
+            
+            if ( dv instanceof ColPredDataValue )
+            {
+                cpdv = (ColPredDataValue)dv;
+                
+                if ( cpdv.getItsValueMveID() == mveID )
+                {
+                    if ( cpdv.getItsFargType() == FormalArgument.fArgType.UNTYPED )
+                    {
+                        if ( mve == null )
+                        {
+                            dbe = this.db.idx.getElement(this.mveID);
+
+                            if ( dbe == null )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "this.mveID has no referent");
+                            }
+
+                            if ( ! ( dbe instanceof MatrixVocabElement ) )
+                            {
+                                throw new SystemErrorException(mName +
+                                    "mveID doesn't refer to a Matrix vocab element");
+                            }
+
+                            mve = (MatrixVocabElement)dbe;
+                        }
+
+                        fa = mve.getFormalArg(i);
+
+                        if ( fa == null )
+                        {
+                            throw new SystemErrorException(mName + "no " + i + 
+                                    "th formal argument?!?!");
+                        }
+
+                        dv = fa.constructEmptyArg();
+
+                        this.replaceArg(i, dv);
+                    }
+                    else if ( dv.getItsFargType() == 
+                              FormalArgument.fArgType.COL_PREDICATE )
+                    {
+                        ((ColPredDataValue)dv).updateForMVEDeletion(db, mveID);
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "arg " + i + 
+                                                       " has unexpected fArgType.");
+                    }
+                }
+                else
+                {
+                    ((ColPredDataValue)dv).updateForMVEDeletion(db, mveID);
+                }
+            }
+            else if ( dv instanceof PredDataValue )
+            {
+                ((PredDataValue)dv).updateForMVEDeletion(db, mveID);
+            }
+
+            i++;
+        }
+                
+        return;
+        
+    } /* Matrix::updateForMVEDeletion() */
 
     
     /**
@@ -1525,6 +1875,13 @@ public class Matrix
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForPVEDeletion(): ";
+        int i;
+        int numArgs;
+        DBElement dbe = null;
+        MatrixVocabElement mve = null;
+        FormalArgument fa = null;
+        DataValue dv = null;
+        PredDataValue pdv = null;
         
         if ( this.db != db )
         {
@@ -1536,14 +1893,83 @@ public class Matrix
             throw new SystemErrorException(mName + "pveID invalid.");
         }
         
-        for ( DataValue dv : this.argList )
+        numArgs = this.argList.size();
+
+        if ( numArgs <= 0 )
         {
+            throw new SystemErrorException(mName + "numArgs <= 0");
+        }
+            
+        i = 0;
+        
+        while ( i < numArgs )
+        {
+            dv = this.getArg(i);
+            
+            if ( dv == null )
+            {
+                throw new SystemErrorException(mName + "arg " + i + 
+                                               " is null?!?!");
+            }
+            
             if ( dv instanceof PredDataValue )
             {
-                ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
+                pdv = (PredDataValue)dv;
+                
+                if ( pdv.getItsValuePveID() == pveID )
+                {
+                    if ( dv.getItsFargType() == FormalArgument.fArgType.UNTYPED )
+                    {
+                        if ( mve == null )
+                        {
+                            dbe = this.db.idx.getElement(this.mveID);
+
+                            if ( dbe == null )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "this.mveID has no referent");
+                            }
+
+                            if ( ! ( dbe instanceof MatrixVocabElement ) )
+                            {
+                                throw new SystemErrorException(mName +
+                                    "mveID doesn't refer to a Matrix vocab element");
+                            }
+
+                            mve = (MatrixVocabElement)dbe;
+                        }
+
+                        fa = mve.getFormalArg(i);
+
+                        if ( fa == null )
+                        {
+                            throw new SystemErrorException(mName + "no " + i + 
+                                    "th formal argument?!?!");
+                        }
+
+                        dv = fa.constructEmptyArg();
+
+                        this.replaceArg(i, dv);
+                    }
+                    else if ( dv.getItsFargType() == FormalArgument.fArgType.PREDICATE )
+                    {
+                        ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "arg " + i + 
+                                                       " has unexpected fArgType.");
+                    }
+                }
+                else
+                {
+                    ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
+                }
             }
+
+            i++;
         }
-        
+                
         return;
         
     } /* Matrix::updateForPVEDeletion() */
@@ -1560,34 +1986,65 @@ public class Matrix
      * to point to the new versions of DataValues and Predicates that appear
      * in both.
      *
-     * Doing this in the general case is quite a chore, so we make some 
-     * simplifying assumptions:
+     * If there is no structural change in the underlying mve's and pve's,
+     * this task relatively straight forward, as continuing objects will 
+     * reside in the same location in the old and new argument lists, and 
+     * will share IDs.  New items will reside in the new argument list, and 
+     * have invalid IDs, and items that will cease to exist will reside in the
+     * old argument list, and not have a new version with the same ID in the 
+     * same location in the new argument list.
      *
-     * 1) The underlying MatrixVocabElement has not changed (we deal with 
-     *    this case elsewhere).
+     * If there is structural change, things get much more complicated -- 
+     * however we limit the complexity by allowing at most one mve or pve
+     * to be modified or deleted in any one cycle.  Thus we are given that 
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * cascadePveDel parameters will be true.
      *
-     * 2) DataValues do not change location in the val matrix -- they are 
-     *    are either modified or replaced with new DataValues (that is, 
-     *    instances of DataValue with invalid ID and probably different
-     *    type).
      *
-     * 3) If a new PredDataValue appears in the val matrix, then its value
-     *    is a new Predicate -- i.e. an instance of Predicate with invalid id. 
+     * 1) cascadeMveMod == true
      *
-     * 4) If a new Predicate appears in the val matrix, then only new DataValues
-     *    and Predicates may appear in its argument list.
+     * If cascadeMveMod is true, then a mve has been modified, and the ID of
+     * the modified mve is in cascadeMveID.
      *
-     * 5) If a Predicate changes its target PVE, then all its arguments must
-     *    be new.
+     * If cascadeMveID == this.mveID, then the definition of the mve that 
+     * defines the structure of this instance of Matrix has changed.  
+     * 
+     * Thus it is possible that formal arguments have been deleted and/or 
+     * re-arranged.  Thus instead of looking just in the corresponding location
+     * in the old argument list for the old version of an argument in the new
+     * list, we must scan the entire old argument list for the old version.
+     * Similarly for each item in the old argument list, we must scan the 
+     * new argument list to verify that there is no new version, and the 
+     * old argument (and all its descendants -- if any) must be removed from 
+     * the index.
      *
-     * 6) If a PredicateVocabElement definition has changed, then this fact
-     *    indicated by the pveChanged parameter, and exactly one pve was 
-     *    modified and its ID is passed in the the changedPveID parameter.
-     *    
+     * If cascadeMveID != this.mveID, then we can proceed as per the no 
+     * structural change case -- for this matrix at least.
      *
-     * Violations of these assumptions should be detected before we get this far,
-     * but we should still check for violations where convienient, and throw a 
-     * system error if one is detected.
+     *
+     * 2) cascadeMveDel == true
+     *
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * the deleted mve is in cascadeMveID.
+     *
+     * In this case, verify that this.mveID != cascadeMveID, and then proceed
+     * as per the no structural change case.
+     *
+     *
+     * 3) cascadePveMod == true
+     *
+     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * the modified pve is in cascadeMveID.
+     *
+     * Proceed as per the no structural change case.
+     *
+     *
+     * 4) cascadePveDel == true
+     *
+     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * the deleted pve is in cascadePveID.
+     *
+     * Proceed as per the no structural change case.
      *
      *                                      JRM -- 2/20/08
      *
@@ -1598,8 +2055,12 @@ public class Matrix
     
     protected void updateIndexForReplacementVal(Matrix oldMatrix,
                                                 long DCID,
-                                                boolean pveChanged,
-                                                long changedPveID)
+                                                boolean cascadeMveMod,
+                                                boolean cascadeMveDel,
+                                                long cascadeMveID,
+                                                boolean cascadePveMod,
+                                                boolean cascadePveDel,
+                                                long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateIndexForReplacementVal(): ";
@@ -1611,6 +2072,31 @@ public class Matrix
         FormalArgument fa;
         DataValue newArg = null;
         DataValue oldArg = null;
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        new_cpdv;
+        FloatDataValue          new_fdv;
+        IntDataValue            new_idv;
+        NominalDataValue        new_ndv;
+        PredDataValue           new_pdv;
+        TimeStampDataValue      new_tsdv;
+        QuoteStringDataValue    new_qsdv;
+        TextStringDataValue     new_tdv;
+        ColPredDataValue        old_cpdv;
+        FloatDataValue          old_fdv;
+        IntDataValue            old_idv;
+        NominalDataValue        old_ndv;
+        PredDataValue           old_pdv;
+        TimeStampDataValue      old_tsdv;
+        QuoteStringDataValue    old_qsdv;
+        TextStringDataValue     old_tdv;
         
         // validate the oldMatrix parameter
         
@@ -1637,6 +2123,11 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
+        else if ( ( cascadeMveDel ) && ( this.mveID == cascadeMveID ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "cascadeMveDel && (this.mveID == cascadeMveID)");
+        }
         else if ( argList == null )
         {
             /* argList hasn't been instantiated yet -- scream and die */
@@ -1651,7 +2142,8 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "mveID mismatch");
         }
-        else if ( this.getNumArgs() != oldMatrix.getNumArgs() )
+        else if ( ( ! cascadeMveMod ) && 
+                  ( this.getNumArgs() != oldMatrix.getNumArgs() ) )
         {
             throw new SystemErrorException(mName + "num args mismatch");
         }
@@ -1705,367 +2197,1042 @@ public class Matrix
         }
         
         // Now scan the argument list
-        while ( i < this.getNumArgs() )
+        if ( ( cascadeMveMod ) && ( cascadeMveID == this.mveID ) )
         {
-        
-            // get the i-th formal argument.  This is the mve's actual argument,
-            // so be careful not to modify it in any way.
-            fa = mve.getFormalArg(i);
-             
-            if ( fa == null )
-            {
-                throw new SystemErrorException(mName + "no " + i + 
-                        "th formal argument?!?!");
-            }
-            else if ( ( fa instanceof TextStringFormalArg ) &&
-                      ( mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT ) )
-            {
-                throw new SystemErrorException(mName + 
-                        "non-text mve contains a text formal arg?!?!");
-            }
-               
-            // get the i'th arguments from the old and new argument lists.  
-            // Again, these are the actual arguments -- must be careful not to 
-            // modify them in any way.
-            newArg = this.argList.get(i);
-            oldArg = oldMatrix.argList.get(i);
-
-            if ( newArg == null )
-            {
-                throw new SystemErrorException(mName + "no new" + i + 
-                        "th argument?!?!");
-            }
-
-            if ( oldArg == null )
-            {
-                throw new SystemErrorException(mName + "no old" + i + 
-                        "th argument?!?!");
-            }
+            assert( ! cascadeMveDel );
+            assert( ! cascadePveDel );
+            assert( ! cascadePveMod );
             
-            if ( fa.getID() != newArg.getItsFargID() )
-            {
-                throw new SystemErrorException(mName + 
-                                "fa.getID() != newArg.getItsFargID()");
-            }
+            // The mve whose definition underlies the old and new incarnations
+            // of the data cell has changed -- thus it is possible that formal
+            // arguments have shifted location, been removed, or added.  We
+            // must update the index accordingly.
+            //
+            // Fortunately, we can count on the following:
+            //
+            // 1) If the formal argument associated with an argument has been
+            //    removed, then the new version of the data cell will contain
+            //    no argument with the same ID as that associated with the 
+            //    formal argument that has been removed.
+            //
+            // 2) If a formal argument has been added, then the argument 
+            //    associated with the formal argument in the new data cell
+            //    will have the invalid id.
+            //
+            // With these two assurances in hand, we can process the two 
+            // argument lists as follows once the sanity checks pass:
+            //
+            // First, scan the old list for IDs that don't exist in the new
+            // list.  Delete the associated entries from the index.
+            //
+            // Second scan the new list.  If an entry has invalid ID, just 
+            // insert it in the index.  If it has valid id, use it to replace
+            // the entry in the old list with the same ID.  If no such old
+            // argument exists, scream and die.
             
-            if ( fa.getID() != oldArg.getItsFargID() )
+            // first remove unmatched old arguments from the index...
+            i = 0;
+            while ( i < oldMatrix.getNumArgs() )
             {
-                throw new SystemErrorException(mName + 
-                                "fa.getID() != oldArg.getItsFargID()");
-            }
-            
-            if ( oldArg.getID() == DBIndex.INVALID_ID )
-            {
-                throw new SystemErrorException(mName + i + 
-                        "th old argument not in index?!?!");
-            }
-            
-            if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
-                 ( newArg.getID() != oldArg.getID() ) )
-            {
-                throw new SystemErrorException(mName + i + 
-                        "th argument id mismatch");
-            }
-
-            switch (fa.getFargType())
-            {
-                case FLOAT:
-                    FloatFormalArg ffa;
-                    FloatDataValue new_fdv;
-                    FloatDataValue old_fdv;
+                int j = 0;
+                boolean foundMatch = false;
+                
+                oldArg = oldMatrix.argList.get(i);
+                
+                while ( j < this.getNumArgs() )
+                {
+                    newArg = this.argList.get(j);
                     
-                    if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                         ( ! ( oldArg instanceof FloatDataValue ) ) )
+                    if ( newArg.getID() == oldArg.getID() )
                     {
-                       throw new SystemErrorException(mName + 
-                                "Type mismatch: float expected.");
-                    }
-                    
-                    ffa = (FloatFormalArg)fa;
-                    new_fdv = (FloatDataValue)newArg;
-                    old_fdv = (FloatDataValue)oldArg;
-                    
-                    if ( new_fdv.getSubRange() != ffa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_fdv.getSubRange() != ffa.getSubRange().");
-                    }
-                    
-                    if ( new_fdv.getSubRange() )
-                    {
-                        if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
-                             ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
+                        if ( foundMatch )
                         {
-                            throw new SystemErrorException(mName + 
-                                    "new_fdv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case INTEGER:
-                    IntFormalArg ifa;
-                    IntDataValue new_idv;
-                    IntDataValue old_idv;
-                    
-                    if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                         ( ! ( oldArg instanceof IntDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: integer expected.");
-                    }
-                    
-                    ifa = (IntFormalArg)fa;
-                    new_idv = (IntDataValue)newArg;
-                    old_idv = (IntDataValue)oldArg;
-                    
-                    if ( new_idv.getSubRange() != ifa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_idv.getSubRange() != ifa.getSubRange().");
-                    }
-                    
-                    if ( new_idv.getSubRange() )
-                    {
-                        if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
-                             ( ifa.getMaxVal() < new_idv.getItsValue() ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "new_idv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case NOMINAL:
-                    NominalFormalArg nfa;
-                    NominalDataValue new_ndv;
-                    NominalDataValue old_ndv;
-                    
-                    if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                         ( ! ( oldArg instanceof NominalDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: nominal expected.");
-                    }
-                    
-                    nfa = (NominalFormalArg)fa;
-                    new_ndv = (NominalDataValue)newArg;
-                    old_ndv = (NominalDataValue)oldArg;
-                    
-                    if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_ndv.getSubRange() != nfa.getSubRange().");
-                    }
-                    
-                    if ( ( new_ndv.getSubRange() ) && 
-                         ( new_ndv.getItsValue() != null ) )
-                    {
-                        if ( ! nfa.approved(new_ndv.getItsValue()) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "new_ndv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case PREDICATE:
-                    PredFormalArg pfa;
-                    PredDataValue new_pdv;
-                    PredDataValue old_pdv;
-                    
-                    if ( ( ! ( newArg instanceof PredDataValue ) ) ||
-                         ( ! ( oldArg instanceof PredDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: Predicate expected.");
-                    }
-                    
-                    pfa = (PredFormalArg)fa;
-                    new_pdv = (PredDataValue)newArg;
-                    old_pdv = (PredDataValue)oldArg;
-                    
-                    if ( new_pdv.getSubRange() != pfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_pdv.getSubRange() != pfa.getSubRange().");
-                    }
-                    
-                    if ( ( new_pdv.getItsValue().getPveID() != 
-                            DBIndex.INVALID_ID ) &&
-                         ( new_pdv.getSubRange() ) &&
-                         ( ! pfa.approved(new_pdv.getItsValue().getPveID()) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "new_pdv.getItsValue() out of range.");
-                    }
-                    
-                    if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                         ( new_pdv.getItsValue().getID() == 
-                            DBIndex.INVALID_ID ) )
-                    {
-                        new_pdv.getItsValue().validatePredicate(true);
-                    }
-                    else
-                    {
-                        if ( pveChanged )
-                        {
-                            new_pdv.getItsValue().validateReplacementPredicate(
-                                                  old_pdv.getItsValueBlind(), 
-                                                  pveChanged, 
-                                                  changedPveID);
+                            throw new SystemErrorException(mName +
+                                                   "found duplicate match?!?");
                         }
                         else
                         {
-                            new_pdv.getItsValue().validateReplacementPredicate(
-                                                  old_pdv.getItsValue(), 
-                                                  pveChanged, 
-                                                  changedPveID);
+                            foundMatch = true;
                         }
                     }
-                    break;
+                    j++;
+                }
+                
+                if ( ! foundMatch )
+                {
+                    oldArg.removeFromIndex(DCID);
+                }
+                
+                i++;
+            }
+            
+            i = 0;
+            while ( i < this.getNumArgs() )
+            {
+                // get the i-th formal argument.  This is the mve's actual 
+                // argument,  so be careful not to modify it in any way.
+                fa = mve.getFormalArg(i);
 
-                case TIME_STAMP:
-                    TimeStampFormalArg tsfa;
-                    TimeStampDataValue new_tsdv;
-                    TimeStampDataValue old_tsdv;
+                if ( fa == null )
+                {
+                    throw new SystemErrorException(mName + "no " + i + 
+                            "th formal argument?!?!");
+                }
+                else if ( ( fa instanceof QuoteStringFormalArg ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.MATRIX) )
+                {
+                    throw new SystemErrorException(mName + 
+                        "non-matrix mve contains a quote string formal arg?!?!");
+                }
+                else if ( ( fa instanceof TextStringFormalArg ) &&
+                          ( i != 0 ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.TEXT ) )
+                {
+                    throw new SystemErrorException(mName + 
+                        "non-text mve contains a text string formal arg?!?!");
+                }
+
+                // get the i'th argument from the new argument list, and 
+                // the matching argument (if any) from the old argument list.
+                // Again, these are the actual arguments -- must be 
+                // careful not to modify them in any way.
+                newArg = this.argList.get(i);
+                oldArg = null;
+
+                if ( newArg == null )
+                {
+                    throw new SystemErrorException(mName + "no new" + i + 
+                            "th argument?!?!");
+                }
                     
-                    if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
-                         ( ! ( oldArg instanceof TimeStampDataValue ) ) )
+                if ( newArg.getID() != DBIndex.INVALID_ID )
+                {
+                    // the old argument list must contain an argument 
+                    // with the same ID.  Scan the list to find it.
+                    int j = 0;
+
+                    while ( ( j < oldMatrix.getNumArgs() ) &&
+                            ( oldArg == null ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: time stamp expected.");
-                    }
-                    
-                    tsfa = (TimeStampFormalArg)fa;
-                    new_tsdv = (TimeStampDataValue)newArg;
-                    old_tsdv = (TimeStampDataValue)oldArg;
-                    
-                    if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                    }
-                    
-                    if ( new_tsdv.getSubRange() )
-                    {
-                        if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) ||
-                             ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) )
+                        oldArg = oldMatrix.argList.get(j);
+
+                        if ( oldArg.getID() == DBIndex.INVALID_ID )
                         {
-                            throw new SystemErrorException(mName + 
-                                    "new_tsdv.getItsValue() out of range.");
+                            throw new SystemErrorException(mName + i + 
+                                    "th old argument not in index?!?!");
                         }
-                    }
-                    break;
 
-                case QUOTE_STRING:
-                    if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
-                         ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: quote string expected.");
+                        if ( oldArg.getID() != newArg.getID() )
+                        {
+                            oldArg = null;
+                        }
+                        
+                        j++;
                     }
-                    break;
 
-                case TEXT:
-                    if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
-                         ( ! ( oldArg instanceof TextStringDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: text string expected.");
-                    }
-                    break;
-
-                case UNTYPED:
-                    if ( ( newArg instanceof TextStringDataValue ) ||
-                         ( oldArg instanceof TextStringDataValue ) )
+                    if ( oldArg == null )
                     {
                         throw new SystemErrorException(mName +
-                                "Type mismatch: Text String can't be " +
-                                "substituted for untyped arguments.");
+                            "new arg has valid ID but no matching old arg.");
                     }
-                    else if ( ! ( ( newArg instanceof FloatDataValue ) ||
-                                  ( newArg instanceof IntDataValue ) ||
-                                  ( newArg instanceof NominalDataValue ) ||
-                                  ( newArg instanceof PredDataValue ) ||
-                                  ( newArg instanceof TimeStampDataValue ) ||
-                                  ( newArg instanceof QuoteStringDataValue ) ||
-                                  ( newArg instanceof UndefinedDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Unknown subtype of DataValue");
-                    }
-                    
-                    if ( ( newArg.getClass() != oldArg.getClass() ) &&
-                         ( newArg.getID() != DBIndex.INVALID_ID ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "dv type change and id set");
-                    }
-                         
-                    if ( newArg instanceof PredDataValue )
-                    {
+                }
+
+                if ( ( oldArg != null ) &&
+                     ( fa.getID() != oldArg.getItsFargID() ) )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+
+                if ( fa.getID() != newArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != newArg.getItsFargID()");
+                }
+
+                if ( ( oldArg != null ) &&
+                     ( fa.getID() != oldArg.getItsFargID() ) )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+                                
+                switch (fa.getFargType())
+                {
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Col Predicate(s) expected.");
+                        }
+
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+
+                        if ( oldArg != null )
+                        {
+                            old_cpdv = (ColPredDataValue)oldArg;
+                        }
+                        else
+                        {
+                            old_cpdv = null;
+                        }
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( old_cpdv != null )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName +
+                            "new_cpdv has valid ID but old_cpdv is null?!?");
+                        }
+                        break;
+
+                    case FLOAT:
+                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof FloatDataValue ) ) ) )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "Type mismatch: float(s) expected.");
+                        }
+
+                        ffa = (FloatFormalArg)fa;
+                        new_fdv = (FloatDataValue)newArg;
+
+                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_fdv.getSubRange() != ffa.getSubRange().");
+                        }
+
+                        if ( new_fdv.getSubRange() )
+                        {
+                            if ( ( ffa.getMinVal() > 
+                                    new_fdv.getItsValue() ) ||
+                                 ( ffa.getMaxVal() < 
+                                    new_fdv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                    "new_fdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case INTEGER:
+                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof IntDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: integer(s) expected.");
+                        }
+
+                        ifa = (IntFormalArg)fa;
+                        new_idv = (IntDataValue)newArg;
+
+                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_idv.getSubRange() != ifa.getSubRange().");
+                        }
+
+                        if ( new_idv.getSubRange() )
+                        {
+                            if ( ( ifa.getMinVal() > 
+                                    new_idv.getItsValue() ) ||
+                                 ( ifa.getMaxVal() < 
+                                    new_idv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                    "new_idv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case NOMINAL:
+                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+                             )
+                           )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: nominal(s) expected.");
+                        }
+
+                        nfa = (NominalFormalArg)fa;
+                        new_ndv = (NominalDataValue)newArg;
+
+                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_ndv.getSubRange() != nfa.getSubRange().");
+                        }
+
+                        if ( ( new_ndv.getSubRange() ) && 
+                             ( new_ndv.getItsValue() != null ) )
+                        {
+                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                    "new_ndv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case PREDICATE:
+                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof PredDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Predicate(s) expected.");
+                        }
+
+                        pfa = (PredFormalArg)fa;
                         new_pdv = (PredDataValue)newArg;
-                        
-                        if ( oldArg instanceof PredDataValue )
+
+                        if ( oldArg != null )
                         {
                             old_pdv = (PredDataValue)oldArg;
-                            
-                            if ( ! pveChanged )
+                        }
+                        else
+                        {
+                            old_pdv = null;
+                        }
+
+                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_pdv.getSubRange() != pfa.getSubRange().");
+                        }
+
+                        if ( ( new_pdv.getItsValue().getPveID() != 
+                                DBIndex.INVALID_ID ) &&
+                             ( new_pdv.getSubRange() ) &&
+                             ( ! pfa.approved(new_pdv.getItsValue().
+                                        getPveID()) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "new_pdv.getItsValue() out of range.");
+                        }
+
+                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_pdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_pdv.getItsValue().validatePredicate(true);
+                        }
+                        else if ( old_pdv != null )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName +
+                            "new_pdv has valid ID but old_pdv is null?!?");
+                        }
+                        break;
+
+                    case TIME_STAMP:
+                        if ( ( ! ( newArg instanceof 
+                                    TimeStampDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      TimeStampDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "Type mismatch: time stamp(s) expected.");
+                        }
+
+                        tsfa = (TimeStampFormalArg)fa;
+                        new_tsdv = (TimeStampDataValue)newArg;
+
+                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
+                        }
+
+                        if ( new_tsdv.getSubRange() )
+                        {
+                            if ( ( tsfa.getMinVal().
+                                    gt(new_tsdv.getItsValue()) ) ||
+                                 ( tsfa.getMaxVal().
+                                    lt(new_tsdv.getItsValue()) ) )
                             {
+                                throw new SystemErrorException(mName + 
+                                        "new_tsdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case QUOTE_STRING:
+                        if ( ( ! ( newArg instanceof 
+                                    QuoteStringDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      QuoteStringDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: quote string(s) expected.");
+                        }
+                        break;
+
+                    case TEXT:
+                        if ( ( ! ( newArg instanceof 
+                                    TextStringDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      TextStringDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: text string(s) expected.");
+                        }
+                        break;
+
+                    case UNTYPED:
+                        if ( ( newArg instanceof TextStringDataValue ) ||
+                             ( ( oldArg != null ) &&
+                               ( oldArg instanceof TextStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName +
+                                "Type mismatch: Text String(s) can't be " +
+                                "substituted for untyped arguments.");
+                        }
+                        else if ( ! ( ( newArg instanceof 
+                                        ColPredDataValue ) ||
+                                      ( newArg instanceof 
+                                        FloatDataValue ) ||
+                                      ( newArg instanceof 
+                                        IntDataValue ) ||
+                                      ( newArg instanceof 
+                                        NominalDataValue ) ||
+                                      ( newArg instanceof 
+                                        PredDataValue ) ||
+                                      ( newArg instanceof 
+                                        TimeStampDataValue ) ||
+                                      ( newArg instanceof 
+                                        QuoteStringDataValue ) ||
+                                      ( newArg instanceof 
+                                        UndefinedDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Unknown subtype of DataValue");
+                        }
+
+                        if ( ( ( oldArg == null ) 
+                               ||
+                               ( newArg.getClass() != oldArg.getClass() ) 
+                             )
+                             &&
+                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "dv type change and id set(2)");
+                        }
+
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
+
+                            if ( ( oldArg != null ) &&
+                                 ( oldArg instanceof ColPredDataValue ) )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                assert( cascadeMveMod );
+
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                            old_cpdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
+                        {
+                            new_pdv = (PredDataValue)newArg;
+
+                            if ( ( oldArg != null ) &&
+                                 ( oldArg instanceof PredDataValue ) )
+                            {
+                                old_pdv = (PredDataValue)oldArg;
+
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                            old_pdv.getItsValue(), 
-                                            pveChanged, 
-                                            changedPveID);
+                                            old_pdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
                             }
                             else
                             {
                                 new_pdv.getItsValue().
-                                        validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(), 
-                                            pveChanged, 
-                                            changedPveID);
+                                        validatePredicate(true);
                             }
+                        }
+                        break;
+
+                    case UNDEFINED:
+                        throw new SystemErrorException(mName +
+                                "formal arg type undefined???");
+                        /* break statement commented out to keep the 
+                         * compiler happy 
+                         */
+                        // break;
+
+                    default:
+                        throw new SystemErrorException(mName + 
+
+                                "Unknown Formal Arg Type");
+                        /* break statement commented out to keep the 
+                         * compiler happy 
+                         */
+                        // break;
+                }
+                
+                // Sanity checks pass.  If oldArg is defined, the IDs must
+                // match and we replace the old version with the new in the
+                // index.  Otherwise, just insert the new argument in the 
+                // index.
+                if ( oldArg != null )
+                {
+                    assert( newArg.getID() == oldArg.getID() );
+                    
+                    newArg.replaceInIndex(oldArg, 
+                                          DCID, 
+                                          cascadeMveMod,
+                                          cascadeMveDel, 
+                                          cascadeMveID,
+                                          cascadePveMod, 
+                                          cascadePveDel, 
+                                          cascadePveID);
+                }
+                else
+                {
+                    assert( newArg.getID() == DBIndex.INVALID_ID );
+
+                    newArg.insertInIndex(DCID);
+                }
+
+                i++;
+
+            } /* while */
+        }
+        else /* no structural change -- at least for this Matrix */
+        {
+            while ( i < this.getNumArgs() )
+            {
+
+                // get the i-th formal argument.  This is the mve's actual 
+                // argument, so be careful not to modify it in any way.
+                fa = mve.getFormalArg(i);
+
+                if ( fa == null )
+                {
+                    throw new SystemErrorException(mName + "no " + i + 
+                            "th formal argument?!?!");
+                }
+                else if ( ( fa instanceof TextStringFormalArg ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.TEXT ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "non-text mve contains a text formal arg?!?!");
+                }
+
+                // get the i'th arguments from the old and new argument lists.  
+                // Again, these are the actual arguments -- must be careful not 
+                // to modify them in any way.
+                newArg = this.argList.get(i);
+                oldArg = oldMatrix.argList.get(i);
+
+                if ( newArg == null )
+                {
+                    throw new SystemErrorException(mName + "no new" + i + 
+                            "th argument?!?!");
+                }
+
+                if ( oldArg == null )
+                {
+                    throw new SystemErrorException(mName + "no old" + i + 
+                            "th argument?!?!");
+                }
+
+                if ( fa.getID() != newArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != newArg.getItsFargID()");
+                }
+
+                if ( fa.getID() != oldArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+
+                if ( oldArg.getID() == DBIndex.INVALID_ID )
+                {
+                    throw new SystemErrorException(mName + i + 
+                            "th old argument not in index?!?!");
+                }
+
+                if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
+                     ( newArg.getID() != oldArg.getID() ) )
+                {
+                    throw new SystemErrorException(mName + i + 
+                            "th argument id mismatch");
+                }
+
+                switch (fa.getFargType())
+                {
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Predicate expected.");
+                        }
+
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+                        old_cpdv = (ColPredDataValue)oldArg;
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
                         }
                         else
                         {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        break;
+
+                    case FLOAT:
+                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+                             ( ! ( oldArg instanceof FloatDataValue ) ) )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "Type mismatch: float expected.");
+                        }
+
+                        ffa = (FloatFormalArg)fa;
+                        new_fdv = (FloatDataValue)newArg;
+                        old_fdv = (FloatDataValue)oldArg;
+
+                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                 "new_fdv.getSubRange() != ffa.getSubRange().");
+                        }
+
+                        if ( new_fdv.getSubRange() )
+                        {
+                            if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
+                                 ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_fdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case INTEGER:
+                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+                             ( ! ( oldArg instanceof IntDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: integer expected.");
+                        }
+
+                        ifa = (IntFormalArg)fa;
+                        new_idv = (IntDataValue)newArg;
+                        old_idv = (IntDataValue)oldArg;
+
+                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                "new_idv.getSubRange() != ifa.getSubRange().");
+                        }
+
+                        if ( new_idv.getSubRange() )
+                        {
+                            if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
+                                 ( ifa.getMaxVal() < new_idv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_idv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case NOMINAL:
+                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+                             ( ! ( oldArg instanceof NominalDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: nominal expected.");
+                        }
+
+                        nfa = (NominalFormalArg)fa;
+                        new_ndv = (NominalDataValue)newArg;
+                        old_ndv = (NominalDataValue)oldArg;
+
+                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                "new_ndv.getSubRange() != nfa.getSubRange().");
+                        }
+
+                        if ( ( new_ndv.getSubRange() ) && 
+                             ( new_ndv.getItsValue() != null ) )
+                        {
+                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_ndv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case PREDICATE:
+                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+                             ( ! ( oldArg instanceof PredDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Predicate expected.");
+                        }
+
+                        pfa = (PredFormalArg)fa;
+                        new_pdv = (PredDataValue)newArg;
+                        old_pdv = (PredDataValue)oldArg;
+
+                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                "new_pdv.getSubRange() != pfa.getSubRange().");
+                        }
+
+                        if ( ( new_pdv.getItsValue().getPveID() != 
+                                DBIndex.INVALID_ID ) &&
+                             ( new_pdv.getSubRange() ) &&
+                             ( ! pfa.approved(
+                                     new_pdv.getItsValue().getPveID()) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "new_pdv.getItsValue() out of range.");
+                        }
+
+                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_pdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
                             new_pdv.getItsValue().validatePredicate(true);
                         }
-                    }
-                    break;
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        break;
 
-                case UNDEFINED:
-                    throw new SystemErrorException(mName +
-                            "formal arg type undefined???");
-                    /* break statement commented out to keep the compiler happy */
-                    // break;
+                    case TIME_STAMP:
+                        if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
+                             ( ! ( oldArg instanceof TimeStampDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: time stamp expected.");
+                        }
 
-                default:
-                    throw new SystemErrorException(mName + 
-                                                   "Unknown Formal Arg Type");
-                    /* break statement commented out to keep the compiler happy */
-                    // break;
-            }
-            
-            // Sanity checks pass.  If the ID's of the old and new versions of 
-            // the argument match, replace the old incarnation of the formal
-            // argument with the new in the index.
-            //
-            // Otherwise, remove the old from the index, and insert the new.
-            if ( newArg.getID() == oldArg.getID() )
-            {
-                newArg.replaceInIndex(oldArg, DCID, pveChanged, changedPveID);
-            }
-            else /* new_fdv.getID() == DBIndex.INVALID_ID */
-            {
-                oldArg.removeFromIndex(DCID);
-                newArg.insertInIndex(DCID);
-            }
-            
-            i++;
-            
-        } /* while */
+                        tsfa = (TimeStampFormalArg)fa;
+                        new_tsdv = (TimeStampDataValue)newArg;
+                        old_tsdv = (TimeStampDataValue)oldArg;
+
+                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
+                        }
+
+                        if ( new_tsdv.getSubRange() )
+                        {
+                            if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) 
+                                 ||
+                                 ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) 
+                               )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_tsdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case QUOTE_STRING:
+                        if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
+                             ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: quote string expected.");
+                        }
+                        break;
+
+                    case TEXT:
+                        if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
+                             ( ! ( oldArg instanceof TextStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: text string expected.");
+                        }
+                        break;
+
+                    case UNTYPED:
+                        if ( ( newArg instanceof TextStringDataValue ) ||
+                             ( oldArg instanceof TextStringDataValue ) )
+                        {
+                            throw new SystemErrorException(mName +
+                                    "Type mismatch: Text String can't be " +
+                                    "substituted for untyped arguments.");
+                        }
+                        else if ( ! ( ( newArg instanceof ColPredDataValue ) 
+                                      ||
+                                      ( newArg instanceof FloatDataValue ) 
+                                      ||
+                                      ( newArg instanceof IntDataValue ) 
+                                      ||
+                                      ( newArg instanceof NominalDataValue ) 
+                                      ||
+                                      ( newArg instanceof PredDataValue ) 
+                                      ||
+                                      ( newArg instanceof TimeStampDataValue ) 
+                                      ||
+                                      ( newArg instanceof QuoteStringDataValue ) 
+                                      ||
+                                      ( newArg instanceof UndefinedDataValue ) 
+                                    ) 
+                                )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Unknown subtype of DataValue");
+                        }
+
+                        if ( ( newArg.getClass() != oldArg.getClass() ) &&
+                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "dv type change and id set");
+                        }
+                        
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
+
+                            if ( oldArg instanceof ColPredDataValue )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValueBlind(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValue(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
+                        {
+                            new_pdv = (PredDataValue)newArg;
+
+                            if ( oldArg instanceof PredDataValue )
+                            {
+                                old_pdv = (PredDataValue)oldArg;
+
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
+                                {
+                                    new_pdv.getItsValue().
+                                            validateReplacementPredicate(
+                                                old_pdv.getItsValueBlind(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_pdv.getItsValue().
+                                            validateReplacementPredicate(
+                                                old_pdv.getItsValue(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                            }
+                            else
+                            {
+                                new_pdv.getItsValue().
+                                        validatePredicate(true);
+                            }
+                        }
+                        break;
+
+                    case UNDEFINED:
+                        throw new SystemErrorException(mName +
+                                "formal arg type undefined???");
+                        // break statement commented out to keep the compiler 
+                        // happy 
+                        // break;
+
+                    default:
+                        throw new SystemErrorException(mName + 
+                                "Unknown Formal Arg Type");
+                        // break statement commented out to keep the compiler 
+                        // happy
+                        // break;
+                }
+
+                // Sanity checks pass.  If the ID's of the old and new versions 
+                // of the argument match, replace the old incarnation of the 
+                // formal argument with the new in the index.
+                //
+                // Otherwise, remove the old from the index, and insert the new.
+                if ( newArg.getID() == oldArg.getID() )
+                {
+                    newArg.replaceInIndex(oldArg, 
+                                          DCID, 
+                                          cascadeMveMod,
+                                          cascadeMveDel, 
+                                          cascadeMveID,
+                                          cascadePveMod, 
+                                          cascadePveDel, 
+                                          cascadePveID);
+                }
+                else /* new_fdv.getID() == DBIndex.INVALID_ID */
+                {
+                    oldArg.removeFromIndex(DCID);
+                    newArg.insertInIndex(DCID);
+                }
+
+                i++;
+
+            } /* while */
+        }
         
         return;
         
@@ -2096,6 +3263,18 @@ public class Matrix
         MatrixVocabElement mve;
         FormalArgument fa;
         DataValue arg = null;
+        ColPredFormalArg cpfa;
+        FloatFormalArg ffa;
+        IntFormalArg ifa;
+        NominalFormalArg nfa;
+        PredFormalArg pfa;
+        TimeStampFormalArg tsfa;
+        ColPredDataValue cpdv;
+        FloatDataValue fdv;
+        IntDataValue idv;
+        NominalDataValue ndv;
+        PredDataValue pdv;
+        TimeStampDataValue tsdv;
         
         if ( this.mveID == DBIndex.INVALID_ID )
         {
@@ -2179,10 +3358,20 @@ public class Matrix
 
             switch (fa.getFargType())
             {
-                case FLOAT:
-                    FloatFormalArg ffa;
-                    FloatDataValue fdv;
+                case COL_PREDICATE:
+                    if ( ! ( arg instanceof ColPredDataValue ) )
+                    {
+                        throw new SystemErrorException(mName +
+                                "Type mismatch: col pred expected");
+                    }
                     
+                    cpfa = (ColPredFormalArg)fa;
+                    cpdv = (ColPredDataValue)arg;
+
+                    cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
+                    break;
+                    
+                case FLOAT:
                     if ( ! ( arg instanceof FloatDataValue ) )
                     {
                        throw new SystemErrorException(mName + 
@@ -2210,9 +3399,6 @@ public class Matrix
                     break;
 
                 case INTEGER:
-                    IntFormalArg ifa;
-                    IntDataValue idv;
-                    
                     if ( ! ( arg instanceof IntDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -2240,9 +3426,6 @@ public class Matrix
                     break;
 
                 case NOMINAL:
-                    NominalFormalArg nfa;
-                    NominalDataValue ndv;
-                    
                     if ( ! ( arg instanceof NominalDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -2270,9 +3453,6 @@ public class Matrix
                     break;
 
                 case PREDICATE:
-                    PredFormalArg pfa;
-                    PredDataValue pdv;
-                    
                     if ( ! ( arg instanceof PredDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -2301,9 +3481,6 @@ public class Matrix
                     break;
 
                 case TIME_STAMP:
-                    TimeStampFormalArg tsfa;
-                    TimeStampDataValue tsdv;
-                    
                     if ( ! ( arg instanceof TimeStampDataValue ) )
                     {
                         throw new SystemErrorException(mName + 
@@ -2353,7 +3530,8 @@ public class Matrix
                                 "Type mismatch: Text String can't be " +
                                 "substituted for untyped arguments.");
                     }
-                    else if ( ! ( ( arg instanceof FloatDataValue ) ||
+                    else if ( ! ( ( arg instanceof ColPredDataValue ) ||
+                                  ( arg instanceof FloatDataValue ) ||
                                   ( arg instanceof IntDataValue ) ||
                                   ( arg instanceof NominalDataValue ) ||
                                   ( arg instanceof PredDataValue ) ||
@@ -2365,7 +3543,14 @@ public class Matrix
                                 "Unknown subtype of DataValue");
                     }
                         
-                    if ( arg instanceof PredDataValue )
+                    if ( arg instanceof ColPredDataValue )
+                    {
+                        cpdv = (ColPredDataValue)arg;
+
+                        cpdv.getItsValue().validateColumnPredicate(
+                                idMustBeInvalid);
+                    }
+                    else if ( arg instanceof PredDataValue )
                     {
                         pdv = (PredDataValue)arg;
 
@@ -2438,25 +3623,73 @@ public class Matrix
      * DataCell.  This is purely a sanity checking routine.  The test should 
      * always pass.
      *
-     * Note that the test assumes that only the value of the data cell has
-     * changes -- the method must not be called if the underlying matrix
-     * vocab element has changed.
+     * In all cases, this requires that we verify that the argument list of 
+     * the matrix is congruent with the formal argument list supplied by the 
+     * target mveID.
      *
-     * A replacement data cell value is valid iff:
+     * Further, verify that all arguments either have invalid ID, or have an 
+     * argument of matching type and ID in oldMatrix.  Unless the target mve 
+     * has been modified (i.e. cascadeMveMod == true and cascadeMveID == 
+     * this.mveID), these matching arguments must be in the same location 
+     * in oldMatrix's argument list.
      *
-     * 1) DataValues do not change location in the val matrix -- they are 
-     *    are either modified or replaced with new DataValues (that is, 
-     *    instances of DataValue with invalid ID and probably different
-     *    type).
+     * If there is no structural change in the underlying mve's and pve's,
+     * this task relatively straight forward, as continuing objects will 
+     * reside in the same location in the old and new argument lists, and 
+     * will share IDs.  New items will reside in the new argument list, and 
+     * have invalid IDs, and items that will cease to exist will reside in the
+     * old argument list, and not have a new version with the same ID in the 
+     * same location in the new argument list.
      *
-     * 2) If a new PredDataValue appears in the val matrix, then its value
-     *    is a new Predicate -- i.e. an instance of Predicate with invalid id. 
+     * If there is structural change, things get much more complicated -- 
+     * however we limit the complexity by allowing at most one mve or pve
+     * to be modified or deleted in any one cycle.  Thus we are given that 
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * cascadePveDel parameters will be true.
      *
-     * 3) If a new Predicate appears in the val matrix, then only new DataValues
-     *    and Predicates may appear in its argument list.
      *
-     * 4) If a Predicate changes its target PVE, then only new DataValues and 
-     *    Predicates may appear in its argument list.
+     * 1) cascadeMveMod == true
+     *
+     * If cascadeMveMod is true, then a mve has been modified, and the ID of
+     * the modified mve is in cascadeMveID.
+     *
+     * If cascadeMveID == this.mveID, then the definition of the mve that 
+     * defines the structure of this instance of Matrix has changed.  
+     * 
+     * Thus it is possible that formal arguments have been deleted and/or 
+     * re-arranged.  Thus instead of looking just in the corresponding location
+     * in the old argument list for the old version of an argument in the new
+     * list, we must scan the entire old argument list for the old version.
+     * Similarly for each item in the old argument list, we must scan the 
+     * new argument list to verify that there is no new version.
+     *
+     * If cascadeMveID != this.mveID, then we can proceed as per the no 
+     * structural change case -- for this matrix at least.
+     *
+     *
+     * 2) cascadeMveDel == true
+     *
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * the deleted mve is in cascadeMveID.
+     *
+     * In this case, verify that this.mveID != cascadeMveID, and then proceed
+     * as per the no structural change case.
+     *
+     *
+     * 3) cascadePveMod == true
+     *
+     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * the modified pve is in cascadeMveID.
+     *
+     * Proceed as per the no structural change case.
+     *
+     *
+     * 4) cascadePveDel == true
+     *
+     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * the deleted pve is in cascadePveID.
+     *
+     * Proceed as per the no structural change case.
      *
      *                                              JRM -- 2/19/08
      *
@@ -2466,7 +3699,11 @@ public class Matrix
      */
     
     public void validateReplacementMatrix(Matrix oldMatrix,
+                                          boolean cascadeMveMod,
+                                          boolean cascadeMveDel,
+                                          long cascadeMveID,
                                           boolean cascadePveMod,
+                                          boolean cascadePveDel,
                                           long cascadePveID)
         throws SystemErrorException
     {
@@ -2476,6 +3713,31 @@ public class Matrix
         FormalArgument fa;
         DataValue newArg = null;
         DataValue oldArg = null;
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        new_cpdv;
+        FloatDataValue          new_fdv;
+        IntDataValue            new_idv;
+        NominalDataValue        new_ndv;
+        PredDataValue           new_pdv;
+        TimeStampDataValue      new_tsdv;
+        QuoteStringDataValue    new_qsdv;
+        TextStringDataValue     new_tdv;
+        ColPredDataValue        old_cpdv;
+        FloatDataValue          old_fdv;
+        IntDataValue            old_idv;
+        NominalDataValue        old_ndv;
+        PredDataValue           old_pdv;
+        TimeStampDataValue      old_tsdv;
+        QuoteStringDataValue    old_qsdv;
+        TextStringDataValue     old_tdv;
         
         if ( oldMatrix == null )
         {
@@ -2500,6 +3762,11 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
+        else if ( ( cascadeMveDel ) && ( cascadeMveID == this.mveID ) )
+        {
+            throw new SystemErrorException(mName + "( cascadeMveDel ) && " +
+                    "( cascadeMveID == this.mveID )");
+        }
         else if ( argList == null )
         {
             /* argList hasn't been instantiated yet -- scream and die */
@@ -2514,7 +3781,8 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "mveID mismatch");
         }
-        else if ( this.getNumArgs() != oldMatrix.getNumArgs() )
+        else if ( ( ! cascadeMveMod ) && 
+                  ( this.getNumArgs() != oldMatrix.getNumArgs() ) )
         {
             throw new SystemErrorException(mName + "num args mismatch");
         }
@@ -2545,185 +3813,695 @@ public class Matrix
         }
         
         
-        // Now scan the argument list
-        while ( i < this.getNumArgs() )
+        if ( ( cascadeMveMod ) && ( cascadeMveID == this.mveID ) )
         {
-        
-            // get the i-th formal argument.  This is the mve's actual argument,
-            // so be careful not to modify it in any way.
-            fa = mve.getFormalArg(i);
-             
-            if ( fa == null )
+            assert( ! cascadeMveDel );
+            assert( ! cascadePveMod );
+            assert( ! cascadePveDel );
+            
+            /* The definition of the mve defining both the old and
+             * new versions of the data cell has changed.  Thus it is
+             * possible that the formal argument list has changed
+             * as well.
+             *
+             * Verify that each of the arguments in the new predicate
+             * match the pve.  Further, for each argument in the new
+             * predicate with a valid id, verify that there is an
+             * argument in the old predicate with the same id and type.
+             */
+            
+            i = 0;
+            while ( i < this.getNumArgs() )
             {
-                throw new SystemErrorException(mName + "no " + i + 
-                        "th formal argument?!?!");
-            }
-            else if ( ( fa instanceof TextStringFormalArg ) &&
-                      ( mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT ) )
-            {
-                throw new SystemErrorException(mName + 
-                        "non-text mve contains a text formal arg?!?!");
-            }
-               
-            // get the i'th arguments from the old and new argument lists.  
-            // Again, these are the actual arguments -- must be careful not to 
-            // modify them in any way.
-            newArg = this.argList.get(i);
-            oldArg = oldMatrix.argList.get(i);
+                // get the i-th formal argument.  This is the mve's actual 
+                // argument,  so be careful not to modify it in any way.
+                fa = mve.getFormalArg(i);
 
-            if ( newArg == null )
-            {
-                throw new SystemErrorException(mName + "no new" + i + 
-                        "th argument?!?!");
-            }
+                if ( fa == null )
+                {
+                    throw new SystemErrorException(mName + "no " + i + 
+                            "th formal argument?!?!");
+                }
+                else if ( ( fa instanceof QuoteStringFormalArg ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.MATRIX) )
+                {
+                    throw new SystemErrorException(mName + 
+                        "non-matrix mve contains a quote string formal arg?!?!");
+                }
+                else if ( ( fa instanceof TextStringFormalArg ) &&
+                          ( i != 0 ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.TEXT ) )
+                {
+                    throw new SystemErrorException(mName + 
+                        "non-text mve contains a text string formal arg?!?!");
+                }
 
-            if ( oldArg == null )
-            {
-                throw new SystemErrorException(mName + "no old" + i + 
-                        "th argument?!?!");
-            }
-            
-            if ( fa.getID() != newArg.getItsFargID() )
-            {
-                throw new SystemErrorException(mName + 
-                                "fa.getID() != newArg.getItsFargID()");
-            }
-            
-            if ( fa.getID() != oldArg.getItsFargID() )
-            {
-                throw new SystemErrorException(mName + 
-                                "fa.getID() != oldArg.getItsFargID()");
-            }
-            
-            if ( oldArg.getID() == DBIndex.INVALID_ID )
-            {
-                throw new SystemErrorException(mName + i + 
-                        "th old argument not in index?!?!");
-            }
-            
-            if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
-                 ( newArg.getID() != oldArg.getID() ) )
-            {
-                throw new SystemErrorException(mName + i + 
-                        "th argument id mismatch");
-            }
+                // get the i'th argument from the new argument list, and 
+                // the matching argument (if any) from the old argument list.
+                // Again, these are the actual arguments -- must be 
+                // careful not to modify them in any way.
+                newArg = this.argList.get(i);
+                oldArg = null;
 
-            switch (fa.getFargType())
-            {
-                case FLOAT:
-                    FloatFormalArg ffa;
-                    FloatDataValue new_fdv;
-                    FloatDataValue old_fdv;
+                if ( newArg == null )
+                {
+                    throw new SystemErrorException(mName + "no new" + i + 
+                            "th argument?!?!");
+                }
                     
-                    if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                         ( ! ( oldArg instanceof FloatDataValue ) ) )
+                if ( newArg.getID() != DBIndex.INVALID_ID )
+                {
+                    // the old argument list must contain an argument 
+                    // with the same ID.  Scan the list to find it.
+                    int j = 0;
+
+                    while ( ( j < oldMatrix.getNumArgs() ) &&
+                            ( oldArg == null ) )
                     {
-                       throw new SystemErrorException(mName + 
-                                "Type mismatch: float expected.");
+                        oldArg = oldMatrix.argList.get(j);
+
+                        if ( oldArg.getID() == DBIndex.INVALID_ID )
+                        {
+                            throw new SystemErrorException(mName + i + 
+                                    "th old argument not in index?!?!");
+                        }
+
+                        if ( oldArg.getID() != newArg.getID() )
+                        {
+                            oldArg = null;
+                        }
+                        
+                        j++;
                     }
-                    
-                    ffa = (FloatFormalArg)fa;
-                    new_fdv = (FloatDataValue)newArg;
-                    old_fdv = (FloatDataValue)oldArg;
-                    
-                    if ( new_fdv.getSubRange() != ffa.getSubRange() )
+
+                    if ( oldArg == null )
                     {
-                       throw new SystemErrorException(mName + 
-                                "new_fdv.getSubRange() != ffa.getSubRange().");
+                        throw new SystemErrorException(mName +
+                            "new arg has valid ID but no matching old arg.");
                     }
-                    
-                    if ( new_fdv.getSubRange() )
-                    {
-                        if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
-                             ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
+                }
+
+                if ( ( oldArg != null ) &&
+                     ( fa.getID() != oldArg.getItsFargID() ) )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+
+                if ( fa.getID() != newArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != newArg.getItsFargID()");
+                }
+
+                if ( ( oldArg != null ) &&
+                     ( fa.getID() != oldArg.getItsFargID() ) )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+                                
+                switch (fa.getFargType())
+                {
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
                         {
                             throw new SystemErrorException(mName + 
+                                    "Type mismatch: Col Predicate(s) expected.");
+                        }
+
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+
+                        if ( oldArg != null )
+                        {
+                            old_cpdv = (ColPredDataValue)oldArg;
+                        }
+                        else
+                        {
+                            old_cpdv = null;
+                        }
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( old_cpdv != null )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName +
+                            "new_cpdv has valid ID but old_cpdv is null?!?");
+                        }
+                        break;
+
+                    case FLOAT:
+                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof FloatDataValue ) ) ) )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "Type mismatch: float(s) expected.");
+                        }
+
+                        ffa = (FloatFormalArg)fa;
+                        new_fdv = (FloatDataValue)newArg;
+
+                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_fdv.getSubRange() != ffa.getSubRange().");
+                        }
+
+                        if ( new_fdv.getSubRange() )
+                        {
+                            if ( ( ffa.getMinVal() > 
+                                    new_fdv.getItsValue() ) ||
+                                 ( ffa.getMaxVal() < 
+                                    new_fdv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
                                     "new_fdv.getItsValue() out of range.");
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case INTEGER:
-                    IntFormalArg ifa;
-                    IntDataValue new_idv;
-                    IntDataValue old_idv;
-                    
-                    if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                         ( ! ( oldArg instanceof IntDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: integer expected.");
-                    }
-                    
-                    ifa = (IntFormalArg)fa;
-                    new_idv = (IntDataValue)newArg;
-                    old_idv = (IntDataValue)oldArg;
-                    
-                    if ( new_idv.getSubRange() != ifa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_idv.getSubRange() != ifa.getSubRange().");
-                    }
-                    
-                    if ( new_idv.getSubRange() )
-                    {
-                        if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
-                             ( ifa.getMaxVal() < new_idv.getItsValue() ) )
+                    case INTEGER:
+                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof IntDataValue ) ) ) )
                         {
                             throw new SystemErrorException(mName + 
+                                    "Type mismatch: integer(s) expected.");
+                        }
+
+                        ifa = (IntFormalArg)fa;
+                        new_idv = (IntDataValue)newArg;
+
+                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_idv.getSubRange() != ifa.getSubRange().");
+                        }
+
+                        if ( new_idv.getSubRange() )
+                        {
+                            if ( ( ifa.getMinVal() > 
+                                    new_idv.getItsValue() ) ||
+                                 ( ifa.getMaxVal() < 
+                                    new_idv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
                                     "new_idv.getItsValue() out of range.");
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case NOMINAL:
-                    NominalFormalArg nfa;
-                    NominalDataValue new_ndv;
-                    NominalDataValue old_ndv;
-                    
-                    if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                         ( ! ( oldArg instanceof NominalDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: nominal expected.");
-                    }
-                    
-                    nfa = (NominalFormalArg)fa;
-                    new_ndv = (NominalDataValue)newArg;
-                    old_ndv = (NominalDataValue)oldArg;
-                    
-                    if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_ndv.getSubRange() != nfa.getSubRange().");
-                    }
-                    
-                    if ( ( new_ndv.getSubRange() ) && 
-                         ( new_ndv.getItsValue() != null ) )
-                    {
-                        if ( ! nfa.approved(new_ndv.getItsValue()) )
+                    case NOMINAL:
+                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+                             )
+                           )
                         {
                             throw new SystemErrorException(mName + 
-                                    "new_ndv.getItsValue() out of range.");
+                                    "Type mismatch: nominal(s) expected.");
                         }
-                    }
-                    break;
 
-                case PREDICATE:
-                    /* If we entered the cascade as the result of a pve 
-                     * definition change, just skip those sanity checks that
-                     * involve the old predicate.
-                     *
-                     * If we don't, we will likely run into a predicate
-                     * whose old version was constructed to match a different
-                     * formal argument list.
-                     */
-                    {
-                        PredFormalArg pfa;
-                        PredDataValue new_pdv;
-                        PredDataValue old_pdv;
+                        nfa = (NominalFormalArg)fa;
+                        new_ndv = (NominalDataValue)newArg;
 
+                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_ndv.getSubRange() != nfa.getSubRange().");
+                        }
+
+                        if ( ( new_ndv.getSubRange() ) && 
+                             ( new_ndv.getItsValue() != null ) )
+                        {
+                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                    "new_ndv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case PREDICATE:
+                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof PredDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Predicate(s) expected.");
+                        }
+
+                        pfa = (PredFormalArg)fa;
+                        new_pdv = (PredDataValue)newArg;
+
+                        if ( oldArg != null )
+                        {
+                            old_pdv = (PredDataValue)oldArg;
+                        }
+                        else
+                        {
+                            old_pdv = null;
+                        }
+
+                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                             "new_pdv.getSubRange() != pfa.getSubRange().");
+                        }
+
+                        if ( ( new_pdv.getItsValue().getPveID() != 
+                                DBIndex.INVALID_ID ) &&
+                             ( new_pdv.getSubRange() ) &&
+                             ( ! pfa.approved(new_pdv.getItsValue().
+                                        getPveID()) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "new_pdv.getItsValue() out of range.");
+                        }
+
+                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_pdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_pdv.getItsValue().validatePredicate(true);
+                        }
+                        else if ( old_pdv != null )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            throw new SystemErrorException(mName +
+                            "new_pdv has valid ID but old_pdv is null?!?");
+                        }
+                        break;
+
+                    case TIME_STAMP:
+                        if ( ( ! ( newArg instanceof 
+                                    TimeStampDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      TimeStampDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "Type mismatch: time stamp(s) expected.");
+                        }
+
+                        tsfa = (TimeStampFormalArg)fa;
+                        new_tsdv = (TimeStampDataValue)newArg;
+
+                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
+                        }
+
+                        if ( new_tsdv.getSubRange() )
+                        {
+                            if ( ( tsfa.getMinVal().
+                                    gt(new_tsdv.getItsValue()) ) ||
+                                 ( tsfa.getMaxVal().
+                                    lt(new_tsdv.getItsValue()) ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_tsdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case QUOTE_STRING:
+                        if ( ( ! ( newArg instanceof 
+                                    QuoteStringDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      QuoteStringDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: quote string(s) expected.");
+                        }
+                        break;
+
+                    case TEXT:
+                        if ( ( ! ( newArg instanceof 
+                                    TextStringDataValue ) ) ||
+                             ( ( oldArg != null ) &&
+                               ( ! ( oldArg instanceof 
+                                      TextStringDataValue ) ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: text string(s) expected.");
+                        }
+                        break;
+
+                    case UNTYPED:
+                        if ( ( newArg instanceof TextStringDataValue ) ||
+                             ( ( oldArg != null ) &&
+                               ( oldArg instanceof TextStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName +
+                                "Type mismatch: Text String(s) can't be " +
+                                "substituted for untyped arguments.");
+                        }
+                        else if ( ! ( ( newArg instanceof 
+                                        ColPredDataValue ) ||
+                                      ( newArg instanceof 
+                                        FloatDataValue ) ||
+                                      ( newArg instanceof 
+                                        IntDataValue ) ||
+                                      ( newArg instanceof 
+                                        NominalDataValue ) ||
+                                      ( newArg instanceof 
+                                        PredDataValue ) ||
+                                      ( newArg instanceof 
+                                        TimeStampDataValue ) ||
+                                      ( newArg instanceof 
+                                        QuoteStringDataValue ) ||
+                                      ( newArg instanceof 
+                                        UndefinedDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Unknown subtype of DataValue");
+                        }
+
+                        if ( ( ( oldArg == null ) 
+                               ||
+                               ( newArg.getClass() != oldArg.getClass() ) 
+                             )
+                             &&
+                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "dv type change and id set(2)");
+                        }
+                        
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
+
+                            if ( ( oldArg != null ) &&
+                                 ( oldArg instanceof ColPredDataValue ) )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                assert( cascadeMveMod );
+
+                                new_cpdv.getItsValue().
+                                        validateReplacementColPred(
+                                            old_cpdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
+                        {
+                            new_pdv = (PredDataValue)newArg;
+
+                            if ( ( oldArg != null ) &&
+                                 ( oldArg instanceof PredDataValue ) )
+                            {
+                                old_pdv = (PredDataValue)oldArg;
+
+                                new_pdv.getItsValue().
+                                        validateReplacementPredicate(
+                                            old_pdv.getItsValueBlind(), 
+                                            cascadeMveMod,
+                                            cascadeMveDel,
+                                            cascadeMveID,
+                                            cascadePveMod,
+                                            cascadePveDel, 
+                                            cascadePveID);
+                            }
+                            else
+                            {
+                                new_pdv.getItsValue().
+                                        validatePredicate(true);
+                            }
+                        }
+                        break;
+
+                    case UNDEFINED:
+                        throw new SystemErrorException(mName +
+                                "formal arg type undefined???");
+                        /* break statement commented out to keep the 
+                         * compiler happy 
+                         */
+                        // break;
+
+                    default:
+                        throw new SystemErrorException(mName + 
+
+                                "Unknown Formal Arg Type");
+                        /* break statement commented out to keep the 
+                         * compiler happy 
+                         */
+                        // break;
+                }
+
+                i++;
+
+            } /* while */
+        }
+        else // no structural change case -- for this matrix at least 
+        {
+            while ( i < this.getNumArgs() )
+            {
+
+                // get the i-th formal argument.  This is the mve's actual argument,
+                // so be careful not to modify it in any way.
+                fa = mve.getFormalArg(i);
+
+                if ( fa == null )
+                {
+                    throw new SystemErrorException(mName + "no " + i + 
+                            "th formal argument?!?!");
+                }
+                else if ( ( fa instanceof TextStringFormalArg ) &&
+                          ( mve.getType() != 
+                            MatrixVocabElement.matrixType.TEXT ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "non-text mve contains a text formal arg?!?!");
+                }
+
+                // get the i'th arguments from the old and new argument lists.  
+                // Again, these are the actual arguments -- must be careful not to 
+                // modify them in any way.
+                newArg = this.argList.get(i);
+                oldArg = oldMatrix.argList.get(i);
+
+                if ( newArg == null )
+                {
+                    throw new SystemErrorException(mName + "no new" + i + 
+                            "th argument?!?!");
+                }
+
+                if ( oldArg == null )
+                {
+                    throw new SystemErrorException(mName + "no old" + i + 
+                            "th argument?!?!");
+                }
+
+                if ( fa.getID() != newArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != newArg.getItsFargID()");
+                }
+
+                if ( fa.getID() != oldArg.getItsFargID() )
+                {
+                    throw new SystemErrorException(mName + 
+                                    "fa.getID() != oldArg.getItsFargID()");
+                }
+
+                if ( oldArg.getID() == DBIndex.INVALID_ID )
+                {
+                    throw new SystemErrorException(mName + i + 
+                            "th old argument not in index?!?!");
+                }
+
+                if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
+                     ( newArg.getID() != oldArg.getID() ) )
+                {
+                    throw new SystemErrorException(mName + i + 
+                            "th argument id mismatch");
+                }
+
+                switch (fa.getFargType())
+                {
+                    case COL_PREDICATE:
+                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: Column Predicate expected.");
+                        }
+
+                        cpfa = (ColPredFormalArg)fa;
+                        new_cpdv = (ColPredDataValue)newArg;
+                        old_cpdv = (ColPredDataValue)oldArg;
+
+                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+                             ( new_cpdv.getItsValue().getID() == 
+                                DBIndex.INVALID_ID ) )
+                        {
+                            new_cpdv.getItsValue().validateColumnPredicate(true);
+                        }
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        break;
+
+                    case FLOAT:
+                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+                             ( ! ( oldArg instanceof FloatDataValue ) ) )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "Type mismatch: float expected.");
+                        }
+
+                        ffa = (FloatFormalArg)fa;
+                        new_fdv = (FloatDataValue)newArg;
+                        old_fdv = (FloatDataValue)oldArg;
+
+                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "new_fdv.getSubRange() != ffa.getSubRange().");
+                        }
+
+                        if ( new_fdv.getSubRange() )
+                        {
+                            if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
+                                 ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_fdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case INTEGER:
+                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+                             ( ! ( oldArg instanceof IntDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: integer expected.");
+                        }
+
+                        ifa = (IntFormalArg)fa;
+                        new_idv = (IntDataValue)newArg;
+                        old_idv = (IntDataValue)oldArg;
+
+                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "new_idv.getSubRange() != ifa.getSubRange().");
+                        }
+
+                        if ( new_idv.getSubRange() )
+                        {
+                            if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
+                                 ( ifa.getMaxVal() < new_idv.getItsValue() ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_idv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case NOMINAL:
+                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+                             ( ! ( oldArg instanceof NominalDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: nominal expected.");
+                        }
+
+                        nfa = (NominalFormalArg)fa;
+                        new_ndv = (NominalDataValue)newArg;
+                        old_ndv = (NominalDataValue)oldArg;
+
+                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "new_ndv.getSubRange() != nfa.getSubRange().");
+                        }
+
+                        if ( ( new_ndv.getSubRange() ) && 
+                             ( new_ndv.getItsValue() != null ) )
+                        {
+                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_ndv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case PREDICATE:
                         if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                              ( ! ( oldArg instanceof PredDataValue ) ) )
                         {
@@ -2757,153 +4535,209 @@ public class Matrix
                         {
                             new_pdv.getItsValue().validatePredicate(true);
                         }
-                        else if ( ! cascadePveMod )
+                        else if ( ( ! cascadeMveMod ) && 
+                                  ( ! cascadeMveDel ) &&
+                                  ( ! cascadePveMod ) &&
+                                  ( ! cascadePveDel ) )
                         {
-                            new_pdv.getItsValue().validateReplacementPredicate(
-                                    old_pdv.getItsValue(), cascadePveMod,
-                                    cascadePveID);
-                        }
-                        else 
-                        {
-                            new_pdv.getItsValue().validateReplacementPredicate(
-                                    old_pdv.getItsValueBlind(), cascadePveMod,
-                                    cascadePveID);
-                        }
-                    }
-                    break;
-
-                case TIME_STAMP:
-                    TimeStampFormalArg tsfa;
-                    TimeStampDataValue new_tsdv;
-                    TimeStampDataValue old_tsdv;
-                    
-                    if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
-                         ( ! ( oldArg instanceof TimeStampDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: time stamp expected.");
-                    }
-                    
-                    tsfa = (TimeStampFormalArg)fa;
-                    new_tsdv = (TimeStampDataValue)newArg;
-                    old_tsdv = (TimeStampDataValue)oldArg;
-                    
-                    if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                    }
-                    
-                    if ( new_tsdv.getSubRange() )
-                    {
-                        if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) ||
-                             ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "new_tsdv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case QUOTE_STRING:
-                    if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
-                         ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: quote string expected.");
-                    }
-                    break;
-
-                case TEXT:
-                    if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
-                         ( ! ( oldArg instanceof TextStringDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: text string expected.");
-                    }
-                    break;
-
-                case UNTYPED:
-                    if ( ( newArg instanceof TextStringDataValue ) ||
-                         ( oldArg instanceof TextStringDataValue ) )
-                    {
-                        throw new SystemErrorException(mName +
-                                "Type mismatch: Text String can't be " +
-                                "substituted for untyped arguments.");
-                    }
-                    else if ( ! ( ( newArg instanceof FloatDataValue ) ||
-                                  ( newArg instanceof IntDataValue ) ||
-                                  ( newArg instanceof NominalDataValue ) ||
-                                  ( newArg instanceof PredDataValue ) ||
-                                  ( newArg instanceof TimeStampDataValue ) ||
-                                  ( newArg instanceof QuoteStringDataValue ) ||
-                                  ( newArg instanceof UndefinedDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Unknown subtype of DataValue");
-                    }
-                    
-                    if ( ( newArg.getClass() != oldArg.getClass() ) &&
-                         ( newArg.getID() != DBIndex.INVALID_ID ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "dv type change and id set");
-                    }
-                         
-                    if ( newArg instanceof PredDataValue )
-                    {
-                        PredDataValue new_pdv;
-                        PredDataValue old_pdv;
-
-                        new_pdv = (PredDataValue)newArg;
-                        
-                        if ( oldArg instanceof PredDataValue )
-                        {
-                            /* If we entered the cascade as the result of a pve 
-                             * definition change, just skip these sanity checks.
-                             * If we don't, we will likely run into a predicate
-                             * whose old version was constructed to match a 
-                             * different formal argument list.
-                             *
-                             * Instead, just validate the new pred by itself.
-                             */
-                            if ( ! cascadePveMod )
-                            {
-                                old_pdv = (PredDataValue)oldArg;
-
-                                new_pdv.getItsValue().validateReplacementPredicate(
-                                        old_pdv.getItsValue(), 
-                                        cascadePveMod, 
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
                                         cascadePveID);
-                            }
-                            else
-                            {
-                                new_pdv.getItsValue().validatePredicate(false);
-                            }
                         }
                         else
                         {
-                            new_pdv.getItsValue().validatePredicate(true);
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
                         }
-                    }
-                    break;
+                        break;
 
-                case UNDEFINED:
-                    throw new SystemErrorException(mName +
-                            "formal arg type undefined???");
-                    /* break statement commented out to keep the compiler happy */
-                    // break;
+                    case TIME_STAMP:
+                        if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
+                             ( ! ( oldArg instanceof TimeStampDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: time stamp expected.");
+                        }
 
-                default:
-                    throw new SystemErrorException(mName + 
-                                                   "Unknown Formal Arg Type");
-                    /* break statement commented out to keep the compiler happy */
-                    // break;
-            }
-            
-            i++;
-            
-        } /* while */
+                        tsfa = (TimeStampFormalArg)fa;
+                        new_tsdv = (TimeStampDataValue)newArg;
+                        old_tsdv = (TimeStampDataValue)oldArg;
+
+                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+                        {
+                           throw new SystemErrorException(mName + 
+                                    "new_tsdv.getSubRange() != tsfa.getSubRange().");
+                        }
+
+                        if ( new_tsdv.getSubRange() )
+                        {
+                            if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) ||
+                                 ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) )
+                            {
+                                throw new SystemErrorException(mName + 
+                                        "new_tsdv.getItsValue() out of range.");
+                            }
+                        }
+                        break;
+
+                    case QUOTE_STRING:
+                        if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
+                             ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: quote string expected.");
+                        }
+                        break;
+
+                    case TEXT:
+                        if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
+                             ( ! ( oldArg instanceof TextStringDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Type mismatch: text string expected.");
+                        }
+                        break;
+
+                    case UNTYPED:
+                        if ( ( newArg instanceof TextStringDataValue ) ||
+                             ( oldArg instanceof TextStringDataValue ) )
+                        {
+                            throw new SystemErrorException(mName +
+                                    "Type mismatch: Text String can't be " +
+                                    "substituted for untyped arguments.");
+                        }
+                        else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                                      ( newArg instanceof FloatDataValue ) ||
+                                      ( newArg instanceof IntDataValue ) ||
+                                      ( newArg instanceof NominalDataValue ) ||
+                                      ( newArg instanceof PredDataValue ) ||
+                                      ( newArg instanceof TimeStampDataValue ) ||
+                                      ( newArg instanceof QuoteStringDataValue ) ||
+                                      ( newArg instanceof UndefinedDataValue ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "Unknown subtype of DataValue");
+                        }
+
+                        if ( ( newArg.getClass() != oldArg.getClass() ) &&
+                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "dv type change and id set");
+                        }
+                        
+                        if ( newArg instanceof ColPredDataValue )
+                        {
+                            new_cpdv = (ColPredDataValue)newArg;
+
+                            if ( oldArg instanceof ColPredDataValue )
+                            {
+                                old_cpdv = (ColPredDataValue)oldArg;
+
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValueBlind(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_cpdv.getItsValue().
+                                            validateReplacementColPred(
+                                                old_cpdv.getItsValue(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                            }
+                            else
+                            {
+                                new_cpdv.getItsValue().
+                                        validateColumnPredicate(true);
+                            }
+                        }
+                        else if ( newArg instanceof PredDataValue )
+                        {
+                            new_pdv = (PredDataValue)newArg;
+
+                            if ( oldArg instanceof PredDataValue )
+                            {
+                                old_pdv = (PredDataValue)oldArg;
+
+                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                                     ( cascadePveMod ) || ( cascadePveDel ) )
+                                {
+                                    new_pdv.getItsValue().
+                                            validateReplacementPredicate(
+                                                old_pdv.getItsValueBlind(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                                else
+                                {
+                                    new_pdv.getItsValue().
+                                            validateReplacementPredicate(
+                                                old_pdv.getItsValue(), 
+                                                cascadeMveMod,
+                                                cascadeMveDel,
+                                                cascadeMveID,
+                                                cascadePveMod,
+                                                cascadePveDel, 
+                                                cascadePveID);
+                                }
+                            }
+                            else
+                            {
+                                new_pdv.getItsValue().
+                                        validatePredicate(true);
+                            }
+                        }
+                        break;
+
+                    case UNDEFINED:
+                        throw new SystemErrorException(mName +
+                                "formal arg type undefined???");
+                        /* break statement commented out to keep the compiler happy */
+                        // break;
+
+                    default:
+                        throw new SystemErrorException(mName + 
+                                                       "Unknown Formal Arg Type");
+                        /* break statement commented out to keep the compiler happy */
+                        // break;
+                }
+
+                i++;
+
+            } /* while */
+        }
         
         return;
         
@@ -3066,6 +4900,61 @@ public class Matrix
         return m;
         
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5) */
+    
+    
+    public static Matrix Construct(Database db,
+                                   long mveID,
+                                   DataValue arg0,
+                                   DataValue arg1,
+                                   DataValue arg2,
+                                   DataValue arg3,
+                                   DataValue arg4,
+                                   DataValue arg5,
+                                   DataValue arg6)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::Construct(db, mveID, arg0, arg1, " +
+                                                "arg2, arg3, arg4, arg5, arg6)";
+        Matrix m = null;
+        
+        m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5);
+        
+        if ( arg6 != null )
+        {
+            m.replaceArg(6, arg6);
+        }
+        
+        return m;
+        
+    } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6) */
+    
+    
+    public static Matrix Construct(Database db,
+                                   long mveID,
+                                   DataValue arg0,
+                                   DataValue arg1,
+                                   DataValue arg2,
+                                   DataValue arg3,
+                                   DataValue arg4,
+                                   DataValue arg5,
+                                   DataValue arg6,
+                                   DataValue arg7)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::Construct(db, mveID, arg0, arg1, " +
+                                          "arg2, arg3, arg4, arg5, arg6, arg7)";
+        Matrix m = null;
+        
+        m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+        
+        if ( arg7 != null )
+        {
+            m.replaceArg(7, arg7);
+        }
+        
+        return m;
+        
+    } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) */
     
       
     /**
@@ -3701,10 +5590,10 @@ public class Matrix
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
             String int_matrix_DBstring = 
-                    "(Matrix (mveID 3) " +
+                    "(Matrix (mveID 7) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
-                                                    "(itsFargID 4) " +
+                                                    "(itsFargID 8) " +
                                                     "(itsFargType INTEGER) " +
                                                     "(itsCellID 0) " +
                                                     "(itsValue 0) " +
@@ -3712,11 +5601,11 @@ public class Matrix
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
             String matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 5) " +
+                    "(Matrix (mveID 13) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 6) " +
+                                    "(itsFargID 14) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 0.0) " +
@@ -3724,7 +5613,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 7) " +
+                                    "(itsFargID 15) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 0) " +
@@ -3732,93 +5621,93 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 8) " +
+                                    "(itsFargID 16) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 9) " +
+                                    "(itsFargID 17) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 10) " +
+                                    "(itsFargID 18) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:00:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 13) " +
+                    "(Matrix (mveID 31) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 14) " +
+                                    "(itsFargID 32) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 33) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg2>) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 16) " +
+                                    "(itsFargID 34) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg3>) " +
                                     "(subRange false))))))";
             String matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 17) " +
+                    "(Matrix (mveID 41) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 18) " +
+                                    "(itsFargID 42) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String nominal_matrix_DBstring = 
-                    "(Matrix (mveID 19) " +
+                    "(Matrix (mveID 47) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 20) " +
+                                    "(itsFargID 48) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
             String pred_matrix_DBstring = 
-                    "(Matrix (mveID 21) " +
+                    "(Matrix (mveID 53) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 22) " +
+                                    "(itsFargID 54) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))";
             String text_matrix_DBstring = 
-                    "(Matrix (mveID 23) " +
+                    "(Matrix (mveID 59) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 24) " +
+                                    "(itsFargID 60) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
@@ -4645,10 +6534,10 @@ public class Matrix
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
             String int_matrix_DBstring = 
-                    "(Matrix (mveID 6) " +
+                    "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
-                                                    "(itsFargID 7) " +
+                                                    "(itsFargID 11) " +
                                                     "(itsFargType INTEGER) " +
                                                     "(itsCellID 0) " +
                                                     "(itsValue 22) " +
@@ -4656,11 +6545,11 @@ public class Matrix
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
             String matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 8) " +
+                    "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 9) " +
+                                    "(itsFargID 17) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 1.0) " +
@@ -4668,7 +6557,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 10) " +
+                                    "(itsFargID 18) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 2) " +
@@ -4676,13 +6565,13 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a_nominal) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -4705,73 +6594,73 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 13) " +
+                                    "(itsFargID 21) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 14) " + 
+                                    "(itsFargID 22) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 23) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 16) " +
+                    "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((QuoteStringDataValue (id 0) " +
-                                "(itsFargID 17) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue  a q string ) " +
-                                "(subRange false)), " +
-                            "(UndefinedDataValue (id 0) " +
-                                "(itsFargID 18) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue <arg2>) " +
-                                "(subRange false)), " +
-                            "(IntDataValue (id 0) " +
-                                "(itsFargID 19) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue 88) " +
-                                "(subRange false) " +
-                                "(minVal 0) " +
-                                "(maxVal 0))))))";
+                                    "(itsFargID 35) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue  a q string ) " +
+                                    "(subRange false)), " +
+                                "(UndefinedDataValue (id 0) " +
+                                    "(itsFargID 36) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue <arg2>) " +
+                                    "(subRange false)), " +
+                                "(IntDataValue (id 0) " +
+                                    "(itsFargID 37) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue 88) " +
+                                    "(subRange false) " +
+                                    "(minVal 0) " +
+                                    "(maxVal 0))))))";
             String matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 20) " +
+                    "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 45) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String nominal_matrix_DBstring = 
-                    "(Matrix (mveID 22) " +
+                    "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 23) " +
+                                    "(itsFargID 51) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
             String pred_matrix_DBstring = 
-                    "(Matrix (mveID 24) " +
+                    "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 25) " +
+                                    "(itsFargID 57) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -4794,11 +6683,11 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
             String text_matrix_DBstring = 
-                    "(Matrix (mveID 26) " +
+                    "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 63) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
@@ -6814,22 +8703,23 @@ public class Matrix
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
             String int_matrix_DBstring = 
-                    "(Matrix (mveID 6) " +
+                    "(Matrix (mveID 10) " +
                             "(varLen false) " +
-                            "(argList ((IntDataValue (id 0) " +
-                                                    "(itsFargID 7) " +
-                                                    "(itsFargType INTEGER) " +
-                                                    "(itsCellID 0) " +
-                                                    "(itsValue 22) " +
-                                                    "(subRange false) " +
-                                                    "(minVal 0) " +
-                                                    "(maxVal 0))))))";
+                            "(argList " +
+                                "((IntDataValue (id 0) " +
+                                    "(itsFargID 11) " +
+                                    "(itsFargType INTEGER) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue 22) " +
+                                    "(subRange false) " +
+                                    "(minVal 0) " +
+                                    "(maxVal 0))))))";
             String matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 8) " +
+                    "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 9) " +
+                                    "(itsFargID 17) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 1.0) " +
@@ -6837,7 +8727,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 10) " +
+                                    "(itsFargID 18) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 2) " +
@@ -6845,13 +8735,13 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a_nominal) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -6874,41 +8764,41 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 13) " +
+                                    "(itsFargID 21) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 14) " + 
+                                    "(itsFargID 22) " + 
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 23) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 16) " +
+                    "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((QuoteStringDataValue (id 0) " +
-                                "(itsFargID 17) " +
+                                "(itsFargID 35) " +
                                 "(itsFargType UNTYPED) " +
                                 "(itsCellID 0) " +
                                 "(itsValue  a q string ) " +
                                 "(subRange false)), " +
                             "(UndefinedDataValue (id 0) " +
-                                "(itsFargID 18) " +
+                                "(itsFargID 36) " +
                                 "(itsFargType UNTYPED) " +
                                 "(itsCellID 0) " +
                                 "(itsValue <arg2>) " +
                                 "(subRange false)), " +
                             "(IntDataValue (id 0) " +
-                                "(itsFargID 19) " +
+                                "(itsFargID 37) " +
                                 "(itsFargType UNTYPED) " +
                                 "(itsCellID 0) " +
                                 "(itsValue 88) " +
@@ -6916,31 +8806,31 @@ public class Matrix
                                 "(minVal 0) " +
                                 "(maxVal 0))))))";
             String matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 20) " +
+                    "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 45) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String nominal_matrix_DBstring = 
-                    "(Matrix (mveID 22) " +
+                    "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 23) " +
+                                    "(itsFargID 51) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
             String pred_matrix_DBstring = 
-                    "(Matrix (mveID 24) " +
+                    "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 25) " +
+                                    "(itsFargID 57) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -6963,11 +8853,11 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
             String text_matrix_DBstring = 
-                    "(Matrix (mveID 26) " +
+                    "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 63) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
@@ -7775,6 +9665,165 @@ public class Matrix
         
     } /* Matrix::Verify3ArgConstructorFailure() */
     
+    
+    /**
+     * TestGetArgCopy()
+     *
+     * Given a matrix, and an argument number, verify that getArgCopy() 
+     * returns a copy of the target argument if the argNum parameter refers
+     * to a parameter, returns null if argNum is greater than the number
+     * of parameters, and fails with a system error is argNum is negative. 
+     *
+     * Return the number of failures detected.
+     *
+     *                                              JRM -- 5/24/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    private static int TestGetArgCopy(Matrix m,
+                                     int argNum,
+                                     int testNum,
+                                     expectedResult er,
+                                     String mName,
+                                     java.io.PrintStream outStream,
+                                     boolean verbose)
+        throws SystemErrorException
+    {
+        String systemErrorExceptionString = null;
+        boolean completed = false;
+        boolean threwSystemErrorException = false;     
+        int failures = 0;
+        DataValue copy = null;
+        
+        try
+        {
+            copy = m.getArgCopy(argNum);
+                        
+            completed = true;
+        }
+        
+        catch (SystemErrorException e)
+        {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        }
+        
+        if ( argNum < 0 )
+        {
+            if ( ( completed ) || 
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose ) 
+                {
+                    if ( completed )
+                    {
+                        outStream.printf("%d: %s.getArgCopy(%d) completed.\n", 
+                                         testNum, mName, argNum);
+                    }
+                    
+                    if ( ! threwSystemErrorException )
+                    {
+                        outStream.printf("%d: %s.getArgCopy(%d) failed to throw " +
+                                "a system error exception.\n", 
+                                testNum, mName, argNum);
+                    }
+                }
+            }
+            else if ( er != expectedResult.system_error )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "%d: expected/actual result mismatch (%s/%s).\n",
+                            testNum, er.toString(), 
+                            expectedResult.system_error.toString());
+                }
+            }
+        } 
+        else if ( argNum >= m.getNumArgs() ) 
+        {
+            if ( ( copy != null ) ||
+                 ( ! completed  ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    if ( copy != null )
+                    {
+                        outStream.printf("%d: %s.getArgCopy(%d >= numArgs) " +
+                                "failed to return null.\n", 
+                                testNum, mName, argNum);
+                    }
+                    
+                    if ( ! completed )
+                    {
+                        outStream.printf("%d: %s.getArgCopy(%d >= numArgs) " +
+                                "failed to completed.\n", 
+                                testNum, mName, argNum);
+                    }
+                    
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf(
+                            "%d: %s.getArgCopy(%d >= numArgs) threw " +
+                            "an unexpected system error exception: \"%s\".\n", 
+                            testNum, mName, argNum, systemErrorExceptionString);
+                    }
+                }
+            }
+            else if ( er != expectedResult.return_null )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "%d: expected/actual result mismatch (%s/%s).\n",
+                            testNum, er.toString(), 
+                            expectedResult.return_null.toString());
+                }
+            }
+        } 
+        else
+        {
+            failures += DataValue.VerifyDVCopy(m.argList.get(argNum),
+                                               copy,
+                                               outStream,
+                                               verbose,
+                                               mName + "(" + argNum + ")",
+                                               mName + "(" + argNum + ") copy");
+            
+            if ( er != expectedResult.succeed )
+            {
+                failures++;
+                
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "%d: expected/actual result mismatch (%s/%s).\n",
+                            testNum, er.toString(), 
+                            expectedResult.succeed.toString());
+                }
+            }
+        }
+                
+        
+        
+        
+        
+        return failures;
+        
+    } /* Matrix::TestGetArgCopy() */
+    
 
     /**
      * TestArgListManagement()
@@ -8221,10 +10270,10 @@ public class Matrix
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
             String int_matrix_DBstring = 
-                    "(Matrix (mveID 8) " +
+                    "(Matrix (mveID 12) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
-                                                    "(itsFargID 9) " +
+                                                    "(itsFargID 13) " +
                                                     "(itsFargType INTEGER) " +
                                                     "(itsCellID 0) " +
                                                     "(itsValue 22) " +
@@ -8232,11 +10281,11 @@ public class Matrix
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
             String matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 10) " +
+                    "(Matrix (mveID 18) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 1.0) " +
@@ -8244,7 +10293,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 2) " +
@@ -8252,13 +10301,13 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 13) " +
+                                    "(itsFargID 21) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a_nominal) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 14) " +
+                                    "(itsFargID 22) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -8275,73 +10324,73 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 23) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 16) " + 
+                                    "(itsFargID 24) " + 
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 17) " +
+                                    "(itsFargID 25) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 18) " +
+                    "(Matrix (mveID 36) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((QuoteStringDataValue (id 0) " +
-                                "(itsFargID 19) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue  a q string ) " +
-                                "(subRange false)), " +
-                            "(UndefinedDataValue (id 0) " +
-                                "(itsFargID 20) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue <arg2>) " +
-                                "(subRange false)), " +
-                            "(IntDataValue (id 0) " +
-                                "(itsFargID 21) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue 88) " +
-                                "(subRange false) " +
-                                "(minVal 0) " +
-                                "(maxVal 0))))))";
+                                    "(itsFargID 37) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue  a q string ) " +
+                                    "(subRange false)), " +
+                                "(UndefinedDataValue (id 0) " +
+                                    "(itsFargID 38) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue <arg2>) " +
+                                    "(subRange false)), " +
+                                "(IntDataValue (id 0) " +
+                                    "(itsFargID 39) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue 88) " +
+                                    "(subRange false) " +
+                                    "(minVal 0) " +
+                                    "(maxVal 0))))))";
             String matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 22) " +
+                    "(Matrix (mveID 46) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 23) " +
+                                    "(itsFargID 47) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String nominal_matrix_DBstring = 
-                    "(Matrix (mveID 24) " +
+                    "(Matrix (mveID 52) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 25) " +
+                                    "(itsFargID 53) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
             String pred_matrix_DBstring = 
-                    "(Matrix (mveID 26) " +
+                    "(Matrix (mveID 58) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 59) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -8358,11 +10407,11 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
             String text_matrix_DBstring = 
-                    "(Matrix (mveID 28) " +
+                    "(Matrix (mveID 64) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 29) " +
+                                    "(itsFargID 65) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
@@ -8774,7 +10823,86 @@ public class Matrix
         
         /* test is now set up.
          *
-         * begin with test of a float matrix
+         * Begin with a battery of tests of getArgCopy() -- objective is to 
+         * verify that output of getArgCopy() is a valid copy of the target
+         * argument, or that the method fails appropriately if the target
+         * doesn't exist.
+         */
+        
+        failures += Matrix.TestGetArgCopy(float_matrix, -1, 1, 
+                expectedResult.system_error, "float_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(float_matrix,  0, 1, 
+                expectedResult.succeed, "float_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(float_matrix,  1, 3, 
+                expectedResult.return_null, "float_matrix", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(int_matrix, -1, 10, 
+                expectedResult.system_error, "int_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(int_matrix,  0, 11, 
+                expectedResult.succeed, "int_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(int_matrix,  1, 12, 
+                expectedResult.return_null, "int_matrix", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(matrix_matrix0, -1, 20, 
+                expectedResult.system_error, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  0, 21, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose); 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  1, 22, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  2, 23, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  3, 24, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  4, 25, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  5, 26, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  6, 27, 
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  7, 28, 
+                expectedResult.return_null, "matrix_matrix0", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(matrix_matrix1, -1, 30, 
+                expectedResult.system_error, "matrix_matrix1", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  0, 31, 
+                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  1, 32, 
+                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  2, 32, 
+                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  3, 32, 
+                expectedResult.return_null, "matrix_matrix1", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(matrix_matrix2, -1, 40, 
+                expectedResult.system_error, "matrix_matrix2", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix2,  0, 41, 
+                expectedResult.succeed, "matrix_matrix2", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix2,  1, 42, 
+                expectedResult.return_null, "matrix_matrix2", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(nominal_matrix, -1, 50, 
+                expectedResult.system_error, "nominal_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(nominal_matrix,  0, 51, 
+                expectedResult.succeed, "nominal_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(nominal_matrix,  1, 52, 
+                expectedResult.return_null, "nominal_matrix", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(pred_matrix, -1, 50, 
+                expectedResult.system_error, "pred_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(pred_matrix,  0, 51, 
+                expectedResult.succeed, "pred_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(pred_matrix,  1, 52, 
+                expectedResult.return_null, "pred_matrix", outStream, verbose);
+        
+        failures += Matrix.TestGetArgCopy(text_matrix, -1, 50, 
+                expectedResult.system_error, "text_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(text_matrix,  0, 51, 
+                expectedResult.succeed, "text_matrix", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(text_matrix,  1, 52, 
+                expectedResult.return_null, "text_matrix", outStream, verbose);
+        
+        
+        /* begin with tests of a float matrix
          */
         if ( failures == 0 )
         {
@@ -11303,22 +13431,23 @@ public class Matrix
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
             String int_matrix_DBstring = 
-                    "(Matrix (mveID 6) " +
+                    "(Matrix (mveID 10) " +
                             "(varLen false) " +
-                            "(argList ((IntDataValue (id 0) " +
-                                                    "(itsFargID 7) " +
-                                                    "(itsFargType INTEGER) " +
-                                                    "(itsCellID 0) " +
-                                                    "(itsValue 22) " +
-                                                    "(subRange false) " +
-                                                    "(minVal 0) " +
-                                                    "(maxVal 0))))))";
+                            "(argList " +
+                                "((IntDataValue (id 0) " +
+                                    "(itsFargID 11) " +
+                                    "(itsFargType INTEGER) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue 22) " +
+                                    "(subRange false) " +
+                                    "(minVal 0) " +
+                                    "(maxVal 0))))))";
             String matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 8) " +
+                    "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 9) " +
+                                    "(itsFargID 17) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 1.0) " +
@@ -11326,7 +13455,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 10) " +
+                                    "(itsFargID 18) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 2) " +
@@ -11334,13 +13463,13 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a_nominal) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -11361,75 +13490,75 @@ public class Matrix
                                                     "(itsCellID 0) " +
                                                     "(itsValue <arg2>) " +
                                                     "(subRange false))))))) " +
-                                    "(subRange false)), " +
+                                            "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 13) " +
+                                    "(itsFargID 21) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 14) " + 
+                                    "(itsFargID 22) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 23) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 16) " +
+                    "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((QuoteStringDataValue (id 0) " +
-                                "(itsFargID 17) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue  a q string ) " +
-                                "(subRange false)), " +
-                            "(UndefinedDataValue (id 0) " +
-                                "(itsFargID 18) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue <arg2>) " +
-                                "(subRange false)), " +
-                            "(IntDataValue (id 0) " +
-                                "(itsFargID 19) " +
-                                "(itsFargType UNTYPED) " +
-                                "(itsCellID 0) " +
-                                "(itsValue 88) " +
-                                "(subRange false) " +
-                                "(minVal 0) " +
-                                "(maxVal 0))))))";
+                                    "(itsFargID 35) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue  a q string ) " +
+                                    "(subRange false)), " +
+                                "(UndefinedDataValue (id 0) " +
+                                    "(itsFargID 36) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue <arg2>) " +
+                                    "(subRange false)), " +
+                                "(IntDataValue (id 0) " +
+                                    "(itsFargID 37) " +
+                                    "(itsFargType UNTYPED) " +
+                                    "(itsCellID 0) " +
+                                    "(itsValue 88) " +
+                                    "(subRange false) " +
+                                    "(minVal 0) " +
+                                    "(maxVal 0))))))";
             String matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 20) " +
+                    "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 45) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String nominal_matrix_DBstring = 
-                    "(Matrix (mveID 22) " +
+                    "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 23) " +
+                                    "(itsFargID 51) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
             String pred_matrix_DBstring = 
-                    "(Matrix (mveID 24) " +
+                    "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 25) " +
+                                    "(itsFargID 57) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue " +
@@ -11452,11 +13581,11 @@ public class Matrix
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
             String text_matrix_DBstring = 
-                    "(Matrix (mveID 26) " +
+                    "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 63) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
@@ -11483,11 +13612,11 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0))))))";
             String empty_int_matrix_DBstring = 
-                    "(Matrix (mveID 6) " +
+                    "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((IntDataValue (id 0) " +
-                                    "(itsFargID 7) " +
+                                    "(itsFargID 11) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 0) " +
@@ -11495,11 +13624,11 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
             String empty_matrix_matrix0_DBstring = 
-                    "(Matrix (mveID 8) " +
+                    "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((FloatDataValue (id 0) " +
-                                    "(itsFargID 9) " +
+                                    "(itsFargID 17) " +
                                     "(itsFargType FLOAT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 0.0) " +
@@ -11507,7 +13636,7 @@ public class Matrix
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0)), " +
                                 "(IntDataValue (id 0) " +
-                                    "(itsFargID 10) " +
+                                    "(itsFargID 18) " +
                                     "(itsFargType INTEGER) " +
                                     "(itsCellID 0) " +
                                     "(itsValue 0) " +
@@ -11515,93 +13644,93 @@ public class Matrix
                                     "(minVal 0) " +
                                     "(maxVal 0)), " +
                                 "(NominalDataValue (id 0) " +
-                                    "(itsFargID 11) " +
+                                    "(itsFargID 19) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false)), " +
                                 "(PredDataValue (id 0) " +
-                                    "(itsFargID 12) " +
+                                    "(itsFargID 20) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false)), " +
                                 "(QuoteStringDataValue (id 0) " +
-                                    "(itsFargID 13) " +
+                                    "(itsFargID 21) " +
                                     "(itsFargType QUOTE_STRING) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 14) " +
+                                    "(itsFargID 22) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:00:000)) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 15) " +
+                                    "(itsFargID 23) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
             String empty_matrix_matrix1_DBstring = 
-                    "(Matrix (mveID 16) " +
+                    "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 17) " +
+                                    "(itsFargID 35) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 18) " +
+                                    "(itsFargID 36) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg2>) " +
                                     "(subRange false)), " +
                                 "(UndefinedDataValue (id 0) " +
-                                    "(itsFargID 19) " +
+                                    "(itsFargID 37) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg3>) " +
                                     "(subRange false))))))";
             String empty_matrix_matrix2_DBstring = 
-                    "(Matrix (mveID 20) " +
+                    "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
                                 "((UndefinedDataValue (id 0) " +
-                                    "(itsFargID 21) " +
+                                    "(itsFargID 45) " +
                                     "(itsFargType UNTYPED) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
             String empty_nominal_matrix_DBstring = 
-                    "(Matrix (mveID 22) " +
+                    "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((NominalDataValue (id 0) " +
-                                    "(itsFargID 23) " +
+                                    "(itsFargID 51) " +
                                     "(itsFargType NOMINAL) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
             String empty_pred_matrix_DBstring = 
-                    "(Matrix (mveID 24) " +
+                    "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((PredDataValue (id 0) " +
-                                    "(itsFargID 25) " +
+                                    "(itsFargID 57) " +
                                     "(itsFargType PREDICATE) " +
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))";
             String empty_text_matrix_DBstring = 
-                    "(Matrix (mveID 26) " +
+                    "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
                                 "((TextStringDataValue (id 0) " +
-                                    "(itsFargID 27) " +
+                                    "(itsFargID 63) " +
                                     "(itsFargType TEXT) " +
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
@@ -12863,11 +14992,11 @@ public class Matrix
                          
             String testString1 = "(99)";
             String testDBString1 = 
-                "(Matrix (mveID 11) " +
+                "(Matrix (mveID 21) " +
                         "(varLen false) " +
                         "(argList " +
                             "((IntDataValue (id 107) " +
-                                "(itsFargID 12) " +
+                                "(itsFargID 22) " +
                                 "(itsFargType INTEGER) " +
                                 "(itsCellID 501) " +
                                 "(itsValue 99) " +

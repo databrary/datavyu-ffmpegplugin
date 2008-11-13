@@ -309,6 +309,13 @@ public class VocabList
      *      changes.
      * 
      *                                                  JRM -- 2/5/08
+     *
+     *    - Modified code to create an instance of MatrixVocabElementListeners
+     *      if the supplied vocab element is a mve, and to use that instance
+     *      when setting the mve's initial listeners.  
+     * 
+     *      In all other cases, we proceed as before -- creating an instance of
+     *      VocabElementListeners and using it to set the ve's initial listeners.
      */
      
     protected void addElement(VocabElement ve)
@@ -352,7 +359,15 @@ public class VocabList
         
         ve.propagateID();
         
-        nl = new VocabElementListeners(this.db, ve);
+        if ( ve instanceof MatrixVocabElement )
+        {
+            nl = new MatrixVocabElementListeners(this.db, ve);
+        }
+        else
+        {
+            nl = new VocabElementListeners(this.db, ve);
+        }
+        
         ve.setListeners(nl);
         
         this.listeners.notifyListenersOfVEInsertion(ve.getID());
@@ -376,6 +391,11 @@ public class VocabList
      *      that haven't had their type declared yet.
      *
      *                                              JRM -- 6/15/07
+     *
+     *    - Modified method to assign IDs to column predicate formal arguments
+     *      in instances of MatrixVocabElement.
+     *
+     *                                              JRM -- 8/31/08
      */
     
     private void addFargListToIndex(VocabElement ve)
@@ -384,6 +404,7 @@ public class VocabList
         final String mName = "VocabList::addFargListToIndex(ve): ";
         int i;
         int numFormalArgs;
+        int numCPFormalArgs = 0;
         FormalArgument farg;
           
         if ( ( ve == null ) ||
@@ -392,11 +413,21 @@ public class VocabList
             throw new SystemErrorException(mName + "Bad ve param");
         }
         
-        if ( ( ve instanceof MatrixVocabElement ) &&
-             ( ((MatrixVocabElement)ve).getType() == 
-               MatrixVocabElement.matrixType.UNDEFINED ) )
+        if ( ve instanceof MatrixVocabElement )
         {
-            numFormalArgs = 0;
+            numCPFormalArgs = ((MatrixVocabElement)ve).getNumCPFormalArgs();
+            
+            if ( ((MatrixVocabElement)ve).getType() == 
+                  MatrixVocabElement.matrixType.UNDEFINED )
+            {
+                numFormalArgs = 0;
+            }
+            else
+            {
+                numFormalArgs = ve.getNumFormalArgs();
+            }
+            
+            assert( numCPFormalArgs == numFormalArgs + 3);
         }
         else
         {
@@ -413,6 +444,21 @@ public class VocabList
             }
             
             db.idx.addElement(farg);
+        }
+        
+        if ( ve instanceof MatrixVocabElement )
+        {
+            for ( i = 0; i < numCPFormalArgs; i++ )
+            {
+                farg = ((MatrixVocabElement)ve).getCPFormalArg(i);
+                
+                if ( farg == null )
+                {
+                    throw new SystemErrorException(mName + "farg is null?!?");
+                }
+
+                db.idx.addElement(farg);
+            }
         }
         
     } /* VocabList::addFargListToIndex() */
@@ -1110,6 +1156,11 @@ public class VocabList
      *      resulting cascade of changes.
      * 
      *                                                  JRM -- 2/5/08
+     *
+     *    - Added code to delete column predicate formal arguments from 
+     *      the index in the case of MatrixVocabElement.
+     *
+     *                                                  JRM -- 8/31/08
      */
      
     protected void removeVocabElement(long targetID)
@@ -1120,6 +1171,7 @@ public class VocabList
         long id;
         FormalArgument fArg;
         VocabElement ve = null;
+        MatrixVocabElement mve = null;
           
         if ( targetID == DBIndex.INVALID_ID )
         {
@@ -1162,6 +1214,33 @@ public class VocabList
                 }
             }
             
+            if ( ve instanceof MatrixVocabElement )
+            {
+                mve = (MatrixVocabElement)ve;
+                        
+                for ( i = 0; i < mve.getNumCPFormalArgs(); i++ )
+                {
+                    fArg = mve.getCPFormalArg(i);
+                    id = fArg.getID();
+
+                    if ( id == DBIndex.INVALID_ID )
+                    {
+                        throw new SystemErrorException(mName + 
+                                                       "Invalid cpfArg id");
+                    }
+                    else if ( ! this.db.idx.inIndex(id) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                                       "cpfArg id not in idx");
+                    }
+                    else if ( fArg != this.db.idx.getElement(id) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                                       "cpfArg not in idx");
+                    }
+                }
+            }
+            
             if ( ! this.nameMap.containsKey(ve.getName()) )
             {
                 throw new SystemErrorException(mName + 
@@ -1191,6 +1270,16 @@ public class VocabList
         for ( i = 0; i < ve.getNumFormalArgs(); i++ )
         {
             this.db.idx.removeElement(ve.getFormalArg(i).getID());
+        }
+        
+        if ( ve instanceof MatrixVocabElement )
+        {
+            mve = (MatrixVocabElement)ve;
+
+            for ( i = 0; i < mve.getNumCPFormalArgs(); i++ )
+            {
+                this.db.idx.removeElement(mve.getCPFormalArg(i).getID());
+            }
         }
         
         this.nameMap.remove(ve.getName());
@@ -1232,6 +1321,10 @@ public class VocabList
      *      changes.  Also added calls to mark the beginning and end of any
      *      resulting cascade of changes.
      *                                                  JRM -- 2/5/08
+     *
+     *    - Modified method to deal with the column predicate argument list 
+     *      of the MatrixVacabElement.
+     *                                                  JRM -- 8/31/08
      */
 
     protected void replaceVocabElement(VocabElement ve)
@@ -1245,7 +1338,12 @@ public class VocabList
         FormalArgument farg = null;
         FormalArgument newFarg = null;
         FormalArgument oldFarg = null;
+        FormalArgument cpFarg = null;
+        FormalArgument newCPFarg = null;
+        FormalArgument oldCPFarg = null;
         VocabElement old_ve = null;
+        MatrixVocabElement mve = null;
+        MatrixVocabElement old_mve = null;
            
         if ( ( ve == null ) ||
              ( ! ( ve instanceof VocabElement ) ) )
@@ -1348,6 +1446,110 @@ public class VocabList
                         throw new SystemErrorException(mName + 
                                                     "dup id in new farg list");
                     }
+                }
+            }
+        }
+        
+        /* likewise, if the vocab element is a MatrixVocabElement, scan the 
+         * old and new column predicate formal argument lists, and verify 
+         * that there are no type changes or duplicate IDs.
+         *
+         * Also verify the expected equivalencies between regular and column
+         * predicate formal arguments.
+         */
+        if ( ve instanceof MatrixVocabElement )
+        {
+            mve = (MatrixVocabElement)ve;    
+
+            if ( ! ( old_ve instanceof MatrixVocabElement ) )
+            {
+                throw new SystemErrorException(mName + 
+                        "ve is a MVE, but old_ve isnt?!?!?");
+            }
+            
+            old_mve = (MatrixVocabElement)old_ve;
+            
+            for ( i = 0; i < mve.getNumCPFormalArgs(); i++ )
+            {
+                matchFound = false;
+                newCPFarg = mve.getCPFormalArg(i);
+
+                if ( newCPFarg == null )
+                {
+                    throw new SystemErrorException(mName + 
+                                                   "newCPFarg is null(1)?!?");
+                }
+
+                if ( newCPFarg.getID() != DBIndex.INVALID_ID )
+                {
+                    for ( j = 0; j < old_mve.getNumCPFormalArgs(); j++ )
+                    {
+                        oldCPFarg = old_mve.getCPFormalArg(j);
+
+                        if ( oldCPFarg == null )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "oldCPFarg is null(1)?!?");
+                        }
+                        else if ( newCPFarg.getID() == oldCPFarg.getID() )
+                        {
+                            if ( newCPFarg.getClass() != oldCPFarg.getClass() )
+                            {
+                                throw new SystemErrorException(mName +
+                                        "new/old cp farg type mismatch?!?");
+                            }
+                            if ( matchFound )
+                            {
+                                throw new SystemErrorException(mName +
+                                        "found multiple cp matches(1)?!?");
+                            }
+                            else
+                            {
+                                matchFound = true;
+                                match = oldCPFarg;
+                            }
+                        }
+                    }
+
+                    if ( ! matchFound )
+                    {
+                        throw new SystemErrorException(mName +
+                                "no match found for pre-existing cp farg(1)?!?");
+                    }
+
+                    for ( j = i + 1; j < mve.getNumCPFormalArgs(); j++ )
+                    {
+                        cpFarg = mve.getCPFormalArg(j);
+
+                        if ( cpFarg == null )
+                        {
+                            throw new SystemErrorException(mName + 
+                                                           "cpFarg is null?!?");
+                        }
+                        else if ( newCPFarg.getID() == cpFarg.getID() )
+                        {
+                            throw new SystemErrorException(mName + 
+                                                        "dup id in new cp farg list");
+                        }
+                    }
+                }
+            }
+            
+            if ( (mve.getNumFormalArgs() + 3) != mve.getNumCPFormalArgs() )
+            {
+                throw new SystemErrorException(mName + 
+                                               "unexpected cp farg list len.");
+            }
+            
+            for ( i = 0; i < mve.getNumFormalArgs(); i++ )
+            {
+                farg = mve.getFormalArg(i);
+                cpFarg = mve.getCPFormalArg(i + 3);
+                
+                if ( ! FormalArgument.FormalArgsAreEquivalent(farg, cpFarg) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "regular / cp formal arg mismatch");
                 }
             }
         }
@@ -1531,6 +1733,155 @@ public class VocabList
             }
         }
         
+        /* likewise, if the vocab element is a MatrixVocabElement, replace the
+         * old column predicate formal argument list with the new in the 
+         * index. 
+         */
+        if ( ve instanceof MatrixVocabElement )
+        {
+            mve = (MatrixVocabElement)ve;    
+
+            if ( ! ( old_ve instanceof MatrixVocabElement ) )
+            {
+                throw new SystemErrorException(mName + 
+                        "ve is a MVE, but old_ve isnt?!?!?");
+            }
+            
+            old_mve = (MatrixVocabElement)old_ve;
+        
+            /* replace the old farg list with the new in the index */
+            for ( i = 0; i < mve.getNumCPFormalArgs(); i++ )
+            {
+                matchFound = false;
+                newCPFarg = mve.getCPFormalArg(i);
+
+                if ( newCPFarg == null )
+                {
+                    throw new SystemErrorException(mName + 
+                                                  "newCPFarg is null(2)?!?");
+                }
+
+                if ( newCPFarg.getID() == DBIndex.INVALID_ID )
+                {
+                    /* it is a completely new formal argument -- just insert 
+                     * it in the index without attempting to find the instance 
+                     * of FormalArgument it is replacing.
+                     */
+                    this.db.idx.addElement(newCPFarg);
+                }
+                else
+                {
+                    for ( j = 0; j < old_mve.getNumCPFormalArgs(); j++ )
+                    {
+                        oldCPFarg = old_mve.getCPFormalArg(j);
+
+                        if ( oldCPFarg == null )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "oldCPFarg is null(2)?!?");
+                        }
+                        else if ( newCPFarg.getID() == oldCPFarg.getID() )
+                        {
+                            if ( matchFound )
+                            {
+                                throw new SystemErrorException(mName +
+                                        "found multiple cp matches(2)?!?");
+                            }
+                            else
+                            {
+                                matchFound = true;
+                                match = oldCPFarg;
+                            }
+                        }
+                    }
+
+                    if ( matchFound )
+                    {
+                        if ( newCPFarg.getClass() == match.getClass() )
+                        {
+                            this.db.idx.replaceElement(newCPFarg);
+                        }
+                        else /* type of formal argument has changed */
+                        {
+                            /* When the type of a formal argument changed,
+                             * it should be replaced with a new instance of 
+                             * the appropriate class of formal argument, and 
+                             * the ID should be left as INVALID_ID.
+                             */
+                            throw new SystemErrorException(mName +
+                                    "Type of cp formal argument has changed.");
+                        }
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "No match found for a pre-existing cp farg(2).");
+                    }
+                }
+            }
+
+            /* it is possible that formal arguments have been removed from the 
+             * column predicate formal argument list.  Thus we must scan the 
+             * old matrix vocab element's column predicate formal argument list, 
+             * and remove from the index all formal arguments that don't have 
+             * matches in the new matrix vocab elements column predicate formal 
+             * argument list.
+             */
+            for ( j = 0; j < old_mve.getNumCPFormalArgs(); j++ )
+            {
+                matchFound = false;
+
+                oldCPFarg = old_mve.getCPFormalArg(j);
+
+                if ( oldCPFarg == null )
+                {
+                    throw new SystemErrorException(mName + 
+                            "oldCPFarg is null(3)?!?");
+                }
+                else if ( oldCPFarg.getID() == DBIndex.INVALID_ID )
+                {
+                    throw new SystemErrorException(mName + 
+                            "oldCPFarg doesn't have an ID?!?");
+                }
+
+                for ( i = 0; i < mve.getNumCPFormalArgs(); i++ )
+                {
+                    newCPFarg = mve.getCPFormalArg(i);
+
+                    if ( newCPFarg == null )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "newCPFarg is null(3)?!?");
+                    }
+                    else if ( newCPFarg.getID() == DBIndex.INVALID_ID )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "newCPFarg doesn't have an ID?!?");
+                    }
+
+                    if ( oldCPFarg.getID() == newCPFarg.getID() )
+                    {
+                        if ( matchFound )
+                        {
+                            throw new SystemErrorException(mName +
+                                    "found multiple cp matches(3)?!?");
+                        }
+                        else
+                        {
+                            matchFound = true;
+                        }
+                    }
+                }
+
+                /* if no match was found, just delete the formal argument from the 
+                 * index, as it has been deleted from the matrix vocab element. 
+                 */
+                if ( ! matchFound )
+                {
+                    this.db.idx.removeElement(oldCPFarg.getID());
+                }
+            }
+        }        
         
         /* Move the listeners from the old incarnation to the new */
         
@@ -2019,6 +2370,22 @@ public class VocabList
         boolean pass = true;
         boolean threwSystemErrorException = false;
         int failures = 0;
+        long p0_id = DBIndex.INVALID_ID;
+        long p1_id = DBIndex.INVALID_ID;
+        long p2_id = DBIndex.INVALID_ID;
+        long p3_id = DBIndex.INVALID_ID;
+        long p4_id = DBIndex.INVALID_ID;
+        long p5_id = DBIndex.INVALID_ID;
+        long p6_id = DBIndex.INVALID_ID;
+        long p7_id = DBIndex.INVALID_ID;
+        long m0_id = DBIndex.INVALID_ID;
+        long m1_id = DBIndex.INVALID_ID;
+        long m2_id = DBIndex.INVALID_ID;
+        long m3_id = DBIndex.INVALID_ID;
+        long m4_id = DBIndex.INVALID_ID;
+        long m5_id = DBIndex.INVALID_ID;
+        long m6_id = DBIndex.INVALID_ID;
+        long m7_id = DBIndex.INVALID_ID;
         Database db = null;
         VocabList vl = null;
         PredicateVocabElement p0 = null;
@@ -2058,6 +2425,49 @@ public class VocabList
         UnTypedFormalArg reno = null;
         UnTypedFormalArg sierra = null;
         UnTypedFormalArg tango = null;
+        FormalArgument m0_ord = null;
+        FormalArgument m0_onset = null;
+        FormalArgument m0_offset = null;
+        FormalArgument m1_ord = null;
+        FormalArgument m1_onset = null;
+        FormalArgument m1_offset = null;
+        FormalArgument m2_ord = null;
+        FormalArgument m2_onset = null;
+        FormalArgument m2_offset = null;
+        FormalArgument m3_ord = null;
+        FormalArgument m3_onset = null;
+        FormalArgument m3_offset = null;
+        FormalArgument m4_ord = null;
+        FormalArgument m4_onset = null;
+        FormalArgument m4_offset = null;
+        FormalArgument m5_ord = null;
+        FormalArgument m5_onset = null;
+        FormalArgument m5_offset = null;
+        FormalArgument m6_ord = null;
+        FormalArgument m6_onset = null;
+        FormalArgument m6_offset = null;
+        FormalArgument m7_ord = null;
+        FormalArgument m7_onset = null;
+        FormalArgument m7_offset = null;
+        FormalArgument cp_alpha = null;
+        FormalArgument cp_bravo = null;
+        FormalArgument cp_charlie = null;
+        FormalArgument cp_delta = null;
+        FormalArgument cp_echo = null;
+        FormalArgument cp_foxtrot = null;
+        FormalArgument cp_golf = null;
+        FormalArgument cp_hotel = null;
+        FormalArgument cp_india = null;
+        FormalArgument cp_juno = null;
+        FormalArgument cp_kilo = null;
+        FormalArgument cp_lima = null;
+        FormalArgument cp_mike = null;
+        FormalArgument cp_nero = null;
+        FormalArgument cp_oscar = null;
+        FormalArgument cp_papa = null;
+        FormalArgument cp_quebec = null;
+        FormalArgument cp_reno = null;
+        FormalArgument cp_sierra = null;
         java.util.Vector<MatrixVocabElement> matricies = null;
         java.util.Vector<PredicateVocabElement> preds = null;
 
@@ -2213,13 +2623,59 @@ public class VocabList
                                          kilo, null, null, null);
                 
                 vl.addElement(m0);
+                
+                m0_id = m0.getID();
+                m0_ord = m0.getCPFormalArg(0);
+                m0_onset = m0.getCPFormalArg(1);
+                m0_offset = m0.getCPFormalArg(2);
+                cp_alpha = m0.getCPFormalArg(3);
+                
                 vl.addElement(m1);
+                
+                m1_id = m1.getID();
+                m1_ord = m1.getCPFormalArg(0);
+                m1_onset = m1.getCPFormalArg(1);
+                m1_offset = m1.getCPFormalArg(2);
+                cp_bravo = m1.getCPFormalArg(3);
+                
                 vl.addElement(m2);
+
+                m2_id = m2.getID();
+                m2_ord = m2.getCPFormalArg(0);
+                m2_onset = m2.getCPFormalArg(1);
+                m2_offset = m2.getCPFormalArg(2);
+                cp_charlie = m2.getCPFormalArg(3);
+                
                 vl.addElement(m3);
+                
+                m3_id = m3.getID();
+                m3_ord = m3.getCPFormalArg(0);
+                m3_onset = m3.getCPFormalArg(1);
+                m3_offset = m3.getCPFormalArg(2);
+                cp_delta = m3.getCPFormalArg(3);
+                
                 vl.addElement(m4);
+
+                m4_id = m4.getID();
+                m4_ord = m4.getCPFormalArg(0);
+                m4_onset = m4.getCPFormalArg(1);
+                m4_offset = m4.getCPFormalArg(2);
+                cp_echo = m4.getCPFormalArg(3);
+                
                 vl.addElement(m5);
+
+                m5_id = m5.getID();
+                m5_ord = m5.getCPFormalArg(0);
+                m5_onset = m5.getCPFormalArg(1);
+                m5_offset = m5.getCPFormalArg(2);
+                cp_foxtrot = m5.getCPFormalArg(3);
+                cp_golf = m5.getCPFormalArg(4);
+                cp_hotel = m5.getCPFormalArg(5);
+                
                 vl.addElement(p0);
+                p0_id = p0.getID();
                 vl.addElement(p1);
+                p1_id = p1.getID();
 
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
@@ -2249,6 +2705,40 @@ public class VocabList
                  ( m0 == null ) || ( m1 == null ) || ( m2 == null ) ||
                  ( m3 == null ) || ( m4 == null ) || ( m5 == null ) ||
                  ( m6 == null ) || ( m7 == null ) ||
+                 ( m0_id == DBIndex.INVALID_ID ) ||
+                 ( m1_id == DBIndex.INVALID_ID ) ||
+                 ( m2_id == DBIndex.INVALID_ID ) ||
+                 ( m3_id == DBIndex.INVALID_ID ) ||
+                 ( m4_id == DBIndex.INVALID_ID ) ||
+                 ( m5_id == DBIndex.INVALID_ID ) ||
+                 ( p0_id == DBIndex.INVALID_ID ) ||
+                 ( p1_id == DBIndex.INVALID_ID ) ||
+                 ( m0_ord == null ) ||
+                 ( m0_onset == null ) ||
+                 ( m0_offset == null ) ||
+                 ( m1_ord == null ) ||
+                 ( m1_onset == null ) ||
+                 ( m1_offset == null ) ||
+                 ( m2_ord == null ) ||
+                 ( m2_onset == null ) ||
+                 ( m2_offset == null ) ||
+                 ( m3_ord == null ) ||
+                 ( m3_onset == null ) ||
+                 ( m3_offset == null ) ||
+                 ( m4_ord == null ) ||
+                 ( m4_onset == null ) ||
+                 ( m4_offset == null ) ||
+                 ( m5_ord == null ) ||
+                 ( m5_onset == null ) ||
+                 ( m5_offset == null ) ||
+                 ( cp_alpha == null ) ||
+                 ( cp_bravo == null ) ||
+                 ( cp_charlie == null ) ||
+                 ( cp_delta == null ) ||
+                 ( cp_echo == null ) ||
+                 ( cp_foxtrot == null ) ||
+                 ( cp_golf == null ) ||
+                 ( cp_hotel == null ) ||
                  ( matricies != null ) ||
                  ( preds != null ) ||
                  ( threwSystemErrorException ) )
@@ -2289,6 +2779,48 @@ public class VocabList
                     {
                         outStream.print("matrix alloc(s) failed.\n");
                     }
+
+                    if ( ( m0_id == DBIndex.INVALID_ID ) ||
+                         ( m1_id == DBIndex.INVALID_ID ) ||
+                         ( m2_id == DBIndex.INVALID_ID ) ||
+                         ( m3_id == DBIndex.INVALID_ID ) ||
+                         ( m4_id == DBIndex.INVALID_ID ) ||
+                         ( m5_id == DBIndex.INVALID_ID ) ||
+                         ( p0_id == DBIndex.INVALID_ID ) ||
+                         ( p1_id == DBIndex.INVALID_ID ) )
+                    {
+                        outStream.print("bad ID assignment(s).\n");
+                    }
+
+                    if ( ( m0_ord == null ) ||
+                         ( m0_onset == null ) ||
+                         ( m0_offset == null ) ||
+                         ( m1_ord == null ) ||
+                         ( m1_onset == null ) ||
+                         ( m1_offset == null ) ||
+                         ( m2_ord == null ) ||
+                         ( m2_onset == null ) ||
+                         ( m2_offset == null ) ||
+                         ( m3_ord == null ) ||
+                         ( m3_onset == null ) ||
+                         ( m3_offset == null ) ||
+                         ( m4_ord == null ) ||
+                         ( m4_onset == null ) ||
+                         ( m4_offset == null ) ||
+                         ( m5_ord == null ) ||
+                         ( m5_onset == null ) ||
+                         ( m5_offset == null ) ||
+                         ( cp_alpha == null ) ||
+                         ( cp_bravo == null ) ||
+                         ( cp_charlie == null ) ||
+                         ( cp_delta == null ) ||
+                         ( cp_echo == null ) ||
+                         ( cp_foxtrot == null ) ||
+                         ( cp_golf == null ) ||
+                         ( cp_hotel == null ) )
+                    {
+                        outStream.print("bad col pred fArg(s).\n");
+                    }
                                         
                     if ( preds != null )
                     {
@@ -2315,32 +2847,41 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {1, 3, 5, 7, 9, 11, 15, 17};
+            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id, 
+                           p0_id, p1_id};
             VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1};
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 
-                              11, 12, 13, 14, 15, 16, 17, 18, 19};
-            DBElement idxValues[] = {m0, alpha, 
-                                     m1, bravo,
-                                     m2, charlie,
-                                     m3, delta,
-                                     m4, echo,
-                                     m5, foxtrot, golf, hotel,
-                                     p0, lima, 
-                                     p1, mike, nero};
+            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  
+                               7,  8,  9, 10, 11, 12,
+                              13, 14, 15, 16, 17, 18,
+                              19, 20, 21, 22, 23, 24,
+                              25, 26, 27, 28, 29, 30, 
+                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                              41, 42,
+                              43, 44, 45};
+            DBElement idxValues[] = 
+                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha, 
+                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
+                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
+                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
+                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
+                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset, 
+                                               cp_foxtrot, cp_golf, cp_hotel,
+                     p0, lima, 
+                     p1, mike, nero};
             
             if ( ! VerifyVLContents(8, keys, values, vl, outStream, 
-                                    verbose, 1) )
+                                    verbose, 11) )
             {
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(19, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(45, idxKeys, idxValues, 
                                                db.idx, outStream, 
-                                               verbose, 1) )
+                                               verbose, 111) )
             {
                 failures++;
             }
-        }
+       }
 
         
         /* Insert one non-system predicate and one non-system matrixType.MATRIX
@@ -2356,7 +2897,17 @@ public class VocabList
             try
             {
                 vl.addElement(m6);
+
+                m6_id = m6.getID();
+                m6_ord = m6.getCPFormalArg(0);
+                m6_onset = m6.getCPFormalArg(1);
+                m6_offset = m6.getCPFormalArg(2);
+                cp_india = m6.getCPFormalArg(3);
+                cp_juno = m6.getCPFormalArg(4);
+
                 vl.addElement(p2);
+                
+                p2_id = p2.getID();
 
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
@@ -2370,6 +2921,13 @@ public class VocabList
             }
             
             if ( ( ! completed ) ||
+                 ( m6_ord == null ) ||
+                 ( m6_onset == null ) ||
+                 ( m6_offset == null ) ||
+                 ( cp_india == null ) ||
+                 ( cp_juno == null ) ||
+                 ( m6_id == DBIndex.INVALID_ID ) ||
+                 ( p2_id == DBIndex.INVALID_ID ) ||
                  ( matricies == null ) ||
                  ( preds == null ) ||
                  ( threwSystemErrorException ) )
@@ -2383,6 +2941,21 @@ public class VocabList
                         outStream.print("test failed to complete(3).\n");
                     }
                                                             
+                    if ( ( m6_ord == null ) ||
+                         ( m6_onset == null ) ||
+                         ( m6_offset == null ) ||
+                         ( cp_india == null ) ||
+                         ( cp_juno == null ) )
+                    {
+                        outStream.print("bad col pred fArg(s).\n");
+                    }
+
+                    if ( ( m6_id == DBIndex.INVALID_ID ) ||
+                         ( p2_id == DBIndex.INVALID_ID ) )
+                    {
+                        outStream.print("bad ID assignment(s).\n");
+                    }
+
                     if ( preds == null ) 
                     {
                         outStream.print(
@@ -2408,31 +2981,42 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {1, 3, 5, 7, 9, 11, 15, 17, 20, 23};
+            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id, 
+                           p0_id, p1_id, m6_id, p2_id};
             VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1, m6, p2};
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 
-                              11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                              21, 22, 23, 24};
-            DBElement idxValues[] = {m0, alpha, 
-                                     m1, bravo,
-                                     m2, charlie,
-                                     m3, delta,
-                                     m4, echo,
-                                     m5, foxtrot, golf, hotel,
-                                     p0, lima, 
-                                     p1, mike, nero,
-                                     m6, india, juno,
-                                     p2, oscar};
+            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  
+                               7,  8,  9, 10, 11, 12,
+                              13, 14, 15, 16, 17, 18,
+                              19, 20, 21, 22, 23, 24,
+                              25, 26, 27, 28, 29, 30, 
+                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                              41, 42,
+                              43, 44, 45,
+                              46, 47, 48, 49, 50, 51, 52, 53,
+                              54, 55};
+            DBElement idxValues[] = 
+                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha, 
+                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
+                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
+                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
+                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
+                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset, 
+                                               cp_foxtrot, cp_golf, cp_hotel,
+                     p0, lima, 
+                     p1, mike, nero,
+                     m6, india, juno, m6_ord, m6_onset, m6_offset, 
+                                      cp_india, cp_juno,
+                     p2, oscar};
             MatrixVocabElement matrixValues[] = {m6};
             PredicateVocabElement predValues[] = {p2};
-
+            
             if ( ! VerifyVLContents(10, keys, values, vl, outStream, 
                                     verbose, 2) )
             {
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(24, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(55, idxKeys, idxValues, 
                                                db.idx, outStream, 
                                                verbose, 2) )
             {
@@ -2464,11 +3048,32 @@ public class VocabList
             try
             {
                 vl.addElement(p3);
+
+                p3_id = p3.getID();
+                
                 vl.addElement(p4);
+                
+                p4_id = p4.getID();
+                
                 vl.addElement(p5);
+                
+                p5_id = p5.getID();
+                
                 vl.addElement(m7);
+                
+                m7_id = m7.getID();
+                m7_ord = m7.getCPFormalArg(0);
+                m7_onset = m7.getCPFormalArg(1);
+                m7_offset = m7.getCPFormalArg(2);
+                cp_kilo = m7.getCPFormalArg(3);
+                
                 vl.addElement(p6);
+                
+                p6_id = p6.getID();
+                
                 vl.addElement(p7);
+                
+                p7_id = p7.getID();
 
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
@@ -2482,6 +3087,16 @@ public class VocabList
             }
             
             if ( ( ! completed ) ||
+                 ( p3_id == DBIndex.INVALID_ID ) ||
+                 ( p4_id == DBIndex.INVALID_ID ) ||
+                 ( p5_id == DBIndex.INVALID_ID ) ||
+                 ( p6_id == DBIndex.INVALID_ID ) ||
+                 ( p7_id == DBIndex.INVALID_ID ) ||
+                 ( m7_id == DBIndex.INVALID_ID ) ||
+                 ( m7_ord == null ) ||
+                 ( m7_onset == null ) ||
+                 ( m7_offset == null ) ||
+                 ( cp_kilo == null ) ||
                  ( matricies == null ) ||
                  ( matricies.size() != 2 ) ||
                  ( preds == null ) ||
@@ -2495,6 +3110,24 @@ public class VocabList
                     if ( ! completed )
                     {
                         outStream.print("test failed to complete(4).\n");
+                    }
+
+                    if ( ( p3_id == DBIndex.INVALID_ID ) ||
+                         ( p4_id == DBIndex.INVALID_ID ) ||
+                         ( p5_id == DBIndex.INVALID_ID ) ||
+                         ( p6_id == DBIndex.INVALID_ID ) ||
+                         ( p7_id == DBIndex.INVALID_ID ) ||
+                         ( m7_id == DBIndex.INVALID_ID ) )
+                    {
+                        outStream.print("bad ID assignment(s).\n");
+                    }
+                    
+                    if ( ( m7_ord == null ) ||
+                        ( m7_onset == null ) ||
+                        ( m7_offset == null ) ||
+                        ( cp_kilo == null ) )
+                    {
+                        outStream.print("bad col pred fArg(s).\n");
                     }
                                                             
                     if ( ( preds == null ) ||
@@ -2529,42 +3162,58 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = { 1,  3,  5,  7,  9, 11, 15, 17,
-                           20, 23, 25, 27, 29, 31, 33, 35};
-            VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1, 
-                                     m6, p2, p3, p4, p5, m7, p6, p7};
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 
-                              11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                              21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                              31, 32, 33, 34, 35, 36};
-            DBElement idxValues[] = {m0, alpha, 
-                                     m1, bravo,
-                                     m2, charlie,
-                                     m3, delta,
-                                     m4, echo,
-                                     m5, foxtrot, golf, hotel,
-                                     p0, lima, 
-                                     p1, mike, nero,
-                                     m6, india, juno,
-                                     p2, oscar,
-                                     p3, papa,
-                                     p4, quebec, 
-                                     p5, reno,
-                                     m7, kilo,
-                                     p6, sierra,
-                                     p7, tango};
+            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id, 
+                           p0_id, p1_id, m6_id, p2_id, p3_id, p4_id, p5_id, 
+                           m7_id, p6_id, p7_id};
+            VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1, m6, p2,
+                                     p3, p4, p5, m7, p6, p7};
+            long idxKeys[] = { 1,  2,  3,  4,  5,  6,  
+                               7,  8,  9, 10, 11, 12,
+                              13, 14, 15, 16, 17, 18,
+                              19, 20, 21, 22, 23, 24,
+                              25, 26, 27, 28, 29, 30, 
+                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                              41, 42,
+                              43, 44, 45,
+                              46, 47, 48, 49, 50, 51, 52, 53,
+                              54, 55,
+                              56, 57,
+                              58, 59,
+                              60, 61,
+                              62, 63, 64, 65, 66, 67,
+                              68, 69,
+                              70, 71};
+            DBElement idxValues[] = 
+                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha, 
+                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
+                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
+                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
+                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
+                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset, 
+                                               cp_foxtrot, cp_golf, cp_hotel,
+                     p0, lima, 
+                     p1, mike, nero,
+                     m6, india, juno, m6_ord, m6_onset, m6_offset, 
+                                      cp_india, cp_juno,
+                     p2, oscar,
+                     p3, papa,
+                     p4, quebec, 
+                     p5, reno,
+                     m7, kilo, m7_ord, m7_onset, m7_offset, cp_kilo,
+                     p6, sierra,
+                     p7, tango};
             MatrixVocabElement matrixValues[] = {m6, m7};
             PredicateVocabElement predValues[] = {p2, p3, p4, p5, p6, p7};
 
             if ( ! VerifyVLContents(16, keys, values, vl, outStream, 
-                                    verbose, 1) )
+                                    verbose, 3) )
             {
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(36, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(71, idxKeys, idxValues, 
                                                db.idx, outStream, 
-                                               verbose, 1) )
+                                               verbose, 3) )
             {
                 failures++;
             }
@@ -2713,6 +3362,50 @@ public class VocabList
         UnTypedFormalArg oscar = null;
         UnTypedFormalArg papa = null;
         NominalFormalArg quebec = null;
+        FormalArgument m0_ord = null;
+        FormalArgument m0_onset = null;
+        FormalArgument m0_offset = null;
+        FormalArgument m1_ord = null;
+        FormalArgument m1_onset = null;
+        FormalArgument m1_offset = null;
+        FormalArgument m1a_ord = null;
+        FormalArgument m1a_onset = null;
+        FormalArgument m1a_offset = null;
+        FormalArgument m2_ord = null;
+        FormalArgument m2_onset = null;
+        FormalArgument m2_offset = null;
+        FormalArgument m2a_ord = null;
+        FormalArgument m2a_onset = null;
+        FormalArgument m2a_offset = null;
+        FormalArgument m3_ord = null;
+        FormalArgument m3_onset = null;
+        FormalArgument m3_offset = null;
+        FormalArgument m3a_ord = null;
+        FormalArgument m3a_onset = null;
+        FormalArgument m3a_offset = null;
+        FormalArgument cp_alpha = null;
+        FormalArgument cp_bravo = null;
+        FormalArgument cp_charlie = null;
+        FormalArgument cp_delta = null;
+        FormalArgument cp_echo = null;
+        FormalArgument cp_echoa = null;
+        FormalArgument cp_foxtrot = null;
+        FormalArgument cp_foxtrota = null;
+        FormalArgument cp_golf = null;
+        FormalArgument cp_hotel = null;
+        FormalArgument cp_hotela = null;
+        FormalArgument cp_india = null;
+        FormalArgument cp_juno = null;
+        FormalArgument cp_kilo = null;
+        FormalArgument cp_lima = null;
+        FormalArgument cp_mike = null;
+        FormalArgument cp_mikea = null;
+        FormalArgument cp_nero = null;
+        FormalArgument cp_oscar = null;
+        FormalArgument cp_papa = null;
+        FormalArgument cp_quebec = null;
+        FormalArgument cp_reno = null;
+        FormalArgument cp_sierra = null;
 
         outStream.print(testBanner);
 
@@ -2958,6 +3651,18 @@ public class VocabList
                 vl.addElement(m1);
                 vl.addElement(p2);
                 
+                m0_ord = m0.getCPFormalArg(0);
+                m0_onset = m0.getCPFormalArg(1);
+                m0_offset = m0.getCPFormalArg(2);
+                cp_delta = m0.getCPFormalArg(3);
+                
+                m1_ord = m1.getCPFormalArg(0);
+                m1_onset = m1.getCPFormalArg(1);
+                m1_offset = m1.getCPFormalArg(2);
+                cp_echo = m1.getCPFormalArg(3);
+                cp_foxtrot = m1.getCPFormalArg(4);
+                cp_hotel = m1.getCPFormalArg(5);
+                
                 methodReturned = true;
             }
          
@@ -2992,14 +3697,20 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {1, 3, 5, 8, 12};
+            long keys[] = {1, 3, 9, 12, 22};
             VocabElement values[] = {p0, m0, p1, m1, p2};
-            long idxKeys[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-            DBElement idxValues[] = {p0, alpha, 
-                                     m0, delta, 
-                                     p1, bravo, charlie,
-                                     m1, echo, foxtrot, hotel, 
-                                     p2};
+            long idxKeys[] = { 1,  2, 
+                               3,  4,  5,  6,  7,  8, 
+                               9, 10, 11, 
+                              12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                              22};
+            DBElement idxValues[] = 
+                    {p0, alpha, 
+                     m0, delta, m0_ord, m0_onset, m0_offset, cp_delta, 
+                     p1, bravo, charlie,
+                     m1, echo, foxtrot, hotel, m1_ord, m1_onset, m1_offset, 
+                                               cp_echo, cp_foxtrot, cp_hotel,
+                     p2};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 1) )
@@ -3007,7 +3718,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(12, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(22, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 1) )
             {
@@ -3030,7 +3741,7 @@ public class VocabList
             try
             {
                 vl.removeVocabElement(3);
-                vl.removeVocabElement(12);
+                vl.removeVocabElement(22);
                 vl.removeVocabElement(1);
                 methodReturned = true;
             }
@@ -3066,11 +3777,14 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8};
+            long keys[] = {9, 12};
             VocabElement values[] = {p1, m1};
-            long idxKeys[] = {5, 6, 7, 8, 9, 10, 11};
-            DBElement idxValues[] = {p1, bravo, charlie,
-                                     m1, echo, foxtrot, hotel};
+            long idxKeys[] = { 9, 10, 11, 
+                              12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
+            DBElement idxValues[] = 
+                    {p1, bravo, charlie,
+                     m1, echo, foxtrot, hotel, m1_ord, m1_onset, m1_offset, 
+                                               cp_echo, cp_foxtrot, cp_hotel};
 
             if ( ! VerifyVLContents(2, keys, values, vl, outStream, 
                                     verbose, 2) )
@@ -3078,7 +3792,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(7, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(13, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 2) )
             {
@@ -3125,27 +3839,44 @@ public class VocabList
             try
             {
                 vl.addElement(m2);
+                
+                m2_ord = m2.getCPFormalArg(0);
+                m2_onset = m2.getCPFormalArg(1);
+                m2_offset = m2.getCPFormalArg(2);
+                cp_juno = m2.getCPFormalArg(3);
+                cp_kilo = m2.getCPFormalArg(4);
+                cp_lima = m2.getCPFormalArg(5);
+
                 inVL0 = vl.inVocabList(1);
-                inVL1 = vl.inVocabList(5);
+                inVL1 = vl.inVocabList(9);
                 inVL2 = vl.inVocabList("p0");
                 inVL3 = vl.inVocabList("p1");
                 mInVL0 = vl.matrixInVocabList(1);
-                mInVL1 = vl.matrixInVocabList(5);
+                mInVL1 = vl.matrixInVocabList(9);
                 mInVL2 = vl.matrixInVocabList("p0");
                 mInVL3 = vl.matrixInVocabList("p1");
-                mInVL4 = vl.matrixInVocabList(8);
+                mInVL4 = vl.matrixInVocabList(12);
                 mInVL5 = vl.matrixInVocabList("m1");
                 pInVL0 = vl.predInVocabList(1);
-                pInVL1 = vl.predInVocabList(5);
+                pInVL1 = vl.predInVocabList(9);
                 pInVL2 = vl.predInVocabList("p0");
                 pInVL3 = vl.predInVocabList("p1");
-                pInVL4 = vl.predInVocabList(8);
+                pInVL4 = vl.predInVocabList(12);
                 pInVL5 = vl.predInVocabList("m1");
+                
                 vl.addElement(m3);
-                ve0 = vl.getVocabElement(8);
+                
+                m3_ord = m3.getCPFormalArg(0);
+                m3_onset = m3.getCPFormalArg(1);
+                m3_offset = m3.getCPFormalArg(2);
+                cp_mike = m3.getCPFormalArg(3);
+
+                ve0 = vl.getVocabElement(12);
                 ve1 = vl.getVocabElement("m1");
+                
                 vl.addElement(p3);
-                ve2 = vl.getVocabElement(5);
+                
+                ve2 = vl.getVocabElement(9);
                 ve3 = vl.getVocabElement("p1");
                 
                 methodReturned = true;
@@ -3180,7 +3911,7 @@ public class VocabList
                     
                     if ( inVL1 != true )
                     {
-                        outStream.print("vl.inVocabList(5) returned false.\n");
+                        outStream.print("vl.inVocabList(9) returned false.\n");
                     }
                     
                     if ( inVL2 != false )
@@ -3205,7 +3936,7 @@ public class VocabList
                     if ( mInVL1 != false )
                     {
                         outStream.print(
-                                "vl.matrixInVocabList(5) returned true.\n");
+                                "vl.matrixInVocabList(9) returned true.\n");
                     }
                     
                     if ( mInVL2 != false ) 
@@ -3223,7 +3954,7 @@ public class VocabList
                     if ( mInVL4 != true ) 
                     {
                         outStream.print(
-                                "vl.matrixInVocabList(8) returned false.\n");
+                                "vl.matrixInVocabList(12) returned false.\n");
                     }
                     
                     if ( mInVL5 != true )
@@ -3242,7 +3973,7 @@ public class VocabList
                     if ( pInVL1 != true )
                     {
                         outStream.print(
-                                "vl.predInVocabList(5) returned false.\n");
+                                "vl.predInVocabList(9) returned false.\n");
                     }
                     
                     if ( pInVL2 != false ) 
@@ -3260,7 +3991,7 @@ public class VocabList
                     if ( pInVL4 != false ) 
                     {
                         outStream.print(
-                                "vl.predInVocabList(8) returned true.\n");
+                                "vl.predInVocabList(12) returned true.\n");
                     }
                     
                     if ( pInVL5 != false )
@@ -3272,17 +4003,17 @@ public class VocabList
                      
                     if ( ve0 != m1 )
                     {
-                        outStream.print("vl.getVocabElement(8) != p1\n");
+                        outStream.print("vl.getVocabElement(12) != p1\n");
                     }
                      
                     if ( ve1 != m1 )
                     {
-                        outStream.print("vl.getVocabElement(\"m1\") != p1\n");
+                        outStream.print("vl.getVocabElement(\"m1\") != m1\n");
                     }
                      
                     if ( ve2 != p1 )
                     {
-                        outStream.print("vl.getVocabElement(5) != p1\n");
+                        outStream.print("vl.getVocabElement(9) != p1\n");
                     }
                      
                     if ( ve3 != p1 )
@@ -3307,15 +4038,21 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1, m1, m2, m3, p3};
-            long idxKeys[] = {5, 6, 7, 8, 9, 10, 11, 13, 14, 
-                              15, 16, 17, 18, 19, 20};
-            DBElement idxValues[] = {p1, bravo, charlie,
-                                     m1, echo, foxtrot, hotel,
-                                     m2, juno, kilo, lima,
-                                     m3, mike,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 11, 
+                              12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1, bravo, charlie,
+                     m1, echo, foxtrot, hotel, m1_ord, m1_onset, m1_offset, 
+                                               cp_echo, cp_foxtrot, cp_hotel,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3, mike, m3_ord, m3_onset, m3_offset, cp_mike,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 3) )
@@ -3323,7 +4060,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(15, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(31, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 3) )
             {
@@ -3369,17 +4106,19 @@ public class VocabList
                 /* replace the current entry with the modified entry */
                 vl.replaceVocabElement(p1a);
                 /* verify that inVocabList() works on the revised entry */
-                inVL0 = vl.inVocabList(5);
+                inVL0 = vl.inVocabList(9);
                 inVL1 = vl.inVocabList("p1a");
                 inVL4 = vl.inVocabList("p1");
                 
                 /* now modify a matrix */
-                m1a = (MatrixVocabElement)(vl.getVocabElement(8));
+                m1a = (MatrixVocabElement)(vl.getVocabElement(12));
                 m1a = new MatrixVocabElement(m1a);
+                m1a.setName("m1a");
                 /* This time, just add a formal argument, and change
                  * the order of the existing arguments.
                  */
-                echoa = (UnTypedFormalArg)m1a.getFormalArg(0);
+                echoa = (UnTypedFormalArg)m1a.copyFormalArg(0);
+                echoa.setFargName("<echoa>");
                 foxtrota = (UnTypedFormalArg)m1a.getFormalArg(1);
                 hotela = (UnTypedFormalArg)m1a.getFormalArg(2);
                 /* make echo the second formal argument */
@@ -3389,18 +4128,32 @@ public class VocabList
                 m1a.insertFormalArg(oscar, 0);
                 /* replace the current entry with the modified entry */
                 vl.replaceVocabElement(m1a);
+                m1a_ord = m1a.getCPFormalArg(0);
+                m1a_onset = m1a.getCPFormalArg(1);
+                m1a_offset = m1a.getCPFormalArg(2);
+                cp_oscar = m1a.getCPFormalArg(3);
+                cp_foxtrota = m1a.getCPFormalArg(4);
+                cp_echoa = m1a.getCPFormalArg(5);
+                cp_hotela = m1a.getCPFormalArg(6);
                 
                 /* Modify a Float matrix */
-                m3a = (MatrixVocabElement)vl.getVocabElement(17);
+                m3a = (MatrixVocabElement)vl.getVocabElement(33);
                 m3a = new MatrixVocabElement(m3a);
-                mikea = (FloatFormalArg)m3a.getFormalArg(0);
+                mikea = (FloatFormalArg)m3a.copyFormalArg(0);
                 mikea.setFargName("<mikea>");
+                m3a.replaceFormalArg(mikea, 0);
                 /* replace the current entry with the modified entry */
                 vl.replaceVocabElement(m3a);
+                m3a_ord = m3a.getCPFormalArg(0);
+                m3a_onset = m3a.getCPFormalArg(1);
+                m3a_offset = m3a.getCPFormalArg(2);
+                cp_mikea = m3a.getCPFormalArg(3);
+                
+                
                 /* verify that the modified version of m3 is detectable by
                  * inVocabList()
                  */
-                inVL2 = vl.inVocabList(17);
+                inVL2 = vl.inVocabList(39);
                 inVL3 = vl.inVocabList("m3");
                 
                 methodReturned = true;
@@ -3457,26 +4210,30 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
-
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
+            
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 4) )
             {
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 4) )
             {
@@ -3539,26 +4296,30 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
-
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
+            
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 5) )
             {
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 5) )
             {
@@ -3613,18 +4374,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 6) )
@@ -3632,7 +4397,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 6) )
             {
@@ -3730,18 +4495,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 7) )
@@ -3749,7 +4518,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 7) )
             {
@@ -3802,18 +4571,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 8) )
@@ -3821,7 +4594,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 8) )
             {
@@ -3872,18 +4645,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 9) )
@@ -3891,7 +4668,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 9) )
             {
@@ -3950,18 +4727,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 10) )
@@ -3969,7 +4750,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 10) )
             {
@@ -4024,18 +4805,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 11) )
@@ -4043,7 +4828,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 11) )
             {
@@ -4101,18 +4886,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 12) )
@@ -4120,7 +4909,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 12) )
             {
@@ -4172,18 +4961,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 13) )
@@ -4191,7 +4984,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 13) )
             {
@@ -4244,18 +5037,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 14) )
@@ -4263,7 +5060,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 14) )
             {
@@ -4315,18 +5112,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 15) )
@@ -4334,7 +5135,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 15) )
             {
@@ -4399,18 +5200,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 16) )
@@ -4418,7 +5223,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 16) )
             {
@@ -4478,18 +5283,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 17) )
@@ -4497,7 +5306,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 17) )
             {
@@ -4557,18 +5366,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 18) )
@@ -4576,7 +5389,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 18) )
             {
@@ -4636,18 +5449,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 19) )
@@ -4655,7 +5472,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 19) )
             {
@@ -4721,18 +5538,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 20) )
@@ -4740,7 +5561,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 20) )
             {
@@ -4800,18 +5621,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 21) )
@@ -4819,7 +5644,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 21) )
             {
@@ -4879,18 +5704,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 22) )
@@ -4898,7 +5727,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 22) )
             {
@@ -4958,18 +5787,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 23) )
@@ -4977,7 +5810,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 23) )
             {
@@ -5043,18 +5876,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 24) )
@@ -5062,7 +5899,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 24) )
             {
@@ -5122,18 +5959,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 25) )
@@ -5141,7 +5982,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 25) )
             {
@@ -5201,18 +6042,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 26) )
@@ -5220,7 +6065,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 26) )
             {
@@ -5280,18 +6125,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 27) )
@@ -5299,7 +6148,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 27) )
             {
@@ -5354,18 +6203,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 28) )
@@ -5373,7 +6226,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 28) )
             {
@@ -5430,18 +6283,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 29) )
@@ -5449,7 +6306,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 29) )
             {
@@ -5545,18 +6402,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 30) )
@@ -5564,7 +6425,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 30) )
             {
@@ -5619,18 +6480,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 31) )
@@ -5638,7 +6503,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 31) )
             {
@@ -5693,18 +6558,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 32) )
@@ -5712,7 +6581,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 32) )
             {
@@ -5766,18 +6635,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 33) )
@@ -5785,7 +6658,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 33) )
             {
@@ -5838,18 +6711,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 34) )
@@ -5857,7 +6734,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 34) )
             {
@@ -5912,18 +6789,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 35) )
@@ -5931,7 +6812,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 35) )
             {
@@ -5990,18 +6871,22 @@ public class VocabList
         
         if ( failures == 0 )
         {
-            long keys[] = {5, 8, 13, 17, 19};
+            long keys[] = {9, 12, 23, 33, 39};
             VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = {5, 6, 21, 
-                              8, 9, 10, 11, 22,
-                              13, 14, 15, 16, 
-                              17, 18, 
-                              19, 20};
-            DBElement idxValues[] = {p1a, bravoa, nero,
-                                     m1a, echoa, foxtrota, hotela, oscar,
-                                     m2, juno, kilo, lima,
-                                     m3a, mikea,
-                                     p3, india};
+            long idxKeys[] = { 9, 10, 41, 
+                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
+                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                              33, 34, 35, 36, 37, 38,
+                              39, 40};
+            DBElement idxValues[] = 
+                    {p1a, bravoa, nero,
+                     m1a, echoa, foxtrota, hotela, 
+                         m1a_ord, m1a_onset, m1a_offset, 
+                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
+                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
+                                           cp_juno, cp_kilo, cp_lima,
+                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
+                     p3, india};
 
             if ( ! VerifyVLContents(5, keys, values, vl, outStream, 
                                     verbose, 36) )
@@ -6009,7 +6894,7 @@ public class VocabList
                 failures++;
             }
             
-            if ( ! DBIndex.VerifyIndexContents(16, idxKeys, idxValues, 
+            if ( ! DBIndex.VerifyIndexContents(33, idxKeys, idxValues, 
                                                vl.db.idx, outStream, 
                                                verbose, 36) )
             {
@@ -6072,109 +6957,149 @@ public class VocabList
         final String expectedVLString1 = 
                 "((VocabList) " +
                  "(vl_contents: " +
-                  "(m1(<echo>, <foxtrot>, <hotel>), " +
-                   "p1(<bravo>, <charlie>), " +
+                  "(p1(<bravo>, <charlie>), " +
                    "m0(<arg>), " +
                    "m2(<india>), " +
-                   "p2(), " + 
-                   "p0(<alpha>))))";
+                   "m1(<echo>, <foxtrot>, <hotel>), " +
+                   "p0(<alpha>), " +
+                   "p2())))"; 
         final String expectedIDXString0 = "((DBIndex) (index_contents: ()))";
         final String expectedIDXString1 = 
-                "((DBIndex) (index_contents: (<india>, m2(<india>), p2(), " +
-                "<hotel>, <foxtrot>, <echo>, m1(<echo>, <foxtrot>, <hotel>), " +
-                "<charlie>, <bravo>, p1(<bravo>, <charlie>), <arg>, " +
-                "m0(<arg>), <alpha>, p0(<alpha>))))";
+                "((DBIndex) " +
+                 "(index_contents: " +
+                  "(<india>, " +
+                   "<offset>, " +
+                   "<onset>, " +
+                   "<ord>, " +
+                   "<india>, " +
+                   "m2(<india>), " +
+                   "p2(), " +
+                   "<hotel>, " +
+                   "<foxtrot>, " +
+                   "<echo>, " +
+                   "<offset>, " +
+                   "<onset>, " +
+                   "<ord>, " +
+                   "<hotel>, " +
+                   "<foxtrot>, " +
+                   "<echo>, " +
+                   "m1(<echo>, <foxtrot>, <hotel>), " +
+                   "<charlie>, " +
+                   "<bravo>, " +
+                   "p1(<bravo>, <charlie>), " +
+                   "<arg>, " +
+                   "<offset>, " +
+                   "<onset>, " +
+                   "<ord>, " +
+                   "<arg>, " +
+                   "m0(<arg>), " +
+                   "<alpha>, " +
+                   "p0(<alpha>))))";
         final String expectedVLDBString0 = 
                 "((VocabList) (vl_size: 0) (vl_contents: ()))";
         final String expectedVLDBString1 = 
-                "((VocabList) " +
-                 "(vl_size: 6) " +
-                 "(vl_contents: " +
-                  "(((MatrixVocabElement: 8 m1) " +
-                    "(system: false) " +
-                    "(type: MATRIX) " +
-                    "(varLen: false) " +
-                    "(fArgList: " +
-                     "((TimeStampFormalArg 9 <echo> false null null), " +
-                      "(NominalFormalArg 10 <foxtrot> false ()), " +
-                      "(UnTypedFormalArg 11 <hotel>))), " +
-                   "((PredicateVocabElement: 5 p1) " +
-                    "(system: false) " +
-                    "(varLen: false) " +
-                    "(fArgList: " +
-                     "((IntFormalArg 6 <bravo> false " +
-                       "-9223372036854775808 9223372036854775807), " +
-                     "(NominalFormalArg 7 <charlie> false ()))), " +
-                   "((MatrixVocabElement: 3 m0) " +
-                    "(system: false) " +
-                    "(type: TEXT) " +
-                    "(varLen: false) " +
-                    "(fArgList: ((TextStringFormalArg 4 <arg>))), " +
-                   "((MatrixVocabElement: 13 m2) " + 
-                    "(system: false) " +
-                    "(type: NOMINAL) " +
-                    "(varLen: false) " +
-                    "(fArgList: ((NominalFormalArg 14 <india> false ()))), " +
-                   "((PredicateVocabElement: 12 p2) " +
-                    "(system: false) " +
-                    "(varLen: false) " +
-                    "(fArgList: ()), " +
-                   "((PredicateVocabElement: 1 p0) " +
-                    "(system: false) " + 
-                    "(varLen: false) " +
-                    "(fArgList: " +
-                     "((FloatFormalArg 2 <alpha> false " +
-                       "-1.7976931348623157E308 1.7976931348623157E308))))))";
-        final String expectedIDXDBString0 = 
-                "((DBIndex) (nextID: 1) (index_size: 0) (index_contents: ()))";
-        final String expectedIDXDBString1 = 
-                "((DBIndex) (nextID: 15) (index_size: 14) " + 
-                 "(index_contents: " +
-                  "((NominalFormalArg 14 <india> false ()), " +
-                   "((MatrixVocabElement: 13 m2) " +
-                    "(system: false) " +
-                    "(type: NOMINAL) " +
-                    "(varLen: false) " +
-                    "(fArgList: " +
-                     "((NominalFormalArg 14 <india> false ()))), " +
-                      "((PredicateVocabElement: 12 p2) " +
+                  "((VocabList) " +
+                    "(vl_size: 6) " +
+                    "(vl_contents: " +
+                     "(((PredicateVocabElement: 9 p1) " +
                        "(system: false) " +
                        "(varLen: false) " +
-                       "(fArgList: ()), " +
-                      "(UnTypedFormalArg 11 <hotel>), " +
-                      "(NominalFormalArg 10 <foxtrot> false ()), " +
-                      "(TimeStampFormalArg 9 <echo> false null null), " +
-                      "((MatrixVocabElement: 8 m1) " +
+                       "(fArgList: " +
+                        "((IntFormalArg 10 <bravo> false " +
+                          "-9223372036854775808 9223372036854775807), " +
+                         "(NominalFormalArg 11 <charlie> false ()))), " +
+                      "((MatrixVocabElement: 3 m0) " +
+                       "(system: false) " +
+                       "(type: TEXT) " +
+                       "(varLen: false) " +
+                       "(fArgList: " +
+                        "((TextStringFormalArg 4 <arg>))), " +
+                      "((MatrixVocabElement: 23 m2) " +
+                       "(system: false) " +
+                       "(type: NOMINAL) " +
+                       "(varLen: false) " +
+                       "(fArgList: " +
+                        "((NominalFormalArg 24 <india> false ()))), " +
+                      "((MatrixVocabElement: 12 m1) " +
                        "(system: false) " +
                        "(type: MATRIX) " +
                        "(varLen: false) " +
                        "(fArgList: " +
-                        "((TimeStampFormalArg 9 <echo> false null null), " +
-                         "(NominalFormalArg 10 <foxtrot> false ()), " +
-                         "(UnTypedFormalArg 11 <hotel>))), " +
-                      "(NominalFormalArg 7 <charlie> false ()), " +
-                      "(IntFormalArg 6 <bravo> false -9223372036854775808 " +
-                        "9223372036854775807), " +
-                      "((PredicateVocabElement: 5 p1) " +
+                        "((TimeStampFormalArg 13 <echo> false null null), " +
+                         "(NominalFormalArg 14 <foxtrot> false ()), " +
+                         "(UnTypedFormalArg 15 <hotel>))), " +
+                      "((PredicateVocabElement: 1 p0) " +
                        "(system: false) " +
                        "(varLen: false) " +
                        "(fArgList: " +
-                        "((IntFormalArg 6 <bravo> false " +
-                          "-9223372036854775808 9223372036854775807), " +
-                         "(NominalFormalArg 7 <charlie> false ()))), " +
+                        "((FloatFormalArg 2 <alpha> false " +
+                         "-1.7976931348623157E308 1.7976931348623157E308))), " +
+                      "((PredicateVocabElement: 22 p2) " +
+                       "(system: false) " +
+                       "(varLen: false) " +
+                       "(fArgList: ()))))";
+        final String expectedIDXDBString0 = 
+                "((DBIndex) (nextID: 1) (index_size: 0) (index_contents: ()))";
+        final String expectedIDXDBString1 = 
+                "((DBIndex) " +
+                  "(nextID: 29) " +
+                  "(index_size: 28) " +
+                  "(index_contents: " +
+                   "((NominalFormalArg 28 <india> false ()), " +
+                    "(TimeStampFormalArg 27 <offset> false null null), " +
+                    "(TimeStampFormalArg 26 <onset> false null null), " +
+                    "(IntFormalArg 25 <ord> false -9223372036854775808 9223372036854775807), " +
+                    "(NominalFormalArg 24 <india> false ()), " +
+                    "((MatrixVocabElement: 23 m2) " +
+                     "(system: false) " +
+                     "(type: NOMINAL) " +
+                     "(varLen: false) " +
+                     "(fArgList: ((NominalFormalArg 24 <india> false ()))), " +
+                    "((PredicateVocabElement: 22 p2) " +
+                     "(system: false) " +
+                     "(varLen: false) " +
+                     "(fArgList: ()), " +
+                    "(UnTypedFormalArg 21 <hotel>), " +
+                    "(NominalFormalArg 20 <foxtrot> false ()), " +
+                    "(TimeStampFormalArg 19 <echo> false null null), " +
+                    "(TimeStampFormalArg 18 <offset> false null null), " +
+                    "(TimeStampFormalArg 17 <onset> false null null), " +
+                    "(IntFormalArg 16 <ord> false -9223372036854775808 9223372036854775807), " +
+                    "(UnTypedFormalArg 15 <hotel>), " +
+                    "(NominalFormalArg 14 <foxtrot> false ()), " +
+                    "(TimeStampFormalArg 13 <echo> false null null), " +
+                    "((MatrixVocabElement: 12 m1) " +
+                     "(system: false) " +
+                     "(type: MATRIX) " +
+                     "(varLen: false) " +
+                     "(fArgList: " +
+                      "((TimeStampFormalArg 13 <echo> false null null), " +
+                       "(NominalFormalArg 14 <foxtrot> false ()), " +
+                       "(UnTypedFormalArg 15 <hotel>))), " +
+                     "(NominalFormalArg 11 <charlie> false ()), " +
+                     "(IntFormalArg 10 <bravo> false -9223372036854775808 9223372036854775807), " +
+                     "((PredicateVocabElement: 9 p1) " +
+                      "(system: false) " +
+                      "(varLen: false) " +
+                      "(fArgList: " +
+                       "((IntFormalArg 10 <bravo> false -9223372036854775808 9223372036854775807), " +
+                        "(NominalFormalArg 11 <charlie> false ()))), " +
+                      "(TextStringFormalArg 8 <arg>), " +
+                      "(TimeStampFormalArg 7 <offset> false null null), " +
+                      "(TimeStampFormalArg 6 <onset> false null null), " +
+                      "(IntFormalArg 5 <ord> false -9223372036854775808 9223372036854775807), " +
                       "(TextStringFormalArg 4 <arg>), " +
                       "((MatrixVocabElement: 3 m0) " +
                        "(system: false) " +
                        "(type: TEXT) " +
                        "(varLen: false) " +
                        "(fArgList: ((TextStringFormalArg 4 <arg>))), " +
-                      "(FloatFormalArg 2 <alpha> false " +
-                        "-1.7976931348623157E308 1.7976931348623157E308), " +
+                      "(FloatFormalArg 2 <alpha> false -1.7976931348623157E308 1.7976931348623157E308), " +
                       "((PredicateVocabElement: 1 p0) " +
                        "(system: false) " +
                        "(varLen: false) " +
-                       "(fArgList: ((FloatFormalArg 2 <alpha> false " +
-                        "-1.7976931348623157E308 1.7976931348623157E308))))))";
+                       "(fArgList: " +
+                        "((FloatFormalArg 2 <alpha> false -1.7976931348623157E308 1.7976931348623157E308))))))";
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -6273,9 +7198,12 @@ public class VocabList
             if ( vl.toString().compareTo(expectedVLString0) != 0 )
             {
                 failures++;
-                outStream.printf(
-                        "vl.toString() returned unexpected value(1): \"%s\".\n",
-                        vl.toString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("vl.toString() returned unexpected " +
+                            "value(0): \"%s\".\n", vl.toString());
+                }
             }
         }
         
@@ -6284,8 +7212,13 @@ public class VocabList
             if ( vl.toDBString().compareTo(expectedVLDBString0) != 0 )
             {
                 failures++;
-                outStream.printf("vl.toDBString() returned unexpected " +
-                        "value(1): \"%s\".\n", vl.toDBString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("vl.toDBString() returned unexpected " +
+                            "value(0): \"%s\".\n", vl.toDBString());
+            
+                }
             }
         }
         
@@ -6294,8 +7227,13 @@ public class VocabList
             if ( db.idx.toString().compareTo(expectedIDXString0) != 0 )
             {
                 failures++;
-                outStream.printf("db.idx.toString() returned unexpected " +
-                        "value(1): \"%s\".\n", db.idx.toString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("db.idx.toString() returned unexpected " +
+                            "value(0): \"%s\".\n", db.idx.toString());
+            
+                }
             }
         }
         
@@ -6304,8 +7242,13 @@ public class VocabList
             if ( db.idx.toDBString().compareTo(expectedIDXDBString0) != 0 )
             {
                 failures++;
-                outStream.printf("db.idx.toDBString() returned unexpected " +
-                        "value(1): \"%s\".\n", db.idx.toDBString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("db.idx.toDBString() returned unexpected " +
+                            "value(0): \"%s\".\n", db.idx.toDBString());
+            
+                }
             }
         }
         
@@ -6437,9 +7380,12 @@ public class VocabList
             if ( vl.toString().compareTo(expectedVLString1) != 0 )
             {
                 failures++;
-                outStream.printf(
-                        "vl.toString() returned unexpected value(1): \"%s\".\n",
-                        vl.toString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("vl.toString() returned unexpected " +
+                            "value(1): \"%s\".\n", vl.toString());
+                }
             }
         }
         
@@ -6448,8 +7394,12 @@ public class VocabList
             if ( vl.toDBString().compareTo(expectedVLDBString1) != 0 )
             {
                 failures++;
-                outStream.printf("vl.toDBString() returned unexpected " +
-                        "value(1): \"%s\".\n", vl.toDBString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("vl.toDBString() returned unexpected " +
+                            "value(1): \"%s\".\n", vl.toDBString());
+                }
             }
         }
         
@@ -6458,8 +7408,12 @@ public class VocabList
             if ( db.idx.toString().compareTo(expectedIDXString1) != 0 )
             {
                 failures++;
-                outStream.printf("db.idx.toString() returned unexpected " +
-                        "value(1): \"%s\".\n", db.idx.toString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("db.idx.toString() returned unexpected " +
+                            "value(1): \"%s\".\n", db.idx.toString());
+                }
             }
         }
         
@@ -6468,8 +7422,12 @@ public class VocabList
             if ( db.idx.toDBString().compareTo(expectedIDXDBString1) != 0 )
             {
                 failures++;
-                outStream.printf("db.idx.toDBString() returned unexpected " +
-                        "value(1): \"%s\".\n", db.idx.toDBString());
+                
+                if ( verbose )
+                {
+                    outStream.printf("db.idx.toDBString() returned unexpected " +
+                            "value(1): \"%s\".\n", db.idx.toDBString());
+                }
             }
         }
         
@@ -6724,6 +7682,7 @@ public class VocabList
         int expected_idx_size = 0;
         int i = 0;
         int j = 0;
+        MatrixVocabElement mve;
         
         if ( ( vl == null ) || ( outStream == null ) )
         {
@@ -6768,14 +7727,48 @@ public class VocabList
                     
                     if ( verbose )
                     {
-                        outStream.printf(
-                                "test %d: formal arg (%d, %d) not in idx.\n",
-                                testNum, i, j);
+                        outStream.printf("test %d: formal arg (%d, %d) " +
+                                "id = %d not in idx.\n",
+                                testNum, i, j, 
+                                values[i].getFormalArg(j).getID());
                     }
                 }
                 else
                 {
                     expected_idx_size++;
+                }
+            }
+            
+            /* also, for matrix vocab elements, verify that all the column
+             * predicate formal arguments are in the index,
+             */
+            if ( values[i] instanceof MatrixVocabElement )
+            {
+                mve = (MatrixVocabElement)values[i];
+                
+                for ( j = 0; j < mve.getNumCPFormalArgs(); j++ )
+                {
+                    if ( mve.getCPFormalArg(j) != 
+                            vl.db.idx.getElement(mve.getCPFormalArg(j).getID()) )
+                    {
+                        verified = false;
+
+                        if ( verbose )
+                        {
+                            outStream.printf("test %d: cp formal arg " +
+                                    "(%d, %d) id = %d not in idx.\n",
+                                    testNum, i, j,
+                                    mve.getCPFormalArg(j).getID());
+                        }
+                    }
+                    else
+                    {
+//                        outStream.printf("test %d: cp formal arg " +
+//                                    "(%d, %d) id = %d in idx.\n",
+//                                    testNum, i, j,
+//                                    mve.getCPFormalArg(j).getID());
+                        expected_idx_size++;
+                    }
                 }
             }
             

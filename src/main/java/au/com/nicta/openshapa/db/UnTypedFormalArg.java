@@ -124,6 +124,11 @@ public class UnTypedFormalArg
             retVal =  new UndefinedDataValue(this.db, this.id, 
                                              this.getFargName());
         }
+        else if ( salvage instanceof ColPredDataValue )
+        {
+            retVal = new ColPredDataValue(this.db, this.id,
+                    ((ColPredDataValue)salvage).getItsValue());
+        }
         else if ( salvage instanceof FloatDataValue )
         {
             retVal = new FloatDataValue(this.db, this.id,
@@ -146,8 +151,20 @@ public class UnTypedFormalArg
         }
         else if ( salvage instanceof TextStringDataValue )
         {
-            throw new SystemErrorException(mName + 
-                    "can't assign text string to UnTypedFormalArg");
+            TextStringDataValue textDV = (TextStringDataValue)salvage;
+            
+            if ( this.db.IsValidQuoteString(textDV.getItsValue()) )
+            {
+                retVal = new QuoteStringDataValue(this.db, this.id, 
+                                                  textDV.getItsValue());
+            }
+            else
+            {
+                // todo: Think of coercing the text string into a quote string
+                //       instead of just discarding it.
+                retVal =  new UndefinedDataValue(this.db, this.id, 
+                                             this.getFargName());
+            }
         }
         else if ( salvage instanceof TimeStampDataValue )
         {

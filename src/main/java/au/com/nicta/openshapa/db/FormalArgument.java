@@ -36,6 +36,7 @@ public abstract class FormalArgument
      */
     
     public enum fArgType {UNDEFINED, 
+                          COL_PREDICATE,
                           INTEGER, 
                           FLOAT, 
                           NOMINAL, 
@@ -446,6 +447,152 @@ public abstract class FormalArgument
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
+    
+    /**
+     * CopyFormalArg()
+     *
+     * Construct a copy of the supplied formal argument, and return a reference
+     * to the copy.  If the resetID parameter is set, set the ID of the copy
+     * to the invalid ID.  If the resetItsVE parameter is set, set the 
+     * itsVE and itsVEID fields to null and the INVALID_ID respectively. 
+     *
+     * Note that the supplied formal arg must be of defined type.
+     *
+     *                                          JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected static FormalArgument CopyFormalArg(FormalArgument fa,
+                                                  boolean resetID,
+                                                  boolean resetItsVE)
+        throws SystemErrorException
+    {
+        final String mName = "FormalArgument::CopyFormalArg()";
+        FormalArgument fa_copy = null;
+        
+        
+        if ( fa == null )
+        {
+            throw new SystemErrorException(mName + "fa null on entry.");
+        }
+        else
+        {
+            switch ( fa.getFargType() )
+            {
+                case COL_PREDICATE:
+                    if ( ! ( fa instanceof ColPredFormalArg ) )
+                    {
+                        throw new SystemErrorException(mName +
+                                "farg type / class mismatch (0).");
+                    }
+                    fa_copy = new ColPredFormalArg((ColPredFormalArg)fa);
+                    break;
+                     
+                 case FLOAT:
+                     if ( ! ( fa instanceof FloatFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (1).");
+                     }
+                     fa_copy = new FloatFormalArg((FloatFormalArg)fa);
+                     break;
+                     
+                 case INTEGER:
+                     if ( ! ( fa instanceof IntFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (2).");
+                     }
+                     fa_copy = new IntFormalArg((IntFormalArg)fa);
+                     break;
+                     
+                 case NOMINAL:
+                     if ( ! ( fa instanceof NominalFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (3).");
+                     }
+                     fa_copy = new NominalFormalArg((NominalFormalArg)fa);
+                     break;
+                     
+                 case PREDICATE:
+                     if ( ! ( fa instanceof PredFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (4).");
+                     }
+                     fa_copy = new PredFormalArg((PredFormalArg)fa);
+                     break;
+                     
+                 case QUOTE_STRING:         
+                     if ( ! ( fa instanceof QuoteStringFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (5).");
+                     }
+                     fa_copy = new QuoteStringFormalArg((QuoteStringFormalArg)fa);
+                     break;
+                     
+                 case TEXT:
+                     if ( ! ( fa instanceof TextStringFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (6).");
+                     }
+                     fa_copy = new TextStringFormalArg((TextStringFormalArg)fa);
+                     break;
+                     
+                 case TIME_STAMP:
+                     if ( ! ( fa instanceof TimeStampFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (7).");
+                     }
+                     fa_copy = new TimeStampFormalArg((TimeStampFormalArg)fa);
+                     break;
+                     
+                 case UNTYPED:
+                     if ( ! ( fa instanceof UnTypedFormalArg ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (8).");
+                     }
+                     fa_copy = new UnTypedFormalArg((UnTypedFormalArg)fa);
+                     break;
+                     
+                 case UNDEFINED:
+                     throw new SystemErrorException(mName + 
+                             "fa of undefined type??");
+                     //break;
+                     
+                default:
+                    throw new SystemErrorException(mName + 
+                            "fa of unknown type??");
+                    /* we comment out the following break statement to 
+                     * keep the compiler from complaining.
+                     */
+                    //break;
+            }
+        }
+        
+        if ( resetID )
+        {
+            fa_copy.clearID();
+        }
+        
+        if (resetItsVE )
+        {
+            fa_copy.setItsVocabElement(null);
+            fa_copy.setItsVocabElementID(DBIndex.INVALID_ID);
+        }
+        
+        return fa_copy;
+        
+    } /* FormalArgument::CopyFormalArg() */
+    
     
     /**
      * FANameChanged()
@@ -1109,6 +1256,385 @@ public abstract class FormalArgument
          return argsAreEqual;
          
      } /* FormalArgument::FormalArgsAreEqual() */
+     
+      
+    /**
+     * FormalArgsAreEquivalent()
+     *
+     * Test to see if two formal arguments are equivalent.
+     * 
+     * We say that two formal argument are equivalent if they are of the 
+     * same type, have the same subtyping restrictions, and have the same name 
+     * and host VocabElement.  However, their IDs must either be invalid, or 
+     * not equal each other.
+     * 
+     * This method exists to facilitate sanity checking on the column predicate
+     * formal argument list maintained by MatrixVocabElements so as to 
+     * facilitate use of the column predicate implied by matrix vocab elements.
+     *
+     *                                                  JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+     protected static boolean FormalArgsAreEquivalent(FormalArgument fa0,
+                                                      FormalArgument fa1)
+         throws SystemErrorException
+     {
+         final String mName = "FormalArgument::FormalArgsAreEquivalent()";
+         boolean argsAreEquivalent = true;
+         boolean verbose = true;
+         
+         if ( ( fa0 == null ) || ( fa1 == null ) )
+         {
+             throw new SystemErrorException(mName + 
+                                            ": fa0 or fa1 null on entry.");
+             
+         }
+         else if ( fa0 == fa1 )
+         {
+             argsAreEquivalent = false;
+         }
+         else if ( fa0.getItsVocabElementID() != fa1.getItsVocabElementID() )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0.getItsVocabElementID() = %d != " +
+                         "fa1.getItsVocabElementID() = %d\n", 
+                         mName,
+                         fa0.getItsVocabElementID(), 
+                         fa1.getItsVocabElementID());
+             }
+         }
+         else if ( ( fa0.getID() == fa1.getID() ) &&
+                   ( fa0.getID() != DBIndex.INVALID_ID ) )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0.getID() = %d == " +
+                         "fa1.getID() = %d\n", 
+                         mName,
+                         fa0.getID(), 
+                         fa1.getID());
+             }
+         }
+         else
+         {
+             argsAreEquivalent = 
+                     FormalArgument.FormalArgsAreEquivalentModuloID(fa0, fa1);
+         }
+
+         return argsAreEquivalent;
+         
+     } /* FormalArgument::FormalArgsAreEquivalent() */
+     
+      
+    /**
+     * FormalArgsAreEquivalentModuloID()
+     *
+     * Test to see if two formal arguments are equivalent modulo ID.
+     * 
+     * We say that two formal argument are equivalent modulo ID if they are of 
+     * the same type, have the same subtyping restrictions, and have the same 
+     * name and host VocabElement.  However, we say nothing about their IDs.
+     * 
+     * This method exists to facilitate sanity checking on the column predicate
+     * formal argument list maintained by MatrixVocabElements so as to 
+     * facilitate use of the column predicate implied by matrix vocab elements.
+     *
+     *                                                  JRM -- 8/9/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+     protected static boolean FormalArgsAreEquivalentModuloID(FormalArgument fa0,
+                                                              FormalArgument fa1)
+         throws SystemErrorException
+     {
+         final String mName = "FormalArgument::FormalArgsAreEquivalentModulo()";
+         boolean argsAreEquivalent = true;
+         boolean verbose = true;
+         
+         if ( ( fa0 == null ) || ( fa1 == null ) )
+         {
+             throw new SystemErrorException(mName + 
+                                            ": fa0 or fa1 null on entry.");
+         }
+         else if ( fa0 == fa1 )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0 == fa1\n", mName);
+             }
+         }
+         else if ( fa0.getItsVocabElementID() != fa1.getItsVocabElementID() )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0.getItsVocabElementID() = %d != " +
+                         "fa1.getItsVocabElementID() = %d\n", 
+                         mName,
+                         fa0.getItsVocabElementID(), 
+                         fa1.getItsVocabElementID());
+             }
+         }
+         else if ( fa0.getFargName().compareTo(fa1.getFargName()) != 0 )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0.getFargName() = \"%s\" != " +
+                         "fa1.getFargName() = \"%s\"\n", 
+                         mName,
+                         fa0.getFargName(), 
+                         fa1.getFargName());
+             }
+         }
+         else if ( fa0.getFargType() != fa1.getFargType() )
+         {
+             argsAreEquivalent = false;
+             
+             if ( verbose )
+             {
+                 System.out.printf("%s: fa0.getFargType() = \"%s\" != " +
+                         "fa1.getFargType() = \"%s\"\n", 
+                         mName,
+                         fa0.getFargType().toString(), 
+                         fa1.getFargType().toString());
+             }
+         }
+         else 
+         {
+             switch ( fa0.getFargType() )
+             {
+                 case COL_PREDICATE:
+                     if ( ( ! ( fa0 instanceof ColPredFormalArg ) ) ||
+                          ( ! ( fa1 instanceof ColPredFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (0).");
+                     }
+                     break;
+                     
+                 case FLOAT:
+                     FloatFormalArg ffa0, ffa1;
+                     
+                     if ( ( ! ( fa0 instanceof FloatFormalArg ) ) ||
+                          ( ! ( fa1 instanceof FloatFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (1).");
+                     }
+                     
+                     ffa0 = (FloatFormalArg)fa0;
+                     ffa1 = (FloatFormalArg)fa1;
+                     
+                     if ( ( ffa0.getSubRange() != ffa1.getSubRange() ) ||
+                          ( ( ffa0.getSubRange() ) &&
+                            ( ( ffa0.getMinVal() != ffa1.getMinVal() ) ||
+                              ( ffa0.getMaxVal() != ffa1.getMaxVal() ) ) ) )
+                     {
+                         argsAreEquivalent = false;
+
+                         if ( verbose )
+                         {
+                             System.out.printf("%s: float range mismatch\n", 
+                                               mName);
+                         }
+                     }
+                     break;
+                     
+                 case INTEGER:
+                     IntFormalArg ifa0, ifa1;
+                     
+                     if ( ( ! ( fa0 instanceof IntFormalArg ) ) ||
+                          ( ! ( fa1 instanceof IntFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (2).");
+                     }
+                     
+                     ifa0 = (IntFormalArg)fa0;
+                     ifa1 = (IntFormalArg)fa1;
+                     
+                     if ( ( ifa0.getSubRange() != ifa1.getSubRange() ) ||
+                          ( ( ifa0.getSubRange() ) &&
+                            ( ( ifa0.getMinVal() != ifa1.getMinVal() ) ||
+                              ( ifa0.getMaxVal() != ifa1.getMaxVal() ) ) ) )
+                     {
+                         argsAreEquivalent = false;
+
+                         if ( verbose )
+                         {
+                             System.out.printf("%s: int range mismatch\n", 
+                                               mName);
+                         }
+                     }
+                     break;
+                     
+                 case NOMINAL:
+                     NominalFormalArg nfa0, nfa1;
+                     
+                     if ( ( ! ( fa0 instanceof NominalFormalArg ) ) ||
+                          ( ! ( fa1 instanceof NominalFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (3).");
+                     }
+                     
+                     nfa0 = (NominalFormalArg)fa0;
+                     nfa1 = (NominalFormalArg)fa1;
+                     
+                     if ( ( nfa0.getSubRange() != nfa1.getSubRange() ) ||
+                          ( ( nfa0.getSubRange() ) &&
+                            ( nfa1.getSubRange() ) &&
+                            ( ( ! nfa0.approvedSet.
+                                  containsAll(nfa1.approvedSet) ) ||
+                              ( ! nfa1.approvedSet.
+                                  containsAll(nfa0.approvedSet) ) ) ) )
+                     {
+                         argsAreEquivalent = false;
+
+                         if ( verbose )
+                         {
+                             System.out.printf("%s: nominal range mismatch\n", 
+                                               mName);
+                         }
+                     }
+                     break;
+                     
+                 case PREDICATE:
+                     PredFormalArg pfa0, pfa1;
+                     
+                     if ( ( ! ( fa0 instanceof PredFormalArg ) ) ||
+                          ( ! ( fa1 instanceof PredFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (4).");
+                     }
+                     
+                     pfa0 = (PredFormalArg)fa0;
+                     pfa1 = (PredFormalArg)fa1;
+                     
+                     if ( ( pfa0.getSubRange() != pfa1.getSubRange() ) ||
+                          ( ( pfa0.getSubRange() ) &&
+                            ( pfa1.getSubRange() ) &&
+                            ( ( ! pfa0.approvedSet.
+                                  containsAll(pfa1.approvedSet) ) ||
+                              ( ! pfa1.approvedSet.
+                                  containsAll(pfa0.approvedSet) ) ) ) )
+                     {
+                         argsAreEquivalent = false;
+
+                         if ( verbose )
+                         {
+                             System.out.printf("%s: pred range mismatch\n", 
+                                               mName);
+                         }
+                     }
+                     break;
+                     
+                 case QUOTE_STRING:
+                     if ( ( ! ( fa0 instanceof QuoteStringFormalArg ) ) ||
+                          ( ! ( fa1 instanceof QuoteStringFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (5).");
+                     }
+                     /* for now at least, it we haven't found a difference
+                      * by now, we will not find one in the quote string
+                      * case.
+                      */
+                     break;
+                     
+                 case TEXT:
+                     if ( ( ! ( fa0 instanceof TextStringFormalArg ) ) ||
+                          ( ! ( fa1 instanceof TextStringFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (6).");
+                     }
+                     /* for now at least, it we haven't found a difference
+                      * by now, we will not find one in the test string
+                      * case.
+                      */
+                     break;
+                     
+                 case TIME_STAMP:
+                     TimeStampFormalArg tsfa0, tsfa1;
+                     
+                     if ( ( ! ( fa0 instanceof TimeStampFormalArg ) ) ||
+                          ( ! ( fa1 instanceof TimeStampFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (7).");
+                     }
+                     
+                     tsfa0 = (TimeStampFormalArg)fa0;
+                     tsfa1 = (TimeStampFormalArg)fa1;
+                     
+                     if ( ( tsfa0.getSubRange() != tsfa1.getSubRange() ) ||
+                          ( ( tsfa0.getSubRange() ) &&
+                            ( ( tsfa0.getMinVal().ne(tsfa1.getMinVal()) ) ||
+                              ( tsfa0.getMaxVal().ne(tsfa1.getMaxVal()) ) ) ) )
+                     {
+                         argsAreEquivalent = false;
+
+                         if ( verbose )
+                         {
+                             System.out.printf("%s: time stamp range mismatch\n", 
+                                               mName);
+                         }
+                     }
+                     break;
+                     
+                 case UNTYPED:
+                     if ( ( ! ( fa0 instanceof UnTypedFormalArg ) ) ||
+                          ( ! ( fa1 instanceof UnTypedFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (8).");
+                     }
+                     /* for now at least, it we haven't found a difference
+                      * by now, we will not find one in the untyped case.
+                      */
+                     break;
+                     
+                 case UNDEFINED:
+                     throw new SystemErrorException(mName + 
+                             "fa0 & fa1 of undefined type??");
+                     /* we comment out the following break statement to 
+                      * keep the compiler from complaining.
+                      */
+                     //break;
+                     
+                 default:
+                     throw new SystemErrorException(mName + 
+                             "fa0 & fa1 of unknown type??");
+                     /* we comment out the following break statement to 
+                      * keep the compiler from complaining.
+                      */
+                     //break;
+             }
+         }
+
+         return argsAreEquivalent;
+         
+     } /* FormalArgument::FormalArgsAreEquivalentModuloID() */
+    
     
     /*************************************************************************/
     /**************************** Test Code: *********************************/

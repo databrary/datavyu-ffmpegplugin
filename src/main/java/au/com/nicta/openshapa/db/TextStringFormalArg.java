@@ -147,7 +147,7 @@ public class TextStringFormalArg extends FormalArgument
                   
         {
             retVal = new TextStringDataValue(this.db, this.id,
-                    ((TextStringDataValue)salvage).getItsValue());
+                    ((QuoteStringDataValue)salvage).getItsValue());
         }
         else if ( ( salvage instanceof NominalDataValue ) &&
                   ( ((NominalDataValue)salvage).getItsValue() != null ) &&

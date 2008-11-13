@@ -254,8 +254,10 @@ public class DataCellListeners extends Listeners
     
     protected boolean noteChange(DataCell oldCell,
                                  DataCell newCell,
-                                 boolean pveMod,
-                                 long pveModID)
+                                 boolean cascadeMveMod,
+                                 boolean cascadePveDel,
+                                 boolean cascadePveMod,
+                                 long cascadePveID)
         throws SystemErrorException
     {
         final String mName = "DCellChangeListeners::noteChanges()";
@@ -335,7 +337,7 @@ public class DataCellListeners extends Listeners
         
         /*** test to see if the cell value has changed ***/
         
-        if ( pveMod )
+        if ( ( cascadeMveMod ) || ( cascadePveDel ) || ( cascadePveMod ) )
         {
             this.oldVal = oldCell.getValBlind();
         }
@@ -586,15 +588,15 @@ public class DataCellListeners extends Listeners
         ExternalDataCellListener el;
         InternalDataCellListener il;
         
-        // first, notify the intenal listeners...
+        // first, notify the internal listeners...
         for ( Long id : this.ils )
         {
             dbe = this.db.idx.getElement(id); // throws system error on failure
 
-            if ( ! ( dbe instanceof InternalVocabElementListener ) )
+            if ( ! ( dbe instanceof InternalDataCellListener ) )
             {
                 throw new SystemErrorException(mName + 
-                        ": dbe not a InternalDCellChangeListener.");
+                        ": dbe not a InternalDataCellListener.");
             }
 
             il = (InternalDataCellListener)dbe;
