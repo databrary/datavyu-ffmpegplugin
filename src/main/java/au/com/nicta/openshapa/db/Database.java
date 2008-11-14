@@ -4461,11 +4461,6 @@ public abstract class Database
             failures++;
         }
         
-        if ( ! IntDataValue.TestClassIntDataValue(outStream, verbose) )
-        {
-            failures++;
-        }
-        
         if ( ! NominalDataValue.TestClassNominalDataValue(outStream, verbose) )
         {
             failures++;
