@@ -705,4 +705,118 @@ public final class DataColumnTest extends TestCase {
             // Do nothing - pass the test.
         }
     }
+
+    public void testToStringMethods() throws SystemErrorException {
+        f_col0 = new DataColumn(db, "f_col",
+                                MatrixVocabElement.matrixType.FLOAT);
+        long f_col0ID = db.addColumn(f_col0);
+        f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
+        f_mve0ID = f_col0.getItsMveID();
+        f_mve0 = db.getMatrixVE(f_mve0ID);
+
+        TimeStamp f_onset0 = new TimeStamp(db.getTicks(), 60);
+        TimeStamp f_offset0 = new TimeStamp(db.getTicks(), 120);
+        Vector<DataValue> f_arg_list0 = new Vector<DataValue>();
+        long fargID = f_mve0.getFormalArg(0).getID();
+        FloatDataValue arg = new FloatDataValue(db, fargID, 0.0);
+        f_arg_list0.add(arg);
+        Matrix f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
+        DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID, f_mve0ID,
+                                        f_onset0, f_offset0, f_matrix0);
+
+        TimeStamp f_onset1 = new TimeStamp(db.getTicks(), 180);
+        TimeStamp f_offset1 = new TimeStamp(db.getTicks(), 240);
+        Vector<DataValue> f_arg_list1 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 1.0);
+        f_arg_list1.add(arg);
+        Matrix f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
+        DataCell f_cell1 = new DataCell(db, "f_cell1", f_col0ID, f_mve0ID,
+                                        f_onset1, f_offset1, f_matrix1);
+
+        TimeStamp f_onset2 = new TimeStamp(db.getTicks(), 300);
+        TimeStamp f_offset2 = new TimeStamp(db.getTicks(), 360);
+        Vector<DataValue> f_arg_list2 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 2.0);
+        f_arg_list2.add(arg);
+        Matrix f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
+        DataCell f_cell2 = new DataCell(db, "f_cell2", f_col0ID, f_mve0ID,
+                                        f_onset2, f_offset2, f_matrix2);
+
+        TimeStamp f_onset3 = new TimeStamp(db.getTicks(), 420);
+        TimeStamp f_offset3 = new TimeStamp(db.getTicks(), 480);
+        Vector<DataValue> f_arg_list3 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 3.0);
+        f_arg_list3.add(arg);
+        Matrix f_matrix3 = new Matrix(db, f_mve0ID, f_arg_list3);
+        DataCell f_cell3 = new DataCell(db, "f_cell3", f_col0ID, f_mve0ID,
+                                        f_onset3, f_offset3, f_matrix3);
+
+        TimeStamp f_onset4 = new TimeStamp(db.getTicks(), 540);
+        TimeStamp f_offset4 = new TimeStamp(db.getTicks(), 600);
+        Vector<DataValue> f_arg_list4 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 4.0);
+        f_arg_list4.add(arg);
+        Matrix f_matrix4 = new Matrix(db, f_mve0ID, f_arg_list4);
+        DataCell f_cell4 = new DataCell(db, "f_cell4", f_col0ID, f_mve0ID,
+                                        f_onset4, f_offset4, f_matrix4);
+
+        TimeStamp f_onset5 = new TimeStamp(db.getTicks(), 660);
+        TimeStamp f_offset5 = new TimeStamp(db.getTicks(), 720);
+        Vector<DataValue> f_arg_list5 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 5.0);
+        f_arg_list5.add(arg);
+        Matrix f_matrix5 = new Matrix(db, f_mve0ID, f_arg_list5);
+        DataCell f_cell5 = new DataCell(db, "f_cell5", f_col0ID, f_mve0ID,
+                                        f_onset5, f_offset5, f_matrix5);
+
+        TimeStamp f_onset6 = new TimeStamp(db.getTicks(), 780);
+        TimeStamp f_offset6 = new TimeStamp(db.getTicks(), 840);
+        Vector<DataValue> f_arg_list6 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 6.0);
+        f_arg_list6.add(arg);
+        Matrix f_matrix6 = new Matrix(db, f_mve0ID, f_arg_list6);
+        DataCell f_cell6 = new DataCell(db, "f_cell6", f_col0ID, f_mve0ID,
+                                       f_onset6, f_offset6, f_matrix6);
+
+        TimeStamp f_onset7 = new TimeStamp(db.getTicks(), 900);
+        TimeStamp f_offset7 = new TimeStamp(db.getTicks(), 960);
+        Vector<DataValue> f_arg_list7 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 7.0);
+        f_arg_list7.add(arg);
+        Matrix f_matrix7 = new Matrix(db, f_mve0ID, f_arg_list7);
+        DataCell f_cell7 = new DataCell(db, "f_cell7", f_col0ID, f_mve0ID,
+                                        f_onset7, f_offset7, f_matrix7);
+
+        TimeStamp f_onset8 = new TimeStamp(db.getTicks(), 900);
+        TimeStamp f_offset8 = new TimeStamp(db.getTicks(), 960);
+        Vector<DataValue> f_arg_list8 = new Vector<DataValue>();
+        fargID = f_mve0.getFormalArg(0).getID();
+        arg = new FloatDataValue(db, fargID, 8.0);
+        f_arg_list8.add(arg);
+        Matrix f_matrix8 = new Matrix(db, f_mve0ID, f_arg_list8);
+        DataCell f_cell8 = new DataCell(db, "f_cell8", f_col0ID, f_mve0ID,
+                                        f_onset8, f_offset8, f_matrix8);
+
+        f_col0.appendCell(f_cell0);
+        f_col0.appendCell(f_cell1);
+        f_col0.appendCell(f_cell2);
+        f_col0.appendCell(f_cell3);
+        f_col0.appendCell(f_cell4);
+        f_col0.appendCell(f_cell5);
+        f_col0.appendCell(f_cell6);
+        f_col0.appendCell(f_cell7);
+        f_col0.appendCell(f_cell8);
+
+        assertTrue(f_col0.getNumCells() == 9);
+
+        //System.out.printf(f_col0.toString());
+        System.out.printf(f_col0.toDBString());
+    }
 }
