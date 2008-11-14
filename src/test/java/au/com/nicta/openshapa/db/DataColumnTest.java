@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.db;
 
+import java.util.Vector;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -276,9 +277,9 @@ public final class DataColumnTest extends TestCase {
 
     public void test3ArgConstructorFailure0() {
         try {
-            DataColumn dc = new DataColumn(null, "f_col",
-                                           MatrixVocabElement.matrixType.FLOAT);
-            fail("DataColumn constructor should have failed");
+            dc = new DataColumn(null, "f_col",
+                                MatrixVocabElement.matrixType.FLOAT);
+            fail(dc.name + ": DataColumn constructor should have failed");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.
         }
@@ -286,9 +287,9 @@ public final class DataColumnTest extends TestCase {
 
     public void test3ArgConstructorFailure1() {
         try {
-            DataColumn dc = new DataColumn(db, "",
-                                           MatrixVocabElement.matrixType.FLOAT);
-            fail("DataColumn constructor should have failed");
+            dc = new DataColumn(db, "",
+                                MatrixVocabElement.matrixType.FLOAT);
+            fail(dc.name + ": DataColumn constructor should have failed");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.
         }
@@ -296,9 +297,9 @@ public final class DataColumnTest extends TestCase {
 
     public void test3ArgConstructorFailure2() {
         try {
-            DataColumn dc = new DataColumn(db, " invalid ",
-                                           MatrixVocabElement.matrixType.FLOAT);
-            fail("DataColumn constructor should have failed");
+            dc = new DataColumn(db, " invalid ",
+                                MatrixVocabElement.matrixType.FLOAT);
+            fail(dc.name + ": DataColumn constructor should have failed");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.
         }
@@ -313,10 +314,10 @@ public final class DataColumnTest extends TestCase {
             long f_mveID = fc.getItsMveID();
             MatrixVocabElement f_mve = db.getMatrixVE(f_mveID);
 
-            DataColumn dc = new DataColumn(db, "f_col",
-                                           MatrixVocabElement.matrixType.FLOAT);
+            dc = new DataColumn(db, "f_col",
+                                MatrixVocabElement.matrixType.FLOAT);
 
-            fail("DataColumn constructor should have failed");
+            fail(dc.name + ": DataColumn constructor should have failed");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.
         }
@@ -324,9 +325,9 @@ public final class DataColumnTest extends TestCase {
 
     public void test3ArgConstructorFailure4() {
         try {
-            DataColumn dc = new DataColumn(db, "valid",
-                                           MatrixVocabElement.matrixType.UNDEFINED);
-            fail("DataColumn constructor should have failed");
+            dc = new DataColumn(db, "valid",
+                                MatrixVocabElement.matrixType.UNDEFINED);
+            fail(dc.name + ": DataColumn constructor should have failed");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.
         }
@@ -338,10 +339,30 @@ public final class DataColumnTest extends TestCase {
         assertTrue(f_mve0 != null);
         assertTrue(f_mve0ID != DBIndex.INVALID_ID);
         assertTrue(f_col0 != null);
+        assertTrue(f_col0.hidden == false);
+        assertTrue(f_col0.readOnly == true);
+        assertTrue(f_col0.numCells == 0);
+        assertTrue(f_col0.name.equals("f_col0"));
+        assertTrue(f_col0.db == db);
+        assertTrue(f_col0.getItsCells() == null);
+        assertTrue(f_col0.getItsMveID() == f_mve0ID);
+        assertTrue(f_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .FLOAT);
+        assertTrue(f_col0.getVarLen() == f_mve0.getVarLen());
 
         assertTrue(f_mve1 != null);
         assertTrue(f_mve1ID != DBIndex.INVALID_ID);
         assertTrue(f_col1 != null);
+        assertTrue(f_col1.hidden == true);
+        assertTrue(f_col1.readOnly == false);
+        assertTrue(f_col1.numCells == 0);
+        assertTrue(f_col1.name.equals("f_col1"));
+        assertTrue(f_col1.db == db);
+        assertTrue(f_col1.getItsCells() == null);
+        assertTrue(f_col1.getItsMveID() == f_mve1ID);
+        assertTrue(f_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .FLOAT);
+        assertTrue(f_col1.getVarLen() == f_mve1.getVarLen());
 
         assertTrue(f_mve2 != null);
         assertTrue(f_mve2ID != DBIndex.INVALID_ID);
@@ -349,41 +370,339 @@ public final class DataColumnTest extends TestCase {
         assertTrue(i_mve0 != null);
         assertTrue(i_mve0ID != DBIndex.INVALID_ID);
         assertTrue(i_col0 != null );
+        assertTrue(i_col0.hidden == false);
+        assertTrue(i_col0.readOnly == true);
+        assertTrue(i_col0.numCells == 0);
+        assertTrue(i_col0.name.equals("i_col0"));
+        assertTrue(i_col0.db == db);
+        assertTrue(i_col0.getItsCells() == null);
+        assertTrue(i_col0.getItsMveID() == i_mve0ID);
+        assertTrue(i_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .INTEGER);
+        assertTrue(i_col0.getVarLen() == i_mve0.getVarLen());
 
         assertTrue(i_mve1 != null);
         assertTrue(i_mve1ID != DBIndex.INVALID_ID);
         assertTrue(i_col1 != null);
+        assertTrue(i_col1.hidden == true);
+        assertTrue(i_col1.readOnly == false);
+        assertTrue(i_col1.numCells == 0);
+        assertTrue(i_col1.name.equals("i_col1"));
+        assertTrue(i_col1.db == db);
+        assertTrue(i_col1.getItsCells() == null);
+        assertTrue(i_col1.getItsMveID() == i_mve1ID);
+        assertTrue(i_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .INTEGER);
+        assertTrue(i_col1.getVarLen() == i_mve1.getVarLen());
 
         assertTrue(m_mve0 != null);
         assertTrue(m_mve0ID != DBIndex.INVALID_ID);
         assertTrue(m_col0 != null);
+        assertTrue(m_col0.hidden == false);
+        assertTrue(m_col0.readOnly == true);
+        assertTrue(m_col0.numCells == 0);
+        assertTrue(m_col0.name.equals("m_col0"));
+        assertTrue(m_col0.db == db);
+        assertTrue(m_col0.getItsCells() == null);
+        assertTrue(m_col0.getItsMveID() == m_mve0ID);
+        assertTrue(m_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .MATRIX);
+        assertTrue(m_col0.getVarLen() == m_mve0.getVarLen());
 
         assertTrue(m_mve1 != null);
         assertTrue(m_mve1ID != DBIndex.INVALID_ID);
         assertTrue(m_col1 != null);
+        assertTrue(m_col1.hidden == true);
+        assertTrue(m_col1.readOnly == false);
+        assertTrue(m_col1.numCells == 0);
+        assertTrue(m_col1.name.equals("m_col1"));
+        assertTrue(m_col1.db == db);
+        assertTrue(m_col1.getItsCells() == null);
+        assertTrue(m_col1.getItsMveID() == m_mve1ID);
+        assertTrue(m_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .MATRIX);
+        assertTrue(m_col1.getVarLen() == m_mve1.getVarLen());
 
         assertTrue(n_mve0 != null);
         assertTrue(n_mve0ID != DBIndex.INVALID_ID);
         assertTrue(n_col0 != null);
+        assertTrue(n_col0.hidden == false);
+        assertTrue(n_col0.readOnly == true);
+        assertTrue(n_col0.numCells == 0);
+        assertTrue(n_col0.name.equals("n_col0"));
+        assertTrue(n_col0.db == db);
+        assertTrue(n_col0.getItsCells() == null);
+        assertTrue(n_col0.getItsMveID() == n_mve0ID);
+        assertTrue(n_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .NOMINAL);
+        assertTrue(n_col0.getVarLen() == n_mve0.getVarLen());
 
         assertTrue(n_mve1 != null);
         assertTrue(n_mve1ID != DBIndex.INVALID_ID);
         assertTrue(n_col1 != null);
+        assertTrue(n_col1.hidden == true);
+        assertTrue(n_col1.readOnly == false);
+        assertTrue(n_col1.numCells == 0);
+        assertTrue(n_col1.name.equals("n_col1"));
+        assertTrue(n_col1.db == db);
+        assertTrue(n_col1.getItsCells() == null);
+        assertTrue(n_col1.getItsMveID() == n_mve1ID);
+        assertTrue(n_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .NOMINAL);
+        assertTrue(n_col1.getVarLen() == n_mve1.getVarLen());
 
         assertTrue(p_mve0 != null);
         assertTrue(p_mve0ID != DBIndex.INVALID_ID);
         assertTrue(p_col0 != null);
+        assertTrue(p_col0.hidden == false);
+        assertTrue(p_col0.readOnly == true);
+        assertTrue(p_col0.numCells == 0);
+        assertTrue(p_col0.name.equals("p_col0"));
+        assertTrue(p_col0.db == db);
+        assertTrue(p_col0.getItsCells() == null);
+        assertTrue(p_col0.getItsMveID() == p_mve0ID);
+        assertTrue(p_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .PREDICATE);
+        assertTrue(p_col0.getVarLen() == p_mve0.getVarLen());
 
         assertTrue(p_mve1 != null);
         assertTrue(p_mve1ID != DBIndex.INVALID_ID);
         assertTrue(p_col1 != null);
+        assertTrue(p_col1.hidden == true);
+        assertTrue(p_col1.readOnly == false);
+        assertTrue(p_col1.numCells == 0);
+        assertTrue(p_col1.name.equals("p_col1"));
+        assertTrue(p_col1.db == db);
+        assertTrue(p_col1.getItsCells() == null);
+        assertTrue(p_col1.getItsMveID() == p_mve1ID);
+        assertTrue(p_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .PREDICATE);
+        assertTrue(p_col1.getVarLen() == p_mve1.getVarLen());
 
         assertTrue(t_mve0 != null);
         assertTrue(t_mve0ID != DBIndex.INVALID_ID);
         assertTrue(t_col0 != null);
+        assertTrue(t_col0.hidden == false);
+        assertTrue(t_col0.readOnly == true);
+        assertTrue(t_col0.numCells == 0);
+        assertTrue(t_col0.name.equals("t_col0"));
+        assertTrue(t_col0.db == db);
+        assertTrue(t_col0.getItsCells() == null);
+        assertTrue(t_col0.getItsMveID() == t_mve0ID);
+        assertTrue(t_col0.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .TEXT);
+        assertTrue(t_col0.getVarLen() == t_mve0.getVarLen());
 
         assertTrue(t_mve1 != null);
         assertTrue(t_mve1ID != DBIndex.INVALID_ID);
         assertTrue(t_col1 != null);
+        assertTrue(t_col1.hidden == true);
+        assertTrue(t_col1.readOnly == false);
+        assertTrue(t_col1.numCells == 0);
+        assertTrue(t_col1.name.equals("t_col1"));
+        assertTrue(t_col1.db == db);
+        assertTrue(t_col1.getItsCells() == null);
+        assertTrue(t_col1.getItsMveID() == t_mve1ID);
+        assertTrue(t_col1.getItsMveType() == MatrixVocabElement.matrixType
+                                                               .TEXT);
+        assertTrue(t_col1.getVarLen() == t_mve1.getVarLen());
+    }
+
+    public void test5ArgConstructorFailure0() {
+        try {
+            dc = new DataColumn(null, "f_col2", false, true, f_mve2ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure1() {
+        try {
+            dc = new DataColumn(db, null, false, true, f_mve2ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure2() {
+        try {
+            dc = new DataColumn(db, "", false, true, f_mve2ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure3() {
+        try {
+            dc = new DataColumn(db, " invalid ", false, true, f_mve2ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure4() {
+        try {
+            dc = new DataColumn(db, "f_col3", false, true, f_mve2ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure5() {
+        try {
+            dc = new DataColumn(db, "f_col2", false, true, DBIndex.INVALID_ID);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void test5ArgConstructorFailure6() {
+        try {
+            dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
+            fail(dc.name + ": DataColumn constructor should have failed");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void testAccessors() throws SystemErrorException {
+        // Build the first data cell.
+        DataColumn f_col = new DataColumn(db, "f_col",
+                                          MatrixVocabElement.matrixType.FLOAT);
+        long f_col0ID = db.addColumn(f_col);
+        f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
+        f_mve0ID = f_col0.getItsMveID();
+        f_mve0 = db.getMatrixVE(f_mve0ID);
+
+        TimeStamp f_onset0 = new TimeStamp(db.getTicks(), 60);
+        TimeStamp f_offset0 = new TimeStamp(db.getTicks(), 120);
+        long fargID = f_mve0.getFormalArg(0).getID();
+        Vector<DataValue> f_arg_list0 = new Vector<DataValue>();        
+        FloatDataValue arg = new FloatDataValue(db, fargID, 0.0);
+        f_arg_list0.add(arg);
+        
+        Matrix f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
+        f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
+
+        DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
+                                        f_mve0.id,
+                                        f_onset0, f_offset0, f_matrix0);
+
+        // Build the second data cell.
+        TimeStamp f_onset1 = new TimeStamp(db.getTicks(), 180);
+        TimeStamp f_offset1 = new TimeStamp(db.getTicks(), 240);
+        Vector<DataValue> f_arg_list1 = new Vector<DataValue>();
+        arg = new FloatDataValue(db, fargID, 1.0);
+        f_arg_list1.add(arg);
+        Matrix f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
+        DataCell f_cell1 = new DataCell(db, "f_cell1", f_col0ID,
+                                        f_mve0.id,
+                                        f_onset1, f_offset1, f_matrix1);
+
+        // Build the third data cell
+        TimeStamp f_onset2 = new TimeStamp(db.getTicks(), 300);
+        TimeStamp f_offset2 = new TimeStamp(db.getTicks(), 360);
+        Vector<DataValue> f_arg_list2 = new Vector<DataValue>();
+        arg = new FloatDataValue(db, fargID, 2.0);
+        f_arg_list2.add(arg);
+        Matrix f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
+        DataCell f_cell2 = new DataCell(db, "f_cell2", f_col0ID,
+                                        f_mve0.id,
+                                        f_onset2, f_offset2, f_matrix2);
+
+        f_col0.appendCell(f_cell2);
+        f_col0.appendCell(f_cell1);
+        f_col0.appendCell(f_cell0);
+
+        assertTrue(f_col0.numCells == 3);
+
+        Vector<DataCell> saved_f_col0_cells = f_col0.getItsCells();
+
+        f_col0.setItsCells(null);
+        assertTrue(f_col0.getItsCells() == null);
+        assertTrue(f_col0.getNumCells() == 0);
+
+        f_col0.setItsCells(saved_f_col0_cells);
+        assertTrue(saved_f_col0_cells == f_col0.getItsCells());
+        assertTrue(f_col0.getNumCells() == 3);        
+    }
+
+    public void testAccessorFailure0() {
+        try {
+            f_col0.setItsMveID(p_mve0.getID());
+            fail("Accessor should have thrown SystemErrorException.");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void testAccessorFailure1() {
+        try {
+            DataColumn newCol = new DataColumn(db, "newCol0",
+                                               MatrixVocabElement.matrixType
+                                                                 .FLOAT);
+            newCol.setItsMveID(DBIndex.INVALID_ID);
+            fail("Accessor should have thrown SystemErrorException.");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void testAccessorFailure2() {
+        try {
+            DataColumn newCol = new DataColumn(db, "newCol1",
+                                               MatrixVocabElement.matrixType
+                                                                 .FLOAT);
+
+            i_mve1 = new MatrixVocabElement(db, "newCol1");
+            i_mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+            i_mve1.appendFormalArg(new IntFormalArg(db, "<int0>"));
+            db.vl.addElement(i_mve1);
+            i_mve1 = db.vl.getMatrixVocabElement("newCol1");
+
+            newCol.setItsMveID(i_mve1.getID());
+
+            fail("Accessor should have thrown SystemErrorException.");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
+    }
+
+    public void testAccessorFailure3() {
+        try {
+            DataColumn newCol = new DataColumn(db, "newCol2",
+                                               MatrixVocabElement.matrixType
+                                                                 .FLOAT);
+
+            long f_col0ID = db.addColumn(newCol);
+            f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
+            f_mve0ID = f_col0.getItsMveID();
+            f_mve0 = db.getMatrixVE(f_mve0ID);
+
+            TimeStamp f_onset0 = new TimeStamp(db.getTicks(), 60);
+            TimeStamp f_offset0 = new TimeStamp(db.getTicks(), 120);
+            long fargID = f_mve0.getFormalArg(0).getID();
+            Vector<DataValue> f_arg_list0 = new Vector<DataValue>();
+            FloatDataValue arg = new FloatDataValue(db, fargID, 0.0);
+            f_arg_list0.add(arg);
+
+            Matrix f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
+            f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
+
+            DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
+                                            f_mve0.id,
+                                            f_onset0, f_offset0, f_matrix0);
+            newCol.setItsMveID(f_cell0.getID());
+            
+            fail("Accessor should have thrown SystemErrorException.");
+        } catch (SystemErrorException e) {
+            // Do nothing - pass the test.
+        }
     }
 }
