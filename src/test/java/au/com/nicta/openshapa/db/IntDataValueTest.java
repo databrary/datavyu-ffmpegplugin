@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 public class IntDataValueTest {
 
     private Database db;
+    MatrixVocabElement int_mve;
     //private IntDataValue intValue;
 
     public IntDataValueTest() {
@@ -109,6 +110,10 @@ public class IntDataValueTest {
         int_mve.appendFormalArg(ifa);
 
         IntDataValue int_value = new IntDataValue(db, int_mve.getID());
+    }
+
+    public void test3ArgConstructor() throws SystemErrorException {
+        
     }
 
     /**
@@ -265,36 +270,6 @@ public class IntDataValueTest {
         boolean verbose = false;
         boolean expResult = false;
         boolean result = IntDataValue.TestClassIntDataValue(outStream, verbose);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of Test1ArgConstructor method, of class IntDataValue.
-     */
-    @Test
-    public void testTest1ArgConstructor() {
-        System.out.println("Test1ArgConstructor");
-        PrintStream outStream = null;
-        boolean verbose = false;
-        boolean expResult = false;
-        boolean result = IntDataValue.Test1ArgConstructor(outStream, verbose);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of Test2ArgConstructor method, of class IntDataValue.
-     */
-    @Test
-    public void testTest2ArgConstructor() throws Exception {
-        System.out.println("Test2ArgConstructor");
-        PrintStream outStream = null;
-        boolean verbose = false;
-        boolean expResult = false;
-        boolean result = IntDataValue.Test2ArgConstructor(outStream, verbose);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
