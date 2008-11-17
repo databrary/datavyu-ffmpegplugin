@@ -817,6 +817,6 @@ public final class DataColumnTest extends TestCase {
         assertTrue(f_col0.getNumCells() == 9);
 
         //System.out.printf(f_col0.toString());
-        System.out.printf(f_col0.toDBString());
+        //System.out.printf(f_col0.toDBString());
     }
 }

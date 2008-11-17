@@ -22,7 +22,7 @@ public class Main {
         throws au.com.nicta.openshapa.db.SystemErrorException
     {
         // TODO code application logic here
-        au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
-        //Executive e = new Executive();
+        //au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
+        Executive e = new Executive();
     }
 }
