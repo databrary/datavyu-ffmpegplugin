@@ -1,19 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package au.com.nicta.openshapa.db;
 
-import java.io.PrintStream;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Junit test cases for the class IntDataValue.
  *
  * @author cfreeman
  */
@@ -25,17 +18,18 @@ public class IntDataValueTest {
     private MatrixVocabElement int_mve2;
     private IntFormalArg ifa2;
 
+    /**
+     * Default test constructor.
+     */
     public IntDataValueTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
+    /**
+     * Sets up the test fixture (i.e. the data available to all tests), this is
+     * performed before each test case.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
+     */
     @Before
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
@@ -54,10 +48,19 @@ public class IntDataValueTest {
         db.vl.addElement(int_mve2);
     }
 
+    /**
+     * Tears down the test fixture (i.e. the data available to all tests), this
+     * is performed after each test case.
+     */
     @After
     public void tearDown() {
     }
 
+    /**
+     * Test 1 arg constructor, of class IntDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
         IntDataValue intValue = new IntDataValue(db);
@@ -70,6 +73,11 @@ public class IntDataValueTest {
         assertEquals(intValue.minVal, 0);
     }
 
+    /**
+     * Test 2 argument constructor, of class IntDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException  on failure
+     */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {        
         IntDataValue int_value = new IntDataValue(db, ifa.getID());
@@ -92,29 +100,40 @@ public class IntDataValueTest {
         assertEquals(int_value2.minVal, ifa2.getMinVal());
     }
 
+    /**
+     * Test0 of 2 arg constructor failre, of class IntDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
+     */
     @Test (expected = SystemErrorException.class)
-    public void test2ArgConstructorFailure() throws SystemErrorException {
+    public void test2ArgConstructorFailure0() throws SystemErrorException {
         IntDataValue int_value = new IntDataValue(null, ifa.getID());
     }
 
+    /**
+     * Test1 of 2 arg constructor failre, of class IntDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
+     */
     @Test (expected = SystemErrorException.class)
-    public void test2ArgConstructorFailure0() throws SystemErrorException {
+    public void test2ArgConstructorFailure1() throws SystemErrorException {
         IntDataValue int_value = new IntDataValue(db, DBIndex.INVALID_ID);
     }
 
     /**
-     * Test1 of 2 arg constructor failure, of class IntDataValue
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * Test2 of 2 arg constructor failure, of class IntDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test (expected = SystemErrorException.class)
-    public void test2ArgConstructorFailure1() throws SystemErrorException {
+    public void test2ArgConstructorFailure2() throws SystemErrorException {
         IntDataValue int_value = new IntDataValue(db, int_mve.getID());
     }
 
     /**
      * Test of 3 arg constructor, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -152,7 +171,7 @@ public class IntDataValueTest {
     /**
      * Test0 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
@@ -162,7 +181,7 @@ public class IntDataValueTest {
     /**
      * Test1 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
@@ -172,7 +191,7 @@ public class IntDataValueTest {
     /**
      * Test2 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
@@ -182,7 +201,7 @@ public class IntDataValueTest {
     /**
      * Test of copy constructor, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -200,9 +219,9 @@ public class IntDataValueTest {
     }
 
     /**
-     * Test of copy constructor failure, of class IntDataValue
+     * Test of copy constructor failure, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test (expected = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
@@ -211,6 +230,8 @@ public class IntDataValueTest {
 
     /**
      * Test of getItsValue method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -221,6 +242,8 @@ public class IntDataValueTest {
 
     /**
      * Test of setItsValue method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -232,6 +255,8 @@ public class IntDataValueTest {
 
     /**
      * Test of toString method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -241,6 +266,8 @@ public class IntDataValueTest {
 
     /**
      * Test of toDBString method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testToDBString() throws SystemErrorException {
@@ -259,6 +286,8 @@ public class IntDataValueTest {
 
     /**
      * Test of coerceToRange method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
     public void testCoerceToRange() throws SystemErrorException {
@@ -275,18 +304,23 @@ public class IntDataValueTest {
 
     /**
      * Test of Construct method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
-    public void testConstruct() throws Exception {
+    public void testConstruct() throws SystemErrorException {
         IntDataValue test = IntDataValue.Construct(db, 50);
         assertEquals(test.getItsValue(), 50);
     }
 
     /**
      * Test of IntDataValuesAreLogicallyEqual method, of class IntDataValue.
+     *
+     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
      */
     @Test
-    public void testIntDataValuesAreLogicallyEqual() throws Exception {
+    public void testIntDataValuesAreLogicallyEqual()
+    throws SystemErrorException {
         IntDataValue int_value0 = new IntDataValue(db, ifa.getID(), 200);
         IntDataValue int_value1 = new IntDataValue(db, ifa.getID(), 50);
         IntDataValue int_copy = new IntDataValue(int_value0);

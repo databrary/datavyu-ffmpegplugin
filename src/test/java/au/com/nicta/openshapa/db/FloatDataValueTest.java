@@ -180,6 +180,36 @@ public class FloatDataValueTest {
     }
 
     /**
+     * Test of copy constructor, of class FloatDataValue.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     */
+    @Test
+    public void testCopyConstructor() throws SystemErrorException {
+        FloatDataValue f_value = new FloatDataValue(db, ffa.getID(), 200.0);
+        FloatDataValue f_copy = new FloatDataValue(f_value);
+
+        assertNotSame(f_value, f_copy);
+        assertEquals(f_value.getDB(), f_copy.getDB());
+        assertEquals(f_value.itsFargID, f_copy.itsFargID);
+        assertEquals(f_value.itsFargType, f_copy.itsFargType);
+        assertEquals(f_value.subRange, f_copy.subRange);
+        assertEquals(f_value.toString(), f_copy.toString());
+        assertEquals(f_value.toDBString(), f_copy.toDBString());
+        assertEquals(f_value.getClass(), f_copy.getClass());
+    }
+
+    /**
+     * Test of copy constructor failure, of class FloatDataValue
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     */
+    @Test (expected = SystemErrorException.class)
+    public void testCopyConstructorFailure() throws SystemErrorException {
+        FloatDataValue f_value = new FloatDataValue((FloatDataValue) null);
+    }
+
+    /**
      * Test of getItsValue method, of class FloatDataValue.
      */
     @Test
