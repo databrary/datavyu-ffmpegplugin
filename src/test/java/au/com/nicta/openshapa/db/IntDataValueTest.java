@@ -59,7 +59,7 @@ public class IntDataValueTest {
     /**
      * Test 1 arg constructor, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -76,7 +76,7 @@ public class IntDataValueTest {
     /**
      * Test 2 argument constructor, of class IntDataValue.
      *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException  on failure
+     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {        
@@ -281,7 +281,7 @@ public class IntDataValueTest {
                                 "(maxVal 100))";
 
         IntDataValue int_value = new IntDataValue(db, ifa2.getID(), 50);
-        assertEquals(int_value.toDBString(), testDBString0);        
+        assertEquals(int_value.toDBString(), testDBString0);
     }
 
     /**

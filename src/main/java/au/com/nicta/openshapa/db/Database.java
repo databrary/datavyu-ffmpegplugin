@@ -4455,12 +4455,7 @@ public abstract class Database
         {
             failures++;
         }
-        
-        if ( ! FloatDataValue.TestClassFloatDataValue(outStream, verbose) )
-        {
-            failures++;
-        }
-        
+
         if ( ! NominalDataValue.TestClassNominalDataValue(outStream, verbose) )
         {
             failures++;

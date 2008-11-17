@@ -1673,30 +1673,6 @@ public abstract class DataValue extends DBElement
                                                 copyDesc);    
                 }
             }
-            else if ( base instanceof FloatDataValue )
-            {
-                if ( ! ( copy instanceof FloatDataValue ) )
-                {
-                    failures++;
-                    
-                    if ( verbose )
-                    {
-                        outStream.printf(
-                                "%s is a FloatDataValue but %s is not.\n", 
-                                baseDesc, copyDesc);
-                    }
-                }
-                else 
-                {
-                    failures += 
-                        FloatDataValue.VerifyFloatDVCopy((FloatDataValue)base,
-                                                         (FloatDataValue)copy,
-                                                         outStream,
-                                                         verbose,
-                                                         baseDesc,
-                                                         copyDesc);    
-                }
-            }
             else if ( base instanceof NominalDataValue )
             {
                 if ( ! ( copy instanceof NominalDataValue ) )
