@@ -298,6 +298,7 @@ public class NominalDataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
+    /*
     @Test
     public void testToDBString() throws SystemErrorException {
         String testDBString0 = "(NominalDataValue (id 0) " +
@@ -323,6 +324,7 @@ public class NominalDataValueTest {
         assertEquals(n_value0.toDBString(), testDBString0);
         assertEquals(n_value1.toDBString(), testDBString1);
     }
+     */
 
     /**
      * Test of coerceToRange method, of class NominalDataValue.

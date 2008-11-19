@@ -1,14 +1,15 @@
 package au.com.nicta.openshapa.db;
 
 import java.util.Vector;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit test for simple App.
  */
-public final class DataColumnTest extends TestCase {
+public final class DataColumnTest {
     
     private Database db = null;
     private long f_mve0ID = DBIndex.INVALID_ID;
@@ -53,10 +54,19 @@ public final class DataColumnTest extends TestCase {
     private DataColumn dc = null;
 
     /**
+     * Create the test case.
+     *
+     * @param testName name of the test case
+     */
+    public DataColumnTest() {
+    }
+
+    /**
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      */
-    protected void setUp() throws SystemErrorException {
+    @Before
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         f_mve0 = new MatrixVocabElement(db, "f_col0");
         f_mve0.setType(MatrixVocabElement.matrixType.FLOAT);
@@ -170,23 +180,8 @@ public final class DataColumnTest extends TestCase {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    protected void tearDown() {
-    }
-
-    /**
-     * Create the test case.
-     *
-     * @param testName name of the test case
-     */
-    public DataColumnTest(final String testName) {
-        super(testName);
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite() {
-        return new TestSuite(DataColumnTest.class);
+    @After
+    public void tearDown() {
     }
 
     /**
@@ -194,6 +189,7 @@ public final class DataColumnTest extends TestCase {
      *
      * @throws SystemErrorException If unable to create DataColumns.
      */
+    @Test
     public void test3ArgConstructor() throws SystemErrorException {
         Database db0 = new ODBCDatabase();
 
@@ -275,64 +271,42 @@ public final class DataColumnTest extends TestCase {
                                                               .TEXT);
     }
 
-    public void test3ArgConstructorFailure0() {
-        try {
-            dc = new DataColumn(null, "f_col",
-                                MatrixVocabElement.matrixType.FLOAT);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure0() throws SystemErrorException {
+        dc = new DataColumn(null, "f_col",
+                            MatrixVocabElement.matrixType.FLOAT);
     }
 
-    public void test3ArgConstructorFailure1() {
-        try {
-            dc = new DataColumn(db, "",
-                                MatrixVocabElement.matrixType.FLOAT);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure1() throws SystemErrorException {
+        dc = new DataColumn(db, "", MatrixVocabElement.matrixType.FLOAT);
     }
 
-    public void test3ArgConstructorFailure2() {
-        try {
-            dc = new DataColumn(db, " invalid ",
-                                MatrixVocabElement.matrixType.FLOAT);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure2() throws SystemErrorException {
+        dc = new DataColumn(db, " invalid ",
+                            MatrixVocabElement.matrixType.FLOAT);
     }
 
-    public void test3ArgConstructorFailure3() {
-        try {
-            DataColumn fc = new DataColumn(db, "f_col",
-                                           MatrixVocabElement.matrixType.FLOAT);
-            long fc_ID = db.addColumn(fc);
-            fc = db.getDataColumn(fc_ID);
-            long f_mveID = fc.getItsMveID();
-            MatrixVocabElement f_mve = db.getMatrixVE(f_mveID);
+    @Test (expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure3() throws SystemErrorException {
+        DataColumn fc = new DataColumn(db, "f_col",
+                                       MatrixVocabElement.matrixType.FLOAT);
+        long fc_ID = db.addColumn(fc);
+        fc = db.getDataColumn(fc_ID);
+        long f_mveID = fc.getItsMveID();
+        MatrixVocabElement f_mve = db.getMatrixVE(f_mveID);
 
-            dc = new DataColumn(db, "f_col",
-                                MatrixVocabElement.matrixType.FLOAT);
-
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+        dc = new DataColumn(db, "f_col", MatrixVocabElement.matrixType.FLOAT);
     }
 
-    public void test3ArgConstructorFailure4() {
-        try {
-            dc = new DataColumn(db, "valid",
-                                MatrixVocabElement.matrixType.UNDEFINED);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure4() throws SystemErrorException {
+        dc = new DataColumn(db, "valid",
+                            MatrixVocabElement.matrixType.UNDEFINED);
     }
 
+    @Test
     public void test5ArgConstructor() throws SystemErrorException {
         assertTrue(db != null);
 
@@ -508,67 +482,39 @@ public final class DataColumnTest extends TestCase {
         assertTrue(t_col1.getVarLen() == t_mve1.getVarLen());
     }
 
-    public void test5ArgConstructorFailure0() {
-        try {
-            dc = new DataColumn(null, "f_col2", false, true, f_mve2ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure0() throws SystemErrorException {
+        dc = new DataColumn(null, "f_col2", false, true, f_mve2ID);
     }
 
-    public void test5ArgConstructorFailure1() {
-        try {
-            dc = new DataColumn(db, null, false, true, f_mve2ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure1() throws SystemErrorException {
+        dc = new DataColumn(db, null, false, true, f_mve2ID);
     }
 
-    public void test5ArgConstructorFailure2() {
-        try {
-            dc = new DataColumn(db, "", false, true, f_mve2ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure2() throws SystemErrorException {
+        dc = new DataColumn(db, "", false, true, f_mve2ID);
     }
 
-    public void test5ArgConstructorFailure3() {
-        try {
-            dc = new DataColumn(db, " invalid ", false, true, f_mve2ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure3() throws SystemErrorException {
+        dc = new DataColumn(db, " invalid ", false, true, f_mve2ID);
     }
 
-    public void test5ArgConstructorFailure4() {
-        try {
-            dc = new DataColumn(db, "f_col3", false, true, f_mve2ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure4() throws SystemErrorException {
+        dc = new DataColumn(db, "f_col3", false, true, f_mve2ID);
     }
 
-    public void test5ArgConstructorFailure5() {
-        try {
-            dc = new DataColumn(db, "f_col2", false, true, DBIndex.INVALID_ID);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure5() throws SystemErrorException {
+        dc = new DataColumn(db, "f_col2", false, true, DBIndex.INVALID_ID);
     }
 
-    public void test5ArgConstructorFailure6() {
-        try {
-            dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
-            fail(dc.name + ": DataColumn constructor should have failed");
-        } catch (SystemErrorException e) {
-            // Do nothing - pass the test.
-        }
+    @Test (expected = SystemErrorException.class)
+    public void test5ArgConstructorFailure6() throws SystemErrorException {
+        dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
     }
 
     public void testAccessors() throws SystemErrorException {

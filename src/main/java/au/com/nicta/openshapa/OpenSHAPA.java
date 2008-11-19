@@ -1,0 +1,54 @@
+package au.com.nicta.openshapa;
+
+import au.com.nicta.openshapa.views.OpenSHAPAView;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.ResourceManager;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+
+/**
+ * The main class of the application.
+ */
+public class OpenSHAPA extends SingleFrameApplication {
+
+    /**
+     * At startup create and show the main frame of the application.
+     */
+    @Override protected void startup() {
+        show(new OpenSHAPAView());
+    }
+
+    @Override protected void initialize(String[] args) {
+        /**
+        ApplicationContext ctxt = Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext();
+        //ApplicationContext ctxt = ApplicationContext.getInstance();
+        ResourceManager mgr = ctxt.getResourceManager();
+        ResourceMap resource = mgr.getResourceMap(au.com.nicta.openshapa.resources.OpenSHAPA.class);
+        String test = resource.getString("Application.name");
+         **/
+    }
+
+    /**
+     * This method is to initialize the specified window by injecting resources.
+     * Windows shown in our application come fully initialized from the GUI
+     * builder, so this additional configuration is not needed.
+     */
+    @Override protected void configureWindow(java.awt.Window root) {
+    }
+
+    /**
+     * A convenient static getter for the application instance.
+     * @return the instance of DesktopApplication1
+     */
+    public static OpenSHAPA getApplication() {
+        return Application.getInstance(OpenSHAPA.class);
+    }
+
+    /**
+     * Main method launching the application.
+     */
+    public static void main(String[] args) {
+        launch(OpenSHAPA.class, args);
+    }
+}
