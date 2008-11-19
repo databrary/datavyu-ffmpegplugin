@@ -19,16 +19,6 @@ public class OpenSHAPA extends SingleFrameApplication {
         show(new OpenSHAPAView());
     }
 
-    @Override protected void initialize(String[] args) {
-        /**
-        ApplicationContext ctxt = Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext();
-        //ApplicationContext ctxt = ApplicationContext.getInstance();
-        ResourceManager mgr = ctxt.getResourceManager();
-        ResourceMap resource = mgr.getResourceMap(au.com.nicta.openshapa.resources.OpenSHAPA.class);
-        String test = resource.getString("Application.name");
-         **/
-    }
-
     /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI

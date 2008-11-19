@@ -31,11 +31,16 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -70,9 +75,39 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
         menuBar.add(fileMenu);
 
-        jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
-        jMenu1.setName("jMenu1"); // NOI18N
-        menuBar.add(jMenu1);
+        jMenu3.setText(resourceMap.getString("jMenu3.text")); // NOI18N
+        jMenu3.setName("jMenu3"); // NOI18N
+
+        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+        jMenuItem1.setName("jMenuItem1"); // NOI18N
+        jMenu3.add(jMenuItem1);
+
+        jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
+        jMenuItem3.setName("jMenuItem3"); // NOI18N
+        jMenu3.add(jMenuItem3);
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+        jMenu3.add(jSeparator1);
+
+        jMenuItem4.setText(resourceMap.getString("jMenuItem4.text")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        jMenu3.add(jMenuItem4);
+
+        menuBar.add(jMenu3);
+
+        jMenu2.setText(resourceMap.getString("jMenu2.text")); // NOI18N
+        jMenu2.setName("jMenu2"); // NOI18N
+
+        jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
+        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem2);
+
+        menuBar.add(jMenu2);
 
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
@@ -86,10 +121,6 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
-
-        jMenu2.setText(resourceMap.getString("jMenu2.text")); // NOI18N
-        jMenu2.setName("jMenu2"); // NOI18N
-        menuBar.add(jMenu2);
 
         setJMenuBar(menuBar);
 
@@ -111,14 +142,24 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        QTVideoController test = new QTVideoController();
+        test.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
