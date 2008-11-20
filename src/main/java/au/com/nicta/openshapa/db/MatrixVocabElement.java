@@ -380,8 +380,9 @@ public class MatrixVocabElement extends VocabElement
     
     /* setName() -- Override of method in VocabElement
      *
-     * Does some additional error checking and then calls the superclass 
-     * version of the method.
+     * Does some additional error checking and then set the name directly.
+     * Do this as the superclass mthod will throw a system error if this is
+     * a system MVE -- which it is unless this.type == MATRIX.
      *
      *                                              JRM -- 3/04/07
      *
@@ -394,13 +395,20 @@ public class MatrixVocabElement extends VocabElement
         throws SystemErrorException 
     {
         final String mName = "MatrixVocabElement::setName(): ";
+
+        if ( ( name == null ) || 
+             ( ! ( name instanceof String ) ) || 
+             ( name.length() <= 0 ) )
+        {
+            throw new SystemErrorException(mName + "Bad name param");
+        }
         
         if ( ! Database.IsValidSVarName(name) )
         {
             throw new SystemErrorException(mName + "Bad name param");
         }
-                      
-        super.setName(name);
+        
+        this.name = (new String(name));             
         
         return;
         
@@ -2093,7 +2101,8 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve.setType(matrixType.MATRIX); /* test will fail otherwise */
-                failures += VocabElement.TestAccessors(ve, outStream, verbose);
+                failures += VocabElement.TestAccessors(ve, true, 
+                                                       outStream, verbose);
             }
         
             catch (SystemErrorException e)
@@ -2131,7 +2140,7 @@ public class MatrixVocabElement extends VocabElement
             
             try
             {
-                ve.setName("in valid");
+                ve.setName("in,valid");
                 methodReturned = true;
             }
         
@@ -2151,13 +2160,13 @@ public class MatrixVocabElement extends VocabElement
                     if ( methodReturned )
                     {
                         outStream.print(
-                                "\"ve.setName(\"in valid\")\" returned.\n");
+                                "\"ve.setName(\"in,valid\")\" returned.\n");
                     }
 
                     if ( ! threwSystemErrorException )
                     {
                         outStream.print(
-                                "\"ve.setName(\"in valid\")\" failed to " +
+                                "\"ve.setName(\"in,valid\")\" failed to " +
                                 "throw a SystemErrorException.\n");
                     }
                 }
@@ -2165,7 +2174,7 @@ public class MatrixVocabElement extends VocabElement
         }
         
         /* the itsColumn field and the associated getItsColumn() and 
-         * setItsColumn() accessors in flux at present, so we will not tests
+         * setItsColumn() accessors in flux at present, so we will not test
          * them now.  
          *
          * TODO: fix this as soon as the underlying design settles.

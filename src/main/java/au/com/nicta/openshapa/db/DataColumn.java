@@ -787,7 +787,7 @@ public class DataColumn extends Column
     public void endCascade(Database db)
         throws SystemErrorException
     {
-        final String mName = "Column::endCascade(): ";
+        final String mName = "DataColumn::endCascade(): ";
         
         if ( this.db != db )
         {
@@ -805,11 +805,6 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "this.pendingSet is null?!?");
         }
         
-        for ( Cell c : this.pendingSet )
-        {
-            ((DataCell)c).exitCascade();
-        }
-        
         /* If temporal ordering, sort cells by onset, and assign new ords 
          * as necessary.
          */
@@ -818,9 +813,14 @@ public class DataColumn extends Column
             this.sortItsCells();
         }
         
+        for ( Cell c : this.pendingSet )
+        {
+            ((DataCell)c).exitCascade();
+        }
+        
         if ( this.pending != null )
         {
-            this.db.cl.replaceDataColumn(this.pending);
+            this.db.cl.replaceDataColumn(this.pending, true);
             
             this.pending = null;
         }
@@ -1592,7 +1592,7 @@ public class DataColumn extends Column
         
         this.db.cascadeStart();
         
-        // set the replacement cell's ord
+        // set the new cell's ord
         newCell.setOrd(ord);
             
         this.db.idx.addElement(newCell);
@@ -1624,6 +1624,11 @@ public class DataColumn extends Column
         {
             dc = itsCells.elementAt(i);
             
+            if ( dc == newCell )
+            {
+                throw new SystemErrorException(mName + "scan hit new cell?!?");
+            }
+            
             if ( dc.cascadeGetOrd() != i )
             {
                 throw new SystemErrorException(mName + "unexpected old ord" + i);
@@ -1638,7 +1643,7 @@ public class DataColumn extends Column
          */
         
         this.db.cascadeEnd();
-        
+                
         return;
         
     } /* DataColumn::insertCell(newCell, ord) */
@@ -1953,6 +1958,7 @@ public class DataColumn extends Column
                 return result;
             }
         };
+        
         cascade_dc_onset_comp comp = new cascade_dc_onset_comp();
         
         if ( ! this.cascadeInProgress )
@@ -2131,7 +2137,30 @@ public class DataColumn extends Column
                     throw new SystemErrorException(mName + 
                                                    "oldName != this.name");
                 }
-                this.pending.setName(newName);
+
+                if ( ! ( this.db.IsValidSVarName(newName) ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "newName not a valid svar name");
+                }
+                
+                if ( ! this.db.vl.inVocabList(newName) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "newName not in v?!?");
+                }
+                
+                if ( db.cl.inColumnList(newName) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "newName already appears in column list");
+                }
+                
+                // set the new name directly in pending, as 
+                // this.pending.setName() will throw a system error if the 
+                // new name is already in the  vocab list -- which it already
+                // is.
+                this.pending.name = new String(newName);
             }
 
             if ( varLenChanged )

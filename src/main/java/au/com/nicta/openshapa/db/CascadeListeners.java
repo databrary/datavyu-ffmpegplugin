@@ -179,9 +179,7 @@ public class CascadeListeners extends Listeners
                     ": refCount non-positive on entry.");
         }
         
-        this.refCount--;
-
-        if ( this.refCount == 0 )
+        if ( this.refCount == 1 )
         {
             // Notify the internal listeners first...
             for ( Long id : this.ils )
@@ -212,6 +210,14 @@ public class CascadeListeners extends Listeners
 
                 el.beginCascade(this.db);
             }
+        }
+        
+        this.refCount--;
+        
+        if ( this.refCount < 0 )
+        {
+            throw new SystemErrorException(mName + 
+                    ": refCount negative on exit.");
         }
         
         return;

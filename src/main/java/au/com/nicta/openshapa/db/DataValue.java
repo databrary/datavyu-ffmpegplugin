@@ -386,7 +386,7 @@ public abstract class DataValue extends DBElement
             if ( ! matchFound )
             {
                 // todo: delete the following line eventually
-                int j = 1/0;
+                // int j = 1/0;
                 throw new SystemErrorException(mName + 
                         "Target cell's mve does not contain itsFarg");
             }
@@ -839,7 +839,6 @@ public abstract class DataValue extends DBElement
         
         if ( dv == null )
         {
-            int i = 1/0;
             throw new SystemErrorException(mName + "dv null on entry.");
         }
         

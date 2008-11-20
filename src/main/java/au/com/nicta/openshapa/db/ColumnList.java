@@ -1025,10 +1025,10 @@ public class ColumnList
         this.db.idx.removeElement(targetID);
         
         this.nameMap.remove(col.getName());
-        
-        this.db.cascadeEnd();
-        
+         
         this.db.deregisterInternalCascadeListener(col.getID());
+       
+        this.db.cascadeEnd();
          
         return;
      
@@ -1069,7 +1069,7 @@ public class ColumnList
      *                                                  JRM -- 2/5/08
      */
 
-    protected void replaceDataColumn(DataColumn new_dc)
+    protected void replaceDataColumn(DataColumn new_dc, boolean cascade)
        throws SystemErrorException
     {
         final String mName = "ColumnList::replaceDataColumn(dbe): ";
@@ -1217,6 +1217,18 @@ public class ColumnList
          */
         new_dc.noteChange(old_dc, new_dc);
         new_dc.notifyListenersOfChange();
+        
+        if ( ! cascade )
+        {
+            /* copy the cascade related fields from the old to the new incarnation
+             * so that the data column will be able to exit the cascade gracefully.
+             */
+            new_dc.cascadeInProgress = old_dc.cascadeInProgress;
+            old_dc.cascadeInProgress = false;
+
+            new_dc.pendingSet = old_dc.pendingSet;
+            old_dc.pendingSet = null;
+        }
         
         this.db.cascadeEnd();
          

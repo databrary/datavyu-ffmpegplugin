@@ -1364,10 +1364,14 @@ public abstract class VocabElement extends DBElement
      * 
      * Changes:
      * 
-     *    - None.
+     *    - Added the setNameOnSystemVEOK field, as I had forgotten that 
+     *      it was OK to change the name of a system MVE and needed to 
+     *      modify the test to allow it.
+     *                                          JRM -- 11/18/08
      */
     
     public static int TestAccessors(VocabElement ve,
+                                    boolean setNameOnSystemVEOK,
                                     java.io.PrintStream outStream,
                                     boolean verbose)
         throws SystemErrorException
@@ -1535,8 +1539,9 @@ public abstract class VocabElement extends DBElement
         }
 
         
-        /* Finally, verify that setName() will refuse to change the name 
-         * if the system flag is set.  Note that for the purposes of this 
+        /* Finally, verify that setName() either will or will not refuse to 
+         * change the name if the system flag is set depending on the value 
+         * of the setNameOnSystemVEOK.  Note that for the purposes of this 
          * test, we change the system flag directly, as otherwise the setup
          * for this test would be much more involved.
          */ 
@@ -1560,40 +1565,72 @@ public abstract class VocabElement extends DBElement
         
             ve.system = false;
             
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
+            if ( setNameOnSystemVEOK )
             {
-                failures++;
-
-                if ( verbose )
+                if ( ( ! methodReturned ) ||
+                     ( threwSystemErrorException ) )
                 {
-                    if ( methodReturned )
-                    {
-                        outStream.print(
-                                "\"arg.setName(\"another_valid_name\")\" " +
-                                "returned with system flag set.\n");
-                    }
+                    failures++;
 
-                    if ( ! threwSystemErrorException )
+                    if ( verbose )
                     {
-                        outStream.print(
-                                "\"arg.setName(\"another_valid_name\")\" " +
-                                "failed to throw a SystemErrorException " +
-                                "with system flag set.\n");
+                        if ( ! methodReturned )
+                        {
+                            outStream.print(
+                                    "\"arg.setName(\"another_valid_name\")\" " +
+                                    "failed to return with system flag set.\n");
+                        }
+
+                        if ( ! threwSystemErrorException )
+                        {
+                            outStream.print(
+                                    "\"arg.setName(\"another_valid_name\")\" " +
+                                    "threw a SystemErrorException " +
+                                    "with system flag set.\n");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if ( ( methodReturned ) ||
+                     ( ! threwSystemErrorException ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        if ( methodReturned )
+                        {
+                            outStream.print(
+                                    "\"arg.setName(\"another_valid_name\")\" " +
+                                    "returned with system flag set.\n");
+                        }
+
+                        if ( ! threwSystemErrorException )
+                        {
+                            outStream.print(
+                                    "\"arg.setName(\"another_valid_name\")\" " +
+                                    "failed to throw a SystemErrorException " +
+                                    "with system flag set.\n");
+                        }
                     }
                 }
             }
         }
         
         
-        /* again, verify that the change didn't take */
+        /* again, verify that the change did or didn't take */
         
         if ( failures == 0 )
         {            
-            if ( ve.getName().compareTo("a_valid_name") != 0 )
+            if ( ( ( setNameOnSystemVEOK ) &&
+                   ( ve.getName().compareTo("another_valid_name") != 0 ) ) ||
+                 ( ( ! setNameOnSystemVEOK ) &&
+                   ( ve.getName().compareTo("a_valid_name") != 0 ) ) )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected name(4) \"%s\".\n",

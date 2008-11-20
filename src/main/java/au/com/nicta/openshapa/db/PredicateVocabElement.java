@@ -538,7 +538,8 @@ public class PredicateVocabElement extends VocabElement
             
             try
             {
-                failures += VocabElement.TestAccessors(ve, outStream, verbose);
+                failures += VocabElement.TestAccessors(ve, false, 
+                                                       outStream, verbose);
             }
         
             catch (SystemErrorException e)

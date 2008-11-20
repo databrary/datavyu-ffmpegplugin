@@ -1075,7 +1075,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         
         if ( this.inCascade )
         {
-            throw new SystemErrorException(mName + "Already in cascade.");
+            throw new SystemErrorException(mName + " Already in cascade.");
         }
         
         if ( newCell == null )

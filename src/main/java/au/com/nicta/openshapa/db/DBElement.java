@@ -125,8 +125,6 @@ public abstract class DBElement
          this.id = dbe.id;
          this.lastModUID = dbe.lastModUID;
          
-         
-         
      } /* DBElement::DBElement(dbe) */
      
         

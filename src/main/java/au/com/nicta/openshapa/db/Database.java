@@ -306,9 +306,19 @@ public abstract class Database
     {
         String s;
         
-        s = "(" + this.getName() + " " + 
-                  this.vl.toString() + " " +
-                  this.cl.toString() + ")";
+        if ( this.description == null )
+        {
+            s = "(" + this.getName() + " " + 
+                      this.vl.toString() + " " +
+                      this.cl.toString() + ")";
+        }
+        else
+        {
+            s = "(" + this.getName() + " " + 
+                      "(Description: " + this.getDescription() + ") " +
+                      this.vl.toString() + " " +
+                      this.cl.toString() + ")";
+        }
                
         return (s);
         
@@ -487,7 +497,7 @@ public abstract class Database
     {
         final String mName = "Databaset::setName(): ";
         
-        if ( ( newName != null ) ||
+        if ( ( newName == null ) ||
              ( newName.length() == 0 ) )
         {
             throw new SystemErrorException(mName + "null or empty name");
@@ -840,7 +850,7 @@ public abstract class Database
             
             dc = (DataColumn)col;
             
-            this.idx.addElement(dataCell);
+            dataCell = new DataCell((DataCell)cell);
             
             dc.insertCell(dataCell, ord);
             
@@ -1559,7 +1569,7 @@ public abstract class Database
             throw new SystemErrorException(mName + "unknown Column subtype?");
         }
         
-        return col;
+        return copy;
         
     } /* Database::getColumn(id) */
     
@@ -1602,7 +1612,7 @@ public abstract class Database
             throw new SystemErrorException(mName + "unknown Column subtype?");
         }
         
-        return col;
+        return copy;
         
     } /* Database::getColumn(name) */
     
@@ -1865,7 +1875,7 @@ public abstract class Database
             throw new SystemErrorException(mName + "id == INVALID_ID");
         }
         
-        col = this.cl.getColumn(name);
+        col = this.cl.getColumn(id);
         
         if ( col.getNumCells() != 0 )
         {
@@ -1925,7 +1935,11 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified method to check for name changes in a DataColumn.  If 
+     *      the name of the DataColumn has been changed, apply the name change
+     *      to the associated MVE first, so as to avoid the one change at a 
+     *      time invarient.  Then check to see if there are any remaining 
+     *      changes.  If there are, proceed as before.
      */ 
     
     public void replaceColumn(Column newCol)
@@ -2010,6 +2024,8 @@ public abstract class Database
             
             if ( mve.getName().compareTo(oldDC.getName()) != 0 )
             {
+                System.out.printf("mve.getName() = %s\n", mve.getName());
+                System.out.printf("oldDC.getName() = %s\n", oldDC.getName());
                 throw new SystemErrorException(mName + 
                                                "oldDC.name != mve.name");
             }
@@ -2033,7 +2049,7 @@ public abstract class Database
                 }
             }
             
-            this.cl.replaceDataColumn(new DataColumn(newDC));
+            this.cl.replaceDataColumn(new DataColumn(newDC), false);
         }
         else if ( oldCol instanceof ReferenceColumn )
         {
@@ -4178,7 +4194,7 @@ public abstract class Database
      *
      * Main routine for all test code for the Database class proper.
      *
-     *                                          JRM 3/03/05
+     *                                          JRM 3/03/07
      *
      * Changes:
      *
@@ -4484,6 +4500,11 @@ public abstract class Database
         }
         
         if ( ! TestInternalListeners(outStream, verbose) )
+        {
+            failures++;
+        }
+        
+        if ( ! MacshapaDatabase.TestClassMacshapaDatabase(outStream, verbose) )
         {
             failures++;
         }

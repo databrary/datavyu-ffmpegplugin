@@ -611,7 +611,7 @@ public abstract class Column
         
         return;
 
-    } /* column::endCascade() */
+    } /* Column::endCascade() */
     
     
         
