@@ -4466,13 +4466,7 @@ public abstract class Database
         {
             failures++;
         }
-        
-        if ( ! TextStringDataValue.TestClassTextStringDataValue(outStream, 
-                                                                verbose) )
-        {
-            failures++;
-        }
-        
+
         if ( ! TimeStampDataValue.TestClassTimeStampDataValue(outStream, 
                                                               verbose) )
         {

@@ -1723,31 +1723,6 @@ public abstract class DataValue extends DBElement
                                                     copyDesc);    
                 }
             }
-            else if ( base instanceof TextStringDataValue )
-            {
-                if ( ! ( copy instanceof TextStringDataValue ) )
-                {
-                    failures++;
-                    
-                    if ( verbose )
-                    {
-                        outStream.printf(
-                                "%s is a TextStringDataValue but %s is not.\n", 
-                                baseDesc, copyDesc);
-                    }
-                }
-                else 
-                {
-                    failures += 
-                        TextStringDataValue.
-                            VerifyTextStringDVCopy((TextStringDataValue)base,
-                                                   (TextStringDataValue)copy,
-                                                   outStream,
-                                                   verbose,
-                                                   baseDesc,
-                                                   copyDesc);    
-                }
-            }
             else if ( base instanceof TimeStampDataValue )
             {
                 if ( ! ( copy instanceof TimeStampDataValue ) )
