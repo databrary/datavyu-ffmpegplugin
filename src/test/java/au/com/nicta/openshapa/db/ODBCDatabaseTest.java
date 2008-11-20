@@ -1,0 +1,76 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package au.com.nicta.openshapa.db;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+/**
+ *
+ * @author swhitcher
+ */
+public class ODBCDatabaseTest extends DatabaseTest {
+
+    public ODBCDatabase db;
+
+    @Override
+    public Database getInstance() {
+        return db;
+    }
+
+    public ODBCDatabaseTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    @Override
+    public void setUp() throws SystemErrorException {
+        db = new ODBCDatabase();
+    }
+
+    @After
+    @Override
+    public void tearDown() {
+        db = null;
+    }
+
+    /**
+     * Test of getType method, of class ODBCDatabase.
+     */
+    @Test
+    @Override
+    public void testGetType() {
+        System.out.println("getType");
+        String result = db.getType();
+        System.out.println(" = " + result);
+        assertFalse(result.isEmpty());
+    }
+
+    /**
+     * Test of getVersion method, of class ODBCDatabase.
+     */
+    @Test
+    public void testGetVersion() {
+        System.out.println("getVersion");
+        float result = db.getVersion();
+        System.out.print(" = ");
+        System.out.println(result);
+        assertTrue(result > 0.0);
+    }
+
+    
+}

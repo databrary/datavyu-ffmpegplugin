@@ -12,8 +12,6 @@ import javax.swing.*;
 import java.text.*;
 import java.util.*;
 import au.com.nicta.openshapa.db.*;
-import au.com.nicta.openshapa.disc.*;
-import au.com.nicta.openshapa.disc.editors.*;
 import au.com.nicta.openshapa.util.*;
 
 /**
@@ -413,11 +411,9 @@ public class SpreadsheetCell
         this.setOffset(newOffset);
       }
 
-      /* getArg is now protected in the database.
       if (valChanged) {
-        this.value.setValue(newVal.getArg(0));
+        this.value.setValue(newVal.getArgCopy(0));
       }
-       */
 
       if (selectedChanged) {
         this.selected = newSelected;
@@ -455,10 +451,13 @@ public class SpreadsheetCell
       //jp.setLayout(gl);
       //JScrollPane jsp = new JScrollPane(jp);
 
-      ODBCDatabase db = new ODBCDatabase();
+      //ODBCDatabase db = new ODBCDatabase();
+      MacshapaDatabase db = new MacshapaDatabase();
       Spreadsheet sp = new Spreadsheet(null, db);
       MatrixVocabElement mve = new MatrixVocabElement(db);
+
       DataColumn column = new DataColumn(db, "TestColumn", MatrixVocabElement.matrixType.TEXT);
+
       db.addColumn(column);
       column = db.getDataColumn("TestColumn");
       mve = db.getMatrixVE(column.getItsMveID());
@@ -469,7 +468,7 @@ public class SpreadsheetCell
       col.setDataVisible(true);
 
       SpreadsheetCell.uiconfig.parseConfiguration(config);
-      DataCell[] cells = new DataCell[4];
+      DataCell[] cells = new DataCell[10000];
       for (int i=0; i<cells.length; i++) {
         cells[i] = new DataCell(db, column.getID(), mve.getID());
         long cid = db.appendCell(cells[i]);
@@ -490,14 +489,36 @@ public class SpreadsheetCell
 
       jf.setVisible(true);
       
+      try {
+          (new Thread()).sleep(5000);
+      } catch (Exception e) {}
+      
       for (int i=0; i<cells.length; i++) {
         Matrix m = new Matrix(db, mve.getID());
-        TextStringDataValue tsdv = new TextStringDataValue(sp.getDatabase());
-        tsdv.setItsValue("Testing. This is some more data. " +
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+/*
+        // Integer
+        IntDataValue dv = new IntDataValue(sp.getDatabase());
+        dv.setItsValue(i);
+*
+        // TextString
+        TextStringDataValue dv = new TextStringDataValue(sp.getDatabase());
+        dv.setItsValue("Testing. This is some data. " + i +
+                         " ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        m.replaceArg(0, tsdv);
+/*
+        // Float
+        FloatDataValue dv = new FloatDataValue(sp.getDatabase());
+        dv.setItsValue(i * 0.333);
+
+        // Nominal
+        NominalDataValue dv = new NominalDataValue(sp.getDatabase());
+        dv.setItsValue("NOM " + i);
+
+        // QuoteString
+        QuoteStringDataValue dv = new QuoteStringDataValue(sp.getDatabase());
+        dv.setItsValue("QuoteStr " + i);
+*
+        m.replaceArg(0, dv);
         //cells[i].setVal(m);
         DataCell dc = new DataCell(db, column.getID(), mve.getID());
         dc.setID(cells[i].getID());
@@ -518,8 +539,7 @@ public class SpreadsheetCell
       System.exit(-1);
     }
   }
-   */
-
+*/
 
   /** This method is called from within the constructor to
    * initialize the form.
