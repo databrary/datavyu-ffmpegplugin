@@ -54,10 +54,7 @@ public class ODBCDatabaseTest extends DatabaseTest {
     @Test
     @Override
     public void testGetType() {
-        System.out.println("getType");
-        String result = db.getType();
-        System.out.println(" = " + result);
-        assertFalse(result.isEmpty());
+        assertFalse(db.getType().isEmpty());
     }
 
     /**
@@ -65,11 +62,7 @@ public class ODBCDatabaseTest extends DatabaseTest {
      */
     @Test
     public void testGetVersion() {
-        System.out.println("getVersion");
-        float result = db.getVersion();
-        System.out.print(" = ");
-        System.out.println(result);
-        assertTrue(result > 0.0);
+        assertTrue(db.getVersion() > 0.0);
     }
 
     
