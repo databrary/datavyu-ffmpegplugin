@@ -5,13 +5,18 @@
  */
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import javax.swing.JOptionPane;
 
 /**
+ * The main view of OpenSHAPA - including menus and tool bars.
  *
  * @author cfreeman
  */
@@ -22,6 +27,9 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
     /** The view to use when creating new databases. */
     private NewDatabaseView newDBView;
+
+    /** The view to use when creating a new variable. */
+    private NewVariableView newVarView;
 
     /**
      * Creates new form OpenSHAPAView
@@ -104,6 +112,11 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
         jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem1);
 
         jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
@@ -156,25 +169,60 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * The action to invoke when the user selects exit from the file menu.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        try {
+            FileOutputStream fos = new FileOutputStream("test.txtDB");
+            OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
+            out.write(db.toDBString());
+        } catch (Exception e) {
+            // TODO: Dump out.
+        }       
+
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
+    /**
+     * The action to invoke when the user selects quicktime controller from the
+     * viewers menu.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void qtControllerItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qtControllerItemActionPerformed
         QTVideoController test = new QTVideoController();
         test.setVisible(true);
 }//GEN-LAST:event_qtControllerItemActionPerformed
 
+    /**
+     * The action to invoke when the user selects new from the file menu.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         newDBView = new NewDatabaseView(this, false, new NewDatabaseAction());
         newDBView.setVisible(true);
     }//GEN-LAST:event_openMenuItemActionPerformed
+
+    /**
+     * The action to invoke when the user selects new variable from the
+     * spreadsheet menu.
+     *
+     * @param evt The event that triggered this action.
+     */
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        newVarView = new NewVariableView(this, false, new NewVariableAction());
+        newVarView.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -210,7 +258,28 @@ public class OpenSHAPAView extends javax.swing.JFrame {
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
             } catch (SystemErrorException e) {
-                // TODO : handle errors.
+                JOptionPane.showMessageDialog(null, "Unable to create new database.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * The action (controller) to invoke when a user adds a new variable to a
+     * database.
+     */
+    class NewVariableAction implements ActionListener {
+        /**
+         * Action to invoke when a new variable is added to the database.
+         *
+         * @param evt The event that triggered this action.
+         */
+        public void actionPerformed(ActionEvent evt) {
+            try {
+                DataColumn dc = new DataColumn(db, newVarView.getName(),
+                                               newVarView.getVariableType());
+                db.addColumn(dc);
+            } catch (SystemErrorException e) {
+                JOptionPane.showMessageDialog(null, "Unable to add variable to database.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

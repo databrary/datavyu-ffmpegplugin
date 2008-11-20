@@ -2,9 +2,6 @@ package au.com.nicta.openshapa;
 
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ResourceManager;
-import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 
 /**
