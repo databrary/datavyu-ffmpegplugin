@@ -5,14 +5,33 @@
  */
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.MacshapaDatabase;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author cfreeman
  */
 public class OpenSHAPAView extends javax.swing.JFrame {
 
-    /** Creates new form OpenSHAPAView */
+    /** The current database we are working on. */
+    private Database db;
+
+    /** The view to use when creating new databases. */
+    private NewDatabaseView newDBView;
+
+    /**
+     * Creates new form OpenSHAPAView
+     */
     public OpenSHAPAView() {
+        try {
+            db = new MacshapaDatabase();
+        } catch (SystemErrorException e) {
+            // TODO log errors.
+        }
         initComponents();
     }
 
@@ -37,7 +56,7 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        qtControllerItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
@@ -54,6 +73,11 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         openMenuItem.setText(resourceMap.getString("openMenuItem.text")); // NOI18N
         openMenuItem.setToolTipText(resourceMap.getString("openMenuItem.toolTipText")); // NOI18N
         openMenuItem.setName("openMenuItem"); // NOI18N
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(openMenuItem);
 
         saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
@@ -98,14 +122,14 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         jMenu2.setText(resourceMap.getString("jMenu2.text")); // NOI18N
         jMenu2.setName("jMenu2"); // NOI18N
 
-        jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
-        jMenuItem2.setName("jMenuItem2"); // NOI18N
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        qtControllerItem.setText(resourceMap.getString("qtControllerItem.text")); // NOI18N
+        qtControllerItem.setName("qtControllerItem"); // NOI18N
+        qtControllerItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                qtControllerItemActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem2);
+        jMenu2.add(qtControllerItem);
 
         menuBar.add(jMenu2);
 
@@ -142,10 +166,15 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void qtControllerItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qtControllerItemActionPerformed
         QTVideoController test = new QTVideoController();
         test.setVisible(true);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+}//GEN-LAST:event_qtControllerItemActionPerformed
+
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        newDBView = new NewDatabaseView(this, false, new NewDatabaseAction());
+        newDBView.setVisible(true);
+    }//GEN-LAST:event_openMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -156,14 +185,33 @@ public class OpenSHAPAView extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * The action (controller) to invoke when a user creates a new database.
+     */
+    class NewDatabaseAction implements ActionListener {
+        /**
+         * Action to invoke when a new database is created.
+         *
+         * @param evt The event that triggered this action.
+         */
+        public void actionPerformed(ActionEvent evt) {
+            try {
+                db = new MacshapaDatabase();
+                db.setName(newDBView.getDatabaseName());
+                db.setDescription(newDBView.getDatabaseDescription());
+            } catch (SystemErrorException e) {
+                // TODO : handle errors.
+            }
+        }
+    }
 }

@@ -461,7 +461,7 @@ public abstract class Database
      *    - None.
      */
     
-    void setDescription(String newDescription)
+    public void setDescription(String newDescription)
     {
         if ( newDescription != null )
         {
@@ -492,7 +492,7 @@ public abstract class Database
      *    - None.
      */
     
-    void setName(String newName)
+    public void setName(String newName)
         throws SystemErrorException
     {
         final String mName = "Databaset::setName(): ";

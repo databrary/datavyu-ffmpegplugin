@@ -18,6 +18,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
+    /*
     public static void main(String[] args) 
         throws au.com.nicta.openshapa.db.SystemErrorException
     {
@@ -25,4 +26,5 @@ public class Main {
         au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
         //Executive e = new Executive();
     }
+     */
 }
