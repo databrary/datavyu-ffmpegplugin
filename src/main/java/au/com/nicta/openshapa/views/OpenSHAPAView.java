@@ -1,8 +1,3 @@
-/*
- * OpenSHAPAView.java
- *
- * Created on 19/11/2008, 11:28:43 AM
- */
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.db.DataColumn;
@@ -30,6 +25,9 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
     /** The view to use when creating a new variable. */
     private NewVariableView newVarView;
+
+    /** The view to use when listing all variables in the database. */
+    private ListVariablesView listVarView;
 
     /**
      * Creates new form OpenSHAPAView
@@ -121,6 +119,11 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
         jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
         jMenuItem3.setName("jMenuItem3"); // NOI18N
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem3);
 
         jSeparator1.setName("jSeparator1"); // NOI18N
@@ -224,6 +227,17 @@ public class OpenSHAPAView extends javax.swing.JFrame {
         newVarView.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    /**
+     * The action to invoke when the user selects list variables from the
+     * spreadsheet menu.
+     *
+     * @param evt The event that triggered this action.
+     */
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        listVarView = new ListVariablesView(this, false, db);
+        listVarView.setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
@@ -275,7 +289,7 @@ public class OpenSHAPAView extends javax.swing.JFrame {
          */
         public void actionPerformed(ActionEvent evt) {
             try {
-                DataColumn dc = new DataColumn(db, newVarView.getName(),
+                DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
                                                newVarView.getVariableType());
                 db.addColumn(dc);
             } catch (SystemErrorException e) {

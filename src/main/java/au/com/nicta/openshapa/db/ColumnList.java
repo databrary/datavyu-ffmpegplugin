@@ -553,7 +553,7 @@ public class ColumnList
         throws SystemErrorException
     {
         final String mName = "ColumnList::getColumns(): ";
-        java.util.Vector<Column> cols = null;
+        java.util.Vector<Column> cols = new java.util.Vector<Column>();
         Column col;
         Column copy;
 
