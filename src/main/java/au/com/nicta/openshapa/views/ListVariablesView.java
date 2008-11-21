@@ -1,0 +1,170 @@
+package au.com.nicta.openshapa.views;
+
+import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.DataColumn;
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+/**
+ * The dialog to list database variables.
+ *
+ * @author cfreeman
+ */
+public class ListVariablesView extends javax.swing.JDialog {
+
+    /** The column for if a variable is visible or not. */
+    private final static int VCOLUMN = 0;
+
+    /** The column for a variables name. */
+    private final static int NCOLUMN = 1;
+
+    /** The column for a variables type. */
+    private final static int TCOLUMN = 2;
+
+    /** The column for a variables comment. */
+    private final static int CCOLUMN = 3;
+
+    /** The total number of columns in the variables list. */
+    private final static int TOTAL_COLUMNS = 4;
+
+    /** The database containing the variables you wish to list. */
+    private Database database;
+
+    /** The table model of the JTable that lists the actual variables. */
+    private DefaultTableModel tableModel;
+
+    /**
+     * Creates new form ListVariablesView.
+     *
+     * @param parent The parent frame for this dialog.
+     * @param modal Is this dialog to be modal (true), or not.
+     * @param db The database containing the variables you wish to list.
+     */
+    public ListVariablesView(java.awt.Frame parent,
+                             boolean modal,
+                             Database db) {
+        super(parent, modal);
+        tableModel = new DefaultTableModel();
+        initComponents();
+        database = db;
+
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(ListVariablesView.class);        
+
+        // Set the names of the columns.
+        tableModel.addColumn(rMap.getString("Table.visibleColumn"));
+        tableModel.addColumn(rMap.getString("Table.nameColumn"));
+        tableModel.addColumn(rMap.getString("Table.typeColumn"));
+        tableModel.addColumn(rMap.getString("Table.commentColumn"));
+
+        // Populate table with a variable listing from the database
+        try {
+            Vector<DataColumn> dbColumns = database.getDataColumns();
+            DefaultTableModel model = (DefaultTableModel) variableList
+                                                                    .getModel();
+
+            if (dbColumns != null) {
+                for (int i = 0; i < dbColumns.size(); i++) {
+                    DataColumn dbColumn = dbColumns.elementAt(i);
+                    Object[] values = new Object[TOTAL_COLUMNS];
+
+                    values[VCOLUMN] = dbColumn.getHidden();
+                    values[NCOLUMN] = dbColumn.getName();
+
+                    switch(dbColumn.getItsMveType()) {
+                        case FLOAT:
+                            values[TCOLUMN] = rMap
+                                               .getString("Variable.floatType");
+                            break;
+                        case INTEGER:
+                            values[TCOLUMN] = rMap
+                                             .getString("Variable.integerType");
+                            break;
+                        case TEXT:
+                            values[TCOLUMN] = rMap
+                                                .getString("Variable.textType");
+                            break;
+                        case NOMINAL:
+                            values[TCOLUMN] = rMap
+                                             .getString("Variable.nominalType");
+                            break;
+                        case PREDICATE:
+                            values[TCOLUMN] = rMap
+                                           .getString("Variable.predicateType");
+                            break;
+                        case MATRIX:
+                            values[TCOLUMN] = rMap
+                                              .getString("Variable.matrixType");
+                            break;
+                        default:
+                            values[TCOLUMN] = rMap
+                                           .getString("Variable.undefinedType");
+                            break;
+                    }
+
+                    // TODO bug #21 Add comment field.
+                    tableModel.insertRow(model.getRowCount(), values);
+                }                
+            }
+        } catch (SystemErrorException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }        
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        variableList = new javax.swing.JTable();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariablesView.class);
+        setTitle(resourceMap.getString("Form.title")); // NOI18N
+        setName("Form"); // NOI18N
+        setResizable(false);
+
+        jScrollPane1.setName("jScrollPane1"); // NOI18N
+
+        variableList.setEnabled(false);
+        variableList.setModel(tableModel);
+        variableList.setName("variableList");
+        variableList.setRowSelectionAllowed(false);
+        jScrollPane1.setViewportView(variableList);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable variableList;
+    // End of variables declaration//GEN-END:variables
+
+}
