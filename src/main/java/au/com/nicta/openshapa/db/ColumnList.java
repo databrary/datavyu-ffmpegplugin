@@ -609,7 +609,9 @@ public class ColumnList
         Column col;
         DataColumn dc;
         java.util.Enumeration<Column> entries;
-        
+
+        cols = new java.util.Vector<DataColumn>();
+
         entries = this.cl.elements();
         while ( entries.hasMoreElements() )
         {
@@ -617,12 +619,7 @@ public class ColumnList
             
             if ( col instanceof DataColumn )
             {
-                dc = (DataColumn)col;
-                
-                if ( cols == null )
-                {
-                    cols = new java.util.Vector<DataColumn>();
-                }
+                dc = (DataColumn)col;                                
 
                 cols.add(new DataColumn(dc));
             }

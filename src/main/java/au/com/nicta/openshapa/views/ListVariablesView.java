@@ -68,48 +68,39 @@ public class ListVariablesView extends javax.swing.JDialog {
             DefaultTableModel model = (DefaultTableModel) variableList
                                                                     .getModel();
 
-            if (dbColumns != null) {
-                for (int i = 0; i < dbColumns.size(); i++) {
-                    DataColumn dbColumn = dbColumns.elementAt(i);
-                    Object[] values = new Object[TOTAL_COLUMNS];
+            for (int i = 0; i < dbColumns.size(); i++) {
+                DataColumn dbColumn = dbColumns.elementAt(i);
+                Object[] vals = new Object[TOTAL_COLUMNS];
 
-                    values[VCOLUMN] = dbColumn.getHidden();
-                    values[NCOLUMN] = dbColumn.getName();
+                vals[VCOLUMN] = dbColumn.getHidden();
+                vals[NCOLUMN] = dbColumn.getName();
 
-                    switch(dbColumn.getItsMveType()) {
-                        case FLOAT:
-                            values[TCOLUMN] = rMap
-                                               .getString("Variable.floatType");
-                            break;
-                        case INTEGER:
-                            values[TCOLUMN] = rMap
-                                             .getString("Variable.integerType");
-                            break;
-                        case TEXT:
-                            values[TCOLUMN] = rMap
-                                                .getString("Variable.textType");
-                            break;
-                        case NOMINAL:
-                            values[TCOLUMN] = rMap
-                                             .getString("Variable.nominalType");
-                            break;
-                        case PREDICATE:
-                            values[TCOLUMN] = rMap
-                                           .getString("Variable.predicateType");
-                            break;
-                        case MATRIX:
-                            values[TCOLUMN] = rMap
-                                              .getString("Variable.matrixType");
-                            break;
-                        default:
-                            values[TCOLUMN] = rMap
-                                           .getString("Variable.undefinedType");
-                            break;
-                    }
+                switch(dbColumn.getItsMveType()) {
+                    case FLOAT:
+                        vals[TCOLUMN] = rMap.getString("VarType.float");
+                        break;
+                    case INTEGER:
+                        vals[TCOLUMN] = rMap.getString("VarType.integer");
+                        break;
+                    case TEXT:
+                        vals[TCOLUMN] = rMap.getString("VarType.text");
+                        break;
+                    case NOMINAL:
+                        vals[TCOLUMN] = rMap.getString("VarType.nominal");
+                        break;
+                    case PREDICATE:
+                        vals[TCOLUMN] = rMap.getString("VarType.predicate");
+                        break;
+                    case MATRIX:
+                        vals[TCOLUMN] = rMap.getString("VarType.matrix");
+                        break;
+                    default:
+                        vals[TCOLUMN] = rMap.getString("VarType.undefined");
+                        break;
+                }
 
-                    // TODO bug #21 Add comment field.
-                    tableModel.insertRow(model.getRowCount(), values);
-                }                
+                // TODO bug #21 Add comment field.
+                tableModel.insertRow(model.getRowCount(), vals);
             }
         } catch (SystemErrorException e) {
             // TODO bug #18 Log the nature of the error to log4j.
