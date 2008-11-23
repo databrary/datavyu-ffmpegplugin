@@ -491,6 +491,9 @@ public abstract class Database
      *
      *    - None.
      */
+    // TODO: must create listener class for changes in db configuration.
+    //       Listener should report changes in name, description, curUID, 
+    //       others?
     
     public void setName(String newName)
         throws SystemErrorException

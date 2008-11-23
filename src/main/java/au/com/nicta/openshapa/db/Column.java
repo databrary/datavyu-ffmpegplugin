@@ -39,6 +39,8 @@ public abstract class Column
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     
+    // TODO add comments field and supporting methods.
+    
     /*
      * name: String containing the name of the Column.
      *      This name must be a valid svar name, and must be unique in both

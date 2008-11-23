@@ -546,20 +546,24 @@ public class ColumnList
      *
      * Changes:
      *
-     *    - none.
+     *    - Modified method to return an empty vector instead of null if 
+     *      the column list is empty.
      */
     
     protected java.util.Vector<Column> getColumns()
         throws SystemErrorException
     {
         final String mName = "ColumnList::getColumns(): ";
-        java.util.Vector<Column> cols = new java.util.Vector<Column>();
+        java.util.Vector<Column> cols = null;
         Column col;
         Column copy;
 
         java.util.Enumeration<Column> entries;
         
+        cols = new java.util.Vector<Column>();
+        
         entries = this.cl.elements();
+        
         while ( entries.hasMoreElements() )
         {
             col = entries.nextElement();
@@ -575,11 +579,6 @@ public class ColumnList
             else
             {
                 throw new SystemErrorException(mName + "Unknown Column type");
-            }
-            
-            if ( cols == null )
-            {
-                cols = new java.util.Vector<Column>();
             }
 
             cols.add(copy);
