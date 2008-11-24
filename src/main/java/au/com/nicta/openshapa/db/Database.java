@@ -1785,7 +1785,9 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None,
+     *    - Modified the method to return an empty vector if there are not
+     *      Columns.
+     *                                              JRM -- 11/24/08
      */
     
     public java.util.Vector<Column> getColumns()
@@ -1810,7 +1812,9 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None,
+     *    - Modified the method to return an empty vector if there are no
+     *      DataColumns.
+     *                                              JRM -- 11/24/08
      */
     
     public java.util.Vector<DataColumn> getDataColumns()
@@ -1835,7 +1839,9 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None,
+     *    - Modified the method to return an empty vector if there are no
+     *      DataColumns.
+     *                                              JRM -- 11/24/08
      */
     
     public java.util.Vector<ReferenceColumn> getReferenceColumns()

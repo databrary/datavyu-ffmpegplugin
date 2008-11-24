@@ -599,7 +599,9 @@ public class ColumnList
      *
      * Changes:
      *
-     *    - none.
+     *    - Modified the method to return an empty vector if there are 
+     *      no data columns in the column list.
+     *                                                  JRM -- 11/24/08
      */
     
     protected java.util.Vector<DataColumn> getDataColumns()
@@ -609,17 +611,18 @@ public class ColumnList
         Column col;
         DataColumn dc;
         java.util.Enumeration<Column> entries;
-
-        cols = new java.util.Vector<DataColumn>();
-
+        
         entries = this.cl.elements();
+        
+        cols = new java.util.Vector<DataColumn>();
+        
         while ( entries.hasMoreElements() )
         {
             col = entries.nextElement();
             
             if ( col instanceof DataColumn )
             {
-                dc = (DataColumn)col;                                
+                dc = (DataColumn)col;
 
                 cols.add(new DataColumn(dc));
             }
@@ -640,7 +643,9 @@ public class ColumnList
      *
      * Changes:
      *
-     *    - none.
+     *    - Modified the method to return an empty vector if there are 
+     *      no reference columns in the column list.
+     *                                                  JRM -- 11/24/08
      */
     
     protected java.util.Vector<ReferenceColumn> getReferenceColumns()
@@ -652,6 +657,9 @@ public class ColumnList
         java.util.Enumeration<Column> entries;
         
         entries = this.cl.elements();
+        
+        cols = new java.util.Vector<ReferenceColumn>();
+        
         while ( entries.hasMoreElements() )
         {
             col = entries.nextElement();
@@ -659,11 +667,6 @@ public class ColumnList
             if ( col instanceof ReferenceColumn )
             {
                 rc = (ReferenceColumn)col;
-                
-                if ( cols == null )
-                {
-                    cols = new java.util.Vector<ReferenceColumn>();
-                }
 
                 cols.add(new ReferenceColumn(rc));
             }
