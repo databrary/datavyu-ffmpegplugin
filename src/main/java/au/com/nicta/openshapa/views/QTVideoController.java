@@ -1,26 +1,15 @@
-/*
- * QTVideoController.java
- *
- * Created on July 6, 2008, 10:10 PM
- */
 package au.com.nicta.openshapa.views;
 
-//import au.com.nicta.openshapa.*;
 import au.com.nicta.openshapa.Executive;
 import au.com.nicta.openshapa.ExecutiveKeyListener;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.cont.QTVideoViewer;
-//import au.com.nicta.openshapa.db.*;
 import au.com.nicta.openshapa.db.TimeStamp;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
-/**
- *
- * @author  Felix
- */
 public class QTVideoController
         extends javax.swing.JFrame
         implements ContinuousDataController, ExecutiveKeyListener

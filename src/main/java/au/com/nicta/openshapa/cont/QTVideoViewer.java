@@ -1,36 +1,25 @@
-/*
- * QTVideoViewer.java
- *
- * Created on June 14, 2008, 10:02 PM
- */
 package au.com.nicta.openshapa.cont;
 
-import au.com.nicta.openshapa.Executive;
 import java.io.File;
+import quicktime.QTException;
+import quicktime.QTSession;
 
-/**
- *
- * @author  FGA
- */
-public class QTVideoViewer
-        extends javax.swing.JPanel
-        implements ContinuousDataViewer {
+public class QTVideoViewer extends javax.swing.JPanel
+implements ContinuousDataViewer {
 
-    /**
-     * Constructor.
-     *
-     * Creates a new form of QTVideoViewer.
-     *
-     * @param exec
-     * @param cont
-     */
-    public QTVideoViewer(Executive exec, ContinuousDataController cont)
-    {
+    private ContinuousDataController vidController;
+
+    public QTVideoViewer(final ContinuousDataController cont) {
         initComponents();
+        vidController = cont;
+        try {
+            QTSession.open();
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }        
     }
     
-    public void setVideoFile(File videoFile)
-    {
+    public void setVideoFile(final File videoFile) {
     }
 
     public void createNewCell(){}

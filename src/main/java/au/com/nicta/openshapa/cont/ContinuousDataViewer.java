@@ -9,8 +9,6 @@
 
 package au.com.nicta.openshapa.cont;
 
-//import au.com.nicta.openshapa.*;
-
 /**
  * Default interface for all Continuous Data Viewers
  * @author FGA

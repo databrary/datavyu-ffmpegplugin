@@ -32,11 +32,6 @@
       <id>jboss</id>
       <url>http://repository.jboss.com/maven2</url>
     </repository>
-
-    <repository>
-      <id>mvnsearch</id>
-      <url>http://mvnsearch.org/maven2/</url>
-    </repository>
   </repositories>
 
   <!-- Build properties. -->
@@ -95,15 +90,10 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jmf</artifactId>
-      <version>2.1.1e</version>
+      <groupId>quicktime</groupId>
+      <artifactId>QTJava</artifactId>
+      <version>7</version>
     </dependency>
 
-    <dependency>
-      <groupId>fobs4jmf</groupId>
-      <artifactId>fobs4jmf</artifactId>
-      <version>0.4.1_win</version>
-    </dependency>
   </dependencies>
 </project>
