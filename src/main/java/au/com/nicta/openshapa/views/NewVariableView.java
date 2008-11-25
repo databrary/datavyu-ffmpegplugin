@@ -8,14 +8,21 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public class NewVariableView extends javax.swing.JDialog {
+public final class NewVariableView extends javax.swing.JDialog {
 
     /** The parent action to notify when the user completes this dialog. */
-    ActionListener notifier;
+    private ActionListener notifier;
 
-    /** Creates new form NewVariableView */
-    public NewVariableView(java.awt.Frame parent, boolean modal,
-                           ActionListener listener) {
+    /**
+     * Constructor, creates a new form to create a new variable.
+     *
+     * @param parent The parent of this form.
+     * @param modal Should the dialog be modal or not?
+     * @param listener The listener to notify when the user has created a new
+     * variable.
+     */
+    public NewVariableView(final java.awt.Frame parent, final boolean modal,
+                           final ActionListener listener) {
         super(parent, modal);
         initComponents();
         notifier = listener;

@@ -47,7 +47,7 @@ implements ContinuousDataViewer {
      * data viewer.
      */
     public QTVideoViewer(final ContinuousDataController controller) {
-        try {            
+        try {
             movie = null;
             shuttleSpeed = 0.0f;
             parentController = controller;
@@ -68,7 +68,7 @@ implements ContinuousDataViewer {
      */
     public void setVideoFile(final File videoFile) {
         try {
-            OpenMovieFile omf = OpenMovieFile.asRead (new QTFile(videoFile));
+            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             this.pack();
@@ -78,10 +78,12 @@ implements ContinuousDataViewer {
     }
 
     @Override
-    public void createNewCell() {}
+    public void createNewCell() {
+    }
 
     @Override
-    public void jogBack() {}
+    public void jogBack() {
+    }
 
     /**
      * Stops the playback of the quicktime video.
@@ -155,7 +157,7 @@ implements ContinuousDataViewer {
      * Rewinds the quicktime video.
      */
     @Override
-    public void rewind() {        
+    public void rewind() {
         try {
             if (movie != null) {
                 shuttleSpeed = 0.0f;

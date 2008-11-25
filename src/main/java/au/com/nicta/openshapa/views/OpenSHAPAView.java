@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import javax.swing.JOptionPane;
+import org.apache.log4j.Logger;
 
 /**
  * The main view of OpenSHAPA - including menus and tool bars.
@@ -18,7 +18,8 @@ import javax.swing.JOptionPane;
  */
 public class OpenSHAPAView extends javax.swing.JFrame {
 
-    
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
 
     /** The current database we are working on. */
     private Database db;
@@ -36,13 +37,13 @@ public class OpenSHAPAView extends javax.swing.JFrame {
     private ListVariablesView listVarView;
 
     /**
-     * Creates new form OpenSHAPAView
+     * Creates new form OpenSHAPAView.
      */
     public OpenSHAPAView() {
         try {
             db = new MacshapaDatabase();
         } catch (SystemErrorException e) {
-            // TODO log errors.
+            logger.error("Unable to create MacSHAPADatabase", e);
         }
         initComponents();
     }
@@ -195,8 +196,8 @@ public class OpenSHAPAView extends javax.swing.JFrame {
             OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
             out.write(db.toDBString());
         } catch (Exception e) {
-            // TODO: Dump out.
-        }       
+            logger.error("Unable to write database", e);
+        }
 
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
@@ -272,7 +273,8 @@ public class OpenSHAPAView extends javax.swing.JFrame {
          *
          * @param evt The event that triggered this action.
          */
-        public void actionPerformed(ActionEvent evt) {
+        @Override
+        public void actionPerformed(final ActionEvent evt) {
             try {
                 db = new MacshapaDatabase();
                 db.setName(newDBView.getDatabaseName());
@@ -282,7 +284,7 @@ public class OpenSHAPAView extends javax.swing.JFrame {
                 sp.setVisible(true);
 
             } catch (SystemErrorException e) {
-                JOptionPane.showMessageDialog(null, "Unable to create new database.", "Error", JOptionPane.ERROR_MESSAGE);
+                logger.error("Unable to create new database", e);
             }
         }
     }
@@ -297,13 +299,14 @@ public class OpenSHAPAView extends javax.swing.JFrame {
          *
          * @param evt The event that triggered this action.
          */
-        public void actionPerformed(ActionEvent evt) {
+        @Override
+        public void actionPerformed(final ActionEvent evt) {
             try {
                 DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
                                                newVarView.getVariableType());
                 db.addColumn(dc);
             } catch (SystemErrorException e) {
-                JOptionPane.showMessageDialog(null, "Unable to add variable to database.", "Error", JOptionPane.ERROR_MESSAGE);
+                logger.error("Unable to add variable to database", e);
             }
         }
     }

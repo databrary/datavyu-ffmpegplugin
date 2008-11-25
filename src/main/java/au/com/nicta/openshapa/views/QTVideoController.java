@@ -12,14 +12,21 @@ public class QTVideoController extends javax.swing.JFrame
 implements ContinuousDataController /*, ExecutiveKeyListener*/ {
 
     //protected Executive parent = null;
-    protected JButton lastButton = null;
-    protected TimeStamp currentTimestamp = null;
+    private JButton lastButton = null;
+    private TimeStamp currentTimestamp = null;
 
-    protected Vector<QTVideoViewer> viewers = new Vector<QTVideoViewer>();
-    protected FileDialog jfc;
+    /** The list of viewers associated with this controller. */
+    private Vector<QTVideoViewer> viewers;
 
+    /** The dialog to present to the user when they desire to load a file. */
+    private FileDialog jfc;
+
+    /**
+     * Constructor. Creates a new QTVideoController.
+     */
     public QTVideoController() {
         initComponents();
+        viewers = new Vector<QTVideoViewer>();
     }
 
     /*
@@ -34,7 +41,7 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         }
     }
      */
-    
+
     public void setCurrentLocation(TimeStamp ts) {
         this.currentTimestamp = ts;
     }
@@ -43,7 +50,13 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         return (this.currentTimestamp);
     }
 
-    public void shutdown(ContinuousDataViewer viewer) {                
+    /**
+     * Shutdowns the specified viewer.
+     *
+     * @param viewer The viewer to shutdown.
+     */
+    @Override
+    public void shutdown(final ContinuousDataViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {
                 this.viewers.elementAt(i).dispose();
@@ -142,16 +155,16 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
               }
             } // End Switch
     }
-    
+
     public void executiveKeyReleased(KeyEvent ke)
     {
     }
-    
+
     public void executiveKeyTyped(KeyEvent ke)
     {
-        
+
     }
-    
+
     public void executiveKeyControlGained()
     {
     }
@@ -160,8 +173,8 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     {
     }
      */
-    
-    
+
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
