@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.disc.spreadsheet.Spreadsheet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
@@ -19,6 +20,9 @@ public class OpenSHAPAView extends javax.swing.JFrame {
 
     /** The current database we are working on. */
     private Database db;
+
+    /** The current spreadsheet view. */
+    private Spreadsheet sp;
 
     /** The view to use when creating new databases. */
     private NewDatabaseView newDBView;
@@ -271,6 +275,10 @@ public class OpenSHAPAView extends javax.swing.JFrame {
                 db = new MacshapaDatabase();
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
+
+                sp = new Spreadsheet(null, db);
+                sp.setVisible(true);
+
             } catch (SystemErrorException e) {
                 JOptionPane.showMessageDialog(null, "Unable to create new database.", "Error", JOptionPane.ERROR_MESSAGE);
             }

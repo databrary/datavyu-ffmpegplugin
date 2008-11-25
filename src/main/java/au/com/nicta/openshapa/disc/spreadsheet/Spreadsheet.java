@@ -1,97 +1,140 @@
 package au.com.nicta.openshapa.disc.spreadsheet;
-/*
- * Spreadsheet.java
- *
- * Created on Feb 5, 2007, 3:50 PM
- */
 
-import java.util.*;
-import au.com.nicta.openshapa.*;
-import au.com.nicta.openshapa.db.*;
-import au.com.nicta.openshapa.disc.*;
-import au.com.nicta.openshapa.disc.editors.*;
+import au.com.nicta.openshapa.Executive;
+import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.DataColumn;
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.Vector;
+import javax.swing.JFrame;
 
 
 /**
+ * Spreadsheet Viewer main component.
  *
  * @author  FGA
  */
-public class Spreadsheet
-    extends     DiscreteDataViewer
-{
-  public final static int LINEAR_VIEW        = 1;
-  public final static int SEMI_TEMPORAL_VIEW = 2;
-  public final static int TEMPORAL_VIEW      = 3;
-
-  protected Executive executive;
-  protected Database  database;
+public class Spreadsheet extends JFrame {
   
-  protected Vector<SpreadsheetColumn> columns = new Vector<SpreadsheetColumn>();
+    /** Linear View orientation. */
+    public static final int LINEAR_VIEW        = 1;
+    /** Semi-temporal View orientation. */
+    public static final int SEMI_TEMPORAL_VIEW = 2;
+    /** Temporal View orientation. */
+    public static final int TEMPORAL_VIEW      = 3;
 
-  protected boolean spreadsheetChanged = false;
+    /** The Executive linked with the spreadsheet. */
+    private Executive executive;
+    /** The Database being viewed. */
+    private Database  database;
 
-  protected long lastMinTimeStamp = Long.MAX_VALUE;
-  protected long lastMaxTimeStamp = Long.MIN_VALUE;
+    /** Columns of the spreadsheet. */
+    private Vector < SpreadsheetColumn > columns;
 
-  protected int spreadsheetView = LINEAR_VIEW;
+    /** Dirty flag for spreadsheet. */
+    private boolean spreadsheetChanged = false;
 
-  /** Creates new form Spreadsheet */
-  public Spreadsheet()
-  {
+    /** Last minimum timestamp. */
+    private long lastMinTimeStamp = Long.MAX_VALUE;
+    /** Last maximum timestamp. */
+    private long lastMaxTimeStamp = Long.MIN_VALUE;
+
+    /** Current spreadsheet view orientation. */
+    private int spreadsheetView = LINEAR_VIEW;
+
+    /** Creates new form Spreadsheet. */
+    public Spreadsheet() {
+
     initComponents();
   }
 
+    /**
+     * Creates new form Spreadsheet.
+     *
+     * @param exec Executive linked to the spreadsheet.
+     * @param db Database this spreadsheet displays.
+     *
+     * @throws SystemErrorException if the db does not create
+     */
   public Spreadsheet(Executive exec, Database db)
-  {
+                                                throws SystemErrorException {
     this();
     this.setExecutive(exec);
     this.setDatabase(db);
+
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLayout(new FlowLayout());
+
+        this.Populate();
+        this.setSize(new Dimension(50,400));
   }
 
-  public void setExecutive(Executive exec)
-  {
+    public void Populate() {
+        // Populate table with a variable listing from the database
+        try {
+            Vector<DataColumn> dbColumns = getDatabase().getDataColumns();
+
+            for (int i = 0; i < dbColumns.size(); i++) {
+                DataColumn dbColumn = dbColumns.elementAt(i);
+
+                SpreadsheetColumn col = new SpreadsheetColumn(this, dbColumn);
+                col.setOrdinalVisible(true);
+                col.setOnsetVisible(true);
+                col.setOffsetVisible(true);
+                col.setDataVisible(true);
+
+                for(int j=0; j < dbColumn.getNumCells(); j++) {
+                    DataCell dc = (DataCell)getDatabase()
+                                            .getCell(dbColumn.getID(), j);
+
+                    SpreadsheetCell sc = new SpreadsheetCell(col, dc);
+                    sc.setWidth(30);
+                    sc.setSize(200,50);
+                    this.getContentPane().add(sc);
+                }
+            }
+        } catch (SystemErrorException e) {
+           // TODO: bug #18 Log the nature of the error to log4j.
+        }
+
+    }
+
+    public void setExecutive(Executive exec) {
     this.executive = exec;
   }
 
-  public void setDatabase(Database db)
-  {
+    public void setDatabase(Database db) {
     this.database = db;
   }
 
-  public Executive getExecutive()
-  {
+    public Executive getExecutive() {
     return (this.executive);
   }
 
-  public Database getDatabase()
-  {
+    public Database getDatabase() {
     return (this.database);
   }
 
-  public void addColumn(SpreadsheetColumn col)
-    throws SystemErrorException
-  {
+    public void addColumn(SpreadsheetColumn col) throws SystemErrorException {
     this.columns.addElement(col);
     this.add(col);
     this.updateSpreadsheet();
   }
   
   public void removeColumn(SpreadsheetColumn col)
-    throws SystemErrorException
-  {
+                                                throws SystemErrorException {
     this.columns.removeElement(col);
     this.remove(col);
     this.updateSpreadsheet();
   }
 
-  public long getScale()
-  {
+    public long getScale() {
     return (1);
   }
 
-  public long getMinTimeStamp()
-    throws SystemErrorException
-  {
+    public long getMinTimeStamp() throws SystemErrorException {
     if (!spreadsheetChanged) {
       return (lastMinTimeStamp);
     }
@@ -110,9 +153,7 @@ public class Spreadsheet
     return (min);
   }
 
-  public long getMaxTimeStamp()
-    throws SystemErrorException
-  {
+    public long getMaxTimeStamp() throws SystemErrorException {
     if (!spreadsheetChanged) {
       return (lastMaxTimeStamp);
     }
@@ -131,9 +172,7 @@ public class Spreadsheet
     return (max);
   }
 
-  public int getColumnHeight()
-    throws SystemErrorException
-  {
+    public int getColumnHeight() throws SystemErrorException {
     long diff = (this.getMaxTimeStamp()-this.getMinTimeStamp())/this.getScale();
     if (diff >= Integer.MAX_VALUE) {
       return (Integer.MAX_VALUE-1);
@@ -142,24 +181,21 @@ public class Spreadsheet
     return ((int)diff);
   }
 
-  public void updateSpreadsheet()
-    throws SystemErrorException
-  {
+    public void updateSpreadsheet() throws SystemErrorException {
     this.spreadsheetChanged = true;
     this.getMinTimeStamp();
     this.getMaxTimeStamp();
     this.spreadsheetChanged = false;
+        Populate();
     this.repaint();
   }
 
-  public int getSpreadsheetView()
-  {
+    public int getSpreadsheetView() {
     return (this.spreadsheetView);
   }
 
-  public void setSpreadsheetView(int view)
-  {
-    if ((view>=1) && (view<=3)) {
+    public void setSpreadsheetView(int view) {
+        if ((view >= 1) && (view <= 3)) {
       this.spreadsheetView = view;
     }
   }
