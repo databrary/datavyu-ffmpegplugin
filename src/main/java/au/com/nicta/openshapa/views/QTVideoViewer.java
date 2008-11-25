@@ -9,6 +9,7 @@ import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 
 /**
@@ -16,7 +17,7 @@ import quicktime.std.movies.Movie;
  *
  * @author cfreeman
  */
-public class QTVideoViewer extends java.awt.Frame
+public final class QTVideoViewer extends java.awt.Frame
 implements ContinuousDataViewer {
 
     /** Logger for this class. */
@@ -36,6 +37,9 @@ implements ContinuousDataViewer {
 
     /** Rewind playback speed. */
     private static final float RWIND_SPEED = -32.0f;
+
+    /** conversion factor for converting milliseconds to seconds. */
+    private static final float MILLI_TO_SECONDS = 0.001f;
 
     /** The current shuttle speed. */
     private float shuttleSpeed;
@@ -129,6 +133,7 @@ implements ContinuousDataViewer {
         try {
             shuttleSpeed = 0.0f;
             movie.stop();
+
         } catch (QTException e) {
             logger.error("pause", e);
         }
@@ -202,12 +207,53 @@ implements ContinuousDataViewer {
     public void setCellOffset() {
     }
 
+    /**
+     * Find can be used to seek to the desired time (specified in milliseconds)
+     * within in the open video.
+     *
+     * @param milliseconds The time you wish to jump too, specified in
+     * milliseconds.
+     */
     @Override
-    public void find() {
+    public void find(final long milliseconds) {
+        try {
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.stop();
+
+                float seconds = milliseconds * MILLI_TO_SECONDS;
+                long qtime = (long) seconds * movie.getTimeScale();
+
+                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                movie.setTime(time);
+                pack();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to find", e);
+        }
     }
 
     @Override
-    public void goBack() {
+    public void goBack(final long milliseconds) {
+        try {
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.stop();
+
+                float curTime = movie.getTime() / (float) movie.getTimeScale();
+                float seconds = milliseconds * MILLI_TO_SECONDS;
+
+                seconds = curTime - seconds;
+                long qtime = (long) seconds * movie.getTimeScale();
+
+                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                movie.setTime(time);
+                movie.start();
+                pack();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to go back", e);
+        }
     }
 
     @Override

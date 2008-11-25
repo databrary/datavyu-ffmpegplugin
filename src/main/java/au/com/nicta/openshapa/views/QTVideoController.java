@@ -5,11 +5,23 @@ import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import au.com.nicta.openshapa.db.TimeStamp;
 import java.awt.FileDialog;
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.JButton;
+import org.apache.log4j.Logger;
 
-public class QTVideoController extends javax.swing.JFrame
+/**
+ * Quicktime video controller.
+ *
+ * @author cfreeman
+ */
+public final class QTVideoController extends javax.swing.JFrame
 implements ContinuousDataController /*, ExecutiveKeyListener*/ {
+    
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(QTVideoController.class);
 
     //protected Executive parent = null;
     private JButton lastButton = null;
@@ -502,8 +514,19 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     }//GEN-LAST:event_forwardButtonActionPerformed
 
     private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).goBack();
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+            Date videoDate = format.parse(this.goBackTextField.getText());
+            Date originDate = format.parse("00:00:00:000");
+
+            // Determine the time in milliseconds.
+            long milli = videoDate.getTime() - originDate.getTime();
+
+            for (int i = 0; i < this.viewers.size(); i++) {
+                this.viewers.elementAt(i).goBack(milli);
+            }
+        } catch (ParseException e) {
+            logger.error("unable to find within video", e);
         }
     }//GEN-LAST:event_goBackButtonActionPerformed
 
@@ -526,8 +549,20 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     }//GEN-LAST:event_shuttleForwardButtonActionPerformed
 
     private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findButtonActionPerformed
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).find();
+        //Date seekTime = DateFormat.getInstance().parse();
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+            Date videoDate = format.parse(this.findTextField.getText());
+            Date originDate = format.parse("00:00:00:000");
+
+            // Determine the time in milliseconds.
+            long milli = videoDate.getTime() - originDate.getTime();
+
+            for (int i = 0; i < this.viewers.size(); i++) {
+                this.viewers.elementAt(i).find(milli);
+            }
+        } catch (ParseException e) {
+            logger.error("unable to find within video", e);
         }
     }//GEN-LAST:event_findButtonActionPerformed
 
@@ -608,5 +643,4 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     private javax.swing.JPanel topPanel;
     private javax.swing.JSlider videoProgressBar;
     // End of variables declaration//GEN-END:variables
-    
 }

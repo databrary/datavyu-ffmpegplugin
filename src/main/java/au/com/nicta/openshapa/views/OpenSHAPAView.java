@@ -9,14 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.SingleFrameApplication;
 
 /**
  * The main view of OpenSHAPA - including menus and tool bars.
  *
  * @author cfreeman
  */
-public class OpenSHAPAView extends javax.swing.JFrame {
+public class OpenSHAPAView extends JFrame {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);

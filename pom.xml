@@ -96,6 +96,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.mobicents.external.appframework</groupId>
+      <artifactId>swing-worker</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>quicktime</groupId>
       <artifactId>QTJava</artifactId>
       <version>7</version>

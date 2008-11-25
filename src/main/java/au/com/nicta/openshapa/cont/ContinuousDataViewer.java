@@ -16,8 +16,8 @@ public interface ContinuousDataViewer {
     public void play();
     public void forward();
     public void setCellOffset();
-    public void find();
-    public void goBack();
+    public void find(final long milliseconds);
+    public void goBack(final long milliseconds);
     public void setNewCellOnset();
     public void syncCtrl();
     public void sync();
