@@ -73,9 +73,16 @@ implements ContinuousDataViewer {
         }
     }
 
+    @Override
     public void createNewCell() {}
+
+    @Override
     public void jogBack() {}
 
+    /**
+     * Stops the playback of the quicktime video.
+     */
+    @Override
     public void stop() {
         try {
             shuttleSpeed = 0.0f;
@@ -85,9 +92,14 @@ implements ContinuousDataViewer {
         }
     }
 
+    @Override
     public void jogForward() {
     }
 
+    /**
+     * Shuttles the quicktime video backwards.
+     */
+    @Override
     public void shuttleBack() {
         try {
             if (movie != null) {
@@ -103,6 +115,10 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Pauses the playback of the quicktime video.
+     */
+    @Override
     public void pause() {
         try {
             shuttleSpeed = 0.0f;
@@ -111,7 +127,11 @@ implements ContinuousDataViewer {
 
         }
     }
-    
+
+    /**
+     * Shuttles the quicktime video forwards.
+     */
+    @Override
     public void shuttleForward() {
         try {
             if (movie != null) {
@@ -127,6 +147,10 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Rewinds the quicktime video.
+     */
+    @Override
     public void rewind() {        
         try {
             if (movie != null) {
@@ -138,6 +162,10 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Plays the quicktime video.
+     */
+    @Override
     public void play() {
         try {
             if (movie != null) {
@@ -149,6 +177,10 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Fast forwards the quicktime video.
+     */
+    @Override
     public void forward() {
         try {
             if (movie != null) {
@@ -160,13 +192,33 @@ implements ContinuousDataViewer {
         }
     }
 
-    public void setCellOffset() {}
-    public void find() {}
-    public void goBack() {}
-    public void setNewCellOnset() {}
-    public void syncCtrl() {}
-    public void sync() {}
-    public void setCellOnset() {}
+    @Override
+    public void setCellOffset() {
+    }
+
+    @Override
+    public void find() {
+    }
+
+    @Override
+    public void goBack() {
+    }
+
+    @Override
+    public void setNewCellOnset() {
+    }
+
+    @Override
+    public void syncCtrl() {
+    }
+
+    @Override
+    public void sync() {
+    }
+
+    @Override
+    public void setCellOnset() {
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -186,7 +238,11 @@ implements ContinuousDataViewer {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /** Exit the Application */
+    /**
+     * The action to invoke when the user closes the viewer.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         parentController.shutdown(this);        
     }//GEN-LAST:event_exitForm
