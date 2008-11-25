@@ -1,0 +1,196 @@
+package au.com.nicta.openshapa.views;
+
+import au.com.nicta.openshapa.cont.ContinuousDataController;
+import au.com.nicta.openshapa.cont.ContinuousDataViewer;
+import java.io.File;
+import quicktime.QTException;
+import quicktime.QTSession;
+import quicktime.app.view.QTFactory;
+import quicktime.io.OpenMovieFile;
+import quicktime.io.QTFile;
+import quicktime.std.movies.Movie;
+
+/**
+ * The viewer for a QTVideo file.
+ *
+ * @author cfreeman
+ */
+public class QTVideoViewer extends java.awt.Frame
+implements ContinuousDataViewer {
+
+    /** The quicktime movie this viewer is displaying. */
+    private Movie movie;
+
+    /** The controller used to perform actions on this viewer. */
+    private ContinuousDataController parentController;
+
+    /** The "normal" playback speed. */
+    private static final float NORMAL_SPEED = 1.0f;
+
+    /** Fastforward playback speed. */
+    private static final float FFORWARD_SPEED = 32.0f;
+
+    /** Rewind playback speed. */
+    private static final float RWIND_SPEED = -32.0f;
+
+    /** The current shuttle speed. */
+    private float shuttleSpeed;
+
+    /**
+     * Constructor - creates new video viewer.
+     *
+     * @param controller The controller invoking actions on this continous
+     * data viewer.
+     */
+    public QTVideoViewer(final ContinuousDataController controller) {
+        try {            
+            movie = null;
+            shuttleSpeed = 0.0f;
+            parentController = controller;
+
+            // Initalise QTJava.
+            QTSession.open();
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+        initComponents();
+    }
+
+    /**
+     * Method to open a video file for playback.
+     *
+     * @param videoFile The video file that this viewer is going to display to
+     * the user.
+     */
+    public void setVideoFile(final File videoFile) {
+        try {
+            OpenMovieFile omf = OpenMovieFile.asRead (new QTFile(videoFile));
+            movie = Movie.fromFile(omf);
+            this.add(QTFactory.makeQTComponent(movie).asComponent());
+            this.pack();
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void createNewCell() {}
+    public void jogBack() {}
+
+    public void stop() {
+        try {
+            shuttleSpeed = 0.0f;
+            movie.stop();
+        } catch (QTException e) {
+            
+        }
+    }
+
+    public void jogForward() {
+    }
+
+    public void shuttleBack() {
+        try {
+            if (movie != null) {
+                if (shuttleSpeed == 0.0f) {
+                    shuttleSpeed = 1.0f / RWIND_SPEED;
+                } else {
+                    shuttleSpeed = shuttleSpeed * 2;
+                }
+                movie.setRate(shuttleSpeed);
+            }
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void pause() {
+        try {
+            shuttleSpeed = 0.0f;
+            movie.stop();
+        } catch (QTException e) {
+
+        }
+    }
+    
+    public void shuttleForward() {
+        try {
+            if (movie != null) {
+                if (shuttleSpeed == 0.0f) {
+                    shuttleSpeed = 1.0f / FFORWARD_SPEED;
+                } else {
+                    shuttleSpeed = shuttleSpeed * 2;
+                }
+                movie.setRate(shuttleSpeed);
+            }
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void rewind() {        
+        try {
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.setRate(RWIND_SPEED);
+            }
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void play() {
+        try {
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.setRate(NORMAL_SPEED);
+            }
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void forward() {
+        try {
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.setRate(FFORWARD_SPEED);
+            }
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
+    }
+
+    public void setCellOffset() {}
+    public void find() {}
+    public void goBack() {}
+    public void setNewCellOnset() {}
+    public void syncCtrl() {}
+    public void sync() {}
+    public void setCellOnset() {}
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setName("Form"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                exitForm(evt);
+            }
+        });
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /** Exit the Application */
+    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+        parentController.shutdown(this);        
+    }//GEN-LAST:event_exitForm
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
+}

@@ -1,17 +1,28 @@
 package au.com.nicta.openshapa.cont;
 
+import java.awt.Frame;
 import java.io.File;
+import java.net.MalformedURLException;
 import quicktime.QTException;
 import quicktime.QTSession;
+import quicktime.app.view.QTComponent;
+import quicktime.std.StdQTConstants;
+import quicktime.std.movies.Movie;
+import quicktime.std.movies.MovieController;
+import quicktime.std.movies.media.DataRef;
 
-public class QTVideoViewer extends javax.swing.JPanel
+public class QTVideoViewer extends Frame
 implements ContinuousDataViewer {
 
-    private ContinuousDataController vidController;
+    //private ContinuousDataController vidController;
 
-    public QTVideoViewer(final ContinuousDataController cont) {
+    private Movie m;
+    private MovieController mc;
+    private QTComponent qtc = null;
+
+    public QTVideoViewer(/*final ContinuousDataController cont*/) {
         initComponents();
-        vidController = cont;
+        //vidController = cont;
         try {
             QTSession.open();
         } catch (QTException e) {
@@ -20,6 +31,36 @@ implements ContinuousDataViewer {
     }
     
     public void setVideoFile(final File videoFile) {
+        try {
+            // create the DataRef that contains the information about where the movie is
+            DataRef urlMovie = new DataRef(videoFile.toURI().toURL().toString());
+
+            // create the movie
+            m = Movie.fromDataRef(urlMovie, StdQTConstants.newMovieActive);
+
+            // create the movie controller
+            mc = new MovieController(m);
+
+            // create and add a QTComponent if we haven't done so yet, otherwise set qtc's movie controller
+            /*
+            if (qtc == null) {
+                qtc = QTFactory.makeQTComponent(mc);
+                add((Component)qtc);
+            } else {
+                qtc.setMovieController(mc);
+            }
+             */
+
+      // this will set the size of the enclosing frame to the size of the incoming movie
+      //pack();
+
+      // start up the movie
+            m.setRate(1);
+        } catch (QTException e) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        } catch (MalformedURLException m) {
+            // TODO bug #18 Log the nature of the error to log4j.
+        }
     }
 
     public void createNewCell(){}

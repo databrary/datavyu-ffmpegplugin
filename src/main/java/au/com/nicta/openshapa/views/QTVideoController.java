@@ -1,30 +1,28 @@
 package au.com.nicta.openshapa.views;
 
-import au.com.nicta.openshapa.Executive;
-import au.com.nicta.openshapa.ExecutiveKeyListener;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
-import au.com.nicta.openshapa.cont.QTVideoViewer;
+import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import au.com.nicta.openshapa.db.TimeStamp;
-import java.awt.event.KeyEvent;
+import java.awt.FileDialog;
+import java.io.File;
 import java.util.Vector;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 
-public class QTVideoController
-        extends javax.swing.JFrame
-        implements ContinuousDataController, ExecutiveKeyListener
-{
-    protected Executive parent = null;
+public class QTVideoController extends javax.swing.JFrame
+implements ContinuousDataController /*, ExecutiveKeyListener*/ {
+
+    //protected Executive parent = null;
     protected JButton lastButton = null;
     protected TimeStamp currentTimestamp = null;
-    protected Vector<QTVideoViewer> viewers = new Vector<QTVideoViewer>();
-    protected static JFileChooser jfc = new JFileChooser();
 
-    /** Creates new form QTVideoController */
+    protected Vector<QTVideoViewer> viewers = new Vector<QTVideoViewer>();
+    protected FileDialog jfc;
+
     public QTVideoController() {
         initComponents();
     }
 
+    /*
     public QTVideoController(Executive exec)
     {
         this.parent = exec;
@@ -35,17 +33,26 @@ public class QTVideoController
             this.parent.setActiveExecutiveKeyListener(this);
         }
     }
+     */
     
-    public void setCurrentLocation(TimeStamp ts)
-    {
+    public void setCurrentLocation(TimeStamp ts) {
         this.currentTimestamp = ts;
     }
 
-    public TimeStamp getCurrentLocation()
-    {
+    public TimeStamp getCurrentLocation() {
         return (this.currentTimestamp);
     }
-    
+
+    public void shutdown(ContinuousDataViewer viewer) {                
+        for (int i = 0; i < this.viewers.size(); i++) {
+            if (viewer == this.viewers.elementAt(i)) {
+                this.viewers.elementAt(i).dispose();
+                this.viewers.remove(viewer);
+            }
+        }
+    }
+
+    /*
     public void executiveKeyPressed(KeyEvent ke)
     {
         switch (ke.getKeyCode()) {
@@ -152,6 +159,7 @@ public class QTVideoController
     public void executiveKeyControlLost()
     {
     }
+     */
     
     
     /** This method is called from within the constructor to
@@ -425,120 +433,123 @@ public class QTVideoController
     }// </editor-fold>//GEN-END:initComponents
 
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
-        // TODO add your handling code here:
-        int status = this.jfc.showOpenDialog(this);
-        this.jfc.setDialogTitle("Select QuickTime Video File");
-        if (status == this.jfc.APPROVE_OPTION) {
-            QTVideoViewer viewer = new QTVideoViewer(this.parent, this);
-            viewer.setVideoFile(this.jfc.getSelectedFile());
-            this.viewers.add(viewer);
-        }
+        jfc = new FileDialog(this, "Select QuickTime Video File",
+                             FileDialog.LOAD);
+        jfc.setVisible(true);
+
+        QTVideoViewer viewer = new QTVideoViewer(this);
+        File f = new File(jfc.getDirectory(), jfc.getFile());
+        viewer.setVideoFile(f);
+        viewer.setVisible(true);
+
+        // Add the QTVideoViewer to the list of viewers we are controlling.
+        this.viewers.add(viewer);
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
     private void syncCtrlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncCtrlButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).syncCtrl();
         }
     }//GEN-LAST:event_syncCtrlButtonActionPerformed
 
     private void syncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
     }//GEN-LAST:event_syncButtonActionPerformed
 
     private void setCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOnsetButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellOnset();
         }
     }//GEN-LAST:event_setCellOnsetButtonActionPerformed
 
     private void setCellOffsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOffsetButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellOffset();
         }
     }//GEN-LAST:event_setCellOffsetButtonActionPerformed
 
     private void rewindButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rewindButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).rewind();
         }
     }//GEN-LAST:event_rewindButtonActionPerformed
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).play();
         }
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void forwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).forward();
         }
     }//GEN-LAST:event_forwardButtonActionPerformed
 
     private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).goBack();
         }
     }//GEN-LAST:event_goBackButtonActionPerformed
 
     private void shuttleBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleBackButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleBack();
         }
     }//GEN-LAST:event_shuttleBackButtonActionPerformed
 
     private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).pause();
         }
     }//GEN-LAST:event_pauseButtonActionPerformed
 
     private void shuttleForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleForwardButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleForward();
         }
     }//GEN-LAST:event_shuttleForwardButtonActionPerformed
 
     private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).find();
         }
     }//GEN-LAST:event_findButtonActionPerformed
 
     private void jogBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogBackButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogBack();
         }
     }//GEN-LAST:event_jogBackButtonActionPerformed
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).stop();
         }
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void jogForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogForwardButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogForward();
         }
     }//GEN-LAST:event_jogForwardButtonActionPerformed
 
     private void createNewCellButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createNewCellButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).createNewCell();
         }
     }//GEN-LAST:event_createNewCellButtonActionPerformed
 
     private void setNewCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setNewCellOnsetButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setNewCellOnset();
         }
     }//GEN-LAST:event_setNewCellOnsetButtonActionPerformed
 
     private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
-        for (int i=0; i<this.viewers.size(); i++) {
+        for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
     }//GEN-LAST:event_syncVideoButtonActionPerformed
@@ -547,25 +558,9 @@ public class QTVideoController
     }//GEN-LAST:event_timestampSetupButtonActionPerformed
 
     private void videoProgressBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_videoProgressBarStateChanged
-        if (!this.videoProgressBar.getValueIsAdjusting())
-        {
+        if (!this.videoProgressBar.getValueIsAdjusting()) {
         }
     }//GEN-LAST:event_videoProgressBarStateChanged
-    
-    /**
-     * @param args the command line arguments
-     */
-    /*
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                Executive exec = new Executive();
-                QTVideoController qtc = new QTVideoController(exec);
-                qtc.setVisible(true);
-            }
-        });
-    }
-     */
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;

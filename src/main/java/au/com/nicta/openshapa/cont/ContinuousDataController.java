@@ -14,4 +14,5 @@ public interface ContinuousDataController
 {
     public void setCurrentLocation(TimeStamp ts);
     public TimeStamp getCurrentLocation();
+    public void shutdown(ContinuousDataViewer viewer);
 }
