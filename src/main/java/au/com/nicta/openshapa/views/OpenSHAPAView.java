@@ -17,6 +17,8 @@ import javax.swing.JOptionPane;
  */
 public class OpenSHAPAView extends javax.swing.JFrame {
 
+    
+
     /** The current database we are working on. */
     private Database db;
 

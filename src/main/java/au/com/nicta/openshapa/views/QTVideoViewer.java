@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import java.io.File;
+import org.apache.log4j.Logger;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
@@ -17,6 +18,9 @@ import quicktime.std.movies.Movie;
  */
 public class QTVideoViewer extends java.awt.Frame
 implements ContinuousDataViewer {
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(QTVideoViewer.class);
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
@@ -51,7 +55,7 @@ implements ContinuousDataViewer {
             // Initalise QTJava.
             QTSession.open();
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to create QTVideoViewer", e);
         }
         initComponents();
     }
@@ -69,7 +73,7 @@ implements ContinuousDataViewer {
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             this.pack();
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to setVideoFile", e);
         }
     }
 
@@ -88,7 +92,7 @@ implements ContinuousDataViewer {
             shuttleSpeed = 0.0f;
             movie.stop();
         } catch (QTException e) {
-            
+            logger.error("Unable to stop", e);
         }
     }
 
@@ -111,7 +115,7 @@ implements ContinuousDataViewer {
                 movie.setRate(shuttleSpeed);
             }
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to shuttleBack", e);
         }
     }
 
@@ -124,7 +128,7 @@ implements ContinuousDataViewer {
             shuttleSpeed = 0.0f;
             movie.stop();
         } catch (QTException e) {
-
+            logger.error("pause", e);
         }
     }
 
@@ -143,7 +147,7 @@ implements ContinuousDataViewer {
                 movie.setRate(shuttleSpeed);
             }
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to shuttleForward", e);
         }
     }
 
@@ -158,7 +162,7 @@ implements ContinuousDataViewer {
                 movie.setRate(RWIND_SPEED);
             }
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to rewind", e);
         }
     }
 
@@ -173,7 +177,7 @@ implements ContinuousDataViewer {
                 movie.setRate(NORMAL_SPEED);
             }
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to play", e);
         }
     }
 
@@ -188,7 +192,7 @@ implements ContinuousDataViewer {
                 movie.setRate(FFORWARD_SPEED);
             }
         } catch (QTException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to forward", e);
         }
     }
 

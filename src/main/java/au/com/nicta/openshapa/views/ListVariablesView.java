@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -15,6 +16,9 @@ import org.jdesktop.application.ResourceMap;
  * @author cfreeman
  */
 public class ListVariablesView extends javax.swing.JDialog {
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(ListVariablesView.class);
 
     /** The column for if a variable is visible or not. */
     private final static int VCOLUMN = 0;
@@ -103,7 +107,7 @@ public class ListVariablesView extends javax.swing.JDialog {
                 tableModel.insertRow(model.getRowCount(), vals);
             }
         } catch (SystemErrorException e) {
-            // TODO bug #18 Log the nature of the error to log4j.
+            logger.error("Unable to list variables.", e);
         }        
     }
 

@@ -1,6 +1,8 @@
 package au.com.nicta.openshapa;
 
 import au.com.nicta.openshapa.views.OpenSHAPAView;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -8,6 +10,9 @@ import org.jdesktop.application.SingleFrameApplication;
  * The main class of the application.
  */
 public class OpenSHAPA extends SingleFrameApplication {
+
+    /** The logger for OpenSHAPA. */
+    private static Logger logger = Logger.getLogger(OpenSHAPA.class);
 
     /**
      * At startup create and show the main frame of the application.
@@ -36,6 +41,9 @@ public class OpenSHAPA extends SingleFrameApplication {
      * Main method launching the application.
      */
     public static void main(String[] args) {
+        PropertyConfigurator.configure("log4j.properties");
+
+        logger.info("Starting OpenSHAPA.");
         launch(OpenSHAPA.class, args);
     }
 }
