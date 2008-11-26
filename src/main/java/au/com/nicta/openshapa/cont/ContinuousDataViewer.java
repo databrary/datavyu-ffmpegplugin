@@ -48,7 +48,17 @@ public interface ContinuousDataViewer {
      */
     void forward();
 
-    void setCellOffset();
+    /**
+     * Sets the cell starting time (onset - in the old terminology), from the
+     * current time of the continous data stream.
+     */
+    void setCellStartTime();
+
+    /**
+     * Sets the cell stopping time (offset - in the old terminology), from the
+     * current time of the continous data stream.
+     */
+    void setCellStopTime();
 
     /**
      * Find can be used to seek within a continous data stream - allowing the
@@ -69,6 +79,5 @@ public interface ContinuousDataViewer {
 
     void setNewCellOnset();
     void syncCtrl();
-    void sync();
-    void setCellOnset();
+    void sync();    
 } //End of ContinuousDataViewer interface definition

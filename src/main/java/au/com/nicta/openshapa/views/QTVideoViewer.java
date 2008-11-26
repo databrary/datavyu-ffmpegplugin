@@ -211,7 +211,25 @@ implements ContinuousDataViewer {
     }
 
     @Override
-    public void setCellOffset() {
+    public void setNewCellOnset() {
+    }
+
+    @Override
+    public void setCellStartTime() {
+        try {
+            float curTime = movie.getTime() / (float) movie.getTimeScale();
+        } catch (QTException e) {
+            logger.error("Unable to setCellStartTime", e);
+        }
+    }
+
+    @Override
+    public void setCellStopTime() {
+        try {
+            float curTime = movie.getTime() / (float) movie.getTimeScale();
+        } catch (QTException e) {
+            logger.error("Unable to setCellStartTime", e);
+        }
     }
 
     @Override
@@ -257,10 +275,6 @@ implements ContinuousDataViewer {
     }
 
     @Override
-    public void setNewCellOnset() {
-    }
-
-    @Override
     public void syncCtrl() {
     }
 
@@ -268,11 +282,7 @@ implements ContinuousDataViewer {
     public void sync() {
     }
 
-    @Override
-    public void setCellOnset() {
-    }
-
-        /**
+    /**
      * Jogs the movie by a specified number of frames.
      *
      * @param offset The number of frames to jog the movie by.

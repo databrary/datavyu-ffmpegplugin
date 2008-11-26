@@ -485,13 +485,13 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
 
     private void setCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOnsetButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellOnset();
+            this.viewers.elementAt(i).setCellStartTime();
         }
     }//GEN-LAST:event_setCellOnsetButtonActionPerformed
 
     private void setCellOffsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOffsetButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellOffset();
+            this.viewers.elementAt(i).setCellStopTime();
         }
     }//GEN-LAST:event_setCellOffsetButtonActionPerformed
 
