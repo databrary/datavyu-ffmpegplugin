@@ -9,11 +9,15 @@ import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
+import quicktime.std.movies.Track;
+import quicktime.std.movies.media.Media;
+import quicktime.std.movies.media.SampleTimeInfo;
 
 /**
- * The viewer for a QTVideo file.
+ * The viewer for a quicktime video file.
  *
  * @author cfreeman
  */
@@ -25,6 +29,12 @@ implements ContinuousDataViewer {
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
+
+    /** The visual track for the above quicktime movie. */
+    private Track visualTrack;
+
+    /** The visual media for the above visual track. */
+    private Media visualMedia;
 
     /** The controller used to perform actions on this viewer. */
     private ContinuousDataController parentController;
@@ -74,6 +84,11 @@ implements ContinuousDataViewer {
         try {
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+            visualTrack = movie.getIndTrackType(1,
+                                       StdQTConstants.visualMediaCharacteristic,
+                                       StdQTConstants.movieTrackCharacteristic);
+            visualMedia = visualTrack.getMedia();
+
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             this.pack();
         } catch (QTException e) {
@@ -87,16 +102,20 @@ implements ContinuousDataViewer {
 
     @Override
     public void jogBack() {
+        try {
+            this.jog(-1);
+        } catch (QTException e) {
+            logger.error("Unable to jogBack", e);
+        }
     }
 
-    /**
-     * Stops the playback of the quicktime video.
-     */
     @Override
     public void stop() {
         try {
-            shuttleSpeed = 0.0f;
-            movie.stop();
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.stop();
+            }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
         }
@@ -104,11 +123,13 @@ implements ContinuousDataViewer {
 
     @Override
     public void jogForward() {
+        try {
+            this.jog(1);
+        } catch (QTException e) {
+            logger.error("Unable to jogForward", e);
+        }
     }
 
-    /**
-     * Shuttles the quicktime video backwards.
-     */
     @Override
     public void shuttleBack() {
         try {
@@ -125,23 +146,18 @@ implements ContinuousDataViewer {
         }
     }
 
-    /**
-     * Pauses the playback of the quicktime video.
-     */
     @Override
     public void pause() {
         try {
-            shuttleSpeed = 0.0f;
-            movie.stop();
-
+            if (movie != null) {
+                shuttleSpeed = 0.0f;
+                movie.stop();
+            }
         } catch (QTException e) {
             logger.error("pause", e);
         }
     }
 
-    /**
-     * Shuttles the quicktime video forwards.
-     */
     @Override
     public void shuttleForward() {
         try {
@@ -158,9 +174,6 @@ implements ContinuousDataViewer {
         }
     }
 
-    /**
-     * Rewinds the quicktime video.
-     */
     @Override
     public void rewind() {
         try {
@@ -173,9 +186,6 @@ implements ContinuousDataViewer {
         }
     }
 
-    /**
-     * Plays the quicktime video.
-     */
     @Override
     public void play() {
         try {
@@ -188,9 +198,6 @@ implements ContinuousDataViewer {
         }
     }
 
-    /**
-     * Fast forwards the quicktime video.
-     */
     @Override
     public void forward() {
         try {
@@ -207,13 +214,6 @@ implements ContinuousDataViewer {
     public void setCellOffset() {
     }
 
-    /**
-     * Find can be used to seek to the desired time (specified in milliseconds)
-     * within in the open video.
-     *
-     * @param milliseconds The time you wish to jump too, specified in
-     * milliseconds.
-     */
     @Override
     public void find(final long milliseconds) {
         try {
@@ -270,6 +270,32 @@ implements ContinuousDataViewer {
 
     @Override
     public void setCellOnset() {
+    }
+
+        /**
+     * Jogs the movie by a specified number of frames.
+     *
+     * @param offset The number of frames to jog the movie by.
+     *
+     * @throws QTException If unable to jog the movie by the specified number
+     * of frames.
+     */
+    private void jog(final int offset) throws QTException {
+        if (movie != null) {
+            shuttleSpeed = 0.0f;
+            movie.stop();
+
+            // Get the current frame.
+            SampleTimeInfo sTime = visualMedia.timeToSampleNum(movie.getTime());
+
+            // Get the time of the next frame.
+            int t = visualMedia
+                    .sampleNumToMediaTime(sTime.sampleNum + offset).time;
+            TimeRecord time = new TimeRecord(movie.getTimeScale(), t);
+
+            // Advance the movie to the next frame.
+            movie.setTime(time);
+        }
     }
 
     /** This method is called from within the constructor to
