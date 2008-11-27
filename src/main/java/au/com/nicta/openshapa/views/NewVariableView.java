@@ -23,8 +23,10 @@ public final class NewVariableView extends javax.swing.JDialog {
      */
     public NewVariableView(final java.awt.Frame parent, final boolean modal,
                            final ActionListener listener) {
-        super(parent, modal);
+        super(parent, modal);        
         initComponents();
+        setName(this.getClass().getSimpleName());
+
         notifier = listener;
 
         // init button group
@@ -63,7 +65,6 @@ public final class NewVariableView extends javax.swing.JDialog {
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariableView.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
-        setResizable(false);
 
         jLabel1.setName("jLabel1"); // NOI18N
 

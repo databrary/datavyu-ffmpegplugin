@@ -54,6 +54,8 @@ public class ListVariablesView extends javax.swing.JDialog {
         super(parent, modal);
         tableModel = new DefaultTableModel();
         initComponents();
+        setName(this.getClass().getSimpleName());
+        
         database = db;
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
@@ -127,7 +129,6 @@ public class ListVariablesView extends javax.swing.JDialog {
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariablesView.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
-        setResizable(false);
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 

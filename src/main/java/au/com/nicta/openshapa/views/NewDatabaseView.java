@@ -21,9 +21,13 @@ public class NewDatabaseView extends javax.swing.JDialog {
      * user clicks on the OK button.
      */
     public NewDatabaseView(java.awt.Frame parent, boolean modal,
-                           ActionListener listener) {
-        super(parent, modal);
+                           ActionListener listener) {        
+        super(parent, modal);        
         initComponents();
+
+        // Need to set a unique name so that we save and restore session data
+        // i.e. window size, position, etc.
+        setName(this.getClass().getSimpleName());
         notifier = listener;
     }
 
@@ -48,7 +52,6 @@ public class NewDatabaseView extends javax.swing.JDialog {
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabaseView.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
-        setResizable(false);
 
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
@@ -141,7 +144,7 @@ public class NewDatabaseView extends javax.swing.JDialog {
      * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        notifier.actionPerformed(evt);        
+        notifier.actionPerformed(evt);
         this.dispose();
 }//GEN-LAST:event_okButtonActionPerformed
 

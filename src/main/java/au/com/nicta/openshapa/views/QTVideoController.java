@@ -38,6 +38,7 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
      */
     public QTVideoController() {
         initComponents();
+        setName(this.getClass().getSimpleName());
         viewers = new Vector<QTVideoViewer>();
     }
 

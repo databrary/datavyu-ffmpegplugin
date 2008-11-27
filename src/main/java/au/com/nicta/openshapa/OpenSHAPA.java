@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.views.OpenSHAPAView;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
 
 /**
@@ -18,7 +19,7 @@ public class OpenSHAPA extends SingleFrameApplication {
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
-        show(new OpenSHAPAView());
+        show(new OpenSHAPAView(this));
     }
 
     /**
@@ -31,10 +32,20 @@ public class OpenSHAPA extends SingleFrameApplication {
 
     /**
      * A convenient static getter for the application instance.
-     * @return the instance of DesktopApplication1
+     *
+     * @return The instance of the OpenSHAPA application.
      */
     public static OpenSHAPA getApplication() {
         return Application.getInstance(OpenSHAPA.class);
+    }
+
+    /**
+     * A convenient static getter for the application session storage.
+     *
+     * @return The SessionStorage for the OpenSHAPA application.
+     */
+    public static SessionStorage getSessionStorage() {
+        return OpenSHAPA.getApplication().getContext().getSessionStorage();
     }
 
     /**
