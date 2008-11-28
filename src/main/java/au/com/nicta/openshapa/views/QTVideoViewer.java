@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import java.io.File;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import quicktime.QTException;
 import quicktime.QTSession;
@@ -21,7 +22,7 @@ import quicktime.std.movies.media.SampleTimeInfo;
  *
  * @author cfreeman
  */
-public final class QTVideoViewer extends java.awt.Frame
+public final class QTVideoViewer extends JFrame
 implements ContinuousDataViewer {
 
     /** Logger for this class. */
@@ -92,7 +93,7 @@ implements ContinuousDataViewer {
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             this.pack();
 
-            setName(this.getClass().getSimpleName() + videoFile.toString());
+            setName(this.getClass().getSimpleName() + videoFile.getName());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }

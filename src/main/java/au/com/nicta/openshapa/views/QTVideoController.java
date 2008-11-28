@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import au.com.nicta.openshapa.db.TimeStamp;
@@ -235,8 +236,7 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Quicktime Video Controller");
         setBackground(java.awt.Color.white);
-        setName("qtVideoController"); // NOI18N
-        setResizable(false);
+        setName(""); // NOI18N
 
         mainPanel.setBackground(java.awt.Color.white);
         mainPanel.setLayout(new java.awt.BorderLayout(2, 0));
@@ -467,13 +467,15 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
                              FileDialog.LOAD);
         jfc.setVisible(true);
 
-        QTVideoViewer viewer = new QTVideoViewer(this);
-        File f = new File(jfc.getDirectory(), jfc.getFile());
-        viewer.setVideoFile(f);
-        viewer.setVisible(true);
+        if (jfc.getFile() != null && jfc.getDirectory() != null) {
+            QTVideoViewer viewer = new QTVideoViewer(this);
+            File f = new File(jfc.getDirectory(), jfc.getFile());
+            viewer.setVideoFile(f);
+            OpenSHAPA.getApplication().show(viewer);
 
-        // Add the QTVideoViewer to the list of viewers we are controlling.
-        this.viewers.add(viewer);
+            // Add the QTVideoViewer to the list of viewers we are controlling.
+            this.viewers.add(viewer);
+        }
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
     private void syncCtrlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncCtrlButtonActionPerformed

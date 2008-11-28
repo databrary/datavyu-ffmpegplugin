@@ -10,7 +10,7 @@ import org.jdesktop.application.SingleFrameApplication;
 /**
  * The main class of the application.
  */
-public class OpenSHAPA extends SingleFrameApplication {
+public final class OpenSHAPA extends SingleFrameApplication {
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
