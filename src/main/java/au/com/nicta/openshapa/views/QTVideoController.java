@@ -10,7 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
-import javax.swing.JButton;
 import org.apache.log4j.Logger;
 
 /**
@@ -19,20 +18,7 @@ import org.apache.log4j.Logger;
  * @author cfreeman
  */
 public final class QTVideoController extends javax.swing.JDialog
-implements ContinuousDataController /*, ExecutiveKeyListener*/ {
-    
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTVideoController.class);
-
-    //protected Executive parent = null;
-    private JButton lastButton = null;
-    private TimeStamp currentTimestamp = null;
-
-    /** The list of viewers associated with this controller. */
-    private Vector<QTVideoViewer> viewers;
-
-    /** The dialog to present to the user when they desire to load a file. */
-    private FileDialog jfc;
+implements ContinuousDataController /*, ExecutiveKeyListener*/ {        
 
     /**
      * Constructor. Creates a new QTVideoController.
@@ -60,10 +46,12 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     }
      */
 
+    @Override
     public void setCurrentLocation(TimeStamp ts) {
         this.currentTimestamp = ts;
     }
 
+    @Override
     public TimeStamp getCurrentLocation() {
         return (this.currentTimestamp);
     }
@@ -462,6 +450,11 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Action to invoke when the user clicks on the open button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
         jfc = new FileDialog(this, "Select QuickTime Video File",
                              FileDialog.LOAD);
@@ -478,48 +471,88 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the sync ctrl button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void syncCtrlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncCtrlButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).syncCtrl();
         }
     }//GEN-LAST:event_syncCtrlButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the sync button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void syncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
     }//GEN-LAST:event_syncButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks the set cell onset button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void setCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOnsetButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStartTime();
         }
     }//GEN-LAST:event_setCellOnsetButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the set cell offest button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void setCellOffsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOffsetButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStopTime();
         }
     }//GEN-LAST:event_setCellOffsetButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the rewind button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void rewindButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rewindButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).rewind();
         }
     }//GEN-LAST:event_rewindButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the play button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).play();
         }
     }//GEN-LAST:event_playButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the fast foward button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void forwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).forward();
         }
     }//GEN-LAST:event_forwardButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the go back button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -537,24 +570,44 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         }
     }//GEN-LAST:event_goBackButtonActionPerformed
 
+    /**
+     * Action to inovke when the user clicks on the shuttle back button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void shuttleBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleBackButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleBack();
         }
     }//GEN-LAST:event_shuttleBackButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the pause button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).pause();
         }
     }//GEN-LAST:event_pauseButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the shuttle forward button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void shuttleForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleForwardButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleForward();
         }
     }//GEN-LAST:event_shuttleForwardButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the find button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findButtonActionPerformed
         //Date seekTime = DateFormat.getInstance().parse();
         try {
@@ -573,45 +626,85 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         }
     }//GEN-LAST:event_findButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the jog backwards button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void jogBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogBackButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogBack();
         }
     }//GEN-LAST:event_jogBackButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the stop button
+     *
+     * @param evt The event that triggered this action.
+     */
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).stop();
         }
     }//GEN-LAST:event_stopButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the jog forwards button
+     *
+     * @param evt The event that triggered this action.
+     */
     private void jogForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogForwardButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogForward();
         }
     }//GEN-LAST:event_jogForwardButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the new cell button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void createNewCellButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createNewCellButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).createNewCell();
         }
     }//GEN-LAST:event_createNewCellButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the new cell onset button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void setNewCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setNewCellOnsetButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setNewCellOnset();
         }
     }//GEN-LAST:event_setNewCellOnsetButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the sync video button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
     }//GEN-LAST:event_syncVideoButtonActionPerformed
 
+    /**
+     * Action to invoke when the user clicks on the time stamp setup button.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void timestampSetupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampSetupButtonActionPerformed
     }//GEN-LAST:event_timestampSetupButtonActionPerformed
 
+    /**
+     * Action to invoke when the video progress bar state changes.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void videoProgressBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_videoProgressBarStateChanged
         if (!this.videoProgressBar.getValueIsAdjusting()) {
         }
@@ -650,4 +743,19 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     private javax.swing.JPanel topPanel;
     private javax.swing.JSlider videoProgressBar;
     // End of variables declaration//GEN-END:variables
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(QTVideoController.class);
+
+    //protected Executive parent = null;
+    //private JButton lastButton = null;
+
+    /** The current time stamp on the quicktime video controller. */
+    private TimeStamp currentTimestamp = null;
+
+    /** The list of viewers associated with this controller. */
+    private Vector<QTVideoViewer> viewers;
+
+    /** The dialog to present to the user when they desire to load a file. */
+    private FileDialog jfc;
 }
