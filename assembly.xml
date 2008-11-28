@@ -5,10 +5,17 @@
     <format>tar.gz</format>
     <format>zip</format>
   </formats>
-  <binaries>        
+
+  <files>
+    <file>
+      <source>log4j.properties</source>
+    </file>
+  </files>
+
+  <binaries>
     <dependencySets>
       <dependencySet>
-          <includes/>
+          <includes/>          
       </dependencySet>
     </dependencySets>
   </binaries>

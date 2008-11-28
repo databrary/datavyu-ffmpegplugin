@@ -60,9 +60,10 @@
 		<configuration>
             <archive>
                 <manifest>
-                    <mainClass>au.com.nicta.openshapa.Main</mainClass>
+                    <mainClass>au.com.nicta.openshapa.OpenSHAPA</mainClass>
+                    <addClasspath>true</addClasspath>
                 </manifest>
-            </archive>
+            </archive>           
         </configuration>
       </plugin>
     </plugins>

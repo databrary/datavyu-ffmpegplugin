@@ -73,7 +73,7 @@ public class OpenSHAPAView extends FrameView {
     @Action
     public void showQTVideoController() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        qtVideoController = new QTVideoController();
+        qtVideoController = new QTVideoController(mainFrame, false);
         OpenSHAPA.getApplication().show(qtVideoController);
     }
 

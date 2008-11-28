@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  *
  * @author cfreeman
  */
-public final class QTVideoController extends javax.swing.JFrame
+public final class QTVideoController extends javax.swing.JDialog
 implements ContinuousDataController /*, ExecutiveKeyListener*/ {
     
     /** Logger for this class. */
@@ -35,8 +35,12 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
 
     /**
      * Constructor. Creates a new QTVideoController.
+     *
+     * @param parent The parent of this form.
+     * @param modal Should the dialog be modal or not?
      */
-    public QTVideoController() {
+    public QTVideoController(final java.awt.Frame parent, final boolean modal) {
+        super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new Vector<QTVideoViewer>();

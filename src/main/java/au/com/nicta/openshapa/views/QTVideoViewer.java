@@ -71,7 +71,7 @@ implements ContinuousDataViewer {
         } catch (QTException e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
-        initComponents();
+        initComponents();        
     }
 
     /**
@@ -91,6 +91,8 @@ implements ContinuousDataViewer {
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             this.pack();
+
+            setName(this.getClass().getSimpleName() + videoFile.toString());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
