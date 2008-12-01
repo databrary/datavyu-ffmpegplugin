@@ -64,6 +64,11 @@ public class OpenSHAPAView extends FrameView {
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         listVarView = new ListVariablesView(mainFrame, false, db);
+        try {
+            db.registerColumnListListener(listVarView);
+        } catch (SystemErrorException e) {
+            logger.error("Unable register column list listener", e);
+        }
         OpenSHAPA.getApplication().show(listVarView);
     }
 
