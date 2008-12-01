@@ -2,15 +2,19 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
-import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import au.com.nicta.openshapa.db.TimeStamp;
+import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
+import au.com.nicta.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Action;
 
 /**
  * Quicktime video controller.
@@ -18,7 +22,7 @@ import org.apache.log4j.Logger;
  * @author cfreeman
  */
 public final class QTVideoController extends javax.swing.JDialog
-implements ContinuousDataController /*, ExecutiveKeyListener*/ {        
+implements ContinuousDataController, KeyEventDispatcher {
 
     /**
      * Constructor. Creates a new QTVideoController.
@@ -28,6 +32,9 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
      */
     public QTVideoController(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
+        KeyboardFocusManager key = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        key.addKeyEventDispatcher(this);
+
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new Vector<QTVideoViewer>();
@@ -223,7 +230,6 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Quicktime Video Controller");
-        setBackground(java.awt.Color.white);
         setName(""); // NOI18N
 
         mainPanel.setBackground(java.awt.Color.white);
@@ -295,12 +301,10 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         });
         gridButtonPanel.add(rewindButton);
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
+        playButton.setAction(actionMap.get("playAction")); // NOI18N
         playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/playButton.png"))); // NOI18N
-        playButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                playButtonActionPerformed(evt);
-            }
-        });
+        playButton.setMnemonic('8');
         gridButtonPanel.add(playButton);
 
         forwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/forwardButton.png"))); // NOI18N
@@ -526,17 +530,18 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
         }
     }//GEN-LAST:event_rewindButtonActionPerformed
 
+    @Action
+    public void playAction() {
+        for (int i = 0; i < this.viewers.size(); i++) {
+            this.viewers.elementAt(i).play();
+        }
+    }
+
     /**
      * Action to invoke when the user clicks on the play button.
      *
      * @param evt The event that triggered this action.
      */
-    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).play();
-        }
-    }//GEN-LAST:event_playButtonActionPerformed
-
     /**
      * Action to invoke when the user clicks on the fast foward button.
      *
@@ -699,6 +704,12 @@ implements ContinuousDataController /*, ExecutiveKeyListener*/ {
      */
     private void timestampSetupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampSetupButtonActionPerformed
     }//GEN-LAST:event_timestampSetupButtonActionPerformed
+
+    @Override
+    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
+        int test = 4;
+        return true;
+    }
 
     /**
      * Action to invoke when the video progress bar state changes.

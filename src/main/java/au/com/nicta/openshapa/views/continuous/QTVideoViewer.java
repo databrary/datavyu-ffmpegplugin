@@ -1,7 +1,6 @@
-package au.com.nicta.openshapa.views;
+package au.com.nicta.openshapa.views.continuous;
 
 import au.com.nicta.openshapa.cont.ContinuousDataController;
-import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -72,7 +71,7 @@ implements ContinuousDataViewer {
         } catch (QTException e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
-        initComponents();        
+        initComponents();      
     }
 
     /**

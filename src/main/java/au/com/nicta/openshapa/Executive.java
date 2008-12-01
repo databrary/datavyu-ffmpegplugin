@@ -7,7 +7,7 @@
 
 package au.com.nicta.openshapa;
 
-import au.com.nicta.openshapa.cont.ContinuousDataViewer;
+//import au.com.nicta.openshapa.cont.ContinuousDataViewer;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.disc.DiscreteDataViewer;
 import au.com.nicta.openshapa.plugin.Plugin;
@@ -77,8 +77,8 @@ public class Executive implements KeyListener {
       new Vector<Database>();
   protected Vector<DiscreteDataViewer> discreteViewers =
       new Vector<DiscreteDataViewer>();
-  protected Vector<ContinuousDataViewer> continuousViewers =
-      new Vector<ContinuousDataViewer>();
+//  protected Vector<ContinuousDataViewer> continuousViewers =
+//      new Vector<ContinuousDataViewer>();
   protected Vector<Plugin> plugins =
       new Vector<Plugin>();
 
