@@ -51,6 +51,9 @@ public class Predicate extends DBElement
      * cellID:  Long containing the ID of the DataCell in which this instance
      *      of predicate appears (if any).
      *
+     * queryVarOK: Boolean flag used to indicate whether parameters can be 
+     *      be query variables.
+     *
      */
         
     /** ID of the represented predicate */
@@ -65,7 +68,11 @@ public class Predicate extends DBElement
     /** Whether the predicate has a variable length argument list */
     protected boolean varLen = false;
     
+    /** ID of cell in which this col pred appears, if any */
     protected long cellID = DBIndex.INVALID_ID;
+    
+    /** whether parameters can be query variables */
+    protected boolean queryVarOK = false;
     
   
     
@@ -1234,84 +1241,313 @@ public class Predicate extends DBElement
             switch (fa.getFargType())
             {
                 case COL_PREDICATE:
-                    if ( ! ( dv instanceof ColPredDataValue ) )
+                    if ( dv instanceof ColPredDataValue )
+                    {
+                        cdv = new ColPredDataValue((ColPredDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + 
-                                ": column predicate expected.");
+                                ": column predicate, undefined DV, " +
+                                "or query var expected.");
                     }
-                    cdv = new ColPredDataValue((ColPredDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + 
+                                ": column predicate, or undefined DV " +
+                                "expected.");
+                    }
                     break;
+                
+//                case COL_PREDICATE: // TODO: delete this eventually
+//                    if ( ! ( dv instanceof ColPredDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": column predicate expected.");
+//                    }
+//                    cdv = new ColPredDataValue((ColPredDataValue)dv);
+//                    break;
 
                 case FLOAT:
-                    if ( ! ( dv instanceof FloatDataValue ) )
+                    if ( dv instanceof FloatDataValue )
+                    {
+                        cdv = new FloatDataValue((FloatDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": float expected.");
+                                "Type mismatch for arg " + i + ": float DV, " +
+                                "undefined DV, or query var expected.");
                     }
-                    cdv = new FloatDataValue((FloatDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": float DV, " +
+                                "or undefined DV expected.");
+                    }
                     break;
+
+//                case FLOAT: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof FloatDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": float expected.");
+//                    }
+//                    cdv = new FloatDataValue((FloatDataValue)dv);
+//                    break;
 
                 case INTEGER:
-                    if ( ! ( dv instanceof IntDataValue ) )
+                    if ( dv instanceof IntDataValue )
+                    {
+                        cdv = new IntDataValue((IntDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": integer expected.");
+                                "Type mismatch for arg " + i + ": integer " +
+                                "DV, undefined DV, or query var expected.");
                     }
-                    cdv = new IntDataValue((IntDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": integer " +
+                                "DV, or undefined DV expected.");
+                    }
                     break;
+
+//                case INTEGER: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof IntDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": integer expected.");
+//                    }
+//                    cdv = new IntDataValue((IntDataValue)dv);
+//                    break;
 
                 case NOMINAL:
-                    if ( ! ( dv instanceof NominalDataValue ) )
+                    if ( dv instanceof NominalDataValue )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": nominal expected.");
+                                "Type mismatch for arg " + i + ": nominal DV, " +
+                                "undefined DV, or query var expected.");
                     }
-                    cdv = new NominalDataValue((NominalDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": nominal DV, " +
+                                "or undefined DV expected.");
+                    }
                     break;
+
+//                case NOMINAL: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof NominalDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": nominal expected.");
+//                    }
+//                    cdv = new NominalDataValue((NominalDataValue)dv);
+//                    break;
 
                 case PREDICATE:
-                    if ( ! ( dv instanceof PredDataValue ) )
+                    if ( dv instanceof PredDataValue )
+                    {
+                        cdv = new PredDataValue((PredDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": predicate expected.");
+                                "Type mismatch for arg " + i + ": predicate " +
+                                "DV, undefined DV, or query var expected.");
                     }
-                    cdv = new PredDataValue((PredDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": predicate " +
+                                "DV, or undefined DV expected.");
+                    }
                     break;
+
+//                case PREDICATE: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof PredDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": predicate expected.");
+//                    }
+//                    cdv = new PredDataValue((PredDataValue)dv);
+//                    break;
 
                 case TIME_STAMP:
-                    if ( ! ( dv instanceof TimeStampDataValue ) )
+                    if ( dv instanceof TimeStampDataValue )
+                    {
+                        cdv = new TimeStampDataValue((TimeStampDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": time stamp expected.");
+                                "Type mismatch for arg " + i + ": time stamp " +
+                                "DV, undefined DV, or query var DV expected.");
                     }
-                    cdv = new TimeStampDataValue((TimeStampDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": time stamp " +
+                                "DV, or undefined DV expected.");
+                    }
                     break;
+
+//                case TIME_STAMP: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof TimeStampDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": time stamp expected.");
+//                    }
+//                    cdv = new TimeStampDataValue((TimeStampDataValue)dv);
+//                    break;
 
                 case QUOTE_STRING:
-                    if ( ! ( dv instanceof QuoteStringDataValue ) )
+                    if ( dv instanceof QuoteStringDataValue )
+                    {
+                        cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": quote string expected.");
+                                "Type mismatch for arg " + i + ": quote " +
+                                "string DV, undefined DV, or query var " +
+                                "expected.");
                     }
-                    cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": quote " +
+                                "string DV, or undefined DV expected.");
+                    }
                     break;
 
+//                case QUOTE_STRING: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof QuoteStringDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": quote string expected.");
+//                    }
+//                    cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
+//                    break;
                 case TEXT:
-                    if ( ! ( dv instanceof TextStringDataValue ) )
+                    if ( dv instanceof TextStringDataValue )
+                    {
+                        cdv = new TextStringDataValue((TextStringDataValue)dv);
+                    }
+                    else if ( dv instanceof UndefinedDataValue )
+                    {
+                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
+                    }
+                    else if ( ( this.queryVarOK ) &&
+                              ( dv instanceof NominalDataValue ) &&
+                              ( ((NominalDataValue)dv).isQueryVar() ) )
+                    {
+                        cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
-                                ": text string expected.");
+                                "Type mismatch for arg " + i + ": text " +
+                                "string DV, undefined DV, or query var " +
+                                "expected.");
                     }
-                    cdv = new TextStringDataValue((TextStringDataValue)dv);
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": text " +
+                                "string DV, or undefined DV expected.");
+                    }
                     break;
+
+//                case TEXT: // TODO: Delete this eventually
+//                    if ( ! ( dv instanceof TextStringDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch for arg " + i + 
+//                                ": text string expected.");
+//                    }
+//                    cdv = new TextStringDataValue((TextStringDataValue)dv);
+//                    break;
 
                 case UNTYPED:
                     if ( dv instanceof ColPredDataValue )
@@ -1756,104 +1992,106 @@ public class Predicate extends DBElement
                     "th source argument?!?!");
         }
 
-        switch (fa.getFargType())
-        {
-            case COL_PREDICATE:
-                if ( ! ( newArg instanceof ColPredDataValue ) )
-                {
-                    throw new SystemErrorException(mName +
-                            "Type mismatch: column predicate expected.");
-                }
-                break;
-                
-            case FLOAT:
-                if ( ! ( newArg instanceof FloatDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: float expected.");
-                }
-                break;
-
-            case INTEGER:
-                if ( ! ( newArg instanceof IntDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: integer expected.");
-                }
-                break;
-
-            case NOMINAL:
-                if ( ! ( newArg instanceof NominalDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: nominal expected.");
-                }
-                break;
-
-            case PREDICATE:
-                if ( ! ( newArg instanceof PredDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: predicate expected.");
-                }
-                break;
-
-            case TIME_STAMP:
-                if ( ! ( newArg instanceof TimeStampDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: time stamp expected.");
-                }
-                break;
-
-            case QUOTE_STRING:
-                if ( ! ( newArg instanceof QuoteStringDataValue ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Type mismatch: quote string expected.");
-                }
-                break;
-
-            case TEXT:
-                throw new SystemErrorException(mName + 
-                            "TextStringFormalArg in a predicate arg list?!?");
-                /* break statement commented out to keep the compiler happy */
-                // break;
- 
-            case UNTYPED:
-                if ( ! ( ( newArg instanceof ColPredDataValue ) ||
-                         ( newArg instanceof FloatDataValue ) ||
-                         ( newArg instanceof IntDataValue ) ||
-                         ( newArg instanceof NominalDataValue ) ||
-                         ( newArg instanceof PredDataValue ) ||
-                         ( newArg instanceof TimeStampDataValue ) ||
-                         ( newArg instanceof QuoteStringDataValue ) ||
-                         ( newArg instanceof TextStringDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "Unknown subtype of DataValue");
-                }
-            
-                if ( newArg instanceof TextStringDataValue )
-                {
-                    throw new SystemErrorException(mName + 
-                            "TextStringDataValue forbidded in pred arg list.");
-                }
-                break;
-
-            case UNDEFINED:
-                throw new SystemErrorException(mName +
-                        "formal arg type undefined???");
-                /* break statement commented out to keep the compiler happy */
-                // break;
-
-            default:
-                throw new SystemErrorException(mName + 
-                                               "Unknown Formal Arg Type");
-                /* break statement commented out to keep the compiler happy */
-                // break;
-        }
+        this.validateArgAsignment(fa, newArg);
+        // delete this eventually.
+//        switch (fa.getFargType())
+//        {
+//            case COL_PREDICATE:
+//                if ( ! ( newArg instanceof ColPredDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName +
+//                            "Type mismatch: column predicate expected.");
+//                }
+//                break;
+//                
+//            case FLOAT:
+//                if ( ! ( newArg instanceof FloatDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: float expected.");
+//                }
+//                break;
+//
+//            case INTEGER:
+//                if ( ! ( newArg instanceof IntDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: integer expected.");
+//                }
+//                break;
+//
+//            case NOMINAL:
+//                if ( ! ( newArg instanceof NominalDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: nominal expected.");
+//                }
+//                break;
+//
+//            case PREDICATE:
+//                if ( ! ( newArg instanceof PredDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: predicate expected.");
+//                }
+//                break;
+//
+//            case TIME_STAMP:
+//                if ( ! ( newArg instanceof TimeStampDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: time stamp expected.");
+//                }
+//                break;
+//
+//            case QUOTE_STRING:
+//                if ( ! ( newArg instanceof QuoteStringDataValue ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Type mismatch: quote string expected.");
+//                }
+//                break;
+//
+//            case TEXT:
+//                throw new SystemErrorException(mName + 
+//                            "TextStringFormalArg in a predicate arg list?!?");
+//                /* break statement commented out to keep the compiler happy */
+//                // break;
+// 
+//            case UNTYPED:
+//                if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+//                         ( newArg instanceof FloatDataValue ) ||
+//                         ( newArg instanceof IntDataValue ) ||
+//                         ( newArg instanceof NominalDataValue ) ||
+//                         ( newArg instanceof PredDataValue ) ||
+//                         ( newArg instanceof TimeStampDataValue ) ||
+//                         ( newArg instanceof QuoteStringDataValue ) ||
+//                         ( newArg instanceof TextStringDataValue ) ||
+//                         ( newArg instanceof UndefinedDataValue ) ) )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "Unknown subtype of DataValue");
+//                }
+//            
+//                if ( newArg instanceof TextStringDataValue )
+//                {
+//                    throw new SystemErrorException(mName + 
+//                            "TextStringDataValue forbidded in pred arg list.");
+//                }
+//                break;
+//
+//            case UNDEFINED:
+//                throw new SystemErrorException(mName +
+//                        "formal arg type undefined???");
+//                /* break statement commented out to keep the compiler happy */
+//                // break;
+//
+//            default:
+//                throw new SystemErrorException(mName + 
+//                                               "Unknown Formal Arg Type");
+//                /* break statement commented out to keep the compiler happy */
+//                // break;
+//        }
         
         if ( newArg.getItsFargID() == DBIndex.INVALID_ID )
         {
@@ -2423,7 +2661,7 @@ public class Predicate extends DBElement
      *
      * 4) cascadePveDel == true
      *
-     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * If cascadePveDel is true, then a pve has been deleted, and the ID of 
      * the deleted pve is in cascadePveID.
      *
      * In this case, verify that this.pveID != cascadePveID, and then proceed
@@ -2728,381 +2966,385 @@ public class Predicate extends DBElement
                             "th argument id mismatch");
                 }
 
+                this.validateReplacementArg(fa, oldArg, newArg, 
+                        cascadeMveMod, cascadeMveDel, cascadeMveID,
+                        cascadePveMod, cascadePveDel, cascadePveID);
 
-                switch (fa.getFargType())
-                {
-                    case COL_PREDICATE:
-                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
-                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: Predicate expected.");
-                        }
-
-                        cpfa = (ColPredFormalArg)fa;
-                        new_cpdv = (ColPredDataValue)newArg;
-                        old_cpdv = (ColPredDataValue)oldArg;
-
-                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
-                                DBIndex.INVALID_ID ) )
-                        {
-                            new_cpdv.getItsValue().validateColumnPredicate(true);
-                        }
-                        else if ( ( ! cascadeMveMod ) && 
-                                  ( ! cascadeMveDel ) &&
-                                  ( ! cascadePveMod ) &&
-                                  ( ! cascadePveDel ) )
-                        {
-                            new_cpdv.getItsValue().
-                                    validateReplacementColPred(
-                                        old_cpdv.getItsValue(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        else
-                        {
-                            new_cpdv.getItsValue().
-                                    validateReplacementColPred(
-                                        old_cpdv.getItsValueBlind(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        break;
-
-                    case FLOAT:
-                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                             ( ! ( oldArg instanceof FloatDataValue ) ) )
-                        {
-                           throw new SystemErrorException(mName + 
-                                    "Type mismatch: float expected.");
-                        }
-
-                        ffa = (FloatFormalArg)fa;
-                        new_fdv = (FloatDataValue)newArg;
-                        old_fdv = (FloatDataValue)oldArg;
-
-                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_fdv.getSubRange() != ffa.getSubRange().");
-                        }
-
-                        if ( new_fdv.getSubRange() )
-                        {
-                            if ( ( ffa.getMinVal() > 
-                                    new_fdv.getItsValue() ) ||
-                                 ( ffa.getMaxVal() < 
-                                    new_fdv.getItsValue() ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_fdv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case INTEGER:
-                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                             ( ! ( oldArg instanceof IntDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: integer expected.");
-                        }
-
-                        ifa = (IntFormalArg)fa;
-                        new_idv = (IntDataValue)newArg;
-                        old_idv = (IntDataValue)oldArg;
-
-                        if ( new_idv.getSubRange() != ifa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_idv.getSubRange() != ifa.getSubRange().");
-                        }
-
-                        if ( new_idv.getSubRange() )
-                        {
-                            if ( ( ifa.getMinVal() > 
-                                    new_idv.getItsValue() ) ||
-                                 ( ifa.getMaxVal() < 
-                                    new_idv.getItsValue() ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_idv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case NOMINAL:
-                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                             ( ! ( oldArg instanceof NominalDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: nominal expected.");
-                        }
-
-                        nfa = (NominalFormalArg)fa;
-                        new_ndv = (NominalDataValue)newArg;
-                        old_ndv = (NominalDataValue)oldArg;
-
-                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_ndv.getSubRange() != nfa.getSubRange().");
-                        }
-
-                        if ( ( new_ndv.getSubRange() ) && 
-                             ( new_ndv.getItsValue() != null ) )
-                        {
-                            if ( ! nfa.approved(new_ndv.getItsValue()) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_ndv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case PREDICATE:
-                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
-                             ( ! ( oldArg instanceof PredDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: Predicate expected.");
-                        }
-
-                        pfa = (PredFormalArg)fa;
-                        new_pdv = (PredDataValue)newArg;
-                        old_pdv = (PredDataValue)oldArg;
-
-                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_pdv.getSubRange() != pfa.getSubRange().");
-                        }
-
-                        if ( ( new_pdv.getItsValue().getPveID() != 
-                                DBIndex.INVALID_ID ) &&
-                             ( new_pdv.getSubRange() ) &&
-                             ( ! pfa.approved(new_pdv.getItsValue().
-                                        getPveID()) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "new_pdv.getItsValue() out of range.");
-                        }
-
-                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
-                                DBIndex.INVALID_ID ) )
-                        {
-                            new_pdv.getItsValue().validatePredicate(true);
-                        }
-                        else if ( ( ! cascadeMveMod ) && 
-                                  ( ! cascadeMveDel ) &&
-                                  ( ! cascadePveMod ) &&
-                                  ( ! cascadePveDel ) )
-                        {
-                            new_pdv.getItsValue().
-                                    validateReplacementPredicate(
-                                        old_pdv.getItsValue(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        else
-                        {
-                            new_pdv.getItsValue().
-                                    validateReplacementPredicate(
-                                        old_pdv.getItsValueBlind(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        break;
-
-                    case TIME_STAMP:
-                        if ( ( ! ( newArg instanceof 
-                                    TimeStampDataValue ) ) ||
-                             ( ! ( oldArg instanceof 
-                                    TimeStampDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: time stamp expected.");
-                        }
-
-                        tsfa = (TimeStampFormalArg)fa;
-                        new_tsdv = (TimeStampDataValue)newArg;
-                        old_tsdv = (TimeStampDataValue)oldArg;
-
-                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                        }
-
-                        if ( new_tsdv.getSubRange() )
-                        {
-                            if ( ( tsfa.getMinVal().
-                                    gt(new_tsdv.getItsValue()) ) ||
-                                 ( tsfa.getMaxVal().
-                                    lt(new_tsdv.getItsValue()) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "new_tsdv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case QUOTE_STRING:
-                        if ( ( ! ( newArg instanceof 
-                                    QuoteStringDataValue ) ) ||
-                             ( ! ( oldArg instanceof 
-                                    QuoteStringDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: quote string expected.");
-                        }
-                        break;
-
-                    case UNTYPED:
-                        if ( ( newArg instanceof TextStringDataValue ) ||
-                             ( oldArg instanceof TextStringDataValue ) )
-                        {
-                            throw new SystemErrorException(mName +
-                                    "Type mismatch: Text String can't be " +
-                                    "substituted for untyped formal arguments.");
-                        }
-                        else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
-                                      ( newArg instanceof FloatDataValue ) ||
-                                      ( newArg instanceof IntDataValue ) ||
-                                      ( newArg instanceof NominalDataValue ) ||
-                                      ( newArg instanceof PredDataValue ) ||
-                                      ( newArg instanceof TimeStampDataValue ) ||
-                                      ( newArg instanceof QuoteStringDataValue ) ||
-                                      ( newArg instanceof UndefinedDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Unknown subtype of DataValue");
-                        }
-
-                        if ( ( newArg.getClass() != oldArg.getClass() ) &&
-                             ( newArg.getID() != DBIndex.INVALID_ID ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "dv type change and id set");
-                        }
-
-                        if ( newArg instanceof ColPredDataValue )
-                        {
-                            new_cpdv = (ColPredDataValue)newArg;
-
-                            if ( oldArg instanceof ColPredDataValue )
-                            {
-                                old_cpdv = (ColPredDataValue)oldArg;
-
-                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
-                                     ( cascadePveMod ) || ( cascadePveDel ) )
-                                {
-                                    new_cpdv.getItsValue().
-                                            validateReplacementColPred(
-                                                old_cpdv.getItsValueBlind(), 
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                                else
-                                {
-                                    new_cpdv.getItsValue().
-                                            validateReplacementColPred(
-                                                old_cpdv.getItsValue(), 
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                            }
-                            else
-                            {
-                                new_cpdv.getItsValue().
-                                        validateColumnPredicate(true);
-                            }
-                        }
-                        else if ( newArg instanceof PredDataValue )
-                        {
-                            new_pdv = (PredDataValue)newArg;
-
-                            if ( oldArg instanceof PredDataValue )
-                            {
-                                old_pdv = (PredDataValue)oldArg;
-
-                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
-                                     ( cascadePveMod ) || ( cascadePveDel ) )
-                                {
-                                    new_pdv.getItsValue().
-                                            validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(), 
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                                else
-                                {
-                                    new_pdv.getItsValue().
-                                            validateReplacementPredicate(
-                                                old_pdv.getItsValue(), 
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                            }
-                            else
-                            {
-                                new_pdv.getItsValue().
-                                        validatePredicate(true);
-                            }
-                        }
-                        break;
-
-                    case UNDEFINED:
-                        throw new SystemErrorException(mName +
-                                "formal arg type undefined???");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
-                         */
-                        // break;
-
-                    default:
-                        throw new SystemErrorException(mName + 
-
-                                "Unknown Formal Arg Type");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
-                         */
-                        // break;
-                }
+                // todo: delete this eventually
+//                switch (fa.getFargType())
+//                {
+//                    case COL_PREDICATE:
+//                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+//                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: Predicate expected.");
+//                        }
+//
+//                        cpfa = (ColPredFormalArg)fa;
+//                        new_cpdv = (ColPredDataValue)newArg;
+//                        old_cpdv = (ColPredDataValue)oldArg;
+//
+//                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+//                             ( new_cpdv.getItsValue().getID() == 
+//                                DBIndex.INVALID_ID ) )
+//                        {
+//                            new_cpdv.getItsValue().validateColumnPredicate(true);
+//                        }
+//                        else if ( ( ! cascadeMveMod ) && 
+//                                  ( ! cascadeMveDel ) &&
+//                                  ( ! cascadePveMod ) &&
+//                                  ( ! cascadePveDel ) )
+//                        {
+//                            new_cpdv.getItsValue().
+//                                    validateReplacementColPred(
+//                                        old_cpdv.getItsValue(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        else
+//                        {
+//                            new_cpdv.getItsValue().
+//                                    validateReplacementColPred(
+//                                        old_cpdv.getItsValueBlind(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        break;
+//
+//                    case FLOAT:
+//                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+//                             ( ! ( oldArg instanceof FloatDataValue ) ) )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                                    "Type mismatch: float expected.");
+//                        }
+//
+//                        ffa = (FloatFormalArg)fa;
+//                        new_fdv = (FloatDataValue)newArg;
+//                        old_fdv = (FloatDataValue)oldArg;
+//
+//                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_fdv.getSubRange() != ffa.getSubRange().");
+//                        }
+//
+//                        if ( new_fdv.getSubRange() )
+//                        {
+//                            if ( ( ffa.getMinVal() > 
+//                                    new_fdv.getItsValue() ) ||
+//                                 ( ffa.getMaxVal() < 
+//                                    new_fdv.getItsValue() ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_fdv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case INTEGER:
+//                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+//                             ( ! ( oldArg instanceof IntDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: integer expected.");
+//                        }
+//
+//                        ifa = (IntFormalArg)fa;
+//                        new_idv = (IntDataValue)newArg;
+//                        old_idv = (IntDataValue)oldArg;
+//
+//                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_idv.getSubRange() != ifa.getSubRange().");
+//                        }
+//
+//                        if ( new_idv.getSubRange() )
+//                        {
+//                            if ( ( ifa.getMinVal() > 
+//                                    new_idv.getItsValue() ) ||
+//                                 ( ifa.getMaxVal() < 
+//                                    new_idv.getItsValue() ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_idv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case NOMINAL:
+//                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+//                             ( ! ( oldArg instanceof NominalDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: nominal expected.");
+//                        }
+//
+//                        nfa = (NominalFormalArg)fa;
+//                        new_ndv = (NominalDataValue)newArg;
+//                        old_ndv = (NominalDataValue)oldArg;
+//
+//                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_ndv.getSubRange() != nfa.getSubRange().");
+//                        }
+//
+//                        if ( ( new_ndv.getSubRange() ) && 
+//                             ( new_ndv.getItsValue() != null ) )
+//                        {
+//                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_ndv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case PREDICATE:
+//                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+//                             ( ! ( oldArg instanceof PredDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: Predicate expected.");
+//                        }
+//
+//                        pfa = (PredFormalArg)fa;
+//                        new_pdv = (PredDataValue)newArg;
+//                        old_pdv = (PredDataValue)oldArg;
+//
+//                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_pdv.getSubRange() != pfa.getSubRange().");
+//                        }
+//
+//                        if ( ( new_pdv.getItsValue().getPveID() != 
+//                                DBIndex.INVALID_ID ) &&
+//                             ( new_pdv.getSubRange() ) &&
+//                             ( ! pfa.approved(new_pdv.getItsValue().
+//                                        getPveID()) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "new_pdv.getItsValue() out of range.");
+//                        }
+//
+//                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+//                             ( new_pdv.getItsValue().getID() == 
+//                                DBIndex.INVALID_ID ) )
+//                        {
+//                            new_pdv.getItsValue().validatePredicate(true);
+//                        }
+//                        else if ( ( ! cascadeMveMod ) && 
+//                                  ( ! cascadeMveDel ) &&
+//                                  ( ! cascadePveMod ) &&
+//                                  ( ! cascadePveDel ) )
+//                        {
+//                            new_pdv.getItsValue().
+//                                    validateReplacementPredicate(
+//                                        old_pdv.getItsValue(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        else
+//                        {
+//                            new_pdv.getItsValue().
+//                                    validateReplacementPredicate(
+//                                        old_pdv.getItsValueBlind(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        break;
+//
+//                    case TIME_STAMP:
+//                        if ( ( ! ( newArg instanceof 
+//                                    TimeStampDataValue ) ) ||
+//                             ( ! ( oldArg instanceof 
+//                                    TimeStampDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: time stamp expected.");
+//                        }
+//
+//                        tsfa = (TimeStampFormalArg)fa;
+//                        new_tsdv = (TimeStampDataValue)newArg;
+//                        old_tsdv = (TimeStampDataValue)oldArg;
+//
+//                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                        }
+//
+//                        if ( new_tsdv.getSubRange() )
+//                        {
+//                            if ( ( tsfa.getMinVal().
+//                                    gt(new_tsdv.getItsValue()) ) ||
+//                                 ( tsfa.getMaxVal().
+//                                    lt(new_tsdv.getItsValue()) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "new_tsdv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case QUOTE_STRING:
+//                        if ( ( ! ( newArg instanceof 
+//                                    QuoteStringDataValue ) ) ||
+//                             ( ! ( oldArg instanceof 
+//                                    QuoteStringDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: quote string expected.");
+//                        }
+//                        break;
+//
+//                    case UNTYPED:
+//                        if ( ( newArg instanceof TextStringDataValue ) ||
+//                             ( oldArg instanceof TextStringDataValue ) )
+//                        {
+//                            throw new SystemErrorException(mName +
+//                                    "Type mismatch: Text String can't be " +
+//                                    "substituted for untyped formal arguments.");
+//                        }
+//                        else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+//                                      ( newArg instanceof FloatDataValue ) ||
+//                                      ( newArg instanceof IntDataValue ) ||
+//                                      ( newArg instanceof NominalDataValue ) ||
+//                                      ( newArg instanceof PredDataValue ) ||
+//                                      ( newArg instanceof TimeStampDataValue ) ||
+//                                      ( newArg instanceof QuoteStringDataValue ) ||
+//                                      ( newArg instanceof UndefinedDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Unknown subtype of DataValue");
+//                        }
+//
+//                        if ( ( newArg.getClass() != oldArg.getClass() ) &&
+//                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "dv type change and id set");
+//                        }
+//
+//                        if ( newArg instanceof ColPredDataValue )
+//                        {
+//                            new_cpdv = (ColPredDataValue)newArg;
+//
+//                            if ( oldArg instanceof ColPredDataValue )
+//                            {
+//                                old_cpdv = (ColPredDataValue)oldArg;
+//
+//                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                                     ( cascadePveMod ) || ( cascadePveDel ) )
+//                                {
+//                                    new_cpdv.getItsValue().
+//                                            validateReplacementColPred(
+//                                                old_cpdv.getItsValueBlind(), 
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                                else
+//                                {
+//                                    new_cpdv.getItsValue().
+//                                            validateReplacementColPred(
+//                                                old_cpdv.getItsValue(), 
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                            }
+//                            else
+//                            {
+//                                new_cpdv.getItsValue().
+//                                        validateColumnPredicate(true);
+//                            }
+//                        }
+//                        else if ( newArg instanceof PredDataValue )
+//                        {
+//                            new_pdv = (PredDataValue)newArg;
+//
+//                            if ( oldArg instanceof PredDataValue )
+//                            {
+//                                old_pdv = (PredDataValue)oldArg;
+//
+//                                if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                                     ( cascadePveMod ) || ( cascadePveDel ) )
+//                                {
+//                                    new_pdv.getItsValue().
+//                                            validateReplacementPredicate(
+//                                                old_pdv.getItsValueBlind(), 
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                                else
+//                                {
+//                                    new_pdv.getItsValue().
+//                                            validateReplacementPredicate(
+//                                                old_pdv.getItsValue(), 
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                            }
+//                            else
+//                            {
+//                                new_pdv.getItsValue().
+//                                        validatePredicate(true);
+//                            }
+//                        }
+//                        break;
+//
+//                    case UNDEFINED:
+//                        throw new SystemErrorException(mName +
+//                                "formal arg type undefined???");
+//                        /* break statement commented out to keep the 
+//                         * compiler happy 
+//                         */
+//                        // break;
+//
+//                    default:
+//                        throw new SystemErrorException(mName + 
+//
+//                                "Unknown Formal Arg Type");
+//                        /* break statement commented out to keep the 
+//                         * compiler happy 
+//                         */
+//                        // break;
+//                }
                 
                 // Sanity checks pass.  If the ID's of the old and new versions of 
                 // the argument match, replace the old incarnation of the formal
@@ -3211,11 +3453,14 @@ public class Predicate extends DBElement
             }
             
             
+            // now scan the new argument list.  Any arguments with 
+            // valid IDs must have a previous version with the same ID
+            // in the old argument list -- verify this.
             i = 0;
             while ( i < this.getNumArgs() )
             {
                 // get the i-th formal argument.  This is the pve's actual 
-                // argument,  so be careful not to modify it in any way.
+                // argument, so be careful not to modify it in any way.
                 fa = pve.getFormalArg(i);
 
                 if ( fa == null )
@@ -3305,369 +3550,374 @@ public class Predicate extends DBElement
                     throw new SystemErrorException(mName + 
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
-                                
-                switch (fa.getFargType())
-                {
-                    case COL_PREDICATE:
-                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                "Type mismatch: Column Predicate(s) expected.");
-                        }
+                
+                this.validateReplacementArg(fa, oldArg, newArg, 
+                        cascadeMveMod, cascadeMveDel, cascadeMveID,
+                        cascadePveMod, cascadePveDel, cascadePveID);
 
-                        cpfa = (ColPredFormalArg)fa;
-                        new_cpdv = (ColPredDataValue)newArg;
-
-                        if ( oldArg != null )
-                        {
-                            old_cpdv = (ColPredDataValue)oldArg;
-                        }
-                        else
-                        {
-                            old_cpdv = null;
-                        }
-
-                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
-                                DBIndex.INVALID_ID ) )
-                        {
-                            new_cpdv.getItsValue().validateColumnPredicate(true);
-                        }
-                        else if ( old_cpdv != null )
-                        {
-                            new_cpdv.getItsValue().
-                                    validateReplacementColPred(
-                                        old_cpdv.getItsValueBlind(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        else
-                        {
-                            throw new SystemErrorException(mName +
-                            "new_cpdv has valid ID but old_cpdv is null?!?");
-                        }
-                        break;
-
-                    case FLOAT:
-                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof FloatDataValue ) ) ) )
-                        {
-                           throw new SystemErrorException(mName + 
-                                    "Type mismatch: float(s) expected.");
-                        }
-
-                        ffa = (FloatFormalArg)fa;
-                        new_fdv = (FloatDataValue)newArg;
-
-                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_fdv.getSubRange() != ffa.getSubRange().");
-                        }
-
-                        if ( new_fdv.getSubRange() )
-                        {
-                            if ( ( ffa.getMinVal() > 
-                                    new_fdv.getItsValue() ) ||
-                                 ( ffa.getMaxVal() < 
-                                    new_fdv.getItsValue() ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_fdv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case INTEGER:
-                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof IntDataValue ) ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: integer(s) expected.");
-                        }
-
-                        ifa = (IntFormalArg)fa;
-                        new_idv = (IntDataValue)newArg;
-
-                        if ( new_idv.getSubRange() != ifa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_idv.getSubRange() != ifa.getSubRange().");
-                        }
-
-                        if ( new_idv.getSubRange() )
-                        {
-                            if ( ( ifa.getMinVal() > 
-                                    new_idv.getItsValue() ) ||
-                                 ( ifa.getMaxVal() < 
-                                    new_idv.getItsValue() ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_idv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case NOMINAL:
-                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof NominalDataValue ) ) 
-                             )
-                           )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: nominal(s) expected.");
-                        }
-
-                        nfa = (NominalFormalArg)fa;
-                        new_ndv = (NominalDataValue)newArg;
-
-                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_ndv.getSubRange() != nfa.getSubRange().");
-                        }
-
-                        if ( ( new_ndv.getSubRange() ) && 
-                             ( new_ndv.getItsValue() != null ) )
-                        {
-                            if ( ! nfa.approved(new_ndv.getItsValue()) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "new_ndv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case PREDICATE:
-                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof PredDataValue ) ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: Predicate(s) expected.");
-                        }
-
-                        pfa = (PredFormalArg)fa;
-                        new_pdv = (PredDataValue)newArg;
-
-                        if ( oldArg != null )
-                        {
-                            old_pdv = (PredDataValue)oldArg;
-                        }
-                        else
-                        {
-                            old_pdv = null;
-                        }
-
-                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                             "new_pdv.getSubRange() != pfa.getSubRange().");
-                        }
-
-                        if ( ( new_pdv.getItsValue().getPveID() != 
-                                DBIndex.INVALID_ID ) &&
-                             ( new_pdv.getSubRange() ) &&
-                             ( ! pfa.approved(new_pdv.getItsValue().
-                                        getPveID()) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "new_pdv.getItsValue() out of range.");
-                        }
-
-                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
-                                DBIndex.INVALID_ID ) )
-                        {
-                            new_pdv.getItsValue().validatePredicate(true);
-                        }
-                        else if ( old_pdv != null )
-                        {
-                            new_pdv.getItsValue().
-                                    validateReplacementPredicate(
-                                        old_pdv.getItsValueBlind(),
-                                        cascadeMveMod,
-                                        cascadeMveDel,
-                                        cascadeMveID,
-                                        cascadePveMod,
-                                        cascadePveDel,
-                                        cascadePveID);
-                        }
-                        else
-                        {
-                            throw new SystemErrorException(mName +
-                            "new_pdv has valid ID but old_pdv is null?!?");
-                        }
-                        break;
-
-                    case TIME_STAMP:
-                        if ( ( ! ( newArg instanceof 
-                                   TimeStampDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
-                                      TimeStampDataValue ) ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                "Type mismatch: time stamp(s) expected.");
-                        }
-
-                        tsfa = (TimeStampFormalArg)fa;
-                        new_tsdv = (TimeStampDataValue)newArg;
-
-                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                        {
-                           throw new SystemErrorException(mName + 
-                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                        }
-
-                        if ( new_tsdv.getSubRange() )
-                        {
-                            if ( ( tsfa.getMinVal().
-                                    gt(new_tsdv.getItsValue()) ) ||
-                                 ( tsfa.getMaxVal().
-                                    lt(new_tsdv.getItsValue()) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "new_tsdv.getItsValue() out of range.");
-                            }
-                        }
-                        break;
-
-                    case QUOTE_STRING:
-                        if ( ( ! ( newArg instanceof 
-                                    QuoteStringDataValue ) ) ||
-                             ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
-                                      QuoteStringDataValue ) ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Type mismatch: quote string(s) expected.");
-                        }
-                        break;
-
-                    case UNTYPED:
-                        if ( ( newArg instanceof TextStringDataValue ) ||
-                             ( ( oldArg != null ) &&
-                               ( oldArg instanceof TextStringDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName +
-                                "Type mismatch: Text String(s) can't be " +
-                                "substituted for untyped arguments.");
-                        }
-                        else if ( ! ( ( newArg instanceof 
-                                        ColPredDataValue ) ||
-                                      ( newArg instanceof 
-                                        FloatDataValue ) ||
-                                      ( newArg instanceof 
-                                        IntDataValue ) ||
-                                      ( newArg instanceof 
-                                        NominalDataValue ) ||
-                                      ( newArg instanceof 
-                                        PredDataValue ) ||
-                                      ( newArg instanceof 
-                                        TimeStampDataValue ) ||
-                                      ( newArg instanceof 
-                                        QuoteStringDataValue ) ||
-                                      ( newArg instanceof 
-                                        UndefinedDataValue ) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "Unknown subtype of DataValue");
-                        }
-
-                        if ( ( ( oldArg == null ) 
-                               ||
-                               ( newArg.getClass() != oldArg.getClass() ) 
-                             )
-                             &&
-                             ( newArg.getID() != DBIndex.INVALID_ID ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "dv type change and id set(2)");
-                        }
-                        
-                        if ( newArg instanceof ColPredDataValue )
-                        {
-                            new_cpdv = (ColPredDataValue)newArg;
-
-                            if ( ( oldArg != null ) &&
-                                 ( oldArg instanceof ColPredDataValue ) )
-                            {
-                                old_cpdv = (ColPredDataValue)oldArg;
-
-                                assert( cascadeMveMod );
-
-                                new_cpdv.getItsValue().
-                                        validateReplacementColPred(
-                                            old_cpdv.getItsValueBlind(), 
-                                            cascadeMveMod,
-                                            cascadeMveDel,
-                                            cascadeMveID,
-                                            cascadePveMod,
-                                            cascadePveDel, 
-                                            cascadePveID);
-                            }
-                            else
-                            {
-                                new_cpdv.getItsValue().
-                                        validateColumnPredicate(true);
-                            }
-                        }
-                        else if ( newArg instanceof PredDataValue )
-                        {
-                            new_pdv = (PredDataValue)newArg;
-
-                            if ( ( oldArg != null ) &&
-                                 ( oldArg instanceof PredDataValue ) )
-                            {
-                                old_pdv = (PredDataValue)oldArg;
-
-                                assert( cascadeMveMod );
-
-                                new_pdv.getItsValue().
-                                        validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(), 
-                                            cascadeMveMod,
-                                            cascadeMveDel,
-                                            cascadeMveID,
-                                            cascadePveMod,
-                                            cascadePveDel, 
-                                            cascadePveID);
-                            }
-                            else
-                            {
-                                new_pdv.getItsValue().
-                                        validatePredicate(true);
-                            }
-                        }
-                        break;
-
-                    case UNDEFINED:
-                        throw new SystemErrorException(mName +
-                                "formal arg type undefined???");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
-                         */
-                        // break;
-
-                    default:
-                        throw new SystemErrorException(mName + 
-
-                                "Unknown Formal Arg Type");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
-                         */
-                        // break;
-                }
+                // todo: delete this eventually
+//                switch (fa.getFargType())
+//                {
+//                    case COL_PREDICATE:
+//                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                "Type mismatch: Column Predicate(s) expected.");
+//                        }
+//
+//                        cpfa = (ColPredFormalArg)fa;
+//                        new_cpdv = (ColPredDataValue)newArg;
+//
+//                        if ( oldArg != null )
+//                        {
+//                            old_cpdv = (ColPredDataValue)oldArg;
+//                        }
+//                        else
+//                        {
+//                            old_cpdv = null;
+//                        }
+//
+//                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+//                             ( new_cpdv.getItsValue().getID() == 
+//                                DBIndex.INVALID_ID ) )
+//                        {
+//                            new_cpdv.getItsValue().validateColumnPredicate(true);
+//                        }
+//                        else if ( old_cpdv != null )
+//                        {
+//                            new_cpdv.getItsValue().
+//                                    validateReplacementColPred(
+//                                        old_cpdv.getItsValueBlind(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        else
+//                        {
+//                            throw new SystemErrorException(mName +
+//                            "new_cpdv has valid ID but old_cpdv is null?!?");
+//                        }
+//                        break;
+//
+//                    case FLOAT:
+//                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof FloatDataValue ) ) ) )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                                    "Type mismatch: float(s) expected.");
+//                        }
+//
+//                        ffa = (FloatFormalArg)fa;
+//                        new_fdv = (FloatDataValue)newArg;
+//
+//                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_fdv.getSubRange() != ffa.getSubRange().");
+//                        }
+//
+//                        if ( new_fdv.getSubRange() )
+//                        {
+//                            if ( ( ffa.getMinVal() > 
+//                                    new_fdv.getItsValue() ) ||
+//                                 ( ffa.getMaxVal() < 
+//                                    new_fdv.getItsValue() ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_fdv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case INTEGER:
+//                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof IntDataValue ) ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: integer(s) expected.");
+//                        }
+//
+//                        ifa = (IntFormalArg)fa;
+//                        new_idv = (IntDataValue)newArg;
+//
+//                        if ( new_idv.getSubRange() != ifa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_idv.getSubRange() != ifa.getSubRange().");
+//                        }
+//
+//                        if ( new_idv.getSubRange() )
+//                        {
+//                            if ( ( ifa.getMinVal() > 
+//                                    new_idv.getItsValue() ) ||
+//                                 ( ifa.getMaxVal() < 
+//                                    new_idv.getItsValue() ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_idv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case NOMINAL:
+//                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+//                             )
+//                           )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: nominal(s) expected.");
+//                        }
+//
+//                        nfa = (NominalFormalArg)fa;
+//                        new_ndv = (NominalDataValue)newArg;
+//
+//                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_ndv.getSubRange() != nfa.getSubRange().");
+//                        }
+//
+//                        if ( ( new_ndv.getSubRange() ) && 
+//                             ( new_ndv.getItsValue() != null ) )
+//                        {
+//                            if ( ! nfa.approved(new_ndv.getItsValue()) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "new_ndv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case PREDICATE:
+//                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof PredDataValue ) ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: Predicate(s) expected.");
+//                        }
+//
+//                        pfa = (PredFormalArg)fa;
+//                        new_pdv = (PredDataValue)newArg;
+//
+//                        if ( oldArg != null )
+//                        {
+//                            old_pdv = (PredDataValue)oldArg;
+//                        }
+//                        else
+//                        {
+//                            old_pdv = null;
+//                        }
+//
+//                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                             "new_pdv.getSubRange() != pfa.getSubRange().");
+//                        }
+//
+//                        if ( ( new_pdv.getItsValue().getPveID() != 
+//                                DBIndex.INVALID_ID ) &&
+//                             ( new_pdv.getSubRange() ) &&
+//                             ( ! pfa.approved(new_pdv.getItsValue().
+//                                        getPveID()) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "new_pdv.getItsValue() out of range.");
+//                        }
+//
+//                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+//                             ( new_pdv.getItsValue().getID() == 
+//                                DBIndex.INVALID_ID ) )
+//                        {
+//                            new_pdv.getItsValue().validatePredicate(true);
+//                        }
+//                        else if ( old_pdv != null )
+//                        {
+//                            new_pdv.getItsValue().
+//                                    validateReplacementPredicate(
+//                                        old_pdv.getItsValueBlind(),
+//                                        cascadeMveMod,
+//                                        cascadeMveDel,
+//                                        cascadeMveID,
+//                                        cascadePveMod,
+//                                        cascadePveDel,
+//                                        cascadePveID);
+//                        }
+//                        else
+//                        {
+//                            throw new SystemErrorException(mName +
+//                            "new_pdv has valid ID but old_pdv is null?!?");
+//                        }
+//                        break;
+//
+//                    case TIME_STAMP:
+//                        if ( ( ! ( newArg instanceof 
+//                                   TimeStampDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof 
+//                                      TimeStampDataValue ) ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                "Type mismatch: time stamp(s) expected.");
+//                        }
+//
+//                        tsfa = (TimeStampFormalArg)fa;
+//                        new_tsdv = (TimeStampDataValue)newArg;
+//
+//                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                        {
+//                           throw new SystemErrorException(mName + 
+//                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                        }
+//
+//                        if ( new_tsdv.getSubRange() )
+//                        {
+//                            if ( ( tsfa.getMinVal().
+//                                    gt(new_tsdv.getItsValue()) ) ||
+//                                 ( tsfa.getMaxVal().
+//                                    lt(new_tsdv.getItsValue()) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "new_tsdv.getItsValue() out of range.");
+//                            }
+//                        }
+//                        break;
+//
+//                    case QUOTE_STRING:
+//                        if ( ( ! ( newArg instanceof 
+//                                    QuoteStringDataValue ) ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( ! ( oldArg instanceof 
+//                                      QuoteStringDataValue ) ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Type mismatch: quote string(s) expected.");
+//                        }
+//                        break;
+//
+//                    case UNTYPED:
+//                        if ( ( newArg instanceof TextStringDataValue ) ||
+//                             ( ( oldArg != null ) &&
+//                               ( oldArg instanceof TextStringDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName +
+//                                "Type mismatch: Text String(s) can't be " +
+//                                "substituted for untyped arguments.");
+//                        }
+//                        else if ( ! ( ( newArg instanceof 
+//                                        ColPredDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        FloatDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        IntDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        NominalDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        PredDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        TimeStampDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        QuoteStringDataValue ) ||
+//                                      ( newArg instanceof 
+//                                        UndefinedDataValue ) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "Unknown subtype of DataValue");
+//                        }
+//
+//                        if ( ( ( oldArg == null ) 
+//                               ||
+//                               ( newArg.getClass() != oldArg.getClass() ) 
+//                             )
+//                             &&
+//                             ( newArg.getID() != DBIndex.INVALID_ID ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "dv type change and id set(2)");
+//                        }
+//                        
+//                        if ( newArg instanceof ColPredDataValue )
+//                        {
+//                            new_cpdv = (ColPredDataValue)newArg;
+//
+//                            if ( ( oldArg != null ) &&
+//                                 ( oldArg instanceof ColPredDataValue ) )
+//                            {
+//                                old_cpdv = (ColPredDataValue)oldArg;
+//
+//                                assert( cascadeMveMod );
+//
+//                                new_cpdv.getItsValue().
+//                                        validateReplacementColPred(
+//                                            old_cpdv.getItsValueBlind(), 
+//                                            cascadeMveMod,
+//                                            cascadeMveDel,
+//                                            cascadeMveID,
+//                                            cascadePveMod,
+//                                            cascadePveDel, 
+//                                            cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                new_cpdv.getItsValue().
+//                                        validateColumnPredicate(true);
+//                            }
+//                        }
+//                        else if ( newArg instanceof PredDataValue )
+//                        {
+//                            new_pdv = (PredDataValue)newArg;
+//
+//                            if ( ( oldArg != null ) &&
+//                                 ( oldArg instanceof PredDataValue ) )
+//                            {
+//                                old_pdv = (PredDataValue)oldArg;
+//
+//                                assert( cascadeMveMod );
+//
+//                                new_pdv.getItsValue().
+//                                        validateReplacementPredicate(
+//                                            old_pdv.getItsValueBlind(), 
+//                                            cascadeMveMod,
+//                                            cascadeMveDel,
+//                                            cascadeMveID,
+//                                            cascadePveMod,
+//                                            cascadePveDel, 
+//                                            cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                new_pdv.getItsValue().
+//                                        validatePredicate(true);
+//                            }
+//                        }
+//                        break;
+//
+//                    case UNDEFINED:
+//                        throw new SystemErrorException(mName +
+//                                "formal arg type undefined???");
+//                        /* break statement commented out to keep the 
+//                         * compiler happy 
+//                         */
+//                        // break;
+//
+//                    default:
+//                        throw new SystemErrorException(mName + 
+//
+//                                "Unknown Formal Arg Type");
+//                        /* break statement commented out to keep the 
+//                         * compiler happy 
+//                         */
+//                        // break;
+//                }
                 
                 // Sanity checks pass.  If oldArg is defined, the IDs must
                 // match and we replace the old version with the new in the
@@ -3699,6 +3949,417 @@ public class Predicate extends DBElement
         return;
         
     } /* Predicate::updateIndexForReplacement() */
+    
+    
+    /**
+     * validateArgAsignment()
+     *
+     * Verify that the supplied data value is an acceptable value to assign
+     * to the supplied formal argument.  Throw a system error if it is not.
+     * This method is a pure sanity checking method -- it should always pass.
+     *
+     *                                              JRM -- 10/28/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    private void validateArgAsignment(FormalArgument fa,
+                                      DataValue arg)
+        throws SystemErrorException
+    {
+        final String mName = "Predicate::validateArgAsignment(): ";
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        cpdv;
+        FloatDataValue          fdv;
+        IntDataValue            idv;
+        NominalDataValue        ndv;
+        PredDataValue           pdv;
+        TimeStampDataValue      tsdv;
+        
+        if ( fa == null )
+        {
+            throw new SystemErrorException(mName + "fa null on entry.");
+        }
+        else if ( fa.getItsVocabElementID() != this.pveID )
+        {
+            throw new SystemErrorException(mName + "fa has unexpected veID.");
+        }
+        
+        if ( arg == null )
+        {
+            throw new SystemErrorException(mName + "arg null on entry.");
+        }
+        else if ( ( arg.getItsFargID() != DBIndex.INVALID_ID) &&
+                  ( arg.getItsFargID() != fa.getID() ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "arg.getItsFargID() defined and != fa.getID()");
+        }
+        
+
+        switch (fa.getFargType())
+        {
+            case COL_PREDICATE:
+                cpfa = (ColPredFormalArg)fa;
+
+                if ( ! ( ( arg instanceof ColPredDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: column predicate DV, " +
+                                "or undefined DV expected.");
+                    }
+                }
+
+                if ( arg instanceof ColPredDataValue )
+                {
+                    cpdv = (ColPredDataValue)arg;
+
+                    cpdv.getItsValue().validateColumnPredicate(false);
+                }
+                break;
+
+            case FLOAT:
+                ffa = (FloatFormalArg)fa;
+
+                if ( ! ( ( arg instanceof FloatDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( arg instanceof FloatDataValue )
+                {
+                    fdv = (FloatDataValue)arg;
+
+                    if ( fdv.getSubRange() != ffa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "fdv.getSubRange() != ffa.getSubRange().");
+                    }
+
+                    if ( fdv.getSubRange() )
+                    {
+                        if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
+                             ( ffa.getMaxVal() < fdv.getItsValue() ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "fdv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case INTEGER:
+                ifa = (IntFormalArg)fa;
+
+                if ( ! ( ( arg instanceof IntDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( arg instanceof IntDataValue )
+                {
+                    idv = (IntDataValue)arg;
+
+                    if ( idv.getSubRange() != ifa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "idv.getSubRange() != ifa.getSubRange().");
+                    }
+
+                    if ( idv.getSubRange() )
+                    {
+                        if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
+                             ( ifa.getMaxVal() < idv.getItsValue() ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "idv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case NOMINAL:
+                nfa = (NominalFormalArg)fa;
+
+                if ( ! ( ( arg instanceof NominalDataValue ) ||
+                         ( arg instanceof UndefinedDataValue )
+                       ) 
+                   )
+                {
+                    throw new SystemErrorException(mName + "Arg " +
+                            "type mismatch: nominal DV, or " +
+                            "undefined DV expected.");
+                }
+
+                if ( arg instanceof NominalDataValue )
+                {
+                    ndv = (NominalDataValue)arg;
+
+                    if ( ndv.getSubRange() != nfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "ndv.getSubRange() != nfa.getSubRange().");
+                    }
+
+                    if ( ( ndv.getSubRange() ) && 
+                         ( ndv.getItsValue() != null ) )
+                    {
+                        if ( ( ! nfa.approved(ndv.getItsValue()) ) &&
+                             ( ( ! this.queryVarOK ) ||
+                               ( ! ndv.isQueryVar() ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "ndv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case PREDICATE:
+                pfa = (PredFormalArg)fa;
+
+                if ( ! ( ( arg instanceof PredDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( arg instanceof PredDataValue )
+                {
+                    pdv = (PredDataValue)arg;
+
+                    if ( pdv.getSubRange() != pfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "pdv.getSubRange() != pfa.getSubRange().");
+                    }
+
+                    if ( ( pdv.getItsValue().getPveID() != DBIndex.INVALID_ID ) &&
+                         ( pdv.getSubRange() ) &&
+                         ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "new_pdv.getItsValue() out of range.");
+                    }
+                    
+                    pdv.getItsValue().validatePredicate(false);
+                }
+                break;
+
+            case TIME_STAMP:
+                tsfa = (TimeStampFormalArg)fa;
+
+                if ( ! ( ( arg instanceof TimeStampDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( arg instanceof TimeStampDataValue )
+                {
+                    tsdv = (TimeStampDataValue)arg;
+
+                    if ( tsdv.getSubRange() != tsfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                       "tsdv.getSubRange() != tsfa.getSubRange().");
+                    }
+
+                    if ( tsdv.getSubRange() )
+                    {
+                        if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
+                             ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "tsdv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case QUOTE_STRING:
+                if ( ! ( ( arg instanceof QuoteStringDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( arg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)arg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+                break;
+
+            case TEXT:
+                throw new SystemErrorException(mName + 
+                        "pve contains a text formal arg?!?!");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+
+            case UNTYPED:
+                if ( arg instanceof TextStringDataValue )
+                {
+                    throw new SystemErrorException(mName +
+                            "Type mismatch: Text Strings can't be " +
+                            "substituted for untyped arguments.");
+                }
+                else if ( ! ( ( arg instanceof ColPredDataValue ) ||
+                              ( arg instanceof FloatDataValue ) ||
+                              ( arg instanceof IntDataValue ) ||
+                              ( arg instanceof NominalDataValue ) ||
+                              ( arg instanceof PredDataValue ) ||
+                              ( arg instanceof TimeStampDataValue ) ||
+                              ( arg instanceof QuoteStringDataValue ) ||
+                              ( arg instanceof UndefinedDataValue ) ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "Unknown subtype of DataValue");
+                }
+
+                if ( arg instanceof ColPredDataValue )
+                {
+                    cpdv = (ColPredDataValue)arg;
+
+                    cpdv.getItsValue().validateColumnPredicate(false);
+                }
+                else if ( arg instanceof PredDataValue )
+                {
+                    pdv = (PredDataValue)arg;
+
+                    pdv.getItsValue().validatePredicate(false);
+                }
+                break;
+
+            case UNDEFINED:
+                throw new SystemErrorException(mName +
+                        "formal arg type undefined???");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+
+            default:
+                throw new SystemErrorException(mName + 
+
+                        "Unknown Formal Arg Type");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+        }
+
+        return;
+        
+    } /* Predicate::validateArgAsignment() */
     
     
     /**
@@ -3895,217 +4556,220 @@ public class Predicate extends DBElement
                         " id set when invalid id required");
             }
 
-            switch (fa.getFargType())
-            {
-                case COL_PREDICATE:
-                    if ( ! ( arg instanceof ColPredDataValue ) )
-                    {
-                        throw new SystemErrorException(mName +
-                                "Type mismatch: col pred expected");
-                    }
-                    
-                    cpfa = (ColPredFormalArg)fa;
-                    cpdv = (ColPredDataValue)arg;
-
-                    cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
-                    break;
-                    
-                case FLOAT:
-                    if ( ! ( arg instanceof FloatDataValue ) )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "Type mismatch: float expected.");
-                    }
-
-                    ffa = (FloatFormalArg)fa;
-                    fdv = (FloatDataValue)arg;
-
-                    if ( fdv.getSubRange() != ffa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "fdv.getSubRange() != ffa.getSubRange().");
-                    }
-
-                    if ( fdv.getSubRange() )
-                    {
-                        if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
-                             ( ffa.getMaxVal() < fdv.getItsValue() ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "fdv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case INTEGER:
-                    if ( ! ( arg instanceof IntDataValue ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: integer expected.");
-                    }
-
-                    ifa = (IntFormalArg)fa;
-                    idv = (IntDataValue)arg;
-
-                    if ( idv.getSubRange() != ifa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "idv.getSubRange() != ifa.getSubRange().");
-                    }
-
-                    if ( idv.getSubRange() )
-                    {
-                        if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
-                             ( ifa.getMaxVal() < idv.getItsValue() ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "idv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case NOMINAL:
-                    if ( ! ( arg instanceof NominalDataValue ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: nominal expected.");
-                    }
-
-                    nfa = (NominalFormalArg)fa;
-                    ndv = (NominalDataValue)arg;
-
-                    if ( ndv.getSubRange() != nfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "ndv.getSubRange() != nfa.getSubRange().");
-                    }
-
-                    if ( ( ndv.getSubRange() ) && 
-                         ( ndv.getItsValue() != null ) )
-                    {
-                        if ( ! nfa.approved(ndv.getItsValue()) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "ndv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case PREDICATE:
-                    if ( ! ( arg instanceof PredDataValue ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: Predicate expected.");
-                    }
-
-                    pfa = (PredFormalArg)fa;
-                    pdv = (PredDataValue)arg;
-
-                    if ( pdv.getSubRange() != pfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "pdv.getSubRange() != pfa.getSubRange().");
-                    }
-
-                    if ( ( pdv.getItsValue().getPveID() != 
-                            DBIndex.INVALID_ID ) &&
-                         ( pdv.getSubRange() ) &&
-                         ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "pdv.getItsValue() out of range.");
-                    }
-
-                    pdv.getItsValue().validatePredicate(idMustBeInvalid);
-
-                    break;
-
-                case TIME_STAMP:
-                    if ( ! ( arg instanceof TimeStampDataValue ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: time stamp expected.");
-                    }
-
-                    tsfa = (TimeStampFormalArg)fa;
-                    tsdv = (TimeStampDataValue)arg;
-
-                    if ( tsdv.getSubRange() != tsfa.getSubRange() )
-                    {
-                       throw new SystemErrorException(mName + 
-                                "tsdv.getSubRange() != tsfa.getSubRange().");
-                    }
-
-                    if ( tsdv.getSubRange() )
-                    {
-                        if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
-                             ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
-                        {
-                            throw new SystemErrorException(mName + 
-                                    "tsdv.getItsValue() out of range.");
-                        }
-                    }
-                    break;
-
-                case QUOTE_STRING:
-                    if ( ! ( arg instanceof QuoteStringDataValue ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch: quote string expected.");
-                    }
-                    break;
-
-                case UNTYPED:
-                    if ( arg instanceof TextStringDataValue )
-                    {
-                        throw new SystemErrorException(mName +
-                                "Type mismatch: Text String can't be " +
-                                "substituted for untyped arguments.");
-                    }
-                    else if ( ! ( ( arg instanceof ColPredDataValue ) ||
-                                  ( arg instanceof FloatDataValue ) ||
-                                  ( arg instanceof IntDataValue ) ||
-                                  ( arg instanceof NominalDataValue ) ||
-                                  ( arg instanceof PredDataValue ) ||
-                                  ( arg instanceof TimeStampDataValue ) ||
-                                  ( arg instanceof QuoteStringDataValue ) ||
-                                  ( arg instanceof UndefinedDataValue ) ) )
-                    {
-                        throw new SystemErrorException(mName + 
-                                "Unknown subtype of DataValue");
-                    }
-
-                    if ( arg instanceof ColPredDataValue )
-                    {
-                        cpdv = (ColPredDataValue)arg;
-
-                        cpdv.getItsValue().validateColumnPredicate(
-                                idMustBeInvalid);
-                    }
-                    else if ( arg instanceof PredDataValue )
-                    {
-                        pdv = (PredDataValue)arg;
-
-                        pdv.getItsValue().validatePredicate(idMustBeInvalid);
-                    }
-                    break;
-
-                case UNDEFINED:
-                    throw new SystemErrorException(mName +
-                            "formal arg type undefined???");
-                    /* break statement commented out to keep the 
-                     * compiler happy 
-                     */
-                    // break;
-
-                default:
-                    throw new SystemErrorException(mName + 
-                                                   "Unknown Formal Arg Type");
-                    /* break statement commented out to keep the 
-                     * compiler happy 
-                     */
-                    // break;
-            }
+            this.validateArgAsignment(fa, arg);
+            
+            // todo: delete this eventually
+//            switch (fa.getFargType())
+//            {
+//                case COL_PREDICATE:
+//                    if ( ! ( arg instanceof ColPredDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch: col pred expected");
+//                    }
+//                    
+//                    cpfa = (ColPredFormalArg)fa;
+//                    cpdv = (ColPredDataValue)arg;
+//
+//                    cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
+//                    break;
+//                    
+//                case FLOAT:
+//                    if ( ! ( arg instanceof FloatDataValue ) )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "Type mismatch: float expected.");
+//                    }
+//
+//                    ffa = (FloatFormalArg)fa;
+//                    fdv = (FloatDataValue)arg;
+//
+//                    if ( fdv.getSubRange() != ffa.getSubRange() )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "fdv.getSubRange() != ffa.getSubRange().");
+//                    }
+//
+//                    if ( fdv.getSubRange() )
+//                    {
+//                        if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
+//                             ( ffa.getMaxVal() < fdv.getItsValue() ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "fdv.getItsValue() out of range.");
+//                        }
+//                    }
+//                    break;
+//
+//                case INTEGER:
+//                    if ( ! ( arg instanceof IntDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch: integer expected.");
+//                    }
+//
+//                    ifa = (IntFormalArg)fa;
+//                    idv = (IntDataValue)arg;
+//
+//                    if ( idv.getSubRange() != ifa.getSubRange() )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "idv.getSubRange() != ifa.getSubRange().");
+//                    }
+//
+//                    if ( idv.getSubRange() )
+//                    {
+//                        if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
+//                             ( ifa.getMaxVal() < idv.getItsValue() ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "idv.getItsValue() out of range.");
+//                        }
+//                    }
+//                    break;
+//
+//                case NOMINAL:
+//                    if ( ! ( arg instanceof NominalDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch: nominal expected.");
+//                    }
+//
+//                    nfa = (NominalFormalArg)fa;
+//                    ndv = (NominalDataValue)arg;
+//
+//                    if ( ndv.getSubRange() != nfa.getSubRange() )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "ndv.getSubRange() != nfa.getSubRange().");
+//                    }
+//
+//                    if ( ( ndv.getSubRange() ) && 
+//                         ( ndv.getItsValue() != null ) )
+//                    {
+//                        if ( ! nfa.approved(ndv.getItsValue()) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "ndv.getItsValue() out of range.");
+//                        }
+//                    }
+//                    break;
+//
+//                case PREDICATE:
+//                    if ( ! ( arg instanceof PredDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch: Predicate expected.");
+//                    }
+//
+//                    pfa = (PredFormalArg)fa;
+//                    pdv = (PredDataValue)arg;
+//
+//                    if ( pdv.getSubRange() != pfa.getSubRange() )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "pdv.getSubRange() != pfa.getSubRange().");
+//                    }
+//
+//                    if ( ( pdv.getItsValue().getPveID() != 
+//                            DBIndex.INVALID_ID ) &&
+//                         ( pdv.getSubRange() ) &&
+//                         ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "pdv.getItsValue() out of range.");
+//                    }
+//
+//                    pdv.getItsValue().validatePredicate(idMustBeInvalid);
+//
+//                    break;
+//
+//                case TIME_STAMP:
+//                    if ( ! ( arg instanceof TimeStampDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch: time stamp expected.");
+//                    }
+//
+//                    tsfa = (TimeStampFormalArg)fa;
+//                    tsdv = (TimeStampDataValue)arg;
+//
+//                    if ( tsdv.getSubRange() != tsfa.getSubRange() )
+//                    {
+//                       throw new SystemErrorException(mName + 
+//                                "tsdv.getSubRange() != tsfa.getSubRange().");
+//                    }
+//
+//                    if ( tsdv.getSubRange() )
+//                    {
+//                        if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
+//                             ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
+//                        {
+//                            throw new SystemErrorException(mName + 
+//                                    "tsdv.getItsValue() out of range.");
+//                        }
+//                    }
+//                    break;
+//
+//                case QUOTE_STRING:
+//                    if ( ! ( arg instanceof QuoteStringDataValue ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Type mismatch: quote string expected.");
+//                    }
+//                    break;
+//
+//                case UNTYPED:
+//                    if ( arg instanceof TextStringDataValue )
+//                    {
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch: Text String can't be " +
+//                                "substituted for untyped arguments.");
+//                    }
+//                    else if ( ! ( ( arg instanceof ColPredDataValue ) ||
+//                                  ( arg instanceof FloatDataValue ) ||
+//                                  ( arg instanceof IntDataValue ) ||
+//                                  ( arg instanceof NominalDataValue ) ||
+//                                  ( arg instanceof PredDataValue ) ||
+//                                  ( arg instanceof TimeStampDataValue ) ||
+//                                  ( arg instanceof QuoteStringDataValue ) ||
+//                                  ( arg instanceof UndefinedDataValue ) ) )
+//                    {
+//                        throw new SystemErrorException(mName + 
+//                                "Unknown subtype of DataValue");
+//                    }
+//
+//                    if ( arg instanceof ColPredDataValue )
+//                    {
+//                        cpdv = (ColPredDataValue)arg;
+//
+//                        cpdv.getItsValue().validateColumnPredicate(
+//                                idMustBeInvalid);
+//                    }
+//                    else if ( arg instanceof PredDataValue )
+//                    {
+//                        pdv = (PredDataValue)arg;
+//
+//                        pdv.getItsValue().validatePredicate(idMustBeInvalid);
+//                    }
+//                    break;
+//
+//                case UNDEFINED:
+//                    throw new SystemErrorException(mName +
+//                            "formal arg type undefined???");
+//                    /* break statement commented out to keep the 
+//                     * compiler happy 
+//                     */
+//                    // break;
+//
+//                default:
+//                    throw new SystemErrorException(mName + 
+//                                                   "Unknown Formal Arg Type");
+//                    /* break statement commented out to keep the 
+//                     * compiler happy 
+//                     */
+//                    // break;
+//            }
 
             i++;
 
@@ -4114,6 +4778,815 @@ public class Predicate extends DBElement
         return;
         
     } /* Predicate::validatePredicateArgList() */
+    
+    
+    /**
+     * validateReplacementArg()
+     *
+     * Given a reference to a formal argument, the old value of that argument,
+     * and a proposed replacement argument, verify that the new argument is a 
+     * valid replacement value.  Note that the old argument may be null if 
+     * cascadePveMod is true, and cascadePveID == this.pveID.  The old argument
+     * must be defined in all other cases.
+     *
+     * This method will typically be called during a cascade, and thus the
+     * cascade parameters are passed in as they may be needed.  The only ones
+     * used in this function are cascadePveMod and cascadePveID, which are 
+     * used to sanity check oldArg.
+     *
+     * Note that the method must take care to avoid modifying the fa, oldArg,
+     * and newArg parameters.
+     *
+     * The method does nothing if all is as it should be, and throws a system
+     * error if any problems are detected.
+     *
+     *                                              JRM -- 10/28/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    
+    public void validateReplacementArg(FormalArgument fa,
+                                       DataValue oldArg,
+                                       DataValue newArg,
+                                       boolean cascadeMveMod,
+                                       boolean cascadeMveDel,
+                                       long cascadeMveID,
+                                       boolean cascadePveMod,
+                                       boolean cascadePveDel,
+                                       long cascadePveID)
+        throws SystemErrorException
+    {
+        final String mName = "Predicate::validateReplacementArg(): ";
+        boolean idMustBeInvalid = false;
+        ColPredFormalArg        cpfa;
+        FloatFormalArg          ffa;
+        IntFormalArg            ifa;
+        NominalFormalArg        nfa;
+        PredFormalArg           pfa;
+        TimeStampFormalArg      tsfa;
+        QuoteStringFormalArg    qsfa;
+        TextStringFormalArg     tfa;
+        UnTypedFormalArg        ufa;
+        ColPredDataValue        new_cpdv;
+        FloatDataValue          new_fdv;
+        IntDataValue            new_idv;
+        NominalDataValue        new_ndv;
+        PredDataValue           new_pdv;
+        TimeStampDataValue      new_tsdv;
+        QuoteStringDataValue    new_qsdv;
+        TextStringDataValue     new_tdv;
+        ColPredDataValue        old_cpdv;
+        FloatDataValue          old_fdv;
+        IntDataValue            old_idv;
+        NominalDataValue        old_ndv;
+        PredDataValue           old_pdv;
+        TimeStampDataValue      old_tsdv;
+        QuoteStringDataValue    old_qsdv;
+        TextStringDataValue     old_tdv;
+        
+        // TODO: Delete this eventually
+//        System.out.printf("%s: cascade MVE mod/del/id = %b/%b/%d\n",
+//                mName, cascadeMveMod, cascadeMveDel, cascadeMveID);
+//        System.out.printf("%s: cascade PVE mod/del/id = %b/%b/%d\n",
+//                mName, cascadePveMod, cascadePveDel, cascadePveID);
+//        System.out.printf("%s: this.pveID = %d\n",
+//                mName, this.pveID);
+        
+        if ( fa == null )
+        {
+            throw new SystemErrorException(mName + "fa null on entry.");
+        }
+        else if ( fa.getItsVocabElementID() != this.pveID )
+        {
+            throw new SystemErrorException(mName + "fa has unexpected veID.");
+        }
+        
+        if ( ( oldArg == null ) &&
+             ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) ) )
+        {
+            throw new SystemErrorException(mName + "oldArg null unexpectedly.");
+        }
+        else if ( ( oldArg != null ) &&
+                  ( oldArg.getItsFargID() != fa.getID() ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "oldArg.getItsFargID() != fa.getID()");
+        }
+         
+        if ( newArg == null )
+        {
+            throw new SystemErrorException(mName + "newArg null on entry.");
+        }
+        else if ( newArg.getItsFargID() != fa.getID() )
+        {
+            throw new SystemErrorException(mName + 
+                    "newArg.getItsFargID() != fa.getID()");
+        }
+        
+        if ( oldArg == null )
+        {
+            if ( newArg.getID() != DBIndex.INVALID_ID )
+            {
+                throw new SystemErrorException(mName +
+                        "new arg with id set.");
+            }
+        }
+        else if ( ( newArg.getClass() != oldArg.getClass() ) &&
+                  ( newArg.getID() != DBIndex.INVALID_ID ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "dv type change and id set");
+        }
+        else if ( ( oldArg.getClass() == newArg.getClass() ) &&
+                  ( newArg.getID() != DBIndex.INVALID_ID ) &&
+                  ( newArg.getID() != oldArg.getID() ) )
+        {
+            throw new SystemErrorException(mName + 
+                    "dv type match with id set but not matching");
+        }
+
+        switch (fa.getFargType())
+        {
+            case COL_PREDICATE:
+                cpfa = (ColPredFormalArg)fa;
+
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof ColPredDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           ) 
+                         )
+                     )
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: column predicate DV, or " +
+                                "undefined DV expected.");
+                   }
+                }
+
+                if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if (this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: column predicate DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( newArg instanceof ColPredDataValue )
+                {
+                    new_cpdv = (ColPredDataValue)newArg;
+
+                    if ( ( oldArg != null ) &&
+                         ( oldArg instanceof ColPredDataValue ) )
+                    {
+                        old_cpdv = (ColPredDataValue)oldArg;
+
+                        if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                             ( cascadePveMod ) || ( cascadePveDel ) )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValue(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                    }
+                    else
+                    {
+                        new_cpdv.getItsValue().
+                                validateColumnPredicate(true);
+                    }
+                }
+                break;
+
+            case FLOAT:
+                ffa = (FloatFormalArg)fa;
+                
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof FloatDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           )
+                         )
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }       
+                }
+
+                if ( ! ( ( newArg instanceof FloatDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( newArg instanceof FloatDataValue )
+                {
+                    new_fdv = (FloatDataValue)newArg;
+
+                    if ( new_fdv.getSubRange() != ffa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "new_fdv.getSubRange() != ffa.getSubRange().");
+                    }
+
+                    if ( new_fdv.getSubRange() )
+                    {
+                        if ( ( ffa.getMinVal() > 
+                                new_fdv.getItsValue() ) ||
+                             ( ffa.getMaxVal() < 
+                                new_fdv.getItsValue() ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "new_fdv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case INTEGER:
+                ifa = (IntFormalArg)fa;
+
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof IntDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           )
+                         )
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ! ( ( newArg instanceof IntDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( newArg instanceof IntDataValue )
+                {
+                    new_idv = (IntDataValue)newArg;
+
+                    if ( new_idv.getSubRange() != ifa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "new_idv.getSubRange() != ifa.getSubRange().");
+                    }
+
+                    if ( new_idv.getSubRange() )
+                    {
+                        if ( ( ifa.getMinVal() > 
+                                new_idv.getItsValue() ) ||
+                             ( ifa.getMaxVal() < 
+                                new_idv.getItsValue() ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "new_idv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case NOMINAL:
+                nfa = (NominalFormalArg)fa;
+
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof NominalDataValue ) ||
+                         ( oldArg instanceof UndefinedDataValue )
+                       ) 
+                     )
+                   )
+                {
+                    throw new SystemErrorException(mName + "Old arg " +
+                            "type mismatch: nominal DV, or " +
+                            "undefined DV expected.");
+                }
+
+                if ( ! ( ( newArg instanceof NominalDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue )
+                       ) 
+                   )
+                {
+                    throw new SystemErrorException(mName + "New arg " +
+                            "type mismatch: nominaal DV, or " +
+                            "undefined DV expected.");
+                }
+
+                if ( newArg instanceof NominalDataValue )
+                {
+                    new_ndv = (NominalDataValue)newArg;
+
+                    if ( new_ndv.getSubRange() != nfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "new_ndv.getSubRange() != nfa.getSubRange().");
+                    }
+
+                    if ( ( new_ndv.getSubRange() ) && 
+                         ( new_ndv.getItsValue() != null ) )
+                    {
+                        if ( ( ! nfa.approved(new_ndv.getItsValue()) ) &&
+                             ( ( ! this.queryVarOK ) ||
+                               ( ! new_ndv.isQueryVar() ) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                "new_ndv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case PREDICATE:
+                pfa = (PredFormalArg)fa;
+
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof PredDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           )
+                       )
+                     ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ! ( ( newArg instanceof PredDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( newArg instanceof PredDataValue )
+                {
+                    new_pdv = (PredDataValue)newArg;
+
+                    if ( new_pdv.getSubRange() != pfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                         "new_pdv.getSubRange() != pfa.getSubRange().");
+                    }
+
+                    if ( ( new_pdv.getItsValue().getPveID() != 
+                            DBIndex.INVALID_ID ) &&
+                         ( new_pdv.getSubRange() ) &&
+                         ( ! pfa.approved(new_pdv.getItsValue().
+                                    getPveID()) ) )
+                    {
+                        throw new SystemErrorException(mName + 
+                                "new_pdv.getItsValue() out of range.");
+                    }
+                    
+                    if ( ( oldArg != null ) &&
+                         ( oldArg instanceof PredDataValue ) )
+                    {
+                        old_pdv = (PredDataValue)oldArg;
+                        
+                        if ( ( ! cascadeMveMod ) && 
+                             ( ! cascadeMveDel ) &&
+                             ( ! cascadePveMod ) &&
+                             ( ! cascadePveDel ) )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValue(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(),
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel,
+                                        cascadePveID);
+                        }
+                    }
+                    else
+                    {
+                        new_pdv.getItsValue().validatePredicate(true);
+                    }
+                }
+                break;
+
+            case TIME_STAMP:
+                tsfa = (TimeStampFormalArg)fa;
+
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof TimeStampDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           ) 
+                         )
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ! ( ( newArg instanceof TimeStampDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ( newArg.getClass() != oldArg.getClass() ) &&
+                     ( newArg.getID() != DBIndex.INVALID_ID ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "dv type change and id set");
+                }
+
+                if ( newArg instanceof TimeStampDataValue )
+                {
+                    new_tsdv = (TimeStampDataValue)newArg;
+
+                    if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+                    {
+                       throw new SystemErrorException(mName + 
+                       "new_tsdv.getSubRange() != tsfa.getSubRange().");
+                    }
+
+                    if ( new_tsdv.getSubRange() )
+                    {
+                        if ( ( tsfa.getMinVal().
+                                gt(new_tsdv.getItsValue()) ) ||
+                             ( tsfa.getMaxVal().
+                                lt(new_tsdv.getItsValue()) ) )
+                        {
+                            throw new SystemErrorException(mName + 
+                                    "new_tsdv.getItsValue() out of range.");
+                        }
+                    }
+                }
+                break;
+
+            case QUOTE_STRING:
+                if ( ( oldArg != null ) &&
+                     ( ! ( ( oldArg instanceof QuoteStringDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) ||
+                           ( ( this.queryVarOK ) ||
+                             ( oldArg instanceof NominalDataValue ) &&
+                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                           )
+                         )
+                     ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ! ( ( newArg instanceof QuoteStringDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) ||
+                         ( ( this.queryVarOK ) ||
+                           ( newArg instanceof NominalDataValue ) &&
+                           ( ((NominalDataValue)newArg).isQueryVar() ) 
+                         ) 
+                       ) 
+                   )
+                {
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
+                }
+
+                if ( ( newArg.getClass() != oldArg.getClass() ) &&
+                     ( newArg.getID() != DBIndex.INVALID_ID ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "dv type change and id set");
+                }
+                break;
+
+            case TEXT:
+                throw new SystemErrorException(mName + 
+                        "pve contains a text formal arg?!?!");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+
+            case UNTYPED:
+                if ( ( ( oldArg != null ) &&
+                       ( oldArg instanceof TextStringDataValue ) ) ||
+                     ( newArg instanceof TextStringDataValue ) )
+                {
+                    throw new SystemErrorException(mName +
+                            "Type mismatch: Text String can't be " +
+                            "substituted for untyped arguments.");
+                }
+                else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
+                              ( newArg instanceof FloatDataValue ) ||
+                              ( newArg instanceof IntDataValue ) ||
+                              ( newArg instanceof NominalDataValue ) ||
+                              ( newArg instanceof PredDataValue ) ||
+                              ( newArg instanceof TimeStampDataValue ) ||
+                              ( newArg instanceof QuoteStringDataValue ) ||
+                              ( newArg instanceof UndefinedDataValue ) ) )
+                {
+                    throw new SystemErrorException(mName + 
+                            "Unknown subtype of DataValue");
+                }
+
+                if ( newArg instanceof ColPredDataValue )
+                {
+                    new_cpdv = (ColPredDataValue)newArg;
+
+                    if ( ( oldArg != null ) &&
+                         ( oldArg instanceof ColPredDataValue ) )
+                    {
+                        old_cpdv = (ColPredDataValue)oldArg;
+
+                        if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                             ( cascadePveMod ) || ( cascadePveDel ) )
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValueBlind(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_cpdv.getItsValue().
+                                    validateReplacementColPred(
+                                        old_cpdv.getItsValue(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                    }
+                    else
+                    {
+                        new_cpdv.getItsValue().
+                                validateColumnPredicate(true);
+                    }
+                }
+                else if ( newArg instanceof PredDataValue )
+                {
+                    new_pdv = (PredDataValue)newArg;
+
+                    if ( ( oldArg != null ) &&
+                         ( oldArg instanceof PredDataValue ) )
+                    {
+                        old_pdv = (PredDataValue)oldArg;
+
+                        if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+                             ( cascadePveMod ) || ( cascadePveDel ) )
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValueBlind(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                        else
+                        {
+                            new_pdv.getItsValue().
+                                    validateReplacementPredicate(
+                                        old_pdv.getItsValue(), 
+                                        cascadeMveMod,
+                                        cascadeMveDel,
+                                        cascadeMveID,
+                                        cascadePveMod,
+                                        cascadePveDel, 
+                                        cascadePveID);
+                        }
+                    }
+                    else
+                    {
+                        new_pdv.getItsValue().
+                                validatePredicate(true);
+                    }
+                }
+                break;
+
+            case UNDEFINED:
+                throw new SystemErrorException(mName +
+                        "formal arg type undefined???");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+
+            default:
+                throw new SystemErrorException(mName + 
+
+                        "Unknown Formal Arg Type");
+                /* break statement commented out to keep the 
+                 * compiler happy 
+                 */
+                // break;
+        }
+        
+        return;
+        
+    } /* Predicate::validateReplacementArg() */
     
     
     /**
@@ -4415,388 +5888,392 @@ public class Predicate extends DBElement
                                 "th argument id mismatch");
                     }
 
+                    this.validateReplacementArg(fa, oldArg, newArg, 
+                            cascadeMveMod, cascadeMveDel, cascadeMveID, 
+                            cascadePveMod, cascadePveDel, cascadePveID);
 
-                    switch (fa.getFargType())
-                    {
-                        case COL_PREDICATE:
-                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
-                                 ( ! ( oldArg instanceof ColPredDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "Type mismatch: Column Predicate expected.");
-                            }
-
-                            cpfa = (ColPredFormalArg)fa;
-                            new_cpdv = (ColPredDataValue)newArg;
-                            old_cpdv = (ColPredDataValue)oldArg;
-
-                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                                 ( new_cpdv.getItsValue().getID() == 
-                                    DBIndex.INVALID_ID ) )
-                            {
-                                new_cpdv.getItsValue().validateColumnPredicate(true);
-                            }
-                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
-                                      ( cascadePveMod ) || ( cascadePveDel ) )
-                            {
-                                new_cpdv.getItsValue().
-                                        validateReplacementColPred(
-                                                old_cpdv.getItsValueBlind(),
-                                                cascadeMveMod, 
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod, 
-                                                cascadePveDel, 
-                                                cascadePveID);
-                            }
-                            else
-                            {
-                                new_cpdv.getItsValue().
-                                        validateReplacementColPred(
-                                                old_cpdv.getItsValue(),
-                                                cascadeMveMod, 
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod, 
-                                                cascadePveDel, 
-                                                cascadePveID);
-                            }
-                            break;
-                                
-                        case FLOAT:
-                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                                 ( ! ( oldArg instanceof FloatDataValue ) ) )
-                            {
-                               throw new SystemErrorException(mName + 
-                                        "Type mismatch: float expected.");
-                            }
-
-                            ffa = (FloatFormalArg)fa;
-                            new_fdv = (FloatDataValue)newArg;
-                            old_fdv = (FloatDataValue)oldArg;
-
-                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_fdv.getSubRange() != ffa.getSubRange().");
-                            }
-
-                            if ( new_fdv.getSubRange() )
-                            {
-                                if ( ( ffa.getMinVal() > 
-                                        new_fdv.getItsValue() ) ||
-                                     ( ffa.getMaxVal() < 
-                                        new_fdv.getItsValue() ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_fdv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case INTEGER:
-                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                                 ( ! ( oldArg instanceof IntDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: integer expected.");
-                            }
-
-                            ifa = (IntFormalArg)fa;
-                            new_idv = (IntDataValue)newArg;
-                            old_idv = (IntDataValue)oldArg;
-
-                            if ( new_idv.getSubRange() != ifa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_idv.getSubRange() != ifa.getSubRange().");
-                            }
-
-                            if ( new_idv.getSubRange() )
-                            {
-                                if ( ( ifa.getMinVal() > 
-                                        new_idv.getItsValue() ) ||
-                                     ( ifa.getMaxVal() < 
-                                        new_idv.getItsValue() ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_idv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case NOMINAL:
-                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                                 ( ! ( oldArg instanceof NominalDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: nominal expected.");
-                            }
-
-                            nfa = (NominalFormalArg)fa;
-                            new_ndv = (NominalDataValue)newArg;
-                            old_ndv = (NominalDataValue)oldArg;
-
-                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_ndv.getSubRange() != nfa.getSubRange().");
-                            }
-
-                            if ( ( new_ndv.getSubRange() ) && 
-                                 ( new_ndv.getItsValue() != null ) )
-                            {
-                                if ( ! nfa.approved(new_ndv.getItsValue()) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_ndv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case PREDICATE:
-                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
-                                 ( ! ( oldArg instanceof PredDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: Predicate expected.");
-                            }
-
-                            pfa = (PredFormalArg)fa;
-                            new_pdv = (PredDataValue)newArg;
-                            old_pdv = (PredDataValue)oldArg;
-
-                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_pdv.getSubRange() != pfa.getSubRange().");
-                            }
-
-                            if ( ( new_pdv.getItsValue().getPveID() != 
-                                    DBIndex.INVALID_ID ) &&
-                                 ( new_pdv.getSubRange() ) &&
-                                 ( ! pfa.approved(new_pdv.getItsValue().
-                                            getPveID()) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "new_pdv.getItsValue() out of range.");
-                            }
-
-                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                                 ( new_pdv.getItsValue().getID() == 
-                                    DBIndex.INVALID_ID ) )
-                            {
-                                new_pdv.getItsValue().validatePredicate(true);
-                            }
-                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
-                                      ( cascadePveMod ) || ( cascadePveDel ) )
-                            {
-                                new_pdv.getItsValue().
-                                        validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(),
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveMod, 
-                                                cascadePveID);
-                            }
-                            else
-                            {
-                                new_pdv.getItsValue().
-                                        validateReplacementPredicate(
-                                                old_pdv.getItsValue(),
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveMod, 
-                                                cascadePveID);
-                            }
-                            break;
-
-                        case TIME_STAMP:
-                            if ( ( ! ( newArg instanceof 
-                                        TimeStampDataValue ) ) ||
-                                 ( ! ( oldArg instanceof 
-                                        TimeStampDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: time stamp expected.");
-                            }
-
-                            tsfa = (TimeStampFormalArg)fa;
-                            new_tsdv = (TimeStampDataValue)newArg;
-                            old_tsdv = (TimeStampDataValue)oldArg;
-
-                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                            }
-
-                            if ( new_tsdv.getSubRange() )
-                            {
-                                if ( ( tsfa.getMinVal().
-                                        gt(new_tsdv.getItsValue()) ) ||
-                                     ( tsfa.getMaxVal().
-                                        lt(new_tsdv.getItsValue()) ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                            "new_tsdv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case QUOTE_STRING:
-                            if ( ( ! ( newArg instanceof 
-                                        QuoteStringDataValue ) ) ||
-                                 ( ! ( oldArg instanceof 
-                                        QuoteStringDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: quote string expected.");
-                            }
-                            break;
-
-                        case UNTYPED:
-                            if ( ( newArg instanceof TextStringDataValue ) ||
-                                 ( oldArg instanceof TextStringDataValue ) )
-                            {
-                                throw new SystemErrorException(mName +
-                                        "Type mismatch: Text String can't be " +
-                                        "substituted for untyped arguments.");
-                            }
-                            else if ( ! ( ( newArg instanceof 
-                                            ColPredDataValue ) ||
-                                          ( newArg instanceof 
-                                            FloatDataValue ) ||
-                                          ( newArg instanceof 
-                                            IntDataValue ) ||
-                                          ( newArg instanceof 
-                                            NominalDataValue ) ||
-                                          ( newArg instanceof 
-                                            PredDataValue ) ||
-                                          ( newArg instanceof 
-                                            TimeStampDataValue ) ||
-                                          ( newArg instanceof 
-                                            QuoteStringDataValue ) ||
-                                          ( newArg instanceof 
-                                            UndefinedDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Unknown subtype of DataValue");
-                            }
-
-                            if ( ( newArg.getClass() != oldArg.getClass() ) &&
-                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "dv type change and id set");
-                            }
-                            
-                            if ( newArg instanceof ColPredDataValue )
-                            {
-                                new_cpdv = (ColPredDataValue)newArg;
-
-                                if ( oldArg instanceof ColPredDataValue )
-                                {
-                                    old_cpdv = (ColPredDataValue)oldArg;
-                                    
-                                    if ( ( ! cascadeMveMod ) && 
-                                         ( ! cascadeMveDel ) &&
-                                         ( ! cascadePveMod ) &&
-                                         ( ! cascadePveDel ) )
-                                    {
-                                        new_cpdv.getItsValue().
-                                                validateReplacementColPred(
-                                                    old_cpdv.getItsValue(),
-                                                    cascadeMveMod,
-                                                    cascadeMveDel,
-                                                    cascadeMveID,
-                                                    cascadePveMod, 
-                                                    cascadePveDel, 
-                                                    cascadePveID);
-                                    }
-                                    else 
-                                    {
-                                        new_cpdv.getItsValue().
-                                                validateReplacementColPred(
-                                                    old_cpdv.getItsValueBlind(),
-                                                    cascadeMveMod,
-                                                    cascadeMveDel,
-                                                    cascadeMveID,
-                                                    cascadePveMod, 
-                                                    cascadePveDel, 
-                                                    cascadePveID);
-                                    }
-                                }
-                                else
-                                {
-                                    new_cpdv.getItsValue().
-                                            validateColumnPredicate(true);
-                                }
-                            }
-                            else if ( newArg instanceof PredDataValue )
-                            {
-                                new_pdv = (PredDataValue)newArg;
-
-                                if ( oldArg instanceof PredDataValue )
-                                {
-                                    old_pdv = (PredDataValue)oldArg;
-                                    
-                                    if ( ( ! cascadeMveMod ) &&
-                                         ( ! cascadeMveDel ) &&
-                                         ( ! cascadePveMod ) && 
-                                         ( ! cascadePveDel ) )
-                                    {
-                                        new_pdv.getItsValue().
-                                                validateReplacementPredicate(
-                                                    old_pdv.getItsValue(),
-                                                    cascadeMveMod,
-                                                    cascadeMveDel,
-                                                    cascadeMveID,
-                                                    cascadePveMod, 
-                                                    cascadePveDel, 
-                                                    cascadePveID);
-                                    }
-                                    else 
-                                    {
-                                        new_pdv.getItsValue().
-                                                validateReplacementPredicate(
-                                                    old_pdv.getItsValueBlind(),
-                                                    cascadeMveMod,
-                                                    cascadeMveDel,
-                                                    cascadeMveID,
-                                                    cascadePveMod, 
-                                                    cascadePveDel, 
-                                                    cascadePveID);
-                                    }
-                                }
-                                else
-                                {
-                                    new_pdv.getItsValue().
-                                            validatePredicate(true);
-                                }
-                            }
-                            break;
-
-                        case UNDEFINED:
-                            throw new SystemErrorException(mName +
-                                    "formal arg type undefined???");
-                            /* break statement commented out to keep the 
-                             * compiler happy 
-                             */
-                            // break;
-
-                        default:
-                            throw new SystemErrorException(mName + 
-                                    "Unknown Formal Arg Type");
-                            /* break statement commented out to keep the 
-                             * compiler happy 
-                             */
-                            // break;
-                    }
+                    // todo: delete this eventually
+//                    switch (fa.getFargType())
+//                    {
+//                        case COL_PREDICATE:
+//                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof ColPredDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "Type mismatch: Column Predicate expected.");
+//                            }
+//
+//                            cpfa = (ColPredFormalArg)fa;
+//                            new_cpdv = (ColPredDataValue)newArg;
+//                            old_cpdv = (ColPredDataValue)oldArg;
+//
+//                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+//                                 ( new_cpdv.getItsValue().getID() == 
+//                                    DBIndex.INVALID_ID ) )
+//                            {
+//                                new_cpdv.getItsValue().validateColumnPredicate(true);
+//                            }
+//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                                      ( cascadePveMod ) || ( cascadePveDel ) )
+//                            {
+//                                new_cpdv.getItsValue().
+//                                        validateReplacementColPred(
+//                                                old_cpdv.getItsValueBlind(),
+//                                                cascadeMveMod, 
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod, 
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                new_cpdv.getItsValue().
+//                                        validateReplacementColPred(
+//                                                old_cpdv.getItsValue(),
+//                                                cascadeMveMod, 
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod, 
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                            }
+//                            break;
+//                                
+//                        case FLOAT:
+//                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof FloatDataValue ) ) )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                        "Type mismatch: float expected.");
+//                            }
+//
+//                            ffa = (FloatFormalArg)fa;
+//                            new_fdv = (FloatDataValue)newArg;
+//                            old_fdv = (FloatDataValue)oldArg;
+//
+//                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_fdv.getSubRange() != ffa.getSubRange().");
+//                            }
+//
+//                            if ( new_fdv.getSubRange() )
+//                            {
+//                                if ( ( ffa.getMinVal() > 
+//                                        new_fdv.getItsValue() ) ||
+//                                     ( ffa.getMaxVal() < 
+//                                        new_fdv.getItsValue() ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_fdv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case INTEGER:
+//                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof IntDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: integer expected.");
+//                            }
+//
+//                            ifa = (IntFormalArg)fa;
+//                            new_idv = (IntDataValue)newArg;
+//                            old_idv = (IntDataValue)oldArg;
+//
+//                            if ( new_idv.getSubRange() != ifa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_idv.getSubRange() != ifa.getSubRange().");
+//                            }
+//
+//                            if ( new_idv.getSubRange() )
+//                            {
+//                                if ( ( ifa.getMinVal() > 
+//                                        new_idv.getItsValue() ) ||
+//                                     ( ifa.getMaxVal() < 
+//                                        new_idv.getItsValue() ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_idv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case NOMINAL:
+//                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof NominalDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: nominal expected.");
+//                            }
+//
+//                            nfa = (NominalFormalArg)fa;
+//                            new_ndv = (NominalDataValue)newArg;
+//                            old_ndv = (NominalDataValue)oldArg;
+//
+//                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_ndv.getSubRange() != nfa.getSubRange().");
+//                            }
+//
+//                            if ( ( new_ndv.getSubRange() ) && 
+//                                 ( new_ndv.getItsValue() != null ) )
+//                            {
+//                                if ( ! nfa.approved(new_ndv.getItsValue()) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_ndv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case PREDICATE:
+//                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof PredDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: Predicate expected.");
+//                            }
+//
+//                            pfa = (PredFormalArg)fa;
+//                            new_pdv = (PredDataValue)newArg;
+//                            old_pdv = (PredDataValue)oldArg;
+//
+//                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_pdv.getSubRange() != pfa.getSubRange().");
+//                            }
+//
+//                            if ( ( new_pdv.getItsValue().getPveID() != 
+//                                    DBIndex.INVALID_ID ) &&
+//                                 ( new_pdv.getSubRange() ) &&
+//                                 ( ! pfa.approved(new_pdv.getItsValue().
+//                                            getPveID()) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "new_pdv.getItsValue() out of range.");
+//                            }
+//
+//                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+//                                 ( new_pdv.getItsValue().getID() == 
+//                                    DBIndex.INVALID_ID ) )
+//                            {
+//                                new_pdv.getItsValue().validatePredicate(true);
+//                            }
+//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                                      ( cascadePveMod ) || ( cascadePveDel ) )
+//                            {
+//                                new_pdv.getItsValue().
+//                                        validateReplacementPredicate(
+//                                                old_pdv.getItsValueBlind(),
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveMod, 
+//                                                cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                new_pdv.getItsValue().
+//                                        validateReplacementPredicate(
+//                                                old_pdv.getItsValue(),
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveMod, 
+//                                                cascadePveID);
+//                            }
+//                            break;
+//
+//                        case TIME_STAMP:
+//                            if ( ( ! ( newArg instanceof 
+//                                        TimeStampDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof 
+//                                        TimeStampDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: time stamp expected.");
+//                            }
+//
+//                            tsfa = (TimeStampFormalArg)fa;
+//                            new_tsdv = (TimeStampDataValue)newArg;
+//                            old_tsdv = (TimeStampDataValue)oldArg;
+//
+//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                            }
+//
+//                            if ( new_tsdv.getSubRange() )
+//                            {
+//                                if ( ( tsfa.getMinVal().
+//                                        gt(new_tsdv.getItsValue()) ) ||
+//                                     ( tsfa.getMaxVal().
+//                                        lt(new_tsdv.getItsValue()) ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                            "new_tsdv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case QUOTE_STRING:
+//                            if ( ( ! ( newArg instanceof 
+//                                        QuoteStringDataValue ) ) ||
+//                                 ( ! ( oldArg instanceof 
+//                                        QuoteStringDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: quote string expected.");
+//                            }
+//                            break;
+//
+//                        case UNTYPED:
+//                            if ( ( newArg instanceof TextStringDataValue ) ||
+//                                 ( oldArg instanceof TextStringDataValue ) )
+//                            {
+//                                throw new SystemErrorException(mName +
+//                                        "Type mismatch: Text String can't be " +
+//                                        "substituted for untyped arguments.");
+//                            }
+//                            else if ( ! ( ( newArg instanceof 
+//                                            ColPredDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            FloatDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            IntDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            NominalDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            PredDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            TimeStampDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            QuoteStringDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            UndefinedDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Unknown subtype of DataValue");
+//                            }
+//
+//                            if ( ( newArg.getClass() != oldArg.getClass() ) &&
+//                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "dv type change and id set");
+//                            }
+//                            
+//                            if ( newArg instanceof ColPredDataValue )
+//                            {
+//                                new_cpdv = (ColPredDataValue)newArg;
+//
+//                                if ( oldArg instanceof ColPredDataValue )
+//                                {
+//                                    old_cpdv = (ColPredDataValue)oldArg;
+//                                    
+//                                    if ( ( ! cascadeMveMod ) && 
+//                                         ( ! cascadeMveDel ) &&
+//                                         ( ! cascadePveMod ) &&
+//                                         ( ! cascadePveDel ) )
+//                                    {
+//                                        new_cpdv.getItsValue().
+//                                                validateReplacementColPred(
+//                                                    old_cpdv.getItsValue(),
+//                                                    cascadeMveMod,
+//                                                    cascadeMveDel,
+//                                                    cascadeMveID,
+//                                                    cascadePveMod, 
+//                                                    cascadePveDel, 
+//                                                    cascadePveID);
+//                                    }
+//                                    else 
+//                                    {
+//                                        new_cpdv.getItsValue().
+//                                                validateReplacementColPred(
+//                                                    old_cpdv.getItsValueBlind(),
+//                                                    cascadeMveMod,
+//                                                    cascadeMveDel,
+//                                                    cascadeMveID,
+//                                                    cascadePveMod, 
+//                                                    cascadePveDel, 
+//                                                    cascadePveID);
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    new_cpdv.getItsValue().
+//                                            validateColumnPredicate(true);
+//                                }
+//                            }
+//                            else if ( newArg instanceof PredDataValue )
+//                            {
+//                                new_pdv = (PredDataValue)newArg;
+//
+//                                if ( oldArg instanceof PredDataValue )
+//                                {
+//                                    old_pdv = (PredDataValue)oldArg;
+//                                    
+//                                    if ( ( ! cascadeMveMod ) &&
+//                                         ( ! cascadeMveDel ) &&
+//                                         ( ! cascadePveMod ) && 
+//                                         ( ! cascadePveDel ) )
+//                                    {
+//                                        new_pdv.getItsValue().
+//                                                validateReplacementPredicate(
+//                                                    old_pdv.getItsValue(),
+//                                                    cascadeMveMod,
+//                                                    cascadeMveDel,
+//                                                    cascadeMveID,
+//                                                    cascadePveMod, 
+//                                                    cascadePveDel, 
+//                                                    cascadePveID);
+//                                    }
+//                                    else 
+//                                    {
+//                                        new_pdv.getItsValue().
+//                                                validateReplacementPredicate(
+//                                                    old_pdv.getItsValueBlind(),
+//                                                    cascadeMveMod,
+//                                                    cascadeMveDel,
+//                                                    cascadeMveID,
+//                                                    cascadePveMod, 
+//                                                    cascadePveDel, 
+//                                                    cascadePveID);
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    new_pdv.getItsValue().
+//                                            validatePredicate(true);
+//                                }
+//                            }
+//                            break;
+//
+//                        case UNDEFINED:
+//                            throw new SystemErrorException(mName +
+//                                    "formal arg type undefined???");
+//                            /* break statement commented out to keep the 
+//                             * compiler happy 
+//                             */
+//                            // break;
+//
+//                        default:
+//                            throw new SystemErrorException(mName + 
+//                                    "Unknown Formal Arg Type");
+//                            /* break statement commented out to keep the 
+//                             * compiler happy 
+//                             */
+//                            // break;
+//                    }
 
                     i++;
 
@@ -4893,371 +6370,375 @@ public class Predicate extends DBElement
                                         "fa.getID() != oldArg.getItsFargID()");
                     }
 
+                    this.validateReplacementArg(fa, oldArg, newArg, 
+                            cascadeMveMod, cascadeMveDel, cascadeMveID, 
+                            cascadePveMod, cascadePveDel, cascadePveID);
 
-                    switch (fa.getFargType())
-                    {
-                        case COL_PREDICATE:
-                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof ColPredDataValue ) ) 
-                                 )
-                               )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: col pred(s) expected.");
-                            }
-
-                            cpfa = (ColPredFormalArg)fa;
-                            new_cpdv = (ColPredDataValue)newArg;
-                            
-                            if ( oldArg != null )
-                            {
-                                old_cpdv = (ColPredDataValue)oldArg;
-                            }
-                            else
-                            {
-                                old_cpdv = null;
-                            }
-
-                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                                 ( new_cpdv.getItsValue().getID() == 
-                                    DBIndex.INVALID_ID ) )
-                            {
-                                new_cpdv.getItsValue().validateColumnPredicate(true);
-                            }
-                            else if ( old_cpdv != null )
-                            {
-                                new_cpdv.getItsValue().
-                                        validateReplacementColPred(
-                                            old_cpdv.getItsValueBlind(),
-                                            cascadeMveMod,
-                                            cascadeMveDel,
-                                            cascadeMveID,
-                                            cascadePveMod,
-                                            cascadePveDel, 
-                                            cascadePveID);
-                            }
-                            else
-                            {
-                                throw new SystemErrorException(mName +
-                                "new_cpdv has valid ID but old_cpdv is null?!?");
-                            }
-                            break;
-
-                        case FLOAT:
-                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof FloatDataValue ) ) ) )
-                            {
-                               throw new SystemErrorException(mName + 
-                                        "Type mismatch: float(s) expected.");
-                            }
-
-                            ffa = (FloatFormalArg)fa;
-                            new_fdv = (FloatDataValue)newArg;
-
-                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_fdv.getSubRange() != ffa.getSubRange().");
-                            }
-
-                            if ( new_fdv.getSubRange() )
-                            {
-                                if ( ( ffa.getMinVal() > 
-                                        new_fdv.getItsValue() ) ||
-                                     ( ffa.getMaxVal() < 
-                                        new_fdv.getItsValue() ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_fdv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case INTEGER:
-                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof IntDataValue ) ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: integer(s) expected.");
-                            }
-
-                            ifa = (IntFormalArg)fa;
-                            new_idv = (IntDataValue)newArg;
-
-                            if ( new_idv.getSubRange() != ifa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_idv.getSubRange() != ifa.getSubRange().");
-                            }
-
-                            if ( new_idv.getSubRange() )
-                            {
-                                if ( ( ifa.getMinVal() > 
-                                        new_idv.getItsValue() ) ||
-                                     ( ifa.getMaxVal() < 
-                                        new_idv.getItsValue() ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_idv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case NOMINAL:
-                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof NominalDataValue ) ) 
-                                 )
-                               )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: nominal(s) expected.");
-                            }
-
-                            nfa = (NominalFormalArg)fa;
-                            new_ndv = (NominalDataValue)newArg;
-
-                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_ndv.getSubRange() != nfa.getSubRange().");
-                            }
-
-                            if ( ( new_ndv.getSubRange() ) && 
-                                 ( new_ndv.getItsValue() != null ) )
-                            {
-                                if ( ! nfa.approved(new_ndv.getItsValue()) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                        "new_ndv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case PREDICATE:
-                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof PredDataValue ) ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: Predicate(s) expected.");
-                            }
-
-                            pfa = (PredFormalArg)fa;
-                            new_pdv = (PredDataValue)newArg;
-                            
-                            if ( oldArg != null )
-                            {
-                                old_pdv = (PredDataValue)oldArg;
-                            }
-                            else
-                            {
-                                old_pdv = null;
-                            }
-
-                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                                 "new_pdv.getSubRange() != pfa.getSubRange().");
-                            }
-
-                            if ( ( new_pdv.getItsValue().getPveID() != 
-                                    DBIndex.INVALID_ID ) &&
-                                 ( new_pdv.getSubRange() ) &&
-                                 ( ! pfa.approved(new_pdv.getItsValue().
-                                            getPveID()) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "new_pdv.getItsValue() out of range.");
-                            }
-
-                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                                 ( new_pdv.getItsValue().getID() == 
-                                    DBIndex.INVALID_ID ) )
-                            {
-                                new_pdv.getItsValue().validatePredicate(true);
-                            }
-                            else if ( old_pdv != null )
-                            {
-                                new_pdv.getItsValue().
-                                        validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(),
-                                            cascadeMveMod,
-                                            cascadeMveDel,
-                                            cascadeMveID,
-                                            cascadePveMod,
-                                            cascadePveDel, 
-                                            cascadePveID);
-                            }
-                            else
-                            {
-                                throw new SystemErrorException(mName +
-                                "new_pdv has valid ID but old_pdv is null?!?");
-                            }
-                            break;
-
-                        case TIME_STAMP:
-                            if ( ( ! ( newArg instanceof 
-                                        TimeStampDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof 
-                                          TimeStampDataValue ) ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                    "Type mismatch: time stamp(s) expected.");
-                            }
-
-                            tsfa = (TimeStampFormalArg)fa;
-                            new_tsdv = (TimeStampDataValue)newArg;
-
-                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
-                            {
-                               throw new SystemErrorException(mName + 
-                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
-                            }
-
-                            if ( new_tsdv.getSubRange() )
-                            {
-                                if ( ( tsfa.getMinVal().
-                                        gt(new_tsdv.getItsValue()) ) ||
-                                     ( tsfa.getMaxVal().
-                                        lt(new_tsdv.getItsValue()) ) )
-                                {
-                                    throw new SystemErrorException(mName + 
-                                            "new_tsdv.getItsValue() out of range.");
-                                }
-                            }
-                            break;
-
-                        case QUOTE_STRING:
-                            if ( ( ! ( newArg instanceof 
-                                        QuoteStringDataValue ) ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( ! ( oldArg instanceof 
-                                          QuoteStringDataValue ) ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Type mismatch: quote string(s) expected.");
-                            }
-                            break;
-
-                        case UNTYPED:
-                            if ( ( newArg instanceof TextStringDataValue ) ||
-                                 ( ( oldArg != null ) &&
-                                   ( oldArg instanceof TextStringDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName +
-                                    "Type mismatch: Text String(s) can't be " +
-                                    "substituted for untyped arguments.");
-                            }
-                            else if ( ! ( ( newArg instanceof 
-                                            ColPredDataValue ) ||
-                                          ( newArg instanceof 
-                                            FloatDataValue ) ||
-                                          ( newArg instanceof 
-                                            IntDataValue ) ||
-                                          ( newArg instanceof 
-                                            NominalDataValue ) ||
-                                          ( newArg instanceof 
-                                            PredDataValue ) ||
-                                          ( newArg instanceof 
-                                            TimeStampDataValue ) ||
-                                          ( newArg instanceof 
-                                            QuoteStringDataValue ) ||
-                                          ( newArg instanceof 
-                                            UndefinedDataValue ) ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "Unknown subtype of DataValue");
-                            }
-
-                            if ( ( ( oldArg == null ) 
-                                   ||
-                                   ( newArg.getClass() != oldArg.getClass() ) 
-                                 )
-                                 &&
-                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
-                            {
-                                throw new SystemErrorException(mName + 
-                                        "dv type change and id set(2)");
-                            }
-                            
-                            if ( newArg instanceof ColPredDataValue )
-                            {
-                                new_cpdv = (ColPredDataValue)newArg;
-
-                                if ( ( oldArg != null ) &&
-                                     ( oldArg instanceof ColPredDataValue ) )
-                                {
-                                    old_cpdv = (ColPredDataValue)oldArg;
-                                    
-                                    assert(cascadeMveMod);
-                                    
-                                    new_cpdv.getItsValue().
-                                            validateReplacementColPred(
-                                                old_cpdv.getItsValueBlind(),
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                                else
-                                {
-                                    new_cpdv.getItsValue().
-                                            validateColumnPredicate(true);
-                                }
-                            }
-                            else if ( newArg instanceof PredDataValue )
-                            {
-                                new_pdv = (PredDataValue)newArg;
-
-                                if ( ( oldArg != null ) &&
-                                     ( oldArg instanceof PredDataValue ) )
-                                {
-                                    old_pdv = (PredDataValue)oldArg;
-                                    
-                                    assert(cascadeMveMod);
-                                    
-                                    new_pdv.getItsValue().
-                                            validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(),
-                                                cascadeMveMod,
-                                                cascadeMveDel,
-                                                cascadeMveID,
-                                                cascadePveMod,
-                                                cascadePveDel, 
-                                                cascadePveID);
-                                }
-                                else
-                                {
-                                    new_pdv.getItsValue().
-                                            validatePredicate(true);
-                                }
-                            }
-                            break;
-
-                        case UNDEFINED:
-                            throw new SystemErrorException(mName +
-                                    "formal arg type undefined???");
-                            /* break statement commented out to keep the 
-                             * compiler happy 
-                             */
-                            // break;
-
-                        default:
-                            throw new SystemErrorException(mName + 
-                                                           
-                                    "Unknown Formal Arg Type");
-                            /* break statement commented out to keep the 
-                             * compiler happy 
-                             */
-                            // break;
-                    }
+                    // todo: delete this eventually
+//                    switch (fa.getFargType())
+//                    {
+//                        case COL_PREDICATE:
+//                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof ColPredDataValue ) ) 
+//                                 )
+//                               )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: col pred(s) expected.");
+//                            }
+//
+//                            cpfa = (ColPredFormalArg)fa;
+//                            new_cpdv = (ColPredDataValue)newArg;
+//
+//                            if ( oldArg != null )
+//                            {
+//                                old_cpdv = (ColPredDataValue)oldArg;
+//                            }
+//                            else
+//                            {
+//                                old_cpdv = null;
+//                            }
+//
+//                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
+//                                 ( new_cpdv.getItsValue().getID() == 
+//                                    DBIndex.INVALID_ID ) )
+//                            {
+//                                new_cpdv.getItsValue().validateColumnPredicate(true);
+//                            }
+//                            else if ( old_cpdv != null )
+//                            {
+//                                new_cpdv.getItsValue().
+//                                        validateReplacementColPred(
+//                                            old_cpdv.getItsValueBlind(),
+//                                            cascadeMveMod,
+//                                            cascadeMveDel,
+//                                            cascadeMveID,
+//                                            cascadePveMod,
+//                                            cascadePveDel, 
+//                                            cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                throw new SystemErrorException(mName +
+//                                "new_cpdv has valid ID but old_cpdv is null?!?");
+//                            }
+//                            break;
+//
+//                        case FLOAT:
+//                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof FloatDataValue ) ) ) )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                        "Type mismatch: float(s) expected.");
+//                            }
+//
+//                            ffa = (FloatFormalArg)fa;
+//                            new_fdv = (FloatDataValue)newArg;
+//
+//                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_fdv.getSubRange() != ffa.getSubRange().");
+//                            }
+//
+//                            if ( new_fdv.getSubRange() )
+//                            {
+//                                if ( ( ffa.getMinVal() > 
+//                                        new_fdv.getItsValue() ) ||
+//                                     ( ffa.getMaxVal() < 
+//                                        new_fdv.getItsValue() ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_fdv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case INTEGER:
+//                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof IntDataValue ) ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: integer(s) expected.");
+//                            }
+//
+//                            ifa = (IntFormalArg)fa;
+//                            new_idv = (IntDataValue)newArg;
+//
+//                            if ( new_idv.getSubRange() != ifa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_idv.getSubRange() != ifa.getSubRange().");
+//                            }
+//
+//                            if ( new_idv.getSubRange() )
+//                            {
+//                                if ( ( ifa.getMinVal() > 
+//                                        new_idv.getItsValue() ) ||
+//                                     ( ifa.getMaxVal() < 
+//                                        new_idv.getItsValue() ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_idv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case NOMINAL:
+//                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof NominalDataValue ) ) 
+//                                 )
+//                               )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: nominal(s) expected.");
+//                            }
+//
+//                            nfa = (NominalFormalArg)fa;
+//                            new_ndv = (NominalDataValue)newArg;
+//
+//                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_ndv.getSubRange() != nfa.getSubRange().");
+//                            }
+//
+//                            if ( ( new_ndv.getSubRange() ) && 
+//                                 ( new_ndv.getItsValue() != null ) )
+//                            {
+//                                if ( ! nfa.approved(new_ndv.getItsValue()) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                        "new_ndv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case PREDICATE:
+//                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof PredDataValue ) ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: Predicate(s) expected.");
+//                            }
+//
+//                            pfa = (PredFormalArg)fa;
+//                            new_pdv = (PredDataValue)newArg;
+//
+//                            if ( oldArg != null )
+//                            {
+//                                old_pdv = (PredDataValue)oldArg;
+//                            }
+//                            else
+//                            {
+//                                old_pdv = null;
+//                            }
+//
+//                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                                 "new_pdv.getSubRange() != pfa.getSubRange().");
+//                            }
+//
+//                            if ( ( new_pdv.getItsValue().getPveID() != 
+//                                    DBIndex.INVALID_ID ) &&
+//                                 ( new_pdv.getSubRange() ) &&
+//                                 ( ! pfa.approved(new_pdv.getItsValue().
+//                                            getPveID()) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "new_pdv.getItsValue() out of range.");
+//                            }
+//
+//                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
+//                                 ( new_pdv.getItsValue().getID() == 
+//                                    DBIndex.INVALID_ID ) )
+//                            {
+//                                new_pdv.getItsValue().validatePredicate(true);
+//                            }
+//                            else if ( old_pdv != null )
+//                            {
+//                                new_pdv.getItsValue().
+//                                        validateReplacementPredicate(
+//                                            old_pdv.getItsValueBlind(),
+//                                            cascadeMveMod,
+//                                            cascadeMveDel,
+//                                            cascadeMveID,
+//                                            cascadePveMod,
+//                                            cascadePveDel, 
+//                                            cascadePveID);
+//                            }
+//                            else
+//                            {
+//                                throw new SystemErrorException(mName +
+//                                "new_pdv has valid ID but old_pdv is null?!?");
+//                            }
+//                            break;
+//
+//                        case TIME_STAMP:
+//                            if ( ( ! ( newArg instanceof 
+//                                        TimeStampDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof 
+//                                          TimeStampDataValue ) ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                    "Type mismatch: time stamp(s) expected.");
+//                            }
+//
+//                            tsfa = (TimeStampFormalArg)fa;
+//                            new_tsdv = (TimeStampDataValue)newArg;
+//
+//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                            {
+//                               throw new SystemErrorException(mName + 
+//                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                            }
+//
+//                            if ( new_tsdv.getSubRange() )
+//                            {
+//                                if ( ( tsfa.getMinVal().
+//                                        gt(new_tsdv.getItsValue()) ) ||
+//                                     ( tsfa.getMaxVal().
+//                                        lt(new_tsdv.getItsValue()) ) )
+//                                {
+//                                    throw new SystemErrorException(mName + 
+//                                            "new_tsdv.getItsValue() out of range.");
+//                                }
+//                            }
+//                            break;
+//
+//                        case QUOTE_STRING:
+//                            if ( ( ! ( newArg instanceof 
+//                                        QuoteStringDataValue ) ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( ! ( oldArg instanceof 
+//                                          QuoteStringDataValue ) ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Type mismatch: quote string(s) expected.");
+//                            }
+//                            break;
+//
+//                        case UNTYPED:
+//                            if ( ( newArg instanceof TextStringDataValue ) ||
+//                                 ( ( oldArg != null ) &&
+//                                   ( oldArg instanceof TextStringDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName +
+//                                    "Type mismatch: Text String(s) can't be " +
+//                                    "substituted for untyped arguments.");
+//                            }
+//                            else if ( ! ( ( newArg instanceof 
+//                                            ColPredDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            FloatDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            IntDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            NominalDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            PredDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            TimeStampDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            QuoteStringDataValue ) ||
+//                                          ( newArg instanceof 
+//                                            UndefinedDataValue ) ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "Unknown subtype of DataValue");
+//                            }
+//
+//                            if ( ( ( oldArg == null ) 
+//                                   ||
+//                                   ( newArg.getClass() != oldArg.getClass() ) 
+//                                 )
+//                                 &&
+//                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
+//                            {
+//                                throw new SystemErrorException(mName + 
+//                                        "dv type change and id set(2)");
+//                            }
+//
+//                            if ( newArg instanceof ColPredDataValue )
+//                            {
+//                                new_cpdv = (ColPredDataValue)newArg;
+//
+//                                if ( ( oldArg != null ) &&
+//                                     ( oldArg instanceof ColPredDataValue ) )
+//                                {
+//                                    old_cpdv = (ColPredDataValue)oldArg;
+//
+//                                    assert(cascadeMveMod);
+//
+//                                    new_cpdv.getItsValue().
+//                                            validateReplacementColPred(
+//                                                old_cpdv.getItsValueBlind(),
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                                else
+//                                {
+//                                    new_cpdv.getItsValue().
+//                                            validateColumnPredicate(true);
+//                                }
+//                            }
+//                            else if ( newArg instanceof PredDataValue )
+//                            {
+//                                new_pdv = (PredDataValue)newArg;
+//
+//                                if ( ( oldArg != null ) &&
+//                                     ( oldArg instanceof PredDataValue ) )
+//                                {
+//                                    old_pdv = (PredDataValue)oldArg;
+//
+//                                    assert(cascadeMveMod);
+//
+//                                    new_pdv.getItsValue().
+//                                            validateReplacementPredicate(
+//                                                old_pdv.getItsValueBlind(),
+//                                                cascadeMveMod,
+//                                                cascadeMveDel,
+//                                                cascadeMveID,
+//                                                cascadePveMod,
+//                                                cascadePveDel, 
+//                                                cascadePveID);
+//                                }
+//                                else
+//                                {
+//                                    new_pdv.getItsValue().
+//                                            validatePredicate(true);
+//                                }
+//                            }
+//                            break;
+//
+//                        case UNDEFINED:
+//                            throw new SystemErrorException(mName +
+//                                    "formal arg type undefined???");
+//                            /* break statement commented out to keep the 
+//                             * compiler happy 
+//                             */
+//                            // break;
+//
+//                        default:
+//                            throw new SystemErrorException(mName + 
+//
+//                                    "Unknown Formal Arg Type");
+//                            /* break statement commented out to keep the 
+//                             * compiler happy 
+//                             */
+//                            // break;
+//                    }
 
                     i++;
 
@@ -5556,7 +7037,10 @@ public class Predicate extends DBElement
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+    // TODO: Must add tests to verify corrct management of undefined data values
+    //       and query variables.  A lot of this will be tested in MacSHAPA file
+    //       save reload, and query language -- so perhaps I can get away with
+    //       holding off for a while.
     /*************************************************************************
      *
      *                             Test Spec:
