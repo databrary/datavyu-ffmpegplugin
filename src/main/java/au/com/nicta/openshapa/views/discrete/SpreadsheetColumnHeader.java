@@ -4,7 +4,7 @@
  * Created on 26/11/2008, 2:37:13 PM
  */
 
-package au.com.nicta.openshapa.disc.spreadsheet;
+package au.com.nicta.openshapa.views.discrete;
 
 import java.awt.Color;
 import java.awt.Dimension;

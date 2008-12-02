@@ -4,15 +4,15 @@
  * Created on 26/11/2008, 2:14:43 PM
  */
 
-package au.com.nicta.openshapa.disc.spreadsheet;
+package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
 import java.util.Vector;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * to, showing the database columns and cells within.
  * @author swhitcher
  */
-public class Spreadsheet extends javax.swing.JFrame {
+public class Spreadsheet extends OpenSHAPADialog {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainview;
@@ -34,9 +34,18 @@ public class Spreadsheet extends javax.swing.JFrame {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
 
-    /** Creates new, empty Spreadsheet. No database referred to as yet */
-    public Spreadsheet() {
+    /**
+     * Creates new, empty Spreadsheet. No database referred to as yet
+     *
+     * @param parent The parent frame for this dialog.
+     * @param modal Is this dialog to be modal (true), or not.
+     */
+    public Spreadsheet(final java.awt.Frame parent,
+                       final boolean modal) {
+        super(parent, modal);
         initComponents();
+
+        setName(this.getClass().getSimpleName());
 
         this.setLayout(new BorderLayout());
 
@@ -52,15 +61,18 @@ public class Spreadsheet extends javax.swing.JFrame {
     }
 
     /**
-     * Creates new Spreadsheet to display a database.
-     * @param db The database to display
+     * Creates new Spreadsheet.
+     *
+     * @param parent The parent frame for this dialog.
+     * @param modal Is this dialog to be modal (true), or not.
+     * @param db The database to display.
      */
-    public Spreadsheet(final Database db) {
-        this();
+    public Spreadsheet(final java.awt.Frame parent,
+                       final boolean modal,
+                       final Database db) {
+        this(parent, modal);
 
         this.setDatabase(db);
-
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.updateComponents();
     }
@@ -103,6 +115,8 @@ public class Spreadsheet extends javax.swing.JFrame {
      */
     public final void setDatabase(final Database db) {
         this.database = db;
+
+        setName(this.getClass().getSimpleName() + db.getName());
     }
 
     /**
@@ -121,7 +135,7 @@ public class Spreadsheet extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

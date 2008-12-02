@@ -4,7 +4,7 @@ import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.disc.spreadsheet.Spreadsheet;
+import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.NewDatabase;
 import au.com.nicta.openshapa.views.NewVariable;
@@ -136,6 +136,16 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Action for showing the spreadsheet.
+     */
+    public void showSpreadsheet() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        spreadsheetView = new Spreadsheet(mainFrame, false, db);
+
+        OpenSHAPA.getApplication().show(spreadsheetView);
+    }
+
+    /**
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
@@ -199,7 +209,7 @@ implements KeyEventDispatcher {
     private Database db;
 
     /** The current spreadsheet view. */
-    private Spreadsheet sp;
+    private Spreadsheet spreadsheetView;
 
     /** The view to use when creating new databases. */
     private NewDatabase newDBView;
@@ -229,8 +239,7 @@ implements KeyEventDispatcher {
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
 
-                sp = new Spreadsheet(db);
-                sp.setVisible(true);
+                showSpreadsheet();
 
             } catch (SystemErrorException e) {
                 logger.error("Unable to create new database", e);

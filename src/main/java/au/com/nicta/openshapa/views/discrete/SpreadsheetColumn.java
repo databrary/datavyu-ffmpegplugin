@@ -4,7 +4,7 @@
  * Created on 26/11/2008, 2:21:02 PM
  */
 
-package au.com.nicta.openshapa.disc.spreadsheet;
+package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;

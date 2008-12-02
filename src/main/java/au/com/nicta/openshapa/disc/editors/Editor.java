@@ -9,12 +9,10 @@
 
 package au.com.nicta.openshapa.disc.editors;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.views.discrete.DataViewLabel;
+import javax.swing.JComponent;
 
-import au.com.nicta.openshapa.disc.spreadsheet.*;
-import au.com.nicta.openshapa.db.*;
 
 /**
  *

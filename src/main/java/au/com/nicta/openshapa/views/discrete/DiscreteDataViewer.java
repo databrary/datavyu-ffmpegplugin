@@ -1,4 +1,4 @@
-package au.com.nicta.openshapa.disc;
+package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Database;
 import javax.swing.JPanel;
