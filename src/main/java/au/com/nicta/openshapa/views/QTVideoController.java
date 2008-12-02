@@ -40,19 +40,6 @@ implements ContinuousDataController, KeyEventDispatcher {
         viewers = new Vector<QTVideoViewer>();
     }
 
-    /*
-    public QTVideoController(Executive exec)
-    {
-        this.parent = exec;
-        initComponents();
-        this.setSize(270, 300);
-        if (this.parent != null) {
-            this.parent.addExecutiveKeyListener(this);
-            this.parent.setActiveExecutiveKeyListener(this);
-        }
-    }
-     */
-
     @Override
     public void setCurrentLocation(TimeStamp ts) {
         this.currentTimestamp = ts;

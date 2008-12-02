@@ -57,4 +57,12 @@ public final class OpenSHAPA extends SingleFrameApplication {
         logger.info("Starting OpenSHAPA.");
         launch(OpenSHAPA.class, args);
     }
+
+    /*
+     * Johns regression tests.
+    public static void main(String[] args)
+    throws au.com.nicta.openshapa.db.SystemErrorException {
+        au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
+    }
+     */
 }
