@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * SpreadsheetColumnHeader.java
  *
  * Created on 26/11/2008, 2:37:13 PM
@@ -18,19 +13,23 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 
 /**
- *
+ * SpreadsheetColumnHeader. Panel used in the JScrollPane columnHeaderView.
  * @author swhitcher
  */
 public class SpreadsheetColumnHeader extends javax.swing.JPanel {
 
-    /** Creates new form SpreadsheetColumnHeader */
+    /** Creates new form SpreadsheetColumnHeader. */
     public SpreadsheetColumnHeader() {
         initComponents();
 
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     }
 
-    public void addColumn(final String name) {
+    /**
+     * Adds a column header panel (JLabel) to the panel.
+     * @param name The name of the column.
+     */
+    public final void addColumn(final String name) {
         JLabel nameLabel = new JLabel(name);
         nameLabel.setOpaque(true);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);

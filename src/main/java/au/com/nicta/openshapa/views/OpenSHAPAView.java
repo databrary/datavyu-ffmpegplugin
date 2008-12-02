@@ -261,14 +261,6 @@ public class OpenSHAPAView extends FrameView {
                 DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
                                                newVarView.getVariableType());
                 db.addColumn(dc);
-                dc = db.getDataColumn(newVarView.getVariableName());
-
-                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
-                for (int i = 0; i < 5; i++) {
-                    DataCell dcell = new DataCell(db, dc.getID(), mve.getID());
-                    db.appendCell(dcell);
-                }
-
             } catch (SystemErrorException e) {
                 logger.error("Unable to add variable to database", e);
             }

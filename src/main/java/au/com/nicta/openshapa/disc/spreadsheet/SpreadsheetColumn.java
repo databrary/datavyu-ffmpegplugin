@@ -13,7 +13,7 @@ import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Column panel that contains the SpreadsheetCell panels.
  * @author swhitcher
  */
 public class SpreadsheetColumn extends javax.swing.JPanel {
@@ -24,33 +24,30 @@ public class SpreadsheetColumn extends javax.swing.JPanel {
     /** DataColumn to display. */
     private DataColumn dbColumn;
 
-    /** Creates new form SpreadsheetColumn. */
+    /** Creates new SpreadsheetColumn. No reference to a database column. */
     public SpreadsheetColumn() {
         initComponents();
-
-            //    col.setOrdinalVisible(true);
-            //    col.setOnsetVisible(true);
-            //    col.setOffsetVisible(true);
-            //    col.setDataVisible(true);
     }
 
     /**
-     * Creates new form SpreadsheetColumn.
-     * @param dbCol the column
+     * Creates new SpreadsheetColumn.
+     * @param dbCol the database column this panel displays
      */
     public SpreadsheetColumn(final DataColumn dbCol) {
         this();
 
         this.dbColumn = dbCol;
 
-        //this.setSize(new Dimension(50,400));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentY(TOP_ALIGNMENT);
 
         updateComponents();
     }
 
-    /** updateComponents. */
+    /**
+     * updateComponents. Called when the SpreadsheetCell panels need to be
+     * built and added to this Column panel.
+     */
     private void updateComponents() {
         try {
             for (int j = 1; j < dbColumn.getNumCells(); j++) {
@@ -59,14 +56,12 @@ public class SpreadsheetColumn extends javax.swing.JPanel {
 
                 SpreadsheetCell sc =
                                 new SpreadsheetCell(dbColumn.getDB(), dc);
-//                sc.setWidth(30);
                 sc.setSize(200,50);
                 this.add(sc);
             }
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
         }
-
     }
 
     /** This method is called from within the constructor to

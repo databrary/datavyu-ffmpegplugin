@@ -17,23 +17,24 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * The main spreadsheet window. Displays the database it refers
+ * to, showing the database columns and cells within.
  * @author swhitcher
  */
 public class Spreadsheet extends javax.swing.JFrame {
 
-    /** the mainview. */
+    /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainview;
-    /** the columnheader. */
-    private SpreadsheetColumnHeader rowView;
+    /** View showing the Column titles. */
+    private SpreadsheetColumnHeader headerView;
 
     /** The Database being viewed. */
-    private Database  database;
+    private Database database;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
 
-    /** Creates new form Spreadsheet. */
+    /** Creates new, empty Spreadsheet. No database referred to as yet */
     public Spreadsheet() {
         initComponents();
 
@@ -41,110 +42,35 @@ public class Spreadsheet extends javax.swing.JFrame {
 
         mainview = new SpreadsheetView();
         mainview.setLayout(new BoxLayout(mainview, BoxLayout.X_AXIS));
-        //mainview.setPreferredSize(new Dimension(400,300));
-        rowView = new SpreadsheetColumnHeader();
+
+        headerView = new SpreadsheetColumnHeader();
 
         JScrollPane jScrollPane3 = new JScrollPane();
         this.add(jScrollPane3, BorderLayout.CENTER);
         jScrollPane3.setViewportView(mainview);
-        jScrollPane3.setColumnHeaderView(rowView);
+        jScrollPane3.setColumnHeaderView(headerView);
     }
 
     /**
-     * Creates new form Spreadsheet.
-     * @param db The databse to display
+     * Creates new Spreadsheet to display a database.
+     * @param db The database to display
      */
     public Spreadsheet(final Database db) {
         this();
-
-//        fakeDB(db);
 
         this.setDatabase(db);
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-//        db.registerCascadeListener(this);
-//        db.registerColumnListListener(this);
-
         this.updateComponents();
-//        this.setSize(new Dimension(50,400));
     }
-
-    /*
-    private void fakeDB(final Database adb) {
-
-        try {
-            MatrixVocabElement mve = new MatrixVocabElement(adb);
-
-            DataColumn column = new DataColumn(adb, "TestColumn",
-                                        MatrixVocabElement.matrixType.TEXT);
-
-            adb.addColumn(column);
-            column = adb.getDataColumn("TestColumn");
-            mve = adb.getMatrixVE(column.getItsMveID());
-
-            DataCell[] cells = new DataCell[200];
-            for (int i=0; i<cells.length; i++) {
-                cells[i] = new DataCell(adb, column.getID(), mve.getID());
-                long cid = adb.appendCell(cells[i]);
-                cells[i] = (DataCell)adb.getCell(cid);
-            }
-
-          for (int i=0; i<cells.length; i++) {
-            Matrix m = new Matrix(adb, mve.getID());
-            // TextString
-            TextStringDataValue dv = new TextStringDataValue(adb);
-            dv.setItsValue("Testing. This is some data. " + i +
-                             " ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            m.replaceArg(0, dv);
-            //cells[i].setVal(m);
-            DataCell dc = new DataCell(adb, column.getID(), mve.getID());
-            dc.setID(cells[i].getID());
-            dc.setVal(m);
-            dc.setOnset(new TimeStamp(60, i*60));
-            dc.setOffset(new TimeStamp(60, i*60 + 59));
-            adb.replaceCell(dc);
-          }
-
-            column = new DataColumn(adb, "TestColumn2",
-                                        MatrixVocabElement.matrixType.INTEGER);
-
-            adb.addColumn(column);
-            column = adb.getDataColumn("TestColumn2");
-            mve = adb.getMatrixVE(column.getItsMveID());
-
-            for (int i=0; i<5; i++) {
-                cells[i] = new DataCell(adb, column.getID(), mve.getID());
-                long cid = adb.appendCell(cells[i]);
-                cells[i] = (DataCell)adb.getCell(cid);
-            }
-
-          for (int i=0; i<5; i++) {
-            Matrix m = new Matrix(adb, mve.getID());
-            // Integer
-            IntDataValue dv = new IntDataValue(adb);
-            dv.setItsValue(i);
-            m.replaceArg(0, dv);
-            //cells[i].setVal(m);
-            DataCell dc = new DataCell(adb, column.getID(), mve.getID());
-            dc.setID(cells[i].getID());
-            dc.setVal(m);
-            dc.setOnset(new TimeStamp(60, i*60));
-            dc.setOffset(new TimeStamp(60, i*60 + 59));
-            adb.replaceCell(dc);
-          }
-
-        } catch (Exception e) {}
-    }
-*/
 
     /**
      * Populate from the database.
      */
     private void updateComponents() {
         try {
-            Vector < DataColumn > dbColumns = getDatabase().getDataColumns();
+            Vector <DataColumn> dbColumns = getDatabase().getDataColumns();
 
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
@@ -168,7 +94,7 @@ public class Spreadsheet extends javax.swing.JFrame {
     private void addColumn(final SpreadsheetColumn col, final String name) {
         mainview.add(col);
 
-        rowView.addColumn(name);
+        headerView.addColumn(name);
     }
 
     /**

@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -38,64 +39,64 @@ public class SpreadsheetCell
 
     /** The Ordinal display component. */
     private DataViewLabel ord;
-    /** The Ordinal display component. */
+    /** The Onset display component. */
     private DataViewLabel onset;
-    /** The Ordinal display component. */
+    /** The Offset display component. */
     private DataViewLabel offset;
-    /** The Ordinal display component. */
+    /** The Value display component. */
     private DataViewLabel value;
 
     /** The Database the cell belongs to. */
     private Database db;
 
-    /** The cellID for retrieving from db. */
+    /** The cellID for retrieving the cell from the database. */
     private long cellID;
 
     /** selected state of cell. */
     private boolean selected = false;
-    /** Config. */
-    private static UIConfiguration uiconfig = new UIConfiguration();
 
-    /** User dimensions. */
+    /** Stores the current user dimensions. */
     private Dimension userDimensions = new Dimension(0, 0);
 
-    /** Used in GetTime calls. */
+    /** Used in GetTime calls - Milliseconds format. */
     public static final int MILLISECONDS  = 1;
-    /** Used in GetTime calls. */
+    /** Used in GetTime calls - Seconds format. */
     public static final int SECONDS       = 2;
-    /** Used in GetTime calls. */
+    /** Used in GetTime calls - Minutes format. */
     public static final int MINUTES       = 3;
-    /** Used in GetTime calls. */
+    /** Used in GetTime calls - Hours format. */
     public static final int HOURS         = 4;
-    /** Used in GetTime calls. */
+    /** Used in GetTime calls - Days format. */
     public static final int DAYS          = 5;
 
-    /** TBA. */
+    /** Default height multiplier of spreadsheet cell. */
     public static final int HEIGHT_MULT   = 50;
 
-    /** TBA. */
+    /** Date format. Not used. */
     public static final String DATEFORMAT = "MM/dd/yyyy HH:mm:ss:SSS";
-    /** TBA. */
+    /** Date Formatter. Not used */
     public static final SimpleDateFormat DATEFORMATER =
                                                new SimpleDateFormat(DATEFORMAT);
 
-    /** TBA. */
+    /** Holds the division format to use when displaying times. */
     private int divType = SECONDS;
-    /** TBA. */
+    /** Holds the division value - used in conjunction with divType. */
     private double divValue = 1;
 
-    /** TBA. */
+    /** Boolean to flag if size is changed. Not Used. */
     private boolean temporalSizeChanged = false;
 
-    /** Show the Ordinal. */
+    /** Show/Hide the Ordinal value of the cell. */
     private boolean showOrd = true;
-    /** Show the Onset. */
+    /** Show/Hide the Onset value of the cell. */
     private boolean showOnset = true;
-    /** Show the Offset. */
+    /** Show/Hide the Offset value of the cell. */
     private boolean showOffset = true;
-    /** Show the Data. */
+    /** Show/Hide the Data value of the cell. */
     private boolean showData = true;
 
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.
@@ -166,7 +167,12 @@ public class SpreadsheetCell
         this.repaint();
     }
 
-    /** Get the Time value. */
+    /**
+     * Get the Time value in the type requested.
+     * @param type Time type to return
+     * @param time Time value to convert
+     * @return double The time value in the type requested.
+     */
     public final static double getTime(int type, long time) {
         switch (type) {
             case MILLISECONDS: {
@@ -189,7 +195,7 @@ public class SpreadsheetCell
         return (-1);
     }
 
-    /** Change in the div type causes change to height of cell. */
+    /** Change in the div type causes change to height of cell. Not Used. */
     public void setDivision(int type, double value)
                                                    throws SystemErrorException {
         this.divType = type;
@@ -235,7 +241,7 @@ public class SpreadsheetCell
     }
 
     /**
-     * Convert a time value
+     * Convert a time value.
      * @param type type of the time value
      * @param time time to convert
      * @return double time value
@@ -247,7 +253,7 @@ public class SpreadsheetCell
 
     /**
      * Get the onset time
-     * @return Onset time as a double
+     * @return Onset time as a double in the type recorded for this cell.
      * @throws SystemErrorException
      */
     public double getOnsetTime() throws SystemErrorException {
@@ -256,8 +262,8 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * Get the offset time
+     * @return Offset time as a double in the type recorded for this cell.
      * @throws SystemErrorException
      */
     public double getOffsetTime() throws SystemErrorException {
@@ -266,16 +272,18 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @param dv
+     * Set the cell DataValue.
+     * @param dv DataValue to set.
      */
     private void setValue(DataValue dv) {
         this.value.setValue(dv);
     }
 
     /**
-     *
-     * @param dv
+     * Set the cell DataValue given a matrix value.
+     * TODO: Confirm the behaviour/relation of Matrix to DataValue - should
+     * DataCells contain a Matrix instead of a DataValue?
+     * @param m The Matrix value to set in the cell
      */
     private void setValue(Matrix m) throws SystemErrorException {
         for (int i = 0; i < m.getNumArgs(); i++) {
@@ -284,16 +292,14 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public IntDataValue getOrdinal() {
         return ((IntDataValue)this.ord.getValue());
     }
 
     /**
-     *
-     * @return
+     * @return The Onset value of the datacell.
      * @throws au.com.nicta.openshapa.db.SystemErrorException
      */
     public TimeStampDataValue getOnset() throws SystemErrorException {
@@ -301,8 +307,7 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return The Offset value of a datacell.
      * @throws au.com.nicta.openshapa.db.SystemErrorException
      */
     public TimeStampDataValue getOffset() throws SystemErrorException {
@@ -310,17 +315,16 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return The DataValue of a datacell.
      */
     public DataValue getValue() {
         return (this.value.getValue());
     }
 
     /**
-     *
-     * @param width
-     * @param height
+     * Set the size of the SpreadsheetCell. Keeps a record in UserDimensions.
+     * @param width New width of the SpreadsheetCell.
+     * @param height New height of the SpreadsheetCell.
      */
     @Override
     public void setSize(int width, int height) {
@@ -329,24 +333,23 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @param width
+     * Set the width of the SpreadsheetCell.
+     * @param width New width of the SpreadsheetCell.
      */
     public void setWidth(int width) {
         this.setSize(width, this.getHeight());
     }
 
     /**
-     *
-     * @param height
+     * Set the height of the SpreadsheetCell.
+     * @param height New height of the SpreadsheetCell.
      */
     public void setHeight(int height) {
         this.setSize(this.getWidth(), height);
     }
 
     /**
-     *
-     * @return
+     * @return The Minimum height of the SpreadsheetCell.
      */
     public int getMinimumHeight() {
         FontMetrics fm =
@@ -357,8 +360,7 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return The Preferred size of the SpreadsheetCell.
      */
     @Override
     public Dimension getPreferredSize()
@@ -372,8 +374,7 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return Minimum size of the SpreadsheetCell.
      */
     @Override
     public Dimension getMinimumSize() {
@@ -386,8 +387,7 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @return
+     * @return Maximum Size of the SpreadsheetCell.
      */
     @Override
     public Dimension getMaximumSize()
@@ -401,7 +401,9 @@ public class SpreadsheetCell
     }
 
     /**
-     *
+     * Calculate the dimensions of the SpreadsheetCell. Called on init and
+     * when painting.
+     * TODO: review purpose
      */
     public void updateDimensions() {
         Rectangle r = this.getBounds();
@@ -437,8 +439,8 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @param g
+     * Paint the SpreadsheetCell.
+     * @param g the <code>Graphics</code> object to protect
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -454,40 +456,42 @@ public class SpreadsheetCell
     }
 
     /**
-     *
-     * @param me
+     * Invoked when the mouse enters a component. No function.
+     * @param me event detail
      */
     @Override
     public void mouseEntered(MouseEvent me) {
     }
 
     /**
-     *
-     * @param me
+     * Invoked when the mouse exits a component. No function.
+     * @param me event detail
      */
     @Override
     public void mouseExited(MouseEvent me) {
     }
 
     /**
-     *
-     * @param me
+     * Invoked when the mouse is pressed in a component. No function.
+     * @param me event detail
      */
     @Override
     public void mousePressed(MouseEvent me) {
     }
 
     /**
-     *
-     * @param me
+     * Invoked when the mouse is released in a component. No function.
+     * @param me event detail
      */
     @Override
     public void mouseReleased(MouseEvent me) {
     }
 
     /**
-     *
-     * @param me
+     * Invoked when the mouse is clicked in a cell.
+     * Toggles the selection state of the cell and notifies the database cell
+     * referred to.
+     * @param me event detail
      */
     @Override
     public void mouseClicked(MouseEvent me) {
@@ -502,14 +506,15 @@ public class SpreadsheetCell
             }
             dc.setSelected(selected);
             cell.getDB().replaceCell(dc);
-        } catch (SystemErrorException see) {
-
+        } catch (SystemErrorException e) {
+           logger.error("Failed clicking on SpreadsheetCell.", e);
         }
         this.repaint();
     }
 
     /**
-     *
+     * Called if the DataCell of interest is changed.
+     * see ExternalDataCellListener.
      */
     @Override
     public void DCellChanged(Database   db,
@@ -553,20 +558,21 @@ public class SpreadsheetCell
             if (selectedChanged) {
                 this.selected = newSelected;
             }
-        } catch (SystemErrorException see) {
-
+        } catch (SystemErrorException e) {
+           logger.error("Failed changing SpreadsheetCell.", e);
         }
 
         this.repaint();
     }
 
     /**
-     *
+     * Called if the DataCell of interest is deleted.
      */
     @Override
     public void DCellDeleted(Database  db,
                            long      colID,
                            long      cellID) {
+        // TODO: Fogure out how to work with cells that are deleted.
     }
 
 
