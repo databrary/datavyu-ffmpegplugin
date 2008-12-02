@@ -1,11 +1,14 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.actions.KeySwitchBoard;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.disc.spreadsheet.Spreadsheet;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.jdesktop.application.Action;
@@ -20,9 +23,12 @@ import org.apache.log4j.Logger;
  * the main application class, DocumentEditorApp. For an overview of the
  * application see the comments for the DocumentEditorApp class.
  */
-public class OpenSHAPAView extends FrameView {
+public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
     public OpenSHAPAView(SingleFrameApplication app) {
         super(app);
+        KeyboardFocusManager key = KeyboardFocusManager
+                                   .getCurrentKeyboardFocusManager();
+        key.addKeyEventDispatcher(this);
 
         try {
             db = new MacshapaDatabase();
@@ -32,6 +38,21 @@ public class OpenSHAPAView extends FrameView {
 
         // generated GUI builder code
         initComponents();
+    }
+
+    /**
+     * Dispatches the keystroke to the correct action.
+     *
+     * @param evt The event that triggered this action.
+     *
+     * @return true if the KeyboardFocusManager should take no further action
+     * with regard to the KeyEvent; false  otherwise
+     */
+    @Override
+    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
+        // Pass the keyevent onto the keyswitchboard so that it can route it
+        // to the correct action.
+        return KeySwitchBoard.getKeySwitchBoard().dispatchKeyEvent(evt);
     }
 
     /**
@@ -51,7 +72,7 @@ public class OpenSHAPAView extends FrameView {
     @Action
     public void showNewVariableForm() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newVarView = new NewVariableView(mainFrame, false,
+        newVarView = new NewVariable(mainFrame, false,
                                          new NewVariableAction());
         OpenSHAPA.getApplication().show(newVarView);
         
@@ -242,7 +263,7 @@ public class OpenSHAPAView extends FrameView {
     private NewDatabase newDBView;
 
     /** The view to use when creating a new variable. */
-    private NewVariableView newVarView;
+    private NewVariable newVarView;
 
     /** The view to use when listing all variables in the database. */
     private ListVariables listVarView;

@@ -6,8 +6,6 @@ import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
 import au.com.nicta.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,8 +19,8 @@ import org.jdesktop.application.Action;
  *
  * @author cfreeman
  */
-public final class QTVideoController extends javax.swing.JDialog
-implements ContinuousDataController, KeyEventDispatcher {
+public final class QTVideoController extends OpenSHAPADialog
+implements ContinuousDataController {
 
     /**
      * Constructor. Creates a new QTVideoController.
@@ -32,8 +30,6 @@ implements ContinuousDataController, KeyEventDispatcher {
      */
     public QTVideoController(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
-        KeyboardFocusManager key = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);
 
         initComponents();
         setName(this.getClass().getSimpleName());
@@ -691,12 +687,6 @@ implements ContinuousDataController, KeyEventDispatcher {
      */
     private void timestampSetupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampSetupButtonActionPerformed
     }//GEN-LAST:event_timestampSetupButtonActionPerformed
-
-    @Override
-    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
-        int test = 4;
-        return true;
-    }
 
     /**
      * Action to invoke when the video progress bar state changes.

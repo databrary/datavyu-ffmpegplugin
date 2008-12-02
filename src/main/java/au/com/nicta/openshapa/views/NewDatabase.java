@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public class NewDatabase extends javax.swing.JDialog {
+public class NewDatabase extends OpenSHAPADialog {
 
     /** The parent action to notify when the user completes this dialog. */
     ActionListener notifier;

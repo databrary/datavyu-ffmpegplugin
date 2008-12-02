@@ -17,7 +17,7 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author cfreeman
  */
-public final class ListVariables extends javax.swing.JDialog
+public final class ListVariables extends OpenSHAPADialog
 implements ExternalColumnListListener {
 
     /** Logger for this class. */
