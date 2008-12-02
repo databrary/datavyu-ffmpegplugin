@@ -1,6 +1,5 @@
 package au.com.nicta.openshapa.disc.spreadsheet;
 
-import au.com.nicta.openshapa.Executive;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
@@ -30,7 +29,7 @@ public class Spreadsheet extends JFrame {
     public static final int TEMPORAL_VIEW      = 3;
 
     /** The Executive linked with the spreadsheet. */
-    private Executive executive;
+    //private Executive executive;
     /** The Database being viewed. */
     private Database  database;
 
@@ -62,10 +61,10 @@ public class Spreadsheet extends JFrame {
      *
      * @throws SystemErrorException if the db does not create
      */
-    public Spreadsheet(Executive exec, Database db)
+    public Spreadsheet(/*Executive exec,*/ Database db)
                                                 throws SystemErrorException {
         this();
-        this.setExecutive(exec);
+        //this.setExecutive(exec);
         this.setDatabase(db);
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -112,9 +111,11 @@ public class Spreadsheet extends JFrame {
     /**
      * Set Executive
      */
+    /*
     public void setExecutive(Executive exec) {
         this.executive = exec;
     }
+     */
 
     /**
      * Set Database
@@ -126,9 +127,10 @@ public class Spreadsheet extends JFrame {
     /**
      * @return Executive for this spreadsheet
      */
+    /*
     public Executive getExecutive() {
         return (this.executive);
-    }
+    }*/
 
     /**
      * @return Database this spreadsheet displays

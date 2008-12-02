@@ -266,7 +266,7 @@ public class OpenSHAPAView extends FrameView {
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
 
-                sp = new Spreadsheet(null, db);
+                sp = new Spreadsheet(db);
                 sp.setVisible(true);
 
             } catch (SystemErrorException e) {
