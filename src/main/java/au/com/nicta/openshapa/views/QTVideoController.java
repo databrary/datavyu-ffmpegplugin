@@ -134,66 +134,66 @@ implements ContinuousDataController {
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
         syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
-        syncCtrlButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncCtrlButton.png"))); // NOI18N
+        syncCtrlButton.setIcon(resourceMap.getIcon("syncCtrlButton.icon")); // NOI18N
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(32, 32));
         gridButtonPanel.add(syncCtrlButton);
 
         syncButton.setAction(actionMap.get("syncAction")); // NOI18N
-        syncButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncButton.png"))); // NOI18N
+        syncButton.setIcon(resourceMap.getIcon("syncButton.icon")); // NOI18N
         gridButtonPanel.add(syncButton);
 
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
-        setCellOnsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/cellOnsetButton.png"))); // NOI18N
+        setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
         gridButtonPanel.add(setCellOnsetButton);
 
         setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
-        setCellOffsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/cellOffsetButton.png"))); // NOI18N
+        setCellOffsetButton.setIcon(resourceMap.getIcon("setCellOffsetButton.icon")); // NOI18N
         gridButtonPanel.add(setCellOffsetButton);
 
         rewindButton.setAction(actionMap.get("rewindAction")); // NOI18N
-        rewindButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/rewindButton.png"))); // NOI18N
+        rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon")); // NOI18N
         gridButtonPanel.add(rewindButton);
 
         playButton.setAction(actionMap.get("playAction")); // NOI18N
-        playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/playButton.png"))); // NOI18N
+        playButton.setIcon(resourceMap.getIcon("playButton.icon")); // NOI18N
         gridButtonPanel.add(playButton);
 
         forwardButton.setAction(actionMap.get("forwardAction")); // NOI18N
-        forwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/forwardButton.png"))); // NOI18N
+        forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon")); // NOI18N
         gridButtonPanel.add(forwardButton);
 
         goBackButton.setAction(actionMap.get("goBackAction")); // NOI18N
-        goBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/goBackButton.png"))); // NOI18N
+        goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon")); // NOI18N
         gridButtonPanel.add(goBackButton);
 
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
-        shuttleBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/shuttleLeftButton.png"))); // NOI18N
+        shuttleBackButton.setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
         gridButtonPanel.add(shuttleBackButton);
 
         pauseButton.setAction(actionMap.get("pauseAction")); // NOI18N
-        pauseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/pauseButton.png"))); // NOI18N
+        pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon")); // NOI18N
         gridButtonPanel.add(pauseButton);
 
         shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
-        shuttleForwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/shuttleRightButton.png"))); // NOI18N
+        shuttleForwardButton.setIcon(resourceMap.getIcon("shuttleForwardButton.icon")); // NOI18N
         gridButtonPanel.add(shuttleForwardButton);
 
         findButton.setAction(actionMap.get("findAction")); // NOI18N
-        findButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/findButton.png"))); // NOI18N
+        findButton.setIcon(resourceMap.getIcon("findButton.icon")); // NOI18N
         gridButtonPanel.add(findButton);
 
         jogBackButton.setAction(actionMap.get("jogBackAction")); // NOI18N
-        jogBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/jogLeftButton.png"))); // NOI18N
+        jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon")); // NOI18N
         gridButtonPanel.add(jogBackButton);
 
         stopButton.setAction(actionMap.get("stopAction")); // NOI18N
-        stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/stopButton.png"))); // NOI18N
+        stopButton.setIcon(resourceMap.getIcon("stopButton.icon")); // NOI18N
         gridButtonPanel.add(stopButton);
 
         jogForwardButton.setAction(actionMap.get("jogForwardAction")); // NOI18N
-        jogForwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/jogRightButton.png"))); // NOI18N
+        jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon")); // NOI18N
         gridButtonPanel.add(jogForwardButton);
 
         mainPanel.add(gridButtonPanel, java.awt.BorderLayout.CENTER);
@@ -226,11 +226,11 @@ implements ContinuousDataController {
         leftButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         createNewCellButton.setAction(actionMap.get("createNewCellAction")); // NOI18N
-        createNewCellButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/newCellButton.png"))); // NOI18N
+        createNewCellButton.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
         leftButtonPanel.add(createNewCellButton, new java.awt.GridBagConstraints());
 
         setNewCellOnsetButton.setAction(actionMap.get("setNewCellOnset")); // NOI18N
-        setNewCellOnsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/newCellOffsetButton.png"))); // NOI18N
+        setNewCellOnsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
         leftButtonPanel.add(setNewCellOnsetButton, new java.awt.GridBagConstraints());
 
         bottomPanel.add(leftButtonPanel, java.awt.BorderLayout.WEST);

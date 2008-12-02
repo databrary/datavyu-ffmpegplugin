@@ -106,9 +106,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="syncCtrlAction" methodName="syncCtrlAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/syncCtrlButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="syncCtrlButton.icon"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[32, 32]"/>
                 </Property>
@@ -125,9 +123,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="syncAction" methodName="syncAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/syncButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="syncButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="setCellOnsetButton">
@@ -135,9 +131,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="setCellOnsetAction" methodName="setCellOnsetAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/cellOnsetButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="setCellOnsetButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="setCellOffsetButton">
@@ -145,9 +139,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="setCellOffsetAction" methodName="setCellOffsetAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/cellOffsetButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="setCellOffsetButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="rewindButton">
@@ -155,9 +147,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="rewindAction" methodName="rewindAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/rewindButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="rewindButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="playButton">
@@ -165,9 +155,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="playAction" methodName="playAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/playButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="playButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="forwardButton">
@@ -175,9 +163,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="forwardAction" methodName="forwardAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/forwardButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="forwardButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="goBackButton">
@@ -185,9 +171,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="goBackAction" methodName="goBackAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/goBackButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="goBackButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="shuttleBackButton">
@@ -195,9 +179,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="shuttleBackAction" methodName="shuttleBackAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/shuttleLeftButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="shuttleBackButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="pauseButton">
@@ -205,9 +187,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="pauseAction" methodName="pauseAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/pauseButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="pauseButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="shuttleForwardButton">
@@ -215,9 +195,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="shuttleForwardAction" methodName="shuttleForwardAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/shuttleRightButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="shuttleForwardButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="findButton">
@@ -225,9 +203,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="findAction" methodName="findAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/findButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="findButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jogBackButton">
@@ -235,9 +211,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="jogBackAction" methodName="jogBackAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/jogLeftButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jogBackButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="stopButton">
@@ -245,9 +219,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="stopAction" methodName="stopAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/stopButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="stopButton.icon"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="jogForwardButton">
@@ -255,9 +227,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.QTVideoController" id="jogForwardAction" methodName="jogForwardAction"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/icons/QTVideoController/eng/jogRightButton.png"/>
-                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jogForwardButton.icon"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -336,9 +306,7 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                       <action class="au.com.nicta.openshapa.views.QTVideoController" id="createNewCellAction" methodName="createNewCellAction"/>
                     </Property>
-                    <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/icons/QTVideoController/eng/newCellButton.png"/>
-                    </Property>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCellButton.icon"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -351,9 +319,7 @@
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                       <action class="au.com.nicta.openshapa.views.QTVideoController" id="setNewCellOnset" methodName="setNewCellOnset"/>
                     </Property>
-                    <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/icons/QTVideoController/eng/newCellOffsetButton.png"/>
-                    </Property>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="setNewCellOnsetButton.icon"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
