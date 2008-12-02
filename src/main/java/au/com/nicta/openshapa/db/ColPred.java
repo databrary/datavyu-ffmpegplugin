@@ -1284,12 +1284,19 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + 
                                 ": column predicate, undefined DV, " +
                                 "or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + 
+                                ": column predicate, or undefined DV " +
+                                "expected.");
                     }
                     break;
 
@@ -1308,11 +1315,17 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": float DV, " +
                                 "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": float DV, " +
+                                "or undefined DV expected.");
                     }
                     break;
 
@@ -1331,11 +1344,17 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": integer " +
                                 "DV, undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": integer " +
+                                "DV, or undefined DV expected.");
                     }
                     break;
 
@@ -1348,11 +1367,17 @@ public class ColPred extends DBElement
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": nominal DV, " +
                                 "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": nominal DV, " +
+                                "or undefined DV expected.");
                     }
                     break;
 
@@ -1371,11 +1396,17 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": predicate " +
                                 "DV, undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": predicate " +
+                                "DV, or undefined DV expected.");
                     }
                     break;
 
@@ -1394,11 +1425,17 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": time stamp " +
                                 "DV, undefined DV, or query var DV expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": time stamp " +
+                                "DV, or undefined DV expected.");
                     }
                     break;
 
@@ -1417,12 +1454,18 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": quote " +
                                 "string DV, undefined DV, or query var " +
                                 "expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": quote " +
+                                "string DV, or undefined DV expected.");
                     }
                     break;
 
@@ -1441,12 +1484,18 @@ public class ColPred extends DBElement
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
                     }
-                    else
+                    else if ( this.queryVarOK )
                     {
                         throw new SystemErrorException(mName + 
                                 "Type mismatch for arg " + i + ": text " +
                                 "string DV, undefined DV, or query var " +
                                 "expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + 
+                                "Type mismatch for arg " + i + ": text " +
+                                "string DV, or undefined DV expected.");
                     }
                     break;
 
@@ -2209,9 +2258,9 @@ public class ColPred extends DBElement
         
         for ( DataValue dv : this.argList )
         {
-            if ( dv instanceof PredDataValue )
+            if ( dv instanceof ColPredDataValue )
             {
-                ((PredDataValue)dv).updateForMVEDefChange(db,
+                ((ColPredDataValue)dv).updateForMVEDefChange(db,
                                                           mveID,
                                                           nameChanged,
                                                           oldName,
@@ -2239,9 +2288,9 @@ public class ColPred extends DBElement
                                                           oldCPFargList,
                                                           newCPFargList);
             }
-            else if ( dv instanceof ColPredDataValue )
+            else if ( dv instanceof PredDataValue )
             {
-                ((ColPredDataValue)dv).updateForMVEDefChange(db,
+                ((PredDataValue)dv).updateForMVEDefChange(db,
                                                           mveID,
                                                           nameChanged,
                                                           oldName,
@@ -3058,7 +3107,7 @@ public class ColPred extends DBElement
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadeMveMod,
+//                                                cascadePveMod,
 //                                                cascadePveDel, 
 //                                                cascadePveID);
 //                                }
@@ -3070,7 +3119,7 @@ public class ColPred extends DBElement
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadeMveMod,
+//                                                cascadePveMod,
 //                                                cascadePveDel, 
 //                                                cascadePveID);
 //                                }
@@ -3538,7 +3587,7 @@ public class ColPred extends DBElement
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadeMveMod,
+//                                                cascadePveMod,
 //                                                cascadePveDel, 
 //                                                cascadePveID);
 //                                }
@@ -3550,7 +3599,7 @@ public class ColPred extends DBElement
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadeMveMod,
+//                                                cascadePveMod,
 //                                                cascadePveDel, 
 //                                                cascadePveID);
 //                                }
@@ -4287,9 +4336,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: column predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: column predicate DV, " +
+                                "or undefined DV expected.");
+                    }
                 }
 
                 if ( arg instanceof ColPredDataValue )
@@ -4312,9 +4370,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: float DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( arg instanceof FloatDataValue )
@@ -4351,9 +4418,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: integer DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( arg instanceof IntDataValue )
@@ -4404,7 +4480,9 @@ public class ColPred extends DBElement
                     if ( ( ndv.getSubRange() ) && 
                          ( ndv.getItsValue() != null ) )
                     {
-                        if ( ! nfa.approved(ndv.getItsValue()) )
+                        if ( ( ! nfa.approved(ndv.getItsValue()) ) &&
+                             ( ( ! this.queryVarOK ) ||
+                               ( ! ndv.isQueryVar() ) ) )
                         {
                             throw new SystemErrorException(mName + 
                                 "ndv.getItsValue() out of range.");
@@ -4425,9 +4503,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( arg instanceof PredDataValue )
@@ -4464,9 +4551,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "arg " +
-                            "type mismatch: time stamp DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( arg instanceof TimeStampDataValue )
@@ -4501,9 +4597,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: quote string DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
                 break;
 
@@ -5072,7 +5177,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "fa has unexpected veID.");
         }
         
-        if ( ( oldArg == null ) ||
+        if ( ( oldArg == null ) &&
              ( ( ! cascadeMveMod ) || ( cascadeMveID != this.mveID ) ) )
         {
             throw new SystemErrorException(mName + "oldArg null unexpectedly.");
@@ -5132,9 +5237,18 @@ public class ColPred extends DBElement
                      )
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: column predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: column predicate DV, or " +
+                                "undefined DV expected.");
+                   }
                 }
 
                 if ( ! ( ( newArg instanceof ColPredDataValue ) ||
@@ -5146,9 +5260,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: column predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if (this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: column predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: column predicate DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( newArg instanceof ColPredDataValue )
@@ -5169,7 +5292,7 @@ public class ColPred extends DBElement
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
-                                        cascadeMveMod,
+                                        cascadePveMod,
                                         cascadePveDel, 
                                         cascadePveID);
                         }
@@ -5181,7 +5304,7 @@ public class ColPred extends DBElement
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
-                                        cascadeMveMod,
+                                        cascadePveMod,
                                         cascadePveDel, 
                                         cascadePveID);
                         }
@@ -5208,9 +5331,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: float DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }       
                 }
 
                 if ( ! ( ( newArg instanceof FloatDataValue ) ||
@@ -5222,9 +5354,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: float DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: float DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: float DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( newArg instanceof FloatDataValue )
@@ -5265,9 +5406,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: integer DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof IntDataValue ) ||
@@ -5279,9 +5429,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: integer DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: integer DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: integer DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( newArg instanceof IntDataValue )
@@ -5346,7 +5505,9 @@ public class ColPred extends DBElement
                     if ( ( new_ndv.getSubRange() ) && 
                          ( new_ndv.getItsValue() != null ) )
                     {
-                        if ( ! nfa.approved(new_ndv.getItsValue()) )
+                        if ( ( ! nfa.approved(new_ndv.getItsValue()) ) &&
+                             ( ( ! this.queryVarOK ) ||
+                               ( ! new_ndv.isQueryVar() ) ) )
                         {
                             throw new SystemErrorException(mName + 
                                 "new_ndv.getItsValue() out of range.");
@@ -5369,9 +5530,18 @@ public class ColPred extends DBElement
                      ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof PredDataValue ) ||
@@ -5383,9 +5553,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: predicate DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: predicate DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: predicate DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( newArg instanceof PredDataValue )
@@ -5462,9 +5641,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: time stamp DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof TimeStampDataValue ) ||
@@ -5476,9 +5664,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: time stamp DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: time stamp DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: time stamp DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ( newArg.getClass() != oldArg.getClass() ) &&
@@ -5524,9 +5721,18 @@ public class ColPred extends DBElement
                      ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: quote string DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof QuoteStringDataValue ) ||
@@ -5538,9 +5744,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: quote string DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: quote string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: quote string DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ( newArg.getClass() != oldArg.getClass() ) &&
@@ -5563,9 +5778,18 @@ public class ColPred extends DBElement
                      ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: text string DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: text string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "Old arg " +
+                                "type mismatch: text string DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof TextStringDataValue ) ||
@@ -5577,9 +5801,18 @@ public class ColPred extends DBElement
                        ) 
                    )
                 {
-                    throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: text string DV, " +
-                            "undefined DV, or query var expected.");
+                    if ( this.queryVarOK )
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: text string DV, " +
+                                "undefined DV, or query var expected.");
+                    }
+                    else
+                    {
+                        throw new SystemErrorException(mName + "New arg " +
+                                "type mismatch: text string DV, or " +
+                                "undefined DV expected.");
+                    }
                 }
 
                 if ( ( newArg.getClass() != oldArg.getClass() ) &&
@@ -5642,7 +5875,7 @@ public class ColPred extends DBElement
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
-                                        cascadeMveMod,
+                                        cascadePveMod,
                                         cascadePveDel, 
                                         cascadePveID);
                         }
@@ -6799,7 +7032,7 @@ public class ColPred extends DBElement
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadeMveMod,
+//                                                cascadePveMod,
 //                                                cascadePveDel, 
 //                                                cascadePveID);
 //                                }
@@ -7158,7 +7391,10 @@ public class ColPred extends DBElement
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+    // TODO: Must add tests to verify corrct management of undefined data values
+    //       and query variables.  A lot of this will be tested in MacSHAPA file
+    //       save reload, and query language -- so perhaps I can get away with
+    //       holding off for a while.
     /*************************************************************************
      *
      *                             Test Spec:

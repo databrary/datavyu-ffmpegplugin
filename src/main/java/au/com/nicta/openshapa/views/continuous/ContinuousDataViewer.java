@@ -1,4 +1,4 @@
-package au.com.nicta.openshapa.cont;
+package au.com.nicta.openshapa.views.continuous;
 
 /**
  * Default interface for all Continuous Data Viewers.

@@ -17,11 +17,11 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author cfreeman
  */
-public final class ListVariablesView extends javax.swing.JDialog
+public final class ListVariables extends OpenSHAPADialog
 implements ExternalColumnListListener {
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(ListVariablesView.class);
+    private static Logger logger = Logger.getLogger(ListVariables.class);
 
     /** The column for if a variable is visible or not. */
     private static final int VCOLUMN = 0;
@@ -54,7 +54,7 @@ implements ExternalColumnListListener {
      * @param modal Is this dialog to be modal (true), or not.
      * @param db The database containing the variables you wish to list.
      */
-    public ListVariablesView(final java.awt.Frame parent,
+    public ListVariables(final java.awt.Frame parent,
                              final boolean modal,
                              final Database db) {
         super(parent, modal);
@@ -68,7 +68,7 @@ implements ExternalColumnListListener {
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
-                                      .getResourceMap(ListVariablesView.class);
+                                      .getResourceMap(ListVariables.class);
 
         // Set the names of the columns.
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
@@ -156,7 +156,7 @@ implements ExternalColumnListListener {
     public void colInsertion(final Database db, final long colID) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
-                                      .getResourceMap(ListVariablesView.class);
+                                      .getResourceMap(ListVariables.class);
 
         try {
             DataColumn dbColumn = db.getDataColumn(colID);
@@ -180,7 +180,7 @@ implements ExternalColumnListListener {
         variableList = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariablesView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariables.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 

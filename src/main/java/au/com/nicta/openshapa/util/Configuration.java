@@ -292,10 +292,10 @@ public class Configuration extends DefaultHandler
         au.com.nicta.openshapa.disc.DiscreteDataManager db = (au.com.nicta.openshapa.disc.DiscreteDataManager)o;
         break;
       }
-      case CONTINUOUSDISPLAY: {
-        au.com.nicta.openshapa.cont.ContinuousDataViewer cv = (au.com.nicta.openshapa.cont.ContinuousDataViewer)o;
-        break;
-      }
+//      case CONTINUOUSDISPLAY: {
+//        au.com.nicta.openshapa.cont.ContinuousDataViewer cv = (au.com.nicta.openshapa.cont.ContinuousDataViewer)o;
+//        break;
+//      }
       case DISCRETEDISPLAY: {
         au.com.nicta.openshapa.disc.DiscreteDataViewer dv = (au.com.nicta.openshapa.disc.DiscreteDataViewer)o;
         break;

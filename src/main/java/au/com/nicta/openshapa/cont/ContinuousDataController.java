@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package au.com.nicta.openshapa.cont;
-import au.com.nicta.openshapa.db.*;
+
+import au.com.nicta.openshapa.db.TimeStamp;
+import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
 
 /**
  *

@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public final class NewVariableView extends javax.swing.JDialog {
+public final class NewVariable extends OpenSHAPADialog {
 
     /** The parent action to notify when the user completes this dialog. */
     private ActionListener notifier;
@@ -21,7 +21,7 @@ public final class NewVariableView extends javax.swing.JDialog {
      * @param listener The listener to notify when the user has created a new
      * variable.
      */
-    public NewVariableView(final java.awt.Frame parent, final boolean modal,
+    public NewVariable(final java.awt.Frame parent, final boolean modal,
                            final ActionListener listener) {
         super(parent, modal);        
         initComponents();
@@ -62,7 +62,7 @@ public final class NewVariableView extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariableView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariable.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 
