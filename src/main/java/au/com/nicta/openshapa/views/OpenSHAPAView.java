@@ -1,9 +1,11 @@
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
+import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.disc.spreadsheet.Spreadsheet;
 import java.awt.event.ActionEvent;
@@ -203,7 +205,7 @@ public class OpenSHAPAView extends FrameView {
     /** The current database we are working on. */
     private Database db;
 
-    /** The current spreadsheet view. */
+    /** The current spreadsheet. */
     private Spreadsheet sp;
 
     /** The view to use when creating new databases. */
@@ -234,7 +236,7 @@ public class OpenSHAPAView extends FrameView {
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
 
-                sp = new Spreadsheet(null, db);
+                sp = new Spreadsheet(db);
                 sp.setVisible(true);
 
             } catch (SystemErrorException e) {
@@ -259,6 +261,14 @@ public class OpenSHAPAView extends FrameView {
                 DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
                                                newVarView.getVariableType());
                 db.addColumn(dc);
+                dc = db.getDataColumn(newVarView.getVariableName());
+
+                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+                for (int i = 0; i < 5; i++) {
+                    DataCell dcell = new DataCell(db, dc.getID(), mve.getID());
+                    db.appendCell(dcell);
+                }
+
             } catch (SystemErrorException e) {
                 logger.error("Unable to add variable to database", e);
             }

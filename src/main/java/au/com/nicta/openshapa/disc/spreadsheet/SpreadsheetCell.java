@@ -6,13 +6,27 @@
 
 package au.com.nicta.openshapa.disc.spreadsheet;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.text.*;
-import java.util.*;
-import au.com.nicta.openshapa.db.*;
-import au.com.nicta.openshapa.util.*;
+import au.com.nicta.openshapa.db.Cell;
+import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.ExternalDataCellListener;
+import au.com.nicta.openshapa.db.IntDataValue;
+import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.ReferenceCell;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.db.TimeStamp;
+import au.com.nicta.openshapa.db.TimeStampDataValue;
+import au.com.nicta.openshapa.util.UIConfiguration;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -20,363 +34,485 @@ import au.com.nicta.openshapa.util.*;
  */
 public class SpreadsheetCell
     extends     javax.swing.JPanel
-    implements  MouseListener, ExternalDataCellListener
-{
-  protected DataViewLabel ord;
-  protected DataViewLabel onset;
-  protected DataViewLabel offset;
-  protected DataViewLabel value;;
+    implements  MouseListener, ExternalDataCellListener {
 
-  protected SpreadsheetColumn column;
-  protected long              cellID;
+    /** The Ordinal display component. */
+    private DataViewLabel ord;
+    /** The Ordinal display component. */
+    private DataViewLabel onset;
+    /** The Ordinal display component. */
+    private DataViewLabel offset;
+    /** The Ordinal display component. */
+    private DataViewLabel value;
 
-  protected boolean selected = false;
-  protected static UIConfiguration uiconfig = new UIConfiguration();
+    /** The Database the cell belongs to. */
+    private Database db;
 
-  protected Dimension userDimensions = new Dimension(0,0);
+    /** The cellID for retrieving from db. */
+    private long cellID;
 
-  
-  
-  public final static int MILLISECONDS  = 1; //Calendar.MILLISECOND;
-  public final static int SECONDS       = 2; //Calendar.SECOND;
-  public final static int MINUTES       = 3; //Calendar.MINUTE;
-  public final static int HOURS         = 4; //Calendar.HOUR_OF_DAY;
-  public final static int DAYS          = 5; //Calendar.DAY_OF_YEAR;
+    /** selected state of cell. */
+    private boolean selected = false;
+    /** Config. */
+    private static UIConfiguration uiconfig = new UIConfiguration();
 
-  public final static int HEIGHT_MULT   = 50;
+    /** User dimensions. */
+    private Dimension userDimensions = new Dimension(0, 0);
 
-  public final static String DATEFORMAT = "MM/dd/yyyy HH:mm:ss:SSS";
-  public final static SimpleDateFormat DATEFORMATER =
+    /** Used in GetTime calls. */
+    public static final int MILLISECONDS  = 1;
+    /** Used in GetTime calls. */
+    public static final int SECONDS       = 2;
+    /** Used in GetTime calls. */
+    public static final int MINUTES       = 3;
+    /** Used in GetTime calls. */
+    public static final int HOURS         = 4;
+    /** Used in GetTime calls. */
+    public static final int DAYS          = 5;
+
+    /** TBA. */
+    public static final int HEIGHT_MULT   = 50;
+
+    /** TBA. */
+    public static final String DATEFORMAT = "MM/dd/yyyy HH:mm:ss:SSS";
+    /** TBA. */
+    public static final SimpleDateFormat DATEFORMATER =
                                                new SimpleDateFormat(DATEFORMAT);
 
-  int     width     = SpreadsheetColumn.DEFAULT_WIDTH;
-  int     height    = SpreadsheetColumn.DEFAULT_HEIGHT;
-  int     divType   = SECONDS;
-  double  divValue  = 1;
+    /** TBA. */
+    private int divType = SECONDS;
+    /** TBA. */
+    private double divValue = 1;
 
-  boolean temporalSizeChanged = false;
-  
-  
-  /** Creates new form SpreadsheetCell */
-  public SpreadsheetCell(SpreadsheetColumn column, Cell cell)
-    throws SystemErrorException
-  {
-    if (column == null) {
-      throw (new NullPointerException("Column can not be NULL!"));
+    /** TBA. */
+    private boolean temporalSizeChanged = false;
+
+    /** Show the Ordinal. */
+    private boolean showOrd = true;
+    /** Show the Onset. */
+    private boolean showOnset = true;
+    /** Show the Offset. */
+    private boolean showOffset = true;
+    /** Show the Data. */
+    private boolean showData = true;
+
+
+    /**
+     * Creates new form SpreadsheetCell.
+     * @param db Database the cell is in
+     * @param cell Cell to display
+     * @throws SystemErrorException if trouble with db calls
+     */
+    public SpreadsheetCell(final Database db, final Cell cell)
+                                                throws SystemErrorException {
+        IntDataValue ordDV = new IntDataValue(db);
+        TimeStampDataValue onsetDV = new TimeStampDataValue(db);
+        TimeStampDataValue offsetDV = new TimeStampDataValue(db);
+
+        this.db = db;
+        this.cellID = cell.getID();
+
+        this.ord    = new DataViewLabel(ordDV,  false, false, false);
+        this.onset  = new DataViewLabel(onsetDV, true, false, false);
+        this.offset = new DataViewLabel(offsetDV, true, false, false);
+        this.value  = new DataViewLabel(null, true, true, true);
+
+        initComponents();
+
+        this.topPanel.add(ord);
+        this.topPanel.add(onset);
+        this.topPanel.add(offset);
+        this.dataPanel.add(value, BorderLayout.CENTER);
+        //    this.column = column;
+
+        this.addMouseListener(this);
+        this.topPanel.addMouseListener(this);
+        this.dataPanel.addMouseListener(this);
+
+        this.updateDimensions();
+
+        DataCell dc = null;
+        if (cell instanceof DataCell) {
+            dc = (DataCell)cell;
+        } else {
+            dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
+        }
+        db.registerDataCellListener(dc.getID(), this);
+        this.setOrdinal(dc.getOrd());
+        this.setOnset(dc.getOnset());
+        this.setOffset(dc.getOffset());
+        this.setValue(dc.getVal());
     }
 
-    if (cell == null) {
-      throw (new NullPointerException("Cell can not be NULL!"));
+    /** Set the ordinal value. */
+    private void setOrdinal(int ord)
+    {
+        ((IntDataValue)this.ord.getValue()).setItsValue(ord);
+        this.ord.updateStrings();
+        this.repaint();
     }
-    
-    IntDataValue ordDV =
-        new IntDataValue(column.getSpreadsheet().getDatabase());
-    TimeStampDataValue onsetDV =
-        new TimeStampDataValue(column.getSpreadsheet().getDatabase());
-    TimeStampDataValue offsetDV =
-        new TimeStampDataValue(column.getSpreadsheet().getDatabase());
-    
-    this.cellID = cell.getID();
 
-    this.ord    = new DataViewLabel(ordDV,  false, false, false);
-    this.onset  = new DataViewLabel(onsetDV, true, false, false);
-    this.offset = new DataViewLabel(offsetDV, true, false, false);
-    this.value  = new DataViewLabel(null, true, true, true);
-    
-    initComponents();
-    this.topPanel.add(ord);
-    this.topPanel.add(onset);
-    this.topPanel.add(offset);
-    this.dataPanel.add(value, BorderLayout.CENTER);
-    this.column = column;
-
-    this.addMouseListener(this);
-    this.topPanel.addMouseListener(this);
-    this.dataPanel.addMouseListener(this);
-
-    this.updateDimensions();
-
-    DataCell dc = null;
-    if (cell instanceof DataCell) {
-      dc = (DataCell)cell;
-    } else {
-      dc = (DataCell)this.column.getSpreadsheet().getDatabase().getCell(((ReferenceCell)cell).getTargetID());
+    /** Set the Onset value. */
+    private void setOnset(TimeStamp newonset) throws SystemErrorException {
+        ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
+        this.onset.updateStrings();
+        this.repaint();
     }
-    this.column.getSpreadsheet().getDatabase().registerDataCellListener(dc.getID(), this);
-    this.setOrdinal(dc.getOrd());
-    this.setOnset(dc.getOnset());
-    this.setOffset(dc.getOffset());
-  }
 
-  private void setOrdinal(int ord)
-  {
-    ((IntDataValue)this.ord.getValue()).setItsValue(ord);
-    this.ord.updateStrings();
-    this.repaint();
-  }
+    /** Set the offset value */
+    private void setOffset(TimeStamp newoffset) throws SystemErrorException {
+        ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
+        this.offset.updateStrings();
+        this.repaint();
+    }
 
-  private void setOnset(TimeStamp newonset)
-    throws SystemErrorException
-  {
-    ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
-    this.onset.updateStrings();
-    this.repaint();
-  }
-  
-  private void setOffset(TimeStamp newoffset)
-    throws SystemErrorException
-  {
-    ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
-    this.offset.updateStrings();
-    this.repaint();
-  }
+    /** Get the Time value. */
+    public final static double getTime(int type, long time) {
+        switch (type) {
+            case MILLISECONDS: {
+                return (time);
+            }
+            case SECONDS: {
+                return (time/1000.0);
+            }
+            case MINUTES: {
+                return (time/(1000*60));
+            }
+            case HOURS: {
+                return (time/(1000*60*60));
+            }
+            case DAYS: {
+                return (time/(1000*60*60*24));
+            }
+        }
 
-  public final static double getTime(int type, long time)
-  {
-      switch (type) {
-          case MILLISECONDS: {
-              return (time);
-          }
-          case SECONDS: {
-              return (time/1000.0);
-          }
-          case MINUTES: {
-              return (time/(1000*60));
-          }
-          case HOURS: {
-              return (time/(1000*60*60));
-          }
-          case DAYS: {
-              return (time/(1000*60*60*24));
-          }
-      }
+        return (-1);
+    }
 
-      return (-1);
-  }
+    /** Change in the div type causes change to height of cell. */
+    public void setDivision(int type, double value)
+                                                   throws SystemErrorException {
+        this.divType = type;
+        this.divValue = value;
 
-  public void setDivision(int type, double value)
-      throws au.com.nicta.openshapa.db.SystemErrorException
-  {
-    this.divType = type;
-    this.divValue = value;
+        // Calculate the height given the division
+        double diff = getTime(type, this.onset) - getTime(type, this.offset);
+        this.setHeight((int)Math.round((diff * SpreadsheetCell.HEIGHT_MULT)
+                                        / value));
+    }
 
-    // Calculate the height given the division
-    double diff = getTime(type, this.onset) - getTime(type, this.offset);
-    this.setHeight((int)Math.round((diff*this.HEIGHT_MULT)/value));
-  }
+    /**
+     * Get division value
+     * @return division value for the cell
+     */
+    public double getDivisionValue()
+    {
+        return (this.divValue);
+    }
 
-  public double getDivisionValue()
-  {
-    return (this.divValue);
-  }
+    /**
+     * Get division type
+     * @return division type for the cell
+     */
+    public double getDivisionType()
+    {
+        return (this.divType);
+    }
 
-  public double getDivisionType()
-  {
-    return (this.divType);
-  }
+    /**
+     * Get the time of the cell
+     * @param type type of the time value
+     * @param timeLabel label containing the time value
+     * @return time value for the cell
+     * @throws SystemErrorException if db cals fail
+     */
+    public final static double getTime(int type, DataViewLabel timeLabel)
+       throws SystemErrorException
+    {
+        long t = ((TimeStampDataValue)timeLabel
+                                        .getValue()).getItsValue().getTime();
+        return (getTime(type, t));
+    }
 
-  public final static double getTime(int type, DataViewLabel timeLabel)
-       throws au.com.nicta.openshapa.db.SystemErrorException
-  {
-    long t = ((TimeStampDataValue)timeLabel.getValue()).getItsValue().getTime();
-    return (getTime(type, t));
-  }
+    /**
+     * Convert a time value
+     * @param type type of the time value
+     * @param time time to convert
+     * @return double time value
+     */
+    public final static double getTime(int type, Date time)
+    {
+        return (getTime(type, time.getTime()));
+    }
 
-  public final static double getTime(int type, Date time)
-  {
-    return (getTime(type, time.getTime()));
-  }
+    /**
+     * Get the onset time
+     * @return Onset time as a double
+     * @throws SystemErrorException
+     */
+    public double getOnsetTime() throws SystemErrorException {
+        return (getTime(this.divType,
+          ((TimeStampDataValue)this.onset.getValue()).getItsValue().getTime()));
+    }
 
-  public double getOnsetTime() throws au.com.nicta.openshapa.db.SystemErrorException
-  {
-    return (getTime(this.divType,
-         ((TimeStampDataValue)this.onset.getValue()).getItsValue().getTime()));
-  }
-
-  public double getOffsetTime() throws au.com.nicta.openshapa.db.SystemErrorException
-  {
-    return (getTime(this.divType,
+    /**
+     *
+     * @return
+     * @throws SystemErrorException
+     */
+    public double getOffsetTime() throws SystemErrorException {
+        return (getTime(this.divType,
          ((TimeStampDataValue)this.offset.getValue()).getItsValue().getTime()));
-  }
-
-  private void setValue(DataValue dv)
-  {
-    this.value.setValue(dv);
-  }
-
-  public IntDataValue getOrdinal()
-  {
-    return ((IntDataValue)this.ord.getValue());
-  }
-
-  public TimeStampDataValue getOnset()
-    throws SystemErrorException
-  {
-    return ((TimeStampDataValue)this.onset.getValue());
-  }
-  
-  public TimeStampDataValue getOffset()
-    throws SystemErrorException
-  {
-    return ((TimeStampDataValue)this.offset.getValue());
-  }
-
-  public DataValue getValue()
-  {
-    return (this.value.getValue());
-  }
-
-  public void setSize(int width, int height)
-  {
-    super.setSize(width, height);
-    this.userDimensions = new Dimension(width, height);
-  }
-
-  public void setWidth(int width)
-  {
-    this.setSize(width, this.getHeight());
-  }
-
-  public void setHeight(int height)
-  {
-    this.setSize(this.getWidth(), height);
-  }
-  
-  public int getMinimumHeight()
-  {
-    FontMetrics fm = this.getFontMetrics(uiconfig.spreadsheetTimeStampFont);
-    FontMetrics fm1 = this.getFontMetrics(uiconfig.spreadsheetDataFont);
-    return(fm.getHeight() + fm1.getHeight());
-  }
-  
-  public Dimension getPreferredSize()
-  {
-    if ((this.userDimensions.width > 0) &&
-        (this.userDimensions.height > 0)) {
-      return (this.userDimensions);
-    }
-    
-    return (super.getPreferredSize());
-  }
-
-  public Dimension getMinimumSize()
-  {
-    if ((this.userDimensions.width > 0) &&
-        (this.userDimensions.height > 0)) {
-      return (this.userDimensions);
-    }
-    
-    return (super.getMinimumSize());
-  }
-  
-  public Dimension getMaximumSize()
-  {
-    if ((this.userDimensions.width > 0) &&
-        (this.userDimensions.height > 0)) {
-      return (this.userDimensions);
-    }
-    
-    return (super.getMaximumSize());
-  }
-  
-  public void updateDimensions()
-  {
-    Rectangle r = this.getBounds();
-    FontMetrics fm = this.getFontMetrics(uiconfig.spreadsheetTimeStampFont);
-
-    int totalWidth = 4;
-    int totalHeight = 4;
-
-    totalWidth += this.ord.getMinimumSize().width;
-    totalWidth += this.onset.getMinimumSize().width;
-    totalWidth += this.offset.getMinimumSize().width;
-
-    if (this.column.showOrdinal() ||
-        this.column.showOnset() ||
-        this.column.showOffset()) {
-      totalHeight += fm.getHeight();
-    }
-    if (this.column.showOrdinal()) {
-      this.ord.setVisible(true);
-    } else {
-      this.ord.setVisible(false);
-    }
-    if (this.column.showOnset()) {
-      this.onset.setVisible(true);
-    } else {
-      this.onset.setVisible(false);
-    }
-    if (this.column.showOffset()) {
-      this.offset.setVisible(true);
-    } else {
-      this.offset.setVisible(false);
-    }
-    
-    if ((this.userDimensions.width > 0) &&
-        (this.userDimensions.height > 0)) {
-      totalWidth = this.userDimensions.width;
-      totalHeight = this.userDimensions.height;
     }
 
-    this.value.setWrapWidth(totalWidth);
-    Dimension d = this.value.getMaximumSize();
-    if (this.column.showData()) {
-      totalHeight += d.getHeight();
-      this.value.setVisible(true);
-    } else {
-      this.value.setVisible(false);
+    /**
+     *
+     * @param dv
+     */
+    private void setValue(DataValue dv) {
+        this.value.setValue(dv);
     }
-  }
 
-  public void paintComponent(Graphics g)
-  {
-    this.updateDimensions();
-    if (this.selected) {
-      this.topPanel.setBackground(uiconfig.spreadsheetSelectedColor);
-      this.dataPanel.setBackground(uiconfig.spreadsheetSelectedColor);
-    } else {
-      this.topPanel.setBackground(uiconfig.spreadsheetBackgroundColor);
-      this.dataPanel.setBackground(uiconfig.spreadsheetBackgroundColor);
+    /**
+     *
+     * @param dv
+     */
+    private void setValue(Matrix m) throws SystemErrorException {
+        for (int i = 0; i < m.getNumArgs(); i++) {
+            setValue(m.getArgCopy(i));
+        }
     }
-    super.paintComponent(g);
-  }
 
-  public void mouseEntered(MouseEvent me)
-  {
-  }
-
-  public void mouseExited(MouseEvent me)
-  {
-  }
-
-  public void mousePressed(MouseEvent me)
-  {
-  }
-
-  public void mouseReleased(MouseEvent me)
-  {
-  }
-
-  public void mouseClicked(MouseEvent me)
-  {
-    try {
-      this.selected = !this.selected;
-      Cell cell = this.column.getSpreadsheet().getDatabase().getCell(this.cellID);
-      DataCell dc = null;
-      if (cell instanceof DataCell) {
-        dc = (DataCell)cell.getDB().getCell(cell.getID());
-      } else {
-        dc = (DataCell)this.column.getSpreadsheet().getDatabase().getCell(((ReferenceCell)cell).getTargetID());
-      }
-      dc.setSelected(this.selected);
-      cell.getDB().replaceCell(dc);
-    } catch (SystemErrorException see) {
-      
+    /**
+     *
+     * @return
+     */
+    public IntDataValue getOrdinal() {
+        return ((IntDataValue)this.ord.getValue());
     }
-    this.repaint();
-  }
 
-  public void DCellChanged(Database   db,
+    /**
+     *
+     * @return
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     */
+    public TimeStampDataValue getOnset() throws SystemErrorException {
+        return ((TimeStampDataValue)this.onset.getValue());
+    }
+
+    /**
+     *
+     * @return
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     */
+    public TimeStampDataValue getOffset() throws SystemErrorException {
+        return ((TimeStampDataValue)this.offset.getValue());
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DataValue getValue() {
+        return (this.value.getValue());
+    }
+
+    /**
+     *
+     * @param width
+     * @param height
+     */
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        this.userDimensions = new Dimension(width, height);
+    }
+
+    /**
+     *
+     * @param width
+     */
+    public void setWidth(int width) {
+        this.setSize(width, this.getHeight());
+    }
+
+    /**
+     *
+     * @param height
+     */
+    public void setHeight(int height) {
+        this.setSize(this.getWidth(), height);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getMinimumHeight() {
+        FontMetrics fm =
+                this.getFontMetrics(UIConfiguration.spreadsheetTimeStampFont);
+        FontMetrics fm1 =
+                this.getFontMetrics(UIConfiguration.spreadsheetDataFont);
+        return(fm.getHeight() + fm1.getHeight());
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Dimension getPreferredSize()
+    {
+        if ((this.userDimensions.width > 0)
+                && (this.userDimensions.height > 0)) {
+            return (this.userDimensions);
+        }
+
+        return (super.getPreferredSize());
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Dimension getMinimumSize() {
+        if ((this.userDimensions.width > 0)
+                && (this.userDimensions.height > 0)) {
+        return (this.userDimensions);
+        }
+
+        return (super.getMinimumSize());
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Dimension getMaximumSize()
+    {
+        if ((this.userDimensions.width > 0)
+                && (this.userDimensions.height > 0)) {
+            return (this.userDimensions);
+        }
+
+        return (super.getMaximumSize());
+    }
+
+    /**
+     *
+     */
+    public void updateDimensions() {
+        Rectangle r = this.getBounds();
+        FontMetrics fm =
+                this.getFontMetrics(UIConfiguration.spreadsheetTimeStampFont);
+
+        int totalWidth = 4;
+        int totalHeight = 4;
+
+        totalWidth += this.ord.getMinimumSize().width;
+        totalWidth += this.onset.getMinimumSize().width;
+        totalWidth += this.offset.getMinimumSize().width;
+
+        if (showOrd || showOnset || showOffset) {
+            totalHeight += fm.getHeight();
+        }
+        this.ord.setVisible(showOrd);
+        this.onset.setVisible(showOnset);
+        this.offset.setVisible(showOffset);
+
+        if ((this.userDimensions.width > 0)
+                && (this.userDimensions.height > 0)) {
+            totalWidth = this.userDimensions.width;
+            totalHeight = this.userDimensions.height;
+        }
+
+        this.value.setWrapWidth(totalWidth);
+        Dimension d = this.value.getMaximumSize();
+        if (showData) {
+            totalHeight += d.getHeight();
+        }
+        this.value.setVisible(showData);
+    }
+
+    /**
+     *
+     * @param g
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        this.updateDimensions();
+        if (selected) {
+            topPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
+            dataPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
+        } else {
+            topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+            dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+        }
+        super.paintComponent(g);
+    }
+
+    /**
+     *
+     * @param me
+     */
+    @Override
+    public void mouseEntered(MouseEvent me) {
+    }
+
+    /**
+     *
+     * @param me
+     */
+    @Override
+    public void mouseExited(MouseEvent me) {
+    }
+
+    /**
+     *
+     * @param me
+     */
+    @Override
+    public void mousePressed(MouseEvent me) {
+    }
+
+    /**
+     *
+     * @param me
+     */
+    @Override
+    public void mouseReleased(MouseEvent me) {
+    }
+
+    /**
+     *
+     * @param me
+     */
+    @Override
+    public void mouseClicked(MouseEvent me) {
+        try {
+            selected = !selected;
+            Cell cell = db.getCell(this.cellID);
+            DataCell dc = null;
+            if (cell instanceof DataCell) {
+                dc = (DataCell)db.getCell(cell.getID());
+            } else {
+                dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
+            }
+            dc.setSelected(selected);
+            cell.getDB().replaceCell(dc);
+        } catch (SystemErrorException see) {
+
+        }
+        this.repaint();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void DCellChanged(Database   db,
                            long       colID,
                            long       cellID,
                            boolean    ordChanged,
@@ -396,180 +532,72 @@ public class SpreadsheetCell
                            boolean    newSelected,
                            boolean    commentChanged,
                            String     oldComment,
-                           String     newComment)
-  {
-    try {
-      if (ordChanged) {
-        this.setOrdinal(newOrd);
-      }
+                           String     newComment) {
+        try {
+            if (ordChanged) {
+                this.setOrdinal(newOrd);
+            }
 
-      if (onsetChanged) {
-        this.setOnset(newOnset);
-      }
+            if (onsetChanged) {
+                this.setOnset(newOnset);
+            }
 
-      if (offsetChanged) {
-        this.setOffset(newOffset);
-      }
+            if (offsetChanged) {
+                this.setOffset(newOffset);
+            }
 
-      if (valChanged) {
-        this.value.setValue(newVal.getArgCopy(0));
-      }
+            if (valChanged) {
+                this.value.setValue(newVal.getArgCopy(0));
+            }
 
-      if (selectedChanged) {
-        this.selected = newSelected;
-      }
-    } catch (SystemErrorException see) {
-      
+            if (selectedChanged) {
+                this.selected = newSelected;
+            }
+        } catch (SystemErrorException see) {
+
+        }
+
+        this.repaint();
     }
-    
-    this.repaint();
-  }
 
-
-  public void DCellDeleted(Database  db,
+    /**
+     *
+     */
+    @Override
+    public void DCellDeleted(Database  db,
                            long      colID,
-                           long      cellID)
-  {
-  }
-
-  /*
-  public final static void main(String[] args)
-  {
-    try {
-      String userDir = System.getProperty("user.home");
-      java.io.File userConfig =
-          new java.io.File(userDir, au.com.nicta.openshapa.Executive.USER_CONFIG_FILE);
-
-      // Open configuration
-      Configuration config = new Configuration(userConfig);
-
-      JFrame jf = new JFrame();
-      //GridLayout gl = new GridLayout(0,1);
-      jf.setDefaultCloseOperation(jf.EXIT_ON_CLOSE);
-      jf.setLayout(new FlowLayout());//new BorderLayout());
-      //JPanel jp = new JPanel();
-      //jp.setLayout(gl);
-      //JScrollPane jsp = new JScrollPane(jp);
-
-      //ODBCDatabase db = new ODBCDatabase();
-      MacshapaDatabase db = new MacshapaDatabase();
-      Spreadsheet sp = new Spreadsheet(null, db);
-      MatrixVocabElement mve = new MatrixVocabElement(db);
-
-      DataColumn column = new DataColumn(db, "TestColumn", MatrixVocabElement.matrixType.TEXT);
-
-      db.addColumn(column);
-      column = db.getDataColumn("TestColumn");
-      mve = db.getMatrixVE(column.getItsMveID());
-      SpreadsheetColumn col = new SpreadsheetColumn(sp, column);
-      col.setOrdinalVisible(true);
-      col.setOnsetVisible(true);
-      col.setOffsetVisible(true);
-      col.setDataVisible(true);
-
-      SpreadsheetCell.uiconfig.parseConfiguration(config);
-      DataCell[] cells = new DataCell[10000];
-      for (int i=0; i<cells.length; i++) {
-        cells[i] = new DataCell(db, column.getID(), mve.getID());
-        long cid = db.appendCell(cells[i]);
-        cells[i] = (DataCell)db.getCell(cid);
-        SpreadsheetCell sc = new SpreadsheetCell(col, cells[i]);
-//        sc.setValue(tsdv);
-//        sc.setOrdinal(i);
-//        sc.setOnset(new TimeStamp(60, i*60));
-//        sc.setOffset(new TimeStamp(60, i*60 + 59));
-        sc.setWidth(30);
-        sc.setSize(200,50);
-        jf.getContentPane().add(sc);
-      }
-
-      //jf.getContentPane().add(jsp);//, BorderLayout.CENTER);
-      jf.setSize(new Dimension(50,400));
-      //jf.pack();
-
-      jf.setVisible(true);
-      
-      try {
-          (new Thread()).sleep(5000);
-      } catch (Exception e) {}
-      
-      for (int i=0; i<cells.length; i++) {
-        Matrix m = new Matrix(db, mve.getID());
-/*
-        // Integer
-        IntDataValue dv = new IntDataValue(sp.getDatabase());
-        dv.setItsValue(i);
-*
-        // TextString
-        TextStringDataValue dv = new TextStringDataValue(sp.getDatabase());
-        dv.setItsValue("Testing. This is some data. " + i +
-                         " ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-/*
-        // Float
-        FloatDataValue dv = new FloatDataValue(sp.getDatabase());
-        dv.setItsValue(i * 0.333);
-
-        // Nominal
-        NominalDataValue dv = new NominalDataValue(sp.getDatabase());
-        dv.setItsValue("NOM " + i);
-
-        // QuoteString
-        QuoteStringDataValue dv = new QuoteStringDataValue(sp.getDatabase());
-        dv.setItsValue("QuoteStr " + i);
-*
-        m.replaceArg(0, dv);
-        //cells[i].setVal(m);
-        DataCell dc = new DataCell(db, column.getID(), mve.getID());
-        dc.setID(cells[i].getID());
-        dc.setVal(m);
-        dc.setOnset(new TimeStamp(60, i*60));
-        dc.setOffset(new TimeStamp(60, i*60 + 59));
-        db.replaceCell(dc);
-      }
-      
-      for (int i=0; i<cells.length; i++) {
-        DataCell dc = (DataCell)db.getCell(cells[i].getID());
-        
-        System.out.println(dc);
-      }
-    } catch (Exception e) {
-      System.err.println("An exception occurred: " + e);
-      e.printStackTrace();
-      System.exit(-1);
+                           long      cellID) {
     }
-  }
-*/
+
 
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
    * always regenerated by the Form Editor.
    */
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents()
-  {
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-    topPanel = new javax.swing.JPanel();
-    dataPanel = new javax.swing.JPanel();
+        topPanel = new javax.swing.JPanel();
+        dataPanel = new javax.swing.JPanel();
 
-    setBackground(java.awt.SystemColor.window);
-    setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-    setLayout(new java.awt.BorderLayout());
+        setBackground(java.awt.SystemColor.window);
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        setLayout(new java.awt.BorderLayout());
 
-    topPanel.setBackground(java.awt.SystemColor.window);
-    topPanel.setLayout(new java.awt.GridLayout(1, 3));
-    add(topPanel, java.awt.BorderLayout.NORTH);
+        topPanel.setBackground(java.awt.SystemColor.window);
+        topPanel.setLayout(new java.awt.GridLayout(1, 3));
+        add(topPanel, java.awt.BorderLayout.NORTH);
 
-    dataPanel.setBackground(java.awt.SystemColor.window);
-    dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
-    add(dataPanel, java.awt.BorderLayout.CENTER);
-  }// </editor-fold>//GEN-END:initComponents
-  
-  
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JPanel dataPanel;
-  private javax.swing.JPanel topPanel;
-  // End of variables declaration//GEN-END:variables
-  
+        dataPanel.setBackground(java.awt.SystemColor.window);
+        dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
+        add(dataPanel, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel dataPanel;
+    private javax.swing.JPanel topPanel;
+    // End of variables declaration//GEN-END:variables
+
 }

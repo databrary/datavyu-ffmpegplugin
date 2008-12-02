@@ -1,107 +1,158 @@
+/*
+ * Spreadsheet.java
+ *
+ * Created on 26/11/2008, 2:14:43 PM
+ */
+
 package au.com.nicta.openshapa.disc.spreadsheet;
 
-import au.com.nicta.openshapa.Executive;
-import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 import java.util.Vector;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
-
 /**
- * Spreadsheet Viewer main component.
  *
- * @author  FGA
+ * @author swhitcher
  */
-public class Spreadsheet extends JFrame {
+public class Spreadsheet extends javax.swing.JFrame {
+
+    /** the mainview. */
+    private SpreadsheetView mainview;
+    /** the columnheader. */
+    private SpreadsheetColumnHeader rowView;
+
+    /** The Database being viewed. */
+    private Database  database;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
 
-    /** Linear View orientation. */
-    public static final int LINEAR_VIEW        = 1;
-    /** Semi-temporal View orientation. */
-    public static final int SEMI_TEMPORAL_VIEW = 2;
-    /** Temporal View orientation. */
-    public static final int TEMPORAL_VIEW      = 3;
-
-    /** The Executive linked with the spreadsheet. */
-    private Executive executive;
-    /** The Database being viewed. */
-    private Database  database;
-
-    /** Columns of the spreadsheet. */
-    private Vector < SpreadsheetColumn > columns;
-
-    /** Dirty flag for spreadsheet. */
-    private boolean spreadsheetChanged = false;
-
-    /** Last minimum timestamp. */
-    private long lastMinTimeStamp = Long.MAX_VALUE;
-    /** Last maximum timestamp. */
-    private long lastMaxTimeStamp = Long.MIN_VALUE;
-
-    /** Current spreadsheet view orientation. */
-    private int spreadsheetView = LINEAR_VIEW;
-
     /** Creates new form Spreadsheet. */
     public Spreadsheet() {
-
         initComponents();
+
+        this.setLayout(new BorderLayout());
+
+        mainview = new SpreadsheetView();
+        mainview.setLayout(new BoxLayout(mainview, BoxLayout.X_AXIS));
+        //mainview.setPreferredSize(new Dimension(400,300));
+        rowView = new SpreadsheetColumnHeader();
+
+        JScrollPane jScrollPane3 = new JScrollPane();
+        this.add(jScrollPane3, BorderLayout.CENTER);
+        jScrollPane3.setViewportView(mainview);
+        jScrollPane3.setColumnHeaderView(rowView);
     }
 
     /**
      * Creates new form Spreadsheet.
-     *
-     * @param exec Executive linked to the spreadsheet.
-     * @param db Database this spreadsheet displays.
-     *
-     * @throws SystemErrorException if the db does not create
+     * @param db The databse to display
      */
-    public Spreadsheet(Executive exec, Database db)
-                                                throws SystemErrorException {
+    public Spreadsheet(final Database db) {
         this();
-        this.setExecutive(exec);
+
+//        fakeDB(db);
+
         this.setDatabase(db);
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLayout(new FlowLayout());
 
-        this.Populate();
-        this.setSize(new Dimension(50,400));
+//        db.registerCascadeListener(this);
+//        db.registerColumnListListener(this);
+
+        this.updateComponents();
+//        this.setSize(new Dimension(50,400));
     }
+
+    /*
+    private void fakeDB(final Database adb) {
+
+        try {
+            MatrixVocabElement mve = new MatrixVocabElement(adb);
+
+            DataColumn column = new DataColumn(adb, "TestColumn",
+                                        MatrixVocabElement.matrixType.TEXT);
+
+            adb.addColumn(column);
+            column = adb.getDataColumn("TestColumn");
+            mve = adb.getMatrixVE(column.getItsMveID());
+
+            DataCell[] cells = new DataCell[200];
+            for (int i=0; i<cells.length; i++) {
+                cells[i] = new DataCell(adb, column.getID(), mve.getID());
+                long cid = adb.appendCell(cells[i]);
+                cells[i] = (DataCell)adb.getCell(cid);
+            }
+
+          for (int i=0; i<cells.length; i++) {
+            Matrix m = new Matrix(adb, mve.getID());
+            // TextString
+            TextStringDataValue dv = new TextStringDataValue(adb);
+            dv.setItsValue("Testing. This is some data. " + i +
+                             " ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            m.replaceArg(0, dv);
+            //cells[i].setVal(m);
+            DataCell dc = new DataCell(adb, column.getID(), mve.getID());
+            dc.setID(cells[i].getID());
+            dc.setVal(m);
+            dc.setOnset(new TimeStamp(60, i*60));
+            dc.setOffset(new TimeStamp(60, i*60 + 59));
+            adb.replaceCell(dc);
+          }
+
+            column = new DataColumn(adb, "TestColumn2",
+                                        MatrixVocabElement.matrixType.INTEGER);
+
+            adb.addColumn(column);
+            column = adb.getDataColumn("TestColumn2");
+            mve = adb.getMatrixVE(column.getItsMveID());
+
+            for (int i=0; i<5; i++) {
+                cells[i] = new DataCell(adb, column.getID(), mve.getID());
+                long cid = adb.appendCell(cells[i]);
+                cells[i] = (DataCell)adb.getCell(cid);
+            }
+
+          for (int i=0; i<5; i++) {
+            Matrix m = new Matrix(adb, mve.getID());
+            // Integer
+            IntDataValue dv = new IntDataValue(adb);
+            dv.setItsValue(i);
+            m.replaceArg(0, dv);
+            //cells[i].setVal(m);
+            DataCell dc = new DataCell(adb, column.getID(), mve.getID());
+            dc.setID(cells[i].getID());
+            dc.setVal(m);
+            dc.setOnset(new TimeStamp(60, i*60));
+            dc.setOffset(new TimeStamp(60, i*60 + 59));
+            adb.replaceCell(dc);
+          }
+
+        } catch (Exception e) {}
+    }
+*/
 
     /**
      * Populate from the database.
      */
-    public void Populate() {
+    private void updateComponents() {
         try {
-            Vector<DataColumn> dbColumns = getDatabase().getDataColumns();
+            Vector < DataColumn > dbColumns = getDatabase().getDataColumns();
 
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
 
-                SpreadsheetColumn col = new SpreadsheetColumn(this, dbColumn);
-                col.setOrdinalVisible(true);
-                col.setOnsetVisible(true);
-                col.setOffsetVisible(true);
-                col.setDataVisible(true);
+                SpreadsheetColumn col = new SpreadsheetColumn(dbColumn);
 
-                addColumn(col);
+                addColumn(col, dbColumn.getName());
 
-                for(int j = 0; j < dbColumn.getNumCells(); j++) {
-                    DataCell dc = (DataCell)getDatabase()
-                                            .getCell(dbColumn.getID(), j);
-
-                    SpreadsheetCell sc = new SpreadsheetCell(col, dc);
-                    sc.setWidth(30);
-                    sc.setSize(200,50);
-                    this.getContentPane().add(sc);
-                }
             }
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
@@ -110,172 +161,58 @@ public class Spreadsheet extends JFrame {
     }
 
     /**
-     * Set Executive
+     * Add a column panel to the scroll panel.
+     * @param col Column to add
+     * @param name Name of column
      */
-    public void setExecutive(Executive exec) {
-        this.executive = exec;
+    private void addColumn(final SpreadsheetColumn col, final String name) {
+        mainview.add(col);
+
+        rowView.addColumn(name);
     }
 
     /**
-     * Set Database
+     * Set Database.
+     * @param db Database to set
      */
-    public void setDatabase(Database db) {
+    public final void setDatabase(final Database db) {
         this.database = db;
-    }
-
-    /**
-     * @return Executive for this spreadsheet
-     */
-    public Executive getExecutive() {
-        return (this.executive);
     }
 
     /**
      * @return Database this spreadsheet displays
      */
-    public Database getDatabase() {
+    public final Database getDatabase() {
         return (this.database);
     }
 
-    /**
-     * Add a column
-     * @param col Column to add
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
      */
-    public void addColumn(SpreadsheetColumn col) throws SystemErrorException {
-        this.columns.addElement(col);
-        this.add(col);
-        this.updateSpreadsheet();
-    }
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-    /**
-     * Remove a column
-     * @param col Column to remove
-     */
-    public void removeColumn(SpreadsheetColumn col)
-                                                throws SystemErrorException {
-        this.columns.removeElement(col);
-        this.remove(col);
-        this.updateSpreadsheet();
-    }
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("Form"); // NOI18N
 
-    /**
-     * @return Scale = 1 only for now
-     */
-    public long getScale() {
-        return (1);
-    }
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 587, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 402, Short.MAX_VALUE)
+        );
 
-    /**
-     * @return Minimum Onset Timestamp found in database
-     */
-    public long getMinTimeStamp() throws SystemErrorException {
-        if (!spreadsheetChanged) {
-            return (lastMinTimeStamp);
-        }
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
-        long min = Long.MAX_VALUE;
-        long lm;
-
-        for (int i=0; i<this.columns.size(); i++) {
-            lm = columns.elementAt(i).getMinOnset();
-            if (lm < min) {
-            min = lm;
-            }
-        }
-
-        this.lastMinTimeStamp = min;
-        return (min);
-    }
-
-    /**
-     * @return Maximum Onset Timestamp found in database
-     * @throws SystemErrorException TODO: should remove this throw
-     */
-    public long getMaxTimeStamp() throws SystemErrorException {
-        if (!spreadsheetChanged) {
-            return (lastMaxTimeStamp);
-        }
-
-        long max = Long.MIN_VALUE;
-        long lm;
-
-        // TODO: MaxOnset doesn't seem enough - what about Offset?
-        for (int i = 0; i < this.columns.size(); i++) {
-            lm = columns.elementAt(i).getMaxOnset();
-            if (lm > max) {
-                max = lm;
-            }
-        }
-
-        this.lastMaxTimeStamp = max;
-        return (max);
-    }
-
-    /**
-     * @return Maximum Onset Timestamp found in database
-     * @throws SystemErrorException TODO: should remove this throw
-     */
-    public int getColumnHeight() throws SystemErrorException {
-        long diff = (this.getMaxTimeStamp() - this.getMinTimeStamp())
-                                                            / this.getScale();
-        if (diff >= Integer.MAX_VALUE) {
-            return (Integer.MAX_VALUE-1);
-        }
-        return ((int)diff);
-    }
-
-    /**
-     * Recalculate Spreadsheet extents
-     * @throws SystemErrorException TODO: should remove this throw
-     */
-    public void updateSpreadsheet() throws SystemErrorException {
-        this.spreadsheetChanged = true;
-        this.getMinTimeStamp();
-        this.getMaxTimeStamp();
-        this.spreadsheetChanged = false;
-        Populate();
-        this.repaint();
-    }
-
-    /**
-     * @return Spreadsheet view orientation
-     */
-    public int getSpreadsheetView() {
-        return (this.spreadsheetView);
-    }
-
-    /**
-     * Set Spreadsheet view orientation
-     */
-    public void setSpreadsheetView(int view) {
-        if ((view >= LINEAR_VIEW) && (view <= TEMPORAL_VIEW)) {
-            this.spreadsheetView = view;
-        }
-    }
-
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
-  private void initComponents()
-  {
-
-    org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-    this.setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-      .add(0, 400, Short.MAX_VALUE)
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-      .add(0, 300, Short.MAX_VALUE)
-    );
-  }// </editor-fold>//GEN-END:initComponents
-
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // End of variables declaration//GEN-END:variables
 
 }
