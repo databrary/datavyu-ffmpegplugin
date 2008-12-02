@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public class NewDatabaseView extends javax.swing.JDialog {
+public class NewDatabase extends javax.swing.JDialog {
 
     /** The parent action to notify when the user completes this dialog. */
     ActionListener notifier;
@@ -20,7 +20,7 @@ public class NewDatabaseView extends javax.swing.JDialog {
      * @param listener The parent listener, of the action to invoke when the
      * user clicks on the OK button.
      */
-    public NewDatabaseView(java.awt.Frame parent, boolean modal,
+    public NewDatabase(java.awt.Frame parent, boolean modal,
                            ActionListener listener) {        
         super(parent, modal);        
         initComponents();
@@ -49,17 +49,18 @@ public class NewDatabaseView extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabaseView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabase.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setToolTipText(resourceMap.getString("jLabel2.toolTipText")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        nameField.setText(resourceMap.getString("nameField.text")); // NOI18N
         nameField.setName("nameField"); // NOI18N
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
@@ -100,8 +101,8 @@ public class NewDatabaseView extends javax.swing.JDialog {
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nameField, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)))
+                            .addComponent(nameField, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

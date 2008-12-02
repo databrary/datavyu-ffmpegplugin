@@ -40,7 +40,7 @@ public class OpenSHAPAView extends FrameView {
     @Action
     public void showNewDatabaseForm() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newDBView = new NewDatabaseView(mainFrame, false,
+        newDBView = new NewDatabase(mainFrame, false,
                                         new NewDatabaseAction());
         OpenSHAPA.getApplication().show(newDBView);        
     }
@@ -63,7 +63,7 @@ public class OpenSHAPAView extends FrameView {
     @Action
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new ListVariablesView(mainFrame, false, db);
+        listVarView = new ListVariables(mainFrame, false, db);
         try {
             db.registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
@@ -239,13 +239,13 @@ public class OpenSHAPAView extends FrameView {
     private Spreadsheet sp;
 
     /** The view to use when creating new databases. */
-    private NewDatabaseView newDBView;
+    private NewDatabase newDBView;
 
     /** The view to use when creating a new variable. */
     private NewVariableView newVarView;
 
     /** The view to use when listing all variables in the database. */
-    private ListVariablesView listVarView;
+    private ListVariables listVarView;
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;

@@ -34,8 +34,8 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="nameField" alignment="0" pref="239" max="32767" attributes="0"/>
-                          <Component id="jScrollPane1" alignment="0" pref="239" max="32767" attributes="0"/>
+                          <Component id="nameField" alignment="0" pref="182" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" pref="182" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -75,18 +75,19 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="jLabel1.toolTipText"/>
         <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" resourceKey="jLabel2.text"/>
+        <Property name="toolTipText" type="java.lang.String" resourceKey="jLabel2.toolTipText"/>
         <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="nameField">
       <Properties>
-        <Property name="text" type="java.lang.String" resourceKey="nameField.text"/>
         <Property name="name" type="java.lang.String" value="nameField" noResource="true"/>
       </Properties>
     </Component>
