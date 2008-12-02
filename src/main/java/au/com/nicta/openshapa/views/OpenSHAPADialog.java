@@ -1,6 +1,6 @@
 package au.com.nicta.openshapa.views;
 
-import au.com.nicta.openshapa.actions.KeySwitchBoard;
+import au.com.nicta.openshapa.OpenSHAPA;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import javax.swing.JDialog;
@@ -39,6 +39,6 @@ implements KeyEventDispatcher {
     public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
         // Pass the keyevent onto the keyswitchboard so that it can route it
         // to the correct action.
-        return KeySwitchBoard.getKeySwitchBoard().dispatchKeyEvent(evt);
+        return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
     }
 }

@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
 import au.com.nicta.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,116 +61,6 @@ implements ContinuousDataController {
             }
         }
     }
-
-    /*
-    public void executiveKeyPressed(KeyEvent ke)
-    {
-        switch (ke.getKeyCode()) {
-              case 96: { // 0
-                this.lastButton = this.createNewCellButton;
-                this.createNewCellButtonActionPerformed(null);
-                break;
-              }
-              case 97: { // 1
-                this.lastButton = this.jogBackButton;
-                this.jogBackButtonActionPerformed(null);
-                break;
-              }
-              case 98: { // 2
-                this.lastButton = this.stopButton;
-                this.stopButtonActionPerformed(null);
-                break;
-              }
-              case 99: { // 3
-                this.lastButton = this.jogForwardButton;
-                this.jogBackButtonActionPerformed(null);
-                break;
-              }
-              case 100: { // 4
-                this.lastButton = this.shuttleBackButton;
-                this.shuttleBackButtonActionPerformed(null);
-                break;
-              }
-              case 101: { // 5
-                this.lastButton = this.pauseButton;
-                this.pauseButtonActionPerformed(null);
-                break;
-              }
-              case 102: { // 6
-                this.lastButton = this.shuttleForwardButton;
-                this.shuttleForwardButtonActionPerformed(null);
-                break;
-              }
-              case 103: { // 7
-                this.lastButton = this.rewindButton;
-                this.rewindButtonActionPerformed(null);
-                break;
-              }
-              case 104: { // 8
-                this.lastButton = this.playButton;
-                this.playButtonActionPerformed(null);
-                break;
-              }
-              case 105: { // 9
-                this.lastButton = this.forwardButton;
-                this.forwardButtonActionPerformed(null);
-                break;
-              }
-              case 106: { // *
-                this.lastButton = this.setCellOffsetButton;
-                this.setCellOffsetButtonActionPerformed(null);
-                break;
-              }
-              case 107: { // +
-                this.lastButton = this.findButton;
-                this.findButtonActionPerformed(null);
-                break;
-              }
-              case 109: { // -
-                this.lastButton = this.goBackButton;
-                this.goBackButtonActionPerformed(null);
-                break;
-              }
-              case 110: { // .
-                this.lastButton = this.setNewCellOnsetButton;
-                this.setNewCellOnsetButtonActionPerformed(null);
-                break;
-              }
-              case 12: { // clear
-                this.lastButton = this.syncCtrlButton;
-                this.syncCtrlButtonActionPerformed(null);
-                break;
-              }
-              case 61: { // /
-                this.lastButton = this.setCellOnsetButton;
-                this.setCellOnsetButtonActionPerformed(null);
-                break;
-              }
-              default: {
-                //System.out.println("KeyCode: " + ke.getKeyCode());
-                return;
-              }
-            } // End Switch
-    }
-
-    public void executiveKeyReleased(KeyEvent ke)
-    {
-    }
-
-    public void executiveKeyTyped(KeyEvent ke)
-    {
-
-    }
-
-    public void executiveKeyControlGained()
-    {
-    }
-
-    public void executiveKeyControlLost()
-    {
-    }
-     */
-
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -241,125 +132,68 @@ implements ContinuousDataController {
         gridButtonPanel.setBackground(java.awt.Color.white);
         gridButtonPanel.setLayout(new java.awt.GridLayout(4, 4));
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
+        syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
         syncCtrlButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncCtrlButton.png"))); // NOI18N
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(32, 32));
-        syncCtrlButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                syncCtrlButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(syncCtrlButton);
 
+        syncButton.setAction(actionMap.get("syncAction")); // NOI18N
         syncButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncButton.png"))); // NOI18N
-        syncButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                syncButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(syncButton);
 
+        setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
         setCellOnsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/cellOnsetButton.png"))); // NOI18N
-        setCellOnsetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setCellOnsetButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(setCellOnsetButton);
 
+        setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
         setCellOffsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/cellOffsetButton.png"))); // NOI18N
-        setCellOffsetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setCellOffsetButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(setCellOffsetButton);
 
+        rewindButton.setAction(actionMap.get("rewindAction")); // NOI18N
         rewindButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/rewindButton.png"))); // NOI18N
-        rewindButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rewindButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(rewindButton);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
         playButton.setAction(actionMap.get("playAction")); // NOI18N
         playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/playButton.png"))); // NOI18N
-        playButton.setMnemonic('8');
         gridButtonPanel.add(playButton);
 
+        forwardButton.setAction(actionMap.get("forwardAction")); // NOI18N
         forwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/forwardButton.png"))); // NOI18N
-        forwardButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                forwardButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(forwardButton);
 
+        goBackButton.setAction(actionMap.get("goBackAction")); // NOI18N
         goBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/goBackButton.png"))); // NOI18N
-        goBackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                goBackButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(goBackButton);
 
+        shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
         shuttleBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/shuttleLeftButton.png"))); // NOI18N
-        shuttleBackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                shuttleBackButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(shuttleBackButton);
 
+        pauseButton.setAction(actionMap.get("pauseAction")); // NOI18N
         pauseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/pauseButton.png"))); // NOI18N
-        pauseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pauseButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(pauseButton);
 
+        shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
         shuttleForwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/shuttleRightButton.png"))); // NOI18N
-        shuttleForwardButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                shuttleForwardButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(shuttleForwardButton);
 
+        findButton.setAction(actionMap.get("findAction")); // NOI18N
         findButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/findButton.png"))); // NOI18N
-        findButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                findButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(findButton);
 
+        jogBackButton.setAction(actionMap.get("jogBackAction")); // NOI18N
         jogBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/jogLeftButton.png"))); // NOI18N
-        jogBackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jogBackButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(jogBackButton);
 
+        stopButton.setAction(actionMap.get("stopAction")); // NOI18N
         stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/stopButton.png"))); // NOI18N
-        stopButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(stopButton);
 
+        jogForwardButton.setAction(actionMap.get("jogForwardAction")); // NOI18N
         jogForwardButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/jogRightButton.png"))); // NOI18N
-        jogForwardButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jogForwardButtonActionPerformed(evt);
-            }
-        });
         gridButtonPanel.add(jogForwardButton);
 
         mainPanel.add(gridButtonPanel, java.awt.BorderLayout.CENTER);
@@ -391,20 +225,12 @@ implements ContinuousDataController {
         leftButtonPanel.setBackground(java.awt.Color.white);
         leftButtonPanel.setLayout(new java.awt.GridBagLayout());
 
+        createNewCellButton.setAction(actionMap.get("createNewCellAction")); // NOI18N
         createNewCellButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/newCellButton.png"))); // NOI18N
-        createNewCellButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createNewCellButtonActionPerformed(evt);
-            }
-        });
         leftButtonPanel.add(createNewCellButton, new java.awt.GridBagConstraints());
 
+        setNewCellOnsetButton.setAction(actionMap.get("setNewCellOnset")); // NOI18N
         setNewCellOnsetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/newCellOffsetButton.png"))); // NOI18N
-        setNewCellOnsetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setNewCellOnsetButtonActionPerformed(evt);
-            }
-        });
         leftButtonPanel.add(setNewCellOnsetButton, new java.awt.GridBagConstraints());
 
         bottomPanel.add(leftButtonPanel, java.awt.BorderLayout.WEST);
@@ -412,7 +238,7 @@ implements ContinuousDataController {
         fillerPanel.setBackground(java.awt.Color.white);
         fillerPanel.setLayout(new java.awt.BorderLayout());
 
-        timestampSetupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/timestampSetupButton.png"))); // NOI18N
+        timestampSetupButton.setIcon(resourceMap.getIcon("timestampSetupButton.icon")); // NOI18N
         timestampSetupButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 timestampSetupButtonActionPerformed(evt);
@@ -463,60 +289,60 @@ implements ContinuousDataController {
      *
      * @param evt The event that triggered this action.
      */
-    private void syncCtrlButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncCtrlButtonActionPerformed
+    @Action
+    public void syncCtrlAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).syncCtrl();
         }
-    }//GEN-LAST:event_syncCtrlButtonActionPerformed
+    }
+
 
     /**
      * Action to invoke when the user clicks on the sync button.
      *
      * @param evt The event that triggered this action.
      */
-    private void syncButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncButtonActionPerformed
+    @Action
+    public void syncAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
-    }//GEN-LAST:event_syncButtonActionPerformed
+    }
+
 
     /**
      * Action to invoke when the user clicks the set cell onset button.
      *
      * @param evt The event that triggered this action.
      */
-    private void setCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOnsetButtonActionPerformed
+    @Action
+    public void setCellOnsetAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStartTime();
         }
-    }//GEN-LAST:event_setCellOnsetButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the set cell offest button.
      *
      * @param evt The event that triggered this action.
      */
-    private void setCellOffsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setCellOffsetButtonActionPerformed
+    @Action
+    public void setCellOffsetAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStopTime();
         }
-    }//GEN-LAST:event_setCellOffsetButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the rewind button.
      *
      * @param evt The event that triggered this action.
      */
-    private void rewindButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rewindButtonActionPerformed
+    @Action
+    public void rewindAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).rewind();
-        }
-    }//GEN-LAST:event_rewindButtonActionPerformed
-
-    @Action
-    public void playAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).play();
         }
     }
 
@@ -525,23 +351,32 @@ implements ContinuousDataController {
      *
      * @param evt The event that triggered this action.
      */
+    @Action
+    public void playAction(KeyEvent evt) {
+        for (int i = 0; i < this.viewers.size(); i++) {
+            this.viewers.elementAt(i).play();
+        }
+    }
+
     /**
      * Action to invoke when the user clicks on the fast foward button.
      *
      * @param evt The event that triggered this action.
      */
-    private void forwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardButtonActionPerformed
+    @Action
+    public void forwardAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).forward();
         }
-    }//GEN-LAST:event_forwardButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the go back button.
      *
      * @param evt The event that triggered this action.
      */
-    private void goBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackButtonActionPerformed
+    @Action
+    public void goBackAction(KeyEvent evt) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
             Date videoDate = format.parse(this.goBackTextField.getText());
@@ -556,48 +391,51 @@ implements ContinuousDataController {
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }
-    }//GEN-LAST:event_goBackButtonActionPerformed
+    }
 
     /**
      * Action to inovke when the user clicks on the shuttle back button.
      *
      * @param evt The event that triggered this action.
      */
-    private void shuttleBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleBackButtonActionPerformed
+    @Action
+    public void shuttleBackAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleBack();
         }
-    }//GEN-LAST:event_shuttleBackButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the pause button.
      *
      * @param evt The event that triggered this action.
      */
-    private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
+    @Action
+    public void pauseAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).pause();
         }
-    }//GEN-LAST:event_pauseButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the shuttle forward button.
      *
      * @param evt The event that triggered this action.
      */
-    private void shuttleForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuttleForwardButtonActionPerformed
+    @Action
+    public void shuttleForwardAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleForward();
         }
-    }//GEN-LAST:event_shuttleForwardButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the find button.
      *
      * @param evt The event that triggered this action.
      */
-    private void findButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findButtonActionPerformed
-        //Date seekTime = DateFormat.getInstance().parse();
+    @Action
+    public void findAction(KeyEvent evt) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
             Date videoDate = format.parse(this.findTextField.getText());
@@ -612,72 +450,82 @@ implements ContinuousDataController {
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }
-    }//GEN-LAST:event_findButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the jog backwards button.
      *
      * @param evt The event that triggered this action.
      */
-    private void jogBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogBackButtonActionPerformed
+    @Action
+    public void jogBackAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogBack();
         }
-    }//GEN-LAST:event_jogBackButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the stop button
      *
      * @param evt The event that triggered this action.
      */
-    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+    @Action
+    public void stopAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).stop();
         }
-    }//GEN-LAST:event_stopButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the jog forwards button
      *
      * @param evt The event that triggered this action.
      */
-    private void jogForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jogForwardButtonActionPerformed
+    @Action
+    public void jogForwardAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogForward();
         }
-    }//GEN-LAST:event_jogForwardButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the new cell button.
      *
      * @param evt The event that triggered this action.
      */
-    private void createNewCellButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createNewCellButtonActionPerformed
+    @Action
+    public void createNewCellAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).createNewCell();
         }
-    }//GEN-LAST:event_createNewCellButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the new cell onset button.
      *
      * @param evt The event that triggered this action.
      */
-    private void setNewCellOnsetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setNewCellOnsetButtonActionPerformed
+    @Action
+    public void setNewCellOnset(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setNewCellOnset();
         }
-    }//GEN-LAST:event_setNewCellOnsetButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks on the sync video button.
      *
      * @param evt The event that triggered this action.
      */
-    private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
+    @Action
+    public void syncVideoAction(KeyEvent evt) {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
+    }
+
+    private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
+
     }//GEN-LAST:event_syncVideoButtonActionPerformed
 
     /**
