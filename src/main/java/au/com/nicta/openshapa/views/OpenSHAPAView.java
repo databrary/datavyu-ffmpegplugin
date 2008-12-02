@@ -27,13 +27,7 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         super(app);
         KeyboardFocusManager key = KeyboardFocusManager
                                    .getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);
-
-        try {
-            db = new MacshapaDatabase();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to create MacSHAPADatabase", e);
-        }
+        key.addKeyEventDispatcher(this);        
 
         // generated GUI builder code
         initComponents();
@@ -59,10 +53,7 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
      */
     @Action
     public void showNewDatabaseForm() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newDBView = new NewDatabase(mainFrame, false,
-                                        new NewDatabaseAction());
-        OpenSHAPA.getApplication().show(newDBView);        
+        OpenSHAPA.getApplication().showNewDatabaseForm();  
     }
 
     /**
@@ -70,11 +61,7 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
      */
     @Action
     public void showNewVariableForm() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newVarView = new NewVariable(mainFrame, false,
-                                         new NewVariableAction());
-        OpenSHAPA.getApplication().show(newVarView);
-        
+        OpenSHAPA.getApplication().showNewVariableForm();
     }
 
     /**
@@ -82,14 +69,7 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
      */
     @Action
     public void showVariableList() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new ListVariables(mainFrame, false, db);
-        try {
-            db.registerColumnListListener(listVarView);
-        } catch (SystemErrorException e) {
-            logger.error("Unable register column list listener", e);
-        }
-        OpenSHAPA.getApplication().show(listVarView);
+        OpenSHAPA.getApplication().showVariableList();
     }
 
     /**
@@ -218,69 +198,4 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
-
-    /** The current database we are working on. */
-    private Database db;
-
-    /** The current spreadsheet view. */
-    private Spreadsheet sp;
-
-    /** The view to use when creating new databases. */
-    private NewDatabase newDBView;
-
-    /** The view to use when creating a new variable. */
-    private NewVariable newVarView;
-
-    /** The view to use when listing all variables in the database. */
-    private ListVariables listVarView;
-
-    /** The view to use for the quick time video controller. */
-    //private QTVideoController qtVideoController;
-
-    /**
-     * The action (controller) to invoke when a user creates a new database.
-     */
-    class NewDatabaseAction implements ActionListener {
-        /**
-         * Action to invoke when a new database is created.
-         *
-         * @param evt The event that triggered this action.
-         */
-        @Override
-        public void actionPerformed(final ActionEvent evt) {
-            try {
-                db = new MacshapaDatabase();
-                db.setName(newDBView.getDatabaseName());
-                db.setDescription(newDBView.getDatabaseDescription());
-
-                sp = new Spreadsheet(db);
-                sp.setVisible(true);
-
-            } catch (SystemErrorException e) {
-                logger.error("Unable to create new database", e);
-            }
-        }
-    }
-
-    /**
-     * The action (controller) to invoke when a user adds a new variable to a
-     * database.
-     */
-    class NewVariableAction implements ActionListener {
-        /**
-         * Action to invoke when a new variable is added to the database.
-         *
-         * @param evt The event that triggered this action.
-         */
-        @Override
-        public void actionPerformed(final ActionEvent evt) {
-            try {
-                DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
-                                               newVarView.getVariableType());
-                db.addColumn(dc);
-            } catch (SystemErrorException e) {
-                logger.error("Unable to add variable to database", e);
-            }
-        }
-    }
 }
