@@ -7,7 +7,7 @@ import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.disc.spreadsheet.Spreadsheet;
+import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -80,6 +80,14 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
     @Action
     public void showQTVideoController() {
         OpenSHAPA.getApplication().showQTVideoController();
+    }
+
+    /**
+     * Action for showing the spreadsheet.
+     */
+    @Action
+    public void showSpreadsheet() {
+        OpenSHAPA.getApplication().showSpreadsheet();
     }
 
     /** This method is called from within the constructor to

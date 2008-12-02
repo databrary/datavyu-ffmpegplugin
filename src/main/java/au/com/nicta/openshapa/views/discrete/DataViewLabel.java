@@ -5,7 +5,7 @@
  *
  */
 
-package au.com.nicta.openshapa.disc.spreadsheet;
+package au.com.nicta.openshapa.views.discrete;
 
 import java.awt.*;
 import java.awt.event.*;

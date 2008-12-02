@@ -289,7 +289,7 @@ public class Configuration extends DefaultHandler
     // Check for valid object type
     switch (type) {
       case DISCRETEMANAGER: {
-        au.com.nicta.openshapa.disc.DiscreteDataManager db = (au.com.nicta.openshapa.disc.DiscreteDataManager)o;
+            au.com.nicta.openshapa.views.discrete.DiscreteDataManager db = (au.com.nicta.openshapa.views.discrete.DiscreteDataManager)o;
         break;
       }
 //      case CONTINUOUSDISPLAY: {
@@ -297,7 +297,7 @@ public class Configuration extends DefaultHandler
 //        break;
 //      }
       case DISCRETEDISPLAY: {
-        au.com.nicta.openshapa.disc.DiscreteDataViewer dv = (au.com.nicta.openshapa.disc.DiscreteDataViewer)o;
+            au.com.nicta.openshapa.views.discrete.DiscreteDataViewer dv = (au.com.nicta.openshapa.views.discrete.DiscreteDataViewer)o;
         break;
       }
       case PLUGIN: {
