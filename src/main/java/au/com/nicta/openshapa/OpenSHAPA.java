@@ -106,7 +106,7 @@ implements KeyEventDispatcher {
     public void showNewDatabaseForm() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         newDBView = new NewDatabase(mainFrame, false,
-                                        new NewDatabaseAction());
+                                    new NewDatabaseAction());
         OpenSHAPA.getApplication().show(newDBView);
     }
 
@@ -216,7 +216,7 @@ implements KeyEventDispatcher {
     /**
      * The action (controller) to invoke when a user creates a new database.
      */
-    class NewDatabaseAction implements ActionListener {
+    public class NewDatabaseAction implements ActionListener {
         /**
          * Action to invoke when a new database is created.
          *
