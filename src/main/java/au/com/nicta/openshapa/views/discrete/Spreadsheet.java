@@ -89,8 +89,8 @@ public class Spreadsheet extends OpenSHAPADialog {
 
                 SpreadsheetColumn col = new SpreadsheetColumn(dbColumn);
 
-                addColumn(col, dbColumn.getName());
-
+                addColumn(col, dbColumn.getName() + "   ("
+                                + dbColumn.getItsMveType() + ")");
             }
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
@@ -117,6 +117,8 @@ public class Spreadsheet extends OpenSHAPADialog {
         this.database = db;
 
         setName(this.getClass().getSimpleName() + db.getName());
+
+        setTitle(db.getName());
     }
 
     /**

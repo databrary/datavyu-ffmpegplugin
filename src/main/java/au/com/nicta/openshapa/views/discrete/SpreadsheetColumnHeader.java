@@ -32,10 +32,12 @@ public class SpreadsheetColumnHeader extends javax.swing.JPanel {
     public final void addColumn(final String name) {
         JLabel nameLabel = new JLabel(name);
         nameLabel.setOpaque(true);
-        nameLabel.setHorizontalTextPosition(JLabel.CENTER);
+       // nameLabel.setHorizontalTextPosition(JLabel.CENTER);
         nameLabel.setHorizontalAlignment(JLabel.CENTER);
-        nameLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+        // nameLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+        nameLabel.setMinimumSize(new Dimension(200,14));
         nameLabel.setPreferredSize(new Dimension(200,14));
+        nameLabel.setMaximumSize(new Dimension(200,14));
 
         this.add(nameLabel);
     }
@@ -55,7 +57,7 @@ public class SpreadsheetColumnHeader extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 188, Short.MAX_VALUE)
+            .addGap(0, 495, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
