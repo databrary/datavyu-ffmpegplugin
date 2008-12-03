@@ -9,6 +9,9 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
 
@@ -40,6 +43,10 @@ public class SpreadsheetColumn extends javax.swing.JPanel {
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentY(TOP_ALIGNMENT);
+        this.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        // if spreadsheet has vars but no data, help scrollbars appear
+        this.setPreferredSize(new Dimension(200, 0));
 
         updateComponents();
     }
@@ -50,7 +57,7 @@ public class SpreadsheetColumn extends javax.swing.JPanel {
      */
     private void updateComponents() {
         try {
-            for (int j = 1; j < dbColumn.getNumCells(); j++) {
+            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
                                     .getCell(dbColumn.getID(), j);
 
