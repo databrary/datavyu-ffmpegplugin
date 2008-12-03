@@ -46,7 +46,7 @@ public class SpreadsheetColumn extends javax.swing.JPanel {
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         // if spreadsheet has vars but no data, help scrollbars appear
-        this.setPreferredSize(new Dimension(200, 0));
+//        this.setPreferredSize(new Dimension(200, 0));
 
         updateComponents();
     }

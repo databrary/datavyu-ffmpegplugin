@@ -6,22 +6,28 @@
 
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * The main spreadsheet window. Displays the database it refers
  * to, showing the database columns and cells within.
  * @author swhitcher
  */
-public class Spreadsheet extends OpenSHAPADialog {
+public class Spreadsheet extends OpenSHAPADialog 
+        implements ExternalColumnListListener {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainview;
@@ -126,6 +132,32 @@ public class Spreadsheet extends OpenSHAPADialog {
      */
     public final Database getDatabase() {
         return (this.database);
+    }
+
+    /**
+     * ExternalColumnListListener overrides
+     */
+
+    /**
+     * Action to invoke when a column is removed from a database.
+     *
+     * @param db The database that the column has been removed from.
+     * @param colID The id of the freshley removed column.
+     */
+    @Override
+    public void colDeletion(final Database db, final long colID) {
+
+    }
+
+    /**
+     * Action to invoke when a column is added to a database.
+     *
+     * @param db The database that the column has been added to.
+     * @param colID The id of the newly added column.
+     */
+    @Override
+    public void colInsertion(final Database db, final long colID) {
+
     }
 
     /** This method is called from within the constructor to
