@@ -6,7 +6,6 @@ import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
 import au.com.nicta.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

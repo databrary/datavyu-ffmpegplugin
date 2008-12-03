@@ -102,6 +102,13 @@ implements ContinuousDataViewer {
 
     @Override
     public void createNewCell() {
+        try {
+            double curTime = movie.getTime() / (double) movie.getTimeScale();
+            curTime = curTime * 1000.0;
+            OpenSHAPA.getApplication().createNewCell((long) curTime);
+        } catch (QTException e) {
+            logger.error("Unable to setCellStartTime", e);
+        }
     }
 
     @Override
@@ -216,13 +223,7 @@ implements ContinuousDataViewer {
 
     @Override
     public void setNewCellStartTime() {
-        try {
-            double curTime = movie.getTime() / (double) movie.getTimeScale();
-            curTime = curTime * 1000.0;
-            OpenSHAPA.getApplication().createNewCell((long) curTime);
-        } catch (QTException e) {
-            logger.error("Unable to setCellStartTime", e);
-        }
+
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -148,16 +149,39 @@ implements KeyEventDispatcher {
         OpenSHAPA.getApplication().show(spreadsheetView);
     }
 
+    /**
+     * Creates a new cell in the first column and sets the start time to the
+     * nominated number of milliseconds.
+     *
+     * @param milliseconds The number of milliseconds since the origin of the
+     * spreadsheet to create a new cell from.
+     */
     public void createNewCell(final long milliseconds) {
         try {
-            DataColumn dc = db.getDataColumn(0);
+            Vector <DataColumn> columns = db.getDataColumns();
+            DataColumn dc = columns.elementAt(0);
             MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
 
-            DataCell cell = new DataCell(db, dc.getID(), dc.getID());
-            cell.setOnset(new TimeStamp(1000, milliseconds));
-            db.appendCell(cell);
+            lastCreatedCell = new DataCell(db, dc.getID(), mve.getID());
+            lastCreatedCell.setOnset(new TimeStamp(1000, milliseconds));
+            db.appendCell(lastCreatedCell);
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
+        }
+    }
+
+    /**
+     * Sets the stop time of the last cell that was created.
+     *
+     * @param milliseconds The number of milliseconds since the origin of the
+     * spreadsheet to set the stop time for.
+     */
+    public void setNewCellStopTime(final long milliseconds) {
+        try {
+            lastCreatedCell.setOffset(new TimeStamp(1000, milliseconds));
+            db.replaceCell(lastCreatedCell);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to set new cell stop time.", e);
         }
     }
 
@@ -223,6 +247,9 @@ implements KeyEventDispatcher {
 
     /** The current database we are working on. */
     private Database db;
+
+    /** The last datacell that was created. */
+    private DataCell lastCreatedCell;
 
     /** The current spreadsheet view. */
     private Spreadsheet spreadsheetView;
