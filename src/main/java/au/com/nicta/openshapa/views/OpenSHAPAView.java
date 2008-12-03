@@ -1,21 +1,11 @@
 package au.com.nicta.openshapa.views;
 
-import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.OpenSHAPA;
-import au.com.nicta.openshapa.db.DataColumn;
-import au.com.nicta.openshapa.db.Database;
-import au.com.nicta.openshapa.db.MacshapaDatabase;
-import au.com.nicta.openshapa.db.MatrixVocabElement;
-import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 /**

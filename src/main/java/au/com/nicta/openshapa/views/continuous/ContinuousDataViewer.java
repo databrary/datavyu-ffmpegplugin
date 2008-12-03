@@ -7,6 +7,10 @@ package au.com.nicta.openshapa.views.continuous;
  */
 public interface ContinuousDataViewer {
 
+    /**
+     * Creates a new cell in the database, and sets the start time (onset) of
+     * that cell to the current time in the continuous data viewer.
+     */
     void createNewCell();
 
     /**
@@ -77,7 +81,12 @@ public interface ContinuousDataViewer {
      */
     void goBack(final long milliseconds);
 
+    /**
+     * Sets the stop time of the last cell that was created. The stop time is
+     * set to the current time of the continuous data viewer.
+     */
     void setNewCellStopTime();
+
     void syncCtrl();
     void sync();    
 } //End of ContinuousDataViewer interface definition

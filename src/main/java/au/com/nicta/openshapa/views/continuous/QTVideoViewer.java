@@ -100,6 +100,10 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Creates a new cell in the database, and sets the start time (onset) of
+     * that cell to the current time in the continuous data viewer.
+     */
     @Override
     public void createNewCell() {
         try {
@@ -111,6 +115,9 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Jogs the data stream backwards by a single unit (i.e. frame for movie)
+     */
     @Override
     public void jogBack() {
         try {
@@ -120,6 +127,9 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Stops the playback of the continous data stream.
+     */
     @Override
     public void stop() {
         try {
@@ -132,6 +142,9 @@ implements ContinuousDataViewer {
         }
     }
 
+    /**
+     * Jogs the data stream forwards by a single unit (i.e. frame for movie).
+     */
     @Override
     public void jogForward() {
         try {
