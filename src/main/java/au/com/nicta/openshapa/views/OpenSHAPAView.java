@@ -105,9 +105,11 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
@@ -152,6 +154,13 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         jMenu3.setAction(actionMap.get("showQTVideoController")); // NOI18N
         jMenu3.setName("jMenu3"); // NOI18N
 
+        jMenuItem2.setAction(actionMap.get("showSpreadsheet")); // NOI18N
+        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        jMenu3.add(jMenuItem2);
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+        jMenu3.add(jSeparator1);
+
         jMenuItem1.setAction(actionMap.get("showNewVariableForm")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         jMenu3.add(jMenuItem1);
@@ -160,8 +169,8 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         jMenuItem3.setName("jMenuItem3"); // NOI18N
         jMenu3.add(jMenuItem3);
 
-        jSeparator1.setName("jSeparator1"); // NOI18N
-        jMenu3.add(jSeparator1);
+        jSeparator2.setName("jSeparator2"); // NOI18N
+        jMenu3.add(jSeparator2);
 
         jMenuItem4.setName("jMenuItem4"); // NOI18N
         jMenu3.add(jMenuItem4);
@@ -198,9 +207,11 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem qtControllerItem;
