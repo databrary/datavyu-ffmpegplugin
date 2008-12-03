@@ -222,8 +222,14 @@ implements ContinuousDataViewer {
     }
 
     @Override
-    public void setNewCellStartTime() {
-
+    public void setNewCellStopTime() {
+        try {
+            double curTime = movie.getTime() / (double) movie.getTimeScale();
+            curTime = curTime * 1000.0;
+            OpenSHAPA.getApplication().setNewCellStopTime((long) curTime);
+        } catch (QTException e) {
+            logger.error("Unable to setCellStartTime", e);
+        }
     }
 
     @Override

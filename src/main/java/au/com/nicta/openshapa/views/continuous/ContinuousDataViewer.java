@@ -77,7 +77,7 @@ public interface ContinuousDataViewer {
      */
     void goBack(final long milliseconds);
 
-    void setNewCellStartTime();
+    void setNewCellStopTime();
     void syncCtrl();
     void sync();    
 } //End of ContinuousDataViewer interface definition

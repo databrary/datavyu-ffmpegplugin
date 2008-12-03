@@ -228,7 +228,7 @@ implements ContinuousDataController {
         createNewCellButton.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
         leftButtonPanel.add(createNewCellButton, new java.awt.GridBagConstraints());
 
-        setNewCellOnsetButton.setAction(actionMap.get("setNewCellOnset")); // NOI18N
+        setNewCellOnsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
         setNewCellOnsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
         leftButtonPanel.add(setNewCellOnsetButton, new java.awt.GridBagConstraints());
 
@@ -505,9 +505,9 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void setNewCellStartTime() {
+    public void setNewCellStopTime() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setNewCellStartTime();
+            this.viewers.elementAt(i).setNewCellStopTime();
         }
     }
 

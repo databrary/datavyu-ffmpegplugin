@@ -162,9 +162,9 @@ implements KeyEventDispatcher {
             DataColumn dc = columns.elementAt(0);
             MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
 
-            lastCreatedCell = new DataCell(db, dc.getID(), mve.getID());
-            lastCreatedCell.setOnset(new TimeStamp(1000, milliseconds));
-            db.appendCell(lastCreatedCell);
+            DataCell cell = new DataCell(db, dc.getID(), mve.getID());
+            cell.setOnset(new TimeStamp(1000, milliseconds));
+            lastCreatedCellID = db.appendCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
         }
@@ -178,8 +178,9 @@ implements KeyEventDispatcher {
      */
     public void setNewCellStopTime(final long milliseconds) {
         try {
-            lastCreatedCell.setOffset(new TimeStamp(1000, milliseconds));
-            db.replaceCell(lastCreatedCell);
+            DataCell cell = (DataCell) db.getCell(lastCreatedCellID);
+            cell.setOffset(new TimeStamp(1000, milliseconds));
+            db.replaceCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to set new cell stop time.", e);
         }
@@ -248,8 +249,8 @@ implements KeyEventDispatcher {
     /** The current database we are working on. */
     private Database db;
 
-    /** The last datacell that was created. */
-    private DataCell lastCreatedCell;
+    /** The id of the last datacell that was created. */
+    private long lastCreatedCellID;
 
     /** The current spreadsheet view. */
     private Spreadsheet spreadsheetView;

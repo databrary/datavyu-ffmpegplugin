@@ -317,7 +317,7 @@
                 <Component class="javax.swing.JButton" name="setNewCellOnsetButton">
                   <Properties>
                     <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                      <action class="au.com.nicta.openshapa.views.QTVideoController" id="setNewCellOnset" methodName="setNewCellOnset"/>
+                      <action class="au.com.nicta.openshapa.views.QTVideoController" id="setNewCellStopTime" methodName="setNewCellStopTime"/>
                     </Property>
                     <Property name="icon" type="javax.swing.Icon" resourceKey="setNewCellOnsetButton.icon"/>
                   </Properties>
