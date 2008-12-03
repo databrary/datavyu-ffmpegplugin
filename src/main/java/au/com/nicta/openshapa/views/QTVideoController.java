@@ -290,7 +290,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void syncCtrlAction(KeyEvent evt) {
+    public void syncCtrlAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).syncCtrl();
         }
@@ -303,7 +303,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void syncAction(KeyEvent evt) {
+    public void syncAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }
@@ -316,7 +316,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void setCellOnsetAction(KeyEvent evt) {
+    public void setCellOnsetAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStartTime();
         }
@@ -328,7 +328,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void setCellOffsetAction(KeyEvent evt) {
+    public void setCellOffsetAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).setCellStopTime();
         }
@@ -340,7 +340,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void rewindAction(KeyEvent evt) {
+    public void rewindAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).rewind();
         }
@@ -352,7 +352,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void playAction(KeyEvent evt) {
+    public void playAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).play();
         }
@@ -364,7 +364,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void forwardAction(KeyEvent evt) {
+    public void forwardAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).forward();
         }
@@ -376,7 +376,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void goBackAction(KeyEvent evt) {
+    public void goBackAction() {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
             Date videoDate = format.parse(this.goBackTextField.getText());
@@ -399,7 +399,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void shuttleBackAction(KeyEvent evt) {
+    public void shuttleBackAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleBack();
         }
@@ -411,7 +411,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void pauseAction(KeyEvent evt) {
+    public void pauseAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).pause();
         }
@@ -423,7 +423,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void shuttleForwardAction(KeyEvent evt) {
+    public void shuttleForwardAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).shuttleForward();
         }
@@ -435,7 +435,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void findAction(KeyEvent evt) {
+    public void findAction() {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
             Date videoDate = format.parse(this.findTextField.getText());
@@ -458,7 +458,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void jogBackAction(KeyEvent evt) {
+    public void jogBackAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogBack();
         }
@@ -470,7 +470,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void stopAction(KeyEvent evt) {
+    public void stopAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).stop();
         }
@@ -482,7 +482,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void jogForwardAction(KeyEvent evt) {
+    public void jogForwardAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).jogForward();
         }
@@ -494,7 +494,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void createNewCellAction(KeyEvent evt) {
+    public void createNewCellAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).createNewCell();
         }
@@ -506,9 +506,9 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void setNewCellOnset(KeyEvent evt) {
+    public void setNewCellStartTime() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setNewCellOnset();
+            this.viewers.elementAt(i).setNewCellStartTime();
         }
     }
 
@@ -518,7 +518,7 @@ implements ContinuousDataController {
      * @param evt The event that triggered this action.
      */
     @Action
-    public void syncVideoAction(KeyEvent evt) {
+    public void syncVideoAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
             this.viewers.elementAt(i).sync();
         }

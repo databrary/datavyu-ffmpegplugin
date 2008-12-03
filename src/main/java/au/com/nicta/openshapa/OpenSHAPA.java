@@ -1,9 +1,12 @@
 package au.com.nicta.openshapa;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
+import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.NewDatabase;
@@ -44,43 +47,43 @@ implements KeyEventDispatcher {
         boolean result = true;
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_ASTERISK:
-                qtVideoController.setCellOffsetAction(evt);
+                qtVideoController.setCellOffsetAction();
                 break;
             case KeyEvent.VK_NUMPAD7:
-                qtVideoController.rewindAction(evt);
+                qtVideoController.rewindAction();
                 break;
             case KeyEvent.VK_NUMPAD8:
-                qtVideoController.playAction(evt);
+                qtVideoController.playAction();
                 break;
             case KeyEvent.VK_NUMPAD9:
-                qtVideoController.forwardAction(evt);
+                qtVideoController.forwardAction();
                 break;
             case KeyEvent.VK_MINUS:
-                qtVideoController.goBackAction(evt);
+                qtVideoController.goBackAction();
                 break;
             case KeyEvent.VK_NUMPAD4:
-                qtVideoController.shuttleBackAction(evt);
+                qtVideoController.shuttleBackAction();
                 break;
             case KeyEvent.VK_NUMPAD5:
-                qtVideoController.pauseAction(evt);
+                qtVideoController.pauseAction();
                 break;
             case KeyEvent.VK_NUMPAD6:
-                qtVideoController.shuttleForwardAction(evt);
+                qtVideoController.shuttleForwardAction();
                 break;
             case KeyEvent.VK_PLUS:
-                qtVideoController.findAction(evt);
+                qtVideoController.findAction();
                 break;
             case KeyEvent.VK_NUMPAD1:
-                qtVideoController.jogBackAction(evt);
+                qtVideoController.jogBackAction();
                 break;
             case KeyEvent.VK_NUMPAD2:
-                qtVideoController.stopAction(evt);
+                qtVideoController.stopAction();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                qtVideoController.jogForwardAction(evt);
+                qtVideoController.jogForwardAction();
                 break;
             case KeyEvent.VK_NUMPAD0:
-                qtVideoController.createNewCellAction(evt);
+                qtVideoController.createNewCellAction();
                 break;
             default:
                 result = false;
@@ -143,6 +146,19 @@ implements KeyEventDispatcher {
         spreadsheetView = new Spreadsheet(mainFrame, false, db);
 
         OpenSHAPA.getApplication().show(spreadsheetView);
+    }
+
+    public void createNewCell(final long milliseconds) {
+        try {
+            DataColumn dc = db.getDataColumn(0);
+            MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+
+            DataCell cell = new DataCell(db, dc.getID(), dc.getID());
+            cell.setOnset(new TimeStamp(1000, milliseconds));
+            db.appendCell(cell);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to create a new cell.", e);
+        }
     }
 
     /**

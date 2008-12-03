@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.continuous;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
 import java.io.File;
 import javax.swing.JFrame;
@@ -82,6 +83,7 @@ implements ContinuousDataViewer {
      */
     public void setVideoFile(final File videoFile) {
         try {
+            this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
             visualTrack = movie.getIndTrackType(1,
@@ -213,7 +215,14 @@ implements ContinuousDataViewer {
     }
 
     @Override
-    public void setNewCellOnset() {
+    public void setNewCellStartTime() {
+        try {
+            double curTime = movie.getTime() / (double) movie.getTimeScale();
+            curTime = curTime * 1000.0;
+            OpenSHAPA.getApplication().createNewCell((long) curTime);
+        } catch (QTException e) {
+            logger.error("Unable to setCellStartTime", e);
+        }
     }
 
     @Override
