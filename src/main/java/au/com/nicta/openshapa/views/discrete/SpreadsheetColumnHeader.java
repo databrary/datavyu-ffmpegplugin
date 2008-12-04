@@ -6,17 +6,20 @@
 
 package au.com.nicta.openshapa.views.discrete;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import org.apache.log4j.Logger;
 
 /**
  * SpreadsheetColumnHeader. Panel used in the JScrollPane columnHeaderView.
  * @author swhitcher
  */
 public class SpreadsheetColumnHeader extends javax.swing.JPanel {
+
+    /** Logger for this class. */
+    private static Logger logger
+                            = Logger.getLogger(SpreadsheetColumnHeader.class);
 
     /** Creates new form SpreadsheetColumnHeader. */
     public SpreadsheetColumnHeader() {
@@ -28,9 +31,10 @@ public class SpreadsheetColumnHeader extends javax.swing.JPanel {
     /**
      * Adds a column header panel (JLabel) to the panel.
      * @param name The name of the column.
+     * @param colID Column ID for reference.
      */
-    public final void addColumn(final String name) {
-        JLabel nameLabel = new JLabel(name);
+    public final void addColumn(final String name, final long colID) {
+        JLabelWithID nameLabel = new JLabelWithID(name, colID);
         nameLabel.setOpaque(true);
        // nameLabel.setHorizontalTextPosition(JLabel.CENTER);
         nameLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -40,6 +44,30 @@ public class SpreadsheetColumnHeader extends javax.swing.JPanel {
         nameLabel.setMaximumSize(new Dimension(200,14));
 
         this.add(nameLabel);
+    }
+
+    /**
+     * Adds a column header panel (JLabel) to the panel.
+     * @param colID Column ID to remove.
+     */
+    public final void removeColumn(final long colID) {
+        JLabelWithID found = null;
+        for (int i = 0; i < this.getComponentCount(); i++) {
+            try {
+                JLabelWithID lab = (JLabelWithID) this.getComponent(i);
+                if (lab.getID() == colID) {
+                    found = lab;
+                    break;
+                }
+            } catch (ClassCastException e) {
+                logger.info("Unexpected Component in mainview", e);
+            }
+        }
+        if (found != null) {
+            this.remove(found);
+        } else {
+            logger.warn("Did not find column to delete by id = " + colID);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -69,4 +97,34 @@ public class SpreadsheetColumnHeader extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 
+}
+
+
+/**
+ * JLabelWithID utility class will need extension to a "ColumnHeader"
+ * Provides JLabel that knows the colID it comes from in the db.
+ * @author swhitcher
+ */
+class JLabelWithID extends JLabel {
+
+    /** ID of the JLabel. */
+    private long compID;
+
+    /**
+     * Creates new JLabelWithID.
+     * @param text String to display
+     * @param cID ID of the associated item
+     */
+    public JLabelWithID(final String text, final long cID) {
+        super(text);
+
+        compID = cID;
+    }
+
+    /**
+     * @return ID of the component.
+     */
+    public long getID() {
+        return compID;
+    }
 }

@@ -6,27 +6,23 @@
 
 package au.com.nicta.openshapa.views.discrete;
 
-import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 /**
  * The main spreadsheet window. Displays the database it refers
  * to, showing the database columns and cells within.
  * @author swhitcher
  */
-public class Spreadsheet extends OpenSHAPADialog 
+public class Spreadsheet extends OpenSHAPADialog
         implements ExternalColumnListListener {
 
     /** Scrollable view inserted into the JScrollPane. */
@@ -93,26 +89,52 @@ public class Spreadsheet extends OpenSHAPADialog
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
 
-                SpreadsheetColumn col = new SpreadsheetColumn(dbColumn);
-
-                addColumn(col, dbColumn.getName() + "   ("
-                                + dbColumn.getItsMveType() + ")");
+                addColumn(dbColumn);
             }
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
         }
-
     }
 
     /**
      * Add a column panel to the scroll panel.
-     * @param col Column to add
-     * @param name Name of column
+     * @param dbColumn Column to add
      */
-    private void addColumn(final SpreadsheetColumn col, final String name) {
+    private void addColumn(final DataColumn dbColumn) {
+        SpreadsheetColumn col = new SpreadsheetColumn(dbColumn);
+
         mainview.add(col);
 
-        headerView.addColumn(name);
+        String name = dbColumn.getName()
+                                   + "   (" + dbColumn.getItsMveType() + ")";
+        headerView.addColumn(name, dbColumn.getID());
+    }
+
+    /**
+     * Remove a column panel from the scroll panel viewport.
+     * @param colID ID of column to remove
+     */
+    private void removeColumn(final long colID) {
+        SpreadsheetColumn foundcol = null;
+        for (int i = 0; i < mainview.getComponentCount(); i++) {
+            try {
+                SpreadsheetColumn col =
+                                (SpreadsheetColumn) mainview.getComponent(i);
+                if (col.getColID() == colID) {
+                    foundcol = col;
+                    break;
+                }
+            } catch (ClassCastException e) {
+                logger.info("Unexpected Component in mainview", e);
+            }
+        }
+        if (foundcol != null) {
+            mainview.remove(foundcol);
+        } else {
+            logger.warn("Did not find column to delete by id = " + colID);
+        }
+
+        headerView.removeColumn(colID);
     }
 
     /**
@@ -120,10 +142,29 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param db Database to set
      */
     public final void setDatabase(final Database db) {
+        // check if we need to deregister
+        if ((database != null) && (database != db)) {
+            try {
+                database.deregisterColumnListListener(this);
+            } catch (SystemErrorException e) {
+                logger.warn("deregisterColumnListListener failed", e);
+            }
+        }
+
+        // set the database
         this.database = db;
 
+        // register as a columnListListener
+        try {
+            db.registerColumnListListener(this);
+        } catch (SystemErrorException e) {
+            logger.error("registerColumnListListener failed", e);
+        }
+
+        // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
 
+        // show database name in title bar
         setTitle(db.getName());
     }
 
@@ -142,11 +183,12 @@ public class Spreadsheet extends OpenSHAPADialog
      * Action to invoke when a column is removed from a database.
      *
      * @param db The database that the column has been removed from.
-     * @param colID The id of the freshley removed column.
+     * @param colID The id of the freshly removed column.
      */
     @Override
-    public void colDeletion(final Database db, final long colID) {
-
+    public final void colDeletion(final Database db, final long colID) {
+        removeColumn(colID);
+        validate();
     }
 
     /**
@@ -156,8 +198,20 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID The id of the newly added column.
      */
     @Override
-    public void colInsertion(final Database db, final long colID) {
+    public final void colInsertion(final Database db, final long colID) {
+        try {
+            DataColumn dbColumn = (DataColumn) database.getColumn(colID);
+            addColumn(dbColumn);
 
+            // repaint the children - this is possibly more than needed
+            // may only have to call validate on the SpreadsheetColumn
+            // created in the call to addColumn
+            validate();
+        } catch (ClassCastException e) {
+            logger.info("Not DataColumn in colInsertion", e);
+        } catch (SystemErrorException e) {
+            logger.error("Problem getting Column from DB = " + colID, e);
+        }
     }
 
     /** This method is called from within the constructor to
