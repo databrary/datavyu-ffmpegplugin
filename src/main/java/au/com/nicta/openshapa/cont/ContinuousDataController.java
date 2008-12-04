@@ -13,7 +13,7 @@ import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
  */
 public interface ContinuousDataController
 {
-    public void setCurrentLocation(TimeStamp ts);
+    public void setCurrentLocation(long milliseconds);
     public TimeStamp getCurrentLocation();
     public void shutdown(ContinuousDataViewer viewer);
 }

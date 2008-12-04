@@ -37,8 +37,11 @@ implements ContinuousDataController {
     }
 
     @Override
-    public void setCurrentLocation(TimeStamp ts) {
-        this.currentTimestamp = ts;
+    public void setCurrentLocation(final long milliseconds) {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+        Date currentTime = new Date(milliseconds);
+
+        this.timestampLabel.setText(format.format(currentTime));
     }
 
     @Override

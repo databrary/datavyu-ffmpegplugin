@@ -86,6 +86,9 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD0:
                 qtVideoController.createNewCellAction();
                 break;
+            case KeyEvent.VK_ENTER:
+                this.createNewCell(0);
+                break;
             default:
                 result = false;
                 // Do nothing with the key.
@@ -192,6 +195,7 @@ implements KeyEventDispatcher {
     @Override protected void startup() {
         try {
             db = new MacshapaDatabase();
+            this.showSpreadsheet();
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         }

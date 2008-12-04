@@ -13,6 +13,7 @@ import quicktime.io.QTFile;
 import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
+import quicktime.std.movies.MovieDrawingComplete;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.SampleTimeInfo;
@@ -23,7 +24,7 @@ import quicktime.std.movies.media.SampleTimeInfo;
  * @author cfreeman
  */
 public final class QTVideoViewer extends JFrame
-implements ContinuousDataViewer {
+implements ContinuousDataViewer, MovieDrawingComplete {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTVideoViewer.class);
@@ -86,6 +87,8 @@ implements ContinuousDataViewer {
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+            //StdQTConstants.movieDrawingCallAlways
+            movie.setDrawingCompleteProc(StdQTConstants.movieDrawingCallAlways, this);
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
@@ -98,6 +101,19 @@ implements ContinuousDataViewer {
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
+    }
+
+    @Override
+    public int execute(final Movie m) {
+        try {
+            float curTime = m.getTime() / (float) m.getTimeScale();
+            long milliseconds = (long) (curTime * 1000.0);
+            parentController.setCurrentLocation(milliseconds);
+        } catch (QTException e) {
+            logger.error("Unable to execute", e);
+        }
+
+        return 0;
     }
 
     /**
@@ -338,6 +354,12 @@ implements ContinuousDataViewer {
             movie.setTime(time);
         }
     }
+
+    /*
+    static public class Test implements MovieDrawingComplete {
+
+    }
+     * */
 
     /** This method is called from within the constructor to
      * initialize the form.

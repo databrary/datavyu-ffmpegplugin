@@ -100,7 +100,7 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        newCellMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         helpMenu1 = new javax.swing.JMenu();
@@ -162,8 +162,13 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         jSeparator2.setName("jSeparator2"); // NOI18N
         jMenu3.add(jSeparator2);
 
-        jMenuItem4.setName("jMenuItem4"); // NOI18N
-        jMenu3.add(jMenuItem4);
+        newCellMenuItem.setName("newCellMenuItem"); // NOI18N
+        newCellMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newCellMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(newCellMenuItem);
 
         menuBar.add(jMenu3);
 
@@ -190,6 +195,15 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * The action to inoke when the user selects new cell from the menu.
+     *
+     * @param evt The event that fired this action.
+     */
+    private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
+        OpenSHAPA.getApplication().createNewCell(0);
+}//GEN-LAST:event_newCellMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
@@ -199,11 +213,11 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem newCellMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     // End of variables declaration//GEN-END:variables
 
