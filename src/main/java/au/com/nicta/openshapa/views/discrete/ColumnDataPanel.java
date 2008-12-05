@@ -1,9 +1,3 @@
-/*
- * ColumnDataPanel.java
- *
- * Created on 26/11/2008, 2:21:02 PM
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataCell;
@@ -39,7 +33,7 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         // hold onto a filler box for when there are no datacells
-        filler = Box.createRigidArea(new Dimension(200,0));
+        filler = Box.createRigidArea(new Dimension(200, 0));
     }
 
     /**
@@ -68,7 +62,7 @@ public class ColumnDataPanel extends javax.swing.JPanel {
             } else {
                 remove(filler);
             }
-            
+
             // traverse and build the cells
             for (int j = 1; j <= numCells; j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
@@ -76,7 +70,7 @@ public class ColumnDataPanel extends javax.swing.JPanel {
 
                 SpreadsheetCell sc =
                                 new SpreadsheetCell(dbColumn.getDB(), dc);
-                sc.setSize(200,50);
+                sc.setSize(200, 50);
                 add(sc);
             }
         } catch (SystemErrorException e) {
@@ -93,7 +87,7 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         // would not work without setting the size to something
         // I guess after first building the panel with no cells
         // the size goes to 0 by 0 and never regrows after that
-        setSize(200,1000);
+        setSize(200, 1000);
         updateComponents(dbColumn);
         validate();
     }

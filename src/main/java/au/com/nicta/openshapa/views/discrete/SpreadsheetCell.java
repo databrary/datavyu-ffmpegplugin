@@ -430,7 +430,7 @@ public class SpreadsheetCell
             totalHeight = this.userDimensions.height;
         }
 
-        this.value.setWrapWidth(totalWidth);
+        this.value.setWrapWidth(totalWidth - 4);
         Dimension d = this.value.getMaximumSize();
         if (showData) {
             totalHeight += d.getHeight();

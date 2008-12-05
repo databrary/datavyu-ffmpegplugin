@@ -1,9 +1,3 @@
-/*
- * Spreadsheet.java
- *
- * Created on 26/11/2008, 2:14:43 PM
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataColumn;
@@ -12,7 +6,10 @@ import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -25,7 +22,7 @@ import org.apache.log4j.Logger;
  * @author swhitcher
  */
 public class Spreadsheet extends OpenSHAPADialog
-        implements ExternalColumnListListener {
+        implements ExternalColumnListListener, MouseListener {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -127,6 +124,8 @@ public class Spreadsheet extends OpenSHAPADialog
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col.getHeaderPanel());
 
+        col.getHeaderPanel().addMouseListener(this);
+
         // and add it to our maintained ref collection
         columns.put(colID, col);
     }
@@ -211,6 +210,66 @@ public class Spreadsheet extends OpenSHAPADialog
     public final void colInsertion(final Database db, final long colID) {
         addColumn(db, colID);
         validate();
+    }
+
+    /**
+     * Invoked when the mouse enters a component. No function.
+     * @param me event detail
+     */
+    @Override
+    public void mouseEntered(final MouseEvent me) {
+    }
+
+    /**
+     * Invoked when the mouse exits a component. No function.
+     * @param me event detail
+     */
+    @Override
+    public void mouseExited(final MouseEvent me) {
+    }
+
+    /**
+     * Invoked when the mouse is pressed in a component. No function.
+     * @param me event detail
+     */
+    @Override
+    public void mousePressed(final MouseEvent me) {
+    }
+
+    /**
+     * Invoked when the mouse is released in a component. No function.
+     * @param me event detail
+     */
+    @Override
+    public void mouseReleased(final MouseEvent me) {
+    }
+
+    /**
+     * Invoked when the mouse is clicked in a cell.
+     * Toggles the selection state of the cell and notifies the database cell
+     * referred to.
+     * @param me event detail
+     */
+    @Override
+    public void mouseClicked(final MouseEvent me) {
+        // A column header has been clicked
+        ColumnHeaderPanel clickedcol = (ColumnHeaderPanel) me.getComponent();
+
+        Iterator<SpreadsheetColumn> it = columns.values().iterator();
+        // deselect the others and toggle the clicked one
+        while (it.hasNext()) {
+            ColumnHeaderPanel col =
+                                (ColumnHeaderPanel) it.next().getHeaderPanel();
+            if (col == clickedcol) {
+                col.toggleSelected();
+                col.repaint();
+            } else {
+                if (col.getSelected()) {
+                    col.toggleSelected();
+                    col.repaint();
+                }
+            }
+        }
     }
 
     /** This method is called from within the constructor to
