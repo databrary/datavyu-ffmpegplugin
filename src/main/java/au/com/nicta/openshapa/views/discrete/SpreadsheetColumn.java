@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataColumn;

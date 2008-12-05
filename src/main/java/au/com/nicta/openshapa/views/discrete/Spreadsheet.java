@@ -141,6 +141,7 @@ public class Spreadsheet extends OpenSHAPADialog
         if (foundcol != null) {
             mainView.remove(foundcol.getDataPanel());
             headerView.remove(foundcol.getHeaderPanel());
+            columns.remove(colID);
         } else {
             logger.warn("Did not find column to delete by id = " + colID);
         }
