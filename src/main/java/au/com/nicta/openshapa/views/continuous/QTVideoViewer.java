@@ -53,6 +53,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /** conversion factor for converting milliseconds to seconds. */
     private static final double MILLI_TO_SECONDS = 0.001;
 
+    /** conversion factor for converting seconds to milliseconds. */
     private static final double SECONDS_TO_MILLI = 1000.0;
 
     /** The current shuttle speed. */
@@ -75,7 +76,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         } catch (QTException e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
-        initComponents();      
+        initComponents();
     }
 
     /**

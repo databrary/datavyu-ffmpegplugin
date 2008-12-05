@@ -40,7 +40,7 @@ implements KeyEventDispatcher {
      * with regard to the KeyEvent; false  otherwise
      */
     @Override
-    public boolean dispatchKeyEvent(KeyEvent evt) {        
+    public boolean dispatchKeyEvent(final KeyEvent evt) {
         if (evt.getID() != KeyEvent.KEY_PRESSED) {
             return false;
         }
@@ -90,8 +90,8 @@ implements KeyEventDispatcher {
                 this.createNewCell(0);
                 break;
             default:
-                result = false;
                 // Do nothing with the key.
+                result = false;
                 break;
         }
 
@@ -232,6 +232,8 @@ implements KeyEventDispatcher {
 
     /**
      * Main method launching the application.
+     *
+     * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(String[] args) {
         PropertyConfigurator.configure("log4j.properties");

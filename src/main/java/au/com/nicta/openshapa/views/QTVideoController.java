@@ -46,7 +46,7 @@ implements ContinuousDataController {
             this.timestampLabel.setText(format.format(currentTime));
         } catch (ParseException e) {
             logger.error("Unable to set current location", e);
-        }        
+        }
     }
 
     @Override
@@ -293,8 +293,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the sync ctrl button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void syncCtrlAction() {
@@ -303,11 +301,8 @@ implements ContinuousDataController {
         }
     }
 
-
     /**
      * Action to invoke when the user clicks on the sync button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void syncAction() {
@@ -319,8 +314,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks the set cell onset button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void setCellOnsetAction() {
@@ -331,8 +324,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the set cell offest button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void setCellOffsetAction() {
@@ -343,8 +334,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the rewind button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void rewindAction() {
@@ -355,8 +344,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the play button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void playAction() {
@@ -367,8 +354,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the fast foward button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void forwardAction() {
@@ -379,8 +364,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the go back button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void goBackAction() {
@@ -402,8 +385,6 @@ implements ContinuousDataController {
 
     /**
      * Action to inovke when the user clicks on the shuttle back button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void shuttleBackAction() {
@@ -414,8 +395,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the pause button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void pauseAction() {
@@ -426,8 +405,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the shuttle forward button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void shuttleForwardAction() {
@@ -438,8 +415,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the find button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void findAction() {
@@ -461,8 +436,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the jog backwards button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void jogBackAction() {
@@ -472,9 +445,7 @@ implements ContinuousDataController {
     }
 
     /**
-     * Action to invoke when the user clicks on the stop button
-     *
-     * @param evt The event that triggered this action.
+     * Action to invoke when the user clicks on the stop button.
      */
     @Action
     public void stopAction() {
@@ -484,9 +455,7 @@ implements ContinuousDataController {
     }
 
     /**
-     * Action to invoke when the user clicks on the jog forwards button
-     *
-     * @param evt The event that triggered this action.
+     * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action
     public void jogForwardAction() {
@@ -497,8 +466,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the new cell button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void createNewCellAction() {
@@ -509,8 +476,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the new cell onset button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void setNewCellStopTime() {
@@ -521,8 +486,6 @@ implements ContinuousDataController {
 
     /**
      * Action to invoke when the user clicks on the sync video button.
-     *
-     * @param evt The event that triggered this action.
      */
     @Action
     public void syncVideoAction() {
