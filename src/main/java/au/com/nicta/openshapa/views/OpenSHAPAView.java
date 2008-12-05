@@ -15,6 +15,12 @@ import org.apache.log4j.Logger;
  * application see the comments for the DocumentEditorApp class.
  */
 public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
+
+    /**
+     * Constructor.
+     *
+     * @param app The SingleFrameApplication that invoked this main FrameView.
+     */
     public OpenSHAPAView(SingleFrameApplication app) {
         super(app);
         KeyboardFocusManager key = KeyboardFocusManager

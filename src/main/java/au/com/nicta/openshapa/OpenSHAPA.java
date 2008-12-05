@@ -192,10 +192,10 @@ implements KeyEventDispatcher {
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override protected void startup() {
+    @Override
+    protected void startup() {
         try {
             db = new MacshapaDatabase();
-            this.showSpreadsheet();
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         }
@@ -208,7 +208,8 @@ implements KeyEventDispatcher {
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
      */
-    @Override protected void configureWindow(java.awt.Window root) {
+    @Override
+    protected void configureWindow(java.awt.Window root) {
     }
 
     /**

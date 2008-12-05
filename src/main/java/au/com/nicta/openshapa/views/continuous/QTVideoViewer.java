@@ -87,8 +87,8 @@ implements ContinuousDataViewer, MovieDrawingComplete {
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
-            //StdQTConstants.movieDrawingCallAlways
-            movie.setDrawingCompleteProc(StdQTConstants.movieDrawingCallAlways, this);
+            movie.setDrawingCompleteProc(StdQTConstants
+                                         .movieDrawingCallWhenChanged, this);
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
