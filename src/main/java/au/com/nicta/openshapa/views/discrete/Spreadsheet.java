@@ -12,8 +12,10 @@ import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
@@ -26,12 +28,15 @@ public class Spreadsheet extends OpenSHAPADialog
         implements ExternalColumnListListener {
 
     /** Scrollable view inserted into the JScrollPane. */
-    private SpreadsheetView mainview;
+    private SpreadsheetView mainView;
     /** View showing the Column titles. */
-    private SpreadsheetColumnHeader headerView;
+    private JPanel headerView;
 
     /** The Database being viewed. */
     private Database database;
+
+    /** Mapping between database column id to the Spreadsheetcolumn. */
+    private HashMap<Long, SpreadsheetColumn> columns;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
@@ -51,14 +56,17 @@ public class Spreadsheet extends OpenSHAPADialog
 
         this.setLayout(new BorderLayout());
 
-        mainview = new SpreadsheetView();
-        mainview.setLayout(new BoxLayout(mainview, BoxLayout.X_AXIS));
+        mainView = new SpreadsheetView();
+        mainView.setLayout(new BoxLayout(mainView, BoxLayout.X_AXIS));
 
-        headerView = new SpreadsheetColumnHeader();
+        headerView = new JPanel();
+        headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
+
+        columns = new HashMap<Long, SpreadsheetColumn>();
 
         JScrollPane jScrollPane3 = new JScrollPane();
         this.add(jScrollPane3, BorderLayout.CENTER);
-        jScrollPane3.setViewportView(mainview);
+        jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
     }
 
@@ -83,13 +91,14 @@ public class Spreadsheet extends OpenSHAPADialog
      * Populate from the database.
      */
     private void updateComponents() {
+        clearAll();
         try {
             Vector <DataColumn> dbColumns = getDatabase().getDataColumns();
 
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
 
-                addColumn(dbColumn);
+                addColumn(getDatabase(), dbColumn.getID());
             }
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
@@ -97,17 +106,29 @@ public class Spreadsheet extends OpenSHAPADialog
     }
 
     /**
-     * Add a column panel to the scroll panel.
-     * @param dbColumn Column to add
+     * Clear all previous panels and references.
      */
-    private void addColumn(final DataColumn dbColumn) {
-        SpreadsheetColumn col = new SpreadsheetColumn(dbColumn);
+    private void clearAll() {
+        columns.clear();
+        mainView.removeAll();
+        headerView.removeAll();
+    }
 
-        mainview.add(col);
+    /**
+     * Add a column panel to the scroll panel.
+     * @param db database.
+     * @param colID ID of the column to add.
+     */
+    private void addColumn(final Database db, final long colID) {
+        // make the SpreadsheetColumn
+        SpreadsheetColumn col = new SpreadsheetColumn(db, colID);
+        // add the datapanel to the scrollpane viewport
+        mainView.add(col.getDataPanel());
+        // add the headerpanel to the scrollpane headerviewport
+        headerView.add(col.getHeaderPanel());
 
-        String name = dbColumn.getName()
-                                   + "   (" + dbColumn.getItsMveType() + ")";
-        headerView.addColumn(name, dbColumn.getID());
+        // and add it to our maintained ref collection
+        columns.put(colID, col);
     }
 
     /**
@@ -115,26 +136,15 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID ID of column to remove
      */
     private void removeColumn(final long colID) {
-        SpreadsheetColumn foundcol = null;
-        for (int i = 0; i < mainview.getComponentCount(); i++) {
-            try {
-                SpreadsheetColumn col =
-                                (SpreadsheetColumn) mainview.getComponent(i);
-                if (col.getColID() == colID) {
-                    foundcol = col;
-                    break;
-                }
-            } catch (ClassCastException e) {
-                logger.info("Unexpected Component in mainview", e);
-            }
-        }
+
+        SpreadsheetColumn foundcol = columns.get(colID);
         if (foundcol != null) {
-            mainview.remove(foundcol);
+            mainView.remove(foundcol.getDataPanel());
+            headerView.remove(foundcol.getHeaderPanel());
+            columns.remove(colID);
         } else {
             logger.warn("Did not find column to delete by id = " + colID);
         }
-
-        headerView.removeColumn(colID);
     }
 
     /**
@@ -199,19 +209,8 @@ public class Spreadsheet extends OpenSHAPADialog
      */
     @Override
     public final void colInsertion(final Database db, final long colID) {
-        try {
-            DataColumn dbColumn = (DataColumn) database.getColumn(colID);
-            addColumn(dbColumn);
-
-            // repaint the children - this is possibly more than needed
-            // may only have to call validate on the SpreadsheetColumn
-            // created in the call to addColumn
-            validate();
-        } catch (ClassCastException e) {
-            logger.info("Not DataColumn in colInsertion", e);
-        } catch (SystemErrorException e) {
-            logger.error("Problem getting Column from DB = " + colID, e);
-        }
+        addColumn(db, colID);
+        validate();
     }
 
     /** This method is called from within the constructor to
