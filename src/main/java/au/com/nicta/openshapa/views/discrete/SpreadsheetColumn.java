@@ -1,88 +1,75 @@
 /*
- * SpreadsheetColumn.java
- *
- * Created on 26/11/2008, 2:21:02 PM
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 package au.com.nicta.openshapa.views.discrete;
 
-import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalDataColumnListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 
 /**
  * Column panel that contains the SpreadsheetCell panels.
  * @author swhitcher
  */
-public class SpreadsheetColumn extends javax.swing.JPanel
+public class SpreadsheetColumn
         implements ExternalDataColumnListener {
+
+    /** Database reference. */
+    private Database database;
+
+    /** Database reference colID of the DataColumn this column displays. */
+    private long dbColID;
+
+    /** ColumnDataPanel this column manages. */
+    private ColumnDataPanel datapanel;
+
+    /** ColumnHeaderPanel this column manages. */
+    private ColumnHeaderPanel headerpanel;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
 
-    /** DataColumn to display. */
-    private DataColumn dbColumn;
-
-    /** ID of the DataColumn to display. */
-    private long dbColID;
-
-    /** Creates new SpreadsheetColumn. No reference to a database column. */
-    public SpreadsheetColumn() {
-        initComponents();
-    }
-
     /**
      * Creates new SpreadsheetColumn.
-     * @param dbCol the database column this panel displays
+     * @param db Database reference.
+     * @param colID the database colID this column displays.
      */
-    public SpreadsheetColumn(final DataColumn dbCol) {
-        this();
-
-        this.dbColumn = dbCol;
-        this.dbColID = dbCol.getID();
+    public SpreadsheetColumn(final Database db, final long colID) {
+        this.database = db;
+        this.dbColID = colID;
 
         try {
-            dbColumn.getDB().registerDataColumnListener(dbColID, this);
+            database.registerDataColumnListener(dbColID, this);
+
+            DataColumn dbColumn = database.getDataColumn(dbColID);
+
+            headerpanel = new ColumnHeaderPanel(dbColumn.getName()
+                            + "  (" + dbColumn.getItsMveType() + ")");
+
+            datapanel = new ColumnDataPanel(dbColumn);
+
         } catch (SystemErrorException e) {
-            logger.error("Problem registering DataColumnListener", e);
+            logger.error("Problem retrieving DataColumn", e);
         }
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setAlignmentY(TOP_ALIGNMENT);
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
-
-        // if spreadsheet has vars but no data, help scrollbars appear
-//        this.setPreferredSize(new Dimension(200, 0));
-//        this.setMinimumSize(new Dimension(200, 2));
-//        this.setSize(200, 2);
-
-        updateComponents();
     }
 
     /**
-     * updateComponents. Called when the SpreadsheetCell panels need to be
-     * built and added to this Column panel.
+     * @return The headerpanel.
      */
-    private void updateComponents() {
-        try {
-            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                DataCell dc = (DataCell) dbColumn.getDB()
-                                    .getCell(dbColumn.getID(), j);
+    public final JComponent getHeaderPanel() {
+        return headerpanel;
+    }
 
-                SpreadsheetCell sc =
-                                new SpreadsheetCell(dbColumn.getDB(), dc);
-                sc.setSize(200,50);
-                this.add(sc);
-            }
-        } catch (SystemErrorException e) {
-           logger.error("Failed to populate Spreadsheet.", e);
-        }
+    /**
+     * @return The datapanel.
+     */
+    public final JComponent getDataPanel() {
+        return datapanel;
     }
 
     /**
@@ -99,17 +86,15 @@ public class SpreadsheetColumn extends javax.swing.JPanel
      */
     private void rebuildAll(final Database db, final long colID) {
         try {
-            dbColumn = db.getDataColumn(colID);
+            DataColumn dbColumn = db.getDataColumn(colID);
+
+            datapanel.rebuildAll(dbColumn);
+            headerpanel.setText(dbColumn.getName()
+                            + "  (" + dbColumn.getItsMveType() + ")");
+
         } catch (SystemErrorException e) {
             logger.error("Failed to reget DataColumn from colID = " + colID, e);
         }
-        this.removeAll();
-        // would not work without setting the size to something
-        // I guess after first building the panel with no cells
-        // the size goes to 0 by 0 and never regrows after that
-        this.setSize(200,1000);
-        updateComponents();
-        validate();
     }
 
     /** ExternalDataColumnListener overrides */
@@ -122,8 +107,8 @@ public class SpreadsheetColumn extends javax.swing.JPanel
      */
     @Override
     public final void DColCellDeletion(final Database db,
-                                 final long colID,
-                                 final long cellID) {
+                                       final long colID,
+                                       final long cellID) {
         rebuildAll(db, colID);
     }
 
@@ -136,8 +121,8 @@ public class SpreadsheetColumn extends javax.swing.JPanel
      */
     @Override
     public final void DColCellInsertion(final Database db,
-                                  final long colID,
-                                  final long cellID) {
+                                        final long colID,
+                                        final long cellID) {
         rebuildAll(db, colID);
     }
 
@@ -165,22 +150,22 @@ public class SpreadsheetColumn extends javax.swing.JPanel
      */
     @Override
     public final void DColConfigChanged(final Database db,
-                                  final long colID,
-                                  final boolean nameChanged,
-                                  final String oldName,
-                                  final String newName,
-                                  final boolean hiddenChanged,
-                                  final boolean oldHidden,
-                                  final boolean newHidden,
-                                  final boolean readOnlyChanged,
-                                  final boolean oldReadOnly,
-                                  final boolean newReadOnly,
-                                  final boolean varLenChanged,
-                                  final boolean oldVarLen,
-                                  final boolean newVarLen,
-                                  final boolean selectedChanged,
-                                  final boolean oldSelected,
-                                  final boolean newSelected) {
+                                      final long colID,
+                                      final boolean nameChanged,
+                                      final String oldName,
+                                      final String newName,
+                                      final boolean hiddenChanged,
+                                      final boolean oldHidden,
+                                      final boolean newHidden,
+                                      final boolean readOnlyChanged,
+                                      final boolean oldReadOnly,
+                                      final boolean newReadOnly,
+                                      final boolean varLenChanged,
+                                      final boolean oldVarLen,
+                                      final boolean newVarLen,
+                                      final boolean selectedChanged,
+                                      final boolean oldSelected,
+                                      final boolean newSelected) {
         rebuildAll(db, colID);
     }
 
@@ -191,36 +176,8 @@ public class SpreadsheetColumn extends javax.swing.JPanel
      */
     @Override
     public final void DColDeleted(final Database db,
-                            final long colID) {
+                                  final long colID) {
         logger.warn("Not sure what to do in DColDeleted");
     }
-
-
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        setName("Form"); // NOI18N
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 
 }
