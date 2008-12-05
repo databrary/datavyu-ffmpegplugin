@@ -51,7 +51,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     private static final float RWIND_SPEED = -32.0f;
 
     /** conversion factor for converting milliseconds to seconds. */
-    private static final float MILLI_TO_SECONDS = 0.001f;
+    private static final double MILLI_TO_SECONDS = 0.001;
+
+    private static final double SECONDS_TO_MILLI = 1000.0;
 
     /** The current shuttle speed. */
     private float shuttleSpeed;
@@ -103,14 +105,22 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Method to invoke when the QTVideoViewer draws a frame.
+     *
+     * @param m The movie that has had a single frame rendered.
+     *
+     * @return Error code on failure, 0 on success.
+     */
     @Override
     public int execute(final Movie m) {
         try {
-            float curTime = m.getTime() / (float) m.getTimeScale();
-            long milliseconds = (long) (curTime * 1000.0);
-            parentController.setCurrentLocation(milliseconds);
+            double curTime = m.getTime() / (double) m.getTimeScale();
+            curTime = curTime * SECONDS_TO_MILLI;
+            parentController.setCurrentLocation((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to execute", e);
+            return 1;
         }
 
         return 0;
@@ -124,7 +134,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     public void createNewCell() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
-            curTime = curTime * 1000.0;
+            curTime = curTime * SECONDS_TO_MILLI;
             OpenSHAPA.getApplication().createNewCell((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
@@ -254,7 +264,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     public void setNewCellStopTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
-            curTime = curTime * 1000.0;
+            curTime = curTime * SECONDS_TO_MILLI;
             OpenSHAPA.getApplication().setNewCellStopTime((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
@@ -264,7 +274,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     @Override
     public void setCellStartTime() {
         try {
-            float curTime = movie.getTime() / (float) movie.getTimeScale();
+            double curTime = movie.getTime() / (double) movie.getTimeScale();
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
         }
@@ -273,7 +283,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     @Override
     public void setCellStopTime() {
         try {
-            float curTime = movie.getTime() / (float) movie.getTimeScale();
+            double curTime = movie.getTime() / (double) movie.getTimeScale();
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
         }
@@ -286,7 +296,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
                 shuttleSpeed = 0.0f;
                 movie.stop();
 
-                float seconds = milliseconds * MILLI_TO_SECONDS;
+                double seconds = milliseconds * MILLI_TO_SECONDS;
                 long qtime = (long) seconds * movie.getTimeScale();
 
                 TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
@@ -305,8 +315,8 @@ implements ContinuousDataViewer, MovieDrawingComplete {
                 shuttleSpeed = 0.0f;
                 movie.stop();
 
-                float curTime = movie.getTime() / (float) movie.getTimeScale();
-                float seconds = milliseconds * MILLI_TO_SECONDS;
+                double curTime = movie.getTime() / (float) movie.getTimeScale();
+                double seconds = milliseconds * MILLI_TO_SECONDS;
 
                 seconds = curTime - seconds;
                 long qtime = (long) seconds * movie.getTimeScale();
@@ -354,12 +364,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
             movie.setTime(time);
         }
     }
-
-    /*
-    static public class Test implements MovieDrawingComplete {
-
-    }
-     * */
 
     /** This method is called from within the constructor to
      * initialize the form.
