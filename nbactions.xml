@@ -7,7 +7,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Djava.security.policy=OpenSHAPA.policy -Djava.security.manager -classpath %classpath au.com.nicta.openshapa.OpenSHAPA</exec.args>
+                <exec.args>-Djava.security.manager -Djava.security.policy=OpenSHAPA.policy -classpath %classpath ${packageClassName}</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -18,7 +18,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Djava.compiler=none -Xnoagent -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Djava.security.policy=OpenSHAPA.policy -Djava.security.manager -classpath %classpath au.com.nicta.openshapa.OpenSHAPA</exec.args>
+                <exec.args>-Xdebug -Djava.compiler=none -Xnoagent -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Djava.security.manager -Djava.security.policy=OpenSHAPA.policy -classpath %classpath ${packageClassName}</exec.args>
                 <jpda.listen>true</jpda.listen>
                 <exec.executable>java</exec.executable>
             </properties>
