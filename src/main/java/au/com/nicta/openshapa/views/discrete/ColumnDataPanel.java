@@ -10,7 +10,10 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
 
@@ -23,6 +26,9 @@ public class ColumnDataPanel extends javax.swing.JPanel {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(ColumnDataPanel.class);
 
+    /** filler box for use when there are no datacells. */
+    private Component filler;
+
     /** Creates new ColumnDataPanel panel. */
     public ColumnDataPanel() {
         initComponents();
@@ -31,6 +37,9 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentY(TOP_ALIGNMENT);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        // hold onto a filler box for when there are no datacells
+        filler = Box.createRigidArea(new Dimension(200,0));
     }
 
     /**
@@ -52,6 +61,14 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         try {
             // TODO: getNumCells should be zero based. likewise getCell
             int numCells = dbColumn.getNumCells();
+
+            // add or remove filler
+            if (numCells == 0) {
+                add(filler);
+            } else {
+                remove(filler);
+            }
+            
             // traverse and build the cells
             for (int j = 1; j <= numCells; j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()

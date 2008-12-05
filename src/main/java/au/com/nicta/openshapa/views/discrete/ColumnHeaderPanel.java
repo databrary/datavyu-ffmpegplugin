@@ -1,6 +1,8 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 /**
@@ -20,7 +22,7 @@ class ColumnHeaderPanel extends JLabel {
         setOpaque(true);
        // nameLabel.setHorizontalTextPosition(JLabel.CENTER);
         setHorizontalAlignment(JLabel.CENTER);
-        // nameLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+        //setBorder(BorderFactory.createLineBorder(Color.black));
         setMinimumSize(new Dimension(200,14));
         setPreferredSize(new Dimension(200,14));
         setMaximumSize(new Dimension(200,14));
