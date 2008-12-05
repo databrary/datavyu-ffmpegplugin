@@ -38,10 +38,15 @@ implements ContinuousDataController {
 
     @Override
     public void setCurrentLocation(final long milliseconds) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
-        Date currentTime = new Date(milliseconds);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+            Date originDate = format.parse("00:00:00:000");
+            Date currentTime = new Date(originDate.getTime() + milliseconds);
 
-        this.timestampLabel.setText(format.format(currentTime));
+            this.timestampLabel.setText(format.format(currentTime));
+        } catch (ParseException e) {
+            logger.error("Unable to set current location", e);
+        }        
     }
 
     @Override
