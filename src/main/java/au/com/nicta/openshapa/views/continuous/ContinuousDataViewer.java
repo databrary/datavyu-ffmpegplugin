@@ -28,6 +28,10 @@ public interface ContinuousDataViewer {
      */
     void jogForward();
 
+    /**
+     * Shuttles the video stream backwards by the current shuttle speed.
+     * Repetative calls to shuttleBack increases the speed at which we reverse.
+     */
     void shuttleBack();
 
     /**
@@ -35,6 +39,11 @@ public interface ContinuousDataViewer {
      */
     void pause();
 
+    /**
+     * Shuttles the video stream forwards by the current shuttle speed.
+     * Repetative calls to shuttleFoward increases the speed at which we fast
+     * forward.
+     */
     void shuttleForward();
 
     /**

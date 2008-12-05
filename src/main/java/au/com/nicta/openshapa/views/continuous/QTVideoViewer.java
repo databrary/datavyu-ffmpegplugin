@@ -180,6 +180,10 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Shuttles the video stream backwards by the current shuttle speed.
+     * Repetative calls to shuttleBack increases the speed at which we reverse.
+     */
     @Override
     public void shuttleBack() {
         try {
@@ -196,6 +200,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Pauses the playback of the continous data stream.
+     */
     @Override
     public void pause() {
         try {
@@ -208,6 +215,11 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Shuttles the video stream forwards by the current shuttle speed.
+     * Repetative calls to shuttleFoward increases the speed at which we fast
+     * forward.
+     */
     @Override
     public void shuttleForward() {
         try {
@@ -224,6 +236,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Rewinds the continous data stream at a speed 32x normal.
+     */
     @Override
     public void rewind() {
         try {
@@ -236,6 +251,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Plays the continous data stream at a regular 1x normal speed.
+     */
     @Override
     public void play() {
         try {
@@ -248,6 +266,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Fast forwards a continous data stream at a speed 32x normal.
+     */
     @Override
     public void forward() {
         try {
@@ -260,6 +281,10 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Sets the stop time of the last cell that was created. The stop time is
+     * set to the current time of the continuous data viewer.
+     */
     @Override
     public void setNewCellStopTime() {
         try {
@@ -271,6 +296,10 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Sets the cell starting time (onset - in the old terminology), from the
+     * current time of the continous data stream.
+     */
     @Override
     public void setCellStartTime() {
         try {
@@ -280,6 +309,10 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Sets the cell stopping time (offset - in the old terminology), from the
+     * current time of the continous data stream.
+     */
     @Override
     public void setCellStopTime() {
         try {
@@ -289,6 +322,13 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Find can be used to seek within a continous data stream - allowing the
+     * caller to jump to a specific time in the datastream.
+     *
+     * @param milliseconds The time within the continous data stream, specified
+     * in milliseconds from the start of the stream.
+     */
     @Override
     public void find(final long milliseconds) {
         try {
@@ -308,6 +348,12 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
+    /**
+     * Go back by the specified number of milliseconds and continue playing the
+     * data stream.
+     *
+     * @param milliseconds The number of milliseconds to jump back by.
+     */
     @Override
     public void goBack(final long milliseconds) {
         try {
