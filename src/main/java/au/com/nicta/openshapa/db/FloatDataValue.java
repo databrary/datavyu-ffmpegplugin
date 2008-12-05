@@ -408,7 +408,6 @@ public class FloatDataValue extends DataValue
      *
      *    - None.
      */
-    
     public double coerceToRange(double value)
     {
         if ( this.subRange )
@@ -422,12 +421,12 @@ public class FloatDataValue extends DataValue
                 return minVal;
             }
         }
-        
+
         return value;
-        
+
     } /* FloatDataValue::coerceToRange() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
@@ -508,4 +507,48 @@ public class FloatDataValue extends DataValue
         return dataValuesAreEqual;
         
     } /* FloatDataValue::FloatDataValuesAreLogicallyEqual() */
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        double hash = this.itsValue * SEED1;
+        hash += this.maxVal * SEED2;
+        hash += this.minVal * SEED3;
+
+        return (int) hash;
+    }
+
+    /**
+     * Compares this FloatDataValue against another object.
+     *
+     * @param o The object to compare this against.
+     *
+     * @return true if the Object o is logically equal to this FloatDataValue,
+     * false otherwise.
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof FloatDataValue) {
+            FloatDataValue f = (FloatDataValue) o;
+            if (f.itsValue != this.itsValue
+                || f.maxVal != this.maxVal
+                || f.minVal != this.minVal) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
 } /* FloatDataValue */
