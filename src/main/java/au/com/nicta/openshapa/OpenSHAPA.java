@@ -166,7 +166,7 @@ implements KeyEventDispatcher {
             MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
 
             DataCell cell = new DataCell(db, dc.getID(), mve.getID());
-            cell.setOnset(new TimeStamp(1000, milliseconds));
+            cell.setOnset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
             lastCreatedCellID = db.appendCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
@@ -182,7 +182,7 @@ implements KeyEventDispatcher {
     public void setNewCellStopTime(final long milliseconds) {
         try {
             DataCell cell = (DataCell) db.getCell(lastCreatedCellID);
-            cell.setOffset(new TimeStamp(1000, milliseconds));
+            cell.setOffset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
             db.replaceCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to set new cell stop time.", e);
@@ -196,7 +196,7 @@ implements KeyEventDispatcher {
     protected void startup() {
         try {
             db = new MacshapaDatabase();
-            db.setTicks(1000);
+            db.setTicks(TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         }
@@ -274,6 +274,9 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
+
+    /** The default number of ticks per second to use. */
+    private final static int TICKS_PER_SECOND = 1000;
 
     /**
      * The action (controller) to invoke when a user creates a new database.
