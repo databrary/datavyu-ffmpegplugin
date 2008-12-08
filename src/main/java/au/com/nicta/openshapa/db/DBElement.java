@@ -26,7 +26,7 @@ package au.com.nicta.openshapa.db;
  *
  * @author FGA
  */
-public abstract class DBElement
+public abstract class DBElement implements Cloneable
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/
@@ -385,4 +385,13 @@ public abstract class DBElement
  
     } /* DBElement::ResetID(dbe) */
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // Perform a shallow copy of this object.
+        DBElement clone = (DBElement) super.clone();
+
+        // Any deep copies, need to be performed within child classes as needed
+        // by overriding this method.
+        return clone;
+    }
 } /* class DBElement */

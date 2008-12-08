@@ -332,4 +332,13 @@ public class FloatDataValueTest {
         assertFalse(FloatDataValue.FloatDataValuesAreLogicallyEqual(f_value0,
                                                                     f_value1));
     }
+
+    @Test
+    public void testClone()
+    throws SystemErrorException, CloneNotSupportedException {
+        FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 200.0);
+        FloatDataValue f_copy = (FloatDataValue) f_value0.clone();
+
+        assertEquals(f_value0, f_copy);
+    }
 }
