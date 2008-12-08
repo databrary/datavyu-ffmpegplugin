@@ -41,7 +41,7 @@ class ColumnHeaderPanel extends JLabel {
     /**
      * @return selected state.
      */
-    public boolean getSelected() {
+    public boolean isSelected() {
         return selected;
     }
 

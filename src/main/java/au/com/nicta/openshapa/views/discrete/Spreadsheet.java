@@ -264,7 +264,7 @@ public class Spreadsheet extends OpenSHAPADialog
                 col.toggleSelected();
                 col.repaint();
             } else {
-                if (col.getSelected()) {
+                if (col.isSelected()) {
                     col.toggleSelected();
                     col.repaint();
                 }
