@@ -293,7 +293,7 @@ implements KeyEventDispatcher {
                 db = new MacshapaDatabase();
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
-                db.setTicks(1000);
+                db.setTicks(TICKS_PER_SECOND);
 
                 showSpreadsheet();
 
