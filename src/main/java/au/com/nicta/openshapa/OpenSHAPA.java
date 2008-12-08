@@ -293,10 +293,12 @@ implements KeyEventDispatcher {
                 db = new MacshapaDatabase();
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
-                db.setTicks(TICKS_PER_SECOND);
 
                 showSpreadsheet();
 
+                // TODO- BugzID:79 This needs to move above showSpreadsheet,
+                // when setTicks is fully implemented.
+                db.setTicks(TICKS_PER_SECOND);
             } catch (SystemErrorException e) {
                 logger.error("Unable to create new database", e);
             }
