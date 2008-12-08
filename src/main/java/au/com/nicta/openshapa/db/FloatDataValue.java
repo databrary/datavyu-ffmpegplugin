@@ -551,4 +551,5 @@ public class FloatDataValue extends DataValue
 
         return true;
     }
+
 } /* FloatDataValue */
