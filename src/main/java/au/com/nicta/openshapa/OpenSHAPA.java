@@ -196,6 +196,7 @@ implements KeyEventDispatcher {
     protected void startup() {
         try {
             db = new MacshapaDatabase();
+            db.setTicks(1000);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         }
@@ -289,6 +290,7 @@ implements KeyEventDispatcher {
                 db = new MacshapaDatabase();
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
+                db.setTicks(1000);
 
                 showSpreadsheet();
 
