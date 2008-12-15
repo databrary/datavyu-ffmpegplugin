@@ -14,7 +14,8 @@ import org.apache.log4j.Logger;
  * the main application class, DocumentEditorApp. For an overview of the
  * application see the comments for the DocumentEditorApp class.
  */
-public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
+public final class OpenSHAPAView extends FrameView
+implements KeyEventDispatcher {
 
     /**
      * Constructor.
@@ -86,6 +87,14 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         OpenSHAPA.getApplication().showSpreadsheet();
     }
 
+    /**
+     * Action for invoking a script.
+     */
+    @Action
+    public void runScript() {
+        OpenSHAPA.getApplication().runScript();
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -109,6 +118,8 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
         newCellMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
         helpMenu1 = new javax.swing.JMenu();
         contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem1 = new javax.swing.JMenuItem();
@@ -186,6 +197,14 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
 
         menuBar.add(jMenu2);
 
+        jMenu1.setName("jMenu1"); // NOI18N
+
+        jMenuItem4.setAction(actionMap.get("runScript")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        jMenu1.add(jMenuItem4);
+
+        menuBar.add(jMenu1);
+
         helpMenu1.setName("helpMenu1"); // NOI18N
 
         contentsMenuItem.setName("contentsMenuItem"); // NOI18N
@@ -214,11 +233,13 @@ public class OpenSHAPAView extends FrameView implements KeyEventDispatcher {
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenu helpMenu1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;

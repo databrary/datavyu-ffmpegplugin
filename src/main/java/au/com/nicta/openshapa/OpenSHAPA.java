@@ -7,17 +7,22 @@ import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
-import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.NewDatabase;
 import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
+import au.com.nicta.openshapa.views.discrete.Spreadsheet;
+//import com.sun.script.jruby.JRubyScriptEngine;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -99,6 +104,23 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Action for running a script.
+     */
+    public void runScript() {
+        ScriptEngineManager m = new ScriptEngineManager();
+        ScriptEngine rubyEngine = m.getEngineByName("jruby");
+        ScriptContext context = rubyEngine.getContext();
+
+        context.setAttribute("label", new Integer(4), ScriptContext.ENGINE_SCOPE);
+
+        try {
+            rubyEngine.eval("puts 2 + 4");
+        } catch (ScriptException e) {
+            logger.error("Unable to execute script: ", e);
+        }
+    }
+
+    /**
      * Action for showing the quicktime video controller.
      */
     public void showQTVideoController() {
@@ -107,7 +129,7 @@ implements KeyEventDispatcher {
         OpenSHAPA.getApplication().show(qtVideoController);
     }
 
-        /**
+    /**
      * Action for creating a new database.
      */
     public void showNewDatabaseForm() {

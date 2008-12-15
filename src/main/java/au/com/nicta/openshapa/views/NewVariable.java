@@ -23,7 +23,7 @@ public final class NewVariable extends OpenSHAPADialog {
      */
     public NewVariable(final java.awt.Frame parent, final boolean modal,
                            final ActionListener listener) {
-        super(parent, modal);        
+        super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
 
