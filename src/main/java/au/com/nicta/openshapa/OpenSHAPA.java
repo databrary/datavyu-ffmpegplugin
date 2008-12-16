@@ -225,6 +225,7 @@ implements KeyEventDispatcher {
             rubyEngine = m.getEngineByName("jruby");
             ScriptContext context = rubyEngine.getContext();
             context.setAttribute("database", db, ScriptContext.ENGINE_SCOPE);
+            rubyEngine.put("db", db);
 
             // Set ticks - this should be done above, next to the db creation
             // but it is is currently throwing an exception.

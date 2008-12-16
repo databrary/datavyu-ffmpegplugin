@@ -1,25 +1,13 @@
 require 'java'
+import 'au.com.nicta.openshapa.db.Database'
+import 'au.com.nicta.openshapa.db.DataColumn'
+import 'au.com.nicta.openshapa.db.MatrixVocabElement'
+import 'au.com.nicta.openshapa.db.FloatDataValue'
+import 'au.com.nicta.openshapa.db.DBElement'
 
-include_class 'au.com.nicta.openshapa.db.DataColumn'
-include_class 'au.com.nicta.openshapa.db.MatrixVocabElement'
-include_class 'au.com.nicta.openshapa.db.FloatDataValue'
-include_class 'au.com.nicta.openshapa.db.DBElement'
-include_class 'au.com.nicta.openshapa.db.Song'
-
-#fdb = FloatDataValue.new($database)
-#puts fdb
-
-#clues = ['vitamins', 'minerals', 'chocolates']
-#puts clues
-
-#puts Song.constants
-#puts Song::Punk::MOO
-#puts "a"
-
-#puts FloatDataValue.constants
-puts "b"
-
-column = DataColumn.new($database, "moo", MatrixVocabElement::MatrixType::TEXT)
-
-puts column
-puts "c"
+begin
+  col = DataColumn.new($db, "moo", MatrixVocabElement::MatrixType::TEXT)
+  $db.add_column(col)
+rescue SystemErrorException => e
+  puts "SystemErrorException: #{e.message}"
+end
