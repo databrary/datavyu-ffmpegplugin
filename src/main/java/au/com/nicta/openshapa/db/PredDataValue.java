@@ -1814,7 +1814,7 @@ public class PredDataValue extends DataValue
             try
             {
                 pred_mve = new MatrixVocabElement(db, "pred_mve");
-                pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa = new PredFormalArg(db);
                 pred_mve.appendFormalArg(pfa);
                 db.vl.addElement(pred_mve);
@@ -1822,7 +1822,7 @@ public class PredDataValue extends DataValue
                 pdv = new PredDataValue(db, pfa.getID());
 
                 pred_mve_sr = new MatrixVocabElement(db, "pred_mve_sr");
-                pred_mve_sr.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve_sr.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa_sr = new PredFormalArg(db);
                 pfa_sr.setSubRange(true);
                 pfa_sr.addApproved(pve0ID);
@@ -2557,7 +2557,7 @@ public class PredDataValue extends DataValue
             try
             {
                 pred_mve = new MatrixVocabElement(db, "pred_mve");
-                pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa = new PredFormalArg(db);
                 pred_mve.appendFormalArg(pfa);
                 db.vl.addElement(pred_mve);
@@ -2565,7 +2565,7 @@ public class PredDataValue extends DataValue
                 pdv = new PredDataValue(db, pfa.getID(), p0);
 
                 pred_mve_sr = new MatrixVocabElement(db, "pred_mve_sr");
-                pred_mve_sr.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve_sr.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa_sr = new PredFormalArg(db);
                 pfa_sr.setSubRange(true);
                 pfa_sr.addApproved(pve0ID);
@@ -3358,7 +3358,7 @@ public class PredDataValue extends DataValue
             try
             {
                 pred_mve = new MatrixVocabElement(db, "pred_mve");
-                pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa = new PredFormalArg(db);
                 pfa.setSubRange(true);
                 pfa.addApproved(pve0ID);
@@ -3371,7 +3371,7 @@ public class PredDataValue extends DataValue
                 pdv0 = new PredDataValue(db, pfa.getID(), p2);
 
                 matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-                matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+                matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
                 ufa = new UnTypedFormalArg(db, "<untyped>");
                 matrix_mve.appendFormalArg(ufa);
                 db.vl.addElement(matrix_mve);
@@ -4428,7 +4428,7 @@ public class PredDataValue extends DataValue
                 pdv0 = new PredDataValue(db);
 
                 pred_mve = new MatrixVocabElement(db, "pred_mve");
-                pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa = new PredFormalArg(db);
                 pred_mve.appendFormalArg(pfa);
                 db.vl.addElement(pred_mve);
@@ -4438,7 +4438,7 @@ public class PredDataValue extends DataValue
 
 
                 matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-                matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+                matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
                 ufa = new UnTypedFormalArg(db);
                 matrix_mve.appendFormalArg(ufa);
                 db.vl.addElement(matrix_mve);
@@ -4448,7 +4448,7 @@ public class PredDataValue extends DataValue
                 
 
                 pred_mve_sr = new MatrixVocabElement(db, "pred_mve_sr");
-                pred_mve_sr.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve_sr.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa_sr = new PredFormalArg(db);
                 pfa_sr.setSubRange(true);
                 pfa_sr.addApproved(pve0ID);
@@ -5064,7 +5064,7 @@ public class PredDataValue extends DataValue
             try
             {
                 pred_mve = new MatrixVocabElement(db, "pred_mve");
-                pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+                pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 pfa = new PredFormalArg(db);
                 pfa.setSubRange(true);
                 pfa.addApproved(pve0ID);
@@ -5077,7 +5077,7 @@ public class PredDataValue extends DataValue
                 pdv0.itsCellID = 500; // invalid value for print test
 
                 matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-                matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+                matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
                 ufa = new UnTypedFormalArg(db, "<untyped>");
                 matrix_mve.appendFormalArg(ufa);
                 db.vl.addElement(matrix_mve);

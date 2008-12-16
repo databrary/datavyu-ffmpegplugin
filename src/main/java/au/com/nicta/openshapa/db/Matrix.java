@@ -1378,7 +1378,7 @@ public class Matrix
         }
         else if ( ( fa instanceof TextStringFormalArg ) &&
                   ( mve.getType() != 
-                    MatrixVocabElement.matrixType.TEXT ) )
+                    MatrixVocabElement.MatrixType.TEXT ) )
         {
             throw new SystemErrorException(mName + 
                     "non-text mve contains a text formal arg?!?!");
@@ -2280,7 +2280,7 @@ public class Matrix
                 }
                 else if ( ( fa instanceof QuoteStringFormalArg ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.MATRIX) )
+                            MatrixVocabElement.MatrixType.MATRIX) )
                 {
                     throw new SystemErrorException(mName + 
                         "non-matrix mve contains a quote string formal arg?!?!");
@@ -2288,7 +2288,7 @@ public class Matrix
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( i != 0 ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.TEXT ) )
+                            MatrixVocabElement.MatrixType.TEXT ) )
                 {
                     throw new SystemErrorException(mName + 
                         "non-text mve contains a text string formal arg?!?!");
@@ -2776,7 +2776,7 @@ public class Matrix
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.TEXT ) )
+                            MatrixVocabElement.MatrixType.TEXT ) )
                 {
                     throw new SystemErrorException(mName + 
                             "non-text mve contains a text formal arg?!?!");
@@ -3326,7 +3326,7 @@ public class Matrix
             }
             else if ( ( fa instanceof TextStringFormalArg ) &&
                       ( mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT ) )
+                        MatrixVocabElement.MatrixType.TEXT ) )
             {
                 throw new SystemErrorException(mName + 
                         "non-text mve contains a text formal arg?!?!");
@@ -3844,7 +3844,7 @@ public class Matrix
                 }
                 else if ( ( fa instanceof QuoteStringFormalArg ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.MATRIX) )
+                            MatrixVocabElement.MatrixType.MATRIX) )
                 {
                     throw new SystemErrorException(mName + 
                         "non-matrix mve contains a quote string formal arg?!?!");
@@ -3852,7 +3852,7 @@ public class Matrix
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( i != 0 ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.TEXT ) )
+                            MatrixVocabElement.MatrixType.TEXT ) )
                 {
                     throw new SystemErrorException(mName + 
                         "non-text mve contains a text string formal arg?!?!");
@@ -4316,7 +4316,7 @@ public class Matrix
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( mve.getType() != 
-                            MatrixVocabElement.matrixType.TEXT ) )
+                            MatrixVocabElement.MatrixType.TEXT ) )
                 {
                     throw new SystemErrorException(mName + 
                             "non-text mve contains a text formal arg?!?!");
@@ -5283,21 +5283,21 @@ public class Matrix
             db = new ODBCDatabase();
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -5316,7 +5316,7 @@ public class Matrix
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -5327,7 +5327,7 @@ public class Matrix
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -5335,21 +5335,21 @@ public class Matrix
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -5366,31 +5366,31 @@ public class Matrix
         
         if ( ( db == null ) || 
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -5410,7 +5410,7 @@ public class Matrix
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -5426,7 +5426,7 @@ public class Matrix
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -5442,7 +5442,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -5464,7 +5464,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -5486,7 +5486,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -5508,7 +5508,7 @@ public class Matrix
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -5524,7 +5524,7 @@ public class Matrix
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -5540,7 +5540,7 @@ public class Matrix
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -6211,21 +6211,21 @@ public class Matrix
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -6244,7 +6244,7 @@ public class Matrix
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -6255,7 +6255,7 @@ public class Matrix
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -6263,21 +6263,21 @@ public class Matrix
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -6296,31 +6296,31 @@ public class Matrix
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -6351,7 +6351,7 @@ public class Matrix
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -6367,7 +6367,7 @@ public class Matrix
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -6383,7 +6383,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -6405,7 +6405,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -6427,7 +6427,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -6449,7 +6449,7 @@ public class Matrix
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -6465,7 +6465,7 @@ public class Matrix
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -6481,7 +6481,7 @@ public class Matrix
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -8379,21 +8379,21 @@ public class Matrix
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -8412,7 +8412,7 @@ public class Matrix
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -8423,7 +8423,7 @@ public class Matrix
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -8431,21 +8431,21 @@ public class Matrix
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -8464,31 +8464,31 @@ public class Matrix
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -8519,7 +8519,7 @@ public class Matrix
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -8535,7 +8535,7 @@ public class Matrix
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -8551,7 +8551,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -8573,7 +8573,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -8595,7 +8595,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -8617,7 +8617,7 @@ public class Matrix
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -8633,7 +8633,7 @@ public class Matrix
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -8649,7 +8649,7 @@ public class Matrix
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -9934,21 +9934,21 @@ public class Matrix
             pve1 = db.getPredVE(pve1_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -9967,7 +9967,7 @@ public class Matrix
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -9978,7 +9978,7 @@ public class Matrix
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -9986,21 +9986,21 @@ public class Matrix
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -10021,31 +10021,31 @@ public class Matrix
              ( pve1 == null ) ||
              ( pve1_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -10087,7 +10087,7 @@ public class Matrix
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -10103,7 +10103,7 @@ public class Matrix
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -10119,7 +10119,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -10141,7 +10141,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -10163,7 +10163,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -10185,7 +10185,7 @@ public class Matrix
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -10201,7 +10201,7 @@ public class Matrix
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -10217,7 +10217,7 @@ public class Matrix
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -13108,21 +13108,21 @@ public class Matrix
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -13141,7 +13141,7 @@ public class Matrix
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -13152,7 +13152,7 @@ public class Matrix
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -13160,21 +13160,21 @@ public class Matrix
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -13193,31 +13193,31 @@ public class Matrix
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -13248,7 +13248,7 @@ public class Matrix
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -13264,7 +13264,7 @@ public class Matrix
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -13280,7 +13280,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -13302,7 +13302,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -13324,7 +13324,7 @@ public class Matrix
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -13346,7 +13346,7 @@ public class Matrix
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -13362,7 +13362,7 @@ public class Matrix
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -13378,7 +13378,7 @@ public class Matrix
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -14819,7 +14819,7 @@ public class Matrix
             pve = db.getPredVE(pveID);
             
             mve0 = new MatrixVocabElement(db, "mve0");
-            mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -14840,7 +14840,7 @@ public class Matrix
             
             
             mve1 = new MatrixVocabElement(db, "mve1");
-            mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+            mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db, "<arg>");
             mve1.appendFormalArg(farg);
             db.vl.addElement(mve1);

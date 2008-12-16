@@ -36,13 +36,13 @@ public class TextStringDataValueTest {
         db = new ODBCDatabase();
 
         txt_mve = new MatrixVocabElement(db, "txt_mve");
-        txt_mve.setType(MatrixVocabElement.matrixType.TEXT);
+        txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
         tfa = new TextStringFormalArg(db);
         txt_mve.appendFormalArg(tfa);
         db.vl.addElement(txt_mve);
 
         txt_mve2 = new MatrixVocabElement(db, "txt_mve2");
-        txt_mve2.setType(MatrixVocabElement.matrixType.TEXT);
+        txt_mve2.setType(MatrixVocabElement.MatrixType.TEXT);
         tfa2 = new TextStringFormalArg(db);
         txt_mve2.appendFormalArg(tfa2);
         db.vl.addElement(txt_mve2);

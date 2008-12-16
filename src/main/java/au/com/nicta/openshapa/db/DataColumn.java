@@ -53,8 +53,8 @@ public class DataColumn extends Column
     private long itsMveID = DBIndex.INVALID_ID;
     
     /** Type of associated matrix VE */
-    private MatrixVocabElement.matrixType itsMveType = 
-            MatrixVocabElement.matrixType.UNDEFINED;
+    private MatrixVocabElement.MatrixType itsMveType =
+            MatrixVocabElement.MatrixType.UNDEFINED;
     
     /** Vector of DataCells for Column */
     private Vector<DataCell> itsCells = null;
@@ -112,7 +112,7 @@ public class DataColumn extends Column
     
     public DataColumn(Database db,
                       String name,
-                      MatrixVocabElement.matrixType type)
+                      MatrixVocabElement.MatrixType type)
         throws SystemErrorException
     {
         super(db);
@@ -121,12 +121,12 @@ public class DataColumn extends Column
         
         this.setName(name);
         
-        if ( ( type == MatrixVocabElement.matrixType.FLOAT ) ||
-             ( type == MatrixVocabElement.matrixType.INTEGER ) ||
-             ( type == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( type == MatrixVocabElement.matrixType.NOMINAL ) ||
-             ( type == MatrixVocabElement.matrixType.PREDICATE ) ||
-             ( type == MatrixVocabElement.matrixType.TEXT ) )
+        if ( ( type == MatrixVocabElement.MatrixType.FLOAT ) ||
+             ( type == MatrixVocabElement.MatrixType.INTEGER ) ||
+             ( type == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( type == MatrixVocabElement.MatrixType.NOMINAL ) ||
+             ( type == MatrixVocabElement.MatrixType.PREDICATE ) ||
+             ( type == MatrixVocabElement.MatrixType.TEXT ) )
         {
             this.itsMveType = type;
         }
@@ -268,7 +268,7 @@ public class DataColumn extends Column
         final String mName = "DataColumn::setItsMveID(): ";
         MatrixVocabElement mve;
         
-        if ( this.itsMveType == MatrixVocabElement.matrixType.UNDEFINED )
+        if ( this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "this.itsMveType undefined on entry.");
@@ -317,7 +317,7 @@ public class DataColumn extends Column
      *    - None.
      */
     
-    public MatrixVocabElement.matrixType getItsMveType()
+    public MatrixVocabElement.MatrixType getItsMveType()
     {
         
         return this.itsMveType;
@@ -732,8 +732,8 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
         
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             oldCell.deregisterPreds();
         }
@@ -748,8 +748,8 @@ public class DataColumn extends Column
         newCell.noteChange(oldCell, newCell);
         newCell.notifyListenersOfChange();
         
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             newCell.registerPreds();
         }
@@ -1188,7 +1188,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "dc.itsMveID != INVALID_ID");
         }
         
-        if ( this.getItsMveType() == MatrixVocabElement.matrixType.UNDEFINED )
+        if ( this.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "dc.itsMveType == UNDEFINED");
         }
@@ -1209,27 +1209,27 @@ public class DataColumn extends Column
          * the type of the DataColumn.
          */
         
-        if ( this.itsMveType == MatrixVocabElement.matrixType.FLOAT )
+        if ( this.itsMveType == MatrixVocabElement.MatrixType.FLOAT )
         {
             fa = new FloatFormalArg(this.db);
         }
-        else if ( this.itsMveType == MatrixVocabElement.matrixType.INTEGER )
+        else if ( this.itsMveType == MatrixVocabElement.MatrixType.INTEGER )
         {
             fa = new IntFormalArg(this.db);
         }
-        else if ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX )
+        else if ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX )
         {
             fa = new UnTypedFormalArg(this.db);
         }
-        else if ( this.itsMveType == MatrixVocabElement.matrixType.NOMINAL )
+        else if ( this.itsMveType == MatrixVocabElement.MatrixType.NOMINAL )
         {
             fa = new NominalFormalArg(this.db);
         }
-        else if ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE )
+        else if ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE )
         {
             fa = new PredFormalArg(this.db);
         }
-        else if ( this.itsMveType == MatrixVocabElement.matrixType.TEXT )
+        else if ( this.itsMveType == MatrixVocabElement.MatrixType.TEXT )
         {
             fa = new TextStringFormalArg(this.db);
         }
@@ -1467,8 +1467,8 @@ public class DataColumn extends Column
         
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
         
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             newCell.registerPreds();
         }
@@ -1613,8 +1613,8 @@ public class DataColumn extends Column
         
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
 
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             newCell.registerPreds();
         }
@@ -2513,7 +2513,7 @@ public class DataColumn extends Column
             
 
             f_col0 = new DataColumn(db, "f_col0", 
-                                    MatrixVocabElement.matrixType.FLOAT);
+                                    MatrixVocabElement.MatrixType.FLOAT);
             f_col0ID = db.addColumn(f_col0);
             f_col0 = (DataColumn)db.cl.getColumn(f_col0ID);
             f_mve0ID = f_col0.getItsMveID();
@@ -2521,7 +2521,7 @@ public class DataColumn extends Column
            
             
             i_col0 = new DataColumn(db, "i_col0", 
-                                    MatrixVocabElement.matrixType.INTEGER);
+                                    MatrixVocabElement.MatrixType.INTEGER);
             i_col0ID = db.addColumn(i_col0);
             i_col0 = (DataColumn)db.cl.getColumn(i_col0ID);
             i_mve0ID = i_col0.getItsMveID();
@@ -2529,7 +2529,7 @@ public class DataColumn extends Column
             
             
             m_col0 = new DataColumn(db, "m_col0", 
-                                    MatrixVocabElement.matrixType.MATRIX);
+                                    MatrixVocabElement.MatrixType.MATRIX);
             m_col0ID = db.addColumn(m_col0);
             m_col0 = (DataColumn)db.cl.getColumn(m_col0ID);
             m_mve0ID = m_col0.getItsMveID();
@@ -2537,7 +2537,7 @@ public class DataColumn extends Column
             
             
             n_col0 = new DataColumn(db, "n_col0", 
-                                    MatrixVocabElement.matrixType.NOMINAL);
+                                    MatrixVocabElement.MatrixType.NOMINAL);
             n_col0ID = db.addColumn(n_col0);
             n_col0 = (DataColumn)db.cl.getColumn(n_col0ID);
             n_mve0ID = n_col0.getItsMveID();
@@ -2545,7 +2545,7 @@ public class DataColumn extends Column
             
             
             p_col0 = new DataColumn(db, "p_col0", 
-                                    MatrixVocabElement.matrixType.PREDICATE);
+                                    MatrixVocabElement.MatrixType.PREDICATE);
             p_col0ID = db.addColumn(p_col0);
             p_col0 = (DataColumn)db.cl.getColumn(p_col0ID);
             p_mve0ID = p_col0.getItsMveID();
@@ -2553,7 +2553,7 @@ public class DataColumn extends Column
             
             
             t_col0 = new DataColumn(db, "t_col0", 
-                                    MatrixVocabElement.matrixType.TEXT);
+                                    MatrixVocabElement.MatrixType.TEXT);
             t_col0ID = db.addColumn(t_col0);
             t_col0 = (DataColumn)db.cl.getColumn(t_col0ID);
             t_mve0ID = t_col0.getItsMveID();
@@ -4837,10 +4837,10 @@ public class DataColumn extends Column
             
 
             f_col0 = new DataColumn(db, "f_col0", 
-                                    MatrixVocabElement.matrixType.FLOAT);
+                                    MatrixVocabElement.MatrixType.FLOAT);
            
             f_mve1 = new MatrixVocabElement(db, "f_col1");
-            f_mve1.setType(MatrixVocabElement.matrixType.FLOAT);
+            f_mve1.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             f_mve1.appendFormalArg(farg);
             db.vl.addElement(f_mve1);
@@ -4848,7 +4848,7 @@ public class DataColumn extends Column
             f_col1 = new DataColumn(db, "f_col1", true, false, f_mve1ID);
             
             f_mve2 = new MatrixVocabElement(db, "f_col2");
-            f_mve2.setType(MatrixVocabElement.matrixType.FLOAT);
+            f_mve2.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             f_mve2.appendFormalArg(farg);
             db.vl.addElement(f_mve2);
@@ -4857,10 +4857,10 @@ public class DataColumn extends Column
             
             
             i_col0 = new DataColumn(db, "i_col0", 
-                                    MatrixVocabElement.matrixType.INTEGER);
+                                    MatrixVocabElement.MatrixType.INTEGER);
             
             i_mve1 = new MatrixVocabElement(db, "i_col1");
-            i_mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+            i_mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             i_mve1.appendFormalArg(farg);
             db.vl.addElement(i_mve1);
@@ -4868,7 +4868,7 @@ public class DataColumn extends Column
             i_col1 = new DataColumn(db, "i_col1", true, false, i_mve1ID);
             
             i_mve2 = new MatrixVocabElement(db, "i_col2");
-            i_mve2.setType(MatrixVocabElement.matrixType.INTEGER);
+            i_mve2.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             i_mve2.appendFormalArg(farg);
             db.vl.addElement(i_mve2);
@@ -4877,10 +4877,10 @@ public class DataColumn extends Column
             
             
             m_col0 = new DataColumn(db, "m_col0", 
-                                    MatrixVocabElement.matrixType.MATRIX);
+                                    MatrixVocabElement.MatrixType.MATRIX);
             
             m_mve1 = new MatrixVocabElement(db, "m_col1");
-            m_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            m_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg>");
             m_mve1.appendFormalArg(farg);
             m_mve1.setVarLen(true);
@@ -4889,7 +4889,7 @@ public class DataColumn extends Column
             m_col1 = new DataColumn(db, "m_col1", true, false, m_mve1ID);
             
             m_mve2 = new MatrixVocabElement(db, "m_col2");
-            m_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            m_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg>");
             m_mve2.appendFormalArg(farg);
             db.vl.addElement(m_mve2);
@@ -4898,10 +4898,10 @@ public class DataColumn extends Column
             
             
             n_col0 = new DataColumn(db, "n_col0", 
-                                    MatrixVocabElement.matrixType.NOMINAL);
+                                    MatrixVocabElement.MatrixType.NOMINAL);
             
             n_mve1 = new MatrixVocabElement(db, "n_col1");
-            n_mve1.setType(MatrixVocabElement.matrixType.NOMINAL);
+            n_mve1.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             n_mve1.appendFormalArg(farg);
             db.vl.addElement(n_mve1);
@@ -4909,7 +4909,7 @@ public class DataColumn extends Column
             n_col1 = new DataColumn(db, "n_col1", true, false, n_mve1ID);
             
             n_mve2 = new MatrixVocabElement(db, "n_col2");
-            n_mve2.setType(MatrixVocabElement.matrixType.NOMINAL);
+            n_mve2.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             n_mve2.appendFormalArg(farg);
             db.vl.addElement(n_mve2);
@@ -4918,10 +4918,10 @@ public class DataColumn extends Column
             
             
             p_col0 = new DataColumn(db, "p_col0", 
-                                    MatrixVocabElement.matrixType.PREDICATE);
+                                    MatrixVocabElement.MatrixType.PREDICATE);
             
             p_mve1 = new MatrixVocabElement(db, "p_col1");
-            p_mve1.setType(MatrixVocabElement.matrixType.PREDICATE);
+            p_mve1.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             p_mve1.appendFormalArg(farg);
             db.vl.addElement(p_mve1);
@@ -4929,7 +4929,7 @@ public class DataColumn extends Column
             p_col1 = new DataColumn(db, "p_col1", true, false, p_mve1ID);
             
             p_mve2 = new MatrixVocabElement(db, "p_col2");
-            p_mve2.setType(MatrixVocabElement.matrixType.PREDICATE);
+            p_mve2.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             p_mve2.appendFormalArg(farg);
             db.vl.addElement(p_mve2);
@@ -4938,10 +4938,10 @@ public class DataColumn extends Column
             
             
             t_col0 = new DataColumn(db, "t_col0", 
-                                    MatrixVocabElement.matrixType.TEXT);
+                                    MatrixVocabElement.MatrixType.TEXT);
             
             t_mve1 = new MatrixVocabElement(db, "t_col1");
-            t_mve1.setType(MatrixVocabElement.matrixType.TEXT);
+            t_mve1.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             t_mve1.appendFormalArg(farg);
             db.vl.addElement(t_mve1);
@@ -4949,7 +4949,7 @@ public class DataColumn extends Column
             t_col1 = new DataColumn(db, "t_col1", true, false, t_mve1ID);
             
             t_mve2 = new MatrixVocabElement(db, "t_col2");
-            t_mve2.setType(MatrixVocabElement.matrixType.TEXT);
+            t_mve2.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             t_mve2.appendFormalArg(farg);
             db.vl.addElement(t_mve2);
@@ -5617,7 +5617,7 @@ public class DataColumn extends Column
             
 
             f_col0 = new DataColumn(db, "f_col0", 
-                                    MatrixVocabElement.matrixType.FLOAT);
+                                    MatrixVocabElement.MatrixType.FLOAT);
             f_col0ID = db.addColumn(f_col0);
             f_col0 = (DataColumn)db.cl.getColumn(f_col0ID);
             f_mve0ID = f_col0.getItsMveID();
@@ -5625,7 +5625,7 @@ public class DataColumn extends Column
            
             
             i_col0 = new DataColumn(db, "i_col0", 
-                                    MatrixVocabElement.matrixType.INTEGER);
+                                    MatrixVocabElement.MatrixType.INTEGER);
             i_col0ID = db.addColumn(i_col0);
             i_col0 = (DataColumn)db.cl.getColumn(i_col0ID);
             i_mve0ID = i_col0.getItsMveID();
@@ -5633,7 +5633,7 @@ public class DataColumn extends Column
             
             
             m_col0 = new DataColumn(db, "m_col0", 
-                                    MatrixVocabElement.matrixType.MATRIX);
+                                    MatrixVocabElement.MatrixType.MATRIX);
             m_col0ID = db.addColumn(m_col0);
             m_col0 = (DataColumn)db.cl.getColumn(m_col0ID);
             m_mve0ID = m_col0.getItsMveID();
@@ -5641,7 +5641,7 @@ public class DataColumn extends Column
             
             
             m_mve1 = new MatrixVocabElement(db, "m_col1");
-            m_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            m_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg>");
             m_mve1.appendFormalArg(farg);
             m_mve1.setVarLen(true);
@@ -5653,7 +5653,7 @@ public class DataColumn extends Column
 
             
             n_col0 = new DataColumn(db, "n_col0", 
-                                    MatrixVocabElement.matrixType.NOMINAL);
+                                    MatrixVocabElement.MatrixType.NOMINAL);
             n_col0ID = db.addColumn(n_col0);
             n_col0 = (DataColumn)db.cl.getColumn(n_col0ID);
             n_mve0ID = n_col0.getItsMveID();
@@ -5661,7 +5661,7 @@ public class DataColumn extends Column
             
             
             p_col0 = new DataColumn(db, "p_col0", 
-                                    MatrixVocabElement.matrixType.PREDICATE);
+                                    MatrixVocabElement.MatrixType.PREDICATE);
             p_col0ID = db.addColumn(p_col0);
             p_col0 = (DataColumn)db.cl.getColumn(p_col0ID);
             p_mve0ID = p_col0.getItsMveID();
@@ -5669,7 +5669,7 @@ public class DataColumn extends Column
             
             
             t_col0 = new DataColumn(db, "t_col0", 
-                                    MatrixVocabElement.matrixType.TEXT);
+                                    MatrixVocabElement.MatrixType.TEXT);
             t_col0ID = db.addColumn(t_col0);
             t_col0 = (DataColumn)db.cl.getColumn(t_col0ID);
             t_mve0ID = t_col0.getItsMveID();

@@ -1049,7 +1049,7 @@ public class TimeStampDataValue extends DataValue
             db = new ODBCDatabase();
             
             ts_mve = new MatrixVocabElement(db, "ts_mve");
-            ts_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            ts_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             ts_mve.appendFormalArg(tsfa);
             db.vl.addElement(ts_mve);
@@ -1057,7 +1057,7 @@ public class TimeStampDataValue extends DataValue
             tsdv = new TimeStampDataValue(db, tsfa.getID());
             
             ts_mve_sr = new MatrixVocabElement(db, "ts_mve_sr");
-            ts_mve_sr.setType(MatrixVocabElement.matrixType.MATRIX);
+            ts_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
             tsfa_sr.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
@@ -1505,7 +1505,7 @@ public class TimeStampDataValue extends DataValue
             db = new ODBCDatabase();
             
             ts_mve = new MatrixVocabElement(db, "ts_mve");
-            ts_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            ts_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             ts_mve.appendFormalArg(tsfa);
             db.vl.addElement(ts_mve);
@@ -1514,7 +1514,7 @@ public class TimeStampDataValue extends DataValue
                                           new TimeStamp(db.getTicks(), 60));
             
             ts_mve_sr = new MatrixVocabElement(db, "ts_mve_sr");
-            ts_mve_sr.setType(MatrixVocabElement.matrixType.MATRIX);
+            ts_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
             tsfa_sr.setRange(new TimeStamp(db.getTicks(), 0), 
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
@@ -2096,7 +2096,7 @@ public class TimeStampDataValue extends DataValue
             db = new ODBCDatabase();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
@@ -2107,7 +2107,7 @@ public class TimeStampDataValue extends DataValue
                     new TimeStamp(db.getTicks(), 60 * db.getTicks()));
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve1.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve1);
@@ -2527,7 +2527,7 @@ public class TimeStampDataValue extends DataValue
             tsdv0 = new TimeStampDataValue(db);
             
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-            matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             matrix_mve.appendFormalArg(tsfa);
             db.vl.addElement(matrix_mve);
@@ -2537,7 +2537,7 @@ public class TimeStampDataValue extends DataValue
                     new TimeStamp(db.getTicks(), 24 * 60 * 60 * db.getTicks()));
             
             matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
-            matrix_mve_sr.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
             tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
@@ -2911,7 +2911,7 @@ public class TimeStampDataValue extends DataValue
             db = new ODBCDatabase();
             
             matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
-            matrix_mve_sr.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
@@ -2924,7 +2924,7 @@ public class TimeStampDataValue extends DataValue
             tsdv0.itsCellID = 500; // invalid value for print test
             
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-            matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve);

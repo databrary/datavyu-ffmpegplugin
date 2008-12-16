@@ -7887,21 +7887,21 @@ public class ColPred extends DBElement
             db = new ODBCDatabase();
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -7920,7 +7920,7 @@ public class ColPred extends DBElement
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -7931,7 +7931,7 @@ public class ColPred extends DBElement
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -7939,21 +7939,21 @@ public class ColPred extends DBElement
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -7970,31 +7970,31 @@ public class ColPred extends DBElement
         
         if ( ( db == null ) || 
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -8014,7 +8014,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -8030,7 +8030,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -8046,7 +8046,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -8068,7 +8068,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -8090,7 +8090,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -8112,7 +8112,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -8128,7 +8128,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -8144,7 +8144,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -9040,21 +9040,21 @@ public class ColPred extends DBElement
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -9073,7 +9073,7 @@ public class ColPred extends DBElement
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -9084,7 +9084,7 @@ public class ColPred extends DBElement
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -9092,21 +9092,21 @@ public class ColPred extends DBElement
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -9125,31 +9125,31 @@ public class ColPred extends DBElement
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -9180,7 +9180,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -9196,7 +9196,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -9212,7 +9212,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -9234,7 +9234,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -9256,7 +9256,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -9278,7 +9278,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -9294,7 +9294,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -9310,7 +9310,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -11411,21 +11411,21 @@ public class ColPred extends DBElement
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -11444,7 +11444,7 @@ public class ColPred extends DBElement
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -11455,7 +11455,7 @@ public class ColPred extends DBElement
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -11463,21 +11463,21 @@ public class ColPred extends DBElement
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -11496,31 +11496,31 @@ public class ColPred extends DBElement
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -11551,7 +11551,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -11567,7 +11567,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -11583,7 +11583,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -11605,7 +11605,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -11627,7 +11627,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -11649,7 +11649,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -11665,7 +11665,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -11681,7 +11681,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -12883,21 +12883,21 @@ public class ColPred extends DBElement
             pve1 = db.getPredVE(pve1_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -12918,7 +12918,7 @@ public class ColPred extends DBElement
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new IntFormalArg(db, "<int>");
             matrix_mve1.appendFormalArg(farg);
             farg = new NominalFormalArg(db, "<nominal>");
@@ -12939,7 +12939,7 @@ public class ColPred extends DBElement
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new NominalFormalArg(db, "<nominal>");
             matrix_mve2.appendFormalArg(farg);
             farg = new PredFormalArg(db, "<pred>");
@@ -12960,7 +12960,7 @@ public class ColPred extends DBElement
             matrix_mve2_ID = matrix_mve2.getID();
             
             matrix_mve3 = new MatrixVocabElement(db, "matrix_mve3");
-            matrix_mve3.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve3.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new PredFormalArg(db, "<pred>");
             matrix_mve3.appendFormalArg(farg);
             farg = new QuoteStringFormalArg(db, "<qstring>");
@@ -12981,7 +12981,7 @@ public class ColPred extends DBElement
             matrix_mve3_ID = matrix_mve3.getID();
             
             matrix_mve4 = new MatrixVocabElement(db, "matrix_mve4");
-            matrix_mve4.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve4.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new QuoteStringFormalArg(db, "<qstring>");
             matrix_mve4.appendFormalArg(farg);
             farg = new TimeStampFormalArg(db, "<timestamp>");
@@ -13002,7 +13002,7 @@ public class ColPred extends DBElement
             matrix_mve4_ID = matrix_mve4.getID();
 
             matrix_mve5 = new MatrixVocabElement(db, "matrix_mve5");
-            matrix_mve5.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve5.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new TimeStampFormalArg(db, "<timestamp>");
             matrix_mve5.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
@@ -13023,7 +13023,7 @@ public class ColPred extends DBElement
             matrix_mve5_ID = matrix_mve5.getID();
             
             matrix_mve6 = new MatrixVocabElement(db, "matrix_mve6");
-            matrix_mve6.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve6.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve6.appendFormalArg(farg);
             farg = new ColPredFormalArg(db, "<colpred>");
@@ -13044,7 +13044,7 @@ public class ColPred extends DBElement
             matrix_mve6_ID = matrix_mve6.getID();
             
             matrix_mve7 = new MatrixVocabElement(db, "matrix_mve7");
-            matrix_mve7.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve7.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new ColPredFormalArg(db, "<colpred>");
             matrix_mve7.appendFormalArg(farg);
             farg = new FloatFormalArg(db, "<float>");
@@ -13065,7 +13065,7 @@ public class ColPred extends DBElement
             matrix_mve7_ID = matrix_mve7.getID();
             
             matrix_mve8 = new MatrixVocabElement(db, "matrix_mve8");
-            matrix_mve8.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve8.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve8.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -13087,7 +13087,7 @@ public class ColPred extends DBElement
             
             
             matrix_mve9 = new MatrixVocabElement(db, "matrix_mve9");
-            matrix_mve9.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve9.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve9.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -13098,7 +13098,7 @@ public class ColPred extends DBElement
             matrix_mve9_ID = matrix_mve9.getID();
             
             matrix_mve10 = new MatrixVocabElement(db, "matrix_mve10");
-            matrix_mve10.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve10.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve10.appendFormalArg(farg);
             matrix_mve10.setVarLen(true);
@@ -13106,21 +13106,21 @@ public class ColPred extends DBElement
             matrix_mve10_ID = matrix_mve10.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -13141,63 +13141,63 @@ public class ColPred extends DBElement
              ( pve1 == null ) ||
              ( pve1_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 8 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 8 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 8 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve3 == null ) ||
-             ( matrix_mve3.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve3.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve3.getNumFormalArgs() != 8 ) ||
              ( matrix_mve3_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve4 == null ) ||
-             ( matrix_mve4.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve4.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve4.getNumFormalArgs() != 8 ) ||
              ( matrix_mve4_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve5 == null ) ||
-             ( matrix_mve5.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve5.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve5.getNumFormalArgs() != 8 ) ||
              ( matrix_mve5_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve6 == null ) ||
-             ( matrix_mve6.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve6.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve6.getNumFormalArgs() != 8 ) ||
              ( matrix_mve6_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve7 == null ) ||
-             ( matrix_mve7.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve7.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve7.getNumFormalArgs() != 8 ) ||
              ( matrix_mve7_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve8 == null ) ||
-             ( matrix_mve8.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve8.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve8.getNumFormalArgs() != 8 ) ||
              ( matrix_mve8_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve9 == null ) ||
-             ( matrix_mve9.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve9.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve9.getNumFormalArgs() != 3 ) ||
              ( matrix_mve9_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve10 == null ) ||
-             ( matrix_mve10.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve10.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve10.getNumFormalArgs() != 1 ) ||
              ( matrix_mve10_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -13239,7 +13239,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -13255,7 +13255,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -13271,7 +13271,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -13293,7 +13293,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -13315,7 +13315,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -13337,7 +13337,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve3 failed.\n");
                 }
                 else if ( matrix_mve3.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve3.getType().\n");
                 }
@@ -13359,7 +13359,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve4 failed.\n");
                 }
                 else if ( matrix_mve4.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve4.getType().\n");
                 }
@@ -13381,7 +13381,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve5 failed.\n");
                 }
                 else if ( matrix_mve5.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve5.getType().\n");
                 }
@@ -13403,7 +13403,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve6 failed.\n");
                 }
                 else if ( matrix_mve6.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve6.getType().\n");
                 }
@@ -13425,7 +13425,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve7 failed.\n");
                 }
                 else if ( matrix_mve7.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve7.getType().\n");
                 }
@@ -13447,7 +13447,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve8 failed.\n");
                 }
                 else if ( matrix_mve8.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve8.getType().\n");
                 }
@@ -13469,7 +13469,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve9 failed.\n");
                 }
                 else if ( matrix_mve9.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve9.getType().\n");
                 }
@@ -13491,7 +13491,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve10 failed.\n");
                 }
                 else if ( matrix_mve10.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve10.getType().\n");
                 }
@@ -13513,7 +13513,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -13529,7 +13529,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -13545,7 +13545,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -17464,21 +17464,21 @@ public class ColPred extends DBElement
             pve0 = db.getPredVE(pve0_ID);
             
             float_mve = new MatrixVocabElement(db, "float_mve");
-            float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+            float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
             
             int_mve = new MatrixVocabElement(db, "int_mve");
-            int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+            int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             matrix_mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -17497,7 +17497,7 @@ public class ColPred extends DBElement
             matrix_mve0_ID = matrix_mve0.getID();
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
@@ -17508,7 +17508,7 @@ public class ColPred extends DBElement
             matrix_mve1_ID = matrix_mve1.getID();
             
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
-            matrix_mve2.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
             matrix_mve2.appendFormalArg(farg);
             matrix_mve2.setVarLen(true);
@@ -17516,21 +17516,21 @@ public class ColPred extends DBElement
             matrix_mve2_ID = matrix_mve2.getID();
             
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
-            nominal_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+            nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
             
             pred_mve = new MatrixVocabElement(db, "pred_mve");
-            pred_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
             
             text_mve = new MatrixVocabElement(db, "text_mve");
-            text_mve.setType(MatrixVocabElement.matrixType.TEXT);
+            text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
@@ -17549,31 +17549,31 @@ public class ColPred extends DBElement
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
-             ( float_mve.getType() != MatrixVocabElement.matrixType.FLOAT ) ||
+             ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
              ( int_mve == null ) ||
-             ( int_mve.getType() != MatrixVocabElement.matrixType.INTEGER ) ||
+             ( int_mve.getType() != MatrixVocabElement.MatrixType.INTEGER ) ||
              ( int_mve_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve0 == null ) ||
-             ( matrix_mve0.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve0.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve0.getNumFormalArgs() != 7 ) ||
              ( matrix_mve0_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve1 == null ) ||
-             ( matrix_mve1.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve1.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve1.getNumFormalArgs() != 3 ) ||
              ( matrix_mve1_ID == DBIndex.INVALID_ID ) ||
              ( matrix_mve2 == null ) ||
-             ( matrix_mve2.getType() != MatrixVocabElement.matrixType.MATRIX ) ||
+             ( matrix_mve2.getType() != MatrixVocabElement.MatrixType.MATRIX ) ||
              ( matrix_mve2.getNumFormalArgs() != 1 ) ||
              ( matrix_mve2_ID == DBIndex.INVALID_ID ) ||
              ( nominal_mve == null ) ||
-             ( nominal_mve.getType() != MatrixVocabElement.matrixType.NOMINAL ) ||
+             ( nominal_mve.getType() != MatrixVocabElement.MatrixType.NOMINAL ) ||
              ( nominal_mve_ID == DBIndex.INVALID_ID ) ||
              ( pred_mve == null ) ||
-             ( pred_mve.getType() != MatrixVocabElement.matrixType.PREDICATE ) ||
+             ( pred_mve.getType() != MatrixVocabElement.MatrixType.PREDICATE ) ||
              ( pred_mve_ID == DBIndex.INVALID_ID ) ||
              ( text_mve == null ) ||
-             ( text_mve.getType() != MatrixVocabElement.matrixType.TEXT ) ||
+             ( text_mve.getType() != MatrixVocabElement.MatrixType.TEXT ) ||
              ( text_mve_ID == DBIndex.INVALID_ID ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -17604,7 +17604,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of float_mve failed.\n");
                 }
                 else if ( float_mve.getType() != 
-                        MatrixVocabElement.matrixType.FLOAT )
+                        MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
@@ -17620,7 +17620,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of int_mve failed.\n");
                 }
                 else if ( int_mve.getType() != 
-                        MatrixVocabElement.matrixType.INTEGER )
+                        MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
@@ -17636,7 +17636,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
                 else if ( matrix_mve0.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
                 }
@@ -17658,7 +17658,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
                 else if ( matrix_mve1.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
                 }
@@ -17680,7 +17680,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
                 else if ( matrix_mve2.getType() != 
-                        MatrixVocabElement.matrixType.MATRIX )
+                        MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
                 }
@@ -17702,7 +17702,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of nominal_mve failed.\n");
                 }
                 else if ( nominal_mve.getType() != 
-                        MatrixVocabElement.matrixType.NOMINAL )
+                        MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
@@ -17718,7 +17718,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of pred_mve failed.\n");
                 }
                 else if ( pred_mve.getType() != 
-                        MatrixVocabElement.matrixType.PREDICATE )
+                        MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
@@ -17734,7 +17734,7 @@ public class ColPred extends DBElement
                     outStream.print("creation of text_mve failed.\n");
                 }
                 else if ( text_mve.getType() != 
-                        MatrixVocabElement.matrixType.TEXT )
+                        MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
@@ -19466,7 +19466,7 @@ public class ColPred extends DBElement
             pve = db.getPredVE(pveID);
             
             mve0 = new MatrixVocabElement(db, "mve0");
-            mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
             mve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -19487,7 +19487,7 @@ public class ColPred extends DBElement
             
             
             mve1 = new MatrixVocabElement(db, "mve1");
-            mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+            mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db, "<arg>");
             mve1.appendFormalArg(farg);
             db.vl.addElement(mve1);

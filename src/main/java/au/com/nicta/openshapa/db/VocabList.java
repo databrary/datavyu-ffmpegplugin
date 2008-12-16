@@ -418,7 +418,7 @@ public class VocabList
             numCPFormalArgs = ((MatrixVocabElement)ve).getNumCPFormalArgs();
             
             if ( ((MatrixVocabElement)ve).getType() == 
-                  MatrixVocabElement.matrixType.UNDEFINED )
+                  MatrixVocabElement.MatrixType.UNDEFINED )
             {
                 numFormalArgs = 0;
             }
@@ -495,7 +495,7 @@ public class VocabList
                 mve = (MatrixVocabElement)ve;
                 
                 if ( ( ! mve.getSystem() ) &&
-                     ( mve.getType() == MatrixVocabElement.matrixType.MATRIX ) )
+                     ( mve.getType() == MatrixVocabElement.MatrixType.MATRIX ) )
                 {
                     if ( matricies == null )
                     {
@@ -1997,7 +1997,7 @@ public class VocabList
     public static MatrixVocabElement 
             ConstructTestMatrix(Database db,
                                 String name,
-                                MatrixVocabElement.matrixType type,
+                                MatrixVocabElement.MatrixType type,
                                 FormalArgument arg0,
                                 FormalArgument arg1,
                                 FormalArgument arg2,
@@ -2597,29 +2597,29 @@ public class VocabList
                 p7 = ConstructTestPred(db, "p7", tango, null, null, null);
                 
                 m0 = ConstructTestMatrix(db, "m0", 
-                                         MatrixVocabElement.matrixType.INTEGER, 
+                                         MatrixVocabElement.MatrixType.INTEGER,
                                          alpha, null, null, null);
                 m1 = ConstructTestMatrix(db, "m1", 
-                                         MatrixVocabElement.matrixType.FLOAT, 
+                                         MatrixVocabElement.MatrixType.FLOAT,
                                          bravo, null, null, null);
                 m2 = ConstructTestMatrix(db, "m2", 
-                                         MatrixVocabElement.matrixType.NOMINAL, 
+                                         MatrixVocabElement.MatrixType.NOMINAL,
                                          charlie, null, null, null);
                 m3 = ConstructTestMatrix(db, "m3", 
-                                         MatrixVocabElement.matrixType.TEXT, 
+                                         MatrixVocabElement.MatrixType.TEXT,
                                          delta, null, null, null);
                 m4 = ConstructTestMatrix(db, "m4", 
-                                         MatrixVocabElement.matrixType.PREDICATE, 
+                                         MatrixVocabElement.MatrixType.PREDICATE,
                                          echo, null, null, null);
                 m5 = ConstructTestMatrix(db, "m5", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          foxtrot, golf, hotel, null);
                 m5.setSystem();
                 m6 = ConstructTestMatrix(db, "m6", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          india, juno, null, null);
                 m7 = ConstructTestMatrix(db, "m7", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          kilo, null, null, null);
                 
                 vl.addElement(m0);
@@ -3546,16 +3546,16 @@ public class VocabList
                 p6 = ConstructTestPred(db, "p6", null, null, null, null);
                 
                 m0 = ConstructTestMatrix(db, "m0", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          delta, null, null, null);
                 m1 = ConstructTestMatrix(db, "m1", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          echo, foxtrot, hotel, null);
                 m2 = ConstructTestMatrix(db, "m2", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          juno, kilo, lima, null);
                 m3 = ConstructTestMatrix(db, "m3", 
-                                         MatrixVocabElement.matrixType.FLOAT, 
+                                         MatrixVocabElement.MatrixType.FLOAT,
                                          mike, null, null, null);
                 
                 
@@ -7280,13 +7280,13 @@ public class VocabList
                 p2 = ConstructTestPred(db, "p2", null, null, null, null);
                 
                 m0 = ConstructTestMatrix(db, "m0", 
-                                         MatrixVocabElement.matrixType.TEXT, 
+                                         MatrixVocabElement.MatrixType.TEXT,
                                          delta, null, null, null);
                 m1 = ConstructTestMatrix(db, "m1", 
-                                         MatrixVocabElement.matrixType.MATRIX, 
+                                         MatrixVocabElement.MatrixType.MATRIX,
                                          echo, foxtrot, hotel, null);
                 m2 = ConstructTestMatrix(db, "m2", 
-                                         MatrixVocabElement.matrixType.NOMINAL, 
+                                         MatrixVocabElement.MatrixType.NOMINAL,
                                          india, null, null, null);
                 
                 progress++;

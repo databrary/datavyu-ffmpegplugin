@@ -45,7 +45,7 @@ public class MatrixVocabElement extends VocabElement
      *      All other values are associated with column types. 
      */
     
-    public enum matrixType 
+    public enum MatrixType
         {UNDEFINED, TEXT, NOMINAL, INTEGER, FLOAT, PREDICATE, MATRIX};
 
     /*************************************************************************/
@@ -76,7 +76,7 @@ public class MatrixVocabElement extends VocabElement
      */
     
     /** type of the matrix vocab element and its associate column */
-    matrixType type = matrixType.UNDEFINED;
+    MatrixType type = MatrixType.UNDEFINED;
     
     /** DataColumn which this matrix vocab element describes. */
     long itsColID = DBIndex.INVALID_ID;
@@ -196,22 +196,22 @@ public class MatrixVocabElement extends VocabElement
      *    - None.
      */
     
-    public matrixType getType()
+    public MatrixType getType()
     {
         return type;
         
     } /* MatrixVocabElement::getType() */
     
-    public void setType(matrixType newType)
+    public void setType(MatrixType newType)
         throws SystemErrorException
     {
         final String mName = "MatrixVocabElement::setType(): ";
         
-        if ( type != matrixType.UNDEFINED )
+        if ( type != MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "type has already been set");
         }
-        else if ( newType == matrixType.UNDEFINED )
+        else if ( newType == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "newType is UNDEFINED");
         }
@@ -249,7 +249,7 @@ public class MatrixVocabElement extends VocabElement
         DBElement dbe;
         DataColumn dc;
         
-        if ( this.type == matrixType.UNDEFINED )
+        if ( this.type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "type is UNDEFINED");
         }
@@ -430,7 +430,7 @@ public class MatrixVocabElement extends VocabElement
     {
         final String mName = "MatrixVocabElement::setSystem(): ";
         
-        if ( type == matrixType.UNDEFINED )
+        if ( type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "type undefined?!?!");
         }
@@ -480,7 +480,7 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName +
                     "can't modify system formal argument.");
         }
-        else if ( this.type == matrixType.UNDEFINED )
+        else if ( this.type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "must set type before adding arguments.");
@@ -490,7 +490,7 @@ public class MatrixVocabElement extends VocabElement
             /* fArgList hasn't been instantiated yet -- scream and die */
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
-        else if ( ( type != matrixType.MATRIX ) && 
+        else if ( ( type != MatrixType.MATRIX ) &&
                   ( fArgList.size() != 0 ) )
         {
             throw new SystemErrorException(mName + "too many arguments.");
@@ -592,7 +592,7 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName +
                     "can't modify system formal argument.");
         }
-        else if ( this.type == matrixType.UNDEFINED )
+        else if ( this.type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "must set type before deleting arguments.");
@@ -602,7 +602,7 @@ public class MatrixVocabElement extends VocabElement
             /* fArgList hasn't been instantiated yet -- scream and die */
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
-        else if ( type != matrixType.MATRIX ) 
+        else if ( type != MatrixType.MATRIX )
         {
             throw new SystemErrorException(mName + 
                "can't delete formal args from non matrix type vocab elements.");
@@ -662,7 +662,7 @@ public class MatrixVocabElement extends VocabElement
     {
         final String mName = "MatrixVocabElement::getFormalArg(): ";
         
-        if ( type == matrixType.UNDEFINED )
+        if ( type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "must set type before getting arguments.");
@@ -672,7 +672,7 @@ public class MatrixVocabElement extends VocabElement
             /* fArgList hasn't been instantiated yet -- scream and die */
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
-        else if ( ( type != matrixType.MATRIX ) && ( n != 0 ) )
+        else if ( ( type != MatrixType.MATRIX ) && ( n != 0 ) )
         {
             throw new SystemErrorException(mName + 
                     "n must be 0 if type isn't MATRIX.");
@@ -701,7 +701,7 @@ public class MatrixVocabElement extends VocabElement
     {
         final String mName = "MatrixVocabElement::getNumFormalArgs(): ";
 
-        if ( type == matrixType.UNDEFINED )
+        if ( type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "type must be defined before fArgList manipulations");
@@ -739,7 +739,7 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName +
                     "can't modify system formal argument.");
         }
-        else if ( type == matrixType.UNDEFINED )
+        else if ( type == MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + 
                     "must set type before inserting arguments.");
@@ -749,12 +749,12 @@ public class MatrixVocabElement extends VocabElement
             /* fArgList hasn't been instantiated yet -- scream and die */
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
-        else if ( ( type != matrixType.MATRIX ) && 
+        else if ( ( type != MatrixType.MATRIX ) &&
                   ( fArgList.size() != 0 ) )
         {
             throw new SystemErrorException(mName + "too many arguments.");
         }
-        else if ( ( type != matrixType.MATRIX ) && 
+        else if ( ( type != MatrixType.MATRIX ) &&
                   ( n != 0 ) )
         {
             throw new SystemErrorException(mName + 
@@ -1143,7 +1143,7 @@ public class MatrixVocabElement extends VocabElement
         
         oldArg = this.getFormalArg(n);
         
-        if ( ( this.type != matrixType.MATRIX ) &&
+        if ( ( this.type != MatrixType.MATRIX ) &&
              ( newArg.getFargType() != oldArg.getFargType() ) )
         {
             throw new SystemErrorException(mName + "In non matrix MVEs, " +
@@ -1151,7 +1151,7 @@ public class MatrixVocabElement extends VocabElement
                     "arguments of the same type.");
         }
         
-        if ( ( this.type == matrixType.MATRIX ) &&
+        if ( ( this.type == MatrixType.MATRIX ) &&
              ( newArg instanceof TextStringFormalArg ) )
         {
             throw new SystemErrorException(mName + "Text formal arguments, " +
@@ -2100,7 +2100,7 @@ public class MatrixVocabElement extends VocabElement
             
             try
             {
-                ve.setType(matrixType.MATRIX); /* test will fail otherwise */
+                ve.setType(MatrixType.MATRIX); /* test will fail otherwise */
                 failures += VocabElement.TestAccessors(ve, true, 
                                                        outStream, verbose);
             }
@@ -2208,7 +2208,7 @@ public class MatrixVocabElement extends VocabElement
          */
         if ( failures == 0 )
         {
-            matrixType initType = matrixType.FLOAT;
+            MatrixType initType = MatrixType.FLOAT;
             
             threwSystemErrorException = false;
             
@@ -2226,8 +2226,8 @@ public class MatrixVocabElement extends VocabElement
             }
             
             if ( ( ve == null ) ||
-                 ( initType != matrixType.UNDEFINED ) || 
-                 ( ve.type != matrixType.UNDEFINED ) ||
+                 ( initType != MatrixType.UNDEFINED ) ||
+                 ( ve.type != MatrixType.UNDEFINED ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2240,8 +2240,8 @@ public class MatrixVocabElement extends VocabElement
                                 "MatrixVocabElement for type init value test.\n");
                     }
                     
-                    if ( ( initType != matrixType.UNDEFINED ) || 
-                         ( ve.type != matrixType.UNDEFINED ) )
+                    if ( ( initType != MatrixType.UNDEFINED ) ||
+                         ( ve.type != MatrixType.UNDEFINED ) )
                     {
                         outStream.print("Unexpected initial value of type.\n");
                     }
@@ -2300,7 +2300,7 @@ public class MatrixVocabElement extends VocabElement
             }
         }
         
-        if ( ( failures == 0 ) && ( ve.type != matrixType.UNDEFINED ) ) 
+        if ( ( failures == 0 ) && ( ve.type != MatrixType.UNDEFINED ) )
         {
             failures++;
             
@@ -2318,7 +2318,7 @@ public class MatrixVocabElement extends VocabElement
             
             try
             {
-                ve.setType(matrixType.UNDEFINED);
+                ve.setType(MatrixType.UNDEFINED);
                 methodReturned = true;
             }
 
@@ -2349,7 +2349,7 @@ public class MatrixVocabElement extends VocabElement
             }
         }
         
-        if ( ( failures == 0 ) && ( ve.type != matrixType.UNDEFINED ) ) 
+        if ( ( failures == 0 ) && ( ve.type != MatrixType.UNDEFINED ) )
         {
             failures++;
             
@@ -2372,9 +2372,9 @@ public class MatrixVocabElement extends VocabElement
             
             try
             {
-                ve.setType(matrixType.FLOAT);
+                ve.setType(MatrixType.FLOAT);
                 methodReturned = true;
-                ve.setType(matrixType.INTEGER);
+                ve.setType(MatrixType.INTEGER);
                 secondMethodReturned = true;
             }
 
@@ -2422,7 +2422,7 @@ public class MatrixVocabElement extends VocabElement
             }
         }
         
-        if ( ( failures == 0 ) && ( ve.type != matrixType.FLOAT ) ) 
+        if ( ( failures == 0 ) && ( ve.type != MatrixType.FLOAT ) )
         {
             failures++;
             
@@ -2519,7 +2519,7 @@ public class MatrixVocabElement extends VocabElement
             
             try
             {
-                ve.setType(matrixType.MATRIX); /* test will fail otherwise */
+                ve.setType(MatrixType.MATRIX); /* test will fail otherwise */
                 failures += VocabElement.TestfArgListManagement(ve, 
                                                                 outStream, 
                                                                 verbose);
@@ -2698,7 +2698,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "float_test");
-                ve.setType(matrixType.FLOAT); 
+                ve.setType(MatrixType.FLOAT);
                 methodReturned = true;
             }
         
@@ -3029,7 +3029,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "int_test");
-                ve.setType(matrixType.INTEGER); 
+                ve.setType(MatrixType.INTEGER);
                 methodReturned = true;
             }
         
@@ -3365,7 +3365,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "matrix_test");
-                ve.setType(matrixType.NOMINAL); 
+                ve.setType(MatrixType.NOMINAL);
                 methodReturned = true;
             }
         
@@ -3500,7 +3500,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "nominal_test");
-                ve.setType(matrixType.NOMINAL); 
+                ve.setType(MatrixType.NOMINAL);
                 methodReturned = true;
             }
         
@@ -3835,7 +3835,7 @@ public class MatrixVocabElement extends VocabElement
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), 
                                            "predicate_test");
-                ve.setType(matrixType.PREDICATE); 
+                ve.setType(MatrixType.PREDICATE);
                 methodReturned = true;
             }
         
@@ -4174,7 +4174,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "text_test");
-                ve.setType(matrixType.TEXT); 
+                ve.setType(MatrixType.TEXT);
                 methodReturned = true;
             }
         
@@ -4724,7 +4724,7 @@ public class MatrixVocabElement extends VocabElement
         
         if ( failures == 0 )
         {
-            if ( ve.getType() != matrixType.UNDEFINED )
+            if ( ve.getType() != MatrixType.UNDEFINED )
             {
                 failures++;
                         
@@ -4875,7 +4875,7 @@ public class MatrixVocabElement extends VocabElement
         
         if ( failures == 0 )
         {
-            if ( ve.getType() != matrixType.UNDEFINED )
+            if ( ve.getType() != MatrixType.UNDEFINED )
             {
                 failures++;
                         
@@ -5071,7 +5071,7 @@ public class MatrixVocabElement extends VocabElement
 
                 progress++;
                 
-                base_ve.setType(matrixType.MATRIX);
+                base_ve.setType(MatrixType.MATRIX);
                 
                 progress++;
                 
@@ -5310,7 +5310,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve = new MatrixVocabElement(db, "matrix2");
 
-                base_ve.setType(matrixType.MATRIX);
+                base_ve.setType(MatrixType.MATRIX);
                 
                 base_ve.appendFormalArg(foxtrot);
 
@@ -5702,7 +5702,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve = new MatrixVocabElement(db, "text4");
 
-                base_ve.setType(matrixType.TEXT);
+                base_ve.setType(MatrixType.TEXT);
                 
                 base_ve.appendFormalArg(golf);
 
@@ -5915,7 +5915,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve = new MatrixVocabElement(db, "float5");
 
-                base_ve.setType(matrixType.FLOAT);
+                base_ve.setType(MatrixType.FLOAT);
                 
                 base_ve.appendFormalArg(bravo);
 
@@ -6237,7 +6237,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 ve = new MatrixVocabElement(new ODBCDatabase(), "test");
-                ve.setType(matrixType.MATRIX);
+                ve.setType(MatrixType.MATRIX);
                 ve.appendFormalArg(new UnTypedFormalArg(ve.getDB(), "<a>"));
                 ve.appendFormalArg(new IntFormalArg(ve.getDB(), "<b>"));
                 ve.appendFormalArg(new FloatFormalArg(ve.getDB(), "<c>"));

@@ -931,7 +931,7 @@ public class QuoteStringDataValue extends DataValue
             db = new ODBCDatabase();
             
             qs_mve = new MatrixVocabElement(db, "qs_mve");
-            qs_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
             qs_mve.appendFormalArg(qsfa);
             db.vl.addElement(qs_mve);
@@ -1288,7 +1288,7 @@ public class QuoteStringDataValue extends DataValue
             db = new ODBCDatabase();
             
             qs_mve = new MatrixVocabElement(db, "qs_mve");
-            qs_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
             qs_mve.appendFormalArg(qsfa);
             db.vl.addElement(qs_mve);
@@ -1681,7 +1681,7 @@ public class QuoteStringDataValue extends DataValue
             db = new ODBCDatabase();
             
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
-            matrix_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
             matrix_mve0.appendFormalArg(qsfa);
             db.vl.addElement(matrix_mve0);
@@ -1689,7 +1689,7 @@ public class QuoteStringDataValue extends DataValue
             qsdv0 = new QuoteStringDataValue(db, qsfa.getID(), "bravo");
             
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
-            matrix_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve1.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve1);
@@ -2006,7 +2006,7 @@ public class QuoteStringDataValue extends DataValue
             qsdv0 = new QuoteStringDataValue(db);
             
             qs_mve = new MatrixVocabElement(db, "qs_mve");
-            qs_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
             qs_mve.appendFormalArg(qsfa);
             db.vl.addElement(qs_mve);
@@ -2315,7 +2315,7 @@ public class QuoteStringDataValue extends DataValue
             db = new ODBCDatabase();
             
             qs_mve = new MatrixVocabElement(db, "qs_mve");
-            qs_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
             qs_mve.appendFormalArg(qsfa);
             db.vl.addElement(qs_mve);
@@ -2325,7 +2325,7 @@ public class QuoteStringDataValue extends DataValue
             qsdv0.itsCellID = 500; // invalid value for print test
             
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-            matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+            matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve);

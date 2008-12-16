@@ -37,13 +37,13 @@ public class FloatDataValueTest {
         db = new ODBCDatabase();
 
         float_mve = new MatrixVocabElement(db, "float_mve");
-        float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+        float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
         ffa = new FloatFormalArg(db);
         float_mve.appendFormalArg(ffa);
         db.vl.addElement(float_mve);
 
         float_mve2 = new MatrixVocabElement(db, "float_mve2");
-        float_mve2.setType(MatrixVocabElement.matrixType.FLOAT);
+        float_mve2.setType(MatrixVocabElement.MatrixType.FLOAT);
         ffa2 = new FloatFormalArg(db);
         ffa2.setRange(-100.0, 100.0);
         float_mve2.appendFormalArg(ffa2);

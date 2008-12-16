@@ -1811,22 +1811,22 @@ public class MacshapaDatabase extends Database
             {
                 // allocate and insert a float data column
                 fdc = new DataColumn(db, fdcName0, 
-                        MatrixVocabElement.matrixType.FLOAT);
+                        MatrixVocabElement.MatrixType.FLOAT);
                 fdcID = db.addColumn(fdc);
                 
                 // allocate and insert an integer data column
                 idc = new DataColumn(db, idcName0, 
-                        MatrixVocabElement.matrixType.INTEGER);
+                        MatrixVocabElement.MatrixType.INTEGER);
                 idcID = db.addColumn(idc);
                 
                 // allocate and insert a nominal data column
                 ndc = new DataColumn(db, ndcName0, 
-                        MatrixVocabElement.matrixType.INTEGER);
+                        MatrixVocabElement.MatrixType.INTEGER);
                 ndcID = db.addColumn(ndc);
                 
                 // allocate and insert a text data column
                 tdc = new DataColumn(db, tdcName0, 
-                        MatrixVocabElement.matrixType.TEXT);
+                        MatrixVocabElement.MatrixType.TEXT);
                 tdcID = db.addColumn(tdc);
                 
                 
@@ -2687,7 +2687,7 @@ public class MacshapaDatabase extends Database
                 
                 // allocate and insert a new float data column
                 fdc2 = new DataColumn(db, fdcName2, 
-                        MatrixVocabElement.matrixType.FLOAT);
+                        MatrixVocabElement.MatrixType.FLOAT);
                 fdc2ID = db.addColumn(fdc2);
                 
                 // append some cells to the text data column -- note that 

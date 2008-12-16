@@ -221,21 +221,21 @@ public final class NewVariable extends OpenSHAPADialog {
     /**
      * @return The type of variable the user has selected to use.
      */
-    public MatrixVocabElement.matrixType getVariableType() {
+    public MatrixVocabElement.MatrixType getVariableType() {
         if (textTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.TEXT;
+            return MatrixVocabElement.MatrixType.TEXT;
         } else if (nominalTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.NOMINAL;
+            return MatrixVocabElement.MatrixType.NOMINAL;
         } else if (predicateTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.PREDICATE;
+            return MatrixVocabElement.MatrixType.PREDICATE;
         } else if (matrixTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.MATRIX;
+            return MatrixVocabElement.MatrixType.MATRIX;
         } else if (integerTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.INTEGER;
+            return MatrixVocabElement.MatrixType.INTEGER;
         } else if (floatTypeButton.isSelected()) {
-            return MatrixVocabElement.matrixType.FLOAT;
+            return MatrixVocabElement.MatrixType.FLOAT;
         } else {
-            return MatrixVocabElement.matrixType.UNDEFINED;
+            return MatrixVocabElement.MatrixType.UNDEFINED;
         }
     }
 

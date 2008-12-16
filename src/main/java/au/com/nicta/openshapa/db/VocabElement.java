@@ -165,7 +165,7 @@ public abstract class VocabElement extends DBElement
             ((MatrixVocabElement)this).type = ((MatrixVocabElement)ve).type;
             
             if ( ((MatrixVocabElement)this).type == 
-                   MatrixVocabElement.matrixType.UNDEFINED )
+                   MatrixVocabElement.MatrixType.UNDEFINED )
             {
                 if ( ( this.fArgList != null ) &&
                      ( this.fArgList.size() != 0 ) )

@@ -1389,7 +1389,7 @@ public abstract class Database
         {
             throw new SystemErrorException(mName + "dc.itsMveID != INVALID_ID");
         }
-        else if ( dc.getItsMveType() == MatrixVocabElement.matrixType.UNDEFINED )
+        else if ( dc.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "dc.insMveType undefined");
         }
@@ -1431,7 +1431,7 @@ public abstract class Database
          * associated MatrixVocabElement must not be editable by the user.
          * Ensure this by setting the system flag on the MVE.
          */
-        if ( dc.getItsMveType() != MatrixVocabElement.matrixType.MATRIX )
+        if ( dc.getItsMveType() != MatrixVocabElement.MatrixType.MATRIX )
         {
             mve.setSystem();
         }
@@ -2017,7 +2017,7 @@ public abstract class Database
                         "newDC.itsMveID != oldC.itsMveID");
             }
             else if ( newDC.getItsMveType() == 
-                      MatrixVocabElement.matrixType.UNDEFINED )
+                      MatrixVocabElement.MatrixType.UNDEFINED )
             {
                 throw new SystemErrorException(mName + 
                         "newDC.itsMveType == UNDEFINED");
@@ -6583,7 +6583,7 @@ public abstract class Database
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -6874,7 +6874,7 @@ public abstract class Database
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -7399,7 +7399,7 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mves0 = db.getMatrixVEs();
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -7631,7 +7631,7 @@ public abstract class Database
                 alpha = new UnTypedFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -7918,10 +7918,10 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -8290,10 +8290,10 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER,
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX,
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -8610,10 +8610,10 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -8945,7 +8945,7 @@ public abstract class Database
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -9236,7 +9236,7 @@ public abstract class Database
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -9760,7 +9760,7 @@ public abstract class Database
                 alpha = new UnTypedFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -9993,7 +9993,7 @@ public abstract class Database
                 alpha = new UnTypedFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -10290,10 +10290,10 @@ public abstract class Database
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 delta = new UnTypedFormalArg(db, "<delta>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -10674,10 +10674,10 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -10993,10 +10993,10 @@ public abstract class Database
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -11336,7 +11336,7 @@ public abstract class Database
                 alpha = new IntFormalArg(db, "<alpha>");
                 bravo = new UnTypedFormalArg(db, "<bravo>");
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", bravo, null,
                                                   null, null);
@@ -11807,10 +11807,10 @@ public abstract class Database
                 charlie = new UnTypedFormalArg(db, "<charlie>");
                 delta = new UnTypedFormalArg(db, "<delta>");
                 smve = VocabList.ConstructTestMatrix(db, "s-matrix",
-                        MatrixVocabElement.matrixType.INTEGER, 
+                        MatrixVocabElement.MatrixType.INTEGER,
                         alpha, null, null, null);
                 mve = VocabList.ConstructTestMatrix(db, "matrix",
-                        MatrixVocabElement.matrixType.MATRIX, 
+                        MatrixVocabElement.MatrixType.MATRIX,
                         bravo, null, null, null);
                 pve = VocabList.ConstructTestPred(db, "pred", charlie, null,
                                                   null, null);
@@ -12150,7 +12150,7 @@ public abstract class Database
       // Create a data column
 
       DataColumn column = new DataColumn(db, "TestColumn",
-                                         MatrixVocabElement.matrixType.TEXT);
+                                         MatrixVocabElement.MatrixType.TEXT);
 
       //Add it to the database
 
@@ -13403,28 +13403,28 @@ public abstract class Database
                 // create Data columns
                 
                 mdc0 = new DataColumn(db, "mdc0", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdc0ID = db.addColumn(mdc0);
                 mdc0 = db.getDataColumn(mdc0ID);
                 mdc0_mveID = mdc0.getItsMveID();
                 mve0 = db.getMatrixVE(mdc0_mveID);
                 
                 mdc1 = new DataColumn(db, "mdc1", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdc1ID = db.addColumn(mdc1);
                 mdc1 = db.getDataColumn(mdc1ID);
                 mdc1_mveID = mdc1.getItsMveID();
                 mve1 = db.getMatrixVE(mdc1_mveID);
                 
                 mdc2 = new DataColumn(db, "mdc2", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdc2ID = db.addColumn(mdc2);
                 mdc2 = db.getDataColumn(mdc2ID);
                 mdc2_mveID = mdc2.getItsMveID();
                 mve2 = db.getMatrixVE(mdc2_mveID);
                 
                 mdc3 = new DataColumn(db, "mdc3", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdc3ID = db.addColumn(mdc3);
                 mdc3 = db.getDataColumn(mdc3ID);
                 mdc3_mveID = mdc3.getItsMveID();
@@ -14821,13 +14821,13 @@ public abstract class Database
                 // create a couple of Data columns
                 
                 mdc = new DataColumn(db, "mdc", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdcID = db.addColumn(mdc);
                 mdc = db.getDataColumn(mdcID);
                 mdc_mveID = mdc.getItsMveID();
                 
                 pdc = new DataColumn(db, "pdc", 
-                                     MatrixVocabElement.matrixType.PREDICATE);
+                                     MatrixVocabElement.MatrixType.PREDICATE);
                 pdcID = db.addColumn(pdc);
                 pdc = db.getDataColumn(pdcID);
                 pdc_mveID = pdc.getItsMveID();
@@ -15989,13 +15989,13 @@ public abstract class Database
                 // create a couple of Data columns
                 
                 mdc = new DataColumn(db, "mdc", 
-                                     MatrixVocabElement.matrixType.MATRIX);
+                                     MatrixVocabElement.MatrixType.MATRIX);
                 mdcID = db.addColumn(mdc);
                 mdc = db.getDataColumn(mdcID);
                 mdc_mveID = mdc.getItsMveID();
                 
                 pdc = new DataColumn(db, "pdc", 
-                                     MatrixVocabElement.matrixType.PREDICATE);
+                                     MatrixVocabElement.MatrixType.PREDICATE);
                 pdcID = db.addColumn(pdc);
                 pdc = db.getDataColumn(pdcID);
                 pdc_mveID = pdc.getItsMveID();

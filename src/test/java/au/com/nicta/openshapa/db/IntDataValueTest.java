@@ -35,13 +35,13 @@ public class IntDataValueTest {
         db = new ODBCDatabase();
 
         int_mve = new MatrixVocabElement(db, "int_mve");
-        int_mve.setType(MatrixVocabElement.matrixType.INTEGER);
+        int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
         ifa = new IntFormalArg(db);
         int_mve.appendFormalArg(ifa);
         db.vl.addElement(int_mve);
 
         int_mve2 = new MatrixVocabElement(db, "int_mve2");
-        int_mve2.setType(MatrixVocabElement.matrixType.INTEGER);
+        int_mve2.setType(MatrixVocabElement.MatrixType.INTEGER);
         ifa2 = new IntFormalArg(db);
         ifa2.setRange(-100, 100);
         int_mve2.appendFormalArg(ifa2);

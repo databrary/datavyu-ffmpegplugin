@@ -39,7 +39,7 @@ public class ColPredDataValueTest {
         db = new ODBCDatabase();
 
         matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-        matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+        matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
 
         farg = new FloatFormalArg(db, "<float>");
         matrix_mve.appendFormalArg(farg);
@@ -67,7 +67,7 @@ public class ColPredDataValueTest {
         colPredFarg = matrix_mve.getFormalArg(7);
 
         float_mve = new MatrixVocabElement(db, "float_mve");
-        float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+        float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
         farg = new FloatFormalArg(db);
         float_mve.appendFormalArg(farg);
         db.vl.addElement(float_mve);

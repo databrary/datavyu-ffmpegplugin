@@ -53,8 +53,8 @@ System.out.println(dc.toDBString());
 System.out.println(mve.toDBString());
 
       dtm.setRoot(dmtn);
-      if ((mve.getType() == MatrixVocabElement.matrixType.MATRIX) ||
-          (mve.getType() == MatrixVocabElement.matrixType.PREDICATE)) {
+      if ((mve.getType() == MatrixVocabElement.MatrixType.MATRIX) ||
+          (mve.getType() == MatrixVocabElement.MatrixType.PREDICATE)) {
       System.out.println("Count of formal args: " + mve.getNumFormalArgs());
         for (int i=0; i<mve.getNumFormalArgs(); i++) {
           DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(mve.getFormalArg(i));
@@ -109,7 +109,7 @@ System.out.println(mve.toDBString());
     try {
       ODBCDatabase db = new ODBCDatabase();
 
-      DataColumn dc = new DataColumn(db, "TestColumn", MatrixVocabElement.matrixType.MATRIX);
+      DataColumn dc = new DataColumn(db, "TestColumn", MatrixVocabElement.MatrixType.MATRIX);
       //DataColumn dc = (DataColumn)db.createColumn(db.COLUMN_TYPE_DATA);
       long colId = db.addColumn(dc);
       dc = (DataColumn)db.getDataColumn(colId);

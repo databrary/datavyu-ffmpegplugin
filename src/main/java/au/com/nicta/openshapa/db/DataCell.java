@@ -148,8 +148,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     protected long itsMveID = DBIndex.INVALID_ID;
     
     /** Type of associated matrix VE */
-    protected MatrixVocabElement.matrixType itsMveType = 
-            MatrixVocabElement.matrixType.UNDEFINED;
+    protected MatrixVocabElement.MatrixType itsMveType =
+            MatrixVocabElement.MatrixType.UNDEFINED;
     
     /** onset of cell */
     protected TimeStamp onset = null;
@@ -475,7 +475,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *    - None.
      */
     
-    public MatrixVocabElement.matrixType getItsMveType()
+    public MatrixVocabElement.MatrixType getItsMveType()
     {
         
         return this.itsMveType;
@@ -2274,8 +2274,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     protected void deregisterPreds()
         throws SystemErrorException
     {
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             this.val.deregisterPreds(this.cascadeMveDel,
                                      this.cascadeMveID,
@@ -2442,8 +2442,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     protected void registerPreds()
         throws SystemErrorException
     {
-        if ( ( this.itsMveType == MatrixVocabElement.matrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.matrixType.PREDICATE ) )
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
         {
             this.val.registerPreds();
         }
@@ -3292,7 +3292,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             db = new ODBCDatabase();
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -3300,7 +3300,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -3308,7 +3308,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -3316,7 +3316,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -3324,7 +3324,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -3332,7 +3332,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -3543,7 +3543,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      f_colID,
                                      f_mveID,
-                                     MatrixVocabElement.matrixType.FLOAT,
+                                     MatrixVocabElement.MatrixType.FLOAT,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -3557,7 +3557,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      i_colID,
                                      i_mveID,
-                                     MatrixVocabElement.matrixType.INTEGER,
+                                     MatrixVocabElement.MatrixType.INTEGER,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -3571,7 +3571,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      m_colID,
                                      m_mveID,
-                                     MatrixVocabElement.matrixType.MATRIX,
+                                     MatrixVocabElement.MatrixType.MATRIX,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -3585,7 +3585,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      n_colID,
                                      n_mveID,
-                                     MatrixVocabElement.matrixType.NOMINAL,
+                                     MatrixVocabElement.MatrixType.NOMINAL,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -3599,7 +3599,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      p_colID,
                                      p_mveID,
-                                     MatrixVocabElement.matrixType.PREDICATE,
+                                     MatrixVocabElement.MatrixType.PREDICATE,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -3613,7 +3613,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      t_colID,
                                      t_mveID,
-                                     MatrixVocabElement.matrixType.TEXT,
+                                     MatrixVocabElement.MatrixType.TEXT,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4091,7 +4091,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             db = new ODBCDatabase();
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -4099,7 +4099,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -4107,7 +4107,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -4115,7 +4115,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -4123,7 +4123,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -4131,7 +4131,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -4349,7 +4349,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      null,
                                      f_colID,
                                      f_mveID,
-                                     MatrixVocabElement.matrixType.FLOAT,
+                                     MatrixVocabElement.MatrixType.FLOAT,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4363,7 +4363,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "f_cell",
                                      f_colID,
                                      f_mveID,
-                                     MatrixVocabElement.matrixType.FLOAT,
+                                     MatrixVocabElement.MatrixType.FLOAT,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4377,7 +4377,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "i_cell",
                                      i_colID,
                                      i_mveID,
-                                     MatrixVocabElement.matrixType.INTEGER,
+                                     MatrixVocabElement.MatrixType.INTEGER,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4391,7 +4391,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "m_cell",
                                      m_colID,
                                      m_mveID,
-                                     MatrixVocabElement.matrixType.MATRIX,
+                                     MatrixVocabElement.MatrixType.MATRIX,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4405,7 +4405,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "n_cell",
                                      n_colID,
                                      n_mveID,
-                                     MatrixVocabElement.matrixType.NOMINAL,
+                                     MatrixVocabElement.MatrixType.NOMINAL,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4419,7 +4419,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "p_cell",
                                      p_colID,
                                      p_mveID,
-                                     MatrixVocabElement.matrixType.PREDICATE,
+                                     MatrixVocabElement.MatrixType.PREDICATE,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4433,7 +4433,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                      "t_cell",
                                      t_colID,
                                      t_mveID,
-                                     MatrixVocabElement.matrixType.TEXT,
+                                     MatrixVocabElement.MatrixType.TEXT,
                                      -1,
                                      new TimeStamp(db.getTicks(), 0),
                                      new TimeStamp(db.getTicks(), 0),
@@ -4949,7 +4949,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             pve0 = db.getPredVE(pve0ID);
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -4964,7 +4964,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -4979,7 +4979,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -4994,7 +4994,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -5009,7 +5009,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -5024,7 +5024,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -5353,7 +5353,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        f_onset,
                                        f_offset,
@@ -5367,7 +5367,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        i_onset,
                                        i_offset,
@@ -5381,7 +5381,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        m_onset,
                                        m_offset,
@@ -5395,7 +5395,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        n_onset,
                                        n_offset,
@@ -5409,7 +5409,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                       "p_cell",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        p_onset,
                                        p_offset,
@@ -5423,7 +5423,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        t_onset,
                                        t_offset,
@@ -5610,7 +5610,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                   String initComment,
                                   long initItsColID,
                                   long initItsMveID,
-                                  MatrixVocabElement.matrixType initItsMveType,
+                                  MatrixVocabElement.MatrixType initItsMveType,
                                   int initOrd,
                                   TimeStamp initOnset,
                                   TimeStamp initOffset,
@@ -6476,7 +6476,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             pve0 = db.getPredVE(pve0ID);
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -6491,7 +6491,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -6506,7 +6506,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -6521,7 +6521,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -6536,7 +6536,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -6551,7 +6551,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -6911,7 +6911,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -6925,7 +6925,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell1",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -6939,7 +6939,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell2",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        f_onset,
                                        f_offset,
@@ -6953,7 +6953,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -6967,7 +6967,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell1",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -6981,7 +6981,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell2",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        i_onset,
                                        i_offset,
@@ -6995,7 +6995,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7009,7 +7009,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell1",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7023,7 +7023,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell2",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        m_onset,
                                        m_offset,
@@ -7037,7 +7037,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7051,7 +7051,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell1",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7065,7 +7065,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell2",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        n_onset,
                                        n_offset,
@@ -7079,7 +7079,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7093,7 +7093,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell1",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7107,7 +7107,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell2",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        p_onset,
                                        p_offset,
@@ -7121,7 +7121,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7135,7 +7135,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell1",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7149,7 +7149,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell2",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        t_onset,
                                        t_offset,
@@ -7164,109 +7164,109 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             /* run accessor tests on accessors */
     
             failures += TestAccessorMethods(f_cell0, db, null, f_colID, 
-                    f_mveID, MatrixVocabElement.matrixType.FLOAT, -1, 
+                    f_mveID, MatrixVocabElement.MatrixType.FLOAT, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, f_mveID),
                     outStream, verbose, "f_cell0");
                     
             failures += TestAccessorMethods(f_cell1, db, "f_cell1", f_colID, 
-                    f_mveID, MatrixVocabElement.matrixType.FLOAT, -1, 
+                    f_mveID, MatrixVocabElement.MatrixType.FLOAT, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, f_mveID),
                     outStream, verbose, "f_cell1");
                     
             failures += TestAccessorMethods(f_cell2, db, "f_cell2", f_colID, 
-                    f_mveID, MatrixVocabElement.matrixType.FLOAT, -1, 
+                    f_mveID, MatrixVocabElement.MatrixType.FLOAT, -1,
                     f_onset, f_offset, f_matrix,
                     outStream, verbose, "f_cell2");
             
     
             failures += TestAccessorMethods(i_cell0, db, null, i_colID, 
-                    i_mveID, MatrixVocabElement.matrixType.INTEGER, -1, 
+                    i_mveID, MatrixVocabElement.MatrixType.INTEGER, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, i_mveID),
                     outStream, verbose, "i_cell0");
                     
             failures += TestAccessorMethods(i_cell1, db, "i_cell1", i_colID, 
-                    i_mveID, MatrixVocabElement.matrixType.INTEGER, -1, 
+                    i_mveID, MatrixVocabElement.MatrixType.INTEGER, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, i_mveID),
                     outStream, verbose, "i_cell1");
                     
             failures += TestAccessorMethods(i_cell2, db, "i_cell2", i_colID, 
-                    i_mveID, MatrixVocabElement.matrixType.INTEGER, -1, 
+                    i_mveID, MatrixVocabElement.MatrixType.INTEGER, -1,
                     i_onset, i_offset, i_matrix,
                     outStream, verbose, "i_cell2");
             
     
             failures += TestAccessorMethods(m_cell0, db, null, m_colID, 
-                    m_mveID, MatrixVocabElement.matrixType.MATRIX, -1, 
+                    m_mveID, MatrixVocabElement.MatrixType.MATRIX, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, m_mveID),
                     outStream, verbose, "m_cell0");
                     
             failures += TestAccessorMethods(m_cell1, db, "m_cell1", m_colID, 
-                    m_mveID, MatrixVocabElement.matrixType.MATRIX, -1, 
+                    m_mveID, MatrixVocabElement.MatrixType.MATRIX, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, m_mveID),
                     outStream, verbose, "m_cell1");
                     
             failures += TestAccessorMethods(m_cell2, db, "m_cell2", m_colID, 
-                    m_mveID, MatrixVocabElement.matrixType.MATRIX, -1, 
+                    m_mveID, MatrixVocabElement.MatrixType.MATRIX, -1,
                     m_onset, m_offset, m_matrix,
                     outStream, verbose, "m_cell2");
             
     
             failures += TestAccessorMethods(n_cell0, db, null, n_colID, 
-                    n_mveID, MatrixVocabElement.matrixType.NOMINAL, -1, 
+                    n_mveID, MatrixVocabElement.MatrixType.NOMINAL, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, n_mveID),
                     outStream, verbose, "n_cell0");
                     
             failures += TestAccessorMethods(n_cell1, db, "n_cell1", n_colID, 
-                    n_mveID, MatrixVocabElement.matrixType.NOMINAL, -1, 
+                    n_mveID, MatrixVocabElement.MatrixType.NOMINAL, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, n_mveID),
                     outStream, verbose, "n_cell1");
                     
             failures += TestAccessorMethods(n_cell2, db, "n_cell2", n_colID, 
-                    n_mveID, MatrixVocabElement.matrixType.NOMINAL, -1, 
+                    n_mveID, MatrixVocabElement.MatrixType.NOMINAL, -1,
                     n_onset, n_offset, n_matrix,
                     outStream, verbose, "n_cell2");
             
     
             failures += TestAccessorMethods(p_cell0, db, null, p_colID, 
-                    p_mveID, MatrixVocabElement.matrixType.PREDICATE, -1, 
+                    p_mveID, MatrixVocabElement.MatrixType.PREDICATE, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, p_mveID),
                     outStream, verbose, "p_cell0");
                     
             failures += TestAccessorMethods(p_cell1, db, "p_cell1", p_colID, 
-                    p_mveID, MatrixVocabElement.matrixType.PREDICATE, -1, 
+                    p_mveID, MatrixVocabElement.MatrixType.PREDICATE, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, p_mveID),
                     outStream, verbose, "p_cell1");
                     
             failures += TestAccessorMethods(p_cell2, db, "p_cell2", p_colID, 
-                    p_mveID, MatrixVocabElement.matrixType.PREDICATE, -1, 
+                    p_mveID, MatrixVocabElement.MatrixType.PREDICATE, -1,
                     p_onset, p_offset, p_matrix,
                     outStream, verbose, "p_cell2");
             
     
             failures += TestAccessorMethods(t_cell0, db, null, t_colID, 
-                    t_mveID, MatrixVocabElement.matrixType.TEXT, -1, 
+                    t_mveID, MatrixVocabElement.MatrixType.TEXT, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, t_mveID),
                     outStream, verbose, "t_cell0");
                     
             failures += TestAccessorMethods(t_cell1, db, "t_cell1", t_colID, 
-                    t_mveID, MatrixVocabElement.matrixType.TEXT, -1, 
+                    t_mveID, MatrixVocabElement.MatrixType.TEXT, -1,
                     new TimeStamp(db.getTicks(), 0), 
                     new TimeStamp(db.getTicks(), 0), new Matrix(db, t_mveID),
                     outStream, verbose, "t_cell1");
                     
             failures += TestAccessorMethods(t_cell2, db, "t_cell2", t_colID, 
-                    t_mveID, MatrixVocabElement.matrixType.TEXT, -1, 
+                    t_mveID, MatrixVocabElement.MatrixType.TEXT, -1,
                     t_onset, t_offset, t_matrix,
                     outStream, verbose, "t_cell2");
         }
@@ -7498,7 +7498,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             pve0 = db.getPredVE(pve0ID);
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -7513,7 +7513,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -7528,7 +7528,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -7543,7 +7543,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -7558,7 +7558,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -7573,7 +7573,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -7934,7 +7934,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        10,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7948,7 +7948,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell1",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7962,7 +7962,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell2",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        f_onset,
                                        f_offset,
@@ -7976,7 +7976,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -7990,7 +7990,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell1",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8004,7 +8004,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell2",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        i_onset,
                                        i_offset,
@@ -8018,7 +8018,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8032,7 +8032,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell1",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8046,7 +8046,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell2",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        m_onset,
                                        m_offset,
@@ -8060,7 +8060,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8074,7 +8074,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell1",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8088,7 +8088,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell2",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        n_onset,
                                        n_offset,
@@ -8102,7 +8102,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8116,7 +8116,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell1",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8130,7 +8130,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell2",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        p_onset,
                                        p_offset,
@@ -8144,7 +8144,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8158,7 +8158,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell1",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -8172,7 +8172,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell2",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        t_onset,
                                        t_offset,
@@ -8680,7 +8680,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             pve3 = db.getPredVE(pve3ID);
             
             f_col = new DataColumn(db, "f_col", 
-                                   MatrixVocabElement.matrixType.FLOAT);
+                                   MatrixVocabElement.MatrixType.FLOAT);
             f_colID = db.addColumn(f_col);
             f_col = db.getDataColumn(f_colID);
             f_mveID = f_col.getItsMveID();
@@ -8695,7 +8695,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             i_col = new DataColumn(db, "i_col", 
-                                   MatrixVocabElement.matrixType.INTEGER);
+                                   MatrixVocabElement.MatrixType.INTEGER);
             i_colID = db.addColumn(i_col);
             i_col = db.getDataColumn(i_colID);
             i_mveID = i_col.getItsMveID();
@@ -8710,7 +8710,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             m_col = new DataColumn(db, "m_col", 
-                                   MatrixVocabElement.matrixType.MATRIX);
+                                   MatrixVocabElement.MatrixType.MATRIX);
             m_colID = db.addColumn(m_col);
             m_col = db.getDataColumn(m_colID);
             m_mveID = m_col.getItsMveID();
@@ -8744,7 +8744,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             n_col = new DataColumn(db, "n_col", 
-                                   MatrixVocabElement.matrixType.NOMINAL);
+                                   MatrixVocabElement.MatrixType.NOMINAL);
             n_colID = db.addColumn(n_col);
             n_col = db.getDataColumn(n_colID);
             n_mveID = n_col.getItsMveID();
@@ -8759,7 +8759,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             p_col = new DataColumn(db, "p_col", 
-                                   MatrixVocabElement.matrixType.PREDICATE);
+                                   MatrixVocabElement.MatrixType.PREDICATE);
             p_colID = db.addColumn(p_col);
             p_col = db.getDataColumn(p_colID);
             p_mveID = p_col.getItsMveID();
@@ -8774,7 +8774,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             
             
             t_col = new DataColumn(db, "t_col", 
-                                   MatrixVocabElement.matrixType.TEXT);
+                                   MatrixVocabElement.MatrixType.TEXT);
             t_colID = db.addColumn(t_col);
             t_col = db.getDataColumn(t_colID);
             t_mveID = t_col.getItsMveID();
@@ -9161,7 +9161,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9175,7 +9175,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell1",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9189,7 +9189,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "f_cell2",
                                        f_colID,
                                        f_mveID,
-                                       MatrixVocabElement.matrixType.FLOAT,
+                                       MatrixVocabElement.MatrixType.FLOAT,
                                        -1,
                                        f_onset,
                                        f_offset,
@@ -9203,7 +9203,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9217,7 +9217,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell1",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9231,7 +9231,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "i_cell2",
                                        i_colID,
                                        i_mveID,
-                                       MatrixVocabElement.matrixType.INTEGER,
+                                       MatrixVocabElement.MatrixType.INTEGER,
                                        -1,
                                        i_onset,
                                        i_offset,
@@ -9245,7 +9245,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9259,7 +9259,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell1",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9273,7 +9273,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "m_cell2",
                                        m_colID,
                                        m_mveID,
-                                       MatrixVocabElement.matrixType.MATRIX,
+                                       MatrixVocabElement.MatrixType.MATRIX,
                                        -1,
                                        m_onset,
                                        m_offset,
@@ -9287,7 +9287,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9301,7 +9301,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell1",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9315,7 +9315,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "n_cell2",
                                        n_colID,
                                        n_mveID,
-                                       MatrixVocabElement.matrixType.NOMINAL,
+                                       MatrixVocabElement.MatrixType.NOMINAL,
                                        -1,
                                        n_onset,
                                        n_offset,
@@ -9329,7 +9329,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9343,7 +9343,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell1",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9357,7 +9357,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "p_cell2",
                                        p_colID,
                                        p_mveID,
-                                       MatrixVocabElement.matrixType.PREDICATE,
+                                       MatrixVocabElement.MatrixType.PREDICATE,
                                        -1,
                                        p_onset,
                                        p_offset,
@@ -9371,7 +9371,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        null,
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9385,7 +9385,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell1",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        new TimeStamp(db.getTicks(), 0),
                                        new TimeStamp(db.getTicks(), 0),
@@ -9399,7 +9399,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                        "t_cell2",
                                        t_colID,
                                        t_mveID,
-                                       MatrixVocabElement.matrixType.TEXT,
+                                       MatrixVocabElement.MatrixType.TEXT,
                                        -1,
                                        t_onset,
                                        t_offset,
@@ -10491,7 +10491,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                    String expectedComment,
                                    long expectedColID,
                                    long expectedMveID,
-                                   MatrixVocabElement.matrixType expectedMveType,
+                                   MatrixVocabElement.MatrixType expectedMveType,
                                    int expectedOrd,
                                    TimeStamp expectedOnset,
                                    TimeStamp expectedOffset,

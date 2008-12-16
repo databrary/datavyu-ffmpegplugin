@@ -38,13 +38,13 @@ public class NominalDataValueTest {
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         nom_mve = new MatrixVocabElement(db, "nom_mve");
-        nom_mve.setType(MatrixVocabElement.matrixType.NOMINAL);
+        nom_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
         nfa = new NominalFormalArg(db);
         nom_mve.appendFormalArg(nfa);
         db.vl.addElement(nom_mve);
 
         nom_mve2 = new MatrixVocabElement(db, "nom_mve2");
-        nom_mve2.setType(MatrixVocabElement.matrixType.NOMINAL);
+        nom_mve2.setType(MatrixVocabElement.MatrixType.NOMINAL);
         nfa2 = new NominalFormalArg(db);
         nfa2.setSubRange(true);
         nfa2.addApproved("alpha");
@@ -54,7 +54,7 @@ public class NominalDataValueTest {
         db.vl.addElement(nom_mve2);
 
         matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-        matrix_mve.setType(MatrixVocabElement.matrixType.MATRIX);
+        matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
         ufa = new UnTypedFormalArg(db, "<untyped>");
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);

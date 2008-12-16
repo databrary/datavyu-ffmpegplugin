@@ -1039,7 +1039,7 @@ public class ColPredFormalArg extends FormalArgument
             p0 = VocabList.ConstructTestPred(db, "p0", 
                                              alpha, null, null, null);
             m0 = VocabList.ConstructTestMatrix(db, "m0",
-                    MatrixVocabElement.matrixType.MATRIX,
+                    MatrixVocabElement.MatrixType.MATRIX,
                     bravo, charlie, null, null);
             
             progress++;

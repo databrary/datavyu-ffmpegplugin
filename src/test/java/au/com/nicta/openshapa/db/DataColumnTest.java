@@ -69,7 +69,7 @@ public final class DataColumnTest {
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         f_mve0 = new MatrixVocabElement(db, "f_col0");
-        f_mve0.setType(MatrixVocabElement.matrixType.FLOAT);
+        f_mve0.setType(MatrixVocabElement.MatrixType.FLOAT);
         farg = new FloatFormalArg(db);
         f_mve0.appendFormalArg(farg);
         db.vl.addElement(f_mve0);
@@ -77,7 +77,7 @@ public final class DataColumnTest {
         f_col0 = new DataColumn(db, "f_col0", false, true, f_mve0ID);
 
         f_mve1 = new MatrixVocabElement(db, "f_col1");
-        f_mve1.setType(MatrixVocabElement.matrixType.FLOAT);
+        f_mve1.setType(MatrixVocabElement.MatrixType.FLOAT);
         farg = new FloatFormalArg(db);
         f_mve1.appendFormalArg(farg);
         db.vl.addElement(f_mve1);
@@ -86,7 +86,7 @@ public final class DataColumnTest {
 
         /* we use f_mve2 & f_mve2ID for failures tests */
         f_mve2 = new MatrixVocabElement(db, "f_col2");
-        f_mve2.setType(MatrixVocabElement.matrixType.FLOAT);
+        f_mve2.setType(MatrixVocabElement.MatrixType.FLOAT);
         farg = new FloatFormalArg(db);
         f_mve2.appendFormalArg(farg);
         db.vl.addElement(f_mve2);
@@ -94,7 +94,7 @@ public final class DataColumnTest {
 
 
         i_mve0 = new MatrixVocabElement(db, "i_col0");
-        i_mve0.setType(MatrixVocabElement.matrixType.INTEGER);
+        i_mve0.setType(MatrixVocabElement.MatrixType.INTEGER);
         farg = new IntFormalArg(db);
         i_mve0.appendFormalArg(farg);
         db.vl.addElement(i_mve0);
@@ -102,7 +102,7 @@ public final class DataColumnTest {
         i_col0 = new DataColumn(db, "i_col0", false, true, i_mve0ID);
 
         i_mve1 = new MatrixVocabElement(db, "i_col1");
-        i_mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+        i_mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
         farg = new IntFormalArg(db);
         i_mve1.appendFormalArg(farg);
         db.vl.addElement(i_mve1);
@@ -111,7 +111,7 @@ public final class DataColumnTest {
 
 
         m_mve0 = new MatrixVocabElement(db, "m_col0");
-        m_mve0.setType(MatrixVocabElement.matrixType.MATRIX);
+        m_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
         farg = new UnTypedFormalArg(db, "<arg>");
         m_mve0.appendFormalArg(farg);
         db.vl.addElement(m_mve0);
@@ -119,7 +119,7 @@ public final class DataColumnTest {
         m_col0 = new DataColumn(db, "m_col0", false, true, m_mve0ID);
 
         m_mve1 = new MatrixVocabElement(db, "m_col1");
-        m_mve1.setType(MatrixVocabElement.matrixType.MATRIX);
+        m_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
         farg = new UnTypedFormalArg(db, "<arg>");
         m_mve1.appendFormalArg(farg);
         m_mve1.setVarLen(true);
@@ -128,7 +128,7 @@ public final class DataColumnTest {
         m_col1 = new DataColumn(db, "m_col1", true, false, m_mve1ID);
 
         n_mve0 = new MatrixVocabElement(db, "n_col0");
-        n_mve0.setType(MatrixVocabElement.matrixType.NOMINAL);
+        n_mve0.setType(MatrixVocabElement.MatrixType.NOMINAL);
         farg = new NominalFormalArg(db);
         n_mve0.appendFormalArg(farg);
         db.vl.addElement(n_mve0);
@@ -136,7 +136,7 @@ public final class DataColumnTest {
         n_col0 = new DataColumn(db, "n_col0", false, true, n_mve0ID);
 
         n_mve1 = new MatrixVocabElement(db, "n_col1");
-        n_mve1.setType(MatrixVocabElement.matrixType.NOMINAL);
+        n_mve1.setType(MatrixVocabElement.MatrixType.NOMINAL);
         farg = new NominalFormalArg(db);
         n_mve1.appendFormalArg(farg);
         db.vl.addElement(n_mve1);
@@ -144,7 +144,7 @@ public final class DataColumnTest {
         n_col1 = new DataColumn(db, "n_col1", true, false, n_mve1ID);
 
         p_mve0 = new MatrixVocabElement(db, "p_col0");
-        p_mve0.setType(MatrixVocabElement.matrixType.PREDICATE);
+        p_mve0.setType(MatrixVocabElement.MatrixType.PREDICATE);
         farg = new PredFormalArg(db);
         p_mve0.appendFormalArg(farg);
         db.vl.addElement(p_mve0);
@@ -152,7 +152,7 @@ public final class DataColumnTest {
         p_col0 = new DataColumn(db, "p_col0", false, true, p_mve0ID);
 
         p_mve1 = new MatrixVocabElement(db, "p_col1");
-        p_mve1.setType(MatrixVocabElement.matrixType.PREDICATE);
+        p_mve1.setType(MatrixVocabElement.MatrixType.PREDICATE);
         farg = new PredFormalArg(db);
         p_mve1.appendFormalArg(farg);
         db.vl.addElement(p_mve1);
@@ -160,7 +160,7 @@ public final class DataColumnTest {
         p_col1 = new DataColumn(db, "p_col1", true, false, p_mve1ID);
 
         t_mve0 = new MatrixVocabElement(db, "t_col0");
-        t_mve0.setType(MatrixVocabElement.matrixType.TEXT);
+        t_mve0.setType(MatrixVocabElement.MatrixType.TEXT);
         farg = new TextStringFormalArg(db);
         t_mve0.appendFormalArg(farg);
         db.vl.addElement(t_mve0);
@@ -168,7 +168,7 @@ public final class DataColumnTest {
         t_col0 = new DataColumn(db, "t_col0", false, true, t_mve0ID);
 
         t_mve1 = new MatrixVocabElement(db, "t_col1");
-        t_mve1.setType(MatrixVocabElement.matrixType.TEXT);
+        t_mve1.setType(MatrixVocabElement.MatrixType.TEXT);
         farg = new TextStringFormalArg(db);
         t_mve1.appendFormalArg(farg);
         db.vl.addElement(t_mve1);
@@ -194,20 +194,20 @@ public final class DataColumnTest {
         Database db0 = new ODBCDatabase();
 
         DataColumn f_col = new DataColumn(db0, "f_col",
-                                          MatrixVocabElement.matrixType.FLOAT);
+                                          MatrixVocabElement.MatrixType.FLOAT);
         DataColumn i_col = new DataColumn(db0, "i_col",
-                                          MatrixVocabElement.matrixType
+                                          MatrixVocabElement.MatrixType
                                                             .INTEGER);
         DataColumn m_col = new DataColumn(db0, "m_col",
-                                          MatrixVocabElement.matrixType.MATRIX);
+                                          MatrixVocabElement.MatrixType.MATRIX);
         DataColumn n_col = new DataColumn(db0, "n_col",
-                                          MatrixVocabElement.matrixType
+                                          MatrixVocabElement.MatrixType
                                                             .NOMINAL);
         DataColumn p_col = new DataColumn(db0, "p_col",
-                                          MatrixVocabElement.matrixType
+                                          MatrixVocabElement.MatrixType
                                                             .PREDICATE);
         DataColumn t_col = new DataColumn(db0, "t_col",
-                                          MatrixVocabElement.matrixType.TEXT);
+                                          MatrixVocabElement.MatrixType.TEXT);
 
         assertTrue(db0 != null);
         assertTrue(f_col != null);
@@ -217,7 +217,7 @@ public final class DataColumnTest {
         assertTrue(f_col.numCells == 0);
         assertTrue(f_col.name.equals("f_col"));
         assertTrue(f_col.getItsCells() == null);
-        assertTrue(f_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(f_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .FLOAT);
 
         assertTrue(i_col != null);
@@ -227,7 +227,7 @@ public final class DataColumnTest {
         assertTrue(i_col.numCells == 0);
         assertTrue(i_col.name.equals("i_col"));
         assertTrue(i_col.getItsCells() == null);
-        assertTrue(i_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(i_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .INTEGER);
 
         assertTrue(m_col != null);
@@ -237,7 +237,7 @@ public final class DataColumnTest {
         assertTrue(m_col.numCells == 0);
         assertTrue(m_col.name.equals("m_col"));
         assertTrue(m_col.getItsCells() == null);
-        assertTrue(m_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(m_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .MATRIX);
 
         assertTrue(n_col != null);
@@ -247,7 +247,7 @@ public final class DataColumnTest {
         assertTrue(n_col.numCells == 0);
         assertTrue(n_col.name.equals("n_col"));
         assertTrue(n_col.getItsCells() == null);
-        assertTrue(n_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(n_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .NOMINAL);
 
         assertTrue(p_col != null);
@@ -257,7 +257,7 @@ public final class DataColumnTest {
         assertTrue(p_col.numCells == 0);
         assertTrue(p_col.name.equals("p_col"));
         assertTrue(p_col.getItsCells() == null);
-        assertTrue(p_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(p_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .PREDICATE);
 
         assertTrue(t_col != null);
@@ -267,43 +267,43 @@ public final class DataColumnTest {
         assertTrue(t_col.numCells == 0);
         assertTrue(t_col.name.equals("t_col"));
         assertTrue(t_col.getItsCells() == null);
-        assertTrue(t_col.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(t_col.getItsMveType() == MatrixVocabElement.MatrixType
                                                               .TEXT);
     }
 
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         dc = new DataColumn(null, "f_col",
-                            MatrixVocabElement.matrixType.FLOAT);
+                            MatrixVocabElement.MatrixType.FLOAT);
     }
 
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
-        dc = new DataColumn(db, "", MatrixVocabElement.matrixType.FLOAT);
+        dc = new DataColumn(db, "", MatrixVocabElement.MatrixType.FLOAT);
     }
 
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         dc = new DataColumn(db, " invalid ",
-                            MatrixVocabElement.matrixType.FLOAT);
+                            MatrixVocabElement.MatrixType.FLOAT);
     }
 
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure3() throws SystemErrorException {
         DataColumn fc = new DataColumn(db, "f_col",
-                                       MatrixVocabElement.matrixType.FLOAT);
+                                       MatrixVocabElement.MatrixType.FLOAT);
         long fc_ID = db.addColumn(fc);
         fc = db.getDataColumn(fc_ID);
         long f_mveID = fc.getItsMveID();
         MatrixVocabElement f_mve = db.getMatrixVE(f_mveID);
 
-        dc = new DataColumn(db, "f_col", MatrixVocabElement.matrixType.FLOAT);
+        dc = new DataColumn(db, "f_col", MatrixVocabElement.MatrixType.FLOAT);
     }
 
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure4() throws SystemErrorException {
         dc = new DataColumn(db, "valid",
-                            MatrixVocabElement.matrixType.UNDEFINED);
+                            MatrixVocabElement.MatrixType.UNDEFINED);
     }
 
     @Test
@@ -320,7 +320,7 @@ public final class DataColumnTest {
         assertTrue(f_col0.db == db);
         assertTrue(f_col0.getItsCells() == null);
         assertTrue(f_col0.getItsMveID() == f_mve0ID);
-        assertTrue(f_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(f_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .FLOAT);
         assertTrue(f_col0.getVarLen() == f_mve0.getVarLen());
 
@@ -334,7 +334,7 @@ public final class DataColumnTest {
         assertTrue(f_col1.db == db);
         assertTrue(f_col1.getItsCells() == null);
         assertTrue(f_col1.getItsMveID() == f_mve1ID);
-        assertTrue(f_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(f_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .FLOAT);
         assertTrue(f_col1.getVarLen() == f_mve1.getVarLen());
 
@@ -351,7 +351,7 @@ public final class DataColumnTest {
         assertTrue(i_col0.db == db);
         assertTrue(i_col0.getItsCells() == null);
         assertTrue(i_col0.getItsMveID() == i_mve0ID);
-        assertTrue(i_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(i_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .INTEGER);
         assertTrue(i_col0.getVarLen() == i_mve0.getVarLen());
 
@@ -365,7 +365,7 @@ public final class DataColumnTest {
         assertTrue(i_col1.db == db);
         assertTrue(i_col1.getItsCells() == null);
         assertTrue(i_col1.getItsMveID() == i_mve1ID);
-        assertTrue(i_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(i_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .INTEGER);
         assertTrue(i_col1.getVarLen() == i_mve1.getVarLen());
 
@@ -379,7 +379,7 @@ public final class DataColumnTest {
         assertTrue(m_col0.db == db);
         assertTrue(m_col0.getItsCells() == null);
         assertTrue(m_col0.getItsMveID() == m_mve0ID);
-        assertTrue(m_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(m_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .MATRIX);
         assertTrue(m_col0.getVarLen() == m_mve0.getVarLen());
 
@@ -393,7 +393,7 @@ public final class DataColumnTest {
         assertTrue(m_col1.db == db);
         assertTrue(m_col1.getItsCells() == null);
         assertTrue(m_col1.getItsMveID() == m_mve1ID);
-        assertTrue(m_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(m_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .MATRIX);
         assertTrue(m_col1.getVarLen() == m_mve1.getVarLen());
 
@@ -407,7 +407,7 @@ public final class DataColumnTest {
         assertTrue(n_col0.db == db);
         assertTrue(n_col0.getItsCells() == null);
         assertTrue(n_col0.getItsMveID() == n_mve0ID);
-        assertTrue(n_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(n_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .NOMINAL);
         assertTrue(n_col0.getVarLen() == n_mve0.getVarLen());
 
@@ -421,7 +421,7 @@ public final class DataColumnTest {
         assertTrue(n_col1.db == db);
         assertTrue(n_col1.getItsCells() == null);
         assertTrue(n_col1.getItsMveID() == n_mve1ID);
-        assertTrue(n_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(n_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .NOMINAL);
         assertTrue(n_col1.getVarLen() == n_mve1.getVarLen());
 
@@ -435,7 +435,7 @@ public final class DataColumnTest {
         assertTrue(p_col0.db == db);
         assertTrue(p_col0.getItsCells() == null);
         assertTrue(p_col0.getItsMveID() == p_mve0ID);
-        assertTrue(p_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(p_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .PREDICATE);
         assertTrue(p_col0.getVarLen() == p_mve0.getVarLen());
 
@@ -449,7 +449,7 @@ public final class DataColumnTest {
         assertTrue(p_col1.db == db);
         assertTrue(p_col1.getItsCells() == null);
         assertTrue(p_col1.getItsMveID() == p_mve1ID);
-        assertTrue(p_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(p_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .PREDICATE);
         assertTrue(p_col1.getVarLen() == p_mve1.getVarLen());
 
@@ -463,7 +463,7 @@ public final class DataColumnTest {
         assertTrue(t_col0.db == db);
         assertTrue(t_col0.getItsCells() == null);
         assertTrue(t_col0.getItsMveID() == t_mve0ID);
-        assertTrue(t_col0.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(t_col0.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .TEXT);
         assertTrue(t_col0.getVarLen() == t_mve0.getVarLen());
 
@@ -477,7 +477,7 @@ public final class DataColumnTest {
         assertTrue(t_col1.db == db);
         assertTrue(t_col1.getItsCells() == null);
         assertTrue(t_col1.getItsMveID() == t_mve1ID);
-        assertTrue(t_col1.getItsMveType() == MatrixVocabElement.matrixType
+        assertTrue(t_col1.getItsMveType() == MatrixVocabElement.MatrixType
                                                                .TEXT);
         assertTrue(t_col1.getVarLen() == t_mve1.getVarLen());
     }
@@ -520,7 +520,7 @@ public final class DataColumnTest {
     public void testAccessors() throws SystemErrorException {
         // Build the first data cell.
         DataColumn f_col = new DataColumn(db, "f_col",
-                                          MatrixVocabElement.matrixType.FLOAT);
+                                          MatrixVocabElement.MatrixType.FLOAT);
         long f_col0ID = db.addColumn(f_col);
         f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
         f_mve0ID = f_col0.getItsMveID();
@@ -591,7 +591,7 @@ public final class DataColumnTest {
     public void testAccessorFailure1() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol0",
-                                               MatrixVocabElement.matrixType
+                                               MatrixVocabElement.MatrixType
                                                                  .FLOAT);
             newCol.setItsMveID(DBIndex.INVALID_ID);
             fail("Accessor should have thrown SystemErrorException.");
@@ -603,11 +603,11 @@ public final class DataColumnTest {
     public void testAccessorFailure2() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol1",
-                                               MatrixVocabElement.matrixType
+                                               MatrixVocabElement.MatrixType
                                                                  .FLOAT);
 
             i_mve1 = new MatrixVocabElement(db, "newCol1");
-            i_mve1.setType(MatrixVocabElement.matrixType.INTEGER);
+            i_mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
             i_mve1.appendFormalArg(new IntFormalArg(db, "<int0>"));
             db.vl.addElement(i_mve1);
             i_mve1 = db.vl.getMatrixVocabElement("newCol1");
@@ -623,7 +623,7 @@ public final class DataColumnTest {
     public void testAccessorFailure3() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol2",
-                                               MatrixVocabElement.matrixType
+                                               MatrixVocabElement.MatrixType
                                                                  .FLOAT);
 
             long f_col0ID = db.addColumn(newCol);
@@ -654,7 +654,7 @@ public final class DataColumnTest {
 
     public void testToStringMethods() throws SystemErrorException {
         f_col0 = new DataColumn(db, "f_col",
-                                MatrixVocabElement.matrixType.FLOAT);
+                                MatrixVocabElement.MatrixType.FLOAT);
         long f_col0ID = db.addColumn(f_col0);
         f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
         f_mve0ID = f_col0.getItsMveID();
