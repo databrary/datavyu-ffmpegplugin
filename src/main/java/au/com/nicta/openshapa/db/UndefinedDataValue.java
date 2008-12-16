@@ -26,7 +26,7 @@ public class UndefinedDataValue extends DataValue
      */
     
     /** the name of the associated formal arg */
-    String itsValue = "<arg>";
+    String itsValue = "<val>";
       
     
     /*************************************************************************/
@@ -123,7 +123,12 @@ public class UndefinedDataValue extends DataValue
      *
      * Changes:
      *
-     *    - None.
+     *    - With the advent of column predicates and the prospect of 
+     *      implementing the old MacSHAPA query language in OpenSHAPA,
+     *      the requirement that undefined data values only be used to 
+     *      replace untyped formal arguments is removed.
+     *
+     *                                              JRM -- 12/12/08
      */
     
     public void setItsValue(String value)
@@ -140,12 +145,12 @@ public class UndefinedDataValue extends DataValue
         if ( this.itsFargID != DBIndex.INVALID_ID )
         {
             DBElement dbe;
-            UnTypedFormalArg utfa;
+            FormalArgument fa;
             
-            if ( itsFargType != FormalArgument.fArgType.UNTYPED )
+            if ( itsFargType == FormalArgument.fArgType.UNDEFINED )
             {
                 throw new SystemErrorException(mName + 
-                                               "itsFargType != UNTYPED");
+                                               "itsFargType == UNDEFINED");
             }
             
             dbe = this.db.idx.getElement(this.itsFargID);
@@ -156,15 +161,15 @@ public class UndefinedDataValue extends DataValue
                                                "itsFargID has no referent");
             }
             
-            if ( ! ( dbe instanceof UnTypedFormalArg ) )
+            if ( ! ( dbe instanceof FormalArgument ) )
             {
                 throw new SystemErrorException(mName +
-                        "itsFargID doesn't refer to an untyped formal arg");
+                        "itsFargID doesn't refer to a formal arg");
             }
             
-            utfa = (UnTypedFormalArg)dbe;
+            fa = (FormalArgument)dbe;
             
-            if ( utfa.getFargName().compareTo(value) != 0 )
+            if ( fa.getFargName().compareTo(value) != 0 )
             {
                 throw new SystemErrorException(mName + 
                         "value doesn't match farg name");
@@ -522,6 +527,8 @@ public class UndefinedDataValue extends DataValue
     /**************************** Test Code: *********************************/
     /*************************************************************************/
 
+    // TODO: Write test suite for undefined data values.
+    
     /**
      * VerifyUndefinedDVCopy()
      *
