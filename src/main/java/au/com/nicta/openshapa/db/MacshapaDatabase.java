@@ -1087,14 +1087,14 @@ public class MacshapaDatabase extends Database
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
                "le(<x>, <y>), " +
-               "text data column(<arg>), " +    // this is a matrix vocab element
+               "text data column(<val>), " +    // this is a matrix vocab element
                "gt(<x>, <y>), lt(<x>, <y>), " +
-               "nominal data column(<arg>), " + // this is a matrix vocab element
+               "nominal data column(<val>), " + // this is a matrix vocab element
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int data column(<arg>), " +     // this is a matrix vocab element
+               "int data column(<val>), " +     // this is a matrix vocab element
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float data column(<arg>), " +   // this is a matrix vocab element
+               "float data column(<val>), " +   // this is a matrix vocab element
                "prevt(<base-var>, <predecessor-var>), " +
                "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
@@ -1175,14 +1175,14 @@ public class MacshapaDatabase extends Database
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
                "le(<x>, <y>), " +
-               "text_data_column(<arg>), " +    // this is a matrix vocab element
+               "text_data_column(<val>), " +    // this is a matrix vocab element
                "gt(<x>, <y>), lt(<x>, <y>), " +
-               "nominal_data_column(<arg>), " + // this is a matrix vocab element
+               "nominal_data_column(<val>), " + // this is a matrix vocab element
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int_data_column(<arg>), " +     // this is a matrix vocab element
+               "int_data_column(<val>), " +     // this is a matrix vocab element
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float_data_column(<arg>), " +   // this is a matrix vocab element
+               "float_data_column(<val>), " +   // this is a matrix vocab element
                "prevt(<base-var>, <predecessor-var>), " +
                "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
@@ -1347,15 +1347,15 @@ public class MacshapaDatabase extends Database
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
                "le(<x>, <y>), " +
-               "text_data_column(<arg>), " +
+               "text_data_column(<val>), " +
                "gt(<x>, <y>), " +
                "lt(<x>, <y>), " +
-               "nominal_data_column(<arg>), " +
+               "nominal_data_column(<val>), " +
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int_data_column(<arg>), " +
+               "int_data_column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float_data_column(<arg>), " +
+               "float_data_column(<val>), " +
                "prevt(<base-var>, <predecessor-var>), " +
                "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
@@ -1446,12 +1446,12 @@ public class MacshapaDatabase extends Database
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
                "le(<x>, <y>), " +
-               "text_data_column(<arg>), " +
+               "text_data_column(<val>), " +
                "gt(<x>, <y>), " +
                "lt(<x>, <y>), " +
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int_data_column(<arg>), " +
+               "int_data_column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevt(<base-var>, <predecessor-var>), " +
                "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
@@ -1518,7 +1518,7 @@ public class MacshapaDatabase extends Database
                "count(<form>), " +
                "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "isempty(<arg>), " +
-               "float_data_col_2(<arg>), " +
+               "float_data_col_2(<val>), " +
                "ispred(<arg>), " +
                "istext(<arg>), " +
                "isqstring(<arg>), " +
@@ -1532,12 +1532,12 @@ public class MacshapaDatabase extends Database
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
                "le(<x>, <y>), " +
-               "text_data_column(<arg>), " +
+               "text_data_column(<val>), " +
                "gt(<x>, <y>), " +
                "lt(<x>, <y>), " +
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int_data_column(<arg>), " +
+               "int_data_column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevt(<base-var>, <predecessor-var>), " +
                "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +

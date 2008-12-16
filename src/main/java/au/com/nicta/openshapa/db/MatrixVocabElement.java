@@ -4350,7 +4350,7 @@ public class MatrixVocabElement extends VocabElement
         if ( failures == 0 )
         {
             failures += VocabElement.VerifyfArgListContents(ve,
-                                                            "(<arg>)",
+                                                            "(<val>)",
                                                              null,
                                                              outStream,
                                                              verbose,
@@ -4366,7 +4366,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 /* set up an instance of TextStringFormalArg with a name
-                 * other than the default name of "<arg>".  Need to do this
+                 * other than the default name of "<val>".  Need to do this
                  * as using a duplicate name could cause a false negative in
                  * the test.
                  */
@@ -4410,7 +4410,7 @@ public class MatrixVocabElement extends VocabElement
         if ( failures == 0 )
         {
             failures += VocabElement.VerifyfArgListContents(ve,
-                                                            "(<arg>)",
+                                                            "(<val>)",
                                                             null,
                                                             outStream,
                                                             verbose,
@@ -4428,7 +4428,7 @@ public class MatrixVocabElement extends VocabElement
             try
             {
                 /* set up an instance of TextStringFormalArg with a name
-                 * other than the default name of "<arg>".  Need to do this
+                 * other than the default name of "<val>".  Need to do this
                  * as usning a duplicate name could cause a false negative in
                  * the test.
                  */
@@ -4472,13 +4472,12 @@ public class MatrixVocabElement extends VocabElement
         if ( failures == 0 )
         {
             failures += VocabElement.VerifyfArgListContents(ve,
-                                                            "(<arg>)",
+                                                            "(<val>)",
                                                              null,
                                                              outStream,
                                                              verbose,
                                                              17);
-         }
-        
+        }
         
         return failures;
         

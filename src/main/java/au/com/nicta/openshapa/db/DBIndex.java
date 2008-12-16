@@ -2002,14 +2002,14 @@ public class DBIndex
         throws SystemErrorException
     {
         final String expectedString0 = "((DBIndex) (index_contents: ()))";
-        final String expectedString1 = "((DBIndex) (index_contents: (<arg>, " +
+        final String expectedString1 = "((DBIndex) (index_contents: (<val>, " +
                 "<echo>, <delta>, <charlie>, <bravo>, <alpha>)))";
         final String expectedDBString0 = 
             "((DBIndex) (nextID: 1) (index_size: 0) (index_contents: ()))";
         final String expectedDBString1 = 
             "((DBIndex) (nextID: 7) (index_size: 6) " +
              "(index_contents: " +
-                "((TextStringFormalArg 6 <arg>), " +
+                "((TextStringFormalArg 6 <val>), " +
                  "(TimeStampFormalArg 5 <echo> false null null), " +
                  "(QuoteStringFormalArg 4 <delta>), " +
                  "(NominalFormalArg 3 <charlie> false ()), " +
@@ -2097,9 +2097,13 @@ public class DBIndex
             if ( idx.toString().compareTo(expectedString0) != 0 )
             {
                 failures++;
-                outStream.printf(
+                
+                if ( verbose )
+                {
+                    outStream.printf(
                         "idx.toString() returned unexpected value(1): \"%s\".\n",
                         idx.toString());
+                }
             }
         }
         
@@ -2108,8 +2112,12 @@ public class DBIndex
             if ( idx.toDBString().compareTo(expectedDBString0) != 0 )
             {
                 failures++;
-                outStream.printf("idx.toDBString() returned unexpected " +
+                
+                if ( verbose )
+                {
+                    outStream.printf("idx.toDBString() returned unexpected " +
                         "value(1): \"%s\".\n", idx.toDBString());
+                }
             }
         }
         
@@ -2173,9 +2181,14 @@ public class DBIndex
             if ( idx.toString().compareTo(expectedString1) != 0 )
             {
                 failures++;
-                outStream.printf(
+                
+                if ( verbose )
+                {
+                    outStream.printf(
                         "idx.toString() returned unexpected value(2): \"%s\".\n",
                         idx.toString());
+
+                }
             }
         }
         
@@ -2184,8 +2197,12 @@ public class DBIndex
             if ( idx.toDBString().compareTo(expectedDBString1) != 0 )
             {
                 failures++;
-                outStream.printf("idx.toDBString() returned unexpected " +
+                
+                if ( verbose )
+                {
+                    outStream.printf("idx.toDBString() returned unexpected " +
                         "value(2): \"%s\".\n", idx.toDBString());
+                }
             }
         }
         

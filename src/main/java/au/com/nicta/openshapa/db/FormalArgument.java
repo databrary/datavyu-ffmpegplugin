@@ -72,7 +72,7 @@ public abstract class FormalArgument
      */
     
     /** The formal argument name */
-    protected String fargName = "<arg>";
+    protected String fargName = "<val>";
     
     /** type code associated with the formal argument */
     protected fArgType fargType = fArgType.UNDEFINED;
@@ -1694,7 +1694,7 @@ public abstract class FormalArgument
         
         if ( failures == 0 )
         {            
-            if ( arg.getFargName().compareTo("<arg>") != 0 )
+            if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
             
