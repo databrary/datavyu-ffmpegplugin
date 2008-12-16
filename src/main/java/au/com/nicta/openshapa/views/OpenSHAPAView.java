@@ -1,8 +1,10 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.io.File;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -26,7 +28,7 @@ implements KeyEventDispatcher {
         super(app);
         KeyboardFocusManager key = KeyboardFocusManager
                                    .getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);        
+        key.addKeyEventDispatcher(this);
 
         // generated GUI builder code
         initComponents();
@@ -52,7 +54,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewDatabaseForm() {
-        OpenSHAPA.getApplication().showNewDatabaseForm();  
+        OpenSHAPA.getApplication().showNewDatabaseForm();
     }
 
     /**
@@ -91,8 +93,16 @@ implements KeyEventDispatcher {
      * Action for invoking a script.
      */
     @Action
-    public void runScript() {
-        OpenSHAPA.getApplication().runScript();
+    public void runScript() {        
+        FileDialog c = new FileDialog(OpenSHAPA.getApplication().getMainFrame(),
+                                      "Select ruby script file:",
+                                      FileDialog.LOAD);
+        c.setVisible(true);
+
+        if (c.getFile() != null && c.getDirectory() != null) {
+            File rubyFile = new File(c.getDirectory() + c.getFile());
+            OpenSHAPA.getApplication().runScript(rubyFile);
+        }
     }
 
     /** This method is called from within the constructor to

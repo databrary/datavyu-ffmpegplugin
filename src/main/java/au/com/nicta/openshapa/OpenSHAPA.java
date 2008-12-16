@@ -13,11 +13,13 @@ import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
-//import com.sun.script.jruby.JRubyScriptEngine;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Vector;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -105,17 +107,16 @@ implements KeyEventDispatcher {
 
     /**
      * Action for running a script.
+     *
+     * @param rubyFile The file of the ruby script to run.
      */
-    public void runScript() {
-        ScriptEngineManager m = new ScriptEngineManager();
-        ScriptEngine rubyEngine = m.getEngineByName("jruby");
-        ScriptContext context = rubyEngine.getContext();
-
-        context.setAttribute("label", new Integer(4), ScriptContext.ENGINE_SCOPE);
-
+    public void runScript(final File rubyFile) {
         try {
-            rubyEngine.eval("puts 2 + 4");
+            FileReader reader = new FileReader(rubyFile);
+            rubyEngine.eval(reader);
         } catch (ScriptException e) {
+            logger.error("Unable to execute script: ", e);
+        } catch (FileNotFoundException e) {
             logger.error("Unable to execute script: ", e);
         }
     }
@@ -218,6 +219,15 @@ implements KeyEventDispatcher {
     protected void startup() {
         try {
             db = new MacshapaDatabase();
+
+            // Build the ruby scripting engine.
+            ScriptEngineManager m = new ScriptEngineManager();
+            rubyEngine = m.getEngineByName("jruby");
+            ScriptContext context = rubyEngine.getContext();
+            context.setAttribute("database", db, ScriptContext.ENGINE_SCOPE);
+
+            // Set ticks - this should be done above, next to the db creation
+            // but it is is currently throwing an exception.
             db.setTicks(TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
@@ -254,6 +264,16 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Gets the single instance database associated with the currently running
+     * OpenSHAPA.
+     *
+     * @return The single database in use with this instance of OpenSHAPA
+     */
+    public static Database getDatabase() {
+        return OpenSHAPA.getApplication().db;
+    }
+
+    /**
      * Main method launching the application.
      *
      * @param args The command line arguments passed to OpenSHAPA.
@@ -278,6 +298,9 @@ implements KeyEventDispatcher {
 
     /** The current database we are working on. */
     private Database db;
+
+    /** Ruby scripting engine to use for this instance of openshapa. */
+    private ScriptEngine rubyEngine;
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
