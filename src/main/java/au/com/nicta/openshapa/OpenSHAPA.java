@@ -190,6 +190,7 @@ implements KeyEventDispatcher {
 
             DataCell cell = new DataCell(db, dc.getID(), mve.getID());
             cell.setOnset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
+            System.out.println(cell.toString());
             lastCreatedCellID = db.appendCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
