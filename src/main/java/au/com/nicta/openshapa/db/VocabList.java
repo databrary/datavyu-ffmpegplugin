@@ -6958,7 +6958,7 @@ public class VocabList
                 "((VocabList) " +
                  "(vl_contents: " +
                   "(p1(<bravo>, <charlie>), " +
-                   "m0(<arg>), " +
+                   "m0(<val>), " +
                    "m2(<india>), " +
                    "m1(<echo>, <foxtrot>, <hotel>), " +
                    "p0(<alpha>), " +
@@ -6987,12 +6987,12 @@ public class VocabList
                    "<charlie>, " +
                    "<bravo>, " +
                    "p1(<bravo>, <charlie>), " +
-                   "<arg>, " +
+                   "<val>, " +
                    "<offset>, " +
                    "<onset>, " +
                    "<ord>, " +
-                   "<arg>, " +
-                   "m0(<arg>), " +
+                   "<val>, " +
+                   "m0(<val>), " +
                    "<alpha>, " +
                    "p0(<alpha>))))";
         final String expectedVLDBString0 = 
@@ -7013,7 +7013,7 @@ public class VocabList
                        "(type: TEXT) " +
                        "(varLen: false) " +
                        "(fArgList: " +
-                        "((TextStringFormalArg 4 <arg>))), " +
+                        "((TextStringFormalArg 4 <val>))), " +
                       "((MatrixVocabElement: 23 m2) " +
                        "(system: false) " +
                        "(type: NOMINAL) " +
@@ -7084,16 +7084,16 @@ public class VocabList
                       "(fArgList: " +
                        "((IntFormalArg 10 <bravo> false -9223372036854775808 9223372036854775807), " +
                         "(NominalFormalArg 11 <charlie> false ()))), " +
-                      "(TextStringFormalArg 8 <arg>), " +
+                      "(TextStringFormalArg 8 <val>), " +
                       "(TimeStampFormalArg 7 <offset> false null null), " +
                       "(TimeStampFormalArg 6 <onset> false null null), " +
                       "(IntFormalArg 5 <ord> false -9223372036854775808 9223372036854775807), " +
-                      "(TextStringFormalArg 4 <arg>), " +
+                      "(TextStringFormalArg 4 <val>), " +
                       "((MatrixVocabElement: 3 m0) " +
                        "(system: false) " +
                        "(type: TEXT) " +
                        "(varLen: false) " +
-                       "(fArgList: ((TextStringFormalArg 4 <arg>))), " +
+                       "(fArgList: ((TextStringFormalArg 4 <val>))), " +
                       "(FloatFormalArg 2 <alpha> false -1.7976931348623157E308 1.7976931348623157E308), " +
                       "((PredicateVocabElement: 1 p0) " +
                        "(system: false) " +

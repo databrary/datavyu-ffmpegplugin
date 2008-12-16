@@ -655,7 +655,7 @@ public class TextStringFormalArg extends FormalArgument
 
         if ( failures == 0 )
         {            
-            if ( arg.getFargName().compareTo("<arg>") != 0 )
+            if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
             

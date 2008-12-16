@@ -8096,12 +8096,12 @@ public class Predicate extends DBElement
                                                   "(itsCellID 0) " +
                                                   "(itsValue <untyped>) " +
                                                   "(subRange false))))";
-        String testArgString1 = "(<arg>)";
+        String testArgString1 = "(<val>)";
         String testArgDBString1 = "(argList ((UndefinedDataValue (id 0) " +
                                                  "(itsFargID 10) " +
                                                  "(itsFargType UNTYPED) " +
                                                  "(itsCellID 0) " +
-                                                 "(itsValue <arg>) " +
+                                                 "(itsValue <val>) " +
                                                  "(subRange false))))";
         boolean threwSystemErrorException = false;
         boolean pass = true;
@@ -8217,7 +8217,7 @@ public class Predicate extends DBElement
             
             pve1 = new PredicateVocabElement(db, "test1");
             
-            farg = new UnTypedFormalArg(db, "<arg>");
+            farg = new UnTypedFormalArg(db, "<val>");
             pve1.appendFormalArg(farg);
             
             pve1.setVarLen(true);
