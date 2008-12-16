@@ -514,4 +514,49 @@ public class IntDataValue extends DataValue
         
     } /* IntDataValue::IntDataValuesAreLogicallyEqual() */
 
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        long hash = super.hashCode();
+        hash += this.itsValue * SEED1;
+        hash += this.maxVal * SEED2;
+        hash += this.minVal * SEED3;
+
+        return (int) (hash ^ (hash >>> 32));
+    }
+
+
+    /**
+     * Compares this FloatDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this FloatDataValue.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        IntDataValue i = (IntDataValue) obj;
+        return i.itsValue == this.itsValue
+            && i.maxVal == this.maxVal
+            && i.minVal == this.minVal
+            && super.equals(obj);
+    }
+
 } /* IntDataValue */

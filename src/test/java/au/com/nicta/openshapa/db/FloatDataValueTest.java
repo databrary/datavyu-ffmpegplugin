@@ -11,13 +11,19 @@ import static org.junit.Assert.*;
  * @author cfreeman
  */
 public class FloatDataValueTest {
-    private final static double DELTA = 0.001;
+    /** tolerance for double comparisons in tests. */
+    private static final double DELTA = 0.001;
 
+    /** Database for tests. */
     private Database db;
-    private MatrixVocabElement float_mve;
+    /** MatrixVocabElement for tests. */
+    private MatrixVocabElement floatMve;
+    /** FloatFormalArg for tests. */
     private FloatFormalArg ffa;
 
-    private MatrixVocabElement float_mve2;
+    /** MatrixVocalElement 2 for tests. */
+    private MatrixVocabElement floatMve2;
+    /** FloatFormalArg 2 for tests. */
     private FloatFormalArg ffa2;
 
     /**
@@ -36,18 +42,18 @@ public class FloatDataValueTest {
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
-        float_mve = new MatrixVocabElement(db, "float_mve");
-        float_mve.setType(MatrixVocabElement.matrixType.FLOAT);
+        floatMve = new MatrixVocabElement(db, "float_mve");
+        floatMve.setType(MatrixVocabElement.matrixType.FLOAT);
         ffa = new FloatFormalArg(db);
-        float_mve.appendFormalArg(ffa);
-        db.vl.addElement(float_mve);
+        floatMve.appendFormalArg(ffa);
+        db.vl.addElement(floatMve);
 
-        float_mve2 = new MatrixVocabElement(db, "float_mve2");
-        float_mve2.setType(MatrixVocabElement.matrixType.FLOAT);
+        floatMve2 = new MatrixVocabElement(db, "float_mve2");
+        floatMve2.setType(MatrixVocabElement.matrixType.FLOAT);
         ffa2 = new FloatFormalArg(db);
         ffa2.setRange(-100.0, 100.0);
-        float_mve2.appendFormalArg(ffa2);
-        db.vl.addElement(float_mve2);
+        floatMve2.appendFormalArg(ffa2);
+        db.vl.addElement(floatMve2);
     }
 
     /**
@@ -71,8 +77,8 @@ public class FloatDataValueTest {
         assertNotNull(db);
 
         assertEquals(float_value.getDB(), db);
-        assertEquals(float_value.maxVal, 0.0, DELTA);
-        assertEquals(float_value.minVal, 0.0, DELTA);
+        assertEquals(float_value.getMaxVal(), 0.0, DELTA);
+        assertEquals(float_value.getMinVal(), 0.0, DELTA);
     }
 
     /**
@@ -86,20 +92,22 @@ public class FloatDataValueTest {
         FloatDataValue float_value2 = new FloatDataValue(db, ffa2.getID());
 
         assertNotNull(db);
-        assertNotNull(float_mve);
+        assertNotNull(floatMve);
         assertNotNull(ffa);
-        assertNotNull(float_mve2);
+        assertNotNull(floatMve2);
         assertNotNull(ffa2);
 
         assertEquals(float_value.getSubRange(), ffa.getSubRange());
-        assertEquals(float_value.getItsValue(), float_value.ItsDefault, DELTA);
-        assertEquals(float_value.maxVal, 0, DELTA);
-        assertEquals(float_value.minVal, 0, DELTA);
+        assertEquals(float_value.getItsValue(),
+                                               float_value.getDefault(), DELTA);
+        assertEquals(float_value.getMaxVal(), 0, DELTA);
+        assertEquals(float_value.getMinVal(), 0, DELTA);
 
         assertEquals(float_value2.getSubRange(), ffa2.getSubRange());
-        assertEquals(float_value2.getItsValue(), float_value2.ItsDefault, DELTA);
-        assertEquals(float_value2.maxVal, ffa2.getMaxVal());
-        assertEquals(float_value2.minVal, ffa2.getMinVal());
+        assertEquals(float_value2.getItsValue(),
+                                              float_value2.getDefault(), DELTA);
+        assertEquals(float_value2.getMaxVal(), ffa2.getMaxVal());
+        assertEquals(float_value2.getMinVal(), ffa2.getMinVal());
     }
 
     /**
@@ -129,7 +137,7 @@ public class FloatDataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
-        FloatDataValue float_value = new FloatDataValue(db, float_mve.getID());
+        FloatDataValue float_value = new FloatDataValue(db, floatMve.getID());
     }
 
     /**
@@ -144,9 +152,9 @@ public class FloatDataValueTest {
         FloatDataValue f_value2 = new FloatDataValue(db, ffa2.getID(), 200.0);
 
         assertNotNull(db);
-        assertNotNull(float_mve);
+        assertNotNull(floatMve);
         assertNotNull(ffa);
-        assertNotNull(float_mve2);
+        assertNotNull(floatMve2);
         assertNotNull(ffa2);
 
         assertNotNull(f_value0);
@@ -154,20 +162,20 @@ public class FloatDataValueTest {
         assertNotNull(f_value2);
 
         assertEquals(f_value0.getSubRange(), ffa.getSubRange());
-        assertEquals(f_value0.itsValue, 200.0, DELTA);
-        assertEquals(f_value0.maxVal, 0.0, DELTA);
-        assertEquals(f_value0.minVal, 0.0, DELTA);
+        assertEquals(f_value0.getItsValue(), 200.0, DELTA);
+        assertEquals(f_value0.getMaxVal(), 0.0, DELTA);
+        assertEquals(f_value0.getMinVal(), 0.0, DELTA);
 
         assertEquals(f_value1.getSubRange(), ffa2.getSubRange());
-        assertEquals(f_value1.itsValue, 1.0, DELTA);
-        assertEquals(f_value1.maxVal, ffa2.getMaxVal(), DELTA);
-        assertEquals(f_value1.minVal, ffa2.getMinVal(), DELTA);
+        assertEquals(f_value1.getItsValue(), 1.0, DELTA);
+        assertEquals(f_value1.getMaxVal(), ffa2.getMaxVal(), DELTA);
+        assertEquals(f_value1.getMinVal(), ffa2.getMinVal(), DELTA);
 
         assertEquals(f_value2.getSubRange(), ffa2.getSubRange());
         assertEquals(f_value2.subRange, ffa2.getSubRange());
-        assertEquals(f_value2.itsValue, ffa2.getMaxVal(), DELTA);
-        assertEquals(f_value2.maxVal, ffa2.getMaxVal(), DELTA);
-        assertEquals(f_value2.minVal, ffa2.getMinVal(), DELTA);
+        assertEquals(f_value2.getItsValue(), ffa2.getMaxVal(), DELTA);
+        assertEquals(f_value2.getMaxVal(), ffa2.getMaxVal(), DELTA);
+        assertEquals(f_value2.getMinVal(), ffa2.getMinVal(), DELTA);
     }
 
     /**
@@ -187,7 +195,8 @@ public class FloatDataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
-        FloatDataValue f_value = new FloatDataValue(db, DBIndex.INVALID_ID, 1.0);
+        FloatDataValue f_value =
+                                new FloatDataValue(db, DBIndex.INVALID_ID, 1.0);
     }
 
     /**
@@ -197,7 +206,7 @@ public class FloatDataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
-        FloatDataValue f_value = new FloatDataValue(db, float_mve.getID(), 1.0);
+        FloatDataValue f_value = new FloatDataValue(db, floatMve.getID(), 1.0);
     }
 
     /**
@@ -280,7 +289,7 @@ public class FloatDataValueTest {
                                 "(itsValue 50.0) " +
                                 "(subRange true) " +
                                 "(minVal -100.0) " +
-                                "(maxVal 100.0))";        
+                                "(maxVal 100.0))";
 
         FloatDataValue f_value = new FloatDataValue(db, ffa2.getID(), 50.0);
         assertEquals(f_value.toDBString(), testDBString0);
@@ -331,6 +340,8 @@ public class FloatDataValueTest {
                                                                    f_copy));
         assertFalse(FloatDataValue.FloatDataValuesAreLogicallyEqual(f_value0,
                                                                     f_value1));
+        assertTrue(f_value0.equals(f_copy));
+        assertFalse(f_value0.equals(f_value1));
     }
 
     @Test
@@ -340,5 +351,41 @@ public class FloatDataValueTest {
         FloatDataValue f_copy = (FloatDataValue) f_value0.clone();
 
         assertEquals(f_value0, f_copy);
+    }
+
+
+    @Test
+    public void testEquals()
+    throws SystemErrorException {
+        FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue f_value1 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue f_value2 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue f_value3 = new FloatDataValue(db, ffa.getID(), 100.001);
+
+        // Reflexive
+        assertTrue(f_value0.equals(f_value0));
+        // Symmetric
+        assertTrue(f_value0.equals(f_value1));
+        assertTrue(f_value1.equals(f_value0));
+        // Transitive
+        assertTrue(f_value0.equals(f_value1));
+        assertTrue(f_value0.equals(f_value2));
+        assertTrue(f_value1.equals(f_value2));
+        // Consistent not tested
+        // Null
+        assertFalse(f_value0.equals(null));
+        // Hashcode
+        assertTrue(f_value0.hashCode() == f_value1.hashCode());
+
+        // Not equals tests
+        assertFalse(f_value0.equals(f_value3));
+        assertTrue(f_value0.hashCode() != f_value3.hashCode());
+
+        // modify f_value3
+        double val = f_value3.getItsValue() * 3.0;
+        f_value3.setItsValue(val);
+        assertTrue(f_value0.equals(f_value3));
+        assertTrue(f_value3.equals(f_value1));
+        assertTrue(f_value2.hashCode() == f_value3.hashCode());
     }
 }
