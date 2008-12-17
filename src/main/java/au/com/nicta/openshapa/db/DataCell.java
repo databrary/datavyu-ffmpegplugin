@@ -8665,7 +8665,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             pve1 = db.getPredVE(pve1ID);
 
             pve2 = new PredicateVocabElement(db, "pve2");
-            farg = new UnTypedFormalArg(db, "<arg>");
+            farg = new UnTypedFormalArg(db, "<val>");
             pve2.appendFormalArg(farg);
             pve2ID = db.addPredVE(pve2);
             // get a copy of the databases version of pve2 with ids assigned
@@ -8673,7 +8673,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
 
             pve3 = new PredicateVocabElement(db, "pve3");
-            farg = new UnTypedFormalArg(db, "<arg>");
+            farg = new UnTypedFormalArg(db, "<val>");
             pve3.appendFormalArg(farg);
             pve3ID = db.addPredVE(pve3);
             // get a copy of the databases version of pve3 with ids assigned
@@ -9431,8 +9431,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             String i_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (0))";
             String i_cell2_string = "(-1, 00:00:03:000, 00:00:04:000, (22))";
     
-            String m_cell0_string = "(-1, 00:00:00:000, 00:00:00:000, (<arg>))";
-            String m_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (<arg>))";
+            String m_cell0_string = "(-1, 00:00:00:000, 00:00:00:000, (<val>))";
+            String m_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (<val>))";
             String m_cell2_string = "(-1, 00:00:05:000, 00:00:06:000, " +
                     "(pve1(pve2(pve3(j_q_nominal)), \"just a quote string\")))";
     
@@ -9583,7 +9583,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(itsFargID 26) " +
                                             "(itsFargType UNTYPED) " +
                                             "(itsCellID 0) " +
-                                            "(itsValue <arg>) " +
+                                            "(itsValue <val>) " +
                                             "(subRange false))))))))";
             String m_cell1_DBstring =
                 "(DataCell (id 0) " +
@@ -9600,7 +9600,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                             "(itsFargID 26) " +
                                             "(itsFargType UNTYPED) " +
                                             "(itsCellID 0) " +
-                                            "(itsValue <arg>) " +
+                                            "(itsValue <val>) " +
                                             "(subRange false))))))))";
             String m_cell2_DBstring =
                 "(DataCell (id 0) " +

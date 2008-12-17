@@ -7065,7 +7065,7 @@ public class macshapa_odb_reader
      *************************************************************************/
     
     private void dump_s_var_definition_to_listing(
-                                            MatrixVocabElement.matrixType type, 
+                                            MatrixVocabElement.MatrixType type,
                                             boolean variable_length, 
                                             int col_width)
         throws SystemErrorException
@@ -9592,7 +9592,7 @@ public class macshapa_odb_reader
      *************************************************************************/
 
     final void parse_s_var_cell(long s_var_col_ID,
-                                MatrixVocabElement.matrixType s_var_type,
+                                MatrixVocabElement.MatrixType s_var_type,
                                 MatrixVocabElement s_var_mve)
 	throws SystemErrorException,
                java.io.IOException
@@ -9636,12 +9636,12 @@ public class macshapa_odb_reader
 	{
 	    /* start with a little more sanity checking */
 
-	    if ( ( s_var_type != MatrixVocabElement.matrixType.FLOAT ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.INTEGER ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.MATRIX ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.NOMINAL ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.PREDICATE ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.TEXT ) )
+	    if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+                 ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
+                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
+                 ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
+                 ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
+                 ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
 	    {
                 throw new SystemErrorException(mName +
                         "s_var_type out of range.");
@@ -9868,7 +9868,7 @@ public class macshapa_odb_reader
 	     */
 	    if ( ! this.abort_parse )
 	    {
-                if ( ( s_var_type == MatrixVocabElement.matrixType.MATRIX ) &&
+                if ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) &&
                      ( s_var_mve.getVarLen() ) )
                 {
                     throw new SystemErrorException(mName + 
@@ -9933,7 +9933,7 @@ public class macshapa_odb_reader
 	    }
             
             if ( ( arg_number > 0 ) &&
-                 ( s_var_type != MatrixVocabElement.matrixType.MATRIX ) )
+                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
             {
                 throw new SystemErrorException(mName + 
                         "non-matrix s_var with more than one argument?!?");
@@ -10055,7 +10055,7 @@ public class macshapa_odb_reader
      **************************************************************************/
 
     private void parse_s_var_cell_list(long s_var_col_ID,
-                                       MatrixVocabElement.matrixType s_var_type,
+                                       MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
 	throws SystemErrorException,
                java.io.IOException
@@ -10702,7 +10702,7 @@ public class macshapa_odb_reader
     private DataValue parse_s_var_cell_value_attribute(
                                       FormalArgument farg,
                                       int arg_num,
-                                      MatrixVocabElement.matrixType s_var_type)
+                                      MatrixVocabElement.MatrixType s_var_type)
         throws SystemErrorException,
                java.io.IOException
     {
@@ -10729,12 +10729,12 @@ public class macshapa_odb_reader
 	
 	/* start with a little more sanity checking */
 
-	if ( ( s_var_type != MatrixVocabElement.matrixType.FLOAT ) &&
-             ( s_var_type != MatrixVocabElement.matrixType.INTEGER ) &&
-             ( s_var_type != MatrixVocabElement.matrixType.MATRIX ) &&
-             ( s_var_type != MatrixVocabElement.matrixType.NOMINAL ) &&
-             ( s_var_type != MatrixVocabElement.matrixType.PREDICATE ) &&
-             ( s_var_type != MatrixVocabElement.matrixType.TEXT ) )
+	if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
 	{
 	    throw new SystemErrorException(mName + 
 		    "s_var_ptr->kind out of range.");
@@ -10743,7 +10743,7 @@ public class macshapa_odb_reader
 	if ( ! this.abort_parse )
 	{
 	    if ( ( arg_num > 0 ) && 
-                 ( s_var_type != MatrixVocabElement.matrixType.MATRIX ) )
+                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
 	    {
 		throw new SystemErrorException(mName + 
 			"((arg_num > 1) && (type != matrixID))");
@@ -11412,7 +11412,7 @@ public class macshapa_odb_reader
 	boolean variable_length;
         FormalArgument fa;
 	MatrixVocabElement mve;
-        MatrixVocabElement.matrixType mveType;
+        MatrixVocabElement.MatrixType mveType;
         Vector<String> args = null;
         DataColumn dc = null;
 
@@ -11463,7 +11463,7 @@ public class macshapa_odb_reader
 	have_variable_length = false;
 	must_be_matrix       = false;
 	variable_length      = false;
-	mveType              = MatrixVocabElement.matrixType.MATRIX;
+	mveType              = MatrixVocabElement.MatrixType.MATRIX;
 	col_width            = DEFAULT_HEXTENT;
 
 	/* now parse the a-list assocated with the spreadsheet variable declaration */
@@ -11652,9 +11652,9 @@ public class macshapa_odb_reader
 	/* check for disagreement between type and argument list */
 	if ( ( ! this.abort_parse ) && 
 	     ( must_be_matrix ) && 
-             ( mveType != MatrixVocabElement.matrixType.MATRIX ) )
+             ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
 	{
-	    mveType = MatrixVocabElement.matrixType.MATRIX;
+	    mveType = MatrixVocabElement.MatrixType.MATRIX;
 
 	    post_warning_message(S_VAR_TYPE_ARG_LIST_MISMATCH_WARN, 
 		    "Will force the type of the spreadsheet variable " +
@@ -11664,7 +11664,7 @@ public class macshapa_odb_reader
 	/* check for disagreement between variable_length and type */
 	if ( ( ! this.abort_parse ) && 
 	     ( variable_length ) && 
-             ( mveType != MatrixVocabElement.matrixType.MATRIX ) )
+             ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
 	{
 	    variable_length = false;
 
@@ -12295,8 +12295,8 @@ public class macshapa_odb_reader
         DataColumn s_var_col = null;
         long s_var_col_ID = DBIndex.INVALID_ID;
         long s_var_mve_ID = DBIndex.INVALID_ID;
-        MatrixVocabElement.matrixType s_var_type = 
-                MatrixVocabElement.matrixType.UNDEFINED;
+        MatrixVocabElement.MatrixType s_var_type =
+                MatrixVocabElement.MatrixType.UNDEFINED;
 
 	if ( this.abort_parse )
 	{
@@ -12358,7 +12358,7 @@ public class macshapa_odb_reader
 
                     s_var_type = s_var_col.getItsMveType();
                     
-                    if ( s_var_type == MatrixVocabElement.matrixType.UNDEFINED )
+                    if ( s_var_type == MatrixVocabElement.MatrixType.UNDEFINED )
                     {
                         throw new SystemErrorException(mName + 
                                 "s_var_type undefined?!?");
@@ -12622,7 +12622,7 @@ public class macshapa_odb_reader
      **************************************************************************/
 
     private void parse_s_var_def_alist(long s_var_col_ID,
-                                       MatrixVocabElement.matrixType s_var_type,
+                                       MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
 	throws SystemErrorException,
                java.io.IOException
@@ -12726,9 +12726,9 @@ public class macshapa_odb_reader
 				have_vocab = true;
 
 				if ( ( s_var_type ==
-                                       MatrixVocabElement.matrixType.MATRIX ) ||
+                                       MatrixVocabElement.MatrixType.MATRIX ) ||
                                      ( s_var_type ==
-                                       MatrixVocabElement.matrixType.PREDICATE ) )
+                                       MatrixVocabElement.MatrixType.PREDICATE ) )
 				{
 				    parse_s_var_def_vocab_attribute(s_var_col_ID);
 				}
@@ -12819,8 +12819,8 @@ public class macshapa_odb_reader
 	}
 
 	if ( ( ! this.abort_parse ) && ( ! have_vocab ) && 
-             ( ( s_var_type == MatrixVocabElement.matrixType.MATRIX ) ||
-               ( s_var_type == MatrixVocabElement.matrixType.PREDICATE ) ) )
+             ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) ||
+               ( s_var_type == MatrixVocabElement.MatrixType.PREDICATE ) ) )
 	{
 	    post_warning_message(MISSING_ALIST_ENTRY_WARN, 
 		    "VOCAB> entry missing from a spreadsheet predicate or " +
@@ -12913,7 +12913,7 @@ public class macshapa_odb_reader
      **************************************************************************/
 
     private void parse_s_var_def_cells_attribute(long s_var_col_ID,
-                                       MatrixVocabElement.matrixType s_var_type,
+                                       MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
 	throws SystemErrorException,
                java.io.IOException
@@ -14173,7 +14173,7 @@ public class macshapa_odb_reader
      *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' | 
      *                      '<<FLOAT>>' | '<<PREDICATE>>' | '<<MATRIX>>'
      *
-     * The function returns a MatrixVocabElement.matrixType indicating the value 
+     * The function returns a MatrixVocabElement.MatrixType indicating the value
      * of the TYPE> a-list entry, or the code for <<MATRIX>> if the value is 
      * either missing or of an inappropriate type.
      *
@@ -14183,7 +14183,7 @@ public class macshapa_odb_reader
      *
      *	  - None.
      *
-     * Returns: MatrixVocabElement.matrixType correlated with the value of the 
+     * Returns: MatrixVocabElement.MatrixType correlated with the value of the
      *          TYPE> attribute.
      *
      * Changes:
@@ -14192,7 +14192,7 @@ public class macshapa_odb_reader
      *
      *************************************************************************/
 
-    private MatrixVocabElement.matrixType parse_s_var_type_attribute()
+    private MatrixVocabElement.MatrixType parse_s_var_type_attribute()
 	throws SystemErrorException,
                java.io.IOException
     {
@@ -14203,9 +14203,9 @@ public class macshapa_odb_reader
 	final String type_val_type_mismatch_mssg = 
 		"The value of the TYPE> attribute must be a private value.  " +
 		"Value forced to <<MATRIX>>.\n";
-	MatrixVocabElement.matrixType type;
+	MatrixVocabElement.MatrixType type;
 
-	type = MatrixVocabElement.matrixType.MATRIX;  /* default value -- 
+	type = MatrixVocabElement.MatrixType.MATRIX;  /* default value --
                                                        * overwritten if we read 
                                                        * a value from the db 
                                                        * file
@@ -14254,27 +14254,27 @@ public class macshapa_odb_reader
 		    switch ( (this.l0_tok).aux )
 		    {
 			case FLOAT_PVAL:
-			    type = MatrixVocabElement.matrixType.FLOAT;
+			    type = MatrixVocabElement.MatrixType.FLOAT;
 			    break;
 
 			case INTEGER_PVAL:
-			    type = MatrixVocabElement.matrixType.INTEGER;
+			    type = MatrixVocabElement.MatrixType.INTEGER;
 			    break;
 
 			case MATRIX_PVAL:
-			    type = MatrixVocabElement.matrixType.MATRIX;
+			    type = MatrixVocabElement.MatrixType.MATRIX;
 			    break;
 
 			case NOMINAL_PVAL:
-			    type = MatrixVocabElement.matrixType.NOMINAL;
+			    type = MatrixVocabElement.MatrixType.NOMINAL;
 			    break;
 
 			case PREDICATE_PVAL:
-			    type = MatrixVocabElement.matrixType.PREDICATE;
+			    type = MatrixVocabElement.MatrixType.PREDICATE;
 			    break;
 
 			case TEXT_PVAL:
-			    type = MatrixVocabElement.matrixType.TEXT;
+			    type = MatrixVocabElement.MatrixType.TEXT;
 			    break;
 
 			default:
@@ -15609,7 +15609,7 @@ public class macshapa_odb_reader
             
             query_mve = new MatrixVocabElement(this.db, QUERY_VAR_NAME);
             
-            query_mve.setType(MatrixVocabElement.matrixType.PREDICATE);
+            query_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
                 
             query_farg = new PredFormalArg(this.db, "<val>");
             

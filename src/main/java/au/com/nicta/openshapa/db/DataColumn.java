@@ -6384,7 +6384,7 @@ public class DataColumn extends Column
                                             "(minVal 0) " +
                                             "(maxVal 0))))))))))))";
             String expected_m_col0_string = 
-                "(m_col0, ((1, 00:00:00:000, 00:00:00:000, (<arg>))))";
+                "(m_col0, ((1, 00:00:00:000, 00:00:00:000, (<val>))))";
             String expected_m_col0_DBstring = 
                 "(DataColumn " +
                     "(name m_col0) " +
@@ -6414,7 +6414,7 @@ public class DataColumn extends Column
                                             "(itsFargID 16) " +
                                             "(itsFargType UNTYPED) " +
                                             "(itsCellID 70) " +
-                                            "(itsValue <arg>) " +
+                                            "(itsValue <val>) " +
                                             "(subRange false))))))))))))";
             String expected_m_col1_string = 
                 "(m_col1, ())";

@@ -9,7 +9,7 @@
 
 package au.com.nicta.openshapa.db;
 
-import java.util.Hashtable;
+import au.com.nicta.openshapa.util.OpenHashtable;
 import java.util.Vector;
 
 /**
@@ -54,8 +54,8 @@ public class DBIndex
      protected Database db = null;
      
      /** Index of all instances of DBelement in the Database */
-     protected Hashtable<Long, DBElement> index = 
-             new Hashtable<Long, DBElement>();
+     protected OpenHashtable<Long, DBElement> index =
+             new OpenHashtable<Long, DBElement>();
     
     
     /*************************************************************************/
@@ -177,7 +177,7 @@ public class DBIndex
             throw new SystemErrorException(mName +
                                            "dbe.getID() != INVALID_ID");
         }
-        else if ( index.containsValue(dbe) )
+        else if ( index.containsReference(dbe) )
         {
             throw new SystemErrorException(mName + "dbe alread in index?!?");
         }

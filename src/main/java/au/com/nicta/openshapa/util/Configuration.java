@@ -44,7 +44,7 @@ public class Configuration extends DefaultHandler
   protected StringBuffer  value = new StringBuffer();
   protected Attributes    attributes;
 
-  protected Hashtable<String, Vector<ConfigurationObject>> configMap = new Hashtable<String, Vector<ConfigurationObject>>();
+  protected OpenHashtable<String, Vector<ConfigurationObject>> configMap = new OpenHashtable<String, Vector<ConfigurationObject>>();
   protected int elementCount = 0;
 
   protected Stack<ConfigurationObject> parentStack = new Stack<ConfigurationObject>();

@@ -1672,6 +1672,79 @@ public abstract class DataValue extends DBElement
                                                 copyDesc);    
                 }
             }
+            else if ( base instanceof FloatDataValue )
+            {
+                if ( ! ( copy instanceof FloatDataValue ) )
+                {
+                    failures++;
+                    
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "%s is a FloatDataValue but %s is not.\n", 
+                                baseDesc, copyDesc);
+                    }
+                }
+                else 
+                {
+                    failures += 
+                        FloatDataValue.VerifyFloatDVCopy((FloatDataValue)base,
+                                                         (FloatDataValue)copy,
+                                                         outStream,
+                                                         verbose,
+                                                         baseDesc,
+                                                         copyDesc);    
+                }
+            }
+            else if ( base instanceof IntDataValue )
+            {
+                if ( ! ( copy instanceof IntDataValue ) )
+                {
+                    failures++;
+                    
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "%s is a IntDataValue but %s is not.\n", 
+                                baseDesc, copyDesc);
+                    }
+                }
+                else 
+                {
+                    failures += 
+                        IntDataValue.VerifyIntDVCopy((IntDataValue)base,
+                                                     (IntDataValue)copy,
+                                                     outStream,
+                                                     verbose,
+                                                     baseDesc,
+                                                     copyDesc);    
+                }
+            }
+            else if ( base instanceof NominalDataValue )
+            {
+                if ( ! ( copy instanceof NominalDataValue ) )
+                {
+                    failures++;
+                    
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "%s is a NominalDataValue but %s is not.\n", 
+                                baseDesc, copyDesc);
+                    }
+                }
+                else 
+                {
+                    failures += 
+                        NominalDataValue.
+                            VerifyNominalDVCopy((NominalDataValue)base,
+                                                (NominalDataValue)copy,
+                                                outStream,
+                                                verbose,
+                                                baseDesc,
+                                                copyDesc);    
+                }
+            }
             else if ( base instanceof PredDataValue )
             {
                 if ( ! ( copy instanceof PredDataValue ) )
@@ -1720,6 +1793,31 @@ public abstract class DataValue extends DBElement
                                                     verbose,
                                                     baseDesc,
                                                     copyDesc);    
+                }
+            }
+            else if ( base instanceof TextStringDataValue )
+            {
+                if ( ! ( copy instanceof TextStringDataValue ) )
+                {
+                    failures++;
+                    
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "%s is a TextStringDataValue but %s is not.\n", 
+                                baseDesc, copyDesc);
+                    }
+                }
+                else 
+                {
+                    failures += 
+                        TextStringDataValue.
+                            VerifyTextStringDVCopy((TextStringDataValue)base,
+                                                   (TextStringDataValue)copy,
+                                                   outStream,
+                                                   verbose,
+                                                   baseDesc,
+                                                   copyDesc);    
                 }
             }
             else if ( base instanceof TimeStampDataValue )
@@ -1775,7 +1873,7 @@ public abstract class DataValue extends DBElement
             else
             {
                 failures++;
-                outStream.printf("%s is a DataValue of unknown type.\n",
+                outStream.printf("%s is a DataValue of unknown type. AAAA\n",
                                  baseDesc);
             }
         }

@@ -288,7 +288,7 @@ implements KeyEventDispatcher {
     }
 
     /*
-     * Johns regression tests.
+    // Johns regression tests.
     public static void main(String[] args)
     throws au.com.nicta.openshapa.db.SystemErrorException {
         au.com.nicta.openshapa.db.Database.TestDatabase(System.out);

@@ -10,7 +10,7 @@
 package au.com.nicta.openshapa.db;
 
 import java.util.HashMap;
-import java.util.Hashtable;
+import au.com.nicta.openshapa.util.OpenHashtable;
 
 /**
  * Class ColumnList
@@ -53,7 +53,7 @@ public class ColumnList
     protected Database db = null;
 
     /** Index of all instances of Column in the column list */
-    protected Hashtable<Long, Column> cl = new Hashtable<Long, Column>();
+    protected OpenHashtable<Long, Column> cl = new OpenHashtable<Long, Column>();
     
     protected HashMap<String, Long> nameMap = new HashMap<String, Long>();
           
@@ -334,7 +334,7 @@ public class ColumnList
             throw new SystemErrorException(mName +
                                            "col.getID() != INVALID_ID");
         }
-        else if ( this.cl.containsValue(col) )
+        else if ( this.cl.containsReference(col) )
         {
             throw new SystemErrorException(mName + "col already in cl?!?");
         }

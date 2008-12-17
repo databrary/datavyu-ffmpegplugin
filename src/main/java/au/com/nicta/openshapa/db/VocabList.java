@@ -10,7 +10,7 @@
 package au.com.nicta.openshapa.db;
 
 import java.util.HashMap;
-import java.util.Hashtable;
+import au.com.nicta.openshapa.util.OpenHashtable;
 
 /**
  * Class VocabList
@@ -53,8 +53,8 @@ public class VocabList
     protected Database db = null;
 
     /** Index of all instances of VocabElement in the vocab list */
-    protected Hashtable<Long, VocabElement> vl =
-             new Hashtable<Long, VocabElement>();
+    protected OpenHashtable<Long, VocabElement> vl =
+             new OpenHashtable<Long, VocabElement>();
     
     /** map to allow allow lookups of vocab elements by name. */
     protected HashMap<String, Long> nameMap = new HashMap<String, Long>();
@@ -338,7 +338,7 @@ public class VocabList
             throw new SystemErrorException(mName +
                                            "ve.getID() != INVALID_ID");
         }
-        else if ( this.vl.containsValue(ve) )
+        else if ( this.vl.containsReference(ve) )
         {
             throw new SystemErrorException(mName + "ve already in vl?!?");
         }

@@ -8,7 +8,7 @@
 package au.com.nicta.openshapa.util;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import au.com.nicta.openshapa.util.OpenHashtable;
 import org.xml.sax.Attributes;
 
 /*
@@ -46,8 +46,8 @@ public class ConfigurationObject
   /**
    * Child mapping
    */
-  protected Hashtable<String, ConfigurationObject> elements =
-      new Hashtable<String, ConfigurationObject>();
+  protected OpenHashtable<String, ConfigurationObject> elements =
+      new OpenHashtable<String, ConfigurationObject>();
 
 
   /**
