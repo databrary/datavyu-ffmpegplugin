@@ -1047,7 +1047,42 @@ public abstract class DataValue extends DBElement
         
     } /* DataValue::DataValuesAreLogicallyEqual() */
 
-    
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        // Assuming id is unique or nearly so, return an int based off it.
+        // >>> is unsigned right shift
+        return (int)(id ^ (id >>> 32));
+    }
+
+    /**
+     * Compares this DBElement against another object.
+     * Assumption: DBElements are not equal just because their id fields match.
+     * This function will test that db, id and lastModUID all match.
+     * If id can be proved to be enough for testing equality we should
+     * implement a simpler, faster version.
+     *
+     * @param obj The object to compare this against.
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        DataValue dv = (DataValue) obj;
+        return itsFargID == dv.itsFargID
+            && itsFargType == dv.itsFargType
+            && subRange == dv.subRange
+            && super.equals(obj);
+    }
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/

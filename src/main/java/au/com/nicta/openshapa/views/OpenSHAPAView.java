@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -87,6 +88,18 @@ implements KeyEventDispatcher {
     @Action
     public void showSpreadsheet() {
         OpenSHAPA.getApplication().showSpreadsheet();
+    }
+
+    /**
+     * Action for running tests.
+     */
+    @Action
+    public void runTests() {
+        try {
+            OpenSHAPA.getApplication().runRegressionTests();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to run regression tests", e);
+        }
     }
 
     /**
@@ -217,6 +230,7 @@ implements KeyEventDispatcher {
 
         helpMenu1.setName("helpMenu1"); // NOI18N
 
+        contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
         contentsMenuItem.setName("contentsMenuItem"); // NOI18N
         helpMenu1.add(contentsMenuItem);
 

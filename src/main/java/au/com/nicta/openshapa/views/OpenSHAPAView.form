@@ -163,6 +163,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="contentsMenuItem">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="au.com.nicta.openshapa.views.OpenSHAPAView" id="runTests" methodName="runTests"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="contentsMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>

@@ -214,6 +214,13 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Run John's older test suit.
+     */
+    public void runRegressionTests() throws SystemErrorException {
+        Database.TestDatabase(System.out);
+    }
+
+    /**
      * At startup create and show the main frame of the application.
      */
     @Override
@@ -286,14 +293,6 @@ implements KeyEventDispatcher {
         logger.info("Starting OpenSHAPA.");
         launch(OpenSHAPA.class, args);
     }
-
-    /*
-    // Johns regression tests.
-    public static void main(String[] args)
-    throws au.com.nicta.openshapa.db.SystemErrorException {
-        au.com.nicta.openshapa.db.Database.TestDatabase(System.out);
-    }
-     */
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
