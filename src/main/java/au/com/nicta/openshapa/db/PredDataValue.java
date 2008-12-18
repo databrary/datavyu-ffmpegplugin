@@ -22,119 +22,118 @@ public class PredDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsValue: Instance of Predicate containing a representation of the 
+     * itsValue: Instance of Predicate containing a representation of the
      *      current value assigned to the predicate.
      *
-     * minVal & maxVal don't appear in PredDataValue as a subrange of 
+     * minVal & maxVal don't appear in PredDataValue as a subrange of
      *      predicates is expressed as a set of allowed predicates.  Given the
-     *      potential size of this set, we don't keep a copy of it here -- 
+     *      potential size of this set, we don't keep a copy of it here --
      *      referring directly to the associated formal argument when needed
-     *      instead.  
+     *      instead.
      */
  
-    /** ID of the represented predicate */
+    /** ID of the represented predicate. */
     protected Predicate itsValue = null;
-      
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * PredDataValue()
      *
-     * Constructor for instances of PredDataValue.  
-     * 
-     * Five versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of PredDataValue.
+     *
+     * Five versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
-     * The second takes a reference to a database, and a formal argument ID, and 
+     * The second takes a reference to a database, and a formal argument ID, and
      * attempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of PredDataValue as an
      * argument, and uses it to create a copy.
      *
-     * The fifth is much the same as the fourth, save that it takes the 
-     * additional blindCopy parameter.  If this parameter is true, the 
-     * PredDataValue is copied without reference to the pve's underlying 
+     * The fifth is much the same as the fourth, save that it takes the
+     * additional blindCopy parameter.  If this parameter is true, the
+     * PredDataValue is copied without reference to the pve's underlying
      * any predicates.  This is necessary if a pve has changed, and we need
      * a copy of the old predicate so we can touch it up for changes in the
      * associated pve.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public PredDataValue(Database db)
-        throws SystemErrorException
-    {
+        throws SystemErrorException {
         super(db);
-        
+
         this.setItsValue(null);
-        
+
     } /* PredDataValue::PredDataValue(db) */
-    
+
     public PredDataValue(Database db,
                         long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsValue(null);
-        
+
         this.setItsFargID(fargID);
-    
+
     } /* PredDataValue::PredDataValue(db, fargID) */
-    
+
     public PredDataValue(Database db,
                          long fargID,
                          Predicate value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsValue(value);
 
         this.setItsFargID(fargID);
-    
+
     } /* PredDataValue::PredDataValue(db, fargID, value) */
-    
+
     public PredDataValue(PredDataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         if ( dv.itsValue != null )
         {
             this.itsValue  = new Predicate(dv.itsValue);
         }
-        
+
     } /* PredDataValue::PredDataValue(dv) */
-    
+
     protected PredDataValue(PredDataValue dv,
                             boolean blindCopy)
         throws SystemErrorException
     {
         super(dv);
-        
+
         if ( dv.itsValue != null )
         {
             this.itsValue  = new Predicate(dv.itsValue, blindCopy);
         }
-        
+
     } /* PredDataValue::PredDataValue(dv, blindCopy) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -150,22 +149,22 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public Predicate getItsValue()
         throws SystemErrorException
     {
-        
+
         return new Predicate(this.itsValue);
-    
+
     } /* PredDataValue::getItsValue() */
-    
+
 
     /**
      * getItsValueBlind()
      *
      * Return a blind copy of the current value of the data value.
      *
-     * This is necessary if we are adjusting for a change in the definition 
+     * This is necessary if we are adjusting for a change in the definition
      * of a predicate, as a change in a predicate's argument list may cause
      * the normal sanity checks to fail.
      *
@@ -175,20 +174,20 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected Predicate getItsValueBlind()
         throws SystemErrorException
     {
-        
+
         return new Predicate(this.itsValue, true);
-    
+
     } /* PredDataValue::getItsValueBlind() */
-    
-    
+
+
     /**
      * getItsValuePveID()
      *
-     * If itsValue is an instance of a predicate vocab element, return the 
+     * If itsValue is an instance of a predicate vocab element, return the
      * ID assigned to that pve, or the INVALID_ID if it is not.
      *
      *                                      JRM -- 4/24/08
@@ -197,30 +196,30 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected long getItsValuePveID()
         throws SystemErrorException
     {
         long pveID = DBIndex.INVALID_ID;
-        
+
         if ( this.itsValue != null )
         {
             pveID = this.itsValue.getPveID();
         }
-        
+
         return pveID;
-        
+
     } /* PredDataValue::getItsValuePveID() */
 
-    
+
     /**
      * setItsValue()
      *
      * Set itsValue to the specified value.  If subrange is true, coerce the
      * value into the subrange.
      *
-     * Coercing a predicate into the specified doesn't make much sense, so 
-     * at least for now, if the predicate is out of range, we will simply 
+     * Coercing a predicate into the specified doesn't make much sense, so
+     * at least for now, if the predicate is out of range, we will simply
      * replace it with an empty predicate.
      *
      *                                              JRM -- 8/16/07
@@ -229,29 +228,29 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void setItsValue(Predicate value)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::setItsValue(): ";
         DBElement dbe;
         PredFormalArg pfa;
-        
+
         if ( ( value != null ) &&
              ( value.getDB() != this.db ) )
         {
             throw new SystemErrorException(mName + "value.getDB() != this.db");
         }
-        
+
         if ( ( value != null ) &&
              ( value.getPveID() != DBIndex.INVALID_ID ) &&
              ( ! db.vl.predInVocabList(value.getPveID()) ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "! db.vl.predInVocabList(value.getPredID())");
         }
-        
-        if ( ( value == null ) || 
+
+        if ( ( value == null ) ||
              ( value.getPveID() == DBIndex.INVALID_ID ) )
         {
             this.itsValue = new Predicate(this.db);
@@ -260,31 +259,31 @@ public class PredDataValue extends DataValue
         {
             if ( this.itsFargID == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
             else if ( itsFargType != FormalArgument.fArgType.PREDICATE )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargType != PREDICATE");
             }
-            
+
             dbe = this.db.idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof PredFormalArg ) )
             {
-                throw new SystemErrorException(mName + 
-                                       "itsFargID doesn't refer to a predicate");
+                throw new SystemErrorException(mName +
+                                      "itsFargID doesn't refer to a predicate");
             }
-            
+
             pfa = (PredFormalArg)dbe;
-            
+
             if ( pfa.isValidValue(value) )
             {
                 itsValue = new Predicate(value);
@@ -298,16 +297,16 @@ public class PredDataValue extends DataValue
         {
             this.itsValue = new Predicate(value);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * clearID()
      *
@@ -320,23 +319,24 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
+    @Override
     protected void clearID()
         throws SystemErrorException
     {
         super.clearID();
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.clearID();
         }
-        
+
         return;
-        
+
     } /* PredDataValue::clearID() */
-    
-    
-    /** 
+
+
+    /**
      * insertInIndex()
      *
      * Call the super, and then pass the insert in index message down to the
@@ -348,26 +348,27 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
+    @Override
     protected void insertInIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::insertInIndex(): ";
-        
+
         super.insertInIndex(DCID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         this.itsValue.insertInIndex(DCID);
-        
+
         return;
-        
+
     } /* PredDataValue::insertInIndex(DCID) */
-    
-    /** 
+
+    /**
      * removeFromIndex()
      *
      * Call the super, and then pass the remove from index message down to the
@@ -379,30 +380,31 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
+    @Override
     protected void removeFromIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::removeFromIndex(): ";
-        
+
         super.removeFromIndex(DCID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         this.itsValue.removeFromIndex(DCID);
-        
+
         return;
-        
+
     } /* PredDataValue::removeFromIndex(DCID) */
-    
-    
+
+
     /**
      * replaceInIndex()
      *
-     * Call the super, and then pass an update index for replacement message 
+     * Call the super, and then pass an update index for replacement message
      * down to the predicate.
      *
      *                                          JRM -- 2/20/08
@@ -411,7 +413,8 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
+    @Override
     protected void replaceInIndex(DataValue old_dv,
                                   long DCID,
                                   boolean cascadeMveMod,
@@ -424,48 +427,48 @@ public class PredDataValue extends DataValue
     {
         final String mName = "PredDataValue::replaceInIndex(): ";
         PredDataValue old_pdv;
-        
-        super.replaceInIndex(old_dv, 
-                             DCID, 
+
+        super.replaceInIndex(old_dv,
+                             DCID,
                              cascadeMveMod,
                              cascadeMveDel,
                              cascadeMveID,
-                             cascadePveMod, 
-                             cascadePveDel, 
+                             cascadePveMod,
+                             cascadePveDel,
                              cascadePveID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         if ( ! ( old_dv instanceof PredDataValue ) )
         {
             throw new SystemErrorException(mName + "old_dv not a pred dv?!?");
         }
-        
+
         old_pdv = (PredDataValue)old_dv;
-        
+
         if ( old_pdv.itsValue == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "old_pdv.itsValue is null?!?");
         }
-        
-        this.itsValue.updateIndexForReplacement(old_pdv.itsValue, 
-                                                DCID, 
-                                                cascadeMveMod, 
+
+        this.itsValue.updateIndexForReplacement(old_pdv.itsValue,
+                                                DCID,
+                                                cascadeMveMod,
                                                 cascadeMveDel,
-                                                cascadeMveID, 
+                                                cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
 
         return;
-        
+
     } /* PredDataValue::replaceInIndex() */
 
-    
+
     /**
      * toString()
      *
@@ -479,7 +482,7 @@ public class PredDataValue extends DataValue
      *
      *     - None.
      */
-    
+
     public String toString()
     {
         if ( this.itsValue == null )
@@ -496,7 +499,7 @@ public class PredDataValue extends DataValue
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -508,11 +511,11 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-  
+
     public String toDBString()
     {
         final String mName = "PredDataValue::toDBString(): ";
-        
+
         if ( ( this.itsValue == null ) ||
              ( this.itsValue.getPveID() == DBIndex.INVALID_ID ) )
         {
@@ -532,14 +535,14 @@ public class PredDataValue extends DataValue
                     ") (itsValue " + this.itsValue.toDBString() +
                     ") (subRange " + this.subRange + "))");
         }
-            
+
     } /* PredDataValue::toDBString() */
-    
-    
+
+
     /**
      * updateForMVEDefChange()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
+     * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element definition change message to the predicate
      * (if defined).
      *                                          JRM -- 8/26/08
@@ -548,7 +551,7 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDefChange(
                                  Database db,
                                  long mveID,
@@ -581,26 +584,26 @@ public class PredDataValue extends DataValue
     {
         final String mName = "PredDataValue::updateForMVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(mveID);
-        
+
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mveID doesn't refer to a pve.");
         }
-        
-        
+
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForMVEDefChange(db,
@@ -631,16 +634,16 @@ public class PredDataValue extends DataValue
                                                 oldCPFargList,
                                                 newCPFargList);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateForMVEDefChange() */
-    
-    
+
+
     /**
      * updateForMVEDeletion()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
+     * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element definition change message to any column predicate
      * or predicate data values.
      *                                          JRM -- 8/30/08
@@ -649,46 +652,46 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDeletion(Database db,
                                         long mveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID invalid.");
         }
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForMVEDeletion(db, mveID);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateForPVEDeletion() */
-    
-    
+
+
     /**
      * updateForPVEDefChange()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
+     * Scan the list of data values in the matrix, and pass an update for
      * predicate vocab element definition change message to the predicate
-     * (if defined). 
+     * (if defined).
      *                                          JRM -- 3/23/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDefChange(
                                  Database db,
                                  long pveID,
@@ -712,26 +715,26 @@ public class PredDataValue extends DataValue
     {
         final String mName = "PredDataValue::updateForPVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "pveID doesn't refer to a pve.");
         }
-        
-        
+
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForPVEDefChange(db,
@@ -753,17 +756,17 @@ public class PredDataValue extends DataValue
                                                 oldFargList,
                                                 newFargList);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateForPVEDefChange() */
-    
-    
+
+
     /**
      * updateForPVEDeletion()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
-     * predicate vocab element definition change message to any predicate 
+     * Scan the list of data values in the matrix, and pass an update for
+     * predicate vocab element definition change message to any predicate
      * data values.
      *                                          JRM -- 3/23/08
      *
@@ -771,34 +774,34 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDeletion(Database db,
                                         long pveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForPVEDeletion(): ";
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForPVEDeletion(db, pveID);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateForPVEDeletion() */
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -809,7 +812,7 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -818,53 +821,53 @@ public class PredDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "PredDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if any) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.  For now, we simply
      * coerce to the empty predicate if subrange is true and the current
@@ -879,23 +882,23 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof PredFormalArg )
         {
             PredFormalArg pfa = (PredFormalArg)fa;
-            
+
             this.subRange = pfa.getSubRange();
-            
+
             if ( this.subRange )
             {
                 if ( this.itsValue.getPveID() != DBIndex.INVALID_ID )
@@ -913,18 +916,18 @@ public class PredDataValue extends DataValue
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* PredDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
@@ -937,7 +940,7 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public Predicate coerceToRange(Predicate value)
         throws SystemErrorException
     {
@@ -945,7 +948,7 @@ public class PredDataValue extends DataValue
         DBElement dbe;
         PredFormalArg pfa;
         Predicate retVal;
-        
+
         if ( value == null )
         {
             retVal = new Predicate(this.db);
@@ -958,31 +961,31 @@ public class PredDataValue extends DataValue
         {
             if ( this.itsFargID == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
             else if ( itsFargType != FormalArgument.fArgType.PREDICATE )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargType != PREDICATE");
             }
-            
+
             dbe = this.db.idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof PredFormalArg ) )
             {
-                throw new SystemErrorException(mName + 
-                                       "itsFargID doesn't refer to a predicate");
+                throw new SystemErrorException(mName +
+                                      "itsFargID doesn't refer to a predicate");
             }
-            
+
             pfa = (PredFormalArg)dbe;
-            
+
             if ( pfa.isValidValue(value) )
             {
                 retVal = value;
@@ -996,18 +999,18 @@ public class PredDataValue extends DataValue
         {
             retVal = value;
         }
-        
+
         return retVal;
-        
+
     } /* PredDataValue::coerceToRange() */
 
-    
+
     /**
      * deregisterPreds()
      *
-     * If this.itsValue isn't null, call its deregisterWithPve() method to 
+     * If this.itsValue isn't null, call its deregisterWithPve() method to
      * cause it to deregister with its associated PVE (if any), and pass
-     * the message down to any column predicates or predicates that may 
+     * the message down to any column predicates or predicates that may
      * appear in its argument list.
      *                                              JRM -- 3/24/08
      *
@@ -1015,7 +1018,7 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void deregisterPreds(boolean cascadeMveDel,
                                    long cascadeMveID,
                                    boolean cascadePveDel,
@@ -1026,19 +1029,19 @@ public class PredDataValue extends DataValue
         {
             this.itsValue.deregisterWithPve(cascadeMveDel,
                                             cascadeMveID,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
         }
-        
+
         return;
-        
+
     } /* PredDataValue::deregisterPreds() */
 
-    
+
     /**
      * registerPreds()
      *
-     * If this.itsValue isn't null, call its registerWithPve() method to 
+     * If this.itsValue isn't null, call its registerWithPve() method to
      * cause it to register with its associated PVE (if any), and pass
      * the message down to any predicates that may appear in its argument
      * list.
@@ -1048,7 +1051,7 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void registerPreds()
         throws SystemErrorException
     {
@@ -1056,24 +1059,24 @@ public class PredDataValue extends DataValue
         {
             this.itsValue.registerWithPve();
         }
-        
+
         return;
-        
+
     } /* PredDataValue::registerPreds() */
 
-    
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-      
+
     /**
      * PredDataValuesAreLogicallyEqual()
      *
-     * Given two instances of PredDataValue, return true if they contain 
+     * Given two instances of PredDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
      *                                              JRM -- 2/7/08
@@ -1082,29 +1085,29 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected static boolean PredDataValuesAreLogicallyEqual(PredDataValue pdv0,
                                                              PredDataValue pdv1)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::PredDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( pdv0 == null ) || ( pdv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": pdv0 or pdv1 null on entry.");
         }
         else if ( ( pdv0.itsValue == null ) || ( pdv1.itsValue == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": pdv0.itsValue or pdv1.itsValue null on entry.");
         }
-        
+
         if ( pdv0 != pdv1 )
         {
             if ( ( pdv0.itsValue != pdv1.itsValue ) &&
-                 ( ! Predicate.PredicatesAreLogicallyEqual(pdv0.itsValue, 
+                 ( ! Predicate.PredicatesAreLogicallyEqual(pdv0.itsValue,
                                                            pdv1.itsValue) ) )
             {
                 dataValuesAreEqual = false;
@@ -1112,14 +1115,50 @@ public class PredDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* PredDataValue::PredDataValuesAreLogicallyEqual() */
-  
-    
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED1;
+
+        return hash;
+    }
+
+    /**
+     * Compares this PredDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        PredDataValue p = (PredDataValue) obj;
+        return (itsValue == p.itsValue
+                           || (itsValue != null && itsValue.equals(p.itsValue)))
+                           && super.equals(obj);
+    }
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
@@ -1134,23 +1173,23 @@ public class PredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static PredDataValue Construct(Database db,
                                           Predicate p)
         throws SystemErrorException
     {
         final String mName = "PredDataValue::Construct(db, p)";
         PredDataValue pdv = null;
-        
+
         pdv = new PredDataValue(db);
-        
+
         if ( p != null )
         {
             pdv.setItsValue(p);
         }
-        
+
         return pdv;
-        
+
     } /* PredDataValue::Construct(db, p) */
 
 

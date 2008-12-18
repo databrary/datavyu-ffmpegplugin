@@ -17,87 +17,87 @@ import java.util.Vector;
  *
  * Primitive class for predicates.  Instances of this class are used to store
  * predicates in a database.  Since predicates must be defined in the vocab
- * list before they can be created, instances of this class are tightly 
+ * list before they can be created, instances of this class are tightly
  * bound to their host database and its vocab list.
  *
  *                                                  JRM -- 8/19/07
  *
  * @author mainzer
  */
-public class Predicate extends DBElement 
+public class Predicate extends DBElement
         implements InternalVocabElementListener
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /* pveID:   Long containing the ID of the PredicateVocabElement represented 
-     *      in this instance of Predicate, or INVALID_ID if the predicate is 
+    /* pveID:   Long containing the ID of the PredicateVocabElement represented
+     *      in this instance of Predicate, or INVALID_ID if the predicate is
      *      undefined.
      *
-     * predName: String containing the name of the predicate represented in 
-     *      this instance of Predicate, or the empty string if the predicate 
+     * predName: String containing the name of the predicate represented in
+     *      this instance of Predicate, or the empty string if the predicate
      *      is undefined.
      *
-     *      Note that this is also the name of the associated 
+     *      Note that this is also the name of the associated
      *      PredicateVocabElement -- if any.
      *
      * argList: Vector of data values representing the arguments of the
      *      predicate represented in this data value, or null if the predicate
      *      is undefined.
      *
-     * varLen:  Boolean flag indicating whether the argument list is of 
-     *      variable length. 
+     * varLen:  Boolean flag indicating whether the argument list is of
+     *      variable length.
      *
      * cellID:  Long containing the ID of the DataCell in which this instance
      *      of predicate appears (if any).
      *
-     * queryVarOK: Boolean flag used to indicate whether parameters can be 
+     * queryVarOK: Boolean flag used to indicate whether parameters can be
      *      be query variables.
      *
      */
-        
+
     /** ID of the represented predicate */
     protected long pveID = DBIndex.INVALID_ID;
-    
+
     /** Name of the represented predicate */
     protected String predName = null;
-    
+
     /** Argument list of the predicate */
     protected Vector<DataValue> argList = null;
-    
+
     /** Whether the predicate has a variable length argument list */
     protected boolean varLen = false;
-    
+
     /** ID of cell in which this col pred appears, if any */
     protected long cellID = DBIndex.INVALID_ID;
-    
+
     /** whether parameters can be query variables */
     protected boolean queryVarOK = false;
-    
-  
-    
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * Predicate()
      *
-     * Constructor for instances of Predicate.  
-     * 
-     * Five versions of this constructor.  
-     * 
-     * The first takes only a reference to a database as its parameter and 
-     * constructs an undefined instance of Predicate (that is, an instance 
-     * that is not yet an instance of some predicate in the vocab list). 
+     * Constructor for instances of Predicate.
+     *
+     * Five versions of this constructor.
+     *
+     * The first takes only a reference to a database as its parameter and
+     * constructs an undefined instance of Predicate (that is, an instance
+     * that is not yet an instance of some predicate in the vocab list).
      *
      * The second takes a reference to a database, and a PredicateVocabElement
      * ID, and constructs a representation of the specified predicate with an
      * empty/undefined argument list.
-     * 
+     *
      * The third takes a reference to a database, a PredicateVocabElementID,
-     * and a vector of formal arguments specifying the values assigned to 
-     * each of the predicates arguments, and then constructs an instance of 
+     * and a vector of formal arguments specifying the values assigned to
+     * each of the predicates arguments, and then constructs an instance of
      * Predicate representing the specified predicate with the indicated
      * values as its arguments.
      *
@@ -106,90 +106,89 @@ public class Predicate extends DBElement
      *
      * The fifth is much the same as the fourth, save that if the blindCopy
      * parameter is true, it creates a copy of the supplied predicate without
-     * making reference to the underlying PredicateVocabElement.  This is 
-     * necessary if the pve has changed, and we need to make a copy of the 
-     * old version of the predicate so we can touch it up for changes in 
+     * making reference to the underlying PredicateVocabElement.  This is
+     * necessary if the pve has changed, and we need to make a copy of the
+     * old version of the predicate so we can touch it up for changes in
      * the pve.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public Predicate(Database db)
-        throws SystemErrorException
-    {
+
+    public Predicate(Database db) throws SystemErrorException {
          super(db);
-         
+
          final String mName = "Predicate::Predicate(db): ";
-        
-         if ( ( db == null ) || 
+
+         if ( ( db == null ) ||
               ( ! ( db instanceof Database ) ) )
          {
              throw new SystemErrorException(mName + "Bad db param");
          }
-         
-         this.predName = new String(""); 
-         
+
+         this.predName = new String("");
+
     } /* Predicate::Predicate(db) */
-    
+
     public Predicate(Database db,
                      long predID)
         throws SystemErrorException
     {
         super(db);
-         
+
         final String mName = "Predicate::Predicate(db, predID): ";
         DBElement dbe;
         PredicateVocabElement pve;
-         
+
         if ( predID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "predID == INVALID_ID");
         }
-         
+
         if ( predID != DBIndex.INVALID_ID )
         {
             dbe = this.db.idx.getElement(predID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + "predID has no referent");
+                throw
+                     new SystemErrorException(mName + "predID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof PredicateVocabElement ) )
             {
                 throw new SystemErrorException(mName +
                         "predID doesn't refer to a predicate vocab element");
             }
-            
+
             this.pveID = predID;
-             
+
             pve = (PredicateVocabElement)dbe;
-             
+
             this.predName = pve.getName();
-            
+
             this.varLen = pve.getVarLen();
-            
+
             this.argList = this.constructEmptyArgList(pve);
-        }         
+        }
     } /* Predicate::Predicate(db, pveID) */
-    
-    
+
+
     public Predicate(Database db,
                      long predID,
                      java.util.Vector<DataValue> argList)
         throws SystemErrorException
     {
         super(db);
-         
+
         final String mName = "Predicate::Predicate(db, predID, argList): ";
         DBElement dbe;
         PredicateVocabElement pve;
-         
+
         if ( predID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "predID == INVALID_ID");
@@ -200,45 +199,46 @@ public class Predicate extends DBElement
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + "predID has no referent");
+                throw
+                     new SystemErrorException(mName + "predID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof PredicateVocabElement ) )
             {
                 throw new SystemErrorException(mName +
                         "predID doesn't refer to a predicate vocab element");
             }
-            
+
             this.pveID = predID;
-             
+
             pve = (PredicateVocabElement)dbe;
-             
+
             this.predName = pve.getName();
-            
+
             this.varLen = pve.getVarLen();
-            
+
             this.argList = this.copyArgList(argList, true);
-        }         
+        }
     } /* Predicate::Predicate(db, pveID, argList) */
-    
-    
+
+
     public Predicate(Predicate pred)
         throws SystemErrorException
     {
         super(pred);
-            
+
         final String mName = "Predicate::Predicate(pred): ";
-        
+
         if ( pred == null )
         {
             throw new SystemErrorException(mName + "pred null on entry");
-        }    
-        
+        }
+
         this.pveID    = pred.pveID;
         this.predName = new String(pred.predName);
         this.varLen   = pred.varLen;
         this.cellID   = pred.cellID;
-        
+
         if ( pred.argList == null )
         {
             this.argList = null;
@@ -247,28 +247,28 @@ public class Predicate extends DBElement
         {
             this.argList = this.copyArgList(pred.argList, false);
         }
-        
+
     } /* Predicate::Predicate(pred) */
-    
-    
+
+
     protected Predicate(Predicate pred,
                         boolean blindCopy)
         throws SystemErrorException
     {
         super(pred);
-            
+
         final String mName = "Predicate::Predicate(pred, blindCopy): ";
-        
+
         if ( pred == null )
         {
             throw new SystemErrorException(mName + "pred null on entry");
-        }    
-        
+        }
+
         this.pveID    = pred.pveID;
         this.predName = new String(pred.predName);
         this.varLen   = pred.varLen;
         this.cellID   = pred.cellID;
-        
+
         if ( pred.argList == null )
         {
             this.argList = null;
@@ -282,13 +282,13 @@ public class Predicate extends DBElement
             this.argList = this.copyArgList(pred.argList, false);
         }
     }/* Predicate::Predicate(pred, blindCopy) */
-     
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * getDB()
      *
      * Return the current value of the db field.
@@ -299,15 +299,15 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+    @Override
     public Database getDB()
     {
-        
+
         return this.db;
-        
+
     } /* Predicate::getdb() */
-    
-    
+
+
     /**
      * getCellID()
      *
@@ -319,37 +319,37 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public long getCellID()
     {
-        
+
         return this.cellID;
-        
+
     } /* Predicate::getCellID() */
-    
-    
+
+
     /**
-     * 
+     *
      * getPveID()
-     * 
+     *
      * Return the current value of the pveID field.
-     * 
+     *
      *                          JRM -- 8/23/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public long getPveID()
     {
-        
+
         return this.pveID;
-        
+
     } /* Predicate::getPveID() */
-    
-    
-    /** 
+
+
+    /**
      * getPredName()
      *
      * Return a copy of the current value of the predName field.
@@ -360,19 +360,19 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public String getPredName()
     {
-        
+
         return new String(this.predName);
-        
+
     } /* Predicate::getPredName() */
-    
-    
-    /** 
+
+
+    /**
      * setPredID()
      *
-     * Set the predicate of which this instance of Predicate will contain a 
+     * Set the predicate of which this instance of Predicate will contain a
      * value.  If requested, try to salvage the argument list (if any).
      *
      *                                          JRM -- 8/23/07
@@ -381,7 +381,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public void setPredID(long predID,
                           boolean salvage)
         throws SystemErrorException
@@ -395,7 +395,7 @@ public class Predicate extends DBElement
         DataValue odv;
         PredicateVocabElement pve;
         Vector<DataValue> oldArgList;
-        
+
         if ( predID == DBIndex.INVALID_ID )
         {
             this.pveID = DBIndex.INVALID_ID;
@@ -406,86 +406,86 @@ public class Predicate extends DBElement
         else
         {
             pve = this.lookupPredicateVE(predID);
-            
+
             this.pveID = predID;
-             
+
             this.predName = pve.getName();
-            
+
             this.varLen = pve.getVarLen();
-            
+
             if ( ( salvage ) && ( this.argList != null ) )
             {
                 newNumArgs = pve.getNumFormalArgs();
-                
+
                 if ( newNumArgs <= 0 )
                 {
                     throw new SystemErrorException(mName + "newNumArgs <= 0");
                 }
-                
+
                 oldNumArgs = this.argList.size();
-                
+
                 if ( oldNumArgs <= 0 )
                 {
                     throw new SystemErrorException(mName + "oldNumArgs <= 0");
                 }
-                
+
                 oldArgList = this.argList;
                 this.argList = new Vector<DataValue>();
-                
+
                 for ( i = 0; i < newNumArgs; i++ )
                 {
-                    // get the i'th formal argument of the predicate.  Observe 
-                    // that getFormaArg() returns a reference to the actual 
-                    // formal argument in the PredicateVocabElement data 
-                    // structure, so we must be careful not to modify it in 
+                    // get the i'th formal argument of the predicate.  Observe
+                    // that getFormaArg() returns a reference to the actual
+                    // formal argument in the PredicateVocabElement data
+                    // structure, so we must be careful not to modify it in
                     // any way, or expose the reference to the user.
                     fa = pve.getFormalArg(i);
-            
+
                     if ( fa == null )
                     {
-                        throw new SystemErrorException(mName + "no " + i + 
+                        throw new SystemErrorException(mName + "no " + i +
                                 "th formal argument?!?!");
                     }
-                    
+
                     if ( i < oldNumArgs )
                     {
                         odv = oldArgList.get(i);
-                        
+
                         if ( odv == null )
                         {
                             throw new SystemErrorException(mName +
                                                            "odv == null!?!");
                         }
-                        
+
                         ndv = fa.constructArgWithSalvage(odv);
-                        
+
                     }
                     else /* just create new argument */
                     {
                         ndv = fa.constructEmptyArg();
                     }
-                    
+
                     if ( ndv == null )
                     {
                         throw new SystemErrorException(mName + "ndv == null?!");
                     }
-                    
+
                     this.argList.add(ndv);
                 }
-                
+
             }
             else
             {
                 this.argList = this.constructEmptyArgList(pve);
             }
-            
+
         }
-        
+
         return;
-        
+
     } /* Predicate::setPredID(pveID, salvage) */
-    
-    /** 
+
+    /**
      * getVarLen()
      *
      * Return the current value of the varLen field.
@@ -496,19 +496,19 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public boolean getVarLen()
     {
-        
+
         return this.varLen;
-        
+
     } /* Predicate::getVarLen() */
-  
-    
+
+
     /*************************************************************************/
     /********************** VE Change Management: ****************************/
     /*************************************************************************/
-    
+
     /**
      * VEChanged()
      *
@@ -517,13 +517,13 @@ public class Predicate extends DBElement
      * Advise the host data cell that it contains a predicate whose associated
      * pve definition has changed.
      *
-     *                                            JRM -- 3/20/08 
+     *                                            JRM -- 3/20/08
      *
      * Changes:
      *
      *    - None.
      */
-        
+    @Override
     public void VEChanged(Database db,
                          long VEID,
                          boolean nameChanged,
@@ -547,32 +547,32 @@ public class Predicate extends DBElement
         final String mName = "Predicate::VEChanged(): ";
         DBElement dbe = null;
         DataCell dc = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( this.pveID != VEID )
         {
             throw new SystemErrorException(mName + "pveID mismatch.");
         }
-        
+
         if ( this.cellID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
-        
+
         dbe = this.db.idx.getElement(this.cellID);
-        
+
         if ( ! ( dbe instanceof DataCell ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "this.cellID doesn't refer to a DataCell?!?!");
         }
-        
+
         dc = (DataCell)dbe;
-        
+
         dc.cascadeUpdateForPVEDefChange(db,
                                         VEID,
                                         nameChanged,
@@ -591,12 +591,12 @@ public class Predicate extends DBElement
                                         fargInserted,
                                         oldFargList,
                                         newFargList);
-        
+
         return;
-        
+
     } /* Predicate::VEChanged() */
- 
-    
+
+
     /**
      * VEDeleted()
      *
@@ -605,13 +605,13 @@ public class Predicate extends DBElement
      * Advise the host data cell that it contains a predicate whose associated
      * pve has been deleted.
      *
-     *                                  JRM -- 3/20/08 
+     *                                  JRM -- 3/20/08
      *
      * Changes:
      *
      *    - None.
      */
-        
+    @Override
     public void VEDeleted(Database db,
                           long VEID)
         throws SystemErrorException
@@ -619,57 +619,57 @@ public class Predicate extends DBElement
         final String mName = "Predicate::VEDeleted(): ";
         DBElement dbe = null;
         DataCell dc = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( this.pveID != VEID )
         {
             throw new SystemErrorException(mName + "pveID mismatch.");
         }
-        
+
         if ( this.cellID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
-        
+
         dbe = this.db.idx.getElement(this.cellID);
-        
+
         if ( ! ( dbe instanceof DataCell ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "this.cellID doesn't refer to a DataCell?!?!");
         }
-        
+
         dc = (DataCell)dbe;
-        
+
         dc.cascadeUpdateForPVEDeletion(db, VEID);
 
         return;
-        
+
     } /* Predicate::VEDeleted() */
-    
-  
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * argListToDBString()
      *
      * Construct a string containing the values of the arguments in a
-     * format that displays the full status of the arguments and 
-     * facilitates debugging.  
+     * format that displays the full status of the arguments and
+     * facilitates debugging.
      *                                          JRM -- 8/23/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String argListToDBString()
         throws SystemErrorException
     {
@@ -685,11 +685,11 @@ public class Predicate extends DBElement
         else
         {
             s = new String("(argList (");
-        
+
             if ( this.argList == null )
             {
                 /* fArgList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
 
             numArgs = this.argList.size();
@@ -698,36 +698,36 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
-                
+
             while ( i < (numArgs - 1) )
             {
                 s += this.getArg(i).toDBString() + ", ";
                 i++;
             }
-            
+
             s += this.getArg(i).toDBString();
 
             s += "))";
         }
-        
+
         return s;
-        
+
     } /* Predicate::argListToDBString() */
-        
-    
+
+
     /**
      * argListToString()
      *
-     * Construct a string containing the values of the arguments in the 
-     * format: (value0, value1, ... value).  
+     * Construct a string containing the values of the arguments in the
+     * format: (value0, value1, ... value).
      *                                          JRM -- 8/23/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String argListToString()
         throws SystemErrorException
     {
@@ -745,7 +745,7 @@ public class Predicate extends DBElement
             if ( argList == null )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
 
             numArgs = this.argList.size();
@@ -754,37 +754,37 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
-            
+
             s = new String("(");
-        
+
             while ( i < (numArgs - 1) )
             {
                 s += this.getArg(i).toString() + ", ";
                 i++;
             }
-            
+
             s += getArg(i).toString();
 
             s += ")";
         }
-        
+
         return s;
-        
+
     } /* Predicate::argListToString() */
-    
-    
-    /** 
+
+
+    /**
      * insertInIndex()
      *
-     * This method is called when the DataCell whose value contains this 
-     * instance of predicate is first inserted in the database and becomes the 
+     * This method is called when the DataCell whose value contains this
+     * instance of predicate is first inserted in the database and becomes the
      * first cannonical version of the DataCell.
      *
-     * Insert the instance of Predicate in the index and make note of the 
+     * Insert the instance of Predicate in the index and make note of the
      * DataCell ID.
-     * 
-     * If the instance of predicate is a representation of some PVE, register 
-     * as a listener with the PVE, and pass the insert in index message down 
+     *
+     * If the instance of predicate is a representation of some PVE, register
+     * as a listener with the PVE, and pass the insert in index message down
      * to the argument list.
      *
      *                                              JRM -- 2/19/08
@@ -793,7 +793,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void insertInIndex(long DCID)
         throws SystemErrorException
     {
@@ -808,30 +808,30 @@ public class Predicate extends DBElement
         if ( this.pveID != DBIndex.INVALID_ID )
         {
             // TODO: register as a listener for this.pveID
-            
+
             if ( this.argList == null )
             {
                 throw new SystemErrorException(mName + "argList is null?!?!");
             }
-            
+
             for ( DataValue dv : this.argList )
             {
                 dv.setItsPredID(this.id);
                 dv.insertInIndex(DCID);
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::insertInIndex(DCID) */
-    
-    
+
+
     /**
      * lookupPredicateVE()
      *
      * Given an ID, attempt to look up the associated predicateVocabElement
-     * in the database associated with the instance of Predicate.  Return a 
-     * reference to same.  If there is no such PredicateVocabElement, throw 
+     * in the database associated with the instance of Predicate.  Return a
+     * reference to same.  If there is no such PredicateVocabElement, throw
      * a system error.
      *                                              JRM -- 8/20/07
      *
@@ -839,14 +839,14 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     private PredicateVocabElement lookupPredicateVE(long predID)
         throws SystemErrorException
     {
         final String mName = "Predicate::lookupPredicateVE(predID): ";
         DBElement dbe;
         PredicateVocabElement pve;
-         
+
         if ( predID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "predID == INVALID_ID");
@@ -866,24 +866,24 @@ public class Predicate extends DBElement
         }
 
         pve = (PredicateVocabElement)dbe;
-        
+
         return pve;
-        
+
     } /* Predicate::lookupPredicateVE(pveID) */
-    
-    
-    /** 
+
+
+    /**
      * removeFromIndex()
      *
-     * This method is called when the DataCell whose value contains this 
+     * This method is called when the DataCell whose value contains this
      * instance of predicate is deleted from the database, and thus all the
-     * DBElements that constitute its value must be removed from the 
+     * DBElements that constitute its value must be removed from the
      * index.
      *
      * Remove the predicate from the index.
-     * 
-     * If the instance of predicate is a representation of some PVE, deregister 
-     * as a listener with the PVE, and pass the remove from index message down 
+     *
+     * If the instance of predicate is a representation of some PVE, deregister
+     * as a listener with the PVE, and pass the remove from index message down
      * to the argument list.
      *
      *                                              JRM -- 2/19/08
@@ -892,17 +892,17 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void removeFromIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "Predicate::removeFromIndex(): ";
-        
+
         if ( this.cellID != DCID )
         {
             throw new SystemErrorException(mName + "cell id mismatch");
         }
-        
+
         this.db.idx.removeElement(this.id);
 
         // if the predicate is not associated with some pve, it doesn't need
@@ -910,27 +910,27 @@ public class Predicate extends DBElement
         if ( this.pveID != DBIndex.INVALID_ID )
         {
             // TODO: de-register as a listener for this.pveID
-            
+
             if ( this.argList == null )
             {
                 throw new SystemErrorException(mName + "argList is null?!?!");
             }
-            
+
             for ( DataValue dv : this.argList )
             {
                 dv.removeFromIndex(DCID);
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::removeFromIndex(DCID) */
-    
-    
+
+
    /**
      * toDBString()
-     * 
-     * Returns a database String representation of the Predicate for comparison 
+     *
+     * Returns a database String representation of the Predicate for comparison
      * against the expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -940,34 +940,34 @@ public class Predicate extends DBElement
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     // TODO:  Added cellID to DB string
-    
+    @Override
     public String toDBString()
     {
         String s;
-        
+
         try
         {
             s = "(predicate (id " + this.id +
                 ") (predID " + this.pveID +
-                ") (predName " + this.predName + 
+                ") (predName " + this.predName +
                 ") (varLen " + this.varLen + ") " +
                 this.argListToDBString() + "))";
         }
-        
+
         catch (SystemErrorException e)
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-       
+
         return s;
-        
+
     } /* Predicate::toDBString() */
 
-    
+
     /**
      * toString()
      *
@@ -978,12 +978,13 @@ public class Predicate extends DBElement
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    public String toString() 
+    @Override
+    public String toString()
     {
         String s;
-        
+
         try
         {
             s = this.predName + this.argListToString();
@@ -993,38 +994,38 @@ public class Predicate extends DBElement
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-               
+
         return (s);
-        
+
     } /* Predicate::toString() */
 
-    
+
     /*************************************************************************/
     /********************* Argument List Management: *************************/
     /*************************************************************************/
 
-    
+
     /**
      * blindCopyArgList()
-     * 
-     * Given a reference to a Vector containing an argument list for the 
+     *
+     * Given a reference to a Vector containing an argument list for the
      * predicate indicated by the current value of pveID, copy the argument
-     * list without attempting any sanity checks against the pve.  
-     * 
-     * This is necessary if the definition of the pve has changed, and we 
+     * list without attempting any sanity checks against the pve.
+     *
+     * This is necessary if the definition of the pve has changed, and we
      * need a copy of the predicate to modify into accordance with the new
      * version.
-     * 
-     * Throw a system error if any errors aredetected.  Otherwise, return the 
+     *
+     * Throw a system error if any errors aredetected.  Otherwise, return the
      * copy.
-     * 
+     *
      *                                              JRM -- 4/6/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     private Vector<DataValue> blindCopyArgList(Vector<DataValue> srcArgList)
         throws SystemErrorException
     {
@@ -1034,53 +1035,53 @@ public class Predicate extends DBElement
         Vector<DataValue> newArgList = new Vector<DataValue>();
         DataValue dv;
         DataValue cdv = null;
-        
+
         if ( srcArgList == null )
         {
             throw new SystemErrorException(mName + "srcArgList null on entry");
         }
-                
+
         numArgs = srcArgList.size();
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
-            // get the i'th argument from the argument list. This 
-            // is the actual argument -- must be careful not to modify it 
+            // get the i'th argument from the argument list. This
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             dv = srcArgList.get(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th source argument?!?!");
             }
-            
+
             cdv = DataValue.Copy(dv, true);
-            
+
             newArgList.add(cdv);
         }
-        
+
         if ( newArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
+
         return newArgList;
-        
+
     } /* Predicate::blindCopyArgList(srcArgList) */
 
-    
+
     /**
      * constructEmptyArgList()
      *
-     * Given a reverence to a PredicateVocabElement, construct an empty 
+     * Given a reverence to a PredicateVocabElement, construct an empty
      * argument list as directed by the formal argument list of the supplied
-     * PredicateVocabElement.  
+     * PredicateVocabElement.
      *
      * Return the newly constructed argument list.
      *
@@ -1090,90 +1091,90 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     private Vector<DataValue> constructEmptyArgList(PredicateVocabElement pve)
         throws SystemErrorException
     {
         final String mName = "Predicate::constructEmptyArgList(pve): ";
         int i;
         int numArgs;
-        Vector<DataValue> argList = new Vector<DataValue>();
+        Vector<DataValue> newArgList = new Vector<DataValue>();
         FormalArgument fa;
         DataValue dv;
-        
+
         if ( pve == null )
         {
             throw new SystemErrorException(mName + "pve == null");
         }
-        
+
         if ( ! ( pve instanceof PredicateVocabElement ) )
         {
             throw new SystemErrorException(mName + "pve not a predVE");
         }
-        
+
         numArgs = pve.getNumFormalArgs();
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
             // get the i'th formal argument of the predicate.  Observe that
-            // getFormaArg() returns a reference to the actual formal 
+            // getFormaArg() returns a reference to the actual formal
             // argument in the PredicateVocabElement data structure, so we
-            // must be careful not to modify it in any way, or expose the 
+            // must be careful not to modify it in any way, or expose the
             // reference to the user.
             fa = pve.getFormalArg(i);
-            
+
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
             else if ( fa instanceof TextStringFormalArg )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "TextStringFormalArg in pve?!?!");
             }
-            
+
             dv = fa.constructEmptyArg();
-            
+
             if ( dv == null )
             {
                 throw new SystemErrorException(mName + "dv == null?!?!");
             }
-                        
-            argList.add(dv);
+
+            newArgList.add(dv);
         }
-        
-        if ( argList.size() != numArgs )
+
+        if ( newArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
-        return argList;
-        
+
+        return newArgList;
+
     } /* Predicate::constructEmptyArgList(pve) */
 
-    
+
     /**
      * copyArgList()
-     * 
-     * Given a reference to a Vector containing an argument list for the 
-     * predicate indicated by the current value of pveID, attempt to make a 
-     * copy of that argument list.  Throw a system error if any errors are 
+     *
+     * Given a reference to a Vector containing an argument list for the
+     * predicate indicated by the current value of pveID, attempt to make a
+     * copy of that argument list.  Throw a system error if any errors are
      * detected.  Otherwise, return the copy.
-     * 
+     *
      *                                              JRM -- 8/20/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - Added the clearID parameter and supporting code.
      *                                              JRM -- 2/19/08
      */
-    
+
     private Vector<DataValue> copyArgList(Vector<DataValue> srcArgList,
                                           boolean clearID)
         throws SystemErrorException
@@ -1186,58 +1187,58 @@ public class Predicate extends DBElement
         FormalArgument fa;
         DataValue dv;
         DataValue cdv = null;
-        
+
         if ( srcArgList == null )
         {
             throw new SystemErrorException(mName + "srcArgList null on entry");
         }
-        
+
         if ( this.pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "predID undefined");
         }
-        
+
         pve = this.lookupPredicateVE(this.pveID);
-                
+
         numArgs = pve.getNumFormalArgs();
-        
+
         if ( srcArgList.size() != numArgs )
         {
             int j = 1/0;
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
             // get the i'th formal argument of the predicate.  Observe that
-            // getFormaArg() returns a reference to the actual formal 
+            // getFormaArg() returns a reference to the actual formal
             // argument in the PredicateVocabElement data structure, so we
-            // must be careful not to modify it in any way, or expose the 
+            // must be careful not to modify it in any way, or expose the
             // reference to the user.
             fa = pve.getFormalArg(i);
-            
+
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
-            
-            // get the i'th argument from the argument list.  Again, this 
-            // is the actual argument -- must be careful not to modify it 
+
+            // get the i'th argument from the argument list.  Again, this
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             dv = srcArgList.get(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th source argument?!?!");
             }
-            
+
             switch (fa.getFargType())
             {
                 case COL_PREDICATE:
@@ -1257,25 +1258,25 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": column predicate, undefined DV, " +
                                 "or query var expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": column predicate, or undefined DV " +
                                 "expected.");
                     }
                     break;
-                
+
 //                case COL_PREDICATE: // TODO: delete this eventually
 //                    if ( ! ( dv instanceof ColPredDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": column predicate expected.");
 //                    }
 //                    cdv = new ColPredDataValue((ColPredDataValue)dv);
@@ -1298,13 +1299,13 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": float DV, " +
                                 "undefined DV, or query var expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": float DV, " +
                                 "or undefined DV expected.");
                     }
@@ -1313,8 +1314,8 @@ public class Predicate extends DBElement
 //                case FLOAT: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof FloatDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": float expected.");
 //                    }
 //                    cdv = new FloatDataValue((FloatDataValue)dv);
@@ -1337,13 +1338,13 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": integer " +
                                 "DV, undefined DV, or query var expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": integer " +
                                 "DV, or undefined DV expected.");
                     }
@@ -1352,8 +1353,8 @@ public class Predicate extends DBElement
 //                case INTEGER: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof IntDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": integer expected.");
 //                    }
 //                    cdv = new IntDataValue((IntDataValue)dv);
@@ -1370,23 +1371,23 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + ": nominal DV, " +
-                                "undefined DV, or query var expected.");
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i + ": nominal DV, "
+                                + "undefined DV, or query var expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + ": nominal DV, " +
-                                "or undefined DV expected.");
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i + ": nominal DV, "
+                                + "or undefined DV expected.");
                     }
                     break;
 
 //                case NOMINAL: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof NominalDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": nominal expected.");
 //                    }
 //                    cdv = new NominalDataValue((NominalDataValue)dv);
@@ -1409,13 +1410,13 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": predicate " +
                                 "DV, undefined DV, or query var expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": predicate " +
                                 "DV, or undefined DV expected.");
                     }
@@ -1424,8 +1425,8 @@ public class Predicate extends DBElement
 //                case PREDICATE: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof PredDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": predicate expected.");
 //                    }
 //                    cdv = new PredDataValue((PredDataValue)dv);
@@ -1448,13 +1449,13 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": time stamp " +
                                 "DV, undefined DV, or query var DV expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": time stamp " +
                                 "DV, or undefined DV expected.");
                     }
@@ -1463,8 +1464,8 @@ public class Predicate extends DBElement
 //                case TIME_STAMP: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof TimeStampDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": time stamp expected.");
 //                    }
 //                    cdv = new TimeStampDataValue((TimeStampDataValue)dv);
@@ -1473,7 +1474,8 @@ public class Predicate extends DBElement
                 case QUOTE_STRING:
                     if ( dv instanceof QuoteStringDataValue )
                     {
-                        cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
+                        cdv =
+                             new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
                     else if ( dv instanceof UndefinedDataValue )
                     {
@@ -1487,14 +1489,14 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": quote " +
                                 "string DV, undefined DV, or query var " +
                                 "expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": quote " +
                                 "string DV, or undefined DV expected.");
                     }
@@ -1503,8 +1505,8 @@ public class Predicate extends DBElement
 //                case QUOTE_STRING: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof QuoteStringDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": quote string expected.");
 //                    }
 //                    cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
@@ -1526,14 +1528,14 @@ public class Predicate extends DBElement
                     }
                     else if ( this.queryVarOK )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": text " +
                                 "string DV, undefined DV, or query var " +
                                 "expected.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch for arg " + i + ": text " +
                                 "string DV, or undefined DV expected.");
                     }
@@ -1542,8 +1544,8 @@ public class Predicate extends DBElement
 //                case TEXT: // TODO: Delete this eventually
 //                    if ( ! ( dv instanceof TextStringDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
-//                                "Type mismatch for arg " + i + 
+//                        throw new SystemErrorException(mName +
+//                                "Type mismatch for arg " + i +
 //                                ": text string expected.");
 //                    }
 //                    cdv = new TextStringDataValue((TextStringDataValue)dv);
@@ -1576,7 +1578,8 @@ public class Predicate extends DBElement
                     }
                     else if ( dv instanceof QuoteStringDataValue )
                     {
-                        cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
+                        cdv =
+                             new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
                     else if ( dv instanceof UndefinedDataValue )
                     {
@@ -1584,13 +1587,13 @@ public class Predicate extends DBElement
                     }
                     else if ( dv instanceof TextStringDataValue )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "A TextStringDataValue may not be used to " +
                                 "replace an untyped formal argument");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Unknown subtype of DataValue");
                     }
                     break;
@@ -1598,21 +1601,21 @@ public class Predicate extends DBElement
                 case UNDEFINED:
                     throw new SystemErrorException(mName +
                             "formal arg type undefined???");
-                    /* break statement commented out to keep the compiler happy */
+                    /* break statement commented out to keep compiler happy */
                     // break;
 
                 default:
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "Unknown Formal Arg Type");
-                    /* break statement commented out to keep the compiler happy */
+                    /* break statement commented out to keep compiler happy */
                     // break;
             }
-            
+
             if ( clearID )
             {
                 cdv.clearID();
             }
-            
+
             if ( dv.getItsFargID() == DBIndex.INVALID_ID )
             {
                 cdv.setItsFargID(fa.getID());
@@ -1621,33 +1624,33 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "fargID mismatch");
             }
-            
+
             newArgList.add(cdv);
         }
-        
+
         if ( newArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
+
         this.argList = newArgList;
-        
+
         return newArgList;
-        
+
     } /* Predicate::copyArgList(srcArgList, clearID) */
-    
-    
+
+
     /**
      * deregisterWithPve()
      *
-     * If the predicate is defined (i.e. this.itsPveID is not DBIndex.INVALID_ID,
+     * If the predicate is defined (i.e. this.itsPveID != DBIndex.INVALID_ID,
      * deregister the predicate with its predicate vocab element as an internal
-     * vocal element listener.  Also pass the deregister predicates message 
-     * down to any predicate data values that may appear in the predicate's 
+     * vocal element listener.  Also pass the deregister predicates message
+     * down to any predicate data values that may appear in the predicate's
      * argument list.
      *
      * This method should only be called if this instance of the predicate
-     * is the cannonical instance -- that is the instance listed in the 
+     * is the cannonical instance -- that is the instance listed in the
      * index.
      *                                              JRM -- 3/24/08
      *
@@ -1655,7 +1658,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void deregisterWithPve(boolean cascadeMveDel,
                                      long cascadeMveID,
                                      boolean cascadePveDel,
@@ -1665,21 +1668,21 @@ public class Predicate extends DBElement
         final String mName = "Predicate::deregisterWithPve(): ";
         DBElement dbe = null;
         PredicateVocabElement pve = null;
-        
+
         if ( this.db == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
-        
+
         if ( this.db.idx.getElement(this.id) != this )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the predicate");
         }
-        
-        if ( this.pveID != DBIndex.INVALID_ID ) 
+
+        if ( this.pveID != DBIndex.INVALID_ID )
         {
-            if ( ( ! cascadePveDel ) || 
+            if ( ( ! cascadePveDel ) ||
                  ( cascadePveID != this.pveID ) ) // must de-register
             {
 
@@ -1687,15 +1690,15 @@ public class Predicate extends DBElement
 
                 if ( ! ( dbe instanceof PredicateVocabElement ) )
                 {
-                    throw new SystemErrorException(mName + 
-                                                   "pveID doesn't refer to a pve.");
+                    throw new SystemErrorException(mName +
+                                               "pveID doesn't refer to a pve.");
                 }
 
                 pve = (PredicateVocabElement)dbe;
 
                 pve.deregisterInternalListener(this.id);
             }
-        
+
             // pass the deregister message to the argument list regardless
             for ( DataValue dv : this.argList )
             {
@@ -1703,25 +1706,25 @@ public class Predicate extends DBElement
                 {
                     ((ColPredDataValue)dv).deregisterPreds(cascadeMveDel,
                                                            cascadeMveID,
-                                                           cascadePveDel, 
+                                                           cascadePveDel,
                                                            cascadePveID);
                 }
                 else if ( dv instanceof PredDataValue )
                 {
                     ((PredDataValue)dv).deregisterPreds(cascadeMveDel,
                                                         cascadeMveID,
-                                                        cascadePveDel, 
+                                                        cascadePveDel,
                                                         cascadePveID);
                 }
             }
         }
-             
-        
+
+
         return;
-        
+
     } /* Predicate::deregisterWithPve() */
-    
-    
+
+
     /**
      * getArg()
      *
@@ -1737,7 +1740,7 @@ public class Predicate extends DBElement
         final String mName = "Predicate::getArg(): ";
         int numArgs;
         DataValue arg = null;
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             arg = null;
@@ -1765,7 +1768,7 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "arg is null?!?");
             }
-            
+
             if ( ! ( ( arg instanceof ColPredDataValue ) ||
                      ( arg instanceof FloatDataValue ) ||
                      ( arg instanceof IntDataValue ) ||
@@ -1778,69 +1781,69 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "arg of unknown type");
             }
-            
+
             if ( arg instanceof TextStringDataValue )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "TextStringDataValue in a pred arg list?!?");
             }
         }
 
         return arg;
-        
+
     } /* VocabElement::getArg() */
-    
-    
+
+
     /**
      * getNumArgs()
-     * 
+     *
      * Return the number of arguments.  Return 0 if the pveID hasn't been
      * specified yet.
      *                                      JRM -- 8/23/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public int getNumArgs()
         throws SystemErrorException
     {
         final String mName = "Predicate::getNumArgs(): ";
         int numArgs = 0;
-        
+
         if ( pveID != DBIndex.INVALID_ID )
         {
             if ( argList == null )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
-            
+
             numArgs = this.argList.size();
-            
+
             if ( numArgs <= 0 )
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
         }
-        
-        return numArgs; 
-        
+
+        return numArgs;
+
     } /* Predicate::getNumArgs() */
-    
-    
+
+
     /**
      * registerWithPve()
      *
-     * If the predicate is defined (i.e. this.itsPveID is not DBIndex.INVALID_ID,
+     * If the predicate is defined (i.e. this.itsPveID != DBIndex.INVALID_ID,
      * register the predicate with its predicate vocab element as an internal
-     * vocal element listener.  Also pass the register predicates message 
-     * down to any predicate data values that may appear in the predicate's 
+     * vocal element listener.  Also pass the register predicates message
+     * down to any predicate data values that may appear in the predicate's
      * argument list.
      *
      * This method should only be called if this instance of the predicate
-     * is the cannonical instance -- that is the instanced listed in the 
+     * is the cannonical instance -- that is the instanced listed in the
      * index.
      *                                              JRM -- 3/24/08
      *
@@ -1848,51 +1851,53 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void registerWithPve()
         throws SystemErrorException
     {
         final String mName = "Predicate::registerWithPve(): ";
         DBElement dbe = null;
         PredicateVocabElement pve = null;
-        
+
         if ( this.id == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "id not set?!?");
         }
-        
+
         if ( this.db == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
-        
+
         if ( this.db.idx.getElement(this.id) != this )
         {
             System.out.println(this.toString());
             System.out.println(this.toDBString());
-            System.out.println(((Predicate)(this.db.idx.getElement(this.id))).toString());
-            System.out.println(((Predicate)(this.db.idx.getElement(this.id))).toDBString());
+            System.out.println((
+                    (Predicate)(this.db.idx.getElement(this.id))).toString());
+            System.out.println((
+                    (Predicate)(this.db.idx.getElement(this.id))).toDBString());
             int j = 1/0;
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the predicate");
         }
-        
+
         if ( this.pveID != DBIndex.INVALID_ID ) // we have work to do
         {
-        
+
             dbe = this.db.idx.getElement(this.pveID);
-        
+
             if ( ! ( dbe instanceof PredicateVocabElement ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "pveID doesn't refer to a pve.");
             }
 
             pve = (PredicateVocabElement)dbe;
-            
+
             pve.registerInternalListener(this.id);
-        
-        
+
+
             for ( DataValue dv : this.argList )
             {
                 if ( dv instanceof ColPredDataValue )
@@ -1905,12 +1910,12 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::registerWithPve() */
-    
-    
+
+
     /**
      * replaceArg()
      *
@@ -1923,8 +1928,8 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
-    public void replaceArg(int n, 
+
+    public void replaceArg(int n,
                            DataValue newArg)
         throws SystemErrorException
     {
@@ -1935,7 +1940,7 @@ public class Predicate extends DBElement
         Vector<DataValue> newArgList = new Vector<DataValue>();
         FormalArgument fa;
         DataValue oldArg = null;
-        
+
         if ( newArg == null )
         {
             throw new SystemErrorException(mName + "newArg null on entry");
@@ -1962,33 +1967,33 @@ public class Predicate extends DBElement
         }
 
         pve = this.lookupPredicateVE(this.pveID);
-        
+
         // get the n'th formal argument of the predicate.  Observe that
-        // getFormaArg() returns a reference to the actual formal 
+        // getFormaArg() returns a reference to the actual formal
         // argument in the PredicateVocabElement data structure, so we
-        // must be careful not to modify it in any way, or expose the 
+        // must be careful not to modify it in any way, or expose the
         // reference to the user.
         fa = pve.getFormalArg(n);
-             
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "no " + n + 
+            throw new SystemErrorException(mName + "no " + n +
                     "th formal argument?!?!");
         }
         else if ( fa instanceof TextStringFormalArg )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "pve contains a text formal arg?!?!");
         }
-               
-        // get the n'th argument from the argument list.  Again, this 
-        // is the actual argument -- must be careful not to modify it 
+
+        // get the n'th argument from the argument list.  Again, this
+        // is the actual argument -- must be careful not to modify it
         // in any way.
         oldArg = this.argList.get(n);
 
         if ( oldArg == null )
         {
-            throw new SystemErrorException(mName + "no " + n + 
+            throw new SystemErrorException(mName + "no " + n +
                     "th source argument?!?!");
         }
 
@@ -2003,11 +2008,11 @@ public class Predicate extends DBElement
 //                            "Type mismatch: column predicate expected.");
 //                }
 //                break;
-//                
+//
 //            case FLOAT:
 //                if ( ! ( newArg instanceof FloatDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: float expected.");
 //                }
 //                break;
@@ -2015,7 +2020,7 @@ public class Predicate extends DBElement
 //            case INTEGER:
 //                if ( ! ( newArg instanceof IntDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: integer expected.");
 //                }
 //                break;
@@ -2023,7 +2028,7 @@ public class Predicate extends DBElement
 //            case NOMINAL:
 //                if ( ! ( newArg instanceof NominalDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: nominal expected.");
 //                }
 //                break;
@@ -2031,7 +2036,7 @@ public class Predicate extends DBElement
 //            case PREDICATE:
 //                if ( ! ( newArg instanceof PredDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: predicate expected.");
 //                }
 //                break;
@@ -2039,7 +2044,7 @@ public class Predicate extends DBElement
 //            case TIME_STAMP:
 //                if ( ! ( newArg instanceof TimeStampDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: time stamp expected.");
 //                }
 //                break;
@@ -2047,17 +2052,17 @@ public class Predicate extends DBElement
 //            case QUOTE_STRING:
 //                if ( ! ( newArg instanceof QuoteStringDataValue ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Type mismatch: quote string expected.");
 //                }
 //                break;
 //
 //            case TEXT:
-//                throw new SystemErrorException(mName + 
+//                throw new SystemErrorException(mName +
 //                            "TextStringFormalArg in a predicate arg list?!?");
 //                /* break statement commented out to keep the compiler happy */
 //                // break;
-// 
+//
 //            case UNTYPED:
 //                if ( ! ( ( newArg instanceof ColPredDataValue ) ||
 //                         ( newArg instanceof FloatDataValue ) ||
@@ -2069,14 +2074,14 @@ public class Predicate extends DBElement
 //                         ( newArg instanceof TextStringDataValue ) ||
 //                         ( newArg instanceof UndefinedDataValue ) ) )
 //                {
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                            "Unknown subtype of DataValue");
 //                }
-//            
+//
 //                if ( newArg instanceof TextStringDataValue )
 //                {
-//                    throw new SystemErrorException(mName + 
-//                            "TextStringDataValue forbidded in pred arg list.");
+//                    throw new SystemErrorException(mName +
+//                          "TextStringDataValue forbidded in pred arg list.");
 //                }
 //                break;
 //
@@ -2087,12 +2092,12 @@ public class Predicate extends DBElement
 //                // break;
 //
 //            default:
-//                throw new SystemErrorException(mName + 
+//                throw new SystemErrorException(mName +
 //                                               "Unknown Formal Arg Type");
 //                /* break statement commented out to keep the compiler happy */
 //                // break;
 //        }
-        
+
         if ( newArg.getItsFargID() == DBIndex.INVALID_ID )
         {
             newArg.setItsFargID(fa.getID());
@@ -2106,16 +2111,16 @@ public class Predicate extends DBElement
         {
             throw new SystemErrorException(mName + "replaced wrong arg?!?");
         }
-        
+
         return;
-        
+
     } /* Predicate::replaceArg(n, newArg) */
-    
-    
+
+
     /**
      * updateForMVEDefChange()
      *
-     * Scan the list of data values in the predicate, and pass an update for 
+     * Scan the list of data values in the predicate, and pass an update for
      * matrix vocab element definition change message to any column predicate
      * or predicate data values.
      *                                          JRM -- 8/26/08
@@ -2124,7 +2129,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDefChange(
                                  Database db,
                                  long mveID,
@@ -2157,25 +2162,25 @@ public class Predicate extends DBElement
     {
         final String mName = "Predicate::updateForMVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(mveID);
-        
+
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mveID doesn't refer to a pve.");
         }
-        
+
         for ( DataValue dv : this.argList )
         {
             if ( dv instanceof ColPredDataValue )
@@ -2239,26 +2244,26 @@ public class Predicate extends DBElement
                                                           newCPFargList);
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::updateForMVEDefChange() */
-    
-    
+
+
     /**
      * updateForMVEDeletion()
      *
      * If the predicate is defined, scan its argument list and
      * pass the update for mve deletion message to any column predicates or
      * predicates that may appear in the argument list.
-     * 
+     *
      *                                          JRM -- 8/26/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDeletion(Database db,
                                         long deletedMveID)
         throws SystemErrorException
@@ -2271,17 +2276,17 @@ public class Predicate extends DBElement
         FormalArgument fa = null;
         DataValue dv = null;
         PredDataValue pdv = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( deletedMveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "deletedPveID invalid.");
         }
-        
+
         if ( this.pveID != DBIndex.INVALID_ID )
         {
             numArgs = this.argList.size();
@@ -2299,7 +2304,7 @@ public class Predicate extends DBElement
 
                 if ( dv == null )
                 {
-                    throw new SystemErrorException(mName + "arg " + i + 
+                    throw new SystemErrorException(mName + "arg " + i +
                                                    " is null?!?!");
                 }
 
@@ -2309,23 +2314,24 @@ public class Predicate extends DBElement
                 }
                 else if ( dv instanceof ColPredDataValue )
                 {
-                    ((ColPredDataValue)dv).updateForPVEDeletion(db, deletedMveID);
+                    ((ColPredDataValue)dv)
+                            .updateForPVEDeletion(db, deletedMveID);
                 }
 
                 i++;
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::updateForMVEDeletion() */
-    
-    
+
+
     /**
      * updateForPVEDefChange()
      *
-     * Scan the list of data values in the predicate, and pass an update for 
-     * predicate vocab element definition change message to any predicate 
+     * Scan the list of data values in the predicate, and pass an update for
+     * predicate vocab element definition change message to any predicate
      * data values.
      *                                          JRM -- 3/23/08
      *
@@ -2333,7 +2339,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDefChange(
                                  Database db,
                                  long pveID,
@@ -2358,49 +2364,49 @@ public class Predicate extends DBElement
         final String mName = "Predicate::updateForPVEDefChange(): ";
         DBElement dbe = null;
         PredicateVocabElement pve = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "pveID doesn't refer to a pve.");
         }
-        
+
         pve = (PredicateVocabElement)dbe;
-        
-        if ( this.pveID == pveID ) 
+
+        if ( this.pveID == pveID )
         {
             if ( nameChanged )
             {
                 if ( this.predName.compareTo(oldName) != 0 )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "unexpected old name.");
                 }
                 this.predName = new String(newName);
             }
-            
+
             if ( varLenChanged )
             {
                 if ( this.varLen != oldVarLen )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "unexpected old varLen.");
                 }
                 this.varLen = newVarLen;
             }
-            
+
             if ( fargListChanged )
             {
                 int i;
@@ -2408,7 +2414,7 @@ public class Predicate extends DBElement
                 int numOldArgs;
                 int numNewArgs;
                 DataValue dv = null;
-                Vector<DataValue> newArgList = null;    
+                Vector<DataValue> newArgList = null;
 
                 newArgList = this.constructEmptyArgList(pve);
                 numOldArgs = oldFargList.size();
@@ -2421,12 +2427,12 @@ public class Predicate extends DBElement
                         dv = DataValue.Copy(this.getArg(i), true);
 
                         j = (int)o2n[i];
-                        
+
                         if ( ( fargNameChanged[j] ) ||
                              ( fargSubRangeChanged[j]) ||
                              ( fargRangeChanged[j] ) )
                         {
-                            // Update the data value for the formal argument 
+                            // Update the data value for the formal argument
                             // change.
                             dv.updateForFargChange(fargNameChanged[j],
                                                    fargSubRangeChanged[j],
@@ -2438,11 +2444,11 @@ public class Predicate extends DBElement
                         newArgList.set(j, dv);
                     }
                 }
-                
+
                 this.argList = newArgList;
             }
         }
-        
+
         for ( DataValue dv : this.argList )
         {
             if ( dv instanceof PredDataValue )
@@ -2467,12 +2473,12 @@ public class Predicate extends DBElement
                                                           newFargList);
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::updateForPVEDefChange() */
-    
-    
+
+
     /**
      * updateForPVEDeletion()
      *
@@ -2481,14 +2487,14 @@ public class Predicate extends DBElement
      * Otherwise, if the predicate is defined, scan its argument list and
      * pass the update for pve deletion message to any column predicates or
      * predicates that may appear in the argument list.
-     * 
+     *
      *                                          JRM -- 3/23/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDeletion(Database db,
                                         long deletedPveID)
         throws SystemErrorException
@@ -2501,17 +2507,17 @@ public class Predicate extends DBElement
         FormalArgument fa = null;
         DataValue dv = null;
         PredDataValue pdv = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( deletedPveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "deletedPveID invalid.");
         }
-        
+
         if ( this.pveID == deletedPveID )
         {
             this.setPredID(DBIndex.INVALID_ID, false);
@@ -2524,26 +2530,26 @@ public class Predicate extends DBElement
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
-            
+
             i = 0;
-            
+
             while ( i < numArgs )
             {
                 dv = this.getArg(i);
 
                 if ( dv == null )
                 {
-                    throw new SystemErrorException(mName + "arg " + i + 
+                    throw new SystemErrorException(mName + "arg " + i +
                                                    " is null?!?!");
                 }
 
                 if ( dv instanceof PredDataValue )
                 {
                     pdv = (PredDataValue)dv;
-                    
+
                     if ( pdv.getItsValuePveID() == deletedPveID )
                     {
-                        if ( dv.getItsFargType() == 
+                        if ( dv.getItsFargType() ==
                                 FormalArgument.fArgType.UNTYPED )
                         {
                             if ( pve == null )
@@ -2560,19 +2566,19 @@ public class Predicate extends DBElement
                             }
 
                             dv = fa.constructEmptyArg();
-                            
+
                             dv.setItsPredID(this.id);
 
                             this.replaceArg(i, dv);
                         }
-                        else if ( dv.getItsFargType() == 
+                        else if ( dv.getItsFargType() ==
                                 FormalArgument.fArgType.PREDICATE )
                         {
                             ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
                         }
                         else
                         {
-                            throw new SystemErrorException(mName + "arg " + i + 
+                            throw new SystemErrorException(mName + "arg " + i +
                                     " has unexpected fArgType.");
                         }
                     }
@@ -2583,41 +2589,42 @@ public class Predicate extends DBElement
                 }
                 else if ( dv instanceof ColPredDataValue )
                 {
-                    ((ColPredDataValue)dv).updateForPVEDeletion(db, deletedPveID);
+                    ((ColPredDataValue)dv)
+                            .updateForPVEDeletion(db, deletedPveID);
                 }
-                
+
                 i++;
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::updateForPVEDeletion() */
-    
-    
-    /** 
+
+
+    /**
      * updateIndexForReplacement()
      *
-     * When the old incarnation of the canonnical version of a DataCell is 
+     * When the old incarnation of the canonnical version of a DataCell is
      * replaced with the new, we must update the index so that DataValues,
-     * column predicates, and predicates that don't appear in the new 
+     * column predicates, and predicates that don't appear in the new
      * incarnation are removed from the index, DataValues, column predicates,
-     * and Predicates that are introduced in the new incarnation are inserted 
-     * in the index, and the index is updated to point to the new versions of 
+     * and Predicates that are introduced in the new incarnation are inserted
+     * in the index, and the index is updated to point to the new versions of
      * DataValues, column predicates, and Predicates that appear in both.
      *
      * If there is no structural change in the underlying mve's and pve's,
-     * this task relatively straight forward, as continuing objects will 
-     * reside in the same location in the old and new argument lists, and 
+     * this task relatively straight forward, as continuing objects will
+     * reside in the same location in the old and new argument lists, and
      * will share IDs.  New items will reside in the new version, and have
      * invalid IDs, and items that will cease to exist will reside in the
      * old version, and not have a cognate with the same ID in the same
      * location in the new verson.
      *
-     * If there is structural change, things get much more complicated -- 
+     * If there is structural change, things get much more complicated --
      * however we limit the complexity by allowing at most one mve or pve
-     * to be modified or deleted in any one cycle.  Thus we are given that 
-     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * to be modified or deleted in any one cycle.  Thus we are given that
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and
      * cascadePveDel parameters will be true.
      *
      *
@@ -2631,7 +2638,7 @@ public class Predicate extends DBElement
      *
      * 2) cascadeMveDel == true
      *
-     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of
      * the deleted mve is in cascadeMveID.
      *
      * Proceed as per the no structural change case.
@@ -2639,29 +2646,29 @@ public class Predicate extends DBElement
      *
      * 3) cascadePveMod == true
      *
-     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * If cascadePveMod is true, then a pve has been modified, and the ID of
      * the modified pve is in cascadeMveID.
      *
-     * If cascadePveID == this.pveID, then the definition of the pve that 
+     * If cascadePveID == this.pveID, then the definition of the pve that
      * defines the predicate represented by this instance of Predicate
-     * has changed.  
-     * 
-     * Thus it is possible that formal arguments have been deleted and/or 
+     * has changed.
+     *
+     * Thus it is possible that formal arguments have been deleted and/or
      * re-arranged.  Thus instead of looking just in the corresponding location
      * in the old argument list for the old version of an argument in the new
      * list, we must scan the entire old argument list for the old version.
-     * Similarly for each item in the old argument list, we must scan the 
-     * new argument list to verify that there is no new version, and the 
-     * old argument (and all its descendants -- if any) must be removed from 
+     * Similarly for each item in the old argument list, we must scan the
+     * new argument list to verify that there is no new version, and the
+     * old argument (and all its descendants -- if any) must be removed from
      * the index.
      *
-     * If cascadePveID != this.pveID, then we can proceed as per the no 
+     * If cascadePveID != this.pveID, then we can proceed as per the no
      * structural change case -- for this predicate at least.
      *
      *
      * 4) cascadePveDel == true
      *
-     * If cascadePveDel is true, then a pve has been deleted, and the ID of 
+     * If cascadePveDel is true, then a pve has been deleted, and the ID of
      * the deleted pve is in cascadePveID.
      *
      * In this case, verify that this.pveID != cascadePveID, and then proceed
@@ -2673,7 +2680,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public void updateIndexForReplacement(Predicate oldPred,
                                           long DCID,
                                           boolean cascadeMveMod,
@@ -2715,47 +2722,47 @@ public class Predicate extends DBElement
         TimeStampDataValue      old_tsdv;
         QuoteStringDataValue    old_qsdv;
         TextStringDataValue     old_tdv;
-        
+
         if ( oldPred == null )
         {
             throw new SystemErrorException(mName + "oldPred is null");
         }
-        
+
         if ( oldPred.cellID != DCID )
         {
             throw new SystemErrorException(mName + "oldPred DCID mismatch.");
         }
-        
+
         if ( oldPred.pveID == DBIndex.INVALID_ID )
         {
             // old pred is undefined -- verify that it was correctly initialized
-            
+
             if ( ( oldPred.predName == null ) ||
                  ( oldPred.predName.compareTo("") != 0 ) ||
                  ( oldPred.argList != null ) ||
                  ( oldPred.varLen != false ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "undefined old pred with incorrect values");
             }
         }
         else if ( oldPred.argList == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldPred.argList == null?!?!");
         }
-        
+
         if ( oldPred.id == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "oldPred.id is invalid.");
         }
-        
-        
+
+
         if ( this.cellID != DCID )
         {
             throw new SystemErrorException(mName + "DCID mismatch.");
         }
-        
+
         if ( this.pveID == DBIndex.INVALID_ID )
         {
             // undefined predicate -- verify that it is correctly initialized
@@ -2765,28 +2772,28 @@ public class Predicate extends DBElement
                  ( this.varLen != false ) )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "undefined pred with incorrect values");
             }
         }
         else if ( ( cascadePveDel ) && ( this.pveID == cascadePveID ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "this.pveID == deleted pve ID?!?!?");
         }
         else if ( this.argList == null )
         {
             throw new SystemErrorException(mName + "this.argList == null?!?");
         }
-            
+
         if ( ( this.id != DBIndex.INVALID_ID ) &&
              ( this.id != oldPred.id ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "this.id not invalid and not equal to oldPred.id");
         }
-        
-        
+
+
         if ( this.pveID == DBIndex.INVALID_ID )
         {
             if ( oldPred.pveID == DBIndex.INVALID_ID )
@@ -2809,7 +2816,7 @@ public class Predicate extends DBElement
                     {
                         dv.removeFromIndex(DCID);
                     }
-                    
+
                     // replace the old Predicate with the new in the index.
                     this.db.idx.replaceElement(this);
                 }
@@ -2828,7 +2835,7 @@ public class Predicate extends DBElement
                 else // this.id == oldPred.id
                 {
                     this.db.idx.replaceElement(this);
-                    
+
                     // Insert the argument list of the new predicate in the
                     // index.
                     for ( DataValue dv : this.argList )
@@ -2852,7 +2859,7 @@ public class Predicate extends DBElement
                     {
                         dv.removeFromIndex(DCID);
                     }
-                    
+
                     for ( DataValue dv : this.argList )
                     {
                         dv.insertInIndex(DCID);
@@ -2868,7 +2875,7 @@ public class Predicate extends DBElement
             // parameters.
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
-            
+
             oldPred.removeFromIndex(DCID);
             this.insertInIndex(DCID);
 
@@ -2885,88 +2892,88 @@ public class Predicate extends DBElement
         else if ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) )
             // note that from previous if statements, we also have:
             // ( this.id == oldPred.id ) &&
-            // ( this.pveID == oldPred.pveID ) && 
+            // ( this.pveID == oldPred.pveID ) &&
             // ( this.pveID != DBIndex.INVALID_ID )
        {
             assert( this.id == oldPred.id );
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
-            
+
             this.db.idx.replaceElement(this);
-            
+
             pve = this.lookupPredicateVE(this.pveID);
-            
+
             while ( i < this.getNumArgs() )
             {
-                // get the i-th formal argument.  This is the pve's actual 
+                // get the i-th formal argument.  This is the pve's actual
                 // argument,  so be careful not to modify it in any way.
                 fa = pve.getFormalArg(i);
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( fa instanceof TextStringFormalArg )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "pve contains a text formal arg?!?!");
                 }
 
-                // get the i'th arguments from the old and new argument 
-                // lists.  Again, these are the actual arguments -- must be 
+                // get the i'th arguments from the old and new argument
+                // lists.  Again, these are the actual arguments -- must be
                 // careful not to modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = oldPred.argList.get(i);
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
                 else if ( newArg instanceof TextStringDataValue )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "new pred contains text arguemnt?!?");
                 }
 
                 if ( oldArg == null )
                 {
-                    throw new SystemErrorException(mName + "no old" + i + 
+                    throw new SystemErrorException(mName + "no old" + i +
                             "th argument?!?!");
                 }
                 else if ( oldArg instanceof TextStringDataValue )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "old pred contains text arguemnt?!?");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( fa.getID() != oldArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( oldArg.getID() == DBIndex.INVALID_ID )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th old argument not in index?!?!");
                 }
 
                 if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
                      ( newArg.getID() != oldArg.getID() ) )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th argument id mismatch");
                 }
 
-                this.validateReplacementArg(fa, oldArg, newArg, 
+                this.validateReplacementArg(fa, oldArg, newArg,
                         cascadeMveMod, cascadeMveDel, cascadeMveID,
                         cascadePveMod, cascadePveDel, cascadePveID);
 
@@ -2977,7 +2984,7 @@ public class Predicate extends DBElement
 //                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
 //                             ( ! ( oldArg instanceof ColPredDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: Predicate expected.");
 //                        }
 //
@@ -2986,12 +2993,13 @@ public class Predicate extends DBElement
 //                        old_cpdv = (ColPredDataValue)oldArg;
 //
 //                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-//                             ( new_cpdv.getItsValue().getID() == 
+//                             ( new_cpdv.getItsValue().getID() ==
 //                                DBIndex.INVALID_ID ) )
 //                        {
-//                            new_cpdv.getItsValue().validateColumnPredicate(true);
+//                            new_cpdv.getItsValue()
+//                                              .validateColumnPredicate(true);
 //                        }
-//                        else if ( ( ! cascadeMveMod ) && 
+//                        else if ( ( ! cascadeMveMod ) &&
 //                                  ( ! cascadeMveDel ) &&
 //                                  ( ! cascadePveMod ) &&
 //                                  ( ! cascadePveDel ) )
@@ -3024,7 +3032,7 @@ public class Predicate extends DBElement
 //                        if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
 //                             ( ! ( oldArg instanceof FloatDataValue ) ) )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                                    "Type mismatch: float expected.");
 //                        }
 //
@@ -3034,18 +3042,18 @@ public class Predicate extends DBElement
 //
 //                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_fdv.getSubRange() != ffa.getSubRange().");
 //                        }
 //
 //                        if ( new_fdv.getSubRange() )
 //                        {
-//                            if ( ( ffa.getMinVal() > 
+//                            if ( ( ffa.getMinVal() >
 //                                    new_fdv.getItsValue() ) ||
-//                                 ( ffa.getMaxVal() < 
+//                                 ( ffa.getMaxVal() <
 //                                    new_fdv.getItsValue() ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_fdv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3055,7 +3063,7 @@ public class Predicate extends DBElement
 //                        if ( ( ! ( newArg instanceof IntDataValue ) ) ||
 //                             ( ! ( oldArg instanceof IntDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: integer expected.");
 //                        }
 //
@@ -3065,18 +3073,18 @@ public class Predicate extends DBElement
 //
 //                        if ( new_idv.getSubRange() != ifa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_idv.getSubRange() != ifa.getSubRange().");
 //                        }
 //
 //                        if ( new_idv.getSubRange() )
 //                        {
-//                            if ( ( ifa.getMinVal() > 
+//                            if ( ( ifa.getMinVal() >
 //                                    new_idv.getItsValue() ) ||
-//                                 ( ifa.getMaxVal() < 
+//                                 ( ifa.getMaxVal() <
 //                                    new_idv.getItsValue() ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_idv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3086,7 +3094,7 @@ public class Predicate extends DBElement
 //                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
 //                             ( ! ( oldArg instanceof NominalDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: nominal expected.");
 //                        }
 //
@@ -3096,16 +3104,16 @@ public class Predicate extends DBElement
 //
 //                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_ndv.getSubRange() != nfa.getSubRange().");
 //                        }
 //
-//                        if ( ( new_ndv.getSubRange() ) && 
+//                        if ( ( new_ndv.getSubRange() ) &&
 //                             ( new_ndv.getItsValue() != null ) )
 //                        {
 //                            if ( ! nfa.approved(new_ndv.getItsValue()) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_ndv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3115,7 +3123,7 @@ public class Predicate extends DBElement
 //                        if ( ( ! ( newArg instanceof PredDataValue ) ) ||
 //                             ( ! ( oldArg instanceof PredDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: Predicate expected.");
 //                        }
 //
@@ -3125,27 +3133,27 @@ public class Predicate extends DBElement
 //
 //                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_pdv.getSubRange() != pfa.getSubRange().");
 //                        }
 //
-//                        if ( ( new_pdv.getItsValue().getPveID() != 
+//                        if ( ( new_pdv.getItsValue().getPveID() !=
 //                                DBIndex.INVALID_ID ) &&
 //                             ( new_pdv.getSubRange() ) &&
 //                             ( ! pfa.approved(new_pdv.getItsValue().
 //                                        getPveID()) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "new_pdv.getItsValue() out of range.");
 //                        }
 //
 //                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-//                             ( new_pdv.getItsValue().getID() == 
+//                             ( new_pdv.getItsValue().getID() ==
 //                                DBIndex.INVALID_ID ) )
 //                        {
 //                            new_pdv.getItsValue().validatePredicate(true);
 //                        }
-//                        else if ( ( ! cascadeMveMod ) && 
+//                        else if ( ( ! cascadeMveMod ) &&
 //                                  ( ! cascadeMveDel ) &&
 //                                  ( ! cascadePveMod ) &&
 //                                  ( ! cascadePveDel ) )
@@ -3175,12 +3183,12 @@ public class Predicate extends DBElement
 //                        break;
 //
 //                    case TIME_STAMP:
-//                        if ( ( ! ( newArg instanceof 
+//                        if ( ( ! ( newArg instanceof
 //                                    TimeStampDataValue ) ) ||
-//                             ( ! ( oldArg instanceof 
+//                             ( ! ( oldArg instanceof
 //                                    TimeStampDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: time stamp expected.");
 //                        }
 //
@@ -3190,7 +3198,7 @@ public class Predicate extends DBElement
 //
 //                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
 //                        }
 //
@@ -3201,19 +3209,19 @@ public class Predicate extends DBElement
 //                                 ( tsfa.getMaxVal().
 //                                    lt(new_tsdv.getItsValue()) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "new_tsdv.getItsValue() out of range.");
+//                                throw new SystemErrorException(mName +
+//                                      "new_tsdv.getItsValue() out of range.");
 //                            }
 //                        }
 //                        break;
 //
 //                    case QUOTE_STRING:
-//                        if ( ( ! ( newArg instanceof 
+//                        if ( ( ! ( newArg instanceof
 //                                    QuoteStringDataValue ) ) ||
-//                             ( ! ( oldArg instanceof 
+//                             ( ! ( oldArg instanceof
 //                                    QuoteStringDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: quote string expected.");
 //                        }
 //                        break;
@@ -3223,26 +3231,26 @@ public class Predicate extends DBElement
 //                             ( oldArg instanceof TextStringDataValue ) )
 //                        {
 //                            throw new SystemErrorException(mName +
-//                                    "Type mismatch: Text String can't be " +
-//                                    "substituted for untyped formal arguments.");
+//                                 "Type mismatch: Text String can't be " +
+//                                 "substituted for untyped formal arguments.");
 //                        }
-//                        else if ( ! ( ( newArg instanceof ColPredDataValue ) ||
-//                                      ( newArg instanceof FloatDataValue ) ||
-//                                      ( newArg instanceof IntDataValue ) ||
-//                                      ( newArg instanceof NominalDataValue ) ||
-//                                      ( newArg instanceof PredDataValue ) ||
-//                                      ( newArg instanceof TimeStampDataValue ) ||
-//                                      ( newArg instanceof QuoteStringDataValue ) ||
-//                                      ( newArg instanceof UndefinedDataValue ) ) )
+//                        else if (!((newArg instanceof ColPredDataValue) ||
+//                                   (newArg instanceof FloatDataValue) ||
+//                                   (newArg instanceof IntDataValue) ||
+//                                   (newArg instanceof NominalDataValue) ||
+//                                   (newArg instanceof PredDataValue) ||
+//                                   (newArg instanceof TimeStampDataValue) ||
+//                                   (newArg instanceof QuoteStringDataValue) ||
+//                                   (newArg instanceof UndefinedDataValue) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Unknown subtype of DataValue");
 //                        }
 //
 //                        if ( ( newArg.getClass() != oldArg.getClass() ) &&
 //                             ( newArg.getID() != DBIndex.INVALID_ID ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "dv type change and id set");
 //                        }
 //
@@ -3259,24 +3267,24 @@ public class Predicate extends DBElement
 //                                {
 //                                    new_cpdv.getItsValue().
 //                                            validateReplacementColPred(
-//                                                old_cpdv.getItsValueBlind(), 
+//                                                old_cpdv.getItsValueBlind(),
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                                else
 //                                {
 //                                    new_cpdv.getItsValue().
 //                                            validateReplacementColPred(
-//                                                old_cpdv.getItsValue(), 
+//                                                old_cpdv.getItsValue(),
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                            }
@@ -3299,24 +3307,24 @@ public class Predicate extends DBElement
 //                                {
 //                                    new_pdv.getItsValue().
 //                                            validateReplacementPredicate(
-//                                                old_pdv.getItsValueBlind(), 
+//                                                old_pdv.getItsValueBlind(),
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                                else
 //                                {
 //                                    new_pdv.getItsValue().
 //                                            validateReplacementPredicate(
-//                                                old_pdv.getItsValue(), 
+//                                                old_pdv.getItsValue(),
 //                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                            }
@@ -3331,35 +3339,35 @@ public class Predicate extends DBElement
 //                    case UNDEFINED:
 //                        throw new SystemErrorException(mName +
 //                                "formal arg type undefined???");
-//                        /* break statement commented out to keep the 
-//                         * compiler happy 
+//                        /* break statement commented out to keep the
+//                         * compiler happy
 //                         */
 //                        // break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //
 //                                "Unknown Formal Arg Type");
-//                        /* break statement commented out to keep the 
-//                         * compiler happy 
+//                        /* break statement commented out to keep the
+//                         * compiler happy
 //                         */
 //                        // break;
 //                }
-                
-                // Sanity checks pass.  If the ID's of the old and new versions of 
+
+                // Sanity checks pass.  If the ID's of old and new versions of
                 // the argument match, replace the old incarnation of the formal
                 // argument with the new in the index.
                 //
                 // Otherwise, remove the old from the index, and insert the new.
                 if ( newArg.getID() == oldArg.getID() )
                 {
-                    newArg.replaceInIndex(oldArg, 
-                                          DCID, 
-                                          cascadeMveMod, 
-                                          cascadeMveDel, 
+                    newArg.replaceInIndex(oldArg,
+                                          DCID,
+                                          cascadeMveMod,
+                                          cascadeMveDel,
                                           cascadeMveID,
-                                          cascadePveMod, 
-                                          cascadePveDel, 
+                                          cascadePveMod,
+                                          cascadePveDel,
                                           cascadePveID);
                 }
                 else /* new_fdv.getID() == DBIndex.INVALID_ID */
@@ -3373,10 +3381,10 @@ public class Predicate extends DBElement
             } /* while */
         }
         else // From previous if statements, we have that:
-             // ( cascadePveMod ) && 
+             // ( cascadePveMod ) &&
              // ( cascadePveID == this.pveID ) &&
              // ( this.id == oldPred.id ) &&
-             // ( this.pveID == oldPred.pveID ) && 
+             // ( this.pveID == oldPred.pveID ) &&
              // ( this.pveID != DBIndex.INVALID_ID )
        {
             assert( cascadePveMod );
@@ -3384,7 +3392,7 @@ public class Predicate extends DBElement
             assert( this.id == oldPred.id );
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
-            
+
             // the pve whose definition underlies the old and new incarnations
             // of the predicate has changes -- thus it is possible that formal
             // arguments have shifted location, been removed, or added.  We
@@ -3394,41 +3402,41 @@ public class Predicate extends DBElement
             //
             // 1) If the formal argument associated with an argument has been
             //    removed, then the new version of the predicate will contain
-            //    no argument with the same ID as that associated with the 
+            //    no argument with the same ID as that associated with the
             //    formal argument that has been removed.
             //
-            // 2) If a formal argument has been added, then the argument 
+            // 2) If a formal argument has been added, then the argument
             //    associated with the formal argument in the new predicate
             //    will have the invalid id.
             //
-            // With these two assurances in hand, we can process the two 
+            // With these two assurances in hand, we can process the two
             // argument lists as follows once the sanity checks pass:
             //
             // First, scan the old list for IDs that don't exist in the new
             // list.  Delete the associated entries from the index.
             //
-            // Second scan the new list.  If an entry has invalid ID, just 
+            // Second scan the new list.  If an entry has invalid ID, just
             // insert it in the index.  If it has valid id, use it to replace
             // the entry in the old list with the same ID.  If no such old
             // argument exists, scream and die.
-            
+
             this.db.idx.replaceElement(this);
-                        
+
             pve = this.lookupPredicateVE(this.pveID);
-            
+
             // first remove unmatched old arguments from the index...
             i = 0;
             while ( i < oldPred.getNumArgs() )
             {
                 int j = 0;
                 boolean foundMatch = false;
-                
+
                 oldArg = oldPred.argList.get(i);
-                
+
                 while ( j < this.getNumArgs() )
                 {
                     newArg = this.argList.get(j);
-                    
+
                     if ( newArg.getID() == oldArg.getID() )
                     {
                         if ( foundMatch )
@@ -3443,58 +3451,58 @@ public class Predicate extends DBElement
                     }
                     j++;
                 }
-                
+
                 if ( ! foundMatch )
                 {
                     oldArg.removeFromIndex(DCID);
                 }
-                
+
                 i++;
             }
-            
-            
-            // now scan the new argument list.  Any arguments with 
+
+
+            // now scan the new argument list.  Any arguments with
             // valid IDs must have a previous version with the same ID
             // in the old argument list -- verify this.
             i = 0;
             while ( i < this.getNumArgs() )
             {
-                // get the i-th formal argument.  This is the pve's actual 
+                // get the i-th formal argument.  This is the pve's actual
                 // argument, so be careful not to modify it in any way.
                 fa = pve.getFormalArg(i);
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( fa instanceof TextStringFormalArg )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "pve contains a text formal arg?!?!");
                 }
 
-                // get the i'th argument from the new argument list, and 
+                // get the i'th argument from the new argument list, and
                 // the matching argument (if any) from the old argument list.
-                // Again, these are the actual arguments -- must be 
+                // Again, these are the actual arguments -- must be
                 // careful not to modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = null;
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
                 else if ( newArg instanceof TextStringDataValue )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "new pred contains text arguemnt?!?");
                 }
-                    
+
                 if ( newArg.getID() != DBIndex.INVALID_ID )
                 {
-                    // the old argument list must contain an argument 
+                    // the old argument list must contain an argument
                     // with the same ID.  Scan the list to find it.
                     int j = 0;
 
@@ -3505,7 +3513,7 @@ public class Predicate extends DBElement
 
                         if ( oldArg.getID() == DBIndex.INVALID_ID )
                         {
-                            throw new SystemErrorException(mName + i + 
+                            throw new SystemErrorException(mName + i +
                                     "th old argument not in index?!?!");
                         }
 
@@ -3513,7 +3521,7 @@ public class Predicate extends DBElement
                         {
                             oldArg = null;
                         }
-                        
+
                         j++;
                     }
 
@@ -3527,31 +3535,31 @@ public class Predicate extends DBElement
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( ( oldArg != null ) &&
                      ( oldArg instanceof TextStringDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "old pred contains text arguemnt?!?");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
-                
-                this.validateReplacementArg(fa, oldArg, newArg, 
+
+                this.validateReplacementArg(fa, oldArg, newArg,
                         cascadeMveMod, cascadeMveDel, cascadeMveID,
                         cascadePveMod, cascadePveDel, cascadePveID);
 
@@ -3561,10 +3569,10 @@ public class Predicate extends DBElement
 //                    case COL_PREDICATE:
 //                        if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
 //                             ( ( oldArg != null ) &&
-//                               ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
+//                               ( ! ( oldArg instanceof ColPredDataValue ))))
 //                        {
-//                            throw new SystemErrorException(mName + 
-//                                "Type mismatch: Column Predicate(s) expected.");
+//                            throw new SystemErrorException(mName +
+//                              "Type mismatch: Column Predicate(s) expected.");
 //                        }
 //
 //                        cpfa = (ColPredFormalArg)fa;
@@ -3580,10 +3588,11 @@ public class Predicate extends DBElement
 //                        }
 //
 //                        if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-//                             ( new_cpdv.getItsValue().getID() == 
+//                             ( new_cpdv.getItsValue().getID() ==
 //                                DBIndex.INVALID_ID ) )
 //                        {
-//                            new_cpdv.getItsValue().validateColumnPredicate(true);
+//                            new_cpdv.getItsValue()
+//                                            .validateColumnPredicate(true);
 //                        }
 //                        else if ( old_cpdv != null )
 //                        {
@@ -3609,7 +3618,7 @@ public class Predicate extends DBElement
 //                             ( ( oldArg != null ) &&
 //                               ( ! ( oldArg instanceof FloatDataValue ) ) ) )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                                    "Type mismatch: float(s) expected.");
 //                        }
 //
@@ -3618,18 +3627,18 @@ public class Predicate extends DBElement
 //
 //                        if ( new_fdv.getSubRange() != ffa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_fdv.getSubRange() != ffa.getSubRange().");
 //                        }
 //
 //                        if ( new_fdv.getSubRange() )
 //                        {
-//                            if ( ( ffa.getMinVal() > 
+//                            if ( ( ffa.getMinVal() >
 //                                    new_fdv.getItsValue() ) ||
-//                                 ( ffa.getMaxVal() < 
+//                                 ( ffa.getMaxVal() <
 //                                    new_fdv.getItsValue() ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_fdv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3640,7 +3649,7 @@ public class Predicate extends DBElement
 //                             ( ( oldArg != null ) &&
 //                               ( ! ( oldArg instanceof IntDataValue ) ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: integer(s) expected.");
 //                        }
 //
@@ -3649,18 +3658,18 @@ public class Predicate extends DBElement
 //
 //                        if ( new_idv.getSubRange() != ifa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_idv.getSubRange() != ifa.getSubRange().");
 //                        }
 //
 //                        if ( new_idv.getSubRange() )
 //                        {
-//                            if ( ( ifa.getMinVal() > 
+//                            if ( ( ifa.getMinVal() >
 //                                    new_idv.getItsValue() ) ||
-//                                 ( ifa.getMaxVal() < 
+//                                 ( ifa.getMaxVal() <
 //                                    new_idv.getItsValue() ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_idv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3669,11 +3678,11 @@ public class Predicate extends DBElement
 //                    case NOMINAL:
 //                        if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
 //                             ( ( oldArg != null ) &&
-//                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+//                               ( ! ( oldArg instanceof NominalDataValue ) )
 //                             )
 //                           )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: nominal(s) expected.");
 //                        }
 //
@@ -3682,16 +3691,16 @@ public class Predicate extends DBElement
 //
 //                        if ( new_ndv.getSubRange() != nfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_ndv.getSubRange() != nfa.getSubRange().");
 //                        }
 //
-//                        if ( ( new_ndv.getSubRange() ) && 
+//                        if ( ( new_ndv.getSubRange() ) &&
 //                             ( new_ndv.getItsValue() != null ) )
 //                        {
 //                            if ( ! nfa.approved(new_ndv.getItsValue()) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "new_ndv.getItsValue() out of range.");
 //                            }
 //                        }
@@ -3702,7 +3711,7 @@ public class Predicate extends DBElement
 //                             ( ( oldArg != null ) &&
 //                               ( ! ( oldArg instanceof PredDataValue ) ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Type mismatch: Predicate(s) expected.");
 //                        }
 //
@@ -3720,22 +3729,22 @@ public class Predicate extends DBElement
 //
 //                        if ( new_pdv.getSubRange() != pfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                             "new_pdv.getSubRange() != pfa.getSubRange().");
 //                        }
 //
-//                        if ( ( new_pdv.getItsValue().getPveID() != 
+//                        if ( ( new_pdv.getItsValue().getPveID() !=
 //                                DBIndex.INVALID_ID ) &&
 //                             ( new_pdv.getSubRange() ) &&
 //                             ( ! pfa.approved(new_pdv.getItsValue().
 //                                        getPveID()) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "new_pdv.getItsValue() out of range.");
 //                        }
 //
 //                        if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-//                             ( new_pdv.getItsValue().getID() == 
+//                             ( new_pdv.getItsValue().getID() ==
 //                                DBIndex.INVALID_ID ) )
 //                        {
 //                            new_pdv.getItsValue().validatePredicate(true);
@@ -3760,13 +3769,13 @@ public class Predicate extends DBElement
 //                        break;
 //
 //                    case TIME_STAMP:
-//                        if ( ( ! ( newArg instanceof 
+//                        if ( ( ! ( newArg instanceof
 //                                   TimeStampDataValue ) ) ||
 //                             ( ( oldArg != null ) &&
-//                               ( ! ( oldArg instanceof 
+//                               ( ! ( oldArg instanceof
 //                                      TimeStampDataValue ) ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                "Type mismatch: time stamp(s) expected.");
 //                        }
 //
@@ -3775,7 +3784,7 @@ public class Predicate extends DBElement
 //
 //                        if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
 //                        {
-//                           throw new SystemErrorException(mName + 
+//                           throw new SystemErrorException(mName +
 //                           "new_tsdv.getSubRange() != tsfa.getSubRange().");
 //                        }
 //
@@ -3786,21 +3795,21 @@ public class Predicate extends DBElement
 //                                 ( tsfa.getMaxVal().
 //                                    lt(new_tsdv.getItsValue()) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "new_tsdv.getItsValue() out of range.");
+//                                throw new SystemErrorException(mName +
+//                                     "new_tsdv.getItsValue() out of range.");
 //                            }
 //                        }
 //                        break;
 //
 //                    case QUOTE_STRING:
-//                        if ( ( ! ( newArg instanceof 
+//                        if ( ( ! ( newArg instanceof
 //                                    QuoteStringDataValue ) ) ||
 //                             ( ( oldArg != null ) &&
-//                               ( ! ( oldArg instanceof 
+//                               ( ! ( oldArg instanceof
 //                                      QuoteStringDataValue ) ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
-//                                    "Type mismatch: quote string(s) expected.");
+//                            throw new SystemErrorException(mName +
+//                                  "Type mismatch: quote string(s) expected.");
 //                        }
 //                        break;
 //
@@ -3813,38 +3822,38 @@ public class Predicate extends DBElement
 //                                "Type mismatch: Text String(s) can't be " +
 //                                "substituted for untyped arguments.");
 //                        }
-//                        else if ( ! ( ( newArg instanceof 
+//                        else if ( ! ( ( newArg instanceof
 //                                        ColPredDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        FloatDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        IntDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        NominalDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        PredDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        TimeStampDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        QuoteStringDataValue ) ||
-//                                      ( newArg instanceof 
+//                                      ( newArg instanceof
 //                                        UndefinedDataValue ) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Unknown subtype of DataValue");
 //                        }
 //
-//                        if ( ( ( oldArg == null ) 
+//                        if ( ( ( oldArg == null )
 //                               ||
-//                               ( newArg.getClass() != oldArg.getClass() ) 
+//                               ( newArg.getClass() != oldArg.getClass() )
 //                             )
 //                             &&
 //                             ( newArg.getID() != DBIndex.INVALID_ID ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "dv type change and id set(2)");
 //                        }
-//                        
+//
 //                        if ( newArg instanceof ColPredDataValue )
 //                        {
 //                            new_cpdv = (ColPredDataValue)newArg;
@@ -3858,12 +3867,12 @@ public class Predicate extends DBElement
 //
 //                                new_cpdv.getItsValue().
 //                                        validateReplacementColPred(
-//                                            old_cpdv.getItsValueBlind(), 
+//                                            old_cpdv.getItsValueBlind(),
 //                                            cascadeMveMod,
 //                                            cascadeMveDel,
 //                                            cascadeMveID,
 //                                            cascadePveMod,
-//                                            cascadePveDel, 
+//                                            cascadePveDel,
 //                                            cascadePveID);
 //                            }
 //                            else
@@ -3885,12 +3894,12 @@ public class Predicate extends DBElement
 //
 //                                new_pdv.getItsValue().
 //                                        validateReplacementPredicate(
-//                                            old_pdv.getItsValueBlind(), 
+//                                            old_pdv.getItsValueBlind(),
 //                                            cascadeMveMod,
 //                                            cascadeMveDel,
 //                                            cascadeMveID,
 //                                            cascadePveMod,
-//                                            cascadePveDel, 
+//                                            cascadePveDel,
 //                                            cascadePveID);
 //                            }
 //                            else
@@ -3904,39 +3913,39 @@ public class Predicate extends DBElement
 //                    case UNDEFINED:
 //                        throw new SystemErrorException(mName +
 //                                "formal arg type undefined???");
-//                        /* break statement commented out to keep the 
-//                         * compiler happy 
+//                        /* break statement commented out to keep the
+//                         * compiler happy
 //                         */
 //                        // break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //
 //                                "Unknown Formal Arg Type");
-//                        /* break statement commented out to keep the 
-//                         * compiler happy 
+//                        /* break statement commented out to keep the
+//                         * compiler happy
 //                         */
 //                        // break;
 //                }
-                
+
                 // Sanity checks pass.  If oldArg is defined, the IDs must
                 // match and we replace the old version with the new in the
-                // index.  Otherwise, just insert the new argument in the 
+                // index.  Otherwise, just insert the new argument in the
                 // index.
                 if ( oldArg != null )
                 {
                     assert( newArg.getID() == oldArg.getID() );
-                    
+
                     newArg.replaceInIndex(oldArg, DCID, cascadeMveMod,
                                           cascadeMveDel, cascadeMveID,
-                                          cascadePveMod, cascadePveDel, 
+                                          cascadePveMod, cascadePveDel,
                                           cascadePveID);
                 }
                 else
                 {
                     assert( newArg.getID() == DBIndex.INVALID_ID );
                     assert( this.id != DBIndex.INVALID_ID );
-                    
+
                     newArg.setItsPredID(this.id);
                     newArg.insertInIndex(DCID);
                 }
@@ -3945,12 +3954,12 @@ public class Predicate extends DBElement
 
             } /* while */
         }
-        
+
         return;
-        
+
     } /* Predicate::updateIndexForReplacement() */
-    
-    
+
+
     /**
      * validateArgAsignment()
      *
@@ -3985,7 +3994,7 @@ public class Predicate extends DBElement
         NominalDataValue        ndv;
         PredDataValue           pdv;
         TimeStampDataValue      tsdv;
-        
+
         if ( fa == null )
         {
             throw new SystemErrorException(mName + "fa null on entry.");
@@ -3994,7 +4003,7 @@ public class Predicate extends DBElement
         {
             throw new SystemErrorException(mName + "fa has unexpected veID.");
         }
-        
+
         if ( arg == null )
         {
             throw new SystemErrorException(mName + "arg null on entry.");
@@ -4002,10 +4011,10 @@ public class Predicate extends DBElement
         else if ( ( arg.getItsFargID() != DBIndex.INVALID_ID) &&
                   ( arg.getItsFargID() != fa.getID() ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "arg.getItsFargID() defined and != fa.getID()");
         }
-        
+
 
         switch (fa.getFargType())
         {
@@ -4016,9 +4025,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4050,9 +4059,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4075,7 +4084,7 @@ public class Predicate extends DBElement
 
                     if ( fdv.getSubRange() != ffa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "fdv.getSubRange() != ffa.getSubRange().");
                     }
 
@@ -4084,7 +4093,7 @@ public class Predicate extends DBElement
                         if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
                              ( ffa.getMaxVal() < fdv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "fdv.getItsValue() out of range.");
                         }
                     }
@@ -4098,9 +4107,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4123,7 +4132,7 @@ public class Predicate extends DBElement
 
                     if ( idv.getSubRange() != ifa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "idv.getSubRange() != ifa.getSubRange().");
                     }
 
@@ -4132,7 +4141,7 @@ public class Predicate extends DBElement
                         if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
                              ( ifa.getMaxVal() < idv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "idv.getItsValue() out of range.");
                         }
                     }
@@ -4144,7 +4153,7 @@ public class Predicate extends DBElement
 
                 if ( ! ( ( arg instanceof NominalDataValue ) ||
                          ( arg instanceof UndefinedDataValue )
-                       ) 
+                       )
                    )
                 {
                     throw new SystemErrorException(mName + "Arg " +
@@ -4158,18 +4167,18 @@ public class Predicate extends DBElement
 
                     if ( ndv.getSubRange() != nfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "ndv.getSubRange() != nfa.getSubRange().");
                     }
 
-                    if ( ( ndv.getSubRange() ) && 
+                    if ( ( ndv.getSubRange() ) &&
                          ( ndv.getItsValue() != null ) )
                     {
                         if ( ( ! nfa.approved(ndv.getItsValue()) ) &&
                              ( ( ! this.queryVarOK ) ||
                                ( ! ndv.isQueryVar() ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "ndv.getItsValue() out of range.");
                         }
                     }
@@ -4183,9 +4192,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4208,18 +4217,18 @@ public class Predicate extends DBElement
 
                     if ( pdv.getSubRange() != pfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "pdv.getSubRange() != pfa.getSubRange().");
                     }
 
-                    if ( ( pdv.getItsValue().getPveID() != DBIndex.INVALID_ID ) &&
-                         ( pdv.getSubRange() ) &&
+                    if ( ( pdv.getItsValue().getPveID() != DBIndex.INVALID_ID )
+                            && ( pdv.getSubRange() ) &&
                          ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "new_pdv.getItsValue() out of range.");
                     }
-                    
+
                     pdv.getItsValue().validatePredicate(false);
                 }
                 break;
@@ -4231,9 +4240,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4256,7 +4265,7 @@ public class Predicate extends DBElement
 
                     if ( tsdv.getSubRange() != tsfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                        "tsdv.getSubRange() != tsfa.getSubRange().");
                     }
 
@@ -4265,7 +4274,7 @@ public class Predicate extends DBElement
                         if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
                              ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "tsdv.getItsValue() out of range.");
                         }
                     }
@@ -4277,9 +4286,9 @@ public class Predicate extends DBElement
                          ( arg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)arg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -4298,10 +4307,10 @@ public class Predicate extends DBElement
                 break;
 
             case TEXT:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "pve contains a text formal arg?!?!");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
 
@@ -4321,7 +4330,7 @@ public class Predicate extends DBElement
                               ( arg instanceof QuoteStringDataValue ) ||
                               ( arg instanceof UndefinedDataValue ) ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Unknown subtype of DataValue");
                 }
 
@@ -4342,30 +4351,30 @@ public class Predicate extends DBElement
             case UNDEFINED:
                 throw new SystemErrorException(mName +
                         "formal arg type undefined???");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
 
             default:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
 
                         "Unknown Formal Arg Type");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
         }
 
         return;
-        
+
     } /* Predicate::validateArgAsignment() */
-    
-    
+
+
     /**
      * validatePredicate()
      *
-     * Verify that the predicate is consistant with the target 
+     * Verify that the predicate is consistant with the target
      * PredicateVocabElement (if andy).  This is purely
      * a sanity checking routine.  The test should always pass.
      *
@@ -4379,7 +4388,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public void validatePredicate(boolean idMustBeInvalid)
         throws SystemErrorException
     {
@@ -4388,13 +4397,13 @@ public class Predicate extends DBElement
         PredicateVocabElement pve;
         FormalArgument fa;
         DataValue arg = null;
-        
+
         if ( idMustBeInvalid )
         {
             if ( this.id != DBIndex.INVALID_ID )
             {
                 int j = 1/0;
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "id set when invalid ID required.");
             }
         }
@@ -4402,7 +4411,7 @@ public class Predicate extends DBElement
         {
             idMustBeInvalid = true;
         }
-        
+
         if ( this.pveID == DBIndex.INVALID_ID )
         {
             // undefined predicate -- verify that it is correctly initialized
@@ -4412,39 +4421,40 @@ public class Predicate extends DBElement
                  ( this.varLen != false ) )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "undefined pred with incorrect values");
             }
         }
-        else 
+        else
         {
             if ( argList == null )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
             else if ( this.getNumArgs() <= 0 )
             {
-                throw new SystemErrorException(mName + "this.getNumArgs() <= 0");
+                throw new SystemErrorException(mName
+                                                    + "this.getNumArgs() <= 0");
             }
 
             pve = this.lookupPredicateVE(this.pveID);
 
             if ( pve.getDB() != this.getDB() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "pve.getDB() != this.getDB()");
             }
 
             if ( pve.getNumFormalArgs() != this.getNumArgs() )
             {
-                throw new SystemErrorException(mName + 
-                                     "pve.getNumFormalArgs() != this.getNumArgs()");
+                throw new SystemErrorException(mName +
+                                 "pve.getNumFormalArgs() != this.getNumArgs()");
             }
 
             if ( pve.getVarLen() != this.getVarLen() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                      "pve.getVarLen() != this.getValLen()");
             }
 
@@ -4452,16 +4462,16 @@ public class Predicate extends DBElement
             // Now scan the argument list
             this.validatePredicateArgList(pve, idMustBeInvalid);
         }
-        
+
         return;
-        
+
     } /* Predicate::validatePredicate() */
-    
-    
+
+
     /**
      * validatePredicateArgList()
      *
-     * Verify that the arguments of the predicate are of type and value 
+     * Verify that the arguments of the predicate are of type and value
      * consistant with the target PredicateVocabElement.  This is purely
      * a sanity checking routine.  The test should always pass.
      *
@@ -4475,7 +4485,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     private void validatePredicateArgList(PredicateVocabElement pve,
                                          boolean idMustBeInvalid)
         throws SystemErrorException
@@ -4496,7 +4506,7 @@ public class Predicate extends DBElement
         NominalDataValue ndv;
         PredDataValue pdv;
         TimeStampDataValue tsdv;
-                
+
         if ( argList == null )
         {
             /* argList hasn't been instantiated yet -- scream and die */
@@ -4518,46 +4528,46 @@ public class Predicate extends DBElement
 
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
             else if ( fa instanceof TextStringFormalArg )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "pve contains a text formal arg?!?!");
             }
 
-            // get the i'th argument from the argument list.  Again, this 
-            // is the actual argument -- must be careful not to modify it 
+            // get the i'th argument from the argument list.  Again, this
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             arg = this.argList.get(i);
 
             if ( arg == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th argument?!?!");
             }
             else if ( arg instanceof TextStringDataValue )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "pred contains text arguemnt?!?");
             }
 
             if ( fa.getID() != arg.getItsFargID() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                 "fa.getID() != arg.getItsFargID()");
             }
 
             if ( ( idMustBeInvalid ) &&
                  ( arg.getID() != DBIndex.INVALID_ID ) )
             {
-                throw new SystemErrorException(mName + "arg " + i + 
+                throw new SystemErrorException(mName + "arg " + i +
                         " id set when invalid id required");
             }
 
             this.validateArgAsignment(fa, arg);
-            
+
             // todo: delete this eventually
 //            switch (fa.getFargType())
 //            {
@@ -4567,17 +4577,17 @@ public class Predicate extends DBElement
 //                        throw new SystemErrorException(mName +
 //                                "Type mismatch: col pred expected");
 //                    }
-//                    
+//
 //                    cpfa = (ColPredFormalArg)fa;
 //                    cpdv = (ColPredDataValue)arg;
 //
-//                    cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
+//                  cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
 //                    break;
-//                    
+//
 //                case FLOAT:
 //                    if ( ! ( arg instanceof FloatDataValue ) )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "Type mismatch: float expected.");
 //                    }
 //
@@ -4586,7 +4596,7 @@ public class Predicate extends DBElement
 //
 //                    if ( fdv.getSubRange() != ffa.getSubRange() )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "fdv.getSubRange() != ffa.getSubRange().");
 //                    }
 //
@@ -4595,7 +4605,7 @@ public class Predicate extends DBElement
 //                        if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
 //                             ( ffa.getMaxVal() < fdv.getItsValue() ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "fdv.getItsValue() out of range.");
 //                        }
 //                    }
@@ -4604,7 +4614,7 @@ public class Predicate extends DBElement
 //                case INTEGER:
 //                    if ( ! ( arg instanceof IntDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Type mismatch: integer expected.");
 //                    }
 //
@@ -4613,7 +4623,7 @@ public class Predicate extends DBElement
 //
 //                    if ( idv.getSubRange() != ifa.getSubRange() )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "idv.getSubRange() != ifa.getSubRange().");
 //                    }
 //
@@ -4622,7 +4632,7 @@ public class Predicate extends DBElement
 //                        if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
 //                             ( ifa.getMaxVal() < idv.getItsValue() ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "idv.getItsValue() out of range.");
 //                        }
 //                    }
@@ -4631,7 +4641,7 @@ public class Predicate extends DBElement
 //                case NOMINAL:
 //                    if ( ! ( arg instanceof NominalDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Type mismatch: nominal expected.");
 //                    }
 //
@@ -4640,16 +4650,16 @@ public class Predicate extends DBElement
 //
 //                    if ( ndv.getSubRange() != nfa.getSubRange() )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "ndv.getSubRange() != nfa.getSubRange().");
 //                    }
 //
-//                    if ( ( ndv.getSubRange() ) && 
+//                    if ( ( ndv.getSubRange() ) &&
 //                         ( ndv.getItsValue() != null ) )
 //                    {
 //                        if ( ! nfa.approved(ndv.getItsValue()) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "ndv.getItsValue() out of range.");
 //                        }
 //                    }
@@ -4658,7 +4668,7 @@ public class Predicate extends DBElement
 //                case PREDICATE:
 //                    if ( ! ( arg instanceof PredDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Type mismatch: Predicate expected.");
 //                    }
 //
@@ -4667,16 +4677,16 @@ public class Predicate extends DBElement
 //
 //                    if ( pdv.getSubRange() != pfa.getSubRange() )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "pdv.getSubRange() != pfa.getSubRange().");
 //                    }
 //
-//                    if ( ( pdv.getItsValue().getPveID() != 
+//                    if ( ( pdv.getItsValue().getPveID() !=
 //                            DBIndex.INVALID_ID ) &&
 //                         ( pdv.getSubRange() ) &&
 //                         ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "pdv.getItsValue() out of range.");
 //                    }
 //
@@ -4687,7 +4697,7 @@ public class Predicate extends DBElement
 //                case TIME_STAMP:
 //                    if ( ! ( arg instanceof TimeStampDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Type mismatch: time stamp expected.");
 //                    }
 //
@@ -4696,7 +4706,7 @@ public class Predicate extends DBElement
 //
 //                    if ( tsdv.getSubRange() != tsfa.getSubRange() )
 //                    {
-//                       throw new SystemErrorException(mName + 
+//                       throw new SystemErrorException(mName +
 //                                "tsdv.getSubRange() != tsfa.getSubRange().");
 //                    }
 //
@@ -4705,7 +4715,7 @@ public class Predicate extends DBElement
 //                        if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
 //                             ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
 //                        {
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "tsdv.getItsValue() out of range.");
 //                        }
 //                    }
@@ -4714,7 +4724,7 @@ public class Predicate extends DBElement
 //                case QUOTE_STRING:
 //                    if ( ! ( arg instanceof QuoteStringDataValue ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Type mismatch: quote string expected.");
 //                    }
 //                    break;
@@ -4735,7 +4745,7 @@ public class Predicate extends DBElement
 //                                  ( arg instanceof QuoteStringDataValue ) ||
 //                                  ( arg instanceof UndefinedDataValue ) ) )
 //                    {
-//                        throw new SystemErrorException(mName + 
+//                        throw new SystemErrorException(mName +
 //                                "Unknown subtype of DataValue");
 //                    }
 //
@@ -4757,16 +4767,16 @@ public class Predicate extends DBElement
 //                case UNDEFINED:
 //                    throw new SystemErrorException(mName +
 //                            "formal arg type undefined???");
-//                    /* break statement commented out to keep the 
-//                     * compiler happy 
+//                    /* break statement commented out to keep the
+//                     * compiler happy
 //                     */
 //                    // break;
 //
 //                default:
-//                    throw new SystemErrorException(mName + 
+//                    throw new SystemErrorException(mName +
 //                                                   "Unknown Formal Arg Type");
-//                    /* break statement commented out to keep the 
-//                     * compiler happy 
+//                    /* break statement commented out to keep the
+//                     * compiler happy
 //                     */
 //                    // break;
 //            }
@@ -4774,24 +4784,24 @@ public class Predicate extends DBElement
             i++;
 
         } /* while */
-        
+
         return;
-        
+
     } /* Predicate::validatePredicateArgList() */
-    
-    
+
+
     /**
      * validateReplacementArg()
      *
      * Given a reference to a formal argument, the old value of that argument,
-     * and a proposed replacement argument, verify that the new argument is a 
-     * valid replacement value.  Note that the old argument may be null if 
+     * and a proposed replacement argument, verify that the new argument is a
+     * valid replacement value.  Note that the old argument may be null if
      * cascadePveMod is true, and cascadePveID == this.pveID.  The old argument
      * must be defined in all other cases.
      *
      * This method will typically be called during a cascade, and thus the
      * cascade parameters are passed in as they may be needed.  The only ones
-     * used in this function are cascadePveMod and cascadePveID, which are 
+     * used in this function are cascadePveMod and cascadePveID, which are
      * used to sanity check oldArg.
      *
      * Note that the method must take care to avoid modifying the fa, oldArg,
@@ -4806,7 +4816,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public void validateReplacementArg(FormalArgument fa,
                                        DataValue oldArg,
                                        DataValue newArg,
@@ -4845,7 +4855,7 @@ public class Predicate extends DBElement
         TimeStampDataValue      old_tsdv;
         QuoteStringDataValue    old_qsdv;
         TextStringDataValue     old_tdv;
-        
+
         // TODO: Delete this eventually
 //        System.out.printf("%s: cascade MVE mod/del/id = %b/%b/%d\n",
 //                mName, cascadeMveMod, cascadeMveDel, cascadeMveID);
@@ -4853,7 +4863,7 @@ public class Predicate extends DBElement
 //                mName, cascadePveMod, cascadePveDel, cascadePveID);
 //        System.out.printf("%s: this.pveID = %d\n",
 //                mName, this.pveID);
-        
+
         if ( fa == null )
         {
             throw new SystemErrorException(mName + "fa null on entry.");
@@ -4862,7 +4872,7 @@ public class Predicate extends DBElement
         {
             throw new SystemErrorException(mName + "fa has unexpected veID.");
         }
-        
+
         if ( ( oldArg == null ) &&
              ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) ) )
         {
@@ -4871,20 +4881,20 @@ public class Predicate extends DBElement
         else if ( ( oldArg != null ) &&
                   ( oldArg.getItsFargID() != fa.getID() ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldArg.getItsFargID() != fa.getID()");
         }
-         
+
         if ( newArg == null )
         {
             throw new SystemErrorException(mName + "newArg null on entry.");
         }
         else if ( newArg.getItsFargID() != fa.getID() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "newArg.getItsFargID() != fa.getID()");
         }
-        
+
         if ( oldArg == null )
         {
             if ( newArg.getID() != DBIndex.INVALID_ID )
@@ -4896,14 +4906,14 @@ public class Predicate extends DBElement
         else if ( ( newArg.getClass() != oldArg.getClass() ) &&
                   ( newArg.getID() != DBIndex.INVALID_ID ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "dv type change and id set");
         }
         else if ( ( oldArg.getClass() == newArg.getClass() ) &&
                   ( newArg.getID() != DBIndex.INVALID_ID ) &&
                   ( newArg.getID() != oldArg.getID() ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "dv type match with id set but not matching");
         }
 
@@ -4917,8 +4927,8 @@ public class Predicate extends DBElement
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
-                           ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
+                           )
                          )
                      )
                    )
@@ -4941,9 +4951,9 @@ public class Predicate extends DBElement
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if (this.queryVarOK )
@@ -4974,24 +4984,24 @@ public class Predicate extends DBElement
                         {
                             new_cpdv.getItsValue().
                                     validateReplacementColPred(
-                                        old_cpdv.getItsValueBlind(), 
+                                        old_cpdv.getItsValueBlind(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                         else
                         {
                             new_cpdv.getItsValue().
                                     validateReplacementColPred(
-                                        old_cpdv.getItsValue(), 
+                                        old_cpdv.getItsValue(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                     }
@@ -5005,16 +5015,16 @@ public class Predicate extends DBElement
 
             case FLOAT:
                 ffa = (FloatFormalArg)fa;
-                
+
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof FloatDataValue ) ||
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
                            )
                          )
-                       ) 
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5028,16 +5038,16 @@ public class Predicate extends DBElement
                         throw new SystemErrorException(mName + "Old arg " +
                                 "type mismatch: float DV, or " +
                                 "undefined DV expected.");
-                    }       
+                    }
                 }
 
                 if ( ! ( ( newArg instanceof FloatDataValue ) ||
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5060,18 +5070,18 @@ public class Predicate extends DBElement
 
                     if ( new_fdv.getSubRange() != ffa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "new_fdv.getSubRange() != ffa.getSubRange().");
                     }
 
                     if ( new_fdv.getSubRange() )
                     {
-                        if ( ( ffa.getMinVal() > 
+                        if ( ( ffa.getMinVal() >
                                 new_fdv.getItsValue() ) ||
-                             ( ffa.getMaxVal() < 
+                             ( ffa.getMaxVal() <
                                 new_fdv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "new_fdv.getItsValue() out of range.");
                         }
                     }
@@ -5086,10 +5096,10 @@ public class Predicate extends DBElement
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
                            )
                          )
-                       ) 
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5110,9 +5120,9 @@ public class Predicate extends DBElement
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5135,18 +5145,18 @@ public class Predicate extends DBElement
 
                     if ( new_idv.getSubRange() != ifa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "new_idv.getSubRange() != ifa.getSubRange().");
                     }
 
                     if ( new_idv.getSubRange() )
                     {
-                        if ( ( ifa.getMinVal() > 
+                        if ( ( ifa.getMinVal() >
                                 new_idv.getItsValue() ) ||
-                             ( ifa.getMaxVal() < 
+                             ( ifa.getMaxVal() <
                                 new_idv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "new_idv.getItsValue() out of range.");
                         }
                     }
@@ -5159,7 +5169,7 @@ public class Predicate extends DBElement
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof NominalDataValue ) ||
                          ( oldArg instanceof UndefinedDataValue )
-                       ) 
+                       )
                      )
                    )
                 {
@@ -5170,7 +5180,7 @@ public class Predicate extends DBElement
 
                 if ( ! ( ( newArg instanceof NominalDataValue ) ||
                          ( newArg instanceof UndefinedDataValue )
-                       ) 
+                       )
                    )
                 {
                     throw new SystemErrorException(mName + "New arg " +
@@ -5184,18 +5194,18 @@ public class Predicate extends DBElement
 
                     if ( new_ndv.getSubRange() != nfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "new_ndv.getSubRange() != nfa.getSubRange().");
                     }
 
-                    if ( ( new_ndv.getSubRange() ) && 
+                    if ( ( new_ndv.getSubRange() ) &&
                          ( new_ndv.getItsValue() != null ) )
                     {
                         if ( ( ! nfa.approved(new_ndv.getItsValue()) ) &&
                              ( ( ! this.queryVarOK ) ||
                                ( ! new_ndv.isQueryVar() ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "new_ndv.getItsValue() out of range.");
                         }
                     }
@@ -5210,10 +5220,10 @@ public class Predicate extends DBElement
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
                            )
                        )
-                     ) 
+                     )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5234,9 +5244,9 @@ public class Predicate extends DBElement
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5259,26 +5269,26 @@ public class Predicate extends DBElement
 
                     if ( new_pdv.getSubRange() != pfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                          "new_pdv.getSubRange() != pfa.getSubRange().");
                     }
 
-                    if ( ( new_pdv.getItsValue().getPveID() != 
+                    if ( ( new_pdv.getItsValue().getPveID() !=
                             DBIndex.INVALID_ID ) &&
                          ( new_pdv.getSubRange() ) &&
                          ( ! pfa.approved(new_pdv.getItsValue().
                                     getPveID()) ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "new_pdv.getItsValue() out of range.");
                     }
-                    
+
                     if ( ( oldArg != null ) &&
                          ( oldArg instanceof PredDataValue ) )
                     {
                         old_pdv = (PredDataValue)oldArg;
-                        
-                        if ( ( ! cascadeMveMod ) && 
+
+                        if ( ( ! cascadeMveMod ) &&
                              ( ! cascadeMveDel ) &&
                              ( ! cascadePveMod ) &&
                              ( ! cascadePveDel ) )
@@ -5321,10 +5331,10 @@ public class Predicate extends DBElement
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
-                           ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
+                           )
                          )
-                       ) 
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5345,9 +5355,9 @@ public class Predicate extends DBElement
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5367,7 +5377,7 @@ public class Predicate extends DBElement
                 if ( ( newArg.getClass() != oldArg.getClass() ) &&
                      ( newArg.getID() != DBIndex.INVALID_ID ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "dv type change and id set");
                 }
 
@@ -5377,7 +5387,7 @@ public class Predicate extends DBElement
 
                     if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                        "new_tsdv.getSubRange() != tsfa.getSubRange().");
                     }
 
@@ -5388,7 +5398,7 @@ public class Predicate extends DBElement
                              ( tsfa.getMaxVal().
                                 lt(new_tsdv.getItsValue()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "new_tsdv.getItsValue() out of range.");
                         }
                     }
@@ -5401,10 +5411,10 @@ public class Predicate extends DBElement
                            ( oldArg instanceof UndefinedDataValue ) ||
                            ( ( this.queryVarOK ) ||
                              ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() ) 
+                             ( ((NominalDataValue)oldArg).isQueryVar() )
                            )
                          )
-                     ) 
+                     )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5425,9 +5435,9 @@ public class Predicate extends DBElement
                          ( newArg instanceof UndefinedDataValue ) ||
                          ( ( this.queryVarOK ) ||
                            ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() ) 
-                         ) 
-                       ) 
+                           ( ((NominalDataValue)newArg).isQueryVar() )
+                         )
+                       )
                    )
                 {
                     if ( this.queryVarOK )
@@ -5447,16 +5457,16 @@ public class Predicate extends DBElement
                 if ( ( newArg.getClass() != oldArg.getClass() ) &&
                      ( newArg.getID() != DBIndex.INVALID_ID ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "dv type change and id set");
                 }
                 break;
 
             case TEXT:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "pve contains a text formal arg?!?!");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
 
@@ -5478,7 +5488,7 @@ public class Predicate extends DBElement
                               ( newArg instanceof QuoteStringDataValue ) ||
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Unknown subtype of DataValue");
                 }
 
@@ -5496,24 +5506,24 @@ public class Predicate extends DBElement
                         {
                             new_cpdv.getItsValue().
                                     validateReplacementColPred(
-                                        old_cpdv.getItsValueBlind(), 
+                                        old_cpdv.getItsValueBlind(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                         else
                         {
                             new_cpdv.getItsValue().
                                     validateReplacementColPred(
-                                        old_cpdv.getItsValue(), 
+                                        old_cpdv.getItsValue(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                     }
@@ -5537,24 +5547,24 @@ public class Predicate extends DBElement
                         {
                             new_pdv.getItsValue().
                                     validateReplacementPredicate(
-                                        old_pdv.getItsValueBlind(), 
+                                        old_pdv.getItsValueBlind(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                         else
                         {
                             new_pdv.getItsValue().
                                     validateReplacementPredicate(
-                                        old_pdv.getItsValue(), 
+                                        old_pdv.getItsValue(),
                                         cascadeMveMod,
                                         cascadeMveDel,
                                         cascadeMveID,
                                         cascadePveMod,
-                                        cascadePveDel, 
+                                        cascadePveDel,
                                         cascadePveID);
                         }
                     }
@@ -5569,51 +5579,51 @@ public class Predicate extends DBElement
             case UNDEFINED:
                 throw new SystemErrorException(mName +
                         "formal arg type undefined???");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
 
             default:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
 
                         "Unknown Formal Arg Type");
-                /* break statement commented out to keep the 
-                 * compiler happy 
+                /* break statement commented out to keep the
+                 * compiler happy
                  */
                 // break;
         }
-        
+
         return;
-        
+
     } /* Predicate::validateReplacementArg() */
-    
-    
+
+
     /**
      * validateReplacementPredicate()
      *
-     * Verify that this Predicate is a valid replacement for the supplied 
-     * old Predicate.  This method is called when a new version of a 
-     * DataCell is about to replace an old version as the cannonical incarnation 
-     * of the DataCell.  This is purely a sanity checking routine.  The test 
+     * Verify that this Predicate is a valid replacement for the supplied
+     * old Predicate.  This method is called when a new version of a
+     * DataCell is about to replace an old version as the cannonical incarnation
+     * of the DataCell.  This is purely a sanity checking routine.  The test
      * should always pass.
      *
      * In all cases, this requires that we verify that if the predicate
-     * is defined, the argument list of the predicate is congruent with 
+     * is defined, the argument list of the predicate is congruent with
      * the predicate formal argument list supplied by the target pveID.
      *
-     * Further, if oldPred is defined, has this same ID as this, and has the 
-     * same target pve as this, verify that all arguments either have invalid ID, 
-     * or have an argument of matching type in oldPred with the same ID.  
-     * Unless the target pve has been modified (i.e. cascadePveMod == true and 
-     * cascadePveID == this.pveID), these matching arguments must be in the same 
+     * Further, if oldPred is defined, has this same ID as this, and has the
+     * same target pve as this, verify that all arguments either have invalid ID
+     * or have an argument of matching type in oldPred with the same ID.
+     * Unless the target pve has been modified (i.e. cascadePveMod == true and
+     * cascadePveID == this.pveID), these matching arguments must be in the same
      * location in oldPred's argument list.
      *
-     * If oldPred is either undefined, or has a different ID or target ve, 
+     * If oldPred is either undefined, or has a different ID or target ve,
      * verify that the column predicate and all its arguments have invalid ID.
      *
      * Further processing depends on the values of the remaining arguments:
-     * 
+     *
      * The test assumes that at most one of the cascadeMveMod, cascadeMveDel,
      * cascadePveMod, and cascadePveDel parameters will be true.
      *
@@ -5628,7 +5638,7 @@ public class Predicate extends DBElement
      *
      * 2) cascadeMveDel == true
      *
-     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of
      * the deleted mve is in cascadeMveID.
      *
      * Proceed as above.
@@ -5636,17 +5646,17 @@ public class Predicate extends DBElement
      *
      * 3) cascadePveMod == true
      *
-     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * If cascadePveMod is true, then a pve has been modified, and the ID of
      * the modified pve is in cascadeMveID.
      *
-     * If cascadePveID == this.pveID, then the definition of the pve that 
+     * If cascadePveID == this.pveID, then the definition of the pve that
      * definses the predicate represented by this instance of Predicate
      * has changed.  Processing is as described above.
      *
      *
      * 4) cascadePveDel == true
      *
-     * If cascadePveDel is true, then a pve has been deleted, and the ID of 
+     * If cascadePveDel is true, then a pve has been deleted, and the ID of
      * the deleted pve is in cascadePveID.
      *
      * In this case, verify that this.pveID != cascadePveID, and then proceed
@@ -5658,7 +5668,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public void validateReplacementPredicate(Predicate oldPred,
                                              boolean cascadeMveMod,
                                              boolean cascadeMveDel,
@@ -5702,15 +5712,17 @@ public class Predicate extends DBElement
         TextStringDataValue     old_tdv;
 
 // todo:  delete this eventually
-//        System.out.printf("ValidateReplacementPredicate: cascade mve mod/del/id = %s/%s/%d.\n", 
+//        System.out
+// .printf("ValidateReplacementPredicate: cascade mve mod/del/id = %s/%s/%d.\n",
 //                          ((Boolean)cascadeMveMod).toString(),
 //                          ((Boolean)cascadeMveDel).toString(),
 //                          cascadeMveID);
-//        System.out.printf("ValidateReplacementPredicate: cascade pve mod/del/id = %s/%s/%d.\n", 
+//        System.out
+// .printf("ValidateReplacementPredicate: cascade pve mod/del/id = %s/%s/%d.\n",
 //                          ((Boolean)cascadePveMod).toString(),
 //                          ((Boolean)cascadePveDel).toString(),
 //                          cascadePveID);
-        
+
         if ( oldPred == null )
         {
             throw new SystemErrorException(mName + "oldPred is null");
@@ -5718,25 +5730,25 @@ public class Predicate extends DBElement
         else if ( oldPred.pveID == DBIndex.INVALID_ID )
         {
             // old pred is undefined -- verify that it was correctly initialized
-            
+
             if ( ( oldPred.predName == null ) ||
                  ( oldPred.predName.compareTo("") != 0 ) ||
                  ( oldPred.argList != null ) ||
                  ( oldPred.varLen != false ) )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "undefined old pred with incorrect values");
             }
-            
+
             idMustBeInvalid = true;
         }
-        
+
         if ( this.id == DBIndex.INVALID_ID )
         {
             idMustBeInvalid = true;
         }
-                
+
         if ( this.pveID == DBIndex.INVALID_ID )
         {
             // undefined predicate -- verify that it is correctly initialized
@@ -5746,43 +5758,45 @@ public class Predicate extends DBElement
                  ( this.varLen != false ) )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "undefined pred with incorrect values");
             }
         }
         else if ( ( cascadePveDel ) && ( this.pveID == cascadePveID ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "this.pveID == deleted pve ID?!?!?");
         }
-        else 
+        else
         {
             if ( argList == null )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
             else if ( this.getNumArgs() <= 0 )
             {
-                throw new SystemErrorException(mName + "this.getNumArgs() <= 0");
+                throw
+                     new SystemErrorException(mName + "this.getNumArgs() <= 0");
             }
-            
+
             if ( oldPred.pveID == this.pveID )
             {
                  if ( ( oldPred.getNumArgs() != this.getNumArgs() ) &&
-                      ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) ) )
+                      ( ( ! cascadePveMod ) || ( cascadePveID != this.pveID ) ))
                  {
                     // todo: delete this eventually
-//                     System.out.printf("cascade mve mod/del/id = %s/%s/%d.\n", 
+//                     System.out.printf("cascade mve mod/del/id = %s/%s/%d.\n",
 //                                       ((Boolean)cascadeMveMod).toString(),
 //                                       ((Boolean)cascadeMveDel).toString(),
 //                                       cascadeMveID);
-//                     System.out.printf("cascade pve mod/del/id = %s/%s/%d.\n", 
+//                     System.out.printf("cascade pve mod/del/id = %s/%s/%d.\n",
 //                                       ((Boolean)cascadePveMod).toString(),
 //                                       ((Boolean)cascadePveDel).toString(),
 //                                       cascadePveID);
 //                     int q = 1/0;
-                     throw new SystemErrorException(mName + "num args mismatch*");
+                     throw
+                         new SystemErrorException(mName + "num args mismatch*");
                  }
             }
             else // target pve changed
@@ -5794,19 +5808,19 @@ public class Predicate extends DBElement
 
             if ( pve.getDB() != this.getDB() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "pve.getDB() != this.getDB()");
             }
 
             if ( pve.getNumFormalArgs() != this.getNumArgs() )
             {
-                throw new SystemErrorException(mName + 
-                                     "pve.getNumFormalArgs() != this.getNumArgs()");
+                throw new SystemErrorException(mName +
+                                 "pve.getNumFormalArgs() != this.getNumArgs()");
             }
 
             if ( pve.getVarLen() != this.getVarLen() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                      "pve.getVarLen() != this.getValLen()");
             }
 
@@ -5820,87 +5834,87 @@ public class Predicate extends DBElement
             {
                 while ( i < this.getNumArgs() )
                 {
-                    // get the i-th formal argument.  This is the pve's actual 
+                    // get the i-th formal argument.  This is the pve's actual
                     // argument,  so be careful not to modify it in any way.
                     fa = pve.getFormalArg(i);
 
                     if ( fa == null )
                     {
-                        throw new SystemErrorException(mName + "no " + i + 
+                        throw new SystemErrorException(mName + "no " + i +
                                 "th formal argument?!?!");
                     }
                     else if ( fa instanceof TextStringFormalArg )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "pve contains a text formal arg?!?!");
                     }
-                    
-                    // get the i'th arguments from the old and new argument 
-                    // lists.  Again, these are the actual arguments -- must be 
+
+                    // get the i'th arguments from the old and new argument
+                    // lists.  Again, these are the actual arguments -- must be
                     // careful not to modify them in any way.
                     newArg = this.argList.get(i);
                     oldArg = oldPred.argList.get(i);
 
                     if ( newArg == null )
                     {
-                        throw new SystemErrorException(mName + "no new" + i + 
+                        throw new SystemErrorException(mName + "no new" + i +
                                 "th argument?!?!");
                     }
                     else if ( newArg instanceof TextStringDataValue )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "new pred contains text arguemnt?!?");
                     }
 
                     if ( oldArg == null )
                     {
-                        throw new SystemErrorException(mName + "no old" + i + 
+                        throw new SystemErrorException(mName + "no old" + i +
                                 "th argument?!?!");
                     }
                     else if ( oldArg instanceof TextStringDataValue )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "old pred contains text arguemnt?!?");
                     }
 
                     if ( fa.getID() != newArg.getItsFargID() )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                         "fa.getID() != newArg.getItsFargID()");
                     }
 
                     if ( fa.getID() != oldArg.getItsFargID() )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                         "fa.getID() != oldArg.getItsFargID()");
                     }
-            
+
                     if ( oldArg.getID() == DBIndex.INVALID_ID )
                     {
-                        throw new SystemErrorException(mName + i + 
+                        throw new SystemErrorException(mName + i +
                                 "th old argument not in index?!?!");
                     }
 
                     if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
                          ( newArg.getID() != oldArg.getID() ) )
                     {
-                        throw new SystemErrorException(mName + i + 
+                        throw new SystemErrorException(mName + i +
                                 "th argument id mismatch");
                     }
 
-                    this.validateReplacementArg(fa, oldArg, newArg, 
-                            cascadeMveMod, cascadeMveDel, cascadeMveID, 
+                    this.validateReplacementArg(fa, oldArg, newArg,
+                            cascadeMveMod, cascadeMveDel, cascadeMveID,
                             cascadePveMod, cascadePveDel, cascadePveID);
 
                     // todo: delete this eventually
 //                    switch (fa.getFargType())
 //                    {
 //                        case COL_PREDICATE:
-//                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
-//                                 ( ! ( oldArg instanceof ColPredDataValue ) ) )
+//                            if ( ( ! ( newArg instanceof ColPredDataValue)) ||
+//                                 ( ! ( oldArg instanceof ColPredDataValue) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                    "Type mismatch: Column Predicate expected.");
+//                                throw new SystemErrorException(mName +
+//                                 "Type mismatch: Column Predicate expected.");
 //                            }
 //
 //                            cpfa = (ColPredFormalArg)fa;
@@ -5908,22 +5922,23 @@ public class Predicate extends DBElement
 //                            old_cpdv = (ColPredDataValue)oldArg;
 //
 //                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-//                                 ( new_cpdv.getItsValue().getID() == 
+//                                 ( new_cpdv.getItsValue().getID() ==
 //                                    DBIndex.INVALID_ID ) )
 //                            {
-//                                new_cpdv.getItsValue().validateColumnPredicate(true);
+//                                new_cpdv.getItsValue()
+//                                            .validateColumnPredicate(true);
 //                            }
-//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel) ||
 //                                      ( cascadePveMod ) || ( cascadePveDel ) )
 //                            {
 //                                new_cpdv.getItsValue().
 //                                        validateReplacementColPred(
 //                                                old_cpdv.getItsValueBlind(),
-//                                                cascadeMveMod, 
+//                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadePveMod, 
-//                                                cascadePveDel, 
+//                                                cascadePveMod,
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                            }
 //                            else
@@ -5931,20 +5946,20 @@ public class Predicate extends DBElement
 //                                new_cpdv.getItsValue().
 //                                        validateReplacementColPred(
 //                                                old_cpdv.getItsValue(),
-//                                                cascadeMveMod, 
+//                                                cascadeMveMod,
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
-//                                                cascadePveMod, 
-//                                                cascadePveDel, 
+//                                                cascadePveMod,
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                            }
 //                            break;
-//                                
+//
 //                        case FLOAT:
 //                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
 //                                 ( ! ( oldArg instanceof FloatDataValue ) ) )
 //                            {
-//                               throw new SystemErrorException(mName + 
+//                               throw new SystemErrorException(mName +
 //                                        "Type mismatch: float expected.");
 //                            }
 //
@@ -5954,19 +5969,19 @@ public class Predicate extends DBElement
 //
 //                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_fdv.getSubRange() != ffa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_fdv.getSubRange() != ffa.getSubRange().");
 //                            }
 //
 //                            if ( new_fdv.getSubRange() )
 //                            {
-//                                if ( ( ffa.getMinVal() > 
+//                                if ( ( ffa.getMinVal() >
 //                                        new_fdv.getItsValue() ) ||
-//                                     ( ffa.getMaxVal() < 
+//                                     ( ffa.getMaxVal() <
 //                                        new_fdv.getItsValue() ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_fdv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_fdv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
@@ -5975,7 +5990,7 @@ public class Predicate extends DBElement
 //                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
 //                                 ( ! ( oldArg instanceof IntDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "Type mismatch: integer expected.");
 //                            }
 //
@@ -5985,28 +6000,28 @@ public class Predicate extends DBElement
 //
 //                            if ( new_idv.getSubRange() != ifa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_idv.getSubRange() != ifa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_idv.getSubRange() != ifa.getSubRange().");
 //                            }
 //
 //                            if ( new_idv.getSubRange() )
 //                            {
-//                                if ( ( ifa.getMinVal() > 
+//                                if ( ( ifa.getMinVal() >
 //                                        new_idv.getItsValue() ) ||
-//                                     ( ifa.getMaxVal() < 
+//                                     ( ifa.getMaxVal() <
 //                                        new_idv.getItsValue() ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_idv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_idv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
 //
 //                        case NOMINAL:
-//                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
-//                                 ( ! ( oldArg instanceof NominalDataValue ) ) )
+//                            if ( ( ! ( newArg instanceof NominalDataValue)) ||
+//                                 ( ! ( oldArg instanceof NominalDataValue) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "Type mismatch: nominal expected.");
 //                            }
 //
@@ -6016,17 +6031,17 @@ public class Predicate extends DBElement
 //
 //                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_ndv.getSubRange() != nfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_ndv.getSubRange() != nfa.getSubRange().");
 //                            }
 //
-//                            if ( ( new_ndv.getSubRange() ) && 
+//                            if ( ( new_ndv.getSubRange() ) &&
 //                                 ( new_ndv.getItsValue() != null ) )
 //                            {
 //                                if ( ! nfa.approved(new_ndv.getItsValue()) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_ndv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_ndv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
@@ -6035,7 +6050,7 @@ public class Predicate extends DBElement
 //                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
 //                                 ( ! ( oldArg instanceof PredDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "Type mismatch: Predicate expected.");
 //                            }
 //
@@ -6045,27 +6060,27 @@ public class Predicate extends DBElement
 //
 //                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_pdv.getSubRange() != pfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_pdv.getSubRange() != pfa.getSubRange().");
 //                            }
 //
-//                            if ( ( new_pdv.getItsValue().getPveID() != 
+//                            if ( ( new_pdv.getItsValue().getPveID() !=
 //                                    DBIndex.INVALID_ID ) &&
 //                                 ( new_pdv.getSubRange() ) &&
 //                                 ( ! pfa.approved(new_pdv.getItsValue().
 //                                            getPveID()) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "new_pdv.getItsValue() out of range.");
+//                                throw new SystemErrorException(mName +
+//                                      "new_pdv.getItsValue() out of range.");
 //                            }
 //
 //                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-//                                 ( new_pdv.getItsValue().getID() == 
+//                                 ( new_pdv.getItsValue().getID() ==
 //                                    DBIndex.INVALID_ID ) )
 //                            {
 //                                new_pdv.getItsValue().validatePredicate(true);
 //                            }
-//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel ) ||
+//                            else if ( ( cascadeMveMod ) || ( cascadeMveDel) ||
 //                                      ( cascadePveMod ) || ( cascadePveDel ) )
 //                            {
 //                                new_pdv.getItsValue().
@@ -6075,7 +6090,7 @@ public class Predicate extends DBElement
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveMod, 
+//                                                cascadePveMod,
 //                                                cascadePveID);
 //                            }
 //                            else
@@ -6087,29 +6102,29 @@ public class Predicate extends DBElement
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveMod, 
+//                                                cascadePveMod,
 //                                                cascadePveID);
 //                            }
 //                            break;
 //
 //                        case TIME_STAMP:
-//                            if ( ( ! ( newArg instanceof 
+//                            if ( ( ! ( newArg instanceof
 //                                        TimeStampDataValue ) ) ||
-//                                 ( ! ( oldArg instanceof 
+//                                 ( ! ( oldArg instanceof
 //                                        TimeStampDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: time stamp expected.");
+//                                throw new SystemErrorException(mName +
+//                                      "Type mismatch: time stamp expected.");
 //                            }
 //
 //                            tsfa = (TimeStampFormalArg)fa;
 //                            new_tsdv = (TimeStampDataValue)newArg;
 //                            old_tsdv = (TimeStampDataValue)oldArg;
 //
-//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange())
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                             "new_tsdv.getSubRange() != tsfa.getSubRange().");
 //                            }
 //
 //                            if ( new_tsdv.getSubRange() )
@@ -6119,20 +6134,20 @@ public class Predicate extends DBElement
 //                                     ( tsfa.getMaxVal().
 //                                        lt(new_tsdv.getItsValue()) ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                            "new_tsdv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_tsdv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
 //
 //                        case QUOTE_STRING:
-//                            if ( ( ! ( newArg instanceof 
+//                            if ( ( ! ( newArg instanceof
 //                                        QuoteStringDataValue ) ) ||
-//                                 ( ! ( oldArg instanceof 
+//                                 ( ! ( oldArg instanceof
 //                                        QuoteStringDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: quote string expected.");
+//                                throw new SystemErrorException(mName +
+//                                     "Type mismatch: quote string expected.");
 //                            }
 //                            break;
 //
@@ -6141,37 +6156,37 @@ public class Predicate extends DBElement
 //                                 ( oldArg instanceof TextStringDataValue ) )
 //                            {
 //                                throw new SystemErrorException(mName +
-//                                        "Type mismatch: Text String can't be " +
+//                                     "Type mismatch: Text String can't be " +
 //                                        "substituted for untyped arguments.");
 //                            }
-//                            else if ( ! ( ( newArg instanceof 
+//                            else if ( ! ( ( newArg instanceof
 //                                            ColPredDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            FloatDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            IntDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            NominalDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            PredDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            TimeStampDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            QuoteStringDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            UndefinedDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "Unknown subtype of DataValue");
 //                            }
 //
 //                            if ( ( newArg.getClass() != oldArg.getClass() ) &&
 //                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "dv type change and id set");
 //                            }
-//                            
+//
 //                            if ( newArg instanceof ColPredDataValue )
 //                            {
 //                                new_cpdv = (ColPredDataValue)newArg;
@@ -6179,8 +6194,8 @@ public class Predicate extends DBElement
 //                                if ( oldArg instanceof ColPredDataValue )
 //                                {
 //                                    old_cpdv = (ColPredDataValue)oldArg;
-//                                    
-//                                    if ( ( ! cascadeMveMod ) && 
+//
+//                                    if ( ( ! cascadeMveMod ) &&
 //                                         ( ! cascadeMveDel ) &&
 //                                         ( ! cascadePveMod ) &&
 //                                         ( ! cascadePveDel ) )
@@ -6191,20 +6206,20 @@ public class Predicate extends DBElement
 //                                                    cascadeMveMod,
 //                                                    cascadeMveDel,
 //                                                    cascadeMveID,
-//                                                    cascadePveMod, 
-//                                                    cascadePveDel, 
+//                                                    cascadePveMod,
+//                                                    cascadePveDel,
 //                                                    cascadePveID);
 //                                    }
-//                                    else 
+//                                    else
 //                                    {
 //                                        new_cpdv.getItsValue().
 //                                                validateReplacementColPred(
-//                                                    old_cpdv.getItsValueBlind(),
+//                                                 old_cpdv.getItsValueBlind(),
 //                                                    cascadeMveMod,
 //                                                    cascadeMveDel,
 //                                                    cascadeMveID,
-//                                                    cascadePveMod, 
-//                                                    cascadePveDel, 
+//                                                    cascadePveMod,
+//                                                    cascadePveDel,
 //                                                    cascadePveID);
 //                                    }
 //                                }
@@ -6221,10 +6236,10 @@ public class Predicate extends DBElement
 //                                if ( oldArg instanceof PredDataValue )
 //                                {
 //                                    old_pdv = (PredDataValue)oldArg;
-//                                    
+//
 //                                    if ( ( ! cascadeMveMod ) &&
 //                                         ( ! cascadeMveDel ) &&
-//                                         ( ! cascadePveMod ) && 
+//                                         ( ! cascadePveMod ) &&
 //                                         ( ! cascadePveDel ) )
 //                                    {
 //                                        new_pdv.getItsValue().
@@ -6233,20 +6248,20 @@ public class Predicate extends DBElement
 //                                                    cascadeMveMod,
 //                                                    cascadeMveDel,
 //                                                    cascadeMveID,
-//                                                    cascadePveMod, 
-//                                                    cascadePveDel, 
+//                                                    cascadePveMod,
+//                                                    cascadePveDel,
 //                                                    cascadePveID);
 //                                    }
-//                                    else 
+//                                    else
 //                                    {
 //                                        new_pdv.getItsValue().
 //                                                validateReplacementPredicate(
-//                                                    old_pdv.getItsValueBlind(),
+//                                                  old_pdv.getItsValueBlind(),
 //                                                    cascadeMveMod,
 //                                                    cascadeMveDel,
 //                                                    cascadeMveID,
-//                                                    cascadePveMod, 
-//                                                    cascadePveDel, 
+//                                                    cascadePveMod,
+//                                                    cascadePveDel,
 //                                                    cascadePveID);
 //                                    }
 //                                }
@@ -6261,16 +6276,16 @@ public class Predicate extends DBElement
 //                        case UNDEFINED:
 //                            throw new SystemErrorException(mName +
 //                                    "formal arg type undefined???");
-//                            /* break statement commented out to keep the 
-//                             * compiler happy 
+//                            /* break statement commented out to keep the
+//                             * compiler happy
 //                             */
 //                            // break;
 //
 //                        default:
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //                                    "Unknown Formal Arg Type");
-//                            /* break statement commented out to keep the 
-//                             * compiler happy 
+//                            /* break statement commented out to keep the
+//                             * compiler happy
 //                             */
 //                            // break;
 //                    }
@@ -6293,50 +6308,50 @@ public class Predicate extends DBElement
                  */
                 while ( i < this.getNumArgs() )
                 {
-                    // get the i-th formal argument.  This is the pve's actual 
+                    // get the i-th formal argument.  This is the pve's actual
                     // argument,  so be careful not to modify it in any way.
                     fa = pve.getFormalArg(i);
 
                     if ( fa == null )
                     {
-                        throw new SystemErrorException(mName + "no " + i + 
+                        throw new SystemErrorException(mName + "no " + i +
                                 "th formal argument?!?!");
                     }
                     else if ( fa instanceof TextStringFormalArg )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "pve contains a text formal arg?!?!");
                     }
-                    
-                    // get the i'th argument from the new argument list.  
-                    // Again, this is the actual argument -- must be 
+
+                    // get the i'th argument from the new argument list.
+                    // Again, this is the actual argument -- must be
                     // careful not to modify them in any way.
                     newArg = this.argList.get(i);
                     oldArg = null;
 
                     if ( newArg == null )
                     {
-                        throw new SystemErrorException(mName + "no new" + i + 
+                        throw new SystemErrorException(mName + "no new" + i +
                                 "th argument?!?!");
                     }
                     else if ( newArg instanceof TextStringDataValue )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "new pred contains text arguemnt?!?");
                     }
 
                     if ( fa.getID() != newArg.getItsFargID() )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                         "fa.getID() != newArg.getItsFargID()");
                     }
-                    
+
                     if ( newArg.getID() != DBIndex.INVALID_ID )
                     {
-                        // the old argument list must contain an argument 
+                        // the old argument list must contain an argument
                         // with the same ID.  Scan the list to find it.
                         int j = 0;
-                        
+
                         while ( ( j < oldPred.getNumArgs() ) &&
                                 ( oldArg == null ) )
                         {
@@ -6344,48 +6359,48 @@ public class Predicate extends DBElement
 
                             if ( oldArg.getID() == DBIndex.INVALID_ID )
                             {
-                                throw new SystemErrorException(mName + i + 
+                                throw new SystemErrorException(mName + i +
                                         "th old argument not in index?!?!");
                             }
-                            
+
                             if ( oldArg.getID() != newArg.getID() )
                             {
                                 oldArg = null;
                             }
-                            
+
                             j++;
                         }
-                        
+
                         if ( oldArg == null )
                         {
                             throw new SystemErrorException(mName +
-                                "new arg has valid ID but no matching old arg.");
+                              "new arg has valid ID but no matching old arg.");
                         }
                     }
 
                     if ( ( oldArg != null ) &&
                          ( fa.getID() != oldArg.getItsFargID() ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                         "fa.getID() != oldArg.getItsFargID()");
                     }
 
-                    this.validateReplacementArg(fa, oldArg, newArg, 
-                            cascadeMveMod, cascadeMveDel, cascadeMveID, 
+                    this.validateReplacementArg(fa, oldArg, newArg,
+                            cascadeMveMod, cascadeMveDel, cascadeMveID,
                             cascadePveMod, cascadePveDel, cascadePveID);
 
                     // todo: delete this eventually
 //                    switch (fa.getFargType())
 //                    {
 //                        case COL_PREDICATE:
-//                            if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
+//                            if ( ( ! ( newArg instanceof ColPredDataValue)) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof ColPredDataValue ) ) 
+//                                   ( ! ( oldArg instanceof ColPredDataValue) )
 //                                 )
 //                               )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: col pred(s) expected.");
+//                                throw new SystemErrorException(mName +
+//                                      "Type mismatch: col pred(s) expected.");
 //                            }
 //
 //                            cpfa = (ColPredFormalArg)fa;
@@ -6401,10 +6416,11 @@ public class Predicate extends DBElement
 //                            }
 //
 //                            if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-//                                 ( new_cpdv.getItsValue().getID() == 
+//                                 ( new_cpdv.getItsValue().getID() ==
 //                                    DBIndex.INVALID_ID ) )
 //                            {
-//                                new_cpdv.getItsValue().validateColumnPredicate(true);
+//                                new_cpdv.getItsValue()
+//                                    .validateColumnPredicate(true);
 //                            }
 //                            else if ( old_cpdv != null )
 //                            {
@@ -6415,22 +6431,22 @@ public class Predicate extends DBElement
 //                                            cascadeMveDel,
 //                                            cascadeMveID,
 //                                            cascadePveMod,
-//                                            cascadePveDel, 
+//                                            cascadePveDel,
 //                                            cascadePveID);
 //                            }
 //                            else
 //                            {
 //                                throw new SystemErrorException(mName +
-//                                "new_cpdv has valid ID but old_cpdv is null?!?");
+//                             "new_cpdv has valid ID but old_cpdv is null?!?");
 //                            }
 //                            break;
 //
 //                        case FLOAT:
 //                            if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof FloatDataValue ) ) ) )
+//                                   ( ! ( oldArg instanceof FloatDataValue))) )
 //                            {
-//                               throw new SystemErrorException(mName + 
+//                               throw new SystemErrorException(mName +
 //                                        "Type mismatch: float(s) expected.");
 //                            }
 //
@@ -6439,19 +6455,19 @@ public class Predicate extends DBElement
 //
 //                            if ( new_fdv.getSubRange() != ffa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_fdv.getSubRange() != ffa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_fdv.getSubRange() != ffa.getSubRange().");
 //                            }
 //
 //                            if ( new_fdv.getSubRange() )
 //                            {
-//                                if ( ( ffa.getMinVal() > 
+//                                if ( ( ffa.getMinVal() >
 //                                        new_fdv.getItsValue() ) ||
-//                                     ( ffa.getMaxVal() < 
+//                                     ( ffa.getMaxVal() <
 //                                        new_fdv.getItsValue() ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_fdv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_fdv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
@@ -6459,10 +6475,10 @@ public class Predicate extends DBElement
 //                        case INTEGER:
 //                            if ( ( ! ( newArg instanceof IntDataValue ) ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof IntDataValue ) ) ) )
+//                                   ( ! ( oldArg instanceof IntDataValue) ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: integer(s) expected.");
+//                                throw new SystemErrorException(mName +
+//                                       "Type mismatch: integer(s) expected.");
 //                            }
 //
 //                            ifa = (IntFormalArg)fa;
@@ -6470,32 +6486,32 @@ public class Predicate extends DBElement
 //
 //                            if ( new_idv.getSubRange() != ifa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_idv.getSubRange() != ifa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_idv.getSubRange() != ifa.getSubRange().");
 //                            }
 //
 //                            if ( new_idv.getSubRange() )
 //                            {
-//                                if ( ( ifa.getMinVal() > 
+//                                if ( ( ifa.getMinVal() >
 //                                        new_idv.getItsValue() ) ||
-//                                     ( ifa.getMaxVal() < 
+//                                     ( ifa.getMaxVal() <
 //                                        new_idv.getItsValue() ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_idv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_idv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
 //
 //                        case NOMINAL:
-//                            if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
+//                            if ( ( ! ( newArg instanceof NominalDataValue)) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof NominalDataValue ) ) 
+//                                   ( ! ( oldArg instanceof NominalDataValue) )
 //                                 )
 //                               )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: nominal(s) expected.");
+//                                throw new SystemErrorException(mName +
+//                                      "Type mismatch: nominal(s) expected.");
 //                            }
 //
 //                            nfa = (NominalFormalArg)fa;
@@ -6503,17 +6519,17 @@ public class Predicate extends DBElement
 //
 //                            if ( new_ndv.getSubRange() != nfa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_ndv.getSubRange() != nfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_ndv.getSubRange() != nfa.getSubRange().");
 //                            }
 //
-//                            if ( ( new_ndv.getSubRange() ) && 
+//                            if ( ( new_ndv.getSubRange() ) &&
 //                                 ( new_ndv.getItsValue() != null ) )
 //                            {
 //                                if ( ! nfa.approved(new_ndv.getItsValue()) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                        "new_ndv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                      "new_ndv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
@@ -6521,10 +6537,10 @@ public class Predicate extends DBElement
 //                        case PREDICATE:
 //                            if ( ( ! ( newArg instanceof PredDataValue ) ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof PredDataValue ) ) ) )
+//                                   ( ! ( oldArg instanceof PredDataValue))) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: Predicate(s) expected.");
+//                                throw new SystemErrorException(mName +
+//                                    "Type mismatch: Predicate(s) expected.");
 //                            }
 //
 //                            pfa = (PredFormalArg)fa;
@@ -6541,22 +6557,22 @@ public class Predicate extends DBElement
 //
 //                            if ( new_pdv.getSubRange() != pfa.getSubRange() )
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                                 "new_pdv.getSubRange() != pfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                               "new_pdv.getSubRange() != pfa.getSubRange().");
 //                            }
 //
-//                            if ( ( new_pdv.getItsValue().getPveID() != 
+//                            if ( ( new_pdv.getItsValue().getPveID() !=
 //                                    DBIndex.INVALID_ID ) &&
 //                                 ( new_pdv.getSubRange() ) &&
 //                                 ( ! pfa.approved(new_pdv.getItsValue().
 //                                            getPveID()) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "new_pdv.getItsValue() out of range.");
+//                                throw new SystemErrorException(mName +
+//                                      "new_pdv.getItsValue() out of range.");
 //                            }
 //
 //                            if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-//                                 ( new_pdv.getItsValue().getID() == 
+//                                 ( new_pdv.getItsValue().getID() ==
 //                                    DBIndex.INVALID_ID ) )
 //                            {
 //                                new_pdv.getItsValue().validatePredicate(true);
@@ -6570,34 +6586,34 @@ public class Predicate extends DBElement
 //                                            cascadeMveDel,
 //                                            cascadeMveID,
 //                                            cascadePveMod,
-//                                            cascadePveDel, 
+//                                            cascadePveDel,
 //                                            cascadePveID);
 //                            }
 //                            else
 //                            {
 //                                throw new SystemErrorException(mName +
-//                                "new_pdv has valid ID but old_pdv is null?!?");
+//                              "new_pdv has valid ID but old_pdv is null?!?");
 //                            }
 //                            break;
 //
 //                        case TIME_STAMP:
-//                            if ( ( ! ( newArg instanceof 
+//                            if ( ( ! ( newArg instanceof
 //                                        TimeStampDataValue ) ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof 
+//                                   ( ! ( oldArg instanceof
 //                                          TimeStampDataValue ) ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                    "Type mismatch: time stamp(s) expected.");
 //                            }
 //
 //                            tsfa = (TimeStampFormalArg)fa;
 //                            new_tsdv = (TimeStampDataValue)newArg;
 //
-//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
+//                            if ( new_tsdv.getSubRange() != tsfa.getSubRange())
 //                            {
-//                               throw new SystemErrorException(mName + 
-//                               "new_tsdv.getSubRange() != tsfa.getSubRange().");
+//                               throw new SystemErrorException(mName +
+//                             "new_tsdv.getSubRange() != tsfa.getSubRange().");
 //                            }
 //
 //                            if ( new_tsdv.getSubRange() )
@@ -6607,62 +6623,62 @@ public class Predicate extends DBElement
 //                                     ( tsfa.getMaxVal().
 //                                        lt(new_tsdv.getItsValue()) ) )
 //                                {
-//                                    throw new SystemErrorException(mName + 
-//                                            "new_tsdv.getItsValue() out of range.");
+//                                    throw new SystemErrorException(mName +
+//                                   "new_tsdv.getItsValue() out of range.");
 //                                }
 //                            }
 //                            break;
 //
 //                        case QUOTE_STRING:
-//                            if ( ( ! ( newArg instanceof 
+//                            if ( ( ! ( newArg instanceof
 //                                        QuoteStringDataValue ) ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( ! ( oldArg instanceof 
+//                                   ( ! ( oldArg instanceof
 //                                          QuoteStringDataValue ) ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
-//                                        "Type mismatch: quote string(s) expected.");
+//                                throw new SystemErrorException(mName +
+//                                 "Type mismatch: quote string(s) expected.");
 //                            }
 //                            break;
 //
 //                        case UNTYPED:
 //                            if ( ( newArg instanceof TextStringDataValue ) ||
 //                                 ( ( oldArg != null ) &&
-//                                   ( oldArg instanceof TextStringDataValue ) ) )
+//                                   ( oldArg instanceof TextStringDataValue)) )
 //                            {
 //                                throw new SystemErrorException(mName +
-//                                    "Type mismatch: Text String(s) can't be " +
+//                                  "Type mismatch: Text String(s) can't be " +
 //                                    "substituted for untyped arguments.");
 //                            }
-//                            else if ( ! ( ( newArg instanceof 
+//                            else if ( ! ( ( newArg instanceof
 //                                            ColPredDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            FloatDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            IntDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            NominalDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            PredDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            TimeStampDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            QuoteStringDataValue ) ||
-//                                          ( newArg instanceof 
+//                                          ( newArg instanceof
 //                                            UndefinedDataValue ) ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "Unknown subtype of DataValue");
 //                            }
 //
-//                            if ( ( ( oldArg == null ) 
+//                            if ( ( ( oldArg == null )
 //                                   ||
-//                                   ( newArg.getClass() != oldArg.getClass() ) 
+//                                   ( newArg.getClass() != oldArg.getClass() )
 //                                 )
 //                                 &&
 //                                 ( newArg.getID() != DBIndex.INVALID_ID ) )
 //                            {
-//                                throw new SystemErrorException(mName + 
+//                                throw new SystemErrorException(mName +
 //                                        "dv type change and id set(2)");
 //                            }
 //
@@ -6684,7 +6700,7 @@ public class Predicate extends DBElement
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                                else
@@ -6711,7 +6727,7 @@ public class Predicate extends DBElement
 //                                                cascadeMveDel,
 //                                                cascadeMveID,
 //                                                cascadePveMod,
-//                                                cascadePveDel, 
+//                                                cascadePveDel,
 //                                                cascadePveID);
 //                                }
 //                                else
@@ -6725,17 +6741,17 @@ public class Predicate extends DBElement
 //                        case UNDEFINED:
 //                            throw new SystemErrorException(mName +
 //                                    "formal arg type undefined???");
-//                            /* break statement commented out to keep the 
-//                             * compiler happy 
+//                            /* break statement commented out to keep the
+//                             * compiler happy
 //                             */
 //                            // break;
 //
 //                        default:
-//                            throw new SystemErrorException(mName + 
+//                            throw new SystemErrorException(mName +
 //
 //                                    "Unknown Formal Arg Type");
-//                            /* break statement commented out to keep the 
-//                             * compiler happy 
+//                            /* break statement commented out to keep the
+//                             * compiler happy
 //                             */
 //                            // break;
 //                    }
@@ -6745,16 +6761,16 @@ public class Predicate extends DBElement
                 } /* while */
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::validateReplacementPredicate() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * clearID()
      *
@@ -6767,40 +6783,40 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+    @Override
     protected void clearID()
         throws SystemErrorException
     {
         final String mName = "Predicate::clearID()";
         super.clearID();
-        
+
         if ( this.pveID != DBIndex.INVALID_ID )
         {
             if ( this.argList == null )
             {
                 /* argList hasn't been instantiated yet -- scream and die */
-                throw new SystemErrorException(mName + "argList unitialized?!?!");
+                throw new SystemErrorException(mName + "argList unitialized?!");
             }
-            
+
             for ( DataValue dv : this.argList )
             {
                 dv.clearID();
             }
         }
-        
+
         return;
-        
+
     } /* Predicate::clearID() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Several versions of this class method, all with the objective of 
+     * Several versions of this class method, all with the objective of
      * constructing instances of Predicate.
      *
      * Returns a reference to the newly constructed predicate if successful.
@@ -6812,7 +6828,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0)
@@ -6820,19 +6836,19 @@ public class Predicate extends DBElement
     {
         final String mName = "Predicate::Construct(db, pveID, arg0)";
         Predicate p = null;
-        
+
         p = new Predicate(db, pveID);
-        
+
         if ( arg0 != null )
         {
             p.replaceArg(0, arg0);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0) */
-    
-    
+
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0,
@@ -6841,19 +6857,19 @@ public class Predicate extends DBElement
     {
         final String mName = "Predicate::Construct(db, pveID, arg0, arg1)";
         Predicate p = null;
-        
+
         p = Predicate.Construct(db, pveID, arg0);
-        
+
         if ( arg1 != null )
         {
             p.replaceArg(1, arg1);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0, arg1) */
-    
-    
+
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0,
@@ -6861,21 +6877,21 @@ public class Predicate extends DBElement
                                       DataValue arg2)
         throws SystemErrorException
     {
-        final String mName = "Predicate::Construct(db, pveID, arg0, arg1, arg2)";
+        final String mName = "Predicate::Construct(db, pveID, arg0, arg1,arg2)";
         Predicate p = null;
-        
+
         p = Predicate.Construct(db, pveID, arg0, arg1);
-        
+
         if ( arg2 != null )
         {
             p.replaceArg(2, arg2);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0, arg1, arg2) */
-    
-    
+
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0,
@@ -6884,22 +6900,22 @@ public class Predicate extends DBElement
                                       DataValue arg3)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3)";
         Predicate p = null;
-        
+
         p = Predicate.Construct(db, pveID, arg0, arg1, arg2);
-        
+
         if ( arg3 != null )
         {
             p.replaceArg(3, arg3);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3) */
-    
-    
+
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0,
@@ -6909,22 +6925,22 @@ public class Predicate extends DBElement
                                       DataValue arg4)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4)";
         Predicate p = null;
-        
+
         p = Predicate.Construct(db, pveID, arg0, arg1, arg2, arg3);
-        
+
         if ( arg4 != null )
         {
             p.replaceArg(4, arg4);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4) */
-    
-    
+
+
     public static Predicate Construct(Database db,
                                       long pveID,
                                       DataValue arg0,
@@ -6938,24 +6954,24 @@ public class Predicate extends DBElement
         final String mName = "Predicate::Construct(db, pveID, arg0, arg1, " +
                                                    "arg2, arg3, arg4, arg5)";
         Predicate p = null;
-        
+
         p = Predicate.Construct(db, pveID, arg0, arg1, arg2, arg3, arg4);
-        
+
         if ( arg5 != null )
         {
             p.replaceArg(5, arg5);
         }
-        
+
         return p;
-        
+
     } /* Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5) */
-    
-      
+
+
     /**
      * PredDataValuesAreLogicallyEqual()
      *
-     * Given two instances of Predicate, return true if they contain 
-     * identical data, and false otherwise.  Observe that the p0 and 
+     * Given two instances of Predicate, return true if they contain
+     * identical data, and false otherwise.  Observe that the p0 and
      * p1 may be null, as this indicates an undefined predicate value.
      *
      *                                              JRM -- 2/7/08
@@ -6964,24 +6980,24 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     protected static boolean PredicatesAreLogicallyEqual(Predicate p0,
                                                          Predicate p1)
         throws SystemErrorException
     {
         final String mName = "Predicate::PredicatesAreLogicallyEqual()";
         boolean predicatesAreEqual = true;
-        
+
         if ( ( p0 != null ) && ( p0.predName == null ) )
         {
             throw new SystemErrorException(mName + ": p0.predName is null.");
         }
-        
+
         if ( ( p1 != null ) && ( p1.predName == null ) )
         {
             throw new SystemErrorException(mName + ": p1.predName is null.");
         }
-        
+
         if ( p0 != p1 )
         {
             if ( ( ( p0 == null ) && ( p1 != null ) ) ||
@@ -7016,12 +7032,12 @@ public class Predicate extends DBElement
                 {
                     int i = 0;
                     int num_args = p0.argList.size();
-                    
+
                     while ( ( i < num_args ) && ( predicatesAreEqual ) )
                     {
-                        predicatesAreEqual = 
+                        predicatesAreEqual =
                                 DataValue.DataValuesAreLogicallyEqual
-                                         (p0.argList.get(i), 
+                                         (p0.argList.get(i),
                                           p1.argList.get(i));
                         i++;
                     }
@@ -7030,10 +7046,64 @@ public class Predicate extends DBElement
         }
 
         return predicatesAreEqual;
-        
+
     } /* Predicate::PredicatesAreLogicallyEqual() */
 
-    
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
+    /** Seed value for generating hash codes. */
+    private final static int SEED5 = 17;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += (int)(pveID ^ (pveID >>> 32)) * SEED1;
+        hash += (this.predName == null ? 0 : this.predName.hashCode()) * SEED2;
+        hash += (this.varLen ? 1 : 0) * SEED3;
+        hash += (int)(cellID ^ (cellID >>> 32)) * SEED4;
+        hash += (this.queryVarOK ? 1 : 0) * SEED5;
+
+        return hash;
+    }
+
+    /**
+     * Compares this NominalDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        Predicate p = (Predicate) obj;
+        return pveID == p.pveID
+                && ((predName == null && p.predName == null)
+                        || (predName != null && predName.equals(p.predName)))
+                && varLen == p.varLen
+                && cellID == p.cellID
+                && queryVarOK == p.queryVarOK
+                && super.equals(obj);
+    }
+
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
@@ -7047,7 +7117,7 @@ public class Predicate extends DBElement
      *
      * 1) One argument constructor:
      *
-     *      a) Verify that constructor completes when passed a valid instance 
+     *      a) Verify that constructor completes when passed a valid instance
      *         of Database, and returns an instance of Predicate.  Verify that:
      *
      *              pred.db matches supplied value
@@ -7060,8 +7130,8 @@ public class Predicate extends DBElement
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database and a pve (predicate vocab element).  
-     *         Insert the pve in the database, and make note of the id 
+     *      a) Construct a database and a pve (predicate vocab element).
+     *         Insert the pve in the database, and make note of the id
      *         assigned to the pve.  Construct a Predicate passing a reference
      *         to the database and the id of the pve.  Verify that:
      *
@@ -7080,7 +7150,7 @@ public class Predicate extends DBElement
      * 3) Three argument constructor:
      *
      *      a) Construct a database and a pve (predicate vocab element).
-     *         Insert the pve in the database, and make note of the id 
+     *         Insert the pve in the database, and make note of the id
      *         assigned to the pve.  Construct an argument list assigned
      *         matching the arg list of the pve.  Construct a Predicate,
      *         passing the db, the id of the pve, and the arg list.  Verify
@@ -7089,7 +7159,7 @@ public class Predicate extends DBElement
      *              pred.db matches the suplied value
      *              pred.predID matches the supplied value
      *              pred.predName matches the name of the pve
-     *              pred.argList reflects both the formal argument list of 
+     *              pred.argList reflects both the formal argument list of
      *                  the pve and the supplied argument list.
      *              pred.varLen matches the varLen field of the pve.
      *
@@ -7099,21 +7169,21 @@ public class Predicate extends DBElement
      *      b) Verify that the constructor fails when passed an invalid db,
      *         an invalid pve id, or an invalid argument list.  Note that
      *         we must test argument lists that are null, too short, too long,
-     *         and which contain type mis-matches.  
-     *              
+     *         and which contain type mis-matches.
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and several pve's (predicate vocab 
-     *         elements). Insert the pve's in the database, and make note 
+     *      a) Construct a database and several pve's (predicate vocab
+     *         elements). Insert the pve's in the database, and make note
      *         of the id's assigned to the pve's.  Using these pve's, construct
-     *         a selection of predicates with and without argument lists, and 
+     *         a selection of predicates with and without argument lists, and
      *         with and without initializations to arguments.
      *
      *         Now use the copy constructor to make copies of these predicates.
      *         Verify that the copies are correct.
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
@@ -7123,7 +7193,7 @@ public class Predicate extends DBElement
      *
      *      Do this by creating a database and a selection of predicate vocab
      *      elements.  Then create a selection of predicates, and verify that
-     *      get methods return the expected values.  Then use setPredID() to 
+     *      get methods return the expected values.  Then use setPredID() to
      *      change the pve ID associated with the predicates, and verify that
      *      values returned by the get methods have changed accordingly.
      *
@@ -7138,21 +7208,21 @@ public class Predicate extends DBElement
      *      is changed.  If salvage is true, must convert values to fit new
      *      formal argument list if possible.
      *
-     *      Verify that the getArg() and replaceArg() methods perform as 
+     *      Verify that the getArg() and replaceArg() methods perform as
      *      expected.
      *
-     *      Verify that getArg() and replaceArg() methods fail on invalid 
+     *      Verify that getArg() and replaceArg() methods fail on invalid
      *      input.
      *
      * 7) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
-    
+
     /**
      * TestClassPredicate()
      *
@@ -7164,53 +7234,53 @@ public class Predicate extends DBElement
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassPredicate(java.io.PrintStream outStream,
                                              boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class Predicate:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestArgListManagement(outStream, verbose) )
         {
             failures++;
         }
-        
+
         // TODO:  Add test for validatePredicate
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -7223,25 +7293,25 @@ public class Predicate extends DBElement
             outStream.print(
                     "All tests passed for class Predicate.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Predicate::TestClassPredicate() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -7264,30 +7334,30 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         pred = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             pred = new Predicate(db);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( db == null ) || 
-             ( pred == null ) || 
-             ( threwSystemErrorException ) ) 
+
+        if ( ( db == null ) ||
+             ( pred == null ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -7301,7 +7371,7 @@ public class Predicate extends DBElement
                     outStream.print(
                             "new Predicate(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new Predicate(db) threw " +
@@ -7312,24 +7382,24 @@ public class Predicate extends DBElement
         }
 
         if ( failures == 0 )
-        {            
+        {
             if ( pred.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.print("db not initialized correctly.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred.getPveID() != DBIndex.INVALID_ID )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7338,13 +7408,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred.getPredName().compareTo("") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7353,33 +7423,33 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred.argList != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of argList.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred.getVarLen() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of varLen.\n");
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -7400,9 +7470,9 @@ public class Predicate extends DBElement
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pred != null ) || 
+            if ( ( pred != null ) ||
                  ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -7427,7 +7497,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -7456,25 +7526,25 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -7502,13 +7572,13 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "test0");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -7523,29 +7593,29 @@ public class Predicate extends DBElement
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve0.appendFormalArg(farg);
-            
+
             predID0 = db.addPredVE(pve0);
-            
+
             pred0 = new Predicate(db, predID0);
-            
+
             pve1 = new PredicateVocabElement(db, "test1");
-            
+
             farg = new UnTypedFormalArg(db, "<arg>");
             pve1.appendFormalArg(farg);
-            
+
             pve1.setVarLen(true);
-            
+
             predID1 = db.addPredVE(pve1);
-            
+
             pred1 = new Predicate(db, predID1);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( predID0 == DBIndex.INVALID_ID ) ||
              ( pred0 == null ) ||
@@ -7555,46 +7625,46 @@ public class Predicate extends DBElement
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( predID0 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve0 failed.\n");
                 }
-                
+
                 if ( pred0 == null )
                 {
                     outStream.print(
                             "new Predicate(db, predID0() returned null.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( predID1 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve1 failed.\n");
                 }
-                
+
                 if ( pred1 == null )
                 {
                     outStream.print(
                             "new Predicate(db, predID1() returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print(
@@ -7602,26 +7672,26 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred0.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getPveID() != predID0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7630,13 +7700,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getPredName().compareTo("test0") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7645,40 +7715,40 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.argList == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of argList.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getVarLen() != pve0.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of varLen.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.argListToString().compareTo(
                     "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected arg list string: \"%s\".\n",
@@ -7686,7 +7756,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.argListToDBString().compareTo(
@@ -7715,7 +7785,7 @@ public class Predicate extends DBElement
                               "(PredDataValue (id 0) " +
                                              "(itsFargID 5) " +
                                              "(itsFargType PREDICATE) " +
-                                             "(itsCellID 0) " + 
+                                             "(itsCellID 0) " +
                                              "(itsValue ()) " +
                                              "(subRange false)), " +
                               "(QuoteStringDataValue (id 0) " +
@@ -7738,7 +7808,7 @@ public class Predicate extends DBElement
                                                  "(subRange false))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7747,26 +7817,26 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred1.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred1.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getPveID() != predID1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7775,13 +7845,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getPredName().compareTo("test1") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7790,13 +7860,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.argList == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7804,13 +7874,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getVarLen() != pve1.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7818,13 +7888,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.argListToString().compareTo("(<arg>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7833,7 +7903,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.argListToDBString().compareTo(
@@ -7845,7 +7915,7 @@ public class Predicate extends DBElement
                                                  "(subRange false))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -7859,25 +7929,25 @@ public class Predicate extends DBElement
         pred0 = null;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred0 = new Predicate(null, predID0);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
+
         if ( ( pred0 != null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -7885,13 +7955,13 @@ public class Predicate extends DBElement
                     outStream.print(
                             "new Predicate(null, predID0) != null.\n");
                 }
-                
+
                 if ( completed )
                 {
-                    outStream.print("new Predicate(null, predID0) completed.\n");
+                    outStream.print("new Predicate(null, predID0)completed.\n");
 
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -7900,29 +7970,29 @@ public class Predicate extends DBElement
                 }
             }
         }
-       
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * predicate vocab element ID.
          */
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred0 = new Predicate(new ODBCDatabase(), predID0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -7931,7 +8001,7 @@ public class Predicate extends DBElement
                             "\"new Predicate(db, bad_pred_id) "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -7940,7 +8010,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -7969,24 +8039,24 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::Test2ArgConstructor() */
-    
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 10/21/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -8088,7 +8158,7 @@ public class Predicate extends DBElement
                                                 "(itsFargID 7) " +
                                                 "(itsFargType TIME_STAMP) " +
                                                 "(itsCellID 0) " +
-                                                "(itsValue (60,00:00:00:000)) " +
+                                                "(itsValue (60,00:00:00:000)) "+
                                                 "(subRange false)), " +
                               "(UndefinedDataValue (id 0) " +
                                                   "(itsFargID 8) " +
@@ -8130,13 +8200,13 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "test0");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -8151,15 +8221,15 @@ public class Predicate extends DBElement
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve0.appendFormalArg(farg);
-            
+
             predID0 = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(predID0);
-            
-            
+
+
             argList0 = new Vector<DataValue>();
-            
+
             fargID = pve0.getFormalArg(0).getID();
             arg = new FloatDataValue(db, fargID, 1.0);
             argList0.add(arg);
@@ -8176,19 +8246,19 @@ public class Predicate extends DBElement
             arg = new QuoteStringDataValue(db, fargID, "q-string");
             argList0.add(arg);
             fargID = pve0.getFormalArg(5).getID();
-            arg = new TimeStampDataValue(db, fargID, 
+            arg = new TimeStampDataValue(db, fargID,
                                          new TimeStamp(db.getTicks()));
             argList0.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve0.getFormalArg(6).getFargName());
             argList0.add(arg);
-            
+
             pred0 = new Predicate(db, predID0, argList0);
-            
-            
+
+
             argList0a = new Vector<DataValue>();
-            
+
             arg = new FloatDataValue(db);
             ((FloatDataValue)arg).setItsValue(1.0);
             argList0a.add(arg);
@@ -8211,55 +8281,55 @@ public class Predicate extends DBElement
             ((UndefinedDataValue)arg).setItsValue(
                     pve0.getFormalArg(6).getFargName());
             argList0a.add(arg);
-            
+
             pred0a = new Predicate(db, predID0, argList0a);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "test1");
-            
+
             farg = new UnTypedFormalArg(db, "<val>");
             pve1.appendFormalArg(farg);
-            
+
             pve1.setVarLen(true);
-            
-            
+
+
             predID1 = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve1 = db.getPredVE(predID1);
-            
-            
+
+
             argList1 = new Vector<DataValue>();
-            
+
             fargID = pve1.getFormalArg(0).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve1.getFormalArg(0).getFargName());
             argList1.add(arg);
-            
+
             pred1 = new Predicate(db, predID1, argList1);
-            
-            
+
+
             argList1a = new Vector<DataValue>();
-            
+
             arg = new UndefinedDataValue(db);
             argList1a.add(arg);
-            
+
             pred1a = new Predicate(db, predID1, argList1a);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( predID0 == DBIndex.INVALID_ID ) ||
              ( argList0 == null ) ||
              ( argList0.size() != 7 ) ||
              ( ! ( argList0.elementAt(0) instanceof FloatDataValue ) ) ||
-             ( ((FloatDataValue)(argList0.elementAt(0))).getItsValue() != 
+             ( ((FloatDataValue)(argList0.elementAt(0))).getItsValue() !=
                 1.0 ) ||
              ( ! ( argList0.elementAt(1) instanceof IntDataValue ) ) ||
              ( ((IntDataValue)(argList0.elementAt(1))).getItsValue() != 2 ) ||
@@ -8274,7 +8344,7 @@ public class Predicate extends DBElement
              ( argList0a == null ) ||
              ( argList0a.size() != 7 ) ||
              ( ! ( argList0a.elementAt(0) instanceof FloatDataValue ) ) ||
-             ( ((FloatDataValue)(argList0a.elementAt(0))).getItsValue() != 
+             ( ((FloatDataValue)(argList0a.elementAt(0))).getItsValue() !=
                 1.0 ) ||
              ( ! ( argList0a.elementAt(1) instanceof IntDataValue ) ) ||
              ( ((IntDataValue)(argList0a.elementAt(1))).getItsValue() != 2 ) ||
@@ -8299,167 +8369,167 @@ public class Predicate extends DBElement
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( predID0 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve0 failed.\n");
                 }
-                
+
                 if ( argList0 == null )
                 {
                     outStream.print("creation of argList0 failed.\n");
                 }
                 else if ( ( argList0.size() != 7 ) ||
-                          ( ! ( argList0.elementAt(0) instanceof 
+                          ( ! ( argList0.elementAt(0) instanceof
                                 FloatDataValue ) ) ||
                           ( ((FloatDataValue)
                               (argList0.elementAt(0))).getItsValue() != 1.0 ) ||
-                          ( ! ( argList0.elementAt(1) instanceof 
+                          ( ! ( argList0.elementAt(1) instanceof
                                 IntDataValue ) ) ||
                           ( ((IntDataValue)
                              (argList0.elementAt(1))).getItsValue() != 2 ) ||
-                          ( ! ( argList0.elementAt(2) instanceof 
+                          ( ! ( argList0.elementAt(2) instanceof
                                 NominalDataValue ) ) ||
                           ( ((NominalDataValue)
                              (argList0.elementAt(2))).getItsValue().
                               compareTo("a_nominal") != 0 ) ||
-                          ( ! ( argList0.elementAt(3) instanceof 
+                          ( ! ( argList0.elementAt(3) instanceof
                                 PredDataValue ) ) ||
-                          ( ! ( argList0.elementAt(4) instanceof 
+                          ( ! ( argList0.elementAt(4) instanceof
                                 QuoteStringDataValue ) ) ||
-                          ( ! ( argList0.elementAt(5) instanceof 
+                          ( ! ( argList0.elementAt(5) instanceof
                                 TimeStampDataValue ) ) ||
-                          ( ! ( argList0.elementAt(6) instanceof 
+                          ( ! ( argList0.elementAt(6) instanceof
                                 UndefinedDataValue ) ) )
                 {
                     outStream.print("unexpected argList0 structure.\n");
                 }
-                
+
                 if ( pred0 == null )
                 {
                     outStream.print("new Predicate(db, predID0, argList0) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( argList0a == null )
                 {
                     outStream.print("creation of argList0a failed.\n");
                 }
                 else if ( ( argList0a.size() != 7 ) ||
-                          ( ! ( argList0a.elementAt(0) instanceof 
+                          ( ! ( argList0a.elementAt(0) instanceof
                                 FloatDataValue ) ) ||
                           ( ((FloatDataValue)
                               (argList0a.elementAt(0))).getItsValue() != 1.0 ) ||
-                          ( ! ( argList0a.elementAt(1) instanceof 
+                          ( ! ( argList0a.elementAt(1) instanceof
                                 IntDataValue ) ) ||
                           ( ((IntDataValue)
                              (argList0a.elementAt(1))).getItsValue() != 2 ) ||
-                          ( ! ( argList0a.elementAt(2) instanceof 
+                          ( ! ( argList0a.elementAt(2) instanceof
                                 NominalDataValue ) ) ||
                           ( ((NominalDataValue)
                              (argList0a.elementAt(2))).getItsValue().
                               compareTo("a_nominal") != 0 ) ||
-                          ( ! ( argList0a.elementAt(3) instanceof 
+                          ( ! ( argList0a.elementAt(3) instanceof
                                 PredDataValue ) ) ||
-                          ( ! ( argList0a.elementAt(4) instanceof 
+                          ( ! ( argList0a.elementAt(4) instanceof
                                 QuoteStringDataValue ) ) ||
-                          ( ! ( argList0a.elementAt(5) instanceof 
+                          ( ! ( argList0a.elementAt(5) instanceof
                                 TimeStampDataValue ) ) ||
-                          ( ! ( argList0a.elementAt(6) instanceof 
+                          ( ! ( argList0a.elementAt(6) instanceof
                                 UndefinedDataValue ) ) )
                 {
                     outStream.print("unexpected argList0a structure.\n");
                 }
-                
+
                 if ( pred0a == null )
                 {
                     outStream.print("new Predicate(db, predID0, argList0a) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( predID1 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve1 failed.\n");
                 }
-                
+
                 if ( argList1 == null )
                 {
                     outStream.print("creation of argList1 failed.\n");
                 }
                 else if ( ( argList1.size() != 1 ) ||
-                          ( ! ( argList1.elementAt(0) instanceof 
+                          ( ! ( argList1.elementAt(0) instanceof
                                UndefinedDataValue ) ) )
                 {
                     outStream.print("unexpected argList1 structure.\n");
                 }
-                
+
                 if ( pred1 == null )
                 {
                     outStream.print("new Predicate(db, predID1, argList1) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( argList1a == null )
                 {
                     outStream.print("creation of argList1a failed.\n");
                 }
                 else if ( ( argList1a.size() != 1 ) ||
-                          ( ! ( argList1a.elementAt(0) instanceof 
+                          ( ! ( argList1a.elementAt(0) instanceof
                                UndefinedDataValue ) ) )
                 {
                     outStream.print("unexpected argList1a structure.\n");
                 }
-                
+
                 if ( pred1a == null )
                 {
                     outStream.print("new Predicate(db, predID1, argList1a) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
-                    outStream.printf("test setup threw a SystemErrorException:" +
+                    outStream.printf("test setup threw a SystemErrorException:"+
                                      "\"%s\".\n", SystemErrorExceptionString);
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred0.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getPveID() != predID0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8468,13 +8538,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getPredName().compareTo("test0") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8483,13 +8553,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0.argList == null ) || ( pred0.argList == argList0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8497,10 +8567,10 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            
+
             if ( ( pred0.argList.size() != 7 ) ||
                  ( ! ( pred0.argList.elementAt(0) instanceof FloatDataValue ) ) ||
                  ( ! ( pred0.argList.elementAt(1) instanceof IntDataValue ) ) ||
@@ -8511,33 +8581,33 @@ public class Predicate extends DBElement
                  ( ! ( pred0.argList.elementAt(6) instanceof UndefinedDataValue ) ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial pred0 argList structure.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.getVarLen() != pve0.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of varLen.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.argListToString().compareTo(testArgString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0 arg list string: " +
@@ -8545,13 +8615,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0.argListToDBString().compareTo(testArgDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8560,26 +8630,26 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred0a.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0a.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0a.getPveID() != predID0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8588,13 +8658,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0a.getPredName().compareTo("test0") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of " +
@@ -8603,13 +8673,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0a.argList == null ) || ( pred0a.argList == argList0a ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8617,10 +8687,10 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            
+
             if ( ( pred0a.argList.size() != 7 ) ||
                  ( ! ( pred0a.argList.elementAt(0) instanceof FloatDataValue ) ) ||
                  ( ! ( pred0a.argList.elementAt(1) instanceof IntDataValue ) ) ||
@@ -8631,20 +8701,20 @@ public class Predicate extends DBElement
                  ( ! ( pred0a.argList.elementAt(6) instanceof UndefinedDataValue ) ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial pred0a argList structure.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0a.getVarLen() != pve0.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8652,13 +8722,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0a.argListToString().compareTo(testArgString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0a arg list string: " +
@@ -8666,13 +8736,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0a.argListToDBString().compareTo(testArgDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8681,26 +8751,26 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred1.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred1.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getPveID() != predID1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8709,13 +8779,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getPredName().compareTo("test1") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8724,13 +8794,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred1.argList == null ) || ( pred1.argList == argList1 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8738,13 +8808,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.getVarLen() != pve1.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8752,13 +8822,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.argListToString().compareTo(testArgString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8767,13 +8837,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.argListToDBString().compareTo(testArgDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8782,27 +8852,27 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        
+
+
         if ( failures == 0 )
-        {            
+        {
             if ( pred1a.getDB() != db )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred1a.db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.getPveID() != predID1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8811,13 +8881,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.getPredName().compareTo("test1") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8826,13 +8896,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred1a.argList == null ) || ( pred1a.argList == argList1a ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8840,13 +8910,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.getVarLen() != pve1.getVarLen() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8854,13 +8924,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.argListToString().compareTo(testArgString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8869,13 +8939,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.argListToDBString().compareTo(testArgDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -8884,31 +8954,31 @@ public class Predicate extends DBElement
                 }
             }
         }
-       
-        
+
+
         /* Verify that the constructor fails when passed an invalid arg list.
          * Start with a null list.
          */
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred0 = new Predicate(null, predID0, null);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -8917,7 +8987,7 @@ public class Predicate extends DBElement
                             "\"new Predicate(db, predID0, null) "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -8926,16 +8996,16 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         /* now construct a list that is too long. */
-        
+
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             argList = new Vector<DataValue>();
-            
+
             fargID = pve0.getFormalArg(0).getID();
             arg = new FloatDataValue(db, fargID, 11.0);
             argList.add(arg);
@@ -8952,33 +9022,33 @@ public class Predicate extends DBElement
             arg = new QuoteStringDataValue(db, fargID, "q-string-2");
             argList.add(arg);
             fargID = pve0.getFormalArg(5).getID();
-            arg = new TimeStampDataValue(db, fargID, 
+            arg = new TimeStampDataValue(db, fargID,
                                          new TimeStamp(db.getTicks()));
             argList.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve0.getFormalArg(6).getFargName());
             argList.add(arg);
             /* now add an extranious argument */
             arg = new IntDataValue(db, fargID, 33);
             argList.add(arg);
 
-            
+
             pred0 = new Predicate(null, predID0, argList);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -8987,7 +9057,7 @@ public class Predicate extends DBElement
                             "new Predicate(db, predID0, too_long_arg_list) " +
                             "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -8996,16 +9066,16 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         /* now construct a list that is too short. */
-        
+
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             argList = new Vector<DataValue>();
-            
+
             fargID = pve0.getFormalArg(0).getID();
             arg = new FloatDataValue(db, fargID, 11.0);
             argList.add(arg);
@@ -9022,29 +9092,29 @@ public class Predicate extends DBElement
             arg = new QuoteStringDataValue(db, fargID, "q-string-2");
             argList.add(arg);
             fargID = pve0.getFormalArg(5).getID();
-            arg = new TimeStampDataValue(db, fargID, 
+            arg = new TimeStampDataValue(db, fargID,
                                          new TimeStamp(db.getTicks()));
             argList.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve0.getFormalArg(6).getFargName());
             /* don't add the last argument */
 
-            
+
             pred0 = new Predicate(null, predID0, argList);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -9053,7 +9123,7 @@ public class Predicate extends DBElement
                             "new Predicate(db, predID0, too_short_arg_list) "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -9062,19 +9132,19 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        /* now construct a list that contains a type mismatch.  Many type 
+
+        /* now construct a list that contains a type mismatch.  Many type
          * mismatches are possible -- we will just jeck one for now.
          */
         /* TODO: add tests for all possible type mis-matches */
-        
+
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             argList = new Vector<DataValue>();
-            
+
             fargID = pve0.getFormalArg(0).getID();
             arg = new FloatDataValue(db, fargID, 11.0);
             argList.add(arg);
@@ -9090,33 +9160,33 @@ public class Predicate extends DBElement
             fargID = pve0.getFormalArg(4).getID();
             arg = new QuoteStringDataValue(db, fargID, "q-string-2");
             argList.add(arg);
-            
+
             /* swap arguments for entries 5 & 6 */
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve0.getFormalArg(6).getFargName());
             argList.add(arg);
             fargID = pve0.getFormalArg(5).getID();
-            arg = new TimeStampDataValue(db, fargID, 
+            arg = new TimeStampDataValue(db, fargID,
                                          new TimeStamp(db.getTicks()));
             argList.add(arg);
 
-            
+
             pred0 = new Predicate(null, predID0, argList);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -9125,7 +9195,7 @@ public class Predicate extends DBElement
                             "new Predicate(db, predID0, mis_match_arg_list) " +
                             "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -9134,29 +9204,29 @@ public class Predicate extends DBElement
                 }
             }
         }
-       
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * pve id.
          */
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred0 = new Predicate(new ODBCDatabase(), predID1, argList1);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -9165,7 +9235,7 @@ public class Predicate extends DBElement
                             "\"new Predicate(db, bad_pred_id, argList1) "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -9174,29 +9244,29 @@ public class Predicate extends DBElement
                 }
             }
         }
-       
-        /* finally, verify that the constructor fails when passed an invalid 
+
+        /* finally, verify that the constructor fails when passed an invalid
          * database.
          */
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred0 = new Predicate(null, predID1, argList1);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( pred0 != null ) || 
+
+        if ( ( pred0 != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred0 != null )
@@ -9205,7 +9275,7 @@ public class Predicate extends DBElement
                             "\"new Predicate(null, bad_pred_id, argList1) "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -9214,7 +9284,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -9243,12 +9313,12 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::Test3ArgConstructor() */
 
-    
+
     /**
      * TestAccessors()
      *
@@ -9258,7 +9328,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -9300,7 +9370,7 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database and pve's
         threwSystemErrorException = false;
         completed = false;
@@ -9308,31 +9378,31 @@ public class Predicate extends DBElement
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -9340,20 +9410,20 @@ public class Predicate extends DBElement
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
 
@@ -9365,7 +9435,7 @@ public class Predicate extends DBElement
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -9378,54 +9448,54 @@ public class Predicate extends DBElement
              ( ! completed ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
@@ -9434,16 +9504,16 @@ public class Predicate extends DBElement
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             SystemErrorExceptionString);
                 }
             }
         }
-        
+
         // Verify that getDB() works as expected.  There is not much to
         // do here, as the db field is set on creation and never changed.
         // Thus this test is a repeat tests done in the constructor tests.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9452,15 +9522,15 @@ public class Predicate extends DBElement
             try
             {
                 pred0 = new Predicate(db);
-                
+
                 pred1 = new Predicate(db, pve1ID);
-            
+
                 argList3 = new Vector<DataValue>();
 
                 fargID = pve3.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
                 argList3.add(arg);
-                
+
                 pred3 = new Predicate(db, pve3ID, argList3);
 
                 completed = true;
@@ -9471,7 +9541,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pred0 == null ) ||
                  ( pred1 == null ) ||
                  ( pred3 == null ) ||
@@ -9479,26 +9549,26 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0 == null )
                     {
                         outStream.print("new Predicate(db) returned null.\n");
                     }
-                    
+
                     if ( pred1 == null )
                     {
                         outStream.print(
                                 "new Predicate(db, pve1ID) returned null.\n");
                     }
-                    
+
                     if ( pred3 == null )
                     {
                         outStream.print(
                           "new Predicate(db, pve3ID, argList) returned null.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -9508,17 +9578,17 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("setup for getDB() test threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 SystemErrorExceptionString);
                     }
                 }
-                
+
                 if ( ( pred0.getDB() != db ) ||
                      ( pred1.getDB() != db ) ||
                      ( pred3.getDB() != db ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
@@ -9527,15 +9597,15 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // Verify that getPveID() / setPredID() work as advertized.  Also test
         // getPredName(), getNumArgs(), and getVarLen in passing.
         //
         // Note that when we set the pveID, we must also re-work the argument
         // list to conform to the new predicate.  We will test this slightly
-        // below, but the real test of this feature will be in the argument 
+        // below, but the real test of this feature will be in the argument
         // list management test.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9544,17 +9614,17 @@ public class Predicate extends DBElement
             try
             {
                 pred0 = new Predicate(db);
-                
+
                 pred1 = new Predicate(db, pve1ID);
-                
+
                 pred2 = new Predicate(db, pve2ID);
-            
+
                 argList3 = new Vector<DataValue>();
 
                 fargID = pve3.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
                 argList3.add(arg);
-                
+
                 pred3 = new Predicate(db, pve3ID, argList3);
 
                 completed = true;
@@ -9565,7 +9635,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pred0 == null ) ||
                  ( pred1 == null ) ||
                  ( pred2 == null ) ||
@@ -9574,32 +9644,32 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0 == null )
                     {
                         outStream.print("new Predicate(db) returned null.\n");
                     }
-                    
+
                     if ( pred1 == null )
                     {
                         outStream.print(
                                 "new Predicate(db, pve1ID) returned null.\n");
                     }
-                    
+
                     if ( pred2 == null )
                     {
                         outStream.print(
                                 "new Predicate(db, pve2ID) returned null.\n");
                     }
-                    
+
                     if ( pred3 == null )
                     {
                         outStream.print(
                           "new Predicate(db, pve3ID, argList) returned null.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print("setup for get/set pred ID test " +
@@ -9609,15 +9679,15 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("setup for getDB() test threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 SystemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {                
+        {
             if ( ( pred0.getPveID() != DBIndex.INVALID_ID ) ||
                  ( pred1.getPveID() != pve1ID ) ||
                  ( pred2.getPveID() != pve2ID ) ||
@@ -9629,9 +9699,9 @@ public class Predicate extends DBElement
                 {
                     outStream.printf("getPredID() returned an unexpected " +
                         "value 1: %d(%d), %d(%d), %d(%d), %d(%d).\n",
-                        pred0.getPveID(), DBIndex.INVALID_ID, 
+                        pred0.getPveID(), DBIndex.INVALID_ID,
                         pred1.getPveID(), pve1ID,
-                        pred2.getPveID(), pve2ID, 
+                        pred2.getPveID(), pve2ID,
                         pred3.getPveID(), pve3ID);
                 }
             } else if ( ( pred0.getNumArgs() != 0 ) ||
@@ -9672,7 +9742,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9684,7 +9754,7 @@ public class Predicate extends DBElement
                 pred1.setPredID(pve2ID, false);
                 pred2.setPredID(pve3ID, false);
                 pred3.setPredID(DBIndex.INVALID_ID, false);
-                
+
                 completed = true;
             }
 
@@ -9693,12 +9763,12 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -9710,13 +9780,13 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("setup for getDB() test threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 SystemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0.getPveID() != pve1ID ) ||
@@ -9730,9 +9800,9 @@ public class Predicate extends DBElement
                 {
                     outStream.printf("getPredID() returned an unexpected " +
                         "value 2: %d(%d), %d(%d), %d(%d), %d(%d).\n",
-                        pred0.getPveID(), pve1ID, 
+                        pred0.getPveID(), pve1ID,
                         pred1.getPveID(), pve2ID,
-                        pred2.getPveID(), pve3ID, 
+                        pred2.getPveID(), pve3ID,
                         pred3.getPveID(), DBIndex.INVALID_ID);
                 }
             } else if ( ( pred0.getNumArgs() != 2 ) ||
@@ -9785,7 +9855,7 @@ public class Predicate extends DBElement
                 pred1.setPredID(pve3ID, true);
                 pred2.setPredID(DBIndex.INVALID_ID, true);
                 pred3.setPredID(pve1ID, true);
-                
+
                 completed = true;
             }
 
@@ -9794,12 +9864,12 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -9811,13 +9881,13 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("setup for getDB() test threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 SystemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0.getPveID() != pve2ID ) ||
@@ -9831,9 +9901,9 @@ public class Predicate extends DBElement
                 {
                     outStream.printf("getPredID() returned an unexpected " +
                         "value 3: %d(%d), %d(%d), %d(%d), %d(%d).\n",
-                        pred0.getPveID(), pve2ID, 
+                        pred0.getPveID(), pve2ID,
                         pred1.getPveID(), pve3ID,
-                        pred2.getPveID(), DBIndex.INVALID_ID, 
+                        pred2.getPveID(), DBIndex.INVALID_ID,
                         pred3.getPveID(), pve2ID);
                 }
             } else if ( ( pred0.getNumArgs() != 3 ) ||
@@ -9885,7 +9955,7 @@ public class Predicate extends DBElement
             try
             {
                 pred0.setPredID(100, true);
-                
+
                 completed = true;
             }
 
@@ -9894,26 +9964,26 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pred0.getPveID() != pve2ID ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0.getPveID() != pve2ID )
                     {
                         outStream.printf("pred0.getPredID() != pve2ID (1)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                                 "pred0.setPredID(100, true) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("pred0.setPredID(100, true) failed " +
@@ -9922,8 +9992,8 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        
+
+
         // now use the id of a formal argument -- should fail as well
         threwSystemErrorException = false;
         completed = false;
@@ -9935,7 +10005,7 @@ public class Predicate extends DBElement
                 fargID = pve0.getFormalArg(0).getID();
 
                 pred0.setPredID(fargID, true);
-                
+
                 completed = true;
             }
 
@@ -9944,32 +10014,32 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( fargID == DBIndex.INVALID_ID ) ||
                  ( pred0.getPveID() != pve2ID ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( fargID == DBIndex.INVALID_ID )
                     {
                         outStream.printf("fargID == DBIndex.INVALID_ID (1).\n");
                     }
-                    
+
                     if ( pred0.getPveID() != pve2ID )
                     {
                         outStream.printf("pred0.getPredID() != pve2ID (2)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                                 "pred0.setPredID(fargID, true) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("pred0.setPredID(fargID, true) " +
@@ -9978,11 +10048,11 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // finally, verify that lookupPredicateVE() throws a system error on
-        // invalid input.  Start with the valid id that does not refer to a 
+        // invalid input.  Start with the valid id that does not refer to a
         // predicate vocab element
-        
+
         threwSystemErrorException = false;
         completed = false;
         fargID = DBIndex.INVALID_ID;
@@ -9995,7 +10065,7 @@ public class Predicate extends DBElement
                 fargID = pve0.getFormalArg(0).getID();
 
                 pve = pred0.lookupPredicateVE(fargID);
-                
+
                 completed = true;
             }
 
@@ -10004,32 +10074,32 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( fargID == DBIndex.INVALID_ID ) ||
                  ( pve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( fargID == DBIndex.INVALID_ID )
                     {
                         outStream.printf("fargID == DBIndex.INVALID_ID (2).\n");
                     }
-                    
+
                     if ( pve != null )
                     {
                         outStream.printf("pve != null (1)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                                 "pred0.lookupPredicateVE(fargID) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("pred0.lookupPredicateVE(fargID) " +
@@ -10038,7 +10108,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // now try an unused ID
         threwSystemErrorException = false;
         completed = false;
@@ -10048,7 +10118,7 @@ public class Predicate extends DBElement
             try
             {
                 pve = pred0.lookupPredicateVE(100);
-                
+
                 completed = true;
             }
 
@@ -10057,26 +10127,26 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pve != null )
                     {
                         outStream.printf("pve != null (2)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                                 "pred0.lookupPredicateVE(100) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("pred0.lookupPredicateVE(100) " +
@@ -10085,7 +10155,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // finally, try the invalid ID
         threwSystemErrorException = false;
         completed = false;
@@ -10095,7 +10165,7 @@ public class Predicate extends DBElement
             try
             {
                 pve = pred0.lookupPredicateVE(DBIndex.INVALID_ID);
-                
+
                 completed = true;
             }
 
@@ -10104,26 +10174,26 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pve != null )
                     {
                         outStream.printf("pve != null (3)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf("pred0.lookupPredicateVE" +
                                          "(DBIndex.INVALID_ID) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("pred0.lookupPredicateVE" +
@@ -10133,7 +10203,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -10162,11 +10232,11 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::TestAccessors() */
-    
+
     /**
      * TestArgListManagement()
      *
@@ -10176,7 +10246,7 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    
+
     public static boolean TestArgListManagement(java.io.PrintStream outStream,
                                                 boolean verbose)
         throws SystemErrorException
@@ -10265,7 +10335,7 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database and pve's
         threwSystemErrorException = false;
         completed = false;
@@ -10273,31 +10343,31 @@ public class Predicate extends DBElement
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -10305,26 +10375,26 @@ public class Predicate extends DBElement
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -10339,15 +10409,15 @@ public class Predicate extends DBElement
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
-            
+
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve5.appendFormalArg(farg);
             farg = new FloatFormalArg(db, "<float>");
@@ -10362,15 +10432,15 @@ public class Predicate extends DBElement
             pve5.appendFormalArg(farg);
             farg = new TimeStampFormalArg(db, "<timestamp>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
-            
+
             farg = new TimeStampFormalArg(db, "<timestamp>");
             pve6.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
@@ -10385,15 +10455,15 @@ public class Predicate extends DBElement
             pve6.appendFormalArg(farg);
             farg = new QuoteStringFormalArg(db, "<qstring>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
-            
+
             farg = new QuoteStringFormalArg(db, "<qstring>");
             pve7.appendFormalArg(farg);
             farg = new TimeStampFormalArg(db, "<timestamp>");
@@ -10408,15 +10478,15 @@ public class Predicate extends DBElement
             pve7.appendFormalArg(farg);
             farg = new PredFormalArg(db, "<pred>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
 
-            
+
             pve8 = new PredicateVocabElement(db, "pve8");
-            
+
             farg = new PredFormalArg(db, "<pred>");
             pve8.appendFormalArg(farg);
             farg = new QuoteStringFormalArg(db, "<qstring>");
@@ -10431,15 +10501,15 @@ public class Predicate extends DBElement
             pve8.appendFormalArg(farg);
             farg = new NominalFormalArg(db, "<nominal>");
             pve8.appendFormalArg(farg);
-            
+
             pve8ID = db.addPredVE(pve8);
-            
+
             // get a copy of the databases version of pve8 with ids assigned
             pve8 = db.getPredVE(pve8ID);
 
-            
+
             pve9 = new PredicateVocabElement(db, "pve9");
-            
+
             farg = new NominalFormalArg(db, "<nominal>");
             pve9.appendFormalArg(farg);
             farg = new PredFormalArg(db, "<pred>");
@@ -10454,15 +10524,15 @@ public class Predicate extends DBElement
             pve9.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
             pve9.appendFormalArg(farg);
-            
+
             pve9ID = db.addPredVE(pve9);
-            
+
             // get a copy of the databases version of pve9 with ids assigned
             pve9 = db.getPredVE(pve9ID);
 
-            
+
             pve10 = new PredicateVocabElement(db, "pve10");
-            
+
             farg = new IntFormalArg(db, "<int>");
             pve10.appendFormalArg(farg);
             farg = new NominalFormalArg(db, "<nominal>");
@@ -10477,15 +10547,15 @@ public class Predicate extends DBElement
             pve10.appendFormalArg(farg);
             farg = new FloatFormalArg(db, "<float>");
             pve10.appendFormalArg(farg);
-            
+
             pve10ID = db.addPredVE(pve10);
-            
+
             // get a copy of the databases version of pve10 with ids assigned
             pve10 = db.getPredVE(pve10ID);
 
-            
+
             pve11 = new PredicateVocabElement(db, "pve11");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve11.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -10500,13 +10570,13 @@ public class Predicate extends DBElement
             pve11.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve11.appendFormalArg(farg);
-            
+
             pve11ID = db.addPredVE(pve11);
-            
+
             // get a copy of the databases version of pve11 with ids assigned
             pve11 = db.getPredVE(pve11ID);
-            
-            
+
+
             pve12 = new PredicateVocabElement(db, "pve12");
 
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -10529,9 +10599,9 @@ public class Predicate extends DBElement
             pve12.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg10>");
             pve12.appendFormalArg(farg);
-            
+
             pve12ID = db.addPredVE(pve12);
-            
+
             // get a copy of the databases version of pve12 with ids assigned
             pve12 = db.getPredVE(pve12ID);
 
@@ -10543,7 +10613,7 @@ public class Predicate extends DBElement
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -10575,144 +10645,144 @@ public class Predicate extends DBElement
              ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pv4ID not initialized.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( pve8 == null )
                 {
                     outStream.print("creation of pve8 failed.\n");
                 }
-                
+
                 if ( pve8ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve8ID not initialized.\n");
                 }
-                
+
                 if ( pve9 == null )
                 {
                     outStream.print("creation of pve9 failed.\n");
                 }
-                
+
                 if ( pve9ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve9ID not initialized.\n");
                 }
-                
+
                 if ( pve10 == null )
                 {
                     outStream.print("creation of pve10 failed.\n");
                 }
-                
+
                 if ( pve10ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve10ID not initialized.\n");
                 }
-                
+
                 if ( pve11 == null )
                 {
                     outStream.print("creation of pve11 failed.\n");
                 }
-                
+
                 if ( pve11ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve11ID not initialized.\n");
                 }
-                
+
                 if ( pve12 == null )
                 {
                     outStream.print("creation of pve12 failed.\n");
                 }
-                
+
                 if ( pve12ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve12ID not initialized.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
@@ -10721,18 +10791,18 @@ public class Predicate extends DBElement
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             SystemErrorExceptionString);
                 }
             }
         }
-        
-        // Start with a set of tests to verify that an argument list is 
-        // converted properly when the pveID of an instance of Predicate 
-        // is changed.  
+
+        // Start with a set of tests to verify that an argument list is
+        // converted properly when the pveID of an instance of Predicate
+        // is changed.
         //
         // Start by creating the necessary set of test instances of Predicate.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -10741,9 +10811,9 @@ public class Predicate extends DBElement
             String testString0 = "pve4(1.0, 2, a_nominal, " +
                                       "pve0(<arg1>, <arg2>), " +
                                       "\"q-string\", 00:00:00:000, <untyped>)";
-            String testDBString0 = 
+            String testDBString0 =
                 "(predicate (id 0) " +
-                           "(predID 13) " + 
+                           "(predID 13) " +
                            "(predName pve4) " +
                            "(varLen false) " +
                            "(argList ((FloatDataValue (id 0) " +
@@ -10890,7 +10960,7 @@ public class Predicate extends DBElement
                                          "(itsCellID 0) " +
                                          "(itsValue <arg10>) " +
                                          "(subRange false))))))";
-           
+
             try
             {
                 argList0 = new Vector<DataValue>();
@@ -10911,11 +10981,11 @@ public class Predicate extends DBElement
                 arg = new QuoteStringDataValue(db, fargID, "q-string");
                 argList0.add(arg);
                 fargID = pve4.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = pve4.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                              pve4.getFormalArg(6).getFargName());
                 argList0.add(arg);
 
@@ -10930,15 +11000,15 @@ public class Predicate extends DBElement
                 pred8  = new Predicate(db, pve4ID, argList0);
                 pred9  = new Predicate(db, pve4ID, argList0);
                 pred12 = new Predicate(db, pve4ID, argList0);
-                
+
                 argList1 = new Vector<DataValue>();
 
                 fargID = pve3.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 99);
                 argList1.add(arg);
-                
+
                 pred10 = new Predicate(db, pve3ID, argList1);
-                
+
                 pred11 = new Predicate(db, pve12ID);
 
                 completed = true;
@@ -10949,7 +11019,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( argList0 == null ) ||
                  ( argList0.size() != 7 ) ||
                  ( pred0 == null ) ||
@@ -10965,11 +11035,11 @@ public class Predicate extends DBElement
                  ( pred10 == null ) ||
                  ( pred11 == null ) ||
                  ( pred12 == null ) ||
-                 ( ! completed ) || 
+                 ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( argList0 == null )
@@ -10981,7 +11051,7 @@ public class Predicate extends DBElement
                         outStream.printf("unexpected argList0.size(): %d (7).\n",
                                          argList0.size());
                     }
-                    
+
                     if ( ( pred0 == null ) ||
                          ( pred1 == null ) ||
                          ( pred2 == null ) ||
@@ -10999,7 +11069,7 @@ public class Predicate extends DBElement
                         outStream.print("one or more Predicate allocation(s) " +
                                         "failed.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print("test predicate allocation failed " +
@@ -11009,7 +11079,7 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("test predicate allocation threw a " +
-                                         "SystemErrorException: \"%s\".\n", 
+                                         "SystemErrorException: \"%s\".\n",
                                          SystemErrorExceptionString);
                     }
                 }
@@ -11022,18 +11092,18 @@ public class Predicate extends DBElement
                       ( pred5.toString().compareTo(testString0) != 0 ) ||
                       ( pred6.toString().compareTo(testString0) != 0 ) ||
                       ( pred7.toString().compareTo(testString0) != 0 ) ||
-                      ( pred8.toString().compareTo(testString0) != 0 ) || 
-                      ( pred9.toString().compareTo(testString0) != 0 ) || 
-                      ( pred12.toString().compareTo(testString0) != 0 ) ) 
+                      ( pred8.toString().compareTo(testString0) != 0 ) ||
+                      ( pred9.toString().compareTo(testString0) != 0 ) ||
+                      ( pred12.toString().compareTo(testString0) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred?.toString)(): \"%s\"\n",
                                      pred0.toString());
                 }
-            } 
+            }
             else if ( ( pred0.toDBString().compareTo(testDBString0) != 0 ) ||
                       ( pred1.toDBString().compareTo(testDBString0) != 0 ) ||
                       ( pred2.toDBString().compareTo(testDBString0) != 0 ) ||
@@ -11041,94 +11111,94 @@ public class Predicate extends DBElement
                       ( pred4.toDBString().compareTo(testDBString0) != 0 ) ||
                       ( pred5.toDBString().compareTo(testDBString0) != 0 ) ||
                       ( pred6.toDBString().compareTo(testDBString0) != 0 ) ||
-                      ( pred7.toDBString().compareTo(testDBString0) != 0 ) || 
-                      ( pred8.toDBString().compareTo(testDBString0) != 0 ) || 
-                      ( pred9.toDBString().compareTo(testDBString0) != 0 ) || 
-                      ( pred12.toDBString().compareTo(testDBString0) != 0 ) ) 
+                      ( pred7.toDBString().compareTo(testDBString0) != 0 ) ||
+                      ( pred8.toDBString().compareTo(testDBString0) != 0 ) ||
+                      ( pred9.toDBString().compareTo(testDBString0) != 0 ) ||
+                      ( pred12.toDBString().compareTo(testDBString0) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred?.toDBString)(): \"%s\"\n",
                                      pred0.toDBString());
                 }
-            } 
+            }
             else if ( pred10.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred10.toString)(): \"%s\"\n",
                                      pred10.toString());
                 }
-            } 
+            }
             else if ( pred10.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred10.toDBString)(): \"%s\"\n",
                                      pred10.toDBString());
                 }
-            } 
+            }
             else if ( pred11.toString().compareTo(testString2) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred11.toString)(): \"%s\"\n",
                                      pred11.toString());
                 }
-            } 
+            }
             else if ( pred11.toDBString().compareTo(testDBString2) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred11.toDBString)(): \"%s\"\n",
                                      pred11.toDBString());
                 }
-            } 
+            }
         }
-        
-        
+
+
         threwSystemErrorException = false;
         completed = false;
 
         if ( failures == 0 )
         {
             // untyped, float, int, nominal, pred, q-string, timestamp
-            String testString1 = 
+            String testString1 =
                     "pve5(1.0, 2.0, 0, , (), \"\", 00:00:00:000)";
             // timestamp, untyped, float, int, nominal, pred, q-string
-            String testString2 = 
+            String testString2 =
                     "pve6(00:00:00:000, 2, 0.0, 0, q-string, (), \"\")";
             // q-string, timestamp, untyped, float, int, nominal, pred
-            String testString3 = 
+            String testString3 =
                     "pve7(\"\", 00:00:00:002, a_nominal, 0.0, 0, , ())";
             // pred, q-string, timestamp, untyped, float, int, nominal
-            String testString4 = 
+            String testString4 =
                     "pve8((), \"\", 00:00:00:000, pve0(<arg1>, <arg2>), 0.0, 0, )";
             // nominal, pred, q-string, timestamp, untyped, float, int
-            String testString5 = 
+            String testString5 =
                     "pve9(, (), \"a_nominal\", 00:00:00:000, \"q-string\", 0.0, 0)";
             // int, nominal, pred, q-string, timestamp, untyped, float
-            String testString6 = 
+            String testString6 =
                     "pve10(1, , (), \"\", 00:00:00:000, 00:00:00:000, 0.0)";
             // float, int, nominal, pred, q-string, timestamp, untyped
-            String testString7 = 
+            String testString7 =
                     "pve11(1.0, 2, a_nominal, pve0(<arg1>, <arg2>), " +
                           "\"q-string\", 00:00:00:000, <untyped>)";
             String testString8 = "pve3(1.0)";
             String testString9 = "pve1(1, 2)";
-            String testString10 = 
+            String testString10 =
                     "pve4(99.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
-            
+
             try
             {
                 pred1.setPredID(pve5ID, true);
@@ -11138,10 +11208,10 @@ public class Predicate extends DBElement
                 pred5.setPredID(pve9ID, true);
                 pred6.setPredID(pve10ID, true);
                 pred7.setPredID(pve11ID, true);
-                
+
                 pred8.setPredID(pve3ID, true);
                 pred9.setPredID(pve1ID, true);
-                
+
                 pred10.setPredID(pve4ID, true);
 
                 completed = true;
@@ -11152,12 +11222,12 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -11169,7 +11239,7 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("test of setPredID(?, true) threw a " +
-                                         "SystemErrorException: \"%s\".\n", 
+                                         "SystemErrorException: \"%s\".\n",
                                          SystemErrorExceptionString);
                     }
                 }
@@ -11185,7 +11255,7 @@ public class Predicate extends DBElement
                         ( pred10.toString().compareTo(testString10) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred1.toString().compareTo(testString1) != 0 )
@@ -11260,10 +11330,10 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        // Verify that the getArg() and replaceArg() methods perform as 
+
+        // Verify that the getArg() and replaceArg() methods perform as
         // expected.
-        
+
         /* first a float argument */
         if ( failures == 0 )
         {
@@ -11306,7 +11376,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -11320,72 +11390,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(fdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11462,7 +11532,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* next an integer argument */
         if ( failures == 0 )
         {
@@ -11505,7 +11575,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -11519,72 +11589,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(idv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11661,7 +11731,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* next an nominal argument */
         if ( failures == 0 )
         {
@@ -11704,7 +11774,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -11718,72 +11788,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(ndv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11860,7 +11930,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* next an predicate argument */
         if ( failures == 0 )
         {
@@ -11903,7 +11973,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -11917,72 +11987,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(pdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12059,7 +12129,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* next an quote string argument */
         if ( failures == 0 )
         {
@@ -12102,7 +12172,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -12116,72 +12186,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(qsdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12258,7 +12328,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* next a time stamp argument */
         if ( failures == 0 )
         {
@@ -12276,7 +12346,7 @@ public class Predicate extends DBElement
             try
             {
                 fargID = pve4.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks(), 360));
                 floatArg0 = new FloatDataValue(db);
                 floatArg0.setItsValue(1066.0);
@@ -12302,7 +12372,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -12316,72 +12386,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(tsdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12458,7 +12528,7 @@ public class Predicate extends DBElement
             }
         }
 
-        
+
         /* finally, an undefined argument */
         if ( failures == 0 )
         {
@@ -12476,7 +12546,7 @@ public class Predicate extends DBElement
             try
             {
                 fargID = pve4.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                             pve4.getFormalArg(6).getFargName());
                 floatArg0 = new FloatDataValue(db);
                 floatArg0.setItsValue(1066.0);
@@ -12502,7 +12572,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg0 == null ) ||
                  ( intArg0 == null ) ||
@@ -12516,72 +12586,72 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(udv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg0 == null )
                     {
                         outStream.printf("%s: Allocation of floatArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg0 == null )
                     {
                         outStream.printf("%s: Allocation of intArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nominalArg0 == null )
                     {
                         outStream.printf(
                                 "%s: Allocation of nominalArg0 failed.\n",
                                 testTag);
                     }
-                    
+
                     if ( predArg0 == null )
                     {
                         outStream.printf("%s: Allocation of predArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg0 == null )
                     {
                         outStream.printf("%s: Allocation of textArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of qsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg0 == null )
                     {
                         outStream.printf("%s: Allocation of tsArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg0 == null )
                     {
                         outStream.printf("%s: Allocation of undefArg0 failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12657,12 +12727,12 @@ public class Predicate extends DBElement
                                                     "arg");
             }
         }
-        
+
         /* In theory, the above battery of tests should cover everything.
          * However, lets throw in a few more random tests on the likely
          * chance that theory has missed a few cases.
          */
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -12672,41 +12742,41 @@ public class Predicate extends DBElement
             {   // float, int, nominal, pred, q-string, timestamp, untyped
 
                 floatArg0 = (FloatDataValue)pred0.getArg(0);
-                floatArg1 = 
+                floatArg1 =
                         new FloatDataValue(db, floatArg0.getItsFargID(), 10.0);
                 pred0.replaceArg(0, floatArg1);
-                
+
                 intArg0 = (IntDataValue)pred0.getArg(1);
                 intArg1 = new IntDataValue(db, intArg0.getItsFargID(), 20);
                 pred0.replaceArg(1, intArg1);
-                
+
                 nominalArg0 = (NominalDataValue)pred0.getArg(2);
-                nominalArg1 = new NominalDataValue(db, 
-                                                   nominalArg0.getItsFargID(), 
+                nominalArg1 = new NominalDataValue(db,
+                                                   nominalArg0.getItsFargID(),
                                                    "another_nominal");
                 pred0.replaceArg(2, nominalArg1);
-                
+
                 predArg0 = (PredDataValue)pred0.getArg(3);
                 predArg1 = new PredDataValue(db, predArg0.getItsFargID(),
                                              pred9);
                 pred0.replaceArg(3, predArg1);
-                
+
                 qsArg0 = (QuoteStringDataValue)pred0.getArg(4);
                 qsArg1 = new QuoteStringDataValue(db, qsArg0.getItsFargID(),
                                                   "another_qs");
                 pred0.replaceArg(4, qsArg1);
-                
+
                 tsArg0 = (TimeStampDataValue)pred0.getArg(5);
                 tsArg1 = new TimeStampDataValue(db, tsArg0.getItsFargID(),
                                            new TimeStamp(db.getTicks(), 3600));
                 pred0.replaceArg(5, tsArg1);
-                
+
                 undefArg0 = (UndefinedDataValue)pred0.getArg(6);
                 intArg2 = new IntDataValue(db, undefArg0.getItsFargID(), 30);
                 pred0.replaceArg(6, intArg2);
 
-                
-                
+
+
                 fargID = pve12.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 33.0);
                 pred11.replaceArg(0, arg);
@@ -12728,10 +12798,10 @@ public class Predicate extends DBElement
                 pred11.replaceArg(4, arg);
 
                 fargID = pve12.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks()));
                 pred11.replaceArg(5, arg);
-                                
+
                 completed = true;
             }
 
@@ -12740,15 +12810,15 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
-                    
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -12758,17 +12828,17 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("get/replace arg test threw a " +
-                                         "SystemErrorException: \"%s\".\n", 
+                                         "SystemErrorException: \"%s\".\n",
                                          SystemErrorExceptionString);
                     }
                 }
-            } 
+            }
             else if ( pred0.toString().compareTo("pve4(10.0, 20, " +
                               "another_nominal, pve1(1, 2), \"another_qs\", " +
                               "00:01:00:000, 30)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                         outStream.printf(
@@ -12782,7 +12852,7 @@ public class Predicate extends DBElement
                               "<arg10>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                         outStream.printf(
@@ -12791,14 +12861,14 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // finally, verify that getArg() and replaceArg() fail on invalid input.
-        
+
         // create a farg ID mis-match
-        
+
         threwSystemErrorException = false;
         completed = false;
-        
+
         if ( failures == 0 )
         {
             try
@@ -12813,7 +12883,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
             }
 
-            if ( ( completed ) || 
+            if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -12833,7 +12903,7 @@ public class Predicate extends DBElement
                                         "didn't throw a SystemErrorException.\n");
                     }
                 }
-            }        
+            }
             else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
@@ -12849,13 +12919,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        
+
+
         // negative index
-        
+
         threwSystemErrorException = false;
         completed = false;
-        
+
         if ( failures == 0 )
         {
             try
@@ -12870,7 +12940,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
             }
 
-            if ( ( completed ) || 
+            if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -12890,7 +12960,7 @@ public class Predicate extends DBElement
                                         "didn't throw a SystemErrorException.\n");
                     }
                 }
-            }        
+            }
             else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
@@ -12906,12 +12976,12 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         // positive unused index
-        
+
         threwSystemErrorException = false;
         completed = false;
-        
+
         if ( failures == 0 )
         {
             try
@@ -12926,7 +12996,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
             }
 
-            if ( ( completed ) || 
+            if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -12946,7 +13016,7 @@ public class Predicate extends DBElement
                                         "didn't throw a SystemErrorException.\n");
                     }
                 }
-            } 
+            }
             else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
@@ -12961,7 +13031,7 @@ public class Predicate extends DBElement
                                 pred11.toString());
                 }
             }
-        }        
+        }
 
         if ( failures > 0 )
         {
@@ -12991,23 +13061,23 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::TestArgListManagement() */
-    
-    
+
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -13051,16 +13121,16 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         // setup the test:
         try
         {
             db = new ODBCDatabase();
-            
+
             pred0 = new Predicate(db);
-            
+
             pve1 = new PredicateVocabElement(db, "test1");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve1.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -13075,16 +13145,16 @@ public class Predicate extends DBElement
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve1.appendFormalArg(farg);
-            
+
             pveID1 = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pveID1);
-            
+
             pred1 = new Predicate(db, pveID1);
-            
+
             argList0 = new Vector<DataValue>();
-            
+
             fargID = pve1.getFormalArg(0).getID();
             arg = new FloatDataValue(db, fargID, 1.0);
             argList0.add(arg);
@@ -13101,86 +13171,86 @@ public class Predicate extends DBElement
             arg = new QuoteStringDataValue(db, fargID, "q-string");
             argList0.add(arg);
             fargID = pve1.getFormalArg(5).getID();
-            arg = new TimeStampDataValue(db, fargID, 
+            arg = new TimeStampDataValue(db, fargID,
                                          new TimeStamp(db.getTicks()));
             argList0.add(arg);
             fargID = pve1.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID, 
+            arg = new UndefinedDataValue(db, fargID,
                                          pve1.getFormalArg(6).getFargName());
             argList0.add(arg);
-            
+
             pred1a = new Predicate(db, pveID1, argList0);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "test2");
-            
+
             farg = new UnTypedFormalArg(db, "<arg>");
             pve2.appendFormalArg(farg);
-            
+
             pve2.setVarLen(true);
-            
+
             pveID2 = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve2 with ids assigned
             pve2 = db.getPredVE(pveID2);
-            
+
             pred2 = new Predicate(db, pveID2);
-            
+
             argList1 = new Vector<DataValue>();
-            
+
             fargID = pve2.getFormalArg(0).getID();
             arg = new IntDataValue(db, fargID, 43);
             argList1.add(arg);
-            
+
             pred2a = new Predicate(db, pveID2, argList1);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pred0 == null ) ||
              ( pve1 == null ) ||
              ( pveID1 == DBIndex.INVALID_ID ) ||
              ( argList0 == null ) ||
              ( argList0.size() != 7 ) ||
              ( pred1 == null ) ||
-             ( pred1a == null ) || 
+             ( pred1a == null ) ||
              ( pve2 == null ) ||
              ( pveID2 == DBIndex.INVALID_ID ) ||
              ( argList1 == null ) ||
              ( argList1.size() != 1 ) ||
              ( pred2 == null ) ||
-             ( pred2a == null ) || 
+             ( pred2a == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pred0 == null )
                 {
                     outStream.print("creation of pred0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pveID1 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve1 failed.\n");
                 }
-                
+
                 if ( argList0 == null )
                 {
                     outStream.print("creation of argList0 failed.\n");
@@ -13189,29 +13259,29 @@ public class Predicate extends DBElement
                 {
                     outStream.print("unexpected argList0 length.\n");
                 }
-                
+
                 if ( pred1 == null )
                 {
                     outStream.print("new Predicate(db, pveID1) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( pred1a == null )
                 {
                     outStream.print("new Predicate(db, pveID1, argList0) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pveID2 == DBIndex.INVALID_ID )
                 {
                     outStream.print("insertion of pve2 failed.\n");
                 }
-                
+
                 if ( argList1 == null )
                 {
                     outStream.print("creation of argList1 failed.\n");
@@ -13220,19 +13290,19 @@ public class Predicate extends DBElement
                 {
                     outStream.print("unexpected argList1 length.\n");
                 }
-                
+
                 if ( pred2 == null )
                 {
                     outStream.print("new Predicate(db, pveID2) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( pred2a == null )
                 {
                     outStream.print("new Predicate(db, pveID2, argList1) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("test setup threw a SystemErrorException:" +
@@ -13240,15 +13310,15 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        
+
+
         // test setup complete -- now for the test proper
 
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
             completed = false;
-            
+
             try
             {
                 pred0_copy  = new Predicate(pred0);
@@ -13258,13 +13328,13 @@ public class Predicate extends DBElement
                 pred2a_copy = new Predicate(pred2a);
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pred0_copy == null ) ||
                  ( pred1_copy == null ) ||
                  ( pred1a_copy == null ) ||
@@ -13274,39 +13344,39 @@ public class Predicate extends DBElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0_copy == null )
                     {
                         outStream.print("new Predicate(pred0) returned null.\n");
                     }
-                    
+
                     if ( pred1_copy == null )
                     {
                         outStream.print("new Predicate(pred1) returned null.\n");
                     }
-                    
+
                     if ( pred1a_copy == null )
                     {
                         outStream.print("new Predicate(pred1a) returned null.\n");
                     }
-                    
+
                     if ( pred2_copy == null )
                     {
                         outStream.print("new Predicate(pred2) returned null.\n");
                     }
-                    
+
                     if ( pred2a_copy == null )
                     {
                         outStream.print("new Predicate(pred2a) returned null.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print("copy constructors failed to complete.\n");
                     }
-                
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -13316,9 +13386,9 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( ( pred0_copy.getDB() != db ) ||
                  ( pred1_copy.getDB() != db ) ||
                  ( pred1a_copy.getDB() != db ) ||
@@ -13326,14 +13396,14 @@ public class Predicate extends DBElement
                  ( pred2a_copy.getDB() != db ) )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("A copy refers to an unexpected db.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0_copy.getPveID() != DBIndex.INVALID_ID ) ||
@@ -13343,7 +13413,7 @@ public class Predicate extends DBElement
                  ( pred2a_copy.getPveID() != pveID2 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13351,17 +13421,17 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            if ( ( pred0_copy.getPredName().compareTo("") != 0 ) || 
+            if ( ( pred0_copy.getPredName().compareTo("") != 0 ) ||
                  ( pred1_copy.getPredName().compareTo("test1") != 0 ) ||
                  ( pred1a_copy.getPredName().compareTo("test1") != 0 ) ||
                  ( pred2_copy.getPredName().compareTo("test2") != 0 ) ||
                  ( pred2a_copy.getPredName().compareTo("test2") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13369,25 +13439,25 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0_copy.argList != null ) ||
                  ( pred1_copy.argList == null ) ||
                  ( pred1_copy.argList == pred1.argList ) ||
-                 ( pred1_copy.argList.size() != 7 ) || 
+                 ( pred1_copy.argList.size() != 7 ) ||
                  ( pred1a_copy.argList == null ) ||
                  ( pred1a_copy.argList == pred1.argList ) ||
-                 ( pred1a_copy.argList.size() != 7 ) || 
+                 ( pred1a_copy.argList.size() != 7 ) ||
                  ( pred2_copy.argList == null ) ||
                  ( pred2_copy.argList == pred2.argList ) ||
-                 ( pred2_copy.argList.size() != 1 ) || 
+                 ( pred2_copy.argList.size() != 1 ) ||
                  ( pred2a_copy.argList == null ) ||
                  ( pred2a_copy.argList == pred2.argList ) ||
-                 ( pred2a_copy.argList.size() != 1 ) ) 
+                 ( pred2a_copy.argList.size() != 1 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13395,7 +13465,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ( pred0_copy.getVarLen() != false ) ||
@@ -13405,7 +13475,7 @@ public class Predicate extends DBElement
                  ( pred2a_copy.getVarLen() != true ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13413,13 +13483,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0_copy.toString().compareTo("()") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0.toString(): \"%s\".\n",
@@ -13427,7 +13497,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred0_copy.toDBString().compareTo(
@@ -13435,7 +13505,7 @@ public class Predicate extends DBElement
                     "(argList ())))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred0.toDBString(): \"%s\".\n",
@@ -13443,14 +13513,14 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.toString().compareTo(
                     "test1(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred1.toString(): \"%s\".\n",
@@ -13458,7 +13528,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1.toDBString().compareTo(
@@ -13514,7 +13584,7 @@ public class Predicate extends DBElement
                                         "(subRange false))))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13523,7 +13593,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-       
+
         if ( failures == 0 )
         {
             if ( pred1a.toString().compareTo(
@@ -13532,7 +13602,7 @@ public class Predicate extends DBElement
                     "<untyped>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred1a.toString(): \"%s\".\n",
@@ -13540,7 +13610,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred1a.toDBString().compareTo(
@@ -13646,7 +13716,7 @@ public class Predicate extends DBElement
                                         "(subRange false))))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13655,13 +13725,13 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred2.toString().compareTo("test2(<arg>)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred2.toString(): \"%s\".\n",
@@ -13669,7 +13739,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred2.toDBString().compareTo(
@@ -13685,7 +13755,7 @@ public class Predicate extends DBElement
                                                 "(subRange false))))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13694,14 +13764,14 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
-        
+
+
         if ( failures == 0 )
         {
             if ( pred2a.toString().compareTo("test2(43)") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred2a.toString(): \"%s\".\n",
@@ -13709,7 +13779,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( pred2a.toDBString().compareTo(
@@ -13727,7 +13797,7 @@ public class Predicate extends DBElement
                                                    "(maxVal 0))))))") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -13736,64 +13806,64 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            failures += VerifyPredicateCopy(pred0, pred0_copy, outStream, 
+            failures += VerifyPredicateCopy(pred0, pred0_copy, outStream,
                                             verbose, "pred0", "pred0_copy");
-            
-            failures += VerifyPredicateCopy(pred1, pred1_copy, outStream, 
+
+            failures += VerifyPredicateCopy(pred1, pred1_copy, outStream,
                                             verbose, "pred1", "pred1_copy");
-            
-            failures += VerifyPredicateCopy(pred1a, pred1a_copy, outStream, 
+
+            failures += VerifyPredicateCopy(pred1a, pred1a_copy, outStream,
                                             verbose, "pred1a", "pred1a_copy");
-            
-            failures += VerifyPredicateCopy(pred2, pred2_copy, outStream, 
+
+            failures += VerifyPredicateCopy(pred2, pred2_copy, outStream,
                                             verbose, "pred2", "pred2_copy");
-            
-            failures += VerifyPredicateCopy(pred2a, pred2a_copy, outStream, 
+
+            failures += VerifyPredicateCopy(pred2a, pred2a_copy, outStream,
                                             verbose, "pred2a", "pred2a_copy");
         }
-        
 
-        /* now verify that the copy constructor fails when passed an invalid 
-         * reference to a predicate.  For now, this just means passing in a 
+
+        /* now verify that the copy constructor fails when passed an invalid
+         * reference to a predicate.  For now, this just means passing in a
          * null.
          */
         pred0 = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             pred = new Predicate((Predicate)null);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( pred != null ) || 
+
+        if ( ( pred != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( pred != null )
                 {
                     outStream.print("new Predicate(null) != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new Predicate(null) " +
                                     "didn't throw a SystemErrorException.\n");
                 }
             }
-        }        
-        
+        }
+
         if ( failures > 0 )
         {
             pass = false;
@@ -13822,25 +13892,25 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the to string methods for this 
+     *
+     * Run a battery of tests on the to string methods for this
      * class.
-     * 
+     *
      *                                              JRM -- 10/29/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -13888,7 +13958,7 @@ public class Predicate extends DBElement
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database and pve's
         threwSystemErrorException = false;
         completed = false;
@@ -13896,9 +13966,9 @@ public class Predicate extends DBElement
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve0.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -13913,20 +13983,20 @@ public class Predicate extends DBElement
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
             pve1.setVarLen(true);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve1 = db.getPredVE(pve1ID);
 
@@ -13938,7 +14008,7 @@ public class Predicate extends DBElement
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -13948,34 +14018,34 @@ public class Predicate extends DBElement
              ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
@@ -13984,15 +14054,15 @@ public class Predicate extends DBElement
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             SystemErrorExceptionString);
                 }
             }
         }
-        
-        // Setup the predicates that we will used for the toString and 
+
+        // Setup the predicates that we will used for the toString and
         // toDBString tests.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -14000,7 +14070,7 @@ public class Predicate extends DBElement
         {
             String testString0 = "pve0(1.0, 2, a_nominal, pve1(<arg1>), " +
                                  "\"q-string\", 00:00:00:000, <untyped>)";
-            String testDBString0 = 
+            String testDBString0 =
                 "(predicate (id 0) " +
                         "(predID 1) " +
                         "(predName pve0) " +
@@ -14063,9 +14133,9 @@ public class Predicate extends DBElement
                                 "(itsCellID 500) " +
                                 "(itsValue <untyped>) " +
                                 "(subRange false))))))";
-                         
+
             String testString1 = "pve1(99)";
-            String testDBString1 = 
+            String testDBString1 =
                 "(predicate (id 0) " +
                         "(predID 9) " +
                         "(predName pve1) " +
@@ -14079,7 +14149,7 @@ public class Predicate extends DBElement
                                 "(subRange false) " +
                                 "(minVal 0) " +
                                 "(maxVal 0))))))";
-            
+
             try
             {
                 argList0 = new Vector<DataValue>();
@@ -14100,16 +14170,16 @@ public class Predicate extends DBElement
                 arg = new QuoteStringDataValue(db, fargID, "q-string");
                 argList0.add(arg);
                 fargID = pve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = pve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                              pve0.getFormalArg(6).getFargName());
                 argList0.add(arg);
 
                 pred0 = new Predicate(db, pve0ID, argList0);
-                
+
                 // set argument IDs to dummy values to test toDBString()
                 pred0.argList.get(0).setID(100);
                 pred0.argList.get(1).setID(101);
@@ -14118,7 +14188,7 @@ public class Predicate extends DBElement
                 pred0.argList.get(4).setID(104);
                 pred0.argList.get(5).setID(105);
                 pred0.argList.get(6).setID(106);
-                
+
                 // set argument cellIDs to dummy values to test toDBString()
                 pred0.argList.get(0).itsCellID = 500;
                 pred0.argList.get(1).itsCellID = 500;
@@ -14127,19 +14197,19 @@ public class Predicate extends DBElement
                 pred0.argList.get(4).itsCellID = 500;
                 pred0.argList.get(5).itsCellID = 500;
                 pred0.argList.get(6).itsCellID = 500;
-                
+
                 argList1 = new Vector<DataValue>();
 
                 fargID = pve1.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 99);
                 arg.setID(107); // a dummy value to test toDBString() method
                 argList1.add(arg);
-                
+
                 pred1 = new Predicate(db, pve1ID, argList1);
-                
+
                 // set argument IDs to dummy values to test toDBString()
                 pred1.argList.get(0).setID(107);
-                
+
                 // set argument cellIDs to dummy values to test toDBString()
                 pred1.argList.get(0).itsCellID = 501;
 
@@ -14151,7 +14221,7 @@ public class Predicate extends DBElement
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( argList0 == null ) ||
                  ( argList0.size() != 7 ) ||
                  ( pred0 == null ) ||
@@ -14160,7 +14230,7 @@ public class Predicate extends DBElement
                  ( pred1 == null ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( argList0 == null )
@@ -14172,7 +14242,7 @@ public class Predicate extends DBElement
                         outStream.printf("unexpected argList0.size(): %d (7).\n",
                                          argList0.size());
                     }
-                    
+
                     if ( argList1 == null )
                     {
                         outStream.print("argList1 allocation failed.\n");
@@ -14182,14 +14252,14 @@ public class Predicate extends DBElement
                         outStream.printf("unexpected argList1.size(): %d (1).\n",
                                          argList1.size());
                     }
-                     
+
                     if ( ( pred0 == null ) ||
                          ( pred1 == null ) )
                     {
                         outStream.print("one or more Predicate allocation(s) " +
                                         "failed.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print("test predicate allocation failed " +
@@ -14199,7 +14269,7 @@ public class Predicate extends DBElement
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("test predicate allocation threw a " +
-                                         "SystemErrorException: \"%s\".\n", 
+                                         "SystemErrorException: \"%s\".\n",
                                          SystemErrorExceptionString);
                     }
                 }
@@ -14214,17 +14284,17 @@ public class Predicate extends DBElement
                       ( pred1.argList.get(0).getID() != 107 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pred.argList arg ID(s): " +
                             "%d %d %d %d %d %d %d - %d\n",
-                            pred0.argList.get(0).getID(), 
-                            pred0.argList.get(1).getID(), 
-                            pred0.argList.get(2).getID(), 
-                            pred0.argList.get(3).getID(), 
-                            pred0.argList.get(4).getID(), 
-                            pred0.argList.get(5).getID(), 
+                            pred0.argList.get(0).getID(),
+                            pred0.argList.get(1).getID(),
+                            pred0.argList.get(2).getID(),
+                            pred0.argList.get(3).getID(),
+                            pred0.argList.get(4).getID(),
+                            pred0.argList.get(5).getID(),
                             pred0.argList.get(6).getID(),
                             pred1.argList.get(0).getID());
                 }
@@ -14233,7 +14303,7 @@ public class Predicate extends DBElement
                       ( pred1.toString().compareTo(testString1) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0.toString().compareTo(testString0) != 0 )
@@ -14241,7 +14311,7 @@ public class Predicate extends DBElement
                        outStream.printf("Unexpected pred0.toString)(): \"%s\"\n",
                                          pred0.toString());
                     }
-                    
+
                     if ( pred1.toString().compareTo(testString1) != 0 )
                     {
                        outStream.printf("Unexpected pred1.toString)(): \"%s\"\n",
@@ -14253,7 +14323,7 @@ public class Predicate extends DBElement
                       ( pred1.toDBString().compareTo(testDBString1) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pred0.toDBString().compareTo(testDBString0) != 0 )
@@ -14262,7 +14332,7 @@ public class Predicate extends DBElement
                                "Unexpected pred0.toDBString)(): \"%s\"\n",
                                pred0.toDBString());
                     }
-                    
+
                     if ( pred1.toDBString().compareTo(testDBString1) != 0 )
                     {
                        outStream.printf(
@@ -14272,7 +14342,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -14301,16 +14371,16 @@ public class Predicate extends DBElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Predicate::TestToStringMethods() */
 
-    
+
     /**
      * VerifyArgListAssignment()
      *
-     * Verify that the specified replacement of an argument list 
+     * Verify that the specified replacement of an argument list
      * entry succeeds.
      *                                              JRM -- 11/8/07
      *
@@ -14329,7 +14399,7 @@ public class Predicate extends DBElement
     {
         String systemErrorExceptionString = null;
         boolean completed = false;
-        boolean threwSystemErrorException = false;     
+        boolean threwSystemErrorException = false;
         int failures = 0;
         DataValue old_dv = null;
         DataValue new_dv = null;
@@ -14337,30 +14407,30 @@ public class Predicate extends DBElement
         try
         {
             old_dv = target.getArg(idx);
-            
+
             target.replaceArg(idx, newArg);
-            
+
             new_dv = target.getArg(idx);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( old_dv == null ) ||
              ( old_dv.getItsFargID() == DBIndex.INVALID_ID ) ||
              ( new_dv == null ) ||
              ( new_dv != newArg ) ||
-             ( old_dv.getItsFargID() != new_dv.getItsFargID() ) ||  
+             ( old_dv.getItsFargID() != new_dv.getItsFargID() ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( old_dv == null )
@@ -14369,21 +14439,21 @@ public class Predicate extends DBElement
                             "initial %s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( old_dv.getItsFargID() == DBIndex.INVALID_ID )
                 {
                     outStream.printf("initial %s.getArg(%d).getItsFargID() " +
                             "returned INVALID_ID.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( new_dv == null )
                 {
                     outStream.printf(
                             "%s.replaceArg(%d, %s) failed to complete.\n",
                             targetDesc, idx, newArgDesc);
                 }
-                
+
                 if ( new_dv != newArg )
                 {
                     outStream.printf(
@@ -14391,33 +14461,33 @@ public class Predicate extends DBElement
                         idx, targetDesc, idx, newArgDesc);
                 }
 
-                if ( old_dv.getItsFargID() != new_dv.getItsFargID() )  
+                if ( old_dv.getItsFargID() != new_dv.getItsFargID() )
                 {
                     outStream.printf("unexpected itsFargID after %s.replace" +
                             "Arg(%d, %s). old = %d, new = %d\n",
                             targetDesc, idx, newArgDesc,
                             old_dv.getItsFargID(), new_dv.getItsFargID());
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "%s.replaceArg(%d, %s) test failed to complete.\n",
                         targetDesc, idx, newArgDesc);
-                    
+
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test threw " +
                             "system error: \"%s\"\n",
                             targetDesc, idx, newArgDesc,
                             systemErrorExceptionString);
-                    
+
                 }
             }
         }
-        
+
         if ( new_dv instanceof UndefinedDataValue )
         {
             long target_pve_ID = DBIndex.INVALID_ID;
@@ -14425,7 +14495,7 @@ public class Predicate extends DBElement
             String new_dv_val = null;
             String farg_name = null;
             PredicateVocabElement target_pve = null;
-            
+
             try
             {
                 if ( old_dv instanceof UndefinedDataValue )
@@ -14437,13 +14507,13 @@ public class Predicate extends DBElement
                 target_pve = target.db.vl.getPredicateVocabElement(target_pve_ID);
                 farg_name = target_pve.getFormalArg(idx).getFargName();
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -14453,12 +14523,12 @@ public class Predicate extends DBElement
                                 targetDesc, idx, newArgDesc,
                                 systemErrorExceptionString);
             }
-            
+
             if ( ( old_dv instanceof UndefinedDataValue ) &&
                  ( old_dv_val == null ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test started " +
@@ -14466,11 +14536,11 @@ public class Predicate extends DBElement
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
+
             if ( new_dv_val == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -14478,11 +14548,11 @@ public class Predicate extends DBElement
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
+
             if ( ( old_dv_val != null ) && ( old_dv_val == new_dv_val ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -14490,12 +14560,12 @@ public class Predicate extends DBElement
                         targetDesc, idx, newArgDesc);
                 }
             }
-            
-            if ( ( old_dv_val != null ) && 
+
+            if ( ( old_dv_val != null ) &&
                  ( old_dv_val.compareTo(new_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -14504,11 +14574,11 @@ public class Predicate extends DBElement
                         targetDesc, idx, newArgDesc, old_dv_val, new_dv_val);
                 }
             }
-            
+
             if ( farg_name == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test couldn't " +
@@ -14516,13 +14586,13 @@ public class Predicate extends DBElement
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
-            if ( ( farg_name != null ) && 
+
+            if ( ( farg_name != null ) &&
                  ( old_dv_val != null ) &&
                  ( farg_name.compareTo(old_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test started " +
@@ -14531,12 +14601,12 @@ public class Predicate extends DBElement
                         targetDesc, idx, newArgDesc, farg_name, old_dv_val);
                 }
             }
-            
+
             if ( ( farg_name != null ) &&
                  ( farg_name.compareTo(new_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -14548,14 +14618,14 @@ public class Predicate extends DBElement
         }
 
         return failures;
-        
+
     } /* Predicate::VerifyArgListAssignment() */
 
 
     /**
      * VerifyArgListAsgnmntFails()
      *
-     * Verify that the specified replacement of an argument list 
+     * Verify that the specified replacement of an argument list
      * entry fails.
      *                                              JRM -- 11/8/07
      *
@@ -14574,7 +14644,7 @@ public class Predicate extends DBElement
     {
         String systemErrorExceptionString = null;
         boolean completed = false;
-        boolean threwSystemErrorException = false;     
+        boolean threwSystemErrorException = false;
         int failures = 0;
         DataValue old_dv = null;
         DataValue new_dv = null;
@@ -14582,24 +14652,24 @@ public class Predicate extends DBElement
         try
         {
             old_dv = target.getArg(idx);
-            
+
             target.replaceArg(idx, newArg);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( old_dv == null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( old_dv == null )
@@ -14608,48 +14678,48 @@ public class Predicate extends DBElement
                             "%s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                                
+
                 if ( completed )
                 {
                     outStream.printf(
                         "%s.replaceArg(%d, %s) test completed.\n",
                         targetDesc, idx, newArgDesc);
-                    
+
                 }
-                                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test " +
                             "failed to throw a system error.\n",
                             targetDesc, idx, newArgDesc);
-                    
+
                 }
             }
         }
 
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             new_dv = target.getArg(idx);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( new_dv == null ) ||
              ( new_dv != old_dv ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( new_dv == null )
@@ -14658,43 +14728,43 @@ public class Predicate extends DBElement
                             "%s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( new_dv != old_dv )
                 {
                     outStream.printf(
                         "unexpected getArg(%d) after %s.replaceArg(%d, %s).\n",
                         idx, targetDesc, idx, newArgDesc);
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "%s.getArg(%d) test failed to complete.\n",
                         targetDesc, idx);
-                    
+
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("%s.getArg(%d) test threw " +
                             "system error: \"%s\"\n",
                             targetDesc, idx,
                             systemErrorExceptionString);
-                    
+
                 }
             }
         }
 
         return failures;
-        
+
     } /* Predicate::VerifyArgListAsgnmntFails() */
 
 
     /**
      * VerifyPredCopy()
      *
-     * Verify that the supplied instances of Predicate are distinct, 
-     * that they contain no common references (other than db), and that they 
+     * Verify that the supplied instances of Predicate are distinct,
+     * that they contain no common references (other than db), and that they
      * have the same value.
      *                                              JRM -- 11/8/07
      *
@@ -14716,13 +14786,13 @@ public class Predicate extends DBElement
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyPredicateCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredicateCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyPredicateCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredicateCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -14749,7 +14819,7 @@ public class Predicate extends DBElement
 
             if ( verbose )
             {
-                outStream.printf("%s.predID == %d != %s.predID == %d.\n", 
+                outStream.printf("%s.predID == %d != %s.predID == %d.\n",
                                  baseDesc, base.pveID, copyDesc, copy.pveID);
             }
         }
@@ -14761,7 +14831,7 @@ public class Predicate extends DBElement
             if ( verbose )
             {
                 outStream.printf(
-                     "%s.predName and %s.predName refer to the same string.\n", 
+                     "%s.predName and %s.predName refer to the same string.\n",
                       baseDesc, copyDesc);
             }
         }
@@ -14771,7 +14841,7 @@ public class Predicate extends DBElement
 
             if ( verbose )
             {
-                outStream.printf("%s.varLen != %s.varLen.\n", 
+                outStream.printf("%s.varLen != %s.varLen.\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -14781,7 +14851,7 @@ public class Predicate extends DBElement
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -14792,7 +14862,7 @@ public class Predicate extends DBElement
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }
@@ -14800,10 +14870,10 @@ public class Predicate extends DBElement
                   ( base.argList != null ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
-                outStream.printf("%s and %s share an argList.\n", 
+                outStream.printf("%s and %s share an argList.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -14811,10 +14881,10 @@ public class Predicate extends DBElement
                   ( copy.argList != null ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
-                outStream.printf("%s.argList is null and %s.argList isn't.\n", 
+                outStream.printf("%s.argList is null and %s.argList isn't.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -14822,10 +14892,10 @@ public class Predicate extends DBElement
                   ( copy.argList == null ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
-                outStream.printf("%s.argList is null and %s.argList isn't.\n", 
+                outStream.printf("%s.argList is null and %s.argList isn't.\n",
                                   copyDesc, baseDesc);
             }
         }

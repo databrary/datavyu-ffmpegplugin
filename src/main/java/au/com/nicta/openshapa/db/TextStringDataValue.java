@@ -520,6 +520,43 @@ public class TextStringDataValue extends DataValue
     } /* TextStringDataValue::TextStringDataValuesAreLogicallyEqual() */
 
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED1;
+
+        return hash;
+    }
+
+    /**
+     * Compares this TextStringDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        TextStringDataValue t = (TextStringDataValue) obj;
+        return ((itsValue == null && t.itsValue == null)
+                        || (itsValue != null && itsValue.equals(t.itsValue)))
+            && super.equals(obj);
+    }
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/

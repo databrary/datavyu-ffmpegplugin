@@ -353,4 +353,57 @@ public class TextStringDataValueTest {
         assertFalse(TextStringDataValue.
                     TextStringDataValuesAreLogicallyEqual(n_value0, n_value1));
     }
+
+
+    @Test
+    public void testClone()
+    throws SystemErrorException, CloneNotSupportedException {
+        TextStringDataValue value0 =
+                             new TextStringDataValue(db, tfa.getID(), "bravo");
+        TextStringDataValue copy = (TextStringDataValue) value0.clone();
+
+        assertEquals(value0, copy);
+    }
+
+
+    @Test
+    public void testEquals()
+    throws SystemErrorException {
+        TextStringDataValue value0 =
+                            new TextStringDataValue(db, tfa.getID(), "bravo");
+        TextStringDataValue value1 =
+                            new TextStringDataValue(db, tfa.getID(), "bravo");
+        TextStringDataValue value2 =
+                            new TextStringDataValue(db, tfa.getID(), "bravo");
+        TextStringDataValue value3 =
+                          new TextStringDataValue(db, tfa.getID(), "charlie");
+
+        // Reflexive
+        assertTrue(value0.equals(value0));
+        // Symmetric
+        assertTrue(value0.equals(value1));
+        assertTrue(value1.equals(value0));
+        // Transitive
+        assertTrue(value0.equals(value1));
+        assertTrue(value0.equals(value2));
+        assertTrue(value1.equals(value2));
+        // Consistent not tested
+        // Null
+        assertFalse(value0.equals(null));
+        // Hashcode
+        assertTrue(value0.hashCode() == value1.hashCode());
+
+        // Not equals tests
+        assertFalse(value0.equals(value3));
+        assertTrue(value0.hashCode() != value3.hashCode());
+
+        // modify value3
+        String val = value3.getItsValue();
+        val = "bravo";
+        value3.setItsValue(val);
+        assertTrue(value0.equals(value3));
+        assertTrue(value3.equals(value1));
+        assertTrue(value2.hashCode() == value3.hashCode());
+    }
+
 }

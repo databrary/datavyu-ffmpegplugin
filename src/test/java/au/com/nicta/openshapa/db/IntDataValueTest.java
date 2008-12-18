@@ -79,7 +79,7 @@ public class IntDataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
-    public void test2ArgConstructor() throws SystemErrorException {        
+    public void test2ArgConstructor() throws SystemErrorException {
         IntDataValue int_value = new IntDataValue(db, ifa.getID());
         IntDataValue int_value2 = new IntDataValue(db, ifa2.getID());
 
@@ -146,11 +146,11 @@ public class IntDataValueTest {
         assertNotNull(ifa);
         assertNotNull(int_mve2);
         assertNotNull(ifa2);
-        
+
         assertNotNull(int_value0);
         assertNotNull(int_value1);
         assertNotNull(int_value2);
-        
+
         assertEquals(int_value0.getSubRange(), ifa.getSubRange());
         assertEquals(int_value0.itsValue, 200);
         assertEquals(int_value0.maxVal, 0);
@@ -329,5 +329,53 @@ public class IntDataValueTest {
                                                                int_copy));
         assertFalse(IntDataValue.IntDataValuesAreLogicallyEqual(int_value0,
                                                                 int_value1));
-    }   
+    }
+
+
+
+    @Test
+    public void testClone()
+    throws SystemErrorException, CloneNotSupportedException {
+        IntDataValue value0 = new IntDataValue(db, ifa.getID(), 200);
+        IntDataValue copy = (IntDataValue) value0.clone();
+
+        assertEquals(value0, copy);
+    }
+
+
+    @Test
+    public void testEquals()
+    throws SystemErrorException {
+        IntDataValue value0 = new IntDataValue(db, ifa.getID(), 300);
+        IntDataValue value1 = new IntDataValue(db, ifa.getID(), 300);
+        IntDataValue value2 = new IntDataValue(db, ifa.getID(), 300);
+        IntDataValue value3 = new IntDataValue(db, ifa.getID(), 100);
+
+        // Reflexive
+        assertTrue(value0.equals(value0));
+        // Symmetric
+        assertTrue(value0.equals(value1));
+        assertTrue(value1.equals(value0));
+        // Transitive
+        assertTrue(value0.equals(value1));
+        assertTrue(value0.equals(value2));
+        assertTrue(value1.equals(value2));
+        // Consistent not tested
+        // Null
+        assertFalse(value0.equals(null));
+        // Hashcode
+        assertTrue(value0.hashCode() == value1.hashCode());
+
+        // Not equals tests
+        assertFalse(value0.equals(value3));
+        assertTrue(value0.hashCode() != value3.hashCode());
+
+        // modify value3
+        long val = value3.getItsValue() * 3;
+        value3.setItsValue(val);
+        assertTrue(value0.equals(value3));
+        assertTrue(value3.equals(value1));
+        assertTrue(value2.hashCode() == value3.hashCode());
+    }
+
 }

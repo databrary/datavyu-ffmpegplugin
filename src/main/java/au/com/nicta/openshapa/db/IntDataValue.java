@@ -22,7 +22,7 @@ public class IntDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all 
+     * itsDefault:  Constant containing the value to be assigned to all
      *      integer data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
@@ -33,7 +33,7 @@ public class IntDataValue extends DataValue
      *      of the associated instance of OmtFormalArg.
      *
      *      Note that this data value may be used to hold an integer
-     *      value assigned to an untype formal argument, in which case 
+     *      value assigned to an untype formal argument, in which case
      *      subrange will always be false.
      *
      * maxVal:  If subRange is true, this field contains the maximum value
@@ -42,97 +42,96 @@ public class IntDataValue extends DataValue
      *      of the associated instance of IntFormalArg.
      *
      *      Note that this data value may be used to hold an integer
-     *      value assigned to an untype formal argument, in which case 
+     *      value assigned to an untype formal argument, in which case
      *      subrange will always be false.
      */
-    
-    /** default value for integers */
+
+    /** default value for integers. */
     final long ItsDefault = 0;
-    
-    /** the value assigned to the associated formal argument in this case */
+
+    /** the value assigned to the associated formal argument in this case. */
     long itsValue = ItsDefault;
-    
-    /** the minimum value -- if subrange is true */
+
+    /** the minimum value -- if subrange is true. */
     long minVal = 0;
-    
-    /** the maximum value -- if subrange is true */
+
+    /** the maximum value -- if subrange is true. */
     long maxVal = 0;
-  
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * IntDataValue()
      *
-     * Constructor for instances of IntDataValue.  
-     * 
-     * Four versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of IntDataValue.
+     *
+     * Four versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
      * The second takes a reference to a database, and a formal argument ID,
      * and attempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of IntDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public IntDataValue(Database db)
-        throws SystemErrorException
-    {
+        throws SystemErrorException {
         super(db);
-        
+
     } /* IntDataValue::IntDataValue(db) */
-    
+
     public IntDataValue(Database db,
                         long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-    
+
     } /* IntDataValue::IntDataValue(db, fargID) */
-    
+
     public IntDataValue(Database db,
                         long fargID,
                         long value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
         this.setItsValue(value);
-    
+
     } /* IntDataValue::IntDataValue(db, fargID, value) */
-    
+
     public IntDataValue(IntDataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         this.itsValue  = dv.itsValue;
         this.minVal    = dv.minVal;
         this.maxVal    = dv.maxVal;
-        
+
     } /* IntDataValue::IntDataValue(dv) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -148,14 +147,14 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public long getItsValue()
     {
-        
+
         return this.itsValue;
-    
+
     } /* IntDataValue::getItsValue() */
-    
+
     /**
      * setItsValue()
      *
@@ -168,7 +167,7 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void setItsValue(long value)
     {
         if ( this.subRange )
@@ -190,36 +189,36 @@ public class IntDataValue extends DataValue
         {
             this.itsValue = value;
         }
-        
+
         return;
-        
+
     } /* IntDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of IntDataValue initialized as appropriate for 
+     * Return an instance of IntDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new IntDataValue(this.db, this.id);
-         
+
      } /* IntFormalArg::constructEmptyArg() */
- 
-     
+
+
     /**
      * toString()
      *
@@ -233,7 +232,7 @@ public class IntDataValue extends DataValue
      *
      *     - None.
      */
-    
+    @Override
     public String toString()
     {
         return ("" + this.itsValue);
@@ -243,7 +242,7 @@ public class IntDataValue extends DataValue
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -255,7 +254,7 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-  
+    @Override
     public String toDBString()
     {
         return ("(IntDataValue (id " + this.id +
@@ -267,9 +266,9 @@ public class IntDataValue extends DataValue
                 ") (minVal " + this.minVal +
                 ") (maxVal " + this.maxVal + "))");
     }
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -280,7 +279,7 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+    @Override
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -289,53 +288,53 @@ public class IntDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "IntDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* IntDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if ant) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.
      *
@@ -348,33 +347,33 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+    @Override
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "IntDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof IntFormalArg )
         {
             IntFormalArg ifa = (IntFormalArg)fa;
-            
+
             this.subRange = ifa.getSubRange();
-            
+
             if ( this.subRange )
             {
                 this.maxVal = ifa.getMaxVal();
                 this.minVal = ifa.getMinVal();
-                
+
                 if ( minVal >= maxVal )
                 {
                     throw new SystemErrorException(mName + "minVal >= maxVal");
                 }
-                
+
                 if ( this.itsValue > this.maxVal )
                 {
                     this.itsValue = this.maxVal;
@@ -391,18 +390,18 @@ public class IntDataValue extends DataValue
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* IntDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
@@ -415,7 +414,7 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public long coerceToRange(long value)
     {
         if ( this.subRange )
@@ -429,16 +428,16 @@ public class IntDataValue extends DataValue
                 return minVal;
             }
         }
-        
+
         return value;
-        
+
     } /* IntDataValue::coerceToRange() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
@@ -453,31 +452,31 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static IntDataValue Construct(Database db,
                                          long i)
         throws SystemErrorException
     {
         final String mName = "IntDataValue::Construct(db, i)";
         IntDataValue idv = null;
-        
+
         idv = new IntDataValue(db);
-        
+
         idv.setItsValue(i);
-        
+
         return idv;
-        
+
     } /* IntDataValue::Construct(db, i) */
 
-    
+
     /**
      * IntDataValuesAreLogicallyEqual()
      *
-     * Given two instances of IntDataValue, return true if they contain 
+     * Given two instances of IntDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
      *                                              JRM -- 2/7/08
@@ -486,20 +485,20 @@ public class IntDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected static boolean IntDataValuesAreLogicallyEqual(IntDataValue idv0,
                                                             IntDataValue idv1)
         throws SystemErrorException
     {
         final String mName = "IntDataValue::IntDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( idv0 == null ) || ( idv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": idv0 or idv1 null on entry.");
         }
-        
+
         if ( idv0 != idv1 )
         {
             if ( ( idv0.itsValue != idv1.itsValue ) ||
@@ -511,9 +510,54 @@ public class IntDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* IntDataValue::IntDataValuesAreLogicallyEqual() */
-    
+
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        long hash = super.hashCode();
+        hash += this.itsValue * SEED1;
+        hash += this.maxVal * SEED2;
+        hash += this.minVal * SEED3;
+
+        return (int) (hash ^ (hash >>> 32));
+    }
+
+
+    /**
+     * Compares this FloatDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this FloatDataValue.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        IntDataValue i = (IntDataValue) obj;
+        return i.itsValue == this.itsValue
+            && i.maxVal == this.maxVal
+            && i.minVal == this.minVal
+            && super.equals(obj);
+    }
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
@@ -2809,48 +2853,4 @@ public class IntDataValue extends DataValue
         return failures;
         
     } /* IntDataValue::VerifyIntDVCopy() */
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
-    /**
-     * @return A hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        long hash = super.hashCode();
-        hash += this.itsValue * SEED1;
-        hash += this.maxVal * SEED2;
-        hash += this.minVal * SEED3;
-
-        return (int) (hash ^ (hash >>> 32));
-    }
-
-
-    /**
-     * Compares this FloatDataValue against another object.
-     *
-     * @param obj The object to compare this against.
-     *
-     * @return true if the Object obj is logically equal to this FloatDataValue.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if ((obj == null) || (obj.getClass() != this.getClass())) {
-            return false;
-        }
-        // Must be this class to be here
-        IntDataValue i = (IntDataValue) obj;
-        return i.itsValue == this.itsValue
-            && i.maxVal == this.maxVal
-            && i.minVal == this.minVal
-            && super.equals(obj);
-    }
 } /* IntDataValue */

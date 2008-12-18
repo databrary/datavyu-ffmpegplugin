@@ -395,4 +395,57 @@ public class NominalDataValueTest {
         assertFalse(NominalDataValue.
                     NominalDataValuesAreLogicallyEqual(n_value0,n_value1));
     }
+
+
+    @Test
+    public void testClone()
+    throws SystemErrorException, CloneNotSupportedException {
+        NominalDataValue value0 =
+                                new NominalDataValue(db, nfa.getID(), "bravo");
+        NominalDataValue copy = (NominalDataValue) value0.clone();
+
+        assertEquals(value0, copy);
+    }
+
+
+    @Test
+    public void testEquals()
+    throws SystemErrorException {
+        NominalDataValue value0 =
+                                new NominalDataValue(db, nfa.getID(), "bravo");
+        NominalDataValue value1 =
+                                new NominalDataValue(db, nfa.getID(), "bravo");
+        NominalDataValue value2 =
+                                new NominalDataValue(db, nfa.getID(), "bravo");
+        NominalDataValue value3 =
+                              new NominalDataValue(db, nfa.getID(), "charlie");
+
+        // Reflexive
+        assertTrue(value0.equals(value0));
+        // Symmetric
+        assertTrue(value0.equals(value1));
+        assertTrue(value1.equals(value0));
+        // Transitive
+        assertTrue(value0.equals(value1));
+        assertTrue(value0.equals(value2));
+        assertTrue(value1.equals(value2));
+        // Consistent not tested
+        // Null
+        assertFalse(value0.equals(null));
+        // Hashcode
+        assertTrue(value0.hashCode() == value1.hashCode());
+
+        // Not equals tests
+        assertFalse(value0.equals(value3));
+        assertTrue(value0.hashCode() != value3.hashCode());
+
+        // modify value3
+        String val = value3.getItsValue();
+        val = "bravo";
+        value3.setItsValue(val);
+        assertTrue(value0.equals(value3));
+        assertTrue(value3.equals(value1));
+        assertTrue(value2.hashCode() == value3.hashCode());
+    }
+
 }
