@@ -15,10 +15,10 @@ import java.util.Vector;
  * Class Matrix
  *
  * Primitive class for matricies.  Instances of this class are used to store
- * the list of values assigned to a matrix in a DataCell in a database.  
- * Since matricies must be defined in the vocab list before they can be 
+ * the list of values assigned to a matrix in a DataCell in a database.
+ * Since matricies must be defined in the vocab list before they can be
  * created, instances of this class are tightly bound to their host database,
- * Column, and associated MatricVocabElement. 
+ * Column, and associated MatricVocabElement.
  *
  *                                                  JRM -- 8/19/07
  *
@@ -26,17 +26,17 @@ import java.util.Vector;
  */
 public class Matrix
 {
-    
+
     /*************************************************************************/
     /************************** Type Definitions: ****************************/
     /*************************************************************************/
-    
+
     /**
      * expectedResult:  Private enumerated type used to specify the expected
      *      result of a test.
      */
-    
-    private enum expectedResult 
+
+    private enum expectedResult
         {succeed, system_error, return_null};
 
     /*************************************************************************/
@@ -54,43 +54,43 @@ public class Matrix
      *      Matrix represented in this data value, or null if the Matrix
      *      is undefined.
      *
-     * varLen:  Boolean flag indicating whether the argument list is of 
-     *      variable length. 
+     * varLen:  Boolean flag indicating whether the argument list is of
+     *      variable length.
      *
      */
-    
+
     /** Database containing the Matrix */
     Database db = null;
-    
+
     /** ID of the represented Matrix */
     protected long mveID = DBIndex.INVALID_ID;
-    
+
     /** Argument list of the Matrix */
     protected Vector<DataValue> argList = null;
-    
+
     /** Whether the Matrix has a variable length argument list */
     protected boolean varLen = false;
-    
-  
-    
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * Matrix()
      *
-     * Constructor for instances of Matrix.  
-     * 
-     * Four versions of this constructor.  
+     * Constructor for instances of Matrix.
+     *
+     * Four versions of this constructor.
      *
      * The first takes a reference to a database, and a MatrixVocabElement
      * ID, and constructs a representation of the specified Matrix with an
      * empty/undefined argument list.
-     * 
+     *
      * The second takes a reference to a database, a MatrixVocabElementID,
-     * and a vector of DataValue specifying the values assigned to 
-     * each of the Matrix arguments, and then constructs an instance of 
+     * and a vector of DataValue specifying the values assigned to
+     * each of the Matrix arguments, and then constructs an instance of
      * Matrix representing the specified Matrix with the indicated
      * values as its arguments.
      *
@@ -98,43 +98,43 @@ public class Matrix
      * argument, and uses it to create a copy.
      *
      * The fourth is the same as the third, save that it takes the additional
-     * blindCopy parameter.  When this parameter is true, it copies the 
+     * blindCopy parameter.  When this parameter is true, it copies the
      * matrix without reference to the underlying mve, or the pve's associated
-     * with any predicate that may appear in the argument list.  This is 
+     * with any predicate that may appear in the argument list.  This is
      * necessary when a mve or pve changes, and we need a copy of the data cell
      * to modify into conformance with the changes
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     public Matrix(Database db,
                   long mveID)
         throws SystemErrorException
     {
         super();
-         
+
         final String mName = "Matrix::Matrix(db, matrixID): ";
         DBElement dbe;
         MatrixVocabElement mve;
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( ! ( db instanceof Database ) ) )
         {
             throw new SystemErrorException(mName + "Bad db param");
         }
-        
+
         this.db = db;
-         
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
-         
+
         if ( mveID != DBIndex.INVALID_ID )
         {
             dbe = this.db.idx.getElement(mveID);
@@ -143,42 +143,42 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "mveID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof MatrixVocabElement ) )
             {
                 throw new SystemErrorException(mName +
                         "mveID doesn't refer to a Matrix vocab element");
             }
-            
+
             this.mveID = mveID;
-            
+
             mve = (MatrixVocabElement)dbe;
-            
+
             this.varLen = mve.getVarLen();
-            
+
             this.argList = this.constructEmptyArgList(mve);
-        }         
+        }
     } /* Matrix::Matrix(db, mveID) */
-    
+
     public Matrix(Database db,
                   long mveID,
                   java.util.Vector<DataValue> argList)
         throws SystemErrorException
     {
         super();
-         
+
         final String mName = "Matrix::Matrix(db, mveID, argList): ";
         DBElement dbe;
         MatrixVocabElement mve;
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( ! ( db instanceof Database ) ) )
         {
             throw new SystemErrorException(mName + "Bad db param");
         }
-        
+
         this.db = db;
-         
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
@@ -191,39 +191,39 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "mveID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof MatrixVocabElement ) )
             {
                 throw new SystemErrorException(mName +
                         "mveID doesn't refer to a Matrix vocab element");
             }
-            
+
             this.mveID = mveID;
-             
+
             mve = (MatrixVocabElement)dbe;
-            
+
             this.varLen = mve.getVarLen();
-            
+
             this.copyArgList(argList);
-        }         
+        }
     } /* Matrix::Matrix(db, mveID, argList) */
-    
+
     public Matrix(Matrix m)
         throws SystemErrorException
     {
         super();
-            
+
         final String mName = "Matrix::Matrix(m): ";
-        
+
         if ( m == null )
         {
             throw new SystemErrorException(mName + "m null on entry");
-        }    
-        
+        }
+
         this.db     = m.db;
         this.mveID  = m.mveID;
         this.varLen = m.varLen;
-        
+
         if ( m.argList == null )
         {
             this.argList = null;
@@ -232,26 +232,26 @@ public class Matrix
         {
             this.copyArgList(m.argList);
         }
-        
+
     } /* Matrix::Matrix(m) */
-    
+
     protected Matrix(Matrix m,
                      boolean blindCopy)
         throws SystemErrorException
     {
         super();
-            
+
         final String mName = "Matrix::Matrix(m, blindCopy): ";
-        
+
         if ( m == null )
         {
             throw new SystemErrorException(mName + "m null on entry");
-        }    
-        
+        }
+
         this.db     = m.db;
         this.mveID  = m.mveID;
         this.varLen = m.varLen;
-        
+
         if ( m.argList == null )
         {
             this.argList = null;
@@ -264,15 +264,15 @@ public class Matrix
         {
             this.copyArgList(m.argList);
         }
-        
+
     } /* Matrix::Matrix(m, blindCopy) */
-     
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * getDB()
      *
      * Return the current value of the db field.
@@ -283,16 +283,16 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public Database getDB()
     {
-        
-        return this.db;
-        
-    } /* Predicate::getdb() */
-    
 
-    /** 
+        return this.db;
+
+    } /* Predicate::getdb() */
+
+
+    /**
      * getMveID()
      *
      * Return the current value of the mveID field.
@@ -303,16 +303,16 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public long getMveID()
     {
-        
+
         return this.mveID;
-        
+
     } /* Matrix::getMveID() */
-    
-    
-    /** 
+
+
+    /**
      * getVarLen()
      *
      * Return the current value of the varLen field.
@@ -323,33 +323,33 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public boolean getVarLen()
     {
-        
+
         return this.varLen;
-        
+
     } /* Matrix::getVarLen() */
-    
-  
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * argListToDBString()
      *
      * Construct a string containing the values of the arguments in a
-     * format that displays the full status of the arguments and 
-     * facilitates debugging.  
+     * format that displays the full status of the arguments and
+     * facilitates debugging.
      *                                          JRM -- 8/23/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String argListToDBString()
         throws SystemErrorException
     {
@@ -365,7 +365,7 @@ public class Matrix
         else
         {
             s = new String("(argList (");
-        
+
             if ( this.argList == null )
             {
                 /* fArgList hasn't been instantiated yet -- scream and die */
@@ -378,36 +378,36 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
-                
+
             while ( i < (numArgs - 1) )
             {
                 s += this.getArg(i).toDBString() + ", ";
                 i++;
             }
-            
+
             s += this.getArg(i).toDBString();
 
             s += "))";
         }
-        
+
         return s;
-        
+
     } /* Matrix::argListToDBString() */
-        
-    
+
+
     /**
      * argListToString()
      *
-     * Construct a string containing the values of the arguments in the 
-     * format: (value0, value1, ... value).  
+     * Construct a string containing the values of the arguments in the
+     * format: (value0, value1, ... value).
      *                                          JRM -- 8/23/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String argListToString()
         throws SystemErrorException
     {
@@ -434,37 +434,37 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
-            
+
             s = new String("(");
-        
+
             while ( i < (numArgs - 1) )
             {
                 s += this.getArg(i).toString() + ", ";
                 i++;
             }
-            
+
             s += getArg(i).toString();
 
             s += ")";
         }
-        
+
         return s;
-        
+
     } /* Matrix::argListToString() */
-    
-    
-    /** 
+
+
+    /**
      * insertInIndex()
      *
      * This method is called when the DataCell whose value is stored in this
-     * instance ov Matrix if first inserted in the database and becomes the 
-     * first cannonical version of the DataCell.  
-     * 
-     * The method passes the cell's ID down to the instance(s) of DataValue 
-     * that stores the value of the Matrix, which in turn pass that ID along 
+     * instance ov Matrix if first inserted in the database and becomes the
+     * first cannonical version of the DataCell.
+     *
+     * The method passes the cell's ID down to the instance(s) of DataValue
+     * that stores the value of the Matrix, which in turn pass that ID along
      * to any instances or Predicate that may appear in the Matrix.
-     * 
-     * In addition, any DBElements in the matrix are instructed to insert 
+     *
+     * In addition, any DBElements in the matrix are instructed to insert
      * themselves in the index as appropriate.
      *
      *                                              JRM -- 2/19/08
@@ -473,35 +473,35 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void insertInIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "Matrix::insertInIndex(): ";
         DBElement dbe = null;
         DataCell dc = null;
-        
+
         if ( DCID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "DCID invalid?!?");
         }
-        
+
         dbe = this.db.idx.getElement(DCID);
-        
+
         if ( ! ( dbe instanceof DataCell ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "ID doesn't refer to a DataCell");
         }
-        
+
         dc = (DataCell)dbe;
-        
+
         if ( dc.getItsMveID() != this.mveID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "mveID mismatch with DataCell");
         }
-        
+
         if ( this.argList == null )
         {
             throw new SystemErrorException(mName + "argList is null!?!");
@@ -511,18 +511,18 @@ public class Matrix
         {
             dv.insertInIndex(DCID);
         }
-        
+
         return;
-        
+
 } /* Matrix::insertInIndex(DCID) */
 
-    
+
     /**
      * lookupMatrixVE()
      *
      * Given an ID, attempt to look up the associated MatrixVocabElement
-     * in the database associated with the instance of Matrix.  Return a 
-     * reference to same.  If there is no such MatrixVocabElement, throw 
+     * in the database associated with the instance of Matrix.  Return a
+     * reference to same.  If there is no such MatrixVocabElement, throw
      * a system error.
      *                                              JRM -- 8/20/07
      *
@@ -530,14 +530,14 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     private MatrixVocabElement lookupMatrixVE(long mveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::lookupMatrixVE(mveID): ";
         DBElement dbe;
         MatrixVocabElement mve;
-         
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
@@ -557,13 +557,13 @@ public class Matrix
         }
 
         mve = (MatrixVocabElement)dbe;
-        
+
         return mve;
-        
+
     } /* Matrix::lookupMatrixVE(mveID) */
-    
-    
-    /** 
+
+
+    /**
      * removeFromIndex()
      *
      * This method is called when the DataCell whose value is stored in this
@@ -573,42 +573,42 @@ public class Matrix
      * Matrix is not a subclass of DBElement, so it has nothing to do beyond
      * sanity checking, and passing the remove from index message on to its
      * constituent DataValues.
-     * 
+     *
      *                                              JRM -- 2/19/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void removeFromIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "Matrix::removeFromIndex(): ";
         DBElement dbe = null;
         DataCell dc = null;
-        
+
         if ( DCID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "DCID invalid?!?");
         }
-        
+
         dbe = this.db.idx.getElement(DCID);
-        
+
         if ( ! ( dbe instanceof DataCell ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "ID doesn't refer to a DataCell");
         }
-        
+
         dc = (DataCell)dbe;
-        
+
         if ( dc.getItsMveID() != this.mveID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "mveID mismatch with DataCell");
         }
-        
+
         if ( this.argList == null )
         {
             throw new SystemErrorException(mName + "argList is null!?!");
@@ -618,16 +618,16 @@ public class Matrix
         {
             dv.removeFromIndex(DCID);
         }
-        
+
         return;
-        
+
 } /* Matrix::removeFromIndex(DCID) */
-    
-    
+
+
    /**
      * toDBString()
-     * 
-     * Returns a database String representation of the Matrix for comparison 
+     *
+     * Returns a database String representation of the Matrix for comparison
      * against the expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -637,30 +637,30 @@ public class Matrix
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     public String toDBString()
     {
         String s;
-        
+
         try
         {
             s = "(Matrix (mveID " + this.mveID +
                 ") (varLen " + this.varLen + ") " +
                 this.argListToDBString() + "))";
         }
-        
+
         catch (SystemErrorException e)
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-       
+
         return s;
-        
+
     } /* Matrix::toDBString() */
 
-    
+
     /**
      * toString()
      *
@@ -671,12 +671,12 @@ public class Matrix
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    public String toString() 
+    public String toString()
     {
         String s;
-        
+
         try
         {
             s = this.argListToString();
@@ -686,31 +686,31 @@ public class Matrix
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-               
+
         return (s);
-        
+
     } /* Matrix::toString() */
 
-    
+
     /*************************************************************************/
     /********************* Argument List Management: *************************/
     /*************************************************************************/
 
-    
+
     /**
      * copyArgList()
      *
-     * Given a reference to a Vector containing an argument list for the 
+     * Given a reference to a Vector containing an argument list for the
      * Matrix indicated by the current value of mveID, copy the argument
      * list without attempting any sanity checks against the mve, or against
-     * the pve's associated with any predicates that may appear in the 
-     * argument list.  
-     * 
-     * This is necessary if the definition of the mve or a pve has changed, 
+     * the pve's associated with any predicates that may appear in the
+     * argument list.
+     *
+     * This is necessary if the definition of the mve or a pve has changed,
      * and we need a copy of the matrix to modify into accordance with the new
      * version.
-     * 
-     * Throw a system error if any errors aredetected.  Otherwise, return the 
+     *
+     * Throw a system error if any errors aredetected.  Otherwise, return the
      * copy.
      *
      *                                              JRM -- 4/6/08
@@ -719,7 +719,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     private Vector<DataValue> blindCopyArgList(Vector<DataValue> srcArgList)
         throws SystemErrorException
     {
@@ -729,58 +729,58 @@ public class Matrix
         Vector<DataValue> newArgList = new Vector<DataValue>();
         DataValue dv;
         DataValue cdv = null;
-        
+
         if ( srcArgList == null )
         {
             throw new SystemErrorException(mName + "srcArgList null on entry");
         }
-        
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID undefined");
         }
-                
+
         numArgs = srcArgList.size();
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
-           // get the i'th argument from the argument list.  Again, this 
-            // is the actual argument -- must be careful not to modify it 
+           // get the i'th argument from the argument list.  Again, this
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             dv = srcArgList.get(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th source argument?!?!");
             }
-            
+
             cdv = DataValue.Copy(dv, true);
-            
+
             newArgList.add(cdv);
         }
-        
+
         if ( newArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
+
         return newArgList;
-        
+
     } /* Matrix::blindCopyArgList(srcArgList) */
-    
-    
+
+
     /**
      * constructEmptyArgList()
      *
-     * Given a reverence to a MatrixVocabElement, construct an empty 
+     * Given a reverence to a MatrixVocabElement, construct an empty
      * argument list as directed by the formal argument list of the supplied
-     * MatrixVocabElement.  
+     * MatrixVocabElement.
      *
      * Return the newly constructed argument list.
      *
@@ -790,7 +790,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     private Vector<DataValue> constructEmptyArgList(MatrixVocabElement mve)
         throws SystemErrorException
     {
@@ -800,65 +800,65 @@ public class Matrix
         Vector<DataValue> argList = new Vector<DataValue>();
         FormalArgument fa;
         DataValue dv;
-        
+
         if ( mve == null )
         {
             throw new SystemErrorException(mName + "mve == null");
         }
-        
+
         if ( ! ( mve instanceof MatrixVocabElement ) )
         {
             throw new SystemErrorException(mName + "mve not a matrixVE");
         }
-        
+
         numArgs = mve.getNumFormalArgs();
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
             // get the i'th formal argument of the Matrix.  Observe that
-            // getFormaArg() returns a reference to the actual formal 
+            // getFormaArg() returns a reference to the actual formal
             // argument in the MatrixVocabElement data structure, so we
-            // must be careful not to modify it in any way, or expose the 
+            // must be careful not to modify it in any way, or expose the
             // reference to the user.
             fa = mve.getFormalArg(i);
-            
+
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
-            
+
             dv = fa.constructEmptyArg();
-            
+
             if ( dv == null )
             {
                 throw new SystemErrorException(mName + "dv == null?!?!");
             }
-                        
+
             argList.add(dv);
         }
-        
+
         if ( argList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
+
         return argList;
-        
+
     } /* Matrix::constructEmptyArgList(mve) */
 
-    
+
     /**
      * copyArgList()
      *
-     * Given a reference to a Vector containing an argument list for the 
-     * Matrix indicated by the current value of mveID, attempt to make a 
-     * copy of that argument list.  Throw a system error if any errors are 
+     * Given a reference to a Vector containing an argument list for the
+     * Matrix indicated by the current value of mveID, attempt to make a
+     * copy of that argument list.  Throw a system error if any errors are
      * detected.  Otherwise, return the copy.
      *
      *                                              JRM -- 8/20/07
@@ -867,7 +867,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     private Vector<DataValue> copyArgList(Vector<DataValue> srcArgList)
         throws SystemErrorException
     {
@@ -879,64 +879,64 @@ public class Matrix
         FormalArgument fa;
         DataValue dv;
         DataValue cdv = null;
-        
+
         if ( srcArgList == null )
         {
             throw new SystemErrorException(mName + "srcArgList null on entry");
         }
-        
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID undefined");
         }
-        
+
         mve = this.lookupMatrixVE(this.mveID);
-                
+
         numArgs = mve.getNumFormalArgs();
-        
+
         if ( srcArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
-        
+
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-        
+
         for ( i = 0; i < numArgs; i++ )
         {
             // get the i'th formal argument of the Matrix.  Observe that
-            // getFormaArg() returns a reference to the actual formal 
+            // getFormaArg() returns a reference to the actual formal
             // argument in the MatrixVocabElement data structure, so we
-            // must be careful not to modify it in any way, or expose the 
+            // must be careful not to modify it in any way, or expose the
             // reference to the user.
             fa = mve.getFormalArg(i);
-            
+
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
-            
-            // get the i'th argument from the argument list.  Again, this 
-            // is the actual argument -- must be careful not to modify it 
+
+            // get the i'th argument from the argument list.  Again, this
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             dv = srcArgList.get(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th source argument?!?!");
             }
-            
+
             switch (fa.getFargType())
             {
                 case COL_PREDICATE:
                     if ( ! ( dv instanceof ColPredDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": col pred expected.");
                     }
                     cdv = new ColPredDataValue((ColPredDataValue)dv);
@@ -945,8 +945,8 @@ public class Matrix
                 case FLOAT:
                     if ( ! ( dv instanceof FloatDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": float expected.");
                     }
                     cdv = new FloatDataValue((FloatDataValue)dv);
@@ -955,8 +955,8 @@ public class Matrix
                 case INTEGER:
                     if ( ! ( dv instanceof IntDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": integer expected.");
                     }
                     cdv = new IntDataValue((IntDataValue)dv);
@@ -965,8 +965,8 @@ public class Matrix
                 case NOMINAL:
                     if ( ! ( dv instanceof NominalDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": nominal expected.");
                     }
                     cdv = new NominalDataValue((NominalDataValue)dv);
@@ -975,8 +975,8 @@ public class Matrix
                 case PREDICATE:
                     if ( ! ( dv instanceof PredDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": Predicate expected.");
                     }
                     cdv = new PredDataValue((PredDataValue)dv);
@@ -985,8 +985,8 @@ public class Matrix
                 case TIME_STAMP:
                     if ( ! ( dv instanceof TimeStampDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": time stamp expected.");
                     }
                     cdv = new TimeStampDataValue((TimeStampDataValue)dv);
@@ -995,8 +995,8 @@ public class Matrix
                 case QUOTE_STRING:
                     if ( ! ( dv instanceof QuoteStringDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": quote string expected.");
                     }
                     cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
@@ -1005,8 +1005,8 @@ public class Matrix
                 case TEXT:
                     if ( ! ( dv instanceof TextStringDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
-                                "Type mismatch for arg " + i + 
+                        throw new SystemErrorException(mName +
+                                "Type mismatch for arg " + i +
                                 ": text string expected.");
                     }
                     cdv = new TextStringDataValue((TextStringDataValue)dv);
@@ -1043,13 +1043,13 @@ public class Matrix
                     }
                     else if ( dv instanceof TextStringDataValue )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Text String(s) can't be " +
                                 "substituted for untyped arguments.");
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Unknown subtype of DataValue");
                     }
                     break;
@@ -1061,12 +1061,12 @@ public class Matrix
                     // break;
 
                 default:
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "Unknown Formal Arg Type");
                     /* break statement commented out to keep the compiler happy */
                     // break;
             }
-            
+
             if ( dv.getItsFargID() == DBIndex.INVALID_ID )
             {
                 cdv.setItsFargID(fa.getID());
@@ -1075,29 +1075,29 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "fargID mismatch");
             }
-            
+
             newArgList.add(cdv);
         }
-        
+
         if ( newArgList.size() != numArgs )
         {
             throw new SystemErrorException(mName + "bad arg list len");
         }
-        
+
         this.argList = newArgList;
-        
+
         return newArgList;
-        
+
     } /* Matrix::copyArgList(srcArgList) */
 
-    
+
     /**
      * deregisterPreds()
      *
-     * Call the deregister preds method on any instances of column predicate or 
-     * predicate data value that appear in the matrix.  
-     * 
-     * The objective is to get any instance of column predicate or predicate 
+     * Call the deregister preds method on any instances of column predicate or
+     * predicate data value that appear in the matrix.
+     *
+     * The objective is to get any instance of column predicate or predicate
      * that appears in the Matrix to deregister as internal (matrix) vocab
      * element listeners with its associated matrix or predicate vocab element.
      *
@@ -1109,10 +1109,10 @@ public class Matrix
      *
      *                                              JRM -- 8/31/08
      */
-    
+
     protected void deregisterPreds(boolean cascadeMveDel,
                                    long cascadeMveID,
-                                   boolean cascadePveDel, 
+                                   boolean cascadePveDel,
                                    long cascadePveID)
         throws SystemErrorException
     {
@@ -1120,25 +1120,25 @@ public class Matrix
         {
             if ( dv instanceof ColPredDataValue )
             {
-                ((ColPredDataValue)dv).deregisterPreds(cascadeMveDel, 
+                ((ColPredDataValue)dv).deregisterPreds(cascadeMveDel,
                                                        cascadeMveID,
-                                                       cascadePveDel, 
+                                                       cascadePveDel,
                                                        cascadePveID);
             }
             else if ( dv instanceof PredDataValue )
             {
-                ((PredDataValue)dv).deregisterPreds(cascadeMveDel, 
+                ((PredDataValue)dv).deregisterPreds(cascadeMveDel,
                                                     cascadeMveID,
-                                                    cascadePveDel, 
+                                                    cascadePveDel,
                                                     cascadePveID);
             }
         }
-        
+
         return;
-        
+
     } /* Matrix::deregisterPreds() */
-    
-    
+
+
     /**
      * getArg()
      *
@@ -1154,7 +1154,7 @@ public class Matrix
         final String mName = "Matrix::getArg(): ";
         int numArgs;
         DataValue arg = null;
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             arg = null;
@@ -1182,7 +1182,7 @@ public class Matrix
             {
                 throw new SystemErrorException(mName + "arg is null?!?");
             }
-            
+
             if ( ! ( ( arg instanceof FloatDataValue ) ||
                      ( arg instanceof FloatDataValue ) ||
                      ( arg instanceof IntDataValue ) ||
@@ -1198,14 +1198,14 @@ public class Matrix
         }
 
         return arg;
-        
+
     } /* Matrix::getArg() */
-    
-    
+
+
     /**
      * getArgCopy()
      *
-     * Return a reference to a copy of the n-th argument if it exists, or 
+     * Return a reference to a copy of the n-th argument if it exists, or
      * null if it doesn't.
      *                                      JRM -- 5/23/08
      *
@@ -1213,26 +1213,26 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public DataValue getArgCopy(int n)
         throws SystemErrorException
     {
         final String mName = "Matrix::getArgCopy(): ";
         DataValue arg = null;
         DataValue argCopy = null;
-        
+
         arg = this.getArg(n);
-        
+
         if ( arg != null )
         {
             argCopy = DataValue.Copy(arg, false);
         }
-        
+
         return argCopy;
-        
+
     } /* Matrix::getArgCopy() */
-    
-    
+
+
     /**
      * getNumArgs()
      *
@@ -1244,13 +1244,13 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public int getNumArgs()
         throws SystemErrorException
     {
         final String mName = "Matrix::getNumArgs(): ";
         int numArgs = 0;
-        
+
         if ( mveID != DBIndex.INVALID_ID )
         {
             if ( argList == null )
@@ -1258,29 +1258,29 @@ public class Matrix
                 /* argList hasn't been instantiated yet -- scream and die */
                 throw new SystemErrorException(mName + "argList unitialized?!?!");
             }
-            
+
             numArgs = this.argList.size();
-            
+
             if ( numArgs <= 0 )
             {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
         }
-        
-        return numArgs; 
-        
+
+        return numArgs;
+
     } /* Matrix::getNumArgs() */
 
-    
+
     /**
      * registerPreds()
      *
      * Call the register preds method on any instances of column predicate or
-     * predicate data value that appears in the matrix.  
-     * 
-     * The objective is to get any instance of column predicate or 
+     * predicate data value that appears in the matrix.
+     *
+     * The objective is to get any instance of column predicate or
      * predicate that appears in the Matrix to register as internal (matrix)
-     * vocab element listeners with its associated matrix or predicate vocab 
+     * vocab element listeners with its associated matrix or predicate vocab
      * element.
      *
      *                                              JRM -- 3/24/08
@@ -1291,7 +1291,7 @@ public class Matrix
      *
      *                                              JRM -- 8/31/08
      */
-    
+
     protected void registerPreds()
         throws SystemErrorException
     {
@@ -1306,12 +1306,12 @@ public class Matrix
                 ((PredDataValue)dv).registerPreds();
             }
         }
-        
+
         return;
-        
+
     } /* Matrix::registerPreds() */
-    
-    
+
+
     /**
      * replaceArg()
      *
@@ -1324,8 +1324,8 @@ public class Matrix
      *
      *    - None.
      */
-    
-    public void replaceArg(int n, 
+
+    public void replaceArg(int n,
                            DataValue newArg)
         throws SystemErrorException
     {
@@ -1336,7 +1336,7 @@ public class Matrix
         Vector<DataValue> newArgList = new Vector<DataValue>();
         FormalArgument fa;
         DataValue oldArg = null;
-        
+
         if ( newArg == null )
         {
             throw new SystemErrorException(mName + "newArg null on entry");
@@ -1363,35 +1363,35 @@ public class Matrix
         }
 
         mve = this.lookupMatrixVE(this.mveID);
-        
+
         // get the n'th formal argument of the Matrix.  Observe that
-        // getFormaArg() returns a reference to the actual formal 
+        // getFormaArg() returns a reference to the actual formal
         // argument in the MatrixVocabElement data structure, so we
-        // must be careful not to modify it in any way, or expose the 
+        // must be careful not to modify it in any way, or expose the
         // reference to the user.
         fa = mve.getFormalArg(n);
-             
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "no " + n + 
+            throw new SystemErrorException(mName + "no " + n +
                     "th formal argument?!?!");
         }
         else if ( ( fa instanceof TextStringFormalArg ) &&
-                  ( mve.getType() != 
+                  ( mve.getType() !=
                     MatrixVocabElement.MatrixType.TEXT ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "non-text mve contains a text formal arg?!?!");
         }
-               
-        // get the n'th argument from the argument list.  Again, this 
-        // is the actual argument -- must be careful not to modify it 
+
+        // get the n'th argument from the argument list.  Again, this
+        // is the actual argument -- must be careful not to modify it
         // in any way.
         oldArg = this.argList.get(n);
 
         if ( oldArg == null )
         {
-            throw new SystemErrorException(mName + "no " + n + 
+            throw new SystemErrorException(mName + "no " + n +
                     "th source argument?!?!");
         }
 
@@ -1400,7 +1400,7 @@ public class Matrix
             case COL_PREDICATE:
                 if ( ! ( newArg instanceof ColPredDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: col pred expected.");
                 }
                 break;
@@ -1408,7 +1408,7 @@ public class Matrix
             case FLOAT:
                 if ( ! ( newArg instanceof FloatDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: float expected.");
                 }
                 break;
@@ -1416,7 +1416,7 @@ public class Matrix
             case INTEGER:
                 if ( ! ( newArg instanceof IntDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: integer expected.");
                 }
                 break;
@@ -1424,7 +1424,7 @@ public class Matrix
             case NOMINAL:
                 if ( ! ( newArg instanceof NominalDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: nominal expected.");
                 }
                 break;
@@ -1432,7 +1432,7 @@ public class Matrix
             case PREDICATE:
                 if ( ! ( newArg instanceof PredDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: Predicate expected.");
                 }
                 break;
@@ -1440,7 +1440,7 @@ public class Matrix
             case TIME_STAMP:
                 if ( ! ( newArg instanceof TimeStampDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: time stamp expected.");
                 }
                 break;
@@ -1448,7 +1448,7 @@ public class Matrix
             case QUOTE_STRING:
                 if ( ! ( newArg instanceof QuoteStringDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: quote string expected.");
                 }
                 break;
@@ -1456,11 +1456,11 @@ public class Matrix
             case TEXT:
                 if ( ! ( newArg instanceof TextStringDataValue ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Type mismatch: text string expected.");
                 }
                 break;
- 
+
             case UNTYPED:
                 if ( newArg instanceof TextStringDataValue )
                 {
@@ -1477,7 +1477,7 @@ public class Matrix
                               ( newArg instanceof QuoteStringDataValue ) ||
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "Unknown subtype of DataValue");
                 }
                 break;
@@ -1489,12 +1489,12 @@ public class Matrix
                 // break;
 
             default:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "Unknown Formal Arg Type");
                 /* break statement commented out to keep the compiler happy */
                 // break;
         }
-        
+
         if ( newArg.getItsFargID() == DBIndex.INVALID_ID )
         {
             newArg.setItsFargID(fa.getID());
@@ -1508,17 +1508,17 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "replaced wrong arg?!?");
         }
-        
+
         return;
-        
+
     } /* Matrix::replaceArg(n, newArg) */
 
-    
+
     /**
      * updateForMVEDefChange()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
-     * matrix vocab element definition change message to any predicate 
+     * Scan the list of data values in the matrix, and pass an update for
+     * matrix vocab element definition change message to any predicate
      * or column predicate data values.
      *                                          JRM -- 8/26/08
      *
@@ -1526,7 +1526,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDefChange(
                                  Database db,
                                  long mveID,
@@ -1559,25 +1559,25 @@ public class Matrix
     {
         final String mName = "Matrix::updateForMVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(mveID);
-        
+
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mveID doesn't refer to a mve.");
         }
-        
+
         for ( DataValue dv : this.argList )
         {
             if ( dv instanceof PredDataValue )
@@ -1642,17 +1642,17 @@ public class Matrix
                                                           newCPFargList);
             }
         }
-        
+
         return;
-        
+
     } /* Matrix::updateForMVEDefChange() */
-    
-    
+
+
     /**
      * updateForMVEDeletion()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
-     * matrix vocab element deletion message to any column predicate or 
+     * Scan the list of data values in the matrix, and pass an update for
+     * matrix vocab element deletion message to any column predicate or
      * predicate data values.
      *                                          JRM -- 8/26/08
      *
@@ -1660,7 +1660,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDeletion(Database db,
                                         long mveID)
         throws SystemErrorException
@@ -1674,40 +1674,40 @@ public class Matrix
         DataValue dv = null;
         ColPredDataValue cpdv = null;
         PredDataValue pdv = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         numArgs = this.argList.size();
 
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-            
+
         i = 0;
-        
+
         while ( i < numArgs )
         {
             dv = this.getArg(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "arg " + i + 
+                throw new SystemErrorException(mName + "arg " + i +
                                                " is null?!?!");
             }
-            
+
             if ( dv instanceof ColPredDataValue )
             {
                 cpdv = (ColPredDataValue)dv;
-                
+
                 if ( cpdv.getItsValueMveID() == mveID )
                 {
                     if ( cpdv.getItsFargType() == FormalArgument.fArgType.UNTYPED )
@@ -1718,7 +1718,7 @@ public class Matrix
 
                             if ( dbe == null )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "this.mveID has no referent");
                             }
 
@@ -1735,7 +1735,7 @@ public class Matrix
 
                         if ( fa == null )
                         {
-                            throw new SystemErrorException(mName + "no " + i + 
+                            throw new SystemErrorException(mName + "no " + i +
                                     "th formal argument?!?!");
                         }
 
@@ -1743,14 +1743,14 @@ public class Matrix
 
                         this.replaceArg(i, dv);
                     }
-                    else if ( dv.getItsFargType() == 
+                    else if ( dv.getItsFargType() ==
                               FormalArgument.fArgType.COL_PREDICATE )
                     {
                         ((ColPredDataValue)dv).updateForMVEDeletion(db, mveID);
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + "arg " + i + 
+                        throw new SystemErrorException(mName + "arg " + i +
                                                        " has unexpected fArgType.");
                     }
                 }
@@ -1766,17 +1766,17 @@ public class Matrix
 
             i++;
         }
-                
+
         return;
-        
+
     } /* Matrix::updateForMVEDeletion() */
 
-    
+
     /**
      * updateForPVEDefChange()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
-     * predicate vocab element definition change message to any predicate 
+     * Scan the list of data values in the matrix, and pass an update for
+     * predicate vocab element definition change message to any predicate
      * data values.
      *                                          JRM -- 3/23/08
      *
@@ -1784,7 +1784,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDefChange(
                                  Database db,
                                  long pveID,
@@ -1808,25 +1808,25 @@ public class Matrix
     {
         final String mName = "Matrix::updateForPVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "pveID doesn't refer to a pve.");
         }
-        
+
         for ( DataValue dv : this.argList )
         {
             if ( dv instanceof PredDataValue )
@@ -1851,17 +1851,17 @@ public class Matrix
                                                           newFargList);
             }
         }
-        
+
         return;
-        
+
     } /* Matrix::updateForPVEDefChange() */
-    
-    
+
+
     /**
      * updateForPVEDeletion()
      *
-     * Scan the list of data values in the matrix, and pass an update for 
-     * predicate vocab element definition change message to any predicate 
+     * Scan the list of data values in the matrix, and pass an update for
+     * predicate vocab element definition change message to any predicate
      * data values.
      *                                          JRM -- 3/23/08
      *
@@ -1869,7 +1869,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDeletion(Database db,
                                         long pveID)
         throws SystemErrorException
@@ -1882,40 +1882,40 @@ public class Matrix
         FormalArgument fa = null;
         DataValue dv = null;
         PredDataValue pdv = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         numArgs = this.argList.size();
 
         if ( numArgs <= 0 )
         {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
-            
+
         i = 0;
-        
+
         while ( i < numArgs )
         {
             dv = this.getArg(i);
-            
+
             if ( dv == null )
             {
-                throw new SystemErrorException(mName + "arg " + i + 
+                throw new SystemErrorException(mName + "arg " + i +
                                                " is null?!?!");
             }
-            
+
             if ( dv instanceof PredDataValue )
             {
                 pdv = (PredDataValue)dv;
-                
+
                 if ( pdv.getItsValuePveID() == pveID )
                 {
                     if ( dv.getItsFargType() == FormalArgument.fArgType.UNTYPED )
@@ -1926,7 +1926,7 @@ public class Matrix
 
                             if ( dbe == null )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "this.mveID has no referent");
                             }
 
@@ -1943,7 +1943,7 @@ public class Matrix
 
                         if ( fa == null )
                         {
-                            throw new SystemErrorException(mName + "no " + i + 
+                            throw new SystemErrorException(mName + "no " + i +
                                     "th formal argument?!?!");
                         }
 
@@ -1957,7 +1957,7 @@ public class Matrix
                     }
                     else
                     {
-                        throw new SystemErrorException(mName + "arg " + i + 
+                        throw new SystemErrorException(mName + "arg " + i +
                                                        " has unexpected fArgType.");
                     }
                 }
@@ -1969,35 +1969,35 @@ public class Matrix
 
             i++;
         }
-                
+
         return;
-        
+
     } /* Matrix::updateForPVEDeletion() */
-    
-    
+
+
     /**
      * updateIndexForReplacementVal()
      *
-     * When the old incarnation of the canonnical version of a DataCell is 
+     * When the old incarnation of the canonnical version of a DataCell is
      * replaced with the new, we must update the index so that DataValues and
      * predicates that don't appear in the new incarnation are removed from
-     * the index, DataValues and Predicates that are introduced in the 
-     * new incarnation are inserted in the index, and the index is updated 
+     * the index, DataValues and Predicates that are introduced in the
+     * new incarnation are inserted in the index, and the index is updated
      * to point to the new versions of DataValues and Predicates that appear
      * in both.
      *
      * If there is no structural change in the underlying mve's and pve's,
-     * this task relatively straight forward, as continuing objects will 
-     * reside in the same location in the old and new argument lists, and 
-     * will share IDs.  New items will reside in the new argument list, and 
+     * this task relatively straight forward, as continuing objects will
+     * reside in the same location in the old and new argument lists, and
+     * will share IDs.  New items will reside in the new argument list, and
      * have invalid IDs, and items that will cease to exist will reside in the
-     * old argument list, and not have a new version with the same ID in the 
+     * old argument list, and not have a new version with the same ID in the
      * same location in the new argument list.
      *
-     * If there is structural change, things get much more complicated -- 
+     * If there is structural change, things get much more complicated --
      * however we limit the complexity by allowing at most one mve or pve
-     * to be modified or deleted in any one cycle.  Thus we are given that 
-     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * to be modified or deleted in any one cycle.  Thus we are given that
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and
      * cascadePveDel parameters will be true.
      *
      *
@@ -2006,25 +2006,25 @@ public class Matrix
      * If cascadeMveMod is true, then a mve has been modified, and the ID of
      * the modified mve is in cascadeMveID.
      *
-     * If cascadeMveID == this.mveID, then the definition of the mve that 
-     * defines the structure of this instance of Matrix has changed.  
-     * 
-     * Thus it is possible that formal arguments have been deleted and/or 
+     * If cascadeMveID == this.mveID, then the definition of the mve that
+     * defines the structure of this instance of Matrix has changed.
+     *
+     * Thus it is possible that formal arguments have been deleted and/or
      * re-arranged.  Thus instead of looking just in the corresponding location
      * in the old argument list for the old version of an argument in the new
      * list, we must scan the entire old argument list for the old version.
-     * Similarly for each item in the old argument list, we must scan the 
-     * new argument list to verify that there is no new version, and the 
-     * old argument (and all its descendants -- if any) must be removed from 
+     * Similarly for each item in the old argument list, we must scan the
+     * new argument list to verify that there is no new version, and the
+     * old argument (and all its descendants -- if any) must be removed from
      * the index.
      *
-     * If cascadeMveID != this.mveID, then we can proceed as per the no 
+     * If cascadeMveID != this.mveID, then we can proceed as per the no
      * structural change case -- for this matrix at least.
      *
      *
      * 2) cascadeMveDel == true
      *
-     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of
      * the deleted mve is in cascadeMveID.
      *
      * In this case, verify that this.mveID != cascadeMveID, and then proceed
@@ -2033,7 +2033,7 @@ public class Matrix
      *
      * 3) cascadePveMod == true
      *
-     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * If cascadePveMod is true, then a pve has been modified, and the ID of
      * the modified pve is in cascadeMveID.
      *
      * Proceed as per the no structural change case.
@@ -2041,7 +2041,7 @@ public class Matrix
      *
      * 4) cascadePveDel == true
      *
-     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * If cascadePveDel is true, then a pve has been deleted, and teh ID of
      * the deleted pve is in cascadePveID.
      *
      * Proceed as per the no structural change case.
@@ -2052,7 +2052,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     protected void updateIndexForReplacementVal(Matrix oldMatrix,
                                                 long DCID,
                                                 boolean cascadeMveMod,
@@ -2064,7 +2064,7 @@ public class Matrix
         throws SystemErrorException
     {
         final String mName = "Matrix::updateIndexForReplacementVal(): ";
-        
+
         int i = 0;
         DBElement dbe = null;
         DataCell dc = null;
@@ -2097,16 +2097,16 @@ public class Matrix
         TimeStampDataValue      old_tsdv;
         QuoteStringDataValue    old_qsdv;
         TextStringDataValue     old_tdv;
-        
+
         // validate the oldMatrix parameter
-        
+
         if ( oldMatrix == null )
         {
             throw new SystemErrorException(mName + "oldMatrix == null");
         }
         else if ( oldMatrix.mveID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldMatrix.mveID == INVALID_ID");
         }
         else if ( oldMatrix.argList == null )
@@ -2115,17 +2115,17 @@ public class Matrix
         }
         else if ( oldMatrix.getNumArgs() <= 0 )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldMatrix.getNumArgs() <= 0");
         }
-        
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
         else if ( ( cascadeMveDel ) && ( this.mveID == cascadeMveID ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "cascadeMveDel && (this.mveID == cascadeMveID)");
         }
         else if ( argList == null )
@@ -2137,72 +2137,72 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "this.getNumArgs() <= 0");
         }
-        
+
         if ( this.mveID != oldMatrix.mveID )
         {
             throw new SystemErrorException(mName + "mveID mismatch");
         }
-        else if ( ( ! cascadeMveMod ) && 
+        else if ( ( ! cascadeMveMod ) &&
                   ( this.getNumArgs() != oldMatrix.getNumArgs() ) )
         {
             throw new SystemErrorException(mName + "num args mismatch");
         }
 
         mve = this.lookupMatrixVE(this.mveID);
-        
+
         if ( mve.getDB() != this.getDB() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mve.getDB() != this.getDB()");
         }
         else if ( mve.getDB() != oldMatrix.getDB() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "mve.getDB() != oldMatrix.getDB()");
         }
-        
+
         if ( mve.getNumFormalArgs() != this.getNumArgs() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getNumFormalArgs() != this.getNumArgs()");
         }
-        
+
         if ( mve.getVarLen() != this.getVarLen() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getVarLen() != this.getValLen()");
         }
-        
+
         // Validate the DCID parameter
-        
+
         if ( DCID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "DCID invalid?!?");
         }
-        
+
         dbe = this.db.idx.getElement(DCID);
-        
+
         if ( ! ( dbe instanceof DataCell ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "ID doesn't refer to a DataCell");
         }
-        
+
         dc = (DataCell)dbe;
-        
+
         if ( dc.getItsMveID() != this.mveID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "mveID mismatch with DataCell");
         }
-        
+
         // Now scan the argument list
         if ( ( cascadeMveMod ) && ( cascadeMveID == this.mveID ) )
         {
             assert( ! cascadeMveDel );
             assert( ! cascadePveDel );
             assert( ! cascadePveMod );
-            
+
             // The mve whose definition underlies the old and new incarnations
             // of the data cell has changed -- thus it is possible that formal
             // arguments have shifted location, been removed, or added.  We
@@ -2212,37 +2212,37 @@ public class Matrix
             //
             // 1) If the formal argument associated with an argument has been
             //    removed, then the new version of the data cell will contain
-            //    no argument with the same ID as that associated with the 
+            //    no argument with the same ID as that associated with the
             //    formal argument that has been removed.
             //
-            // 2) If a formal argument has been added, then the argument 
+            // 2) If a formal argument has been added, then the argument
             //    associated with the formal argument in the new data cell
             //    will have the invalid id.
             //
-            // With these two assurances in hand, we can process the two 
+            // With these two assurances in hand, we can process the two
             // argument lists as follows once the sanity checks pass:
             //
             // First, scan the old list for IDs that don't exist in the new
             // list.  Delete the associated entries from the index.
             //
-            // Second scan the new list.  If an entry has invalid ID, just 
+            // Second scan the new list.  If an entry has invalid ID, just
             // insert it in the index.  If it has valid id, use it to replace
             // the entry in the old list with the same ID.  If no such old
             // argument exists, scream and die.
-            
+
             // first remove unmatched old arguments from the index...
             i = 0;
             while ( i < oldMatrix.getNumArgs() )
             {
                 int j = 0;
                 boolean foundMatch = false;
-                
+
                 oldArg = oldMatrix.argList.get(i);
-                
+
                 while ( j < this.getNumArgs() )
                 {
                     newArg = this.argList.get(j);
-                    
+
                     if ( newArg.getID() == oldArg.getID() )
                     {
                         if ( foundMatch )
@@ -2257,59 +2257,59 @@ public class Matrix
                     }
                     j++;
                 }
-                
+
                 if ( ! foundMatch )
                 {
                     oldArg.removeFromIndex(DCID);
                 }
-                
+
                 i++;
             }
-            
+
             i = 0;
             while ( i < this.getNumArgs() )
             {
-                // get the i-th formal argument.  This is the mve's actual 
+                // get the i-th formal argument.  This is the mve's actual
                 // argument,  so be careful not to modify it in any way.
                 fa = mve.getFormalArg(i);
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( ( fa instanceof QuoteStringFormalArg ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.MATRIX) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                         "non-matrix mve contains a quote string formal arg?!?!");
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( i != 0 ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.TEXT ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                         "non-text mve contains a text string formal arg?!?!");
                 }
 
-                // get the i'th argument from the new argument list, and 
+                // get the i'th argument from the new argument list, and
                 // the matching argument (if any) from the old argument list.
-                // Again, these are the actual arguments -- must be 
+                // Again, these are the actual arguments -- must be
                 // careful not to modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = null;
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
-                    
+
                 if ( newArg.getID() != DBIndex.INVALID_ID )
                 {
-                    // the old argument list must contain an argument 
+                    // the old argument list must contain an argument
                     // with the same ID.  Scan the list to find it.
                     int j = 0;
 
@@ -2320,7 +2320,7 @@ public class Matrix
 
                         if ( oldArg.getID() == DBIndex.INVALID_ID )
                         {
-                            throw new SystemErrorException(mName + i + 
+                            throw new SystemErrorException(mName + i +
                                     "th old argument not in index?!?!");
                         }
 
@@ -2328,7 +2328,7 @@ public class Matrix
                         {
                             oldArg = null;
                         }
-                        
+
                         j++;
                     }
 
@@ -2342,23 +2342,23 @@ public class Matrix
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
-                                
+
                 switch (fa.getFargType())
                 {
                     case COL_PREDICATE:
@@ -2366,7 +2366,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Col Predicate(s) expected.");
                         }
 
@@ -2383,7 +2383,7 @@ public class Matrix
                         }
 
                         if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
+                             ( new_cpdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_cpdv.getItsValue().validateColumnPredicate(true);
@@ -2412,7 +2412,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof FloatDataValue ) ) ) )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "Type mismatch: float(s) expected.");
                         }
 
@@ -2421,18 +2421,18 @@ public class Matrix
 
                         if ( new_fdv.getSubRange() != ffa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_fdv.getSubRange() != ffa.getSubRange().");
                         }
 
                         if ( new_fdv.getSubRange() )
                         {
-                            if ( ( ffa.getMinVal() > 
+                            if ( ( ffa.getMinVal() >
                                     new_fdv.getItsValue() ) ||
-                                 ( ffa.getMaxVal() < 
+                                 ( ffa.getMaxVal() <
                                     new_fdv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_fdv.getItsValue() out of range.");
                             }
                         }
@@ -2443,7 +2443,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof IntDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: integer(s) expected.");
                         }
 
@@ -2452,18 +2452,18 @@ public class Matrix
 
                         if ( new_idv.getSubRange() != ifa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_idv.getSubRange() != ifa.getSubRange().");
                         }
 
                         if ( new_idv.getSubRange() )
                         {
-                            if ( ( ifa.getMinVal() > 
+                            if ( ( ifa.getMinVal() >
                                     new_idv.getItsValue() ) ||
-                                 ( ifa.getMaxVal() < 
+                                 ( ifa.getMaxVal() <
                                     new_idv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_idv.getItsValue() out of range.");
                             }
                         }
@@ -2472,11 +2472,11 @@ public class Matrix
                     case NOMINAL:
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+                               ( ! ( oldArg instanceof NominalDataValue ) )
                              )
                            )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: nominal(s) expected.");
                         }
 
@@ -2485,16 +2485,16 @@ public class Matrix
 
                         if ( new_ndv.getSubRange() != nfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_ndv.getSubRange() != nfa.getSubRange().");
                         }
 
-                        if ( ( new_ndv.getSubRange() ) && 
+                        if ( ( new_ndv.getSubRange() ) &&
                              ( new_ndv.getItsValue() != null ) )
                         {
                             if ( ! nfa.approved(new_ndv.getItsValue()) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_ndv.getItsValue() out of range.");
                             }
                         }
@@ -2505,7 +2505,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof PredDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Predicate(s) expected.");
                         }
 
@@ -2523,22 +2523,22 @@ public class Matrix
 
                         if ( new_pdv.getSubRange() != pfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_pdv.getSubRange() != pfa.getSubRange().");
                         }
 
-                        if ( ( new_pdv.getItsValue().getPveID() != 
+                        if ( ( new_pdv.getItsValue().getPveID() !=
                                 DBIndex.INVALID_ID ) &&
                              ( new_pdv.getSubRange() ) &&
                              ( ! pfa.approved(new_pdv.getItsValue().
                                         getPveID()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "new_pdv.getItsValue() out of range.");
                         }
 
                         if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
+                             ( new_pdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_pdv.getItsValue().validatePredicate(true);
@@ -2563,13 +2563,13 @@ public class Matrix
                         break;
 
                     case TIME_STAMP:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     TimeStampDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       TimeStampDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "Type mismatch: time stamp(s) expected.");
                         }
 
@@ -2578,7 +2578,7 @@ public class Matrix
 
                         if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                            "new_tsdv.getSubRange() != tsfa.getSubRange().");
                         }
 
@@ -2589,32 +2589,32 @@ public class Matrix
                                  ( tsfa.getMaxVal().
                                     lt(new_tsdv.getItsValue()) ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_tsdv.getItsValue() out of range.");
                             }
                         }
                         break;
 
                     case QUOTE_STRING:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     QuoteStringDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       QuoteStringDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: quote string(s) expected.");
                         }
                         break;
 
                     case TEXT:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     TextStringDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       TextStringDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: text string(s) expected.");
                         }
                         break;
@@ -2628,35 +2628,35 @@ public class Matrix
                                 "Type mismatch: Text String(s) can't be " +
                                 "substituted for untyped arguments.");
                         }
-                        else if ( ! ( ( newArg instanceof 
+                        else if ( ! ( ( newArg instanceof
                                         ColPredDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         FloatDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         IntDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         NominalDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         PredDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         TimeStampDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         QuoteStringDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         UndefinedDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Unknown subtype of DataValue");
                         }
 
-                        if ( ( ( oldArg == null ) 
+                        if ( ( ( oldArg == null )
                                ||
-                               ( newArg.getClass() != oldArg.getClass() ) 
+                               ( newArg.getClass() != oldArg.getClass() )
                              )
                              &&
                              ( newArg.getID() != DBIndex.INVALID_ID ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "dv type change and id set(2)");
                         }
 
@@ -2673,12 +2673,12 @@ public class Matrix
 
                                 new_cpdv.getItsValue().
                                         validateReplacementColPred(
-                                            old_cpdv.getItsValueBlind(), 
+                                            old_cpdv.getItsValueBlind(),
                                             cascadeMveMod,
                                             cascadeMveDel,
                                             cascadeMveID,
                                             cascadePveMod,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
                             }
                             else
@@ -2698,12 +2698,12 @@ public class Matrix
 
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(), 
+                                            old_pdv.getItsValueBlind(),
                                             cascadeMveMod,
                                             cascadeMveDel,
                                             cascadeMveID,
                                             cascadePveMod,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
                             }
                             else
@@ -2717,36 +2717,36 @@ public class Matrix
                     case UNDEFINED:
                         throw new SystemErrorException(mName +
                                 "formal arg type undefined???");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
+                        /* break statement commented out to keep the
+                         * compiler happy
                          */
                         // break;
 
                     default:
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
 
                                 "Unknown Formal Arg Type");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
+                        /* break statement commented out to keep the
+                         * compiler happy
                          */
                         // break;
                 }
-                
+
                 // Sanity checks pass.  If oldArg is defined, the IDs must
                 // match and we replace the old version with the new in the
-                // index.  Otherwise, just insert the new argument in the 
+                // index.  Otherwise, just insert the new argument in the
                 // index.
                 if ( oldArg != null )
                 {
                     assert( newArg.getID() == oldArg.getID() );
-                    
-                    newArg.replaceInIndex(oldArg, 
-                                          DCID, 
+
+                    newArg.replaceInIndex(oldArg,
+                                          DCID,
                                           cascadeMveMod,
-                                          cascadeMveDel, 
+                                          cascadeMveDel,
                                           cascadeMveID,
-                                          cascadePveMod, 
-                                          cascadePveDel, 
+                                          cascadePveMod,
+                                          cascadePveDel,
                                           cascadePveID);
                 }
                 else
@@ -2765,63 +2765,63 @@ public class Matrix
             while ( i < this.getNumArgs() )
             {
 
-                // get the i-th formal argument.  This is the mve's actual 
+                // get the i-th formal argument.  This is the mve's actual
                 // argument, so be careful not to modify it in any way.
                 fa = mve.getFormalArg(i);
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.TEXT ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "non-text mve contains a text formal arg?!?!");
                 }
 
-                // get the i'th arguments from the old and new argument lists.  
-                // Again, these are the actual arguments -- must be careful not 
+                // get the i'th arguments from the old and new argument lists.
+                // Again, these are the actual arguments -- must be careful not
                 // to modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = oldMatrix.argList.get(i);
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
 
                 if ( oldArg == null )
                 {
-                    throw new SystemErrorException(mName + "no old" + i + 
+                    throw new SystemErrorException(mName + "no old" + i +
                             "th argument?!?!");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( fa.getID() != oldArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( oldArg.getID() == DBIndex.INVALID_ID )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th old argument not in index?!?!");
                 }
 
                 if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
                      ( newArg.getID() != oldArg.getID() ) )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th argument id mismatch");
                 }
 
@@ -2831,7 +2831,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
                              ( ! ( oldArg instanceof ColPredDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Predicate expected.");
                         }
 
@@ -2840,12 +2840,12 @@ public class Matrix
                         old_cpdv = (ColPredDataValue)oldArg;
 
                         if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
+                             ( new_cpdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_cpdv.getItsValue().validateColumnPredicate(true);
                         }
-                        else if ( ( ! cascadeMveMod ) && 
+                        else if ( ( ! cascadeMveMod ) &&
                                   ( ! cascadeMveDel ) &&
                                   ( ! cascadePveMod ) &&
                                   ( ! cascadePveDel ) )
@@ -2878,7 +2878,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                              ( ! ( oldArg instanceof FloatDataValue ) ) )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "Type mismatch: float expected.");
                         }
 
@@ -2888,7 +2888,7 @@ public class Matrix
 
                         if ( new_fdv.getSubRange() != ffa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                  "new_fdv.getSubRange() != ffa.getSubRange().");
                         }
 
@@ -2897,7 +2897,7 @@ public class Matrix
                             if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
                                  ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_fdv.getItsValue() out of range.");
                             }
                         }
@@ -2907,7 +2907,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                              ( ! ( oldArg instanceof IntDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: integer expected.");
                         }
 
@@ -2917,7 +2917,7 @@ public class Matrix
 
                         if ( new_idv.getSubRange() != ifa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                 "new_idv.getSubRange() != ifa.getSubRange().");
                         }
 
@@ -2926,7 +2926,7 @@ public class Matrix
                             if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
                                  ( ifa.getMaxVal() < new_idv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_idv.getItsValue() out of range.");
                             }
                         }
@@ -2936,7 +2936,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ! ( oldArg instanceof NominalDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: nominal expected.");
                         }
 
@@ -2946,16 +2946,16 @@ public class Matrix
 
                         if ( new_ndv.getSubRange() != nfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                 "new_ndv.getSubRange() != nfa.getSubRange().");
                         }
 
-                        if ( ( new_ndv.getSubRange() ) && 
+                        if ( ( new_ndv.getSubRange() ) &&
                              ( new_ndv.getItsValue() != null ) )
                         {
                             if ( ! nfa.approved(new_ndv.getItsValue()) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_ndv.getItsValue() out of range.");
                             }
                         }
@@ -2965,7 +2965,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                              ( ! ( oldArg instanceof PredDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Predicate expected.");
                         }
 
@@ -2975,27 +2975,27 @@ public class Matrix
 
                         if ( new_pdv.getSubRange() != pfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                 "new_pdv.getSubRange() != pfa.getSubRange().");
                         }
 
-                        if ( ( new_pdv.getItsValue().getPveID() != 
+                        if ( ( new_pdv.getItsValue().getPveID() !=
                                 DBIndex.INVALID_ID ) &&
                              ( new_pdv.getSubRange() ) &&
                              ( ! pfa.approved(
                                      new_pdv.getItsValue().getPveID()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "new_pdv.getItsValue() out of range.");
                         }
 
                         if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
+                             ( new_pdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_pdv.getItsValue().validatePredicate(true);
                         }
-                        else if ( ( ! cascadeMveMod ) && 
+                        else if ( ( ! cascadeMveMod ) &&
                                   ( ! cascadeMveDel ) &&
                                   ( ! cascadePveMod ) &&
                                   ( ! cascadePveDel ) )
@@ -3028,7 +3028,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
                              ( ! ( oldArg instanceof TimeStampDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: time stamp expected.");
                         }
 
@@ -3038,18 +3038,18 @@ public class Matrix
 
                         if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                "new_tsdv.getSubRange() != tsfa.getSubRange().");
                         }
 
                         if ( new_tsdv.getSubRange() )
                         {
-                            if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) 
+                            if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) )
                                  ||
-                                 ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) 
+                                 ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) )
                                )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_tsdv.getItsValue() out of range.");
                             }
                         }
@@ -3059,7 +3059,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
                              ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: quote string expected.");
                         }
                         break;
@@ -3068,7 +3068,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
                              ( ! ( oldArg instanceof TextStringDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: text string expected.");
                         }
                         break;
@@ -3081,35 +3081,35 @@ public class Matrix
                                     "Type mismatch: Text String can't be " +
                                     "substituted for untyped arguments.");
                         }
-                        else if ( ! ( ( newArg instanceof ColPredDataValue ) 
+                        else if ( ! ( ( newArg instanceof ColPredDataValue )
                                       ||
-                                      ( newArg instanceof FloatDataValue ) 
+                                      ( newArg instanceof FloatDataValue )
                                       ||
-                                      ( newArg instanceof IntDataValue ) 
+                                      ( newArg instanceof IntDataValue )
                                       ||
-                                      ( newArg instanceof NominalDataValue ) 
+                                      ( newArg instanceof NominalDataValue )
                                       ||
-                                      ( newArg instanceof PredDataValue ) 
+                                      ( newArg instanceof PredDataValue )
                                       ||
-                                      ( newArg instanceof TimeStampDataValue ) 
+                                      ( newArg instanceof TimeStampDataValue )
                                       ||
-                                      ( newArg instanceof QuoteStringDataValue ) 
+                                      ( newArg instanceof QuoteStringDataValue )
                                       ||
-                                      ( newArg instanceof UndefinedDataValue ) 
-                                    ) 
+                                      ( newArg instanceof UndefinedDataValue )
+                                    )
                                 )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Unknown subtype of DataValue");
                         }
 
                         if ( ( newArg.getClass() != oldArg.getClass() ) &&
                              ( newArg.getID() != DBIndex.INVALID_ID ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "dv type change and id set");
                         }
-                        
+
                         if ( newArg instanceof ColPredDataValue )
                         {
                             new_cpdv = (ColPredDataValue)newArg;
@@ -3123,24 +3123,24 @@ public class Matrix
                                 {
                                     new_cpdv.getItsValue().
                                             validateReplacementColPred(
-                                                old_cpdv.getItsValueBlind(), 
+                                                old_cpdv.getItsValueBlind(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                                 else
                                 {
                                     new_cpdv.getItsValue().
                                             validateReplacementColPred(
-                                                old_cpdv.getItsValue(), 
+                                                old_cpdv.getItsValue(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                             }
@@ -3163,24 +3163,24 @@ public class Matrix
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(), 
+                                                old_pdv.getItsValueBlind(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                                 else
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
-                                                old_pdv.getItsValue(), 
+                                                old_pdv.getItsValue(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                             }
@@ -3195,32 +3195,32 @@ public class Matrix
                     case UNDEFINED:
                         throw new SystemErrorException(mName +
                                 "formal arg type undefined???");
-                        // break statement commented out to keep the compiler 
-                        // happy 
+                        // break statement commented out to keep the compiler
+                        // happy
                         // break;
 
                     default:
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Unknown Formal Arg Type");
-                        // break statement commented out to keep the compiler 
+                        // break statement commented out to keep the compiler
                         // happy
                         // break;
                 }
 
-                // Sanity checks pass.  If the ID's of the old and new versions 
-                // of the argument match, replace the old incarnation of the 
+                // Sanity checks pass.  If the ID's of the old and new versions
+                // of the argument match, replace the old incarnation of the
                 // formal argument with the new in the index.
                 //
                 // Otherwise, remove the old from the index, and insert the new.
                 if ( newArg.getID() == oldArg.getID() )
                 {
-                    newArg.replaceInIndex(oldArg, 
-                                          DCID, 
+                    newArg.replaceInIndex(oldArg,
+                                          DCID,
                                           cascadeMveMod,
-                                          cascadeMveDel, 
+                                          cascadeMveDel,
                                           cascadeMveID,
-                                          cascadePveMod, 
-                                          cascadePveDel, 
+                                          cascadePveMod,
+                                          cascadePveDel,
                                           cascadePveID);
                 }
                 else /* new_fdv.getID() == DBIndex.INVALID_ID */
@@ -3233,18 +3233,18 @@ public class Matrix
 
             } /* while */
         }
-        
+
         return;
-        
+
     } /* Matrix::updateIndexForReplacementVal() */
-    
-    
+
+
     /**
      * validateMatrix()
      *
-     * Verify that the arguments of the matrix are of type and value 
-     * consistant with the target MatrixVocabElement.  If specified by the 
-     * idMustBeInvalid parameter, verify that the ids associated with all 
+     * Verify that the arguments of the matrix are of type and value
+     * consistant with the target MatrixVocabElement.  If specified by the
+     * idMustBeInvalid parameter, verify that the ids associated with all
      * the DataValues and Predicates in the matrix are invalid.  This is purely
      * a sanity checking routine.  The test should always pass.
      *
@@ -3254,7 +3254,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public void validateMatrix(boolean idMustBeInvalid)
         throws SystemErrorException
     {
@@ -3275,7 +3275,7 @@ public class Matrix
         NominalDataValue ndv;
         PredDataValue pdv;
         TimeStampDataValue tsdv;
-        
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
@@ -3291,68 +3291,68 @@ public class Matrix
         }
 
         mve = this.lookupMatrixVE(this.mveID);
-        
+
         if ( mve.getDB() != this.getDB() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mve.getDB() != this.getDB()");
         }
-        
+
         if ( mve.getNumFormalArgs() != this.getNumArgs() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getNumFormalArgs() != this.getNumArgs()");
         }
-        
+
         if ( mve.getVarLen() != this.getVarLen() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getVarLen() != this.getValLen()");
         }
-        
-        
+
+
         // Now scan the argument list
         while ( i < this.getNumArgs() )
         {
-        
+
             // get the i-th formal argument.  This is the mve's actual argument,
             // so be careful not to modify it in any way.
             fa = mve.getFormalArg(i);
-             
+
             if ( fa == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th formal argument?!?!");
             }
             else if ( ( fa instanceof TextStringFormalArg ) &&
-                      ( mve.getType() != 
+                      ( mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "non-text mve contains a text formal arg?!?!");
             }
-               
-            // get the i'th argument from the argument list.  Again, this 
-            // is the actual argument -- must be careful not to modify it 
+
+            // get the i'th argument from the argument list.  Again, this
+            // is the actual argument -- must be careful not to modify it
             // in any way.
             arg = this.argList.get(i);
 
             if ( arg == null )
             {
-                throw new SystemErrorException(mName + "no " + i + 
+                throw new SystemErrorException(mName + "no " + i +
                         "th argument?!?!");
             }
-            
+
             if ( fa.getID() != arg.getItsFargID() )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                 "fa.getID() != arg.getItsFargID()");
             }
-            
+
             if ( ( idMustBeInvalid ) &&
                  ( arg.getID() != DBIndex.INVALID_ID ) )
             {
-                throw new SystemErrorException(mName + i + 
+                throw new SystemErrorException(mName + i +
                         "th argument not new?!?!");
             }
 
@@ -3364,35 +3364,35 @@ public class Matrix
                         throw new SystemErrorException(mName +
                                 "Type mismatch: col pred expected");
                     }
-                    
+
                     cpfa = (ColPredFormalArg)fa;
                     cpdv = (ColPredDataValue)arg;
 
                     cpdv.getItsValue().validateColumnPredicate(idMustBeInvalid);
                     break;
-                    
+
                 case FLOAT:
                     if ( ! ( arg instanceof FloatDataValue ) )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "Type mismatch: float expected.");
                     }
-                    
+
                     ffa = (FloatFormalArg)fa;
                     fdv = (FloatDataValue)arg;
-                    
+
                     if ( fdv.getSubRange() != ffa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "fdv.getSubRange() != ffa.getSubRange().");
                     }
-                    
+
                     if ( fdv.getSubRange() )
                     {
                         if ( ( ffa.getMinVal() > fdv.getItsValue() ) ||
                              ( ffa.getMaxVal() < fdv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "fdv.getItsValue() out of range.");
                         }
                     }
@@ -3401,25 +3401,25 @@ public class Matrix
                 case INTEGER:
                     if ( ! ( arg instanceof IntDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: integer expected.");
                     }
-                    
+
                     ifa = (IntFormalArg)fa;
                     idv = (IntDataValue)arg;
-                    
+
                     if ( idv.getSubRange() != ifa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "idv.getSubRange() != ifa.getSubRange().");
                     }
-                    
+
                     if ( idv.getSubRange() )
                     {
                         if ( ( ifa.getMinVal() > idv.getItsValue() ) ||
                              ( ifa.getMaxVal() < idv.getItsValue() ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "idv.getItsValue() out of range.");
                         }
                     }
@@ -3428,25 +3428,25 @@ public class Matrix
                 case NOMINAL:
                     if ( ! ( arg instanceof NominalDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: nominal expected.");
                     }
-                    
+
                     nfa = (NominalFormalArg)fa;
                     ndv = (NominalDataValue)arg;
-                    
+
                     if ( ndv.getSubRange() != nfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "ndv.getSubRange() != nfa.getSubRange().");
                     }
-                    
-                    if ( ( ndv.getSubRange() ) && 
+
+                    if ( ( ndv.getSubRange() ) &&
                          ( ndv.getItsValue() != null ) )
                     {
                         if ( ! nfa.approved(ndv.getItsValue()) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "ndv.getItsValue() out of range.");
                         }
                     }
@@ -3455,25 +3455,25 @@ public class Matrix
                 case PREDICATE:
                     if ( ! ( arg instanceof PredDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: Predicate expected.");
                     }
-                    
+
                     pfa = (PredFormalArg)fa;
                     pdv = (PredDataValue)arg;
-                    
+
                     if ( pdv.getSubRange() != pfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "pdv.getSubRange() != pfa.getSubRange().");
                     }
-                    
-                    if ( ( pdv.getItsValue().getPveID() != 
+
+                    if ( ( pdv.getItsValue().getPveID() !=
                             DBIndex.INVALID_ID ) &&
                          ( pdv.getSubRange() ) &&
                          ( ! pfa.approved(pdv.getItsValue().getPveID()) ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "pdv.getItsValue() out of range.");
                     }
 
@@ -3483,25 +3483,25 @@ public class Matrix
                 case TIME_STAMP:
                     if ( ! ( arg instanceof TimeStampDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: time stamp expected.");
                     }
-                    
+
                     tsfa = (TimeStampFormalArg)fa;
                     tsdv = (TimeStampDataValue)arg;
-                    
+
                     if ( tsdv.getSubRange() != tsfa.getSubRange() )
                     {
-                       throw new SystemErrorException(mName + 
+                       throw new SystemErrorException(mName +
                                 "tsdv.getSubRange() != tsfa.getSubRange().");
                     }
-                    
+
                     if ( tsdv.getSubRange() )
                     {
                         if ( ( tsfa.getMinVal().gt(tsdv.getItsValue()) ) ||
                              ( tsfa.getMaxVal().lt(tsdv.getItsValue()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "tsdv.getItsValue() out of range.");
                         }
                     }
@@ -3510,7 +3510,7 @@ public class Matrix
                 case QUOTE_STRING:
                     if ( ! ( arg instanceof QuoteStringDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: quote string expected.");
                     }
                     break;
@@ -3518,7 +3518,7 @@ public class Matrix
                 case TEXT:
                     if ( ! ( arg instanceof TextStringDataValue ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Type mismatch: text string expected.");
                     }
                     break;
@@ -3539,10 +3539,10 @@ public class Matrix
                                   ( arg instanceof QuoteStringDataValue ) ||
                                   ( arg instanceof UndefinedDataValue ) ) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "Unknown subtype of DataValue");
                     }
-                        
+
                     if ( arg instanceof ColPredDataValue )
                     {
                         cpdv = (ColPredDataValue)arg;
@@ -3561,35 +3561,35 @@ public class Matrix
                 case UNDEFINED:
                     throw new SystemErrorException(mName +
                             "formal arg type undefined???");
-                    /* break statement commented out to keep the 
-                     * compiler happy 
+                    /* break statement commented out to keep the
+                     * compiler happy
                      */
                     // break;
 
                 default:
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "Unknown Formal Arg Type");
-                    /* break statement commented out to keep the 
-                     * compiler happy 
+                    /* break statement commented out to keep the
+                     * compiler happy
                      */
                     // break;
             }
-            
+
             i++;
-            
+
         } /* while */
-        
+
         return;
-        
+
     } /* Matrix::validateMatrix() */
-    
-    
+
+
     /**
      * validateNewMatrix()
      *
-     * Verify that the arguments of the matrix are of type and value 
-     * consistant with the target MatrixVocabElement.  Verify that the IDs 
-     * of all the DataValues and Predicates in the matrix are invalid. This 
+     * Verify that the arguments of the matrix are of type and value
+     * consistant with the target MatrixVocabElement.  Verify that the IDs
+     * of all the DataValues and Predicates in the matrix are invalid. This
      * is purely a sanity checking routine.  The test should always pass.
      *
      * Note that this method is run on the initial value of a DataCell.
@@ -3603,48 +3603,48 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public void validateNewMatrix()
         throws SystemErrorException
     {
         this.validateMatrix(true);
-        
+
         return;
-        
+
     } /* Matrix::validateNewMatrix()
-    
-    
+
+
     /**
      * validateReplacementMatrix()
      *
      * Verify that this matrix is a valid replacement for the supplied old
-     * matrix.  This method is called when a new version of a DataCell is 
+     * matrix.  This method is called when a new version of a DataCell is
      * about to replace an old version as the cannonical incarnation of the
-     * DataCell.  This is purely a sanity checking routine.  The test should 
+     * DataCell.  This is purely a sanity checking routine.  The test should
      * always pass.
      *
-     * In all cases, this requires that we verify that the argument list of 
-     * the matrix is congruent with the formal argument list supplied by the 
+     * In all cases, this requires that we verify that the argument list of
+     * the matrix is congruent with the formal argument list supplied by the
      * target mveID.
      *
-     * Further, verify that all arguments either have invalid ID, or have an 
-     * argument of matching type and ID in oldMatrix.  Unless the target mve 
-     * has been modified (i.e. cascadeMveMod == true and cascadeMveID == 
-     * this.mveID), these matching arguments must be in the same location 
+     * Further, verify that all arguments either have invalid ID, or have an
+     * argument of matching type and ID in oldMatrix.  Unless the target mve
+     * has been modified (i.e. cascadeMveMod == true and cascadeMveID ==
+     * this.mveID), these matching arguments must be in the same location
      * in oldMatrix's argument list.
      *
      * If there is no structural change in the underlying mve's and pve's,
-     * this task relatively straight forward, as continuing objects will 
-     * reside in the same location in the old and new argument lists, and 
-     * will share IDs.  New items will reside in the new argument list, and 
+     * this task relatively straight forward, as continuing objects will
+     * reside in the same location in the old and new argument lists, and
+     * will share IDs.  New items will reside in the new argument list, and
      * have invalid IDs, and items that will cease to exist will reside in the
-     * old argument list, and not have a new version with the same ID in the 
+     * old argument list, and not have a new version with the same ID in the
      * same location in the new argument list.
      *
-     * If there is structural change, things get much more complicated -- 
+     * If there is structural change, things get much more complicated --
      * however we limit the complexity by allowing at most one mve or pve
-     * to be modified or deleted in any one cycle.  Thus we are given that 
-     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and 
+     * to be modified or deleted in any one cycle.  Thus we are given that
+     * at most one of the cascadeMveMod, cascadeMveDel, cascadePveMod, and
      * cascadePveDel parameters will be true.
      *
      *
@@ -3653,23 +3653,23 @@ public class Matrix
      * If cascadeMveMod is true, then a mve has been modified, and the ID of
      * the modified mve is in cascadeMveID.
      *
-     * If cascadeMveID == this.mveID, then the definition of the mve that 
-     * defines the structure of this instance of Matrix has changed.  
-     * 
-     * Thus it is possible that formal arguments have been deleted and/or 
+     * If cascadeMveID == this.mveID, then the definition of the mve that
+     * defines the structure of this instance of Matrix has changed.
+     *
+     * Thus it is possible that formal arguments have been deleted and/or
      * re-arranged.  Thus instead of looking just in the corresponding location
      * in the old argument list for the old version of an argument in the new
      * list, we must scan the entire old argument list for the old version.
-     * Similarly for each item in the old argument list, we must scan the 
+     * Similarly for each item in the old argument list, we must scan the
      * new argument list to verify that there is no new version.
      *
-     * If cascadeMveID != this.mveID, then we can proceed as per the no 
+     * If cascadeMveID != this.mveID, then we can proceed as per the no
      * structural change case -- for this matrix at least.
      *
      *
      * 2) cascadeMveDel == true
      *
-     * If cascadeMveDel is true, the a mve has been deleted, and the ID of 
+     * If cascadeMveDel is true, the a mve has been deleted, and the ID of
      * the deleted mve is in cascadeMveID.
      *
      * In this case, verify that this.mveID != cascadeMveID, and then proceed
@@ -3678,7 +3678,7 @@ public class Matrix
      *
      * 3) cascadePveMod == true
      *
-     * If cascadePveMod is true, then a pve has been modified, and the ID of 
+     * If cascadePveMod is true, then a pve has been modified, and the ID of
      * the modified pve is in cascadeMveID.
      *
      * Proceed as per the no structural change case.
@@ -3686,7 +3686,7 @@ public class Matrix
      *
      * 4) cascadePveDel == true
      *
-     * If cascadePveDel is true, then a pve has been deleted, and teh ID of 
+     * If cascadePveDel is true, then a pve has been deleted, and teh ID of
      * the deleted pve is in cascadePveID.
      *
      * Proceed as per the no structural change case.
@@ -3697,7 +3697,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public void validateReplacementMatrix(Matrix oldMatrix,
                                           boolean cascadeMveMod,
                                           boolean cascadeMveDel,
@@ -3738,14 +3738,14 @@ public class Matrix
         TimeStampDataValue      old_tsdv;
         QuoteStringDataValue    old_qsdv;
         TextStringDataValue     old_tdv;
-        
+
         if ( oldMatrix == null )
         {
             throw new SystemErrorException(mName + "oldMatrix == null");
         }
         else if ( oldMatrix.mveID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldMatrix.mveID == INVALID_ID");
         }
         else if ( oldMatrix.argList == null )
@@ -3754,10 +3754,10 @@ public class Matrix
         }
         else if ( oldMatrix.getNumArgs() <= 0 )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "oldMatrix.getNumArgs() <= 0");
         }
-        
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
@@ -3776,49 +3776,49 @@ public class Matrix
         {
             throw new SystemErrorException(mName + "this.getNumArgs() <= 0");
         }
-        
+
         if ( this.mveID != oldMatrix.mveID )
         {
             throw new SystemErrorException(mName + "mveID mismatch");
         }
-        else if ( ( ! cascadeMveMod ) && 
+        else if ( ( ! cascadeMveMod ) &&
                   ( this.getNumArgs() != oldMatrix.getNumArgs() ) )
         {
             throw new SystemErrorException(mName + "num args mismatch");
         }
 
         mve = this.lookupMatrixVE(this.mveID);
-        
+
         if ( mve.getDB() != this.getDB() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "mve.getDB() != this.getDB()");
         }
         else if ( mve.getDB() != oldMatrix.getDB() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "mve.getDB() != oldMatrix.getDB()");
         }
-        
+
         if ( mve.getNumFormalArgs() != this.getNumArgs() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getNumFormalArgs() != this.getNumArgs()");
         }
-        
+
         if ( mve.getVarLen() != this.getVarLen() )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                  "mve.getVarLen() != this.getValLen()");
         }
-        
-        
+
+
         if ( ( cascadeMveMod ) && ( cascadeMveID == this.mveID ) )
         {
             assert( ! cascadeMveDel );
             assert( ! cascadePveMod );
             assert( ! cascadePveDel );
-            
+
             /* The definition of the mve defining both the old and
              * new versions of the data cell has changed.  Thus it is
              * possible that the formal argument list has changed
@@ -3829,51 +3829,51 @@ public class Matrix
              * predicate with a valid id, verify that there is an
              * argument in the old predicate with the same id and type.
              */
-            
+
             i = 0;
             while ( i < this.getNumArgs() )
             {
-                // get the i-th formal argument.  This is the mve's actual 
+                // get the i-th formal argument.  This is the mve's actual
                 // argument,  so be careful not to modify it in any way.
                 fa = mve.getFormalArg(i);
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( ( fa instanceof QuoteStringFormalArg ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.MATRIX) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                         "non-matrix mve contains a quote string formal arg?!?!");
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
                           ( i != 0 ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.TEXT ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                         "non-text mve contains a text string formal arg?!?!");
                 }
 
-                // get the i'th argument from the new argument list, and 
+                // get the i'th argument from the new argument list, and
                 // the matching argument (if any) from the old argument list.
-                // Again, these are the actual arguments -- must be 
+                // Again, these are the actual arguments -- must be
                 // careful not to modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = null;
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
-                    
+
                 if ( newArg.getID() != DBIndex.INVALID_ID )
                 {
-                    // the old argument list must contain an argument 
+                    // the old argument list must contain an argument
                     // with the same ID.  Scan the list to find it.
                     int j = 0;
 
@@ -3884,7 +3884,7 @@ public class Matrix
 
                         if ( oldArg.getID() == DBIndex.INVALID_ID )
                         {
-                            throw new SystemErrorException(mName + i + 
+                            throw new SystemErrorException(mName + i +
                                     "th old argument not in index?!?!");
                         }
 
@@ -3892,7 +3892,7 @@ public class Matrix
                         {
                             oldArg = null;
                         }
-                        
+
                         j++;
                     }
 
@@ -3906,23 +3906,23 @@ public class Matrix
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( ( oldArg != null ) &&
                      ( fa.getID() != oldArg.getItsFargID() ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
-                                
+
                 switch (fa.getFargType())
                 {
                     case COL_PREDICATE:
@@ -3930,7 +3930,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof ColPredDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Col Predicate(s) expected.");
                         }
 
@@ -3947,7 +3947,7 @@ public class Matrix
                         }
 
                         if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
+                             ( new_cpdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_cpdv.getItsValue().validateColumnPredicate(true);
@@ -3976,7 +3976,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof FloatDataValue ) ) ) )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "Type mismatch: float(s) expected.");
                         }
 
@@ -3985,18 +3985,18 @@ public class Matrix
 
                         if ( new_fdv.getSubRange() != ffa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_fdv.getSubRange() != ffa.getSubRange().");
                         }
 
                         if ( new_fdv.getSubRange() )
                         {
-                            if ( ( ffa.getMinVal() > 
+                            if ( ( ffa.getMinVal() >
                                     new_fdv.getItsValue() ) ||
-                                 ( ffa.getMaxVal() < 
+                                 ( ffa.getMaxVal() <
                                     new_fdv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_fdv.getItsValue() out of range.");
                             }
                         }
@@ -4007,7 +4007,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof IntDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: integer(s) expected.");
                         }
 
@@ -4016,18 +4016,18 @@ public class Matrix
 
                         if ( new_idv.getSubRange() != ifa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_idv.getSubRange() != ifa.getSubRange().");
                         }
 
                         if ( new_idv.getSubRange() )
                         {
-                            if ( ( ifa.getMinVal() > 
+                            if ( ( ifa.getMinVal() >
                                     new_idv.getItsValue() ) ||
-                                 ( ifa.getMaxVal() < 
+                                 ( ifa.getMaxVal() <
                                     new_idv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_idv.getItsValue() out of range.");
                             }
                         }
@@ -4036,11 +4036,11 @@ public class Matrix
                     case NOMINAL:
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof NominalDataValue ) ) 
+                               ( ! ( oldArg instanceof NominalDataValue ) )
                              )
                            )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: nominal(s) expected.");
                         }
 
@@ -4049,16 +4049,16 @@ public class Matrix
 
                         if ( new_ndv.getSubRange() != nfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_ndv.getSubRange() != nfa.getSubRange().");
                         }
 
-                        if ( ( new_ndv.getSubRange() ) && 
+                        if ( ( new_ndv.getSubRange() ) &&
                              ( new_ndv.getItsValue() != null ) )
                         {
                             if ( ! nfa.approved(new_ndv.getItsValue()) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                     "new_ndv.getItsValue() out of range.");
                             }
                         }
@@ -4069,7 +4069,7 @@ public class Matrix
                              ( ( oldArg != null ) &&
                                ( ! ( oldArg instanceof PredDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Predicate(s) expected.");
                         }
 
@@ -4087,22 +4087,22 @@ public class Matrix
 
                         if ( new_pdv.getSubRange() != pfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                              "new_pdv.getSubRange() != pfa.getSubRange().");
                         }
 
-                        if ( ( new_pdv.getItsValue().getPveID() != 
+                        if ( ( new_pdv.getItsValue().getPveID() !=
                                 DBIndex.INVALID_ID ) &&
                              ( new_pdv.getSubRange() ) &&
                              ( ! pfa.approved(new_pdv.getItsValue().
                                         getPveID()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "new_pdv.getItsValue() out of range.");
                         }
 
                         if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
+                             ( new_pdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_pdv.getItsValue().validatePredicate(true);
@@ -4127,13 +4127,13 @@ public class Matrix
                         break;
 
                     case TIME_STAMP:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     TimeStampDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       TimeStampDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                 "Type mismatch: time stamp(s) expected.");
                         }
 
@@ -4142,7 +4142,7 @@ public class Matrix
 
                         if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                            "new_tsdv.getSubRange() != tsfa.getSubRange().");
                         }
 
@@ -4153,32 +4153,32 @@ public class Matrix
                                  ( tsfa.getMaxVal().
                                     lt(new_tsdv.getItsValue()) ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_tsdv.getItsValue() out of range.");
                             }
                         }
                         break;
 
                     case QUOTE_STRING:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     QuoteStringDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       QuoteStringDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: quote string(s) expected.");
                         }
                         break;
 
                     case TEXT:
-                        if ( ( ! ( newArg instanceof 
+                        if ( ( ! ( newArg instanceof
                                     TextStringDataValue ) ) ||
                              ( ( oldArg != null ) &&
-                               ( ! ( oldArg instanceof 
+                               ( ! ( oldArg instanceof
                                       TextStringDataValue ) ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: text string(s) expected.");
                         }
                         break;
@@ -4192,38 +4192,38 @@ public class Matrix
                                 "Type mismatch: Text String(s) can't be " +
                                 "substituted for untyped arguments.");
                         }
-                        else if ( ! ( ( newArg instanceof 
+                        else if ( ! ( ( newArg instanceof
                                         ColPredDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         FloatDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         IntDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         NominalDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         PredDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         TimeStampDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         QuoteStringDataValue ) ||
-                                      ( newArg instanceof 
+                                      ( newArg instanceof
                                         UndefinedDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Unknown subtype of DataValue");
                         }
 
-                        if ( ( ( oldArg == null ) 
+                        if ( ( ( oldArg == null )
                                ||
-                               ( newArg.getClass() != oldArg.getClass() ) 
+                               ( newArg.getClass() != oldArg.getClass() )
                              )
                              &&
                              ( newArg.getID() != DBIndex.INVALID_ID ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "dv type change and id set(2)");
                         }
-                        
+
                         if ( newArg instanceof ColPredDataValue )
                         {
                             new_cpdv = (ColPredDataValue)newArg;
@@ -4237,12 +4237,12 @@ public class Matrix
 
                                 new_cpdv.getItsValue().
                                         validateReplacementColPred(
-                                            old_cpdv.getItsValueBlind(), 
+                                            old_cpdv.getItsValueBlind(),
                                             cascadeMveMod,
                                             cascadeMveDel,
                                             cascadeMveID,
                                             cascadePveMod,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
                             }
                             else
@@ -4262,12 +4262,12 @@ public class Matrix
 
                                 new_pdv.getItsValue().
                                         validateReplacementPredicate(
-                                            old_pdv.getItsValueBlind(), 
+                                            old_pdv.getItsValueBlind(),
                                             cascadeMveMod,
                                             cascadeMveDel,
                                             cascadeMveID,
                                             cascadePveMod,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
                             }
                             else
@@ -4281,17 +4281,17 @@ public class Matrix
                     case UNDEFINED:
                         throw new SystemErrorException(mName +
                                 "formal arg type undefined???");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
+                        /* break statement commented out to keep the
+                         * compiler happy
                          */
                         // break;
 
                     default:
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
 
                                 "Unknown Formal Arg Type");
-                        /* break statement commented out to keep the 
-                         * compiler happy 
+                        /* break statement commented out to keep the
+                         * compiler happy
                          */
                         // break;
                 }
@@ -4300,7 +4300,7 @@ public class Matrix
 
             } /* while */
         }
-        else // no structural change case -- for this matrix at least 
+        else // no structural change case -- for this matrix at least
         {
             while ( i < this.getNumArgs() )
             {
@@ -4311,57 +4311,57 @@ public class Matrix
 
                 if ( fa == null )
                 {
-                    throw new SystemErrorException(mName + "no " + i + 
+                    throw new SystemErrorException(mName + "no " + i +
                             "th formal argument?!?!");
                 }
                 else if ( ( fa instanceof TextStringFormalArg ) &&
-                          ( mve.getType() != 
+                          ( mve.getType() !=
                             MatrixVocabElement.MatrixType.TEXT ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "non-text mve contains a text formal arg?!?!");
                 }
 
-                // get the i'th arguments from the old and new argument lists.  
-                // Again, these are the actual arguments -- must be careful not to 
+                // get the i'th arguments from the old and new argument lists.
+                // Again, these are the actual arguments -- must be careful not to
                 // modify them in any way.
                 newArg = this.argList.get(i);
                 oldArg = oldMatrix.argList.get(i);
 
                 if ( newArg == null )
                 {
-                    throw new SystemErrorException(mName + "no new" + i + 
+                    throw new SystemErrorException(mName + "no new" + i +
                             "th argument?!?!");
                 }
 
                 if ( oldArg == null )
                 {
-                    throw new SystemErrorException(mName + "no old" + i + 
+                    throw new SystemErrorException(mName + "no old" + i +
                             "th argument?!?!");
                 }
 
                 if ( fa.getID() != newArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != newArg.getItsFargID()");
                 }
 
                 if ( fa.getID() != oldArg.getItsFargID() )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                     "fa.getID() != oldArg.getItsFargID()");
                 }
 
                 if ( oldArg.getID() == DBIndex.INVALID_ID )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th old argument not in index?!?!");
                 }
 
                 if ( ( newArg.getID() != DBIndex.INVALID_ID ) &&
                      ( newArg.getID() != oldArg.getID() ) )
                 {
-                    throw new SystemErrorException(mName + i + 
+                    throw new SystemErrorException(mName + i +
                             "th argument id mismatch");
                 }
 
@@ -4371,7 +4371,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof ColPredDataValue ) ) ||
                              ( ! ( oldArg instanceof ColPredDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Column Predicate expected.");
                         }
 
@@ -4380,12 +4380,12 @@ public class Matrix
                         old_cpdv = (ColPredDataValue)oldArg;
 
                         if ( ( new_cpdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_cpdv.getItsValue().getID() == 
+                             ( new_cpdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_cpdv.getItsValue().validateColumnPredicate(true);
                         }
-                        else if ( ( ! cascadeMveMod ) && 
+                        else if ( ( ! cascadeMveMod ) &&
                                   ( ! cascadeMveDel ) &&
                                   ( ! cascadePveMod ) &&
                                   ( ! cascadePveDel ) )
@@ -4418,7 +4418,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof FloatDataValue ) ) ||
                              ( ! ( oldArg instanceof FloatDataValue ) ) )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "Type mismatch: float expected.");
                         }
 
@@ -4428,7 +4428,7 @@ public class Matrix
 
                         if ( new_fdv.getSubRange() != ffa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "new_fdv.getSubRange() != ffa.getSubRange().");
                         }
 
@@ -4437,7 +4437,7 @@ public class Matrix
                             if ( ( ffa.getMinVal() > new_fdv.getItsValue() ) ||
                                  ( ffa.getMaxVal() < new_fdv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_fdv.getItsValue() out of range.");
                             }
                         }
@@ -4447,7 +4447,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof IntDataValue ) ) ||
                              ( ! ( oldArg instanceof IntDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: integer expected.");
                         }
 
@@ -4457,7 +4457,7 @@ public class Matrix
 
                         if ( new_idv.getSubRange() != ifa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "new_idv.getSubRange() != ifa.getSubRange().");
                         }
 
@@ -4466,7 +4466,7 @@ public class Matrix
                             if ( ( ifa.getMinVal() > new_idv.getItsValue() ) ||
                                  ( ifa.getMaxVal() < new_idv.getItsValue() ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_idv.getItsValue() out of range.");
                             }
                         }
@@ -4476,7 +4476,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof NominalDataValue ) ) ||
                              ( ! ( oldArg instanceof NominalDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: nominal expected.");
                         }
 
@@ -4486,16 +4486,16 @@ public class Matrix
 
                         if ( new_ndv.getSubRange() != nfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "new_ndv.getSubRange() != nfa.getSubRange().");
                         }
 
-                        if ( ( new_ndv.getSubRange() ) && 
+                        if ( ( new_ndv.getSubRange() ) &&
                              ( new_ndv.getItsValue() != null ) )
                         {
                             if ( ! nfa.approved(new_ndv.getItsValue()) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_ndv.getItsValue() out of range.");
                             }
                         }
@@ -4505,7 +4505,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof PredDataValue ) ) ||
                              ( ! ( oldArg instanceof PredDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: Predicate expected.");
                         }
 
@@ -4515,27 +4515,27 @@ public class Matrix
 
                         if ( new_pdv.getSubRange() != pfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                 "new_pdv.getSubRange() != pfa.getSubRange().");
                         }
 
-                        if ( ( new_pdv.getItsValue().getPveID() != 
+                        if ( ( new_pdv.getItsValue().getPveID() !=
                                 DBIndex.INVALID_ID ) &&
                              ( new_pdv.getSubRange() ) &&
                              ( ! pfa.approved(new_pdv.
                                               getItsValue().getPveID()) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "new_pdv.getItsValue() out of range.");
                         }
 
                         if ( ( new_pdv.getID() == DBIndex.INVALID_ID ) ||
-                             ( new_pdv.getItsValue().getID() == 
+                             ( new_pdv.getItsValue().getID() ==
                                 DBIndex.INVALID_ID ) )
                         {
                             new_pdv.getItsValue().validatePredicate(true);
                         }
-                        else if ( ( ! cascadeMveMod ) && 
+                        else if ( ( ! cascadeMveMod ) &&
                                   ( ! cascadeMveDel ) &&
                                   ( ! cascadePveMod ) &&
                                   ( ! cascadePveDel ) )
@@ -4568,7 +4568,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof TimeStampDataValue ) ) ||
                              ( ! ( oldArg instanceof TimeStampDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: time stamp expected.");
                         }
 
@@ -4578,7 +4578,7 @@ public class Matrix
 
                         if ( new_tsdv.getSubRange() != tsfa.getSubRange() )
                         {
-                           throw new SystemErrorException(mName + 
+                           throw new SystemErrorException(mName +
                                     "new_tsdv.getSubRange() != tsfa.getSubRange().");
                         }
 
@@ -4587,7 +4587,7 @@ public class Matrix
                             if ( ( tsfa.getMinVal().gt(new_tsdv.getItsValue()) ) ||
                                  ( tsfa.getMaxVal().lt(new_tsdv.getItsValue()) ) )
                             {
-                                throw new SystemErrorException(mName + 
+                                throw new SystemErrorException(mName +
                                         "new_tsdv.getItsValue() out of range.");
                             }
                         }
@@ -4597,7 +4597,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof QuoteStringDataValue ) ) ||
                              ( ! ( oldArg instanceof QuoteStringDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: quote string expected.");
                         }
                         break;
@@ -4606,7 +4606,7 @@ public class Matrix
                         if ( ( ! ( newArg instanceof TextStringDataValue ) ) ||
                              ( ! ( oldArg instanceof TextStringDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Type mismatch: text string expected.");
                         }
                         break;
@@ -4628,17 +4628,17 @@ public class Matrix
                                       ( newArg instanceof QuoteStringDataValue ) ||
                                       ( newArg instanceof UndefinedDataValue ) ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "Unknown subtype of DataValue");
                         }
 
                         if ( ( newArg.getClass() != oldArg.getClass() ) &&
                              ( newArg.getID() != DBIndex.INVALID_ID ) )
                         {
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "dv type change and id set");
                         }
-                        
+
                         if ( newArg instanceof ColPredDataValue )
                         {
                             new_cpdv = (ColPredDataValue)newArg;
@@ -4652,24 +4652,24 @@ public class Matrix
                                 {
                                     new_cpdv.getItsValue().
                                             validateReplacementColPred(
-                                                old_cpdv.getItsValueBlind(), 
+                                                old_cpdv.getItsValueBlind(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                                 else
                                 {
                                     new_cpdv.getItsValue().
                                             validateReplacementColPred(
-                                                old_cpdv.getItsValue(), 
+                                                old_cpdv.getItsValue(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                             }
@@ -4692,24 +4692,24 @@ public class Matrix
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
-                                                old_pdv.getItsValueBlind(), 
+                                                old_pdv.getItsValueBlind(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                                 else
                                 {
                                     new_pdv.getItsValue().
                                             validateReplacementPredicate(
-                                                old_pdv.getItsValue(), 
+                                                old_pdv.getItsValue(),
                                                 cascadeMveMod,
                                                 cascadeMveDel,
                                                 cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
                                 }
                             }
@@ -4728,7 +4728,7 @@ public class Matrix
                         // break;
 
                     default:
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                                        "Unknown Formal Arg Type");
                         /* break statement commented out to keep the compiler happy */
                         // break;
@@ -4738,20 +4738,20 @@ public class Matrix
 
             } /* while */
         }
-        
+
         return;
-        
+
     } /* Matrix::validateReplacementMatrix() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Several versions of this class method, all with the objective of 
+     * Several versions of this class method, all with the objective of
      * constructing instances of Matrix.
      *
      * Returns a reference to the newly constructed matrix if successful.
@@ -4763,7 +4763,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0)
@@ -4771,19 +4771,19 @@ public class Matrix
     {
         final String mName = "Matrix::Construct(db, mveID, arg0)";
         Matrix m = null;
-        
+
         m = new Matrix(db, mveID);
-        
+
         if ( arg0 != null )
         {
             m.replaceArg(0, arg0);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4792,19 +4792,19 @@ public class Matrix
     {
         final String mName = "Matrix::Construct(db, mveID, arg0, arg1)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0);
-        
+
         if ( arg1 != null )
         {
             m.replaceArg(1, arg1);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4814,19 +4814,19 @@ public class Matrix
     {
         final String mName = "Matrix::Construct(db, mveID, arg0, arg1, arg2)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1);
-        
+
         if ( arg2 != null )
         {
             m.replaceArg(2, arg2);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4835,22 +4835,22 @@ public class Matrix
                                    DataValue arg3)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1, arg2);
-        
+
         if ( arg3 != null )
         {
             m.replaceArg(3, arg3);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4860,22 +4860,22 @@ public class Matrix
                                    DataValue arg4)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3);
-        
+
         if ( arg4 != null )
         {
             m.replaceArg(4, arg4);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4889,19 +4889,19 @@ public class Matrix
         final String mName = "Matrix::Construct(db, mveID, arg0, arg1, " +
                                                 "arg2, arg3, arg4, arg5)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4);
-        
+
         if ( arg5 != null )
         {
             m.replaceArg(5, arg5);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4916,19 +4916,19 @@ public class Matrix
         final String mName = "Matrix::Construct(db, mveID, arg0, arg1, " +
                                                 "arg2, arg3, arg4, arg5, arg6)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5);
-        
+
         if ( arg6 != null )
         {
             m.replaceArg(6, arg6);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6) */
-    
-    
+
+
     public static Matrix Construct(Database db,
                                    long mveID,
                                    DataValue arg0,
@@ -4944,19 +4944,19 @@ public class Matrix
         final String mName = "Matrix::Construct(db, mveID, arg0, arg1, " +
                                           "arg2, arg3, arg4, arg5, arg6, arg7)";
         Matrix m = null;
-        
+
         m = Matrix.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-        
+
         if ( arg7 != null )
         {
             m.replaceArg(7, arg7);
         }
-        
+
         return m;
-        
+
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) */
-    
-      
+
+
     /**
      * MatriciesAreLogicallyEqual()
      *
@@ -4968,19 +4968,19 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public static boolean MatriciesAreLogicallyEqual(Matrix m0,
                                                      Matrix m1)
         throws SystemErrorException
     {
         final String mName = "Matrix::MatriciesAreLogicallyEqual()";
         boolean matriciesAreEqual = true;
-        
+
         if ( ( m0 == null ) || ( m1 == null ) )
         {
             throw new SystemErrorException(mName + ": m0 or m1 null on entry.");
         }
-        
+
         if ( m0 != m1 )
         {
             if ( ( m0.db != m1.db ) ||
@@ -4989,14 +4989,14 @@ public class Matrix
             {
                 matriciesAreEqual = false;
             }
-            
+
             if ( ( m0.argList == null ) ||
                  ( m1.argList == null ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         ": m0.argList and/or m1.argList is null.");
             }
-            
+
             if ( ( matriciesAreEqual ) &&
                  ( m0.argList != m1.argList ) )
             {
@@ -5007,30 +5007,30 @@ public class Matrix
                 else
                 {
                     int i = 0;
-                    
+
                     while ( ( i < m0.argList.size() ) &&
                             ( matriciesAreEqual ) )
                     {
-                        matriciesAreEqual = 
+                        matriciesAreEqual =
                                 DataValue.DataValuesAreLogicallyEqual
-                                         (m0.argList.get(i), 
+                                         (m0.argList.get(i),
                                           m1.argList.get(i));
-                        
+
                         i++;
                     }
                 }
             }
         }
-            
+
         return matriciesAreEqual;
-        
+
     } /* Matrix::MatriciesAreLogicallyEqual() */
-    
-    
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /*************************************************************************
      *
      *                             Test Spec:
@@ -5040,7 +5040,7 @@ public class Matrix
      *      a) Construct a database and a mve (matrix vocab element)  Insert the
      *         mve into the database, and make note of the IDs assigned to them.
      *
-     *         Construct a matrix instantiating the mve by passing a reference 
+     *         Construct a matrix instantiating the mve by passing a reference
      *         to the database and the id of the mve.  Verify that:
      *
      *              matrix.db matches the suplied value
@@ -5048,9 +5048,9 @@ public class Matrix
      *              matrix.argList reflects the formal argument list of the mve
      *              matrix.varLen matches the varLen field of the mve.
      *
-     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL, 
+     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL,
      *         PREDICATE, TEXT, and MATRIX) and in the case of mve's of type
-     *         MATRIX, with a selection of single entry and a multi-entry 
+     *         MATRIX, with a selection of single entry and a multi-entry
      *         mve's, and with both a fixed length and variable length mve's.
      *
      *      b) Verify that the constructor fails when passed and invalid
@@ -5060,44 +5060,44 @@ public class Matrix
      *
      *      a) Construct a database and a mve (matrix vocab element) and such
      *         pve's (predicate vocab elements) as are necessary.  Insert the
-     *         mve (and pve's if present) int the database, and make note of 
+     *         mve (and pve's if present) int the database, and make note of
      *         the IDs assigned to them.
-     * 
-     *         Construct two argument lists with values and length matching the 
+     *
+     *         Construct two argument lists with values and length matching the
      *         argument list of the mve.  In one arg list, assign fargIDs, in
-     *         the other, leave the fargID set to INVALID_ID.  
+     *         the other, leave the fargID set to INVALID_ID.
      *
      *         Using the above arg lists, construct two marticies, passing the
-     *         db, the ID of the mve, and one of the arg list to the 
+     *         db, the ID of the mve, and one of the arg list to the
      *         constructor.
-     *  
+     *
      *         Verify that:
      *
      *              matrix.db matches the suplied value
      *              matrix.mveID matches the supplied value
-     *              matrix.argList reflects both the formal argument list of 
+     *              matrix.argList reflects both the formal argument list of
      *                  the mve and the supplied argument list.
      *              matrix.varLen matches the varLen field of the mve.
      *
-     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL, 
+     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL,
      *         PREDICATE, TEXT, and MATRIX) and in the case of mve's of type
-     *         MATRIX, with a selection of single entry and a multi-entry 
+     *         MATRIX, with a selection of single entry and a multi-entry
      *         mve's, and with both a fixed length and variable length mve's.
      *
      *      b) Verify that the constructor fails when passed an invalid db,
      *         an invalid mve id, or an invalid argument list.  Note that
      *         we must test argument lists that are null, too short, too long,
-     *         and which contain type and fargID mis-matches.  
-     *              
+     *         and which contain type and fargID mis-matches.
+     *
      * 4) Copy constructor:
      *
      *      a) Construct a database and a mve (matrix vocab element) and such
      *         pve's (predicate vocab elements) as are necessary.  Insert the
-     *         mve (and pve's if present) int the database, and make note of 
+     *         mve (and pve's if present) int the database, and make note of
      *         the IDs assigned to them.
-     * 
-     *         Construct an argument lists with values and length matching the 
-     *         argument list of the mve. 
+     *
+     *         Construct an argument lists with values and length matching the
+     *         argument list of the mve.
      *
      *         Using the above arg lists, construct a martix, passing the
      *         db, the ID of the mve, and the arg list to the constructor.
@@ -5107,13 +5107,13 @@ public class Matrix
      *         Now, using the copy constructor, construct copies of these two
      *         matricies.  Verify that the copies are correct.
      *
-     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL, 
+     *         Do this with mve's of all types (FLOAT, INTEGER, NOMINAL,
      *         PREDICATE, TEXT, and MATRIX) and in the case of mve's of type
-     *         MATRIX, with a selection of single entry and a multi-entry 
+     *         MATRIX, with a selection of single entry and a multi-entry
      *         mve's, and with both a fixed length and variable length mve's.
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
@@ -5123,28 +5123,28 @@ public class Matrix
      *
      *      Do this by creating a database and a selection of predicate vocab
      *      elements.  Then create a selection of predicates, and verify that
-     *      get methods return the expected values.  
+     *      get methods return the expected values.
      *
      *      lookupMatrixVE() is an internal method that has been exercised
      *      already.  Verify that it fails on invalid input.
      *
      * 6) ArgList management:
      *
-     *      Verify that the getArg() and replaceArg() methods perform as 
+     *      Verify that the getArg() and replaceArg() methods perform as
      *      expected.  Verify that replaceArg() fails on all type mismatches.
      *
-     *      Verify that getArg() and replaceArg() methods fail on invalid 
+     *      Verify that getArg() and replaceArg() methods fail on invalid
      *      input.
      *
      * 7) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
-    
+
     /**
      * TestClassMatrix()
      *
@@ -5156,48 +5156,48 @@ public class Matrix
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassMatrix(java.io.PrintStream outStream,
                                           boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class Matrix:\n");
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestArgListManagement(outStream, verbose) )
         {
             failures++;
         }
-        
+
         // TODO:  Add test for validateMatrix
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -5208,25 +5208,25 @@ public class Matrix
         {
             outStream.print("All tests passed for class Matrix.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Matrix::TestClassMatrix() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -5274,28 +5274,28 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -5314,7 +5314,7 @@ public class Matrix
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -5325,7 +5325,7 @@ public class Matrix
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -5333,38 +5333,38 @@ public class Matrix
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( float_mve.getType() != MatrixVocabElement.MatrixType.FLOAT ) ||
              ( float_mve_ID == DBIndex.INVALID_ID ) ||
@@ -5396,52 +5396,52 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -5452,18 +5452,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -5474,18 +5474,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -5496,65 +5496,65 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -5563,7 +5563,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // having set up a selection of test mve's, now try to allocate some
         // matricies.  Use toString and toDBString to verify that they are
         // initialized correctly.
@@ -5571,14 +5571,14 @@ public class Matrix
         {
             String float_matrix_string = "(0.0)";
             String int_matrix_string = "(0)";
-            String matrix_matrix0_string = 
+            String matrix_matrix0_string =
                     "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String matrix_matrix2_string = "(<arg1>)";
             String nominal_matrix_string = "()";
             String pred_matrix_string = "(())";
             String text_matrix_string = "()";
-            String float_matrix_DBstring = 
+            String float_matrix_DBstring =
                     "(Matrix (mveID 1) " +
                             "(varLen false) " +
                             "(argList ((FloatDataValue (id 0) " +
@@ -5589,7 +5589,7 @@ public class Matrix
                                                       "(subRange false) " +
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
-            String int_matrix_DBstring = 
+            String int_matrix_DBstring =
                     "(Matrix (mveID 7) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
@@ -5600,7 +5600,7 @@ public class Matrix
                                                     "(subRange false) " +
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
-            String matrix_matrix0_DBstring = 
+            String matrix_matrix0_DBstring =
                     "(Matrix (mveID 13) " +
                             "(varLen false) " +
                             "(argList " +
@@ -5650,7 +5650,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String matrix_matrix1_DBstring = 
+            String matrix_matrix1_DBstring =
                     "(Matrix (mveID 31) " +
                             "(varLen false) " +
                             "(argList " +
@@ -5672,7 +5672,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg3>) " +
                                     "(subRange false))))))";
-            String matrix_matrix2_DBstring = 
+            String matrix_matrix2_DBstring =
                     "(Matrix (mveID 41) " +
                             "(varLen true) " +
                             "(argList " +
@@ -5682,7 +5682,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String nominal_matrix_DBstring = 
+            String nominal_matrix_DBstring =
                     "(Matrix (mveID 47) " +
                             "(varLen false) " +
                             "(argList " +
@@ -5692,7 +5692,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
-            String pred_matrix_DBstring = 
+            String pred_matrix_DBstring =
                     "(Matrix (mveID 53) " +
                             "(varLen false) " +
                             "(argList " +
@@ -5702,7 +5702,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))";
-            String text_matrix_DBstring = 
+            String text_matrix_DBstring =
                     "(Matrix (mveID 59) " +
                             "(varLen false) " +
                             "(argList " +
@@ -5712,7 +5712,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
-             
+
             completed = false;
             threwSystemErrorException = false;
             try
@@ -5734,7 +5734,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_matrix == null ) ||
                  ( int_matrix == null ) ||
                  ( matrix_matrix0 == null ) ||
@@ -5747,52 +5747,52 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix == null )
                     {
                         outStream.printf("allocation of float_matrix failed.\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf("allocation of int_matrix failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed.\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf("allocation of nominal_matrix failed.\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf("allocation of pred_matrix failed.\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf("allocation of text_matrix failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -5825,7 +5825,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -5835,7 +5835,7 @@ public class Matrix
                                 "unexpected float_matrix.toString(): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -5843,7 +5843,7 @@ public class Matrix
                                 "unexpected int_matrix.toString(): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -5851,7 +5851,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString(): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -5859,7 +5859,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString(): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -5867,7 +5867,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString(): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -5875,7 +5875,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString(): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -5883,7 +5883,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString(): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -5911,7 +5911,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -5921,7 +5921,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString(): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -5929,7 +5929,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString(): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -5937,7 +5937,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString(): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -5945,7 +5945,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString(): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -5953,7 +5953,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString(): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_DBstring) != 0 )
                     {
@@ -5961,7 +5961,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString(): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -5969,7 +5969,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString(): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -5980,30 +5980,30 @@ public class Matrix
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db */
         m0 = null;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             m0 = new Matrix(null, float_mve_ID);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( m0 != null ) || 
+
+        if ( ( m0 != null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( m0 != null )
@@ -6011,13 +6011,13 @@ public class Matrix
                     outStream.print(
                             "\"new Matrix(null, float_mve_ID) != null.\n");
                 }
-                
+
                 if ( completed )
                 {
                     outStream.print(
                             "\"new Matrix(null, float_mve_ID) completed.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -6026,33 +6026,33 @@ public class Matrix
                 }
             }
         }
-       
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * predicate vocab element ID.
          */
 
         m0 = null;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             m0 = new Matrix(new ODBCDatabase(), float_mve_ID);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( m0 != null ) || 
+
+        if ( ( m0 != null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( m0 != null )
@@ -6060,13 +6060,13 @@ public class Matrix
                     outStream.print("new Matrix(new ODBCDatabase(), " +
                                     "float_mve_ID) != null.\n");
                 }
-                
+
                 if ( completed )
                 {
                     outStream.print("new Matrix(new ODBCDatabase(), " +
                                     "float_mve_ID) completed.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -6104,25 +6104,25 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -6193,14 +6193,14 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
@@ -6209,21 +6209,21 @@ public class Matrix
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -6242,7 +6242,7 @@ public class Matrix
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -6253,7 +6253,7 @@ public class Matrix
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -6261,38 +6261,38 @@ public class Matrix
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
@@ -6326,63 +6326,63 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -6393,18 +6393,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -6415,18 +6415,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -6437,65 +6437,65 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -6504,7 +6504,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // having set up a selection of test mve's, now try to allocate some
         // matricies.  Use toString and toDBString to verify that they are
         // initialized correctly.
@@ -6522,7 +6522,7 @@ public class Matrix
             String nominal_matrix_string = "(another_nominal)";
             String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
             String text_matrix_string = "(a text string)";
-            String float_matrix_DBstring = 
+            String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
                             "(argList ((FloatDataValue (id 0) " +
@@ -6533,7 +6533,7 @@ public class Matrix
                                                       "(subRange false) " +
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
-            String int_matrix_DBstring = 
+            String int_matrix_DBstring =
                     "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
@@ -6544,7 +6544,7 @@ public class Matrix
                                                     "(subRange false) " +
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
-            String matrix_matrix0_DBstring = 
+            String matrix_matrix0_DBstring =
                     "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
@@ -6611,7 +6611,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String matrix_matrix1_DBstring = 
+            String matrix_matrix1_DBstring =
                     "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
@@ -6635,7 +6635,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String matrix_matrix2_DBstring = 
+            String matrix_matrix2_DBstring =
                     "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
@@ -6645,7 +6645,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String nominal_matrix_DBstring = 
+            String nominal_matrix_DBstring =
                     "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
@@ -6655,7 +6655,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
-            String pred_matrix_DBstring = 
+            String pred_matrix_DBstring =
                     "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
@@ -6682,7 +6682,7 @@ public class Matrix
                                                     "(itsValue <arg2>) " +
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
-            String text_matrix_DBstring = 
+            String text_matrix_DBstring =
                     "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
@@ -6692,29 +6692,29 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
                                     "(subRange false))))))";
-             
+
             completed = false;
             threwSystemErrorException = false;
             try
             {
                 empty_arg_list = new Vector<DataValue>();
-                
-                
+
+
                 float_matrix_arg_list = new Vector<DataValue>();
                 fargID = float_mve.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 11.0);
                 float_matrix_arg_list.add(arg);
-                float_matrix = new Matrix(db, float_mve_ID, 
+                float_matrix = new Matrix(db, float_mve_ID,
                                           float_matrix_arg_list);
-                
-                
+
+
                 int_matrix_arg_list = new Vector<DataValue>();
                 fargID = int_mve.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 22);
                 int_matrix_arg_list.add(arg);
                 int_matrix = new Matrix(db, int_mve_ID, int_matrix_arg_list);
-                
-                
+
+
                 matrix_matrix0_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve0.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
@@ -6733,56 +6733,56 @@ public class Matrix
                 qstring_arg = arg; // save to construct quote_string_arg_list
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve0.getFormalArg(6).getFargName());
                 matrix_matrix0_arg_list.add(arg);
-                matrix_matrix0 = new Matrix(db, matrix_mve0_ID, 
+                matrix_matrix0 = new Matrix(db, matrix_mve0_ID,
                                             matrix_matrix0_arg_list);
-                
-                
+
+
                 matrix_matrix1_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve1.getFormalArg(0).getID();
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(1).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(1).getFargName());
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(2).getID();
                 arg = new IntDataValue(db, fargID, 88);
                 matrix_matrix1_arg_list.add(arg);
-                matrix_matrix1 = new Matrix(db, matrix_mve1_ID, 
+                matrix_matrix1 = new Matrix(db, matrix_mve1_ID,
                                             matrix_matrix1_arg_list);
-                
-                
+
+
                 matrix_matrix2_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve2.getFormalArg(0).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(0).getFargName());
                 matrix_matrix2_arg_list.add(arg);
-                matrix_matrix2 = new Matrix(db, matrix_mve2_ID, 
+                matrix_matrix2 = new Matrix(db, matrix_mve2_ID,
                                             matrix_matrix2_arg_list);
-                
-                
+
+
                 nominal_matrix_arg_list = new Vector<DataValue>();
                 fargID = nominal_mve.getFormalArg(0).getID();
                 arg = new NominalDataValue(db, fargID, "another_nominal");
                 nominal_matrix_arg_list.add(arg);
                 nominal_matrix = new Matrix(db, nominal_mve_ID,
                                             nominal_matrix_arg_list);
-                
-                
+
+
                 pred_matrix_arg_list = new Vector<DataValue>();
                 fargID = pred_mve.getFormalArg(0).getID();
                 arg = new PredDataValue(db, fargID, new Predicate(db, pve0_ID));
                 pred_matrix_arg_list.add(arg);
                 pred_matrix = new Matrix(db, pred_mve_ID, pred_matrix_arg_list);
-                
-                
+
+
                 text_matrix_arg_list = new Vector<DataValue>();
                 fargID = text_mve.getFormalArg(0).getID();
                 arg = new TextStringDataValue(db, fargID, "a text string");
@@ -6791,7 +6791,7 @@ public class Matrix
 
                 quote_string_arg_list = new Vector<DataValue>();
                 quote_string_arg_list.add(qstring_arg);
-                
+
                 completed = true;
             }
 
@@ -6800,7 +6800,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( empty_arg_list == null ) ||
                  ( float_matrix_arg_list == null ) ||
                  ( float_matrix == null ) ||
@@ -6823,7 +6823,7 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( empty_arg_list == null )
@@ -6831,105 +6831,105 @@ public class Matrix
                         outStream.printf(
                             "allocation of empty_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of float_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix == null )
                     {
                         outStream.printf("allocation of float_matrix failed.\n");
                     }
-                    
+
                     if ( int_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf("allocation of int_matrix failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed.\n");
                     }
-                    
+
                     if ( nominal_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_matrix failed.\n");
                     }
-                    
+
                     if ( pred_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf("allocation of pred_matrix failed.\n");
                     }
-                    
+
                     if ( text_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf("allocation of text_matrix failed.\n");
                     }
-                    
+
                     if ( quote_string_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of quote_string_arg_list failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -6962,7 +6962,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -6972,7 +6972,7 @@ public class Matrix
                                 "unexpected float_matrix.toString(): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -6980,7 +6980,7 @@ public class Matrix
                                 "unexpected int_matrix.toString(): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -6988,7 +6988,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString(): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -6996,7 +6996,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString(): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -7004,7 +7004,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString(): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -7012,7 +7012,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString(): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -7020,7 +7020,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString(): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -7048,7 +7048,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -7058,7 +7058,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString(): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -7066,7 +7066,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString(): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -7074,7 +7074,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString(): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -7082,7 +7082,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString(): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -7090,7 +7090,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString(): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_DBstring) != 0 )
                     {
@@ -7098,7 +7098,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString(): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -7106,7 +7106,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString(): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -7116,8 +7116,8 @@ public class Matrix
                     }
                 }
             }
-            
-            /* Now repeat the above test, only without setting the fargIDs 
+
+            /* Now repeat the above test, only without setting the fargIDs
              * on the entries in the argument list passed to the constructor.
              */
             float_matrix_arg_list1 = null;
@@ -7144,17 +7144,17 @@ public class Matrix
                 arg = new FloatDataValue(db);
                 ((FloatDataValue)arg).setItsValue(11.0);
                 float_matrix_arg_list1.add(arg);
-                float_matrix = new Matrix(db, float_mve_ID, 
+                float_matrix = new Matrix(db, float_mve_ID,
                                           float_matrix_arg_list1);
-                
-                
+
+
                 int_matrix_arg_list1 = new Vector<DataValue>();
                 arg = new IntDataValue(db);
                 ((IntDataValue)arg).setItsValue(22);
                 int_matrix_arg_list1.add(arg);
                 int_matrix = new Matrix(db, int_mve_ID, int_matrix_arg_list1);
-                
-                
+
+
                 matrix_matrix0_arg_list1 = new Vector<DataValue>();
                 arg = new FloatDataValue(db);
                 ((FloatDataValue)arg).setItsValue(1.0);
@@ -7172,62 +7172,62 @@ public class Matrix
                 ((QuoteStringDataValue)arg).setItsValue("q-string");
                 matrix_matrix0_arg_list1.add(arg);
                 arg = new TimeStampDataValue(db);
-                ((TimeStampDataValue)arg).setItsValue( 
+                ((TimeStampDataValue)arg).setItsValue(
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_matrix0_arg_list1.add(arg);
                 arg = new UndefinedDataValue(db);
-                ((UndefinedDataValue)arg).setItsValue( 
+                ((UndefinedDataValue)arg).setItsValue(
                                      matrix_mve0.getFormalArg(6).getFargName());
                 matrix_matrix0_arg_list1.add(arg);
-                matrix_matrix0 = new Matrix(db, matrix_mve0_ID, 
+                matrix_matrix0 = new Matrix(db, matrix_mve0_ID,
                                             matrix_matrix0_arg_list1);
-                
-                
+
+
                 matrix_matrix1_arg_list1 = new Vector<DataValue>();
                 arg = new QuoteStringDataValue(db);
                 ((QuoteStringDataValue)arg).setItsValue(" a q string ");
                 matrix_matrix1_arg_list1.add(arg);
                 arg = new UndefinedDataValue(db);
-                ((UndefinedDataValue)arg).setItsValue( 
+                ((UndefinedDataValue)arg).setItsValue(
                                      matrix_mve1.getFormalArg(1).getFargName());
                 matrix_matrix1_arg_list1.add(arg);
                 arg = new IntDataValue(db);
                 ((IntDataValue)arg).setItsValue(88);
                 matrix_matrix1_arg_list1.add(arg);
-                matrix_matrix1 = new Matrix(db, matrix_mve1_ID, 
+                matrix_matrix1 = new Matrix(db, matrix_mve1_ID,
                                             matrix_matrix1_arg_list1);
-                
-                
+
+
                 matrix_matrix2_arg_list1 = new Vector<DataValue>();
                 arg = new UndefinedDataValue(db);
-                ((UndefinedDataValue)arg).setItsValue( 
+                ((UndefinedDataValue)arg).setItsValue(
                                      matrix_mve1.getFormalArg(0).getFargName());
                 matrix_matrix2_arg_list1.add(arg);
-                matrix_matrix2 = new Matrix(db, matrix_mve2_ID, 
+                matrix_matrix2 = new Matrix(db, matrix_mve2_ID,
                                             matrix_matrix2_arg_list1);
-                
-                
+
+
                 nominal_matrix_arg_list1 = new Vector<DataValue>();
                 arg = new NominalDataValue(db);
                 ((NominalDataValue)arg).setItsValue("another_nominal");
                 nominal_matrix_arg_list1.add(arg);
                 nominal_matrix = new Matrix(db, nominal_mve_ID,
                                             nominal_matrix_arg_list1);
-                
-                
+
+
                 pred_matrix_arg_list1 = new Vector<DataValue>();
                 arg = new PredDataValue(db);
                 ((PredDataValue)arg).setItsValue(new Predicate(db, pve0_ID));
                 pred_matrix_arg_list1.add(arg);
                 pred_matrix = new Matrix(db, pred_mve_ID, pred_matrix_arg_list1);
-                
-                
+
+
                 text_matrix_arg_list1 = new Vector<DataValue>();
                 arg = new TextStringDataValue(db);
                 ((TextStringDataValue)arg).setItsValue("a text string");
                 text_matrix_arg_list1.add(arg);
                 text_matrix = new Matrix(db, text_mve_ID, text_matrix_arg_list1);
-                
+
                 completed = true;
             }
 
@@ -7236,7 +7236,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_matrix_arg_list1 == null ) ||
                  ( float_matrix == null ) ||
                  ( int_matrix_arg_list1 == null ) ||
@@ -7257,105 +7257,105 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
-                {                    
+                {
                     if ( float_matrix_arg_list1 == null )
                     {
                         outStream.printf(
                             "allocation of float_matrix_arg_list failed(2).\n");
                     }
-                    
+
                     if ( float_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of float_matrix failed(2).\n");
                     }
-                    
+
                     if ( int_matrix_arg_list1 == null )
                     {
                         outStream.printf(
                             "allocation of int_matrix_arg_list failed(2).\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of int_matrix failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix0_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "matrix_matrix0_arg_list failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix1_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "matrix_matrix1_arg_list failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix2_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "matrix_matrix2_arg_list failed(2).\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed(2).\n");
                     }
-                    
+
                     if ( nominal_matrix_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "nominal_matrix_arg_list failed(2).\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_matrix failed(2).\n");
                     }
-                    
+
                     if ( pred_matrix_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "pred_matrix_arg_list failed(2).\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of pred_matrix failed(2).\n");
                     }
-                    
+
                     if ( text_matrix_arg_list1 == null )
                     {
                         outStream.printf("allocation of " +
                                          "text_matrix_arg_list failed(2).\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of text_matrix failed(2).\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("Creation of test matricies " +
@@ -7388,7 +7388,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -7398,7 +7398,7 @@ public class Matrix
                                 "unexpected float_matrix.toString()(2): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -7406,7 +7406,7 @@ public class Matrix
                                 "unexpected int_matrix.toString()(2): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -7414,7 +7414,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString()(2): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -7422,7 +7422,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString()(2): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -7430,7 +7430,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString()(2): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -7438,7 +7438,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString()(2): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -7446,7 +7446,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString()(2): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -7474,7 +7474,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -7484,7 +7484,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString()(2): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -7492,7 +7492,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString()(2): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -7500,7 +7500,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString()(2): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -7508,7 +7508,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString()(2): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -7516,7 +7516,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString()(2): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_DBstring) != 0 )
                     {
@@ -7524,7 +7524,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString()(2): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -7532,7 +7532,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString()(2): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -7543,7 +7543,7 @@ public class Matrix
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db */
         failures += Verify3ArgConstructorFailure(null,
                                                  float_mve_ID,
@@ -7553,8 +7553,8 @@ public class Matrix
                                                  "null",
                                                  "float_mve_ID",
                                                  "float_matrix_arg_list");
-       
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * predicate vocab element ID.
          */
         failures += Verify3ArgConstructorFailure(new ODBCDatabase(),
@@ -7565,18 +7565,18 @@ public class Matrix
                                                  "new ODBCDatabase()",
                                                  "float_mve_ID",
                                                  "float_matrix_arg_list");
-       
 
-        
+
+
         // finally, verify that the constructor fails when passed an invalid
         // arg list.  Many possibilities...
         //
         // In the following, we do the obvious and try to construct instances
         // of all the mve's defined above, but using all the wrong arg lists.
-        // All these attempts should fail when the farg ID mis-matches are 
-        // detected.  
+        // All these attempts should fail when the farg ID mis-matches are
+        // detected.
         //
-        // In theory, there is also the possiblility of a type mis-match 
+        // In theory, there is also the possiblility of a type mis-match
         // between the formal argument and a datavalue in the argument list.
         // However, the datavalues should throw a system error if a datavalue
         // is created for a formal argument that doesn't match the type of that
@@ -7587,7 +7587,7 @@ public class Matrix
         // it.  However, in this case, we should be assigning a new ID to the
         // formal argument, causing a farg ID mismatch failure.
         //
-        // Assuming we do our part in the rest of the library, the following 
+        // Assuming we do our part in the rest of the library, the following
         // tests should be sufficient.
         //
         // Start with a float mve as the target:
@@ -8282,9 +8282,9 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::Test3ArgConstructor() */
 
 
@@ -8297,7 +8297,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -8361,14 +8361,14 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
@@ -8377,21 +8377,21 @@ public class Matrix
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -8410,7 +8410,7 @@ public class Matrix
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -8421,7 +8421,7 @@ public class Matrix
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -8429,38 +8429,38 @@ public class Matrix
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
@@ -8494,63 +8494,63 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -8561,18 +8561,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -8583,18 +8583,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -8605,65 +8605,65 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -8672,8 +8672,8 @@ public class Matrix
                 }
             }
         }
-        
-        
+
+
         // having set up a selection of test mve's, now allocate some
         // matricies.  Use toString and toDBString to verify that they are
         // initialized correctly.
@@ -8691,7 +8691,7 @@ public class Matrix
             String nominal_matrix_string = "(another_nominal)";
             String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
             String text_matrix_string = "(a text string)";
-            String float_matrix_DBstring = 
+            String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
                             "(argList ((FloatDataValue (id 0) " +
@@ -8702,7 +8702,7 @@ public class Matrix
                                                       "(subRange false) " +
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
-            String int_matrix_DBstring = 
+            String int_matrix_DBstring =
                     "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8714,7 +8714,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String matrix_matrix0_DBstring = 
+            String matrix_matrix0_DBstring =
                     "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8770,7 +8770,7 @@ public class Matrix
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 22) " + 
+                                    "(itsFargID 22) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
@@ -8781,7 +8781,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String matrix_matrix1_DBstring = 
+            String matrix_matrix1_DBstring =
                     "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8805,7 +8805,7 @@ public class Matrix
                                 "(subRange false) " +
                                 "(minVal 0) " +
                                 "(maxVal 0))))))";
-            String matrix_matrix2_DBstring = 
+            String matrix_matrix2_DBstring =
                     "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
@@ -8815,7 +8815,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String nominal_matrix_DBstring = 
+            String nominal_matrix_DBstring =
                     "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8825,7 +8825,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
-            String pred_matrix_DBstring = 
+            String pred_matrix_DBstring =
                     "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8852,7 +8852,7 @@ public class Matrix
                                                     "(itsValue <arg2>) " +
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
-            String text_matrix_DBstring = 
+            String text_matrix_DBstring =
                     "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
@@ -8862,29 +8862,29 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
                                     "(subRange false))))))";
-             
+
             completed = false;
             threwSystemErrorException = false;
             try
             {
                 empty_arg_list = new Vector<DataValue>();
-                
-                
+
+
                 float_matrix_arg_list = new Vector<DataValue>();
                 fargID = float_mve.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 11.0);
                 float_matrix_arg_list.add(arg);
-                float_matrix = new Matrix(db, float_mve_ID, 
+                float_matrix = new Matrix(db, float_mve_ID,
                                           float_matrix_arg_list);
-                
-                
+
+
                 int_matrix_arg_list = new Vector<DataValue>();
                 fargID = int_mve.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 22);
                 int_matrix_arg_list.add(arg);
                 int_matrix = new Matrix(db, int_mve_ID, int_matrix_arg_list);
-                
-                
+
+
                 matrix_matrix0_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve0.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
@@ -8903,56 +8903,56 @@ public class Matrix
                 qstring_arg = arg; // save to construct quote_string_arg_list
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve0.getFormalArg(6).getFargName());
                 matrix_matrix0_arg_list.add(arg);
-                matrix_matrix0 = new Matrix(db, matrix_mve0_ID, 
+                matrix_matrix0 = new Matrix(db, matrix_mve0_ID,
                                             matrix_matrix0_arg_list);
-                
-                
+
+
                 matrix_matrix1_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve1.getFormalArg(0).getID();
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(1).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(1).getFargName());
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(2).getID();
                 arg = new IntDataValue(db, fargID, 88);
                 matrix_matrix1_arg_list.add(arg);
-                matrix_matrix1 = new Matrix(db, matrix_mve1_ID, 
+                matrix_matrix1 = new Matrix(db, matrix_mve1_ID,
                                             matrix_matrix1_arg_list);
-                
-                
+
+
                 matrix_matrix2_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve2.getFormalArg(0).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(0).getFargName());
                 matrix_matrix2_arg_list.add(arg);
-                matrix_matrix2 = new Matrix(db, matrix_mve2_ID, 
+                matrix_matrix2 = new Matrix(db, matrix_mve2_ID,
                                             matrix_matrix2_arg_list);
-                
-                
+
+
                 nominal_matrix_arg_list = new Vector<DataValue>();
                 fargID = nominal_mve.getFormalArg(0).getID();
                 arg = new NominalDataValue(db, fargID, "another_nominal");
                 nominal_matrix_arg_list.add(arg);
                 nominal_matrix = new Matrix(db, nominal_mve_ID,
                                             nominal_matrix_arg_list);
-                
-                
+
+
                 pred_matrix_arg_list = new Vector<DataValue>();
                 fargID = pred_mve.getFormalArg(0).getID();
                 arg = new PredDataValue(db, fargID, new Predicate(db, pve0_ID));
                 pred_matrix_arg_list.add(arg);
                 pred_matrix = new Matrix(db, pred_mve_ID, pred_matrix_arg_list);
-                
-                
+
+
                 text_matrix_arg_list = new Vector<DataValue>();
                 fargID = text_mve.getFormalArg(0).getID();
                 arg = new TextStringDataValue(db, fargID, "a text string");
@@ -8961,7 +8961,7 @@ public class Matrix
 
                 quote_string_arg_list = new Vector<DataValue>();
                 quote_string_arg_list.add(qstring_arg);
-                
+
                 completed = true;
             }
 
@@ -8970,7 +8970,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( empty_arg_list == null ) ||
                  ( float_matrix_arg_list == null ) ||
                  ( float_matrix == null ) ||
@@ -8993,7 +8993,7 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( empty_arg_list == null )
@@ -9001,105 +9001,105 @@ public class Matrix
                         outStream.printf(
                             "allocation of empty_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of float_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix == null )
                     {
                         outStream.printf("allocation of float_matrix failed.\n");
                     }
-                    
+
                     if ( int_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf("allocation of int_matrix failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed.\n");
                     }
-                    
+
                     if ( nominal_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_matrix failed.\n");
                     }
-                    
+
                     if ( pred_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf("allocation of pred_matrix failed.\n");
                     }
-                    
+
                     if ( text_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf("allocation of text_matrix failed.\n");
                     }
-                    
+
                     if ( quote_string_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of quote_string_arg_list failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -9132,7 +9132,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -9142,7 +9142,7 @@ public class Matrix
                                 "unexpected float_matrix.toString(): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -9150,7 +9150,7 @@ public class Matrix
                                 "unexpected int_matrix.toString(): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -9158,7 +9158,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString(): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -9166,7 +9166,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString(): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -9174,7 +9174,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString(): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -9182,7 +9182,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString(): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -9190,7 +9190,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString(): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -9218,7 +9218,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -9228,7 +9228,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString(): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -9236,7 +9236,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString(): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -9244,7 +9244,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString(): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -9252,7 +9252,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString(): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -9260,7 +9260,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString(): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_DBstring) != 0 )
                     {
@@ -9268,7 +9268,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString(): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -9276,7 +9276,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString(): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -9287,11 +9287,11 @@ public class Matrix
                 }
             }
         }
-        
-        
+
+
         // Verify that getDB() works as expected.  There is not much to
         // do here, as the db field is set on creation and never changed.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9307,7 +9307,7 @@ public class Matrix
                  ( text_matrix.getDB() != db ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -9315,12 +9315,12 @@ public class Matrix
                 }
             }
         }
-        
-        
+
+
         // Verify that getMveID() works as expected.  There is not much to
-        // do here either, as the mveID field is set on creation and never 
+        // do here either, as the mveID field is set on creation and never
         // changed.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9336,7 +9336,7 @@ public class Matrix
                  ( text_matrix.getMveID() != text_mve_ID ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -9344,10 +9344,10 @@ public class Matrix
                 }
             }
         }
-        
-        
-        // Verify that getNumArgs() works as expected.  
-        
+
+
+        // Verify that getNumArgs() works as expected.
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9363,7 +9363,7 @@ public class Matrix
                  ( text_matrix.getNumArgs() != 1 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -9371,10 +9371,10 @@ public class Matrix
                 }
             }
         }
-        
-        
+
+
         // Verify that getVarLen() works as expected.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -9390,7 +9390,7 @@ public class Matrix
                  ( text_matrix.getVarLen() != false ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -9398,12 +9398,12 @@ public class Matrix
                 }
             }
         }
-        
-        
+
+
         // finally, verify that lookupMatrixVE() throws a system error on
-        // invalid input.  Start with the valid id that does not refer to a 
+        // invalid input.  Start with the valid id that does not refer to a
         // matrix vocab element
-        
+
         threwSystemErrorException = false;
         completed = false;
         fargID = DBIndex.INVALID_ID;
@@ -9416,7 +9416,7 @@ public class Matrix
                 fargID = pve0.getFormalArg(0).getID();
 
                 mve = float_matrix.lookupMatrixVE(fargID);
-                
+
                 completed = true;
             }
 
@@ -9425,32 +9425,32 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( fargID == DBIndex.INVALID_ID ) ||
                  ( mve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( fargID == DBIndex.INVALID_ID )
                     {
                         outStream.printf("fargID == DBIndex.INVALID_ID (2).\n");
                     }
-                    
+
                     if ( mve != null )
                     {
                         outStream.printf("mve != null (1)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                             "float_matrix.lookupMatrixVE(fargID) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf(
@@ -9460,7 +9460,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // now try an unused ID
         mve = null;
         threwSystemErrorException = false;
@@ -9471,7 +9471,7 @@ public class Matrix
             try
             {
                 mve = int_matrix.lookupMatrixVE(500);
-                
+
                 completed = true;
             }
 
@@ -9480,26 +9480,26 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( mve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( mve != null )
                     {
                         outStream.printf("mve != null (2)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf(
                                 "int_matrix.lookupMatrixVE(500) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("int_matrix.lookupMatrixVE(500) " +
@@ -9508,7 +9508,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // finally, try the invalid ID
         mve = null;
         threwSystemErrorException = false;
@@ -9519,7 +9519,7 @@ public class Matrix
             try
             {
                 mve = matrix_matrix0.lookupMatrixVE(DBIndex.INVALID_ID);
-                
+
                 completed = true;
             }
 
@@ -9528,26 +9528,26 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( mve != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( mve != null )
                     {
                         outStream.printf("mve != null (3)\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf("matrix_matrix0.lookupMatrixVE" +
                                          "(DBIndex.INVALID_ID) completed.\n");
                     }
-                     
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("matrix_matrix0.lookupMatrixVE" +
@@ -9557,7 +9557,7 @@ public class Matrix
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -9586,24 +9586,24 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::TestAccessors() */
-   
-    
+
+
     /**
      * Verify3ArgConstructorFailure()
-     * 
+     *
      * Verify that the three argument constructor for this class fails with
      * a system error when supplied the given parameters.
-     * 
+     *
      * Return 0 if the constructor fails as expected, and 1 if it does not.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
 
@@ -9620,7 +9620,7 @@ public class Matrix
         boolean threwSystemErrorException = false;
         int failures = 0;
         Matrix m0 = null;
-        
+
         try
         {
             m0 = new Matrix(db, mve_id, arg_list);
@@ -9632,7 +9632,7 @@ public class Matrix
             threwSystemErrorException = true;
         }
 
-        if ( ( m0 != null ) || 
+        if ( ( m0 != null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
@@ -9660,19 +9660,19 @@ public class Matrix
                 }
             }
         }
-        
+
         return failures;
-        
+
     } /* Matrix::Verify3ArgConstructorFailure() */
-    
-    
+
+
     /**
      * TestGetArgCopy()
      *
-     * Given a matrix, and an argument number, verify that getArgCopy() 
+     * Given a matrix, and an argument number, verify that getArgCopy()
      * returns a copy of the target argument if the argNum parameter refers
      * to a parameter, returns null if argNum is greater than the number
-     * of parameters, and fails with a system error is argNum is negative. 
+     * of parameters, and fails with a system error is argNum is negative.
      *
      * Return the number of failures detected.
      *
@@ -9682,7 +9682,7 @@ public class Matrix
      *
      *    - None.
      */
-    
+
     private static int TestGetArgCopy(Matrix m,
                                      int argNum,
                                      int testNum,
@@ -9694,42 +9694,42 @@ public class Matrix
     {
         String systemErrorExceptionString = null;
         boolean completed = false;
-        boolean threwSystemErrorException = false;     
+        boolean threwSystemErrorException = false;
         int failures = 0;
         DataValue copy = null;
-        
+
         try
         {
             copy = m.getArgCopy(argNum);
-                        
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( argNum < 0 )
         {
-            if ( ( completed ) || 
+            if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
-                if ( verbose ) 
+
+                if ( verbose )
                 {
                     if ( completed )
                     {
-                        outStream.printf("%d: %s.getArgCopy(%d) completed.\n", 
+                        outStream.printf("%d: %s.getArgCopy(%d) completed.\n",
                                          testNum, mName, argNum);
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("%d: %s.getArgCopy(%d) failed to throw " +
-                                "a system error exception.\n", 
+                                "a system error exception.\n",
                                 testNum, mName, argNum);
                     }
                 }
@@ -9737,45 +9737,45 @@ public class Matrix
             else if ( er != expectedResult.system_error )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
-                            testNum, er.toString(), 
+                            testNum, er.toString(),
                             expectedResult.system_error.toString());
                 }
             }
-        } 
-        else if ( argNum >= m.getNumArgs() ) 
+        }
+        else if ( argNum >= m.getNumArgs() )
         {
             if ( ( copy != null ) ||
                  ( ! completed  ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( copy != null )
                     {
                         outStream.printf("%d: %s.getArgCopy(%d >= numArgs) " +
-                                "failed to return null.\n", 
+                                "failed to return null.\n",
                                 testNum, mName, argNum);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%d: %s.getArgCopy(%d >= numArgs) " +
-                                "failed to completed.\n", 
+                                "failed to completed.\n",
                                 testNum, mName, argNum);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
                             "%d: %s.getArgCopy(%d >= numArgs) threw " +
-                            "an unexpected system error exception: \"%s\".\n", 
+                            "an unexpected system error exception: \"%s\".\n",
                             testNum, mName, argNum, systemErrorExceptionString);
                     }
                 }
@@ -9783,16 +9783,16 @@ public class Matrix
             else if ( er != expectedResult.return_null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
-                            testNum, er.toString(), 
+                            testNum, er.toString(),
                             expectedResult.return_null.toString());
                 }
             }
-        } 
+        }
         else
         {
             failures += DataValue.VerifyDVCopy(m.argList.get(argNum),
@@ -9801,42 +9801,42 @@ public class Matrix
                                                verbose,
                                                mName + "(" + argNum + ")",
                                                mName + "(" + argNum + ") copy");
-            
+
             if ( er != expectedResult.succeed )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
-                            testNum, er.toString(), 
+                            testNum, er.toString(),
                             expectedResult.succeed.toString());
                 }
             }
         }
-                
-        
-        
-        
-        
+
+
+
+
+
         return failures;
-        
+
     } /* Matrix::TestGetArgCopy() */
-    
+
 
     /**
      * TestArgListManagement()
-     * 
+     *
      * Run a battery of tests on the arg list management facilities.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestArgListManagement(java.io.PrintStream outStream,
                                                 boolean verbose)
         throws SystemErrorException
@@ -9892,8 +9892,8 @@ public class Matrix
         Vector<DataValue> nominal_matrix_arg_list = null;
         Vector<DataValue> pred_matrix_arg_list = null;
         Vector<DataValue> text_matrix_arg_list = null;
-        Matrix float_matrix = null;        
-        Matrix int_matrix = null;        
+        Matrix float_matrix = null;
+        Matrix int_matrix = null;
         Matrix matrix_matrix0 = null;
         Matrix matrix_matrix1 = null;
         Matrix matrix_matrix2 = null;
@@ -9908,22 +9908,22 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve0.appendFormalArg(farg);
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
@@ -9932,21 +9932,21 @@ public class Matrix
             pve1_ID = db.addPredVE(pve1);
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -9965,7 +9965,7 @@ public class Matrix
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -9976,7 +9976,7 @@ public class Matrix
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -9984,38 +9984,38 @@ public class Matrix
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( pve1 == null ) ||
@@ -10051,74 +10051,74 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
-                if ( pve1 == null ) 
+
+
+                if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-             
+
                 if ( pve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -10129,18 +10129,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -10151,18 +10151,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -10173,65 +10173,65 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -10240,7 +10240,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // having set up a selection of test mve's, now try to allocate some
         // matricies.  Use toString and toDBString to verify that they are
         // initialized correctly.
@@ -10258,7 +10258,7 @@ public class Matrix
             String nominal_matrix_string = "(another_nominal)";
             String pred_matrix_string = "(pve0(<arg>))";
             String text_matrix_string = "(a text string)";
-            String float_matrix_DBstring = 
+            String float_matrix_DBstring =
                     "(Matrix (mveID 6) " +
                             "(varLen false) " +
                             "(argList ((FloatDataValue (id 0) " +
@@ -10269,7 +10269,7 @@ public class Matrix
                                                       "(subRange false) " +
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
-            String int_matrix_DBstring = 
+            String int_matrix_DBstring =
                     "(Matrix (mveID 12) " +
                             "(varLen false) " +
                             "(argList ((IntDataValue (id 0) " +
@@ -10280,7 +10280,7 @@ public class Matrix
                                                     "(subRange false) " +
                                                     "(minVal 0) " +
                                                     "(maxVal 0))))))";
-            String matrix_matrix0_DBstring = 
+            String matrix_matrix0_DBstring =
                     "(Matrix (mveID 18) " +
                             "(varLen false) " +
                             "(argList " +
@@ -10330,7 +10330,7 @@ public class Matrix
                                     "(itsValue q-string) " +
                                     "(subRange false)), " +
                                 "(TimeStampDataValue (id 0) " +
-                                    "(itsFargID 24) " + 
+                                    "(itsFargID 24) " +
                                     "(itsFargType TIME_STAMP) " +
                                     "(itsCellID 0) " +
                                     "(itsValue (60,00:00:01:000)) " +
@@ -10341,7 +10341,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String matrix_matrix1_DBstring = 
+            String matrix_matrix1_DBstring =
                     "(Matrix (mveID 36) " +
                             "(varLen false) " +
                             "(argList " +
@@ -10365,7 +10365,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String matrix_matrix2_DBstring = 
+            String matrix_matrix2_DBstring =
                     "(Matrix (mveID 46) " +
                             "(varLen true) " +
                             "(argList " +
@@ -10375,7 +10375,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String nominal_matrix_DBstring = 
+            String nominal_matrix_DBstring =
                     "(Matrix (mveID 52) " +
                             "(varLen false) " +
                             "(argList " +
@@ -10385,7 +10385,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
-            String pred_matrix_DBstring = 
+            String pred_matrix_DBstring =
                     "(Matrix (mveID 58) " +
                             "(varLen false) " +
                             "(argList " +
@@ -10406,7 +10406,7 @@ public class Matrix
                                                     "(itsValue <arg>) " +
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
-            String text_matrix_DBstring = 
+            String text_matrix_DBstring =
                     "(Matrix (mveID 64) " +
                             "(varLen false) " +
                             "(argList " +
@@ -10416,7 +10416,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
                                     "(subRange false))))))";
-             
+
             completed = false;
             threwSystemErrorException = false;
             try
@@ -10425,17 +10425,17 @@ public class Matrix
                 fargID = float_mve.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 11.0);
                 float_matrix_arg_list.add(arg);
-                float_matrix = new Matrix(db, float_mve_ID, 
+                float_matrix = new Matrix(db, float_mve_ID,
                                           float_matrix_arg_list);
-                
-                
+
+
                 int_matrix_arg_list = new Vector<DataValue>();
                 fargID = int_mve.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 22);
                 int_matrix_arg_list.add(arg);
                 int_matrix = new Matrix(db, int_mve_ID, int_matrix_arg_list);
-                
-                
+
+
                 matrix_matrix0_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve0.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
@@ -10453,56 +10453,56 @@ public class Matrix
                 arg = new QuoteStringDataValue(db, fargID, "q-string");
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve0.getFormalArg(6).getFargName());
                 matrix_matrix0_arg_list.add(arg);
-                matrix_matrix0 = new Matrix(db, matrix_mve0_ID, 
+                matrix_matrix0 = new Matrix(db, matrix_mve0_ID,
                                             matrix_matrix0_arg_list);
-                
-                
+
+
                 matrix_matrix1_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve1.getFormalArg(0).getID();
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(1).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(1).getFargName());
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(2).getID();
                 arg = new IntDataValue(db, fargID, 88);
                 matrix_matrix1_arg_list.add(arg);
-                matrix_matrix1 = new Matrix(db, matrix_mve1_ID, 
+                matrix_matrix1 = new Matrix(db, matrix_mve1_ID,
                                             matrix_matrix1_arg_list);
-                
-                
+
+
                 matrix_matrix2_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve2.getFormalArg(0).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(0).getFargName());
                 matrix_matrix2_arg_list.add(arg);
-                matrix_matrix2 = new Matrix(db, matrix_mve2_ID, 
+                matrix_matrix2 = new Matrix(db, matrix_mve2_ID,
                                             matrix_matrix2_arg_list);
-                
-                
+
+
                 nominal_matrix_arg_list = new Vector<DataValue>();
                 fargID = nominal_mve.getFormalArg(0).getID();
                 arg = new NominalDataValue(db, fargID, "another_nominal");
                 nominal_matrix_arg_list.add(arg);
                 nominal_matrix = new Matrix(db, nominal_mve_ID,
                                             nominal_matrix_arg_list);
-                
-                
+
+
                 pred_matrix_arg_list = new Vector<DataValue>();
                 fargID = pred_mve.getFormalArg(0).getID();
                 arg = new PredDataValue(db, fargID, new Predicate(db, pve0_ID));
                 pred_matrix_arg_list.add(arg);
                 pred_matrix = new Matrix(db, pred_mve_ID, pred_matrix_arg_list);
-                
-                
+
+
                 text_matrix_arg_list = new Vector<DataValue>();
                 fargID = text_mve.getFormalArg(0).getID();
                 arg = new TextStringDataValue(db, fargID, "a text string");
@@ -10517,7 +10517,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_matrix_arg_list == null ) ||
                  ( float_matrix == null ) ||
                  ( int_matrix_arg_list == null ) ||
@@ -10538,7 +10538,7 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix_arg_list == null )
@@ -10546,93 +10546,93 @@ public class Matrix
                         outStream.printf(
                             "allocation of float_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix == null )
                     {
                         outStream.printf("allocation of float_matrix failed.\n");
                     }
-                    
+
                     if ( int_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf("allocation of int_matrix failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed.\n");
                     }
-                    
+
                     if ( nominal_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_matrix failed.\n");
                     }
-                    
+
                     if ( pred_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf("allocation of pred_matrix failed.\n");
                     }
-                    
+
                     if ( text_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf("allocation of text_matrix failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -10665,7 +10665,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -10675,7 +10675,7 @@ public class Matrix
                                 "unexpected float_matrix.toString(): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -10683,7 +10683,7 @@ public class Matrix
                                 "unexpected int_matrix.toString(): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -10691,7 +10691,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString(): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -10699,7 +10699,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString(): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -10707,7 +10707,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString(): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -10715,7 +10715,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString(): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -10723,7 +10723,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString(): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -10751,7 +10751,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -10761,7 +10761,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString(): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -10769,7 +10769,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString(): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -10777,7 +10777,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString(): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -10785,7 +10785,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString(): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -10793,7 +10793,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString(): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_DBstring) != 0 )
                     {
@@ -10801,7 +10801,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString(): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -10809,7 +10809,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString(): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -10820,88 +10820,88 @@ public class Matrix
                 }
             }
         }
-        
+
         /* test is now set up.
          *
-         * Begin with a battery of tests of getArgCopy() -- objective is to 
+         * Begin with a battery of tests of getArgCopy() -- objective is to
          * verify that output of getArgCopy() is a valid copy of the target
          * argument, or that the method fails appropriately if the target
          * doesn't exist.
          */
-        
-        failures += Matrix.TestGetArgCopy(float_matrix, -1, 1, 
+
+        failures += Matrix.TestGetArgCopy(float_matrix, -1, 1,
                 expectedResult.system_error, "float_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(float_matrix,  0, 1, 
+        failures += Matrix.TestGetArgCopy(float_matrix,  0, 1,
                 expectedResult.succeed, "float_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(float_matrix,  1, 3, 
+        failures += Matrix.TestGetArgCopy(float_matrix,  1, 3,
                 expectedResult.return_null, "float_matrix", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(int_matrix, -1, 10, 
+
+        failures += Matrix.TestGetArgCopy(int_matrix, -1, 10,
                 expectedResult.system_error, "int_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(int_matrix,  0, 11, 
+        failures += Matrix.TestGetArgCopy(int_matrix,  0, 11,
                 expectedResult.succeed, "int_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(int_matrix,  1, 12, 
+        failures += Matrix.TestGetArgCopy(int_matrix,  1, 12,
                 expectedResult.return_null, "int_matrix", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(matrix_matrix0, -1, 20, 
+
+        failures += Matrix.TestGetArgCopy(matrix_matrix0, -1, 20,
                 expectedResult.system_error, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  0, 21, 
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose); 
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  1, 22, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  0, 21,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  2, 23, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  1, 22,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  3, 24, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  2, 23,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  4, 25, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  3, 24,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  5, 26, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  4, 25,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  6, 27, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  5, 26,
                 expectedResult.succeed, "matrix_matrix0", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix0,  7, 28, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  6, 27,
+                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+        failures += Matrix.TestGetArgCopy(matrix_matrix0,  7, 28,
                 expectedResult.return_null, "matrix_matrix0", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(matrix_matrix1, -1, 30, 
+
+        failures += Matrix.TestGetArgCopy(matrix_matrix1, -1, 30,
                 expectedResult.system_error, "matrix_matrix1", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix1,  0, 31, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  0, 31,
                 expectedResult.succeed, "matrix_matrix1", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix1,  1, 32, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  1, 32,
                 expectedResult.succeed, "matrix_matrix1", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix1,  2, 32, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  2, 32,
                 expectedResult.succeed, "matrix_matrix1", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix1,  3, 32, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix1,  3, 32,
                 expectedResult.return_null, "matrix_matrix1", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(matrix_matrix2, -1, 40, 
+
+        failures += Matrix.TestGetArgCopy(matrix_matrix2, -1, 40,
                 expectedResult.system_error, "matrix_matrix2", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix2,  0, 41, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix2,  0, 41,
                 expectedResult.succeed, "matrix_matrix2", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(matrix_matrix2,  1, 42, 
+        failures += Matrix.TestGetArgCopy(matrix_matrix2,  1, 42,
                 expectedResult.return_null, "matrix_matrix2", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(nominal_matrix, -1, 50, 
+
+        failures += Matrix.TestGetArgCopy(nominal_matrix, -1, 50,
                 expectedResult.system_error, "nominal_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(nominal_matrix,  0, 51, 
+        failures += Matrix.TestGetArgCopy(nominal_matrix,  0, 51,
                 expectedResult.succeed, "nominal_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(nominal_matrix,  1, 52, 
+        failures += Matrix.TestGetArgCopy(nominal_matrix,  1, 52,
                 expectedResult.return_null, "nominal_matrix", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(pred_matrix, -1, 50, 
+
+        failures += Matrix.TestGetArgCopy(pred_matrix, -1, 50,
                 expectedResult.system_error, "pred_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(pred_matrix,  0, 51, 
+        failures += Matrix.TestGetArgCopy(pred_matrix,  0, 51,
                 expectedResult.succeed, "pred_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(pred_matrix,  1, 52, 
+        failures += Matrix.TestGetArgCopy(pred_matrix,  1, 52,
                 expectedResult.return_null, "pred_matrix", outStream, verbose);
-        
-        failures += Matrix.TestGetArgCopy(text_matrix, -1, 50, 
+
+        failures += Matrix.TestGetArgCopy(text_matrix, -1, 50,
                 expectedResult.system_error, "text_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(text_matrix,  0, 51, 
+        failures += Matrix.TestGetArgCopy(text_matrix,  0, 51,
                 expectedResult.succeed, "text_matrix", outStream, verbose);
-        failures += Matrix.TestGetArgCopy(text_matrix,  1, 52, 
+        failures += Matrix.TestGetArgCopy(text_matrix,  1, 52,
                 expectedResult.return_null, "text_matrix", outStream, verbose);
-        
-        
+
+
         /* begin with tests of a float matrix
          */
         if ( failures == 0 )
@@ -10944,7 +10944,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg == null ) ||
                  ( intArg == null ) ||
@@ -10958,71 +10958,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(fdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11098,7 +11098,7 @@ public class Matrix
                                                     "arg");
             }
         }
-        
+
 
         /* now an int matrix */
         if ( failures == 0 )
@@ -11141,7 +11141,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg == null ) ||
                  ( intArg == null ) ||
@@ -11155,71 +11155,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(idv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11296,7 +11296,7 @@ public class Matrix
             }
         }
 
-        
+
         /* now an nominal matrix */
         if ( failures == 0 )
         {
@@ -11338,7 +11338,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg == null ) ||
                  ( intArg == null ) ||
@@ -11352,71 +11352,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(ndv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11493,7 +11493,7 @@ public class Matrix
             }
         }
 
-        
+
         /* now a predicate matrix */
         if ( failures == 0 )
         {
@@ -11536,7 +11536,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg == null ) ||
                  ( intArg == null ) ||
@@ -11550,71 +11550,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(pdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11690,7 +11690,7 @@ public class Matrix
                                                     "arg");
             }
         }
-        
+
 
         /* now a text matrix */
         if ( failures == 0 )
@@ -11709,7 +11709,7 @@ public class Matrix
             try
             {
                 fargID = text_mve.getFormalArg(0).getID();
-                arg = new TextStringDataValue(db, fargID, 
+                arg = new TextStringDataValue(db, fargID,
                                               "yet another text string");
                 floatArg = new FloatDataValue(db);
                 floatArg.setItsValue(1066.0);
@@ -11735,7 +11735,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( floatArg == null ) ||
                  ( intArg == null ) ||
@@ -11749,71 +11749,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(tsdv)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -11889,8 +11889,8 @@ public class Matrix
                                                     "arg");
             }
         }
-        
-        
+
+
         /* we have save matrix matricies for last -- in theory
          * only need to test the single entry case below.  However,
          * we will start with that, and then do some spot checks on
@@ -11936,7 +11936,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( floatArg == null ) ||
                  ( intArg == null ) ||
                  ( nomArg == null ) ||
@@ -11949,65 +11949,65 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(m2adv)";
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12075,7 +12075,7 @@ public class Matrix
                                                     "tsArg");
             }
         }
-        
+
         /* repeat the above test, only with fargIDs set:
          */
         if ( failures == 0 )
@@ -12097,13 +12097,13 @@ public class Matrix
                 floatArg = new FloatDataValue(db, fargID, 1066.0);
                 intArg = new IntDataValue(db, fargID, 1903);
                 nomArg = new NominalDataValue(db, fargID, "yan");
-                predArg = new PredDataValue(db, fargID, 
+                predArg = new PredDataValue(db, fargID,
                             new Predicate(db, pve1_ID));
                 textArg = new TextStringDataValue(db, fargID, "yats");
                 qsArg = new QuoteStringDataValue(db, fargID, "yaqs");
-                tsArg = new TimeStampDataValue(db, fargID, 
+                tsArg = new TimeStampDataValue(db, fargID,
                             new TimeStamp(db.getTicks(), 60));
-                undefArg = new UndefinedDataValue(db, fargID, 
+                undefArg = new UndefinedDataValue(db, fargID,
                             matrix_mve2.getFormalArg(0).getFargName());
 
                 completed = true;
@@ -12114,7 +12114,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( floatArg == null ) ||
                  ( intArg == null ) ||
                  ( nomArg == null ) ||
@@ -12127,65 +12127,65 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(m2dv)";
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12253,8 +12253,8 @@ public class Matrix
                                                     "tsArg");
             }
         }
-        
-        
+
+
         /* finally, do some spot checks of replaceArg()/getArg() on matricies
          * of length greater than one -- in the first pass, we will not assign
          * fargIDs.
@@ -12297,7 +12297,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( floatArg == null ) ||
                  ( intArg == null ) ||
                  ( nomArg == null ) ||
@@ -12310,65 +12310,65 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(m0adv)";
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12436,9 +12436,9 @@ public class Matrix
                                                     "tsArg");
             }
         }
-        
+
         /* and a simlar test, with fargIDs set */
-        
+
         if ( failures == 0 )
         {
             floatArg = null;
@@ -12463,7 +12463,7 @@ public class Matrix
                 nomArg = new NominalDataValue(db, fargID, "yan");
 
                 fargID = matrix_mve0.getFormalArg(3).getID();
-                predArg = new PredDataValue(db, fargID, 
+                predArg = new PredDataValue(db, fargID,
                             new Predicate(db, pve1_ID));
 
                 fargID = matrix_mve0.getFormalArg(6).getID();
@@ -12473,11 +12473,11 @@ public class Matrix
                 qsArg = new QuoteStringDataValue(db, fargID, "yaqs");
 
                 fargID = matrix_mve0.getFormalArg(5).getID();
-                tsArg = new TimeStampDataValue(db, fargID, 
+                tsArg = new TimeStampDataValue(db, fargID,
                             new TimeStamp(db.getTicks(), 360));
 
                 fargID = matrix_mve0.getFormalArg(6).getID();
-                undefArg = new UndefinedDataValue(db, fargID, 
+                undefArg = new UndefinedDataValue(db, fargID,
                             matrix_mve0.getFormalArg(6).getFargName());
 
                 fargID = matrix_mve0.getFormalArg(6).getID();
@@ -12491,7 +12491,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( floatArg == null ) ||
                  ( intArg == null ) ||
                  ( nomArg == null ) ||
@@ -12505,71 +12505,71 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(m0dv)";
-                    
+
                     if ( floatArg == null )
                     {
                         outStream.printf("%s: Allocation of floatArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( intArg == null )
                     {
                         outStream.printf("%s: Allocation of intArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( nomArg == null )
                     {
                         outStream.printf("%s: Allocation of nomArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( predArg == null )
                     {
                         outStream.printf("%s: Allocation of predArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( textArg == null )
                     {
                         outStream.printf("%s: Allocation of textArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( qsArg == null )
                     {
                         outStream.printf("%s: Allocation of qsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( tsArg == null )
                     {
                         outStream.printf("%s: Allocation of tsArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( undefArg == null )
                     {
                         outStream.printf("%s: Allocation of undefArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12645,20 +12645,20 @@ public class Matrix
                                                     "arg");
             }
         }
-        
+
         /* we have now tested replaceArg() and getArg() against all
          * type combinations.  Must now go through the rest of the
          * cases in which failures are expected.
          */
-        
+
         /* verify failure on a farg ID mismatch. */
-        
+
         if ( failures == 0 )
         {
             goodArg = null;
             badArg = null;
             completed = false;
-            threwSystemErrorException = false; 
+            threwSystemErrorException = false;
             try
             {
                 fargID = matrix_mve1.getFormalArg(0).getID();
@@ -12675,36 +12675,36 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( badArg == null ) ||
                  ( goodArg == null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(fID)";
-                    
+
                     if ( goodArg == null )
                     {
                         outStream.printf("%s: Allocation of goodArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( badArg == null )
                     {
                         outStream.printf("%s: Allocation of badArg failed.\n",
                                          testTag);
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf("%s: arg allocation did not complete.\n",
                                          testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf(
@@ -12740,8 +12740,8 @@ public class Matrix
                                                     "badArg");
             }
         }
-        
-        
+
+
         /* next, verify that getArg() and replaceArg() fail when supplied
          * invalid indexes.
          */
@@ -12750,12 +12750,12 @@ public class Matrix
         {
             arg = null;
             completed = false;
-            threwSystemErrorException = false; 
+            threwSystemErrorException = false;
             try
             {
                 arg = new FloatDataValue(db);
                 ((FloatDataValue)arg).setItsValue(28.0);
-                
+
                 float_matrix.replaceArg(-1, arg);
 
                 completed = true;
@@ -12766,30 +12766,30 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(bad_idx0)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                                        
+
                     if ( completed )
                     {
                         outStream.printf(
                             "%s: float_matrix.replaceArg(-1, arg) completed.\n",
                             testTag);
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("%s: float_matrix.replaceArg(-1, " +
@@ -12799,18 +12799,18 @@ public class Matrix
                 }
             }
         }
-        
+
         /* replaceArg() with index too big */
         if ( failures == 0 )
         {
             arg = null;
             completed = false;
-            threwSystemErrorException = false; 
+            threwSystemErrorException = false;
             try
             {
                 arg = new FloatDataValue(db);
                 ((FloatDataValue)arg).setItsValue(28.0);
-                
+
                 matrix_matrix1.replaceArg(3, arg);
 
                 completed = true;
@@ -12821,30 +12821,30 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg == null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(bad_idx1)";
-                    
+
                     if ( arg == null )
                     {
                         outStream.printf("%s: Allocation of arg failed.\n",
                                          testTag);
                     }
-                                        
+
                     if ( completed )
                     {
                         outStream.printf(
                             "%s: matrix_matrix1.replaceArg(3, arg) completed.\n",
                             testTag);
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("%s: matrix_matrix1.replaceArg(3, " +
@@ -12860,7 +12860,7 @@ public class Matrix
         {
             arg = null;
             completed = false;
-            threwSystemErrorException = false; 
+            threwSystemErrorException = false;
             try
             {
                 arg = matrix_matrix1.getArg(-1);
@@ -12873,31 +12873,31 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(bad_idx2)";
-                    
+
                     if ( arg != null )
                     {
                         outStream.printf(
                                 "%s: matrix_matrix1.getArg(-1) returned.\n",
                                 testTag);
                     }
-                                        
+
                     if ( completed )
                     {
                         outStream.printf(
                             "%s: matrix_matrix1.getArg(-1) completed.\n",
                             testTag);
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("%s: matrix_matrix1.getArg(-1) " +
@@ -12913,7 +12913,7 @@ public class Matrix
         {
             arg = null;
             completed = false;
-            threwSystemErrorException = false; 
+            threwSystemErrorException = false;
             try
             {
                 arg = float_matrix.getArg(1);
@@ -12926,30 +12926,30 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( arg != null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String testTag = "(bad_idx3)";
-                    
+
                     if ( arg != null )
                     {
                         outStream.printf("%s: float_matrix.getArg(1) " +
                                 "returned non-null.\n", testTag);
                     }
-                                        
+
                     if ( ! completed )
                     {
                         outStream.printf(
                             "%s: float_matrix.getArg(1) failed to complete.\n",
                             testTag);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s: float_matrix.getArg(1) " +
@@ -12959,7 +12959,7 @@ public class Matrix
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -12988,25 +12988,25 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::TestArgListManagement() */
-    
+
 
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 10/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -13050,13 +13050,13 @@ public class Matrix
         Vector<DataValue> nominal_matrix_arg_list = null;
         Vector<DataValue> pred_matrix_arg_list = null;
         Vector<DataValue> text_matrix_arg_list = null;
-        Matrix float_matrix = null;        
+        Matrix float_matrix = null;
         Matrix float_matrix_copy = null;
-        Matrix empty_float_matrix = null;        
+        Matrix empty_float_matrix = null;
         Matrix empty_float_matrix_copy = null;
-        Matrix int_matrix = null;        
+        Matrix int_matrix = null;
         Matrix int_matrix_copy = null;
-        Matrix empty_int_matrix = null;        
+        Matrix empty_int_matrix = null;
         Matrix empty_int_matrix_copy = null;
         Matrix matrix_matrix0 = null;
         Matrix matrix_matrix0_copy = null;
@@ -13090,14 +13090,14 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
@@ -13106,21 +13106,21 @@ public class Matrix
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -13139,7 +13139,7 @@ public class Matrix
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -13150,7 +13150,7 @@ public class Matrix
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -13158,38 +13158,38 @@ public class Matrix
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( float_mve == null ) ||
@@ -13223,63 +13223,63 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -13290,18 +13290,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -13312,18 +13312,18 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -13334,65 +13334,65 @@ public class Matrix
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -13401,7 +13401,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // having set up a selection of test mve's, now try to allocate some
         // matricies.  Use toString and toDBString to verify that they are
         // initialized correctly.
@@ -13419,7 +13419,7 @@ public class Matrix
             String nominal_matrix_string = "(another_nominal)";
             String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
             String text_matrix_string = "(a text string)";
-            String float_matrix_DBstring = 
+            String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
                             "(argList ((FloatDataValue (id 0) " +
@@ -13430,7 +13430,7 @@ public class Matrix
                                                       "(subRange false) " +
                                                       "(minVal 0.0) " +
                                                       "(maxVal 0.0))))))";
-            String int_matrix_DBstring = 
+            String int_matrix_DBstring =
                     "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13442,7 +13442,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String matrix_matrix0_DBstring = 
+            String matrix_matrix0_DBstring =
                     "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13509,7 +13509,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String matrix_matrix1_DBstring = 
+            String matrix_matrix1_DBstring =
                     "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13533,7 +13533,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String matrix_matrix2_DBstring = 
+            String matrix_matrix2_DBstring =
                     "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
@@ -13543,7 +13543,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String nominal_matrix_DBstring = 
+            String nominal_matrix_DBstring =
                     "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13553,7 +13553,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue another_nominal) " +
                                     "(subRange false))))))";
-            String pred_matrix_DBstring = 
+            String pred_matrix_DBstring =
                     "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13580,7 +13580,7 @@ public class Matrix
                                                     "(itsValue <arg2>) " +
                                                     "(subRange false))))))) " +
                                     "(subRange false))))))";
-            String text_matrix_DBstring = 
+            String text_matrix_DBstring =
                     "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13592,14 +13592,14 @@ public class Matrix
                                     "(subRange false))))))";
             String empty_float_matrix_string = "(0.0)";
             String empty_int_matrix_string = "(0)";
-            String empty_matrix_matrix0_string = 
+            String empty_matrix_matrix0_string =
                     "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String empty_matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String empty_matrix_matrix2_string = "(<arg1>)";
             String empty_nominal_matrix_string = "()";
             String empty_pred_matrix_string = "(())";
             String empty_text_matrix_string = "()";
-            String empty_float_matrix_DBstring = 
+            String empty_float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13611,7 +13611,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0.0) " +
                                     "(maxVal 0.0))))))";
-            String empty_int_matrix_DBstring = 
+            String empty_int_matrix_DBstring =
                     "(Matrix (mveID 10) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13623,7 +13623,7 @@ public class Matrix
                                     "(subRange false) " +
                                     "(minVal 0) " +
                                     "(maxVal 0))))))";
-            String empty_matrix_matrix0_DBstring = 
+            String empty_matrix_matrix0_DBstring =
                     "(Matrix (mveID 16) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13673,7 +13673,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <untyped>) " +
                                     "(subRange false))))))";
-            String empty_matrix_matrix1_DBstring = 
+            String empty_matrix_matrix1_DBstring =
                     "(Matrix (mveID 34) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13695,7 +13695,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg3>) " +
                                     "(subRange false))))))";
-            String empty_matrix_matrix2_DBstring = 
+            String empty_matrix_matrix2_DBstring =
                     "(Matrix (mveID 44) " +
                             "(varLen true) " +
                             "(argList " +
@@ -13705,7 +13705,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <arg1>) " +
                                     "(subRange false))))))";
-            String empty_nominal_matrix_DBstring = 
+            String empty_nominal_matrix_DBstring =
                     "(Matrix (mveID 50) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13715,7 +13715,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
-            String empty_pred_matrix_DBstring = 
+            String empty_pred_matrix_DBstring =
                     "(Matrix (mveID 56) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13725,7 +13725,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue ()) " +
                                     "(subRange false))))))";
-            String empty_text_matrix_DBstring = 
+            String empty_text_matrix_DBstring =
                     "(Matrix (mveID 62) " +
                             "(varLen false) " +
                             "(argList " +
@@ -13735,7 +13735,7 @@ public class Matrix
                                     "(itsCellID 0) " +
                                     "(itsValue <null>) " +
                                     "(subRange false))))))";
-             
+
             completed = false;
             threwSystemErrorException = false;
             try
@@ -13744,17 +13744,17 @@ public class Matrix
                 fargID = float_mve.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 11.0);
                 float_matrix_arg_list.add(arg);
-                float_matrix = new Matrix(db, float_mve_ID, 
+                float_matrix = new Matrix(db, float_mve_ID,
                                           float_matrix_arg_list);
-                
-                
+
+
                 int_matrix_arg_list = new Vector<DataValue>();
                 fargID = int_mve.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 22);
                 int_matrix_arg_list.add(arg);
                 int_matrix = new Matrix(db, int_mve_ID, int_matrix_arg_list);
-                
-                
+
+
                 matrix_matrix0_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve0.getFormalArg(0).getID();
                 arg = new FloatDataValue(db, fargID, 1.0);
@@ -13772,63 +13772,63 @@ public class Matrix
                 arg = new QuoteStringDataValue(db, fargID, "q-string");
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_matrix0_arg_list.add(arg);
                 fargID = matrix_mve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve0.getFormalArg(6).getFargName());
                 matrix_matrix0_arg_list.add(arg);
-                matrix_matrix0 = new Matrix(db, matrix_mve0_ID, 
+                matrix_matrix0 = new Matrix(db, matrix_mve0_ID,
                                             matrix_matrix0_arg_list);
-                
-                
+
+
                 matrix_matrix1_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve1.getFormalArg(0).getID();
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(1).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(1).getFargName());
                 matrix_matrix1_arg_list.add(arg);
                 fargID = matrix_mve1.getFormalArg(2).getID();
                 arg = new IntDataValue(db, fargID, 88);
                 matrix_matrix1_arg_list.add(arg);
-                matrix_matrix1 = new Matrix(db, matrix_mve1_ID, 
+                matrix_matrix1 = new Matrix(db, matrix_mve1_ID,
                                             matrix_matrix1_arg_list);
-                
-                
+
+
                 matrix_matrix2_arg_list = new Vector<DataValue>();
                 fargID = matrix_mve2.getFormalArg(0).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                      matrix_mve1.getFormalArg(0).getFargName());
                 matrix_matrix2_arg_list.add(arg);
-                matrix_matrix2 = new Matrix(db, matrix_mve2_ID, 
+                matrix_matrix2 = new Matrix(db, matrix_mve2_ID,
                                             matrix_matrix2_arg_list);
-                
-                
+
+
                 nominal_matrix_arg_list = new Vector<DataValue>();
                 fargID = nominal_mve.getFormalArg(0).getID();
                 arg = new NominalDataValue(db, fargID, "another_nominal");
                 nominal_matrix_arg_list.add(arg);
                 nominal_matrix = new Matrix(db, nominal_mve_ID,
                                             nominal_matrix_arg_list);
-                
-                
+
+
                 pred_matrix_arg_list = new Vector<DataValue>();
                 fargID = pred_mve.getFormalArg(0).getID();
                 arg = new PredDataValue(db, fargID, new Predicate(db, pve0_ID));
                 pred_matrix_arg_list.add(arg);
                 pred_matrix = new Matrix(db, pred_mve_ID, pred_matrix_arg_list);
-                
-                
+
+
                 text_matrix_arg_list = new Vector<DataValue>();
                 fargID = text_mve.getFormalArg(0).getID();
                 arg = new TextStringDataValue(db, fargID, "a text string");
                 text_matrix_arg_list.add(arg);
                 text_matrix = new Matrix(db, text_mve_ID, text_matrix_arg_list);
 
-                
+
                 empty_float_matrix   = new Matrix(db, float_mve_ID);
                 empty_int_matrix     = new Matrix(db, int_mve_ID);
                 empty_matrix_matrix0 = new Matrix(db, matrix_mve0_ID);
@@ -13838,7 +13838,7 @@ public class Matrix
                 empty_pred_matrix    = new Matrix(db, pred_mve_ID);
                 empty_text_matrix    = new Matrix(db, text_mve_ID);
 
-                
+
                 completed = true;
             }
 
@@ -13847,7 +13847,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_matrix_arg_list == null ) ||
                  ( float_matrix == null ) ||
                  ( int_matrix_arg_list == null ) ||
@@ -13876,7 +13876,7 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix_arg_list == null )
@@ -13884,141 +13884,141 @@ public class Matrix
                         outStream.printf(
                             "allocation of float_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( float_matrix == null )
                     {
                         outStream.printf("allocation of float_matrix failed.\n");
                     }
-                    
+
                     if ( int_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( int_matrix == null )
                     {
                         outStream.printf("allocation of int_matrix failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix0 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix1 failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_matrix2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_matrix2 failed.\n");
                     }
-                    
+
                     if ( nominal_matrix_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_matrix failed.\n");
                     }
-                    
+
                     if ( pred_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_matrix == null )
                     {
                         outStream.printf("allocation of pred_matrix failed.\n");
                     }
-                    
+
                     if ( text_matrix_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_matrix_arg_list failed.\n");
                     }
-                    
+
                     if ( text_matrix == null )
                     {
                         outStream.printf("allocation of text_matrix failed.\n");
                     }
-                    
+
                     if ( empty_float_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of empty_float_matrix failed.\n");
                     }
-                    
-                    if ( empty_int_matrix == null ) 
+
+                    if ( empty_int_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of empty_int_matrix failed.\n");
                     }
-                    
-                    if ( empty_matrix_matrix0 == null ) 
+
+                    if ( empty_matrix_matrix0 == null )
                     {
                         outStream.printf(
                                 "allocation of empty_matrix_matrix0 failed.\n");
                     }
-                    
-                    if ( empty_matrix_matrix1 == null ) 
+
+                    if ( empty_matrix_matrix1 == null )
                     {
                         outStream.printf(
                                 "allocation of empty_matrix_matrix1 failed.\n");
                     }
-                    
-                    if ( empty_matrix_matrix2 == null ) 
+
+                    if ( empty_matrix_matrix2 == null )
                     {
                         outStream.printf(
                                 "allocation of empty_matrix_matrix2 failed.\n");
                     }
-                    
-                    if ( empty_nominal_matrix == null ) 
+
+                    if ( empty_nominal_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of empty_nominal_matrix failed.\n");
                     }
-                    
-                    if ( empty_pred_matrix == null ) 
+
+                    if ( empty_pred_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of empty_pred_matrix failed.\n");
                     }
-                    
-                    if ( empty_text_matrix == null ) 
+
+                    if ( empty_text_matrix == null )
                     {
                         outStream.printf(
                                 "allocation of empty_text_matrix failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print(
@@ -14051,7 +14051,7 @@ public class Matrix
                         compareTo(text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toString().
@@ -14061,7 +14061,7 @@ public class Matrix
                                 "unexpected float_matrix.toString(): %s\n",
                                 float_matrix.toString());
                     }
-                    
+
                     if ( int_matrix.toString().
                          compareTo(int_matrix_string) != 0 )
                     {
@@ -14069,7 +14069,7 @@ public class Matrix
                                 "unexpected int_matrix.toString(): %s\n",
                                 int_matrix.toString());
                     }
-                    
+
                     if ( matrix_matrix0.toString().
                          compareTo(matrix_matrix0_string) != 0 )
                     {
@@ -14077,7 +14077,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toString(): %s\n",
                                 matrix_matrix0.toString());
                     }
-                    
+
                     if ( matrix_matrix1.toString().
                          compareTo(matrix_matrix1_string) != 0 )
                     {
@@ -14085,7 +14085,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toString(): %s\n",
                                 matrix_matrix1.toString());
                     }
-                    
+
                     if ( matrix_matrix2.toString().
                          compareTo(matrix_matrix2_string) != 0 )
                     {
@@ -14093,7 +14093,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toString(): %s\n",
                                 matrix_matrix2.toString());
                     }
-                    
+
                     if ( nominal_matrix.toString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -14101,7 +14101,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toString(): %s\n",
                                 nominal_matrix.toString());
                     }
-                    
+
                     if ( pred_matrix.toString().
                          compareTo(pred_matrix_string) != 0 )
                     {
@@ -14109,7 +14109,7 @@ public class Matrix
                                 "unexpected pred_matrix.toString(): %s\n",
                                 pred_matrix.toString());
                     }
-                    
+
                     if ( text_matrix.toString().
                          compareTo(text_matrix_string) != 0 )
                     {
@@ -14137,7 +14137,7 @@ public class Matrix
                         compareTo(text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_matrix.toDBString().
@@ -14147,7 +14147,7 @@ public class Matrix
                                 "unexpected float_matrix.toDBString(): %s\n",
                                 float_matrix.toDBString());
                     }
-                    
+
                     if ( int_matrix.toDBString().
                          compareTo(int_matrix_DBstring) != 0 )
                     {
@@ -14155,7 +14155,7 @@ public class Matrix
                                 "unexpected int_matrix.toDBString(): %s\n",
                                 int_matrix.toDBString());
                     }
-                    
+
                     if ( matrix_matrix0.toDBString().
                          compareTo(matrix_matrix0_DBstring) != 0 )
                     {
@@ -14163,7 +14163,7 @@ public class Matrix
                                 "unexpected matrix_matrix0.toDBString(): %s\n",
                                 matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( matrix_matrix1.toDBString().
                          compareTo(matrix_matrix1_DBstring) != 0 )
                     {
@@ -14171,7 +14171,7 @@ public class Matrix
                                 "unexpected matrix_matrix1.toDBString(): %s\n",
                                 matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( matrix_matrix2.toDBString().
                          compareTo(matrix_matrix2_DBstring) != 0 )
                     {
@@ -14179,7 +14179,7 @@ public class Matrix
                                 "unexpected matrix_matrix2.toDBString(): %s\n",
                                 matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( nominal_matrix.toDBString().
                          compareTo(nominal_matrix_string) != 0 )
                     {
@@ -14187,7 +14187,7 @@ public class Matrix
                                 "unexpected nominal_matrix.toDBString(): %s\n",
                                 nominal_matrix.toDBString());
                     }
-                    
+
                     if ( pred_matrix.toDBString().
                          compareTo(pred_matrix_DBstring) != 0 )
                     {
@@ -14195,7 +14195,7 @@ public class Matrix
                                 "unexpected pred_matrix.toDBString(): %s\n",
                                 pred_matrix.toDBString());
                     }
-                    
+
                     if ( text_matrix.toDBString().
                          compareTo(text_matrix_DBstring) != 0 )
                     {
@@ -14223,7 +14223,7 @@ public class Matrix
                         compareTo(empty_text_matrix_string) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( empty_float_matrix.toString().
@@ -14233,7 +14233,7 @@ public class Matrix
                             "unexpected empty_float_matrix.toString(): %s\n",
                             empty_float_matrix.toString());
                     }
-                    
+
                     if ( empty_int_matrix.toString().
                          compareTo(empty_int_matrix_string) != 0 )
                     {
@@ -14241,7 +14241,7 @@ public class Matrix
                                 "unexpected empty_int_matrix.toString(): %s\n",
                                 empty_int_matrix.toString());
                     }
-                    
+
                     if ( empty_matrix_matrix0.toString().
                          compareTo(empty_matrix_matrix0_string) != 0 )
                     {
@@ -14249,7 +14249,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix0.toString(): %s\n",
                             empty_matrix_matrix0.toString());
                     }
-                    
+
                     if ( empty_matrix_matrix1.toString().
                          compareTo(empty_matrix_matrix1_string) != 0 )
                     {
@@ -14257,7 +14257,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix1.toString(): %s\n",
                             empty_matrix_matrix1.toString());
                     }
-                    
+
                     if ( empty_matrix_matrix2.toString().
                          compareTo(empty_matrix_matrix2_string) != 0 )
                     {
@@ -14265,7 +14265,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix2.toString(): %s\n",
                             empty_matrix_matrix2.toString());
                     }
-                    
+
                     if ( empty_nominal_matrix.toString().
                          compareTo(empty_nominal_matrix_string) != 0 )
                     {
@@ -14273,7 +14273,7 @@ public class Matrix
                              "unexpected empty_nominal_matrix.toString(): %s\n",
                              empty_nominal_matrix.toString());
                     }
-                    
+
                     if ( empty_pred_matrix.toString().
                          compareTo(empty_pred_matrix_string) != 0 )
                     {
@@ -14281,7 +14281,7 @@ public class Matrix
                                 "unexpected empty_pred_matrix.toString(): %s\n",
                                 empty_pred_matrix.toString());
                     }
-                    
+
                     if ( empty_text_matrix.toString().
                          compareTo(empty_text_matrix_string) != 0 )
                     {
@@ -14309,7 +14309,7 @@ public class Matrix
                         compareTo(empty_text_matrix_DBstring) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( empty_float_matrix.toDBString().
@@ -14319,7 +14319,7 @@ public class Matrix
                             "unexpected empty_float_matrix.toDBString(): %s\n",
                             empty_float_matrix.toDBString());
                     }
-                    
+
                     if ( empty_int_matrix.toDBString().
                          compareTo(empty_int_matrix_DBstring) != 0 )
                     {
@@ -14327,7 +14327,7 @@ public class Matrix
                                 "unexpected empty_int_matrix.toDBString(): %s\n",
                                 empty_int_matrix.toDBString());
                     }
-                    
+
                     if ( empty_matrix_matrix0.toDBString().
                          compareTo(empty_matrix_matrix0_DBstring) != 0 )
                     {
@@ -14335,7 +14335,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix0.toDBString(): %s\n",
                             empty_matrix_matrix0.toDBString());
                     }
-                    
+
                     if ( empty_matrix_matrix1.toDBString().
                          compareTo(empty_matrix_matrix1_DBstring) != 0 )
                     {
@@ -14343,7 +14343,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix1.toDBString(): %s\n",
                             empty_matrix_matrix1.toDBString());
                     }
-                    
+
                     if ( empty_matrix_matrix2.toDBString().
                          compareTo(empty_matrix_matrix2_DBstring) != 0 )
                     {
@@ -14351,7 +14351,7 @@ public class Matrix
                             "unexpected empty_matrix_matrix2.toDBString(): %s\n",
                             empty_matrix_matrix2.toDBString());
                     }
-                    
+
                     if ( empty_nominal_matrix.toDBString().
                          compareTo(empty_nominal_matrix_DBstring) != 0 )
                     {
@@ -14359,7 +14359,7 @@ public class Matrix
                              "unexpected empty_nominal_matrix.toDBString(): %s\n",
                              empty_nominal_matrix.toDBString());
                     }
-                    
+
                     if ( empty_pred_matrix.toDBString().
                          compareTo(empty_pred_matrix_DBstring) != 0 )
                     {
@@ -14367,7 +14367,7 @@ public class Matrix
                                 "unexpected empty_pred_matrix.toDBString(): %s\n",
                                 empty_pred_matrix.toDBString());
                     }
-                    
+
                     if ( empty_text_matrix.toDBString().
                          compareTo(empty_text_matrix_DBstring) != 0 )
                     {
@@ -14378,7 +14378,7 @@ public class Matrix
                 }
             }
         }
-        
+
         // setup is complete -- now try to make the copies
         if ( failures == 0 )
         {
@@ -14412,7 +14412,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( empty_float_matrix_copy == null ) ||
                  ( empty_int_matrix_copy == null ) ||
                  ( empty_matrix_matrix0_copy == null ) ||
@@ -14433,108 +14433,108 @@ public class Matrix
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( empty_float_matrix_copy == null )
                 {
                     outStream.printf(
                             "empty_float_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_int_matrix_copy == null )
                 {
                     outStream.printf(
                             "empty_int_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_matrix_matrix0_copy == null )
                 {
                     outStream.printf(
                             "empty_matrix_matrix0_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_matrix_matrix1_copy == null )
                 {
                     outStream.printf(
                             "empty_matrix_matrix1_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_matrix_matrix2_copy == null )
                 {
                     outStream.printf(
                             "empty_matrix_matrix2_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_nominal_matrix_copy == null )
                 {
                     outStream.printf(
                             "empty_nominal_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_pred_matrix_copy == null )
                 {
                     outStream.printf(
                             "empty_pred_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( empty_text_matrix_copy == null )
                 {
                     outStream.printf(
                             "empty_text_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( float_matrix_copy == null )
                 {
                     outStream.printf(
                             "float_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( int_matrix_copy == null )
                 {
                     outStream.printf(
                             "int_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( matrix_matrix0_copy == null )
                 {
                     outStream.printf(
                             "matrix_matrix0_copy allocation failed.\n");
                 }
-                
+
                 if ( matrix_matrix1_copy == null )
                 {
                     outStream.printf(
                             "matrix_matrix1_copy allocation failed.\n");
                 }
-                
+
                 if ( matrix_matrix2_copy == null )
                 {
                     outStream.printf(
                             "matrix_matrix2_copy allocation failed.\n");
                 }
-                
+
                 if ( nominal_matrix_copy == null )
                 {
                     outStream.printf(
                             "nominal_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( pred_matrix_copy == null )
                 {
                     outStream.printf(
                             "pred_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( text_matrix_copy == null )
                 {
                     outStream.printf(
                             "text_matrix_copy allocation failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of copies failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -14543,168 +14543,168 @@ public class Matrix
                 }
             }
         }
-        
+
         // if failures == 0, check to see if the copies are valid */
         if ( failures == 0 )
         {
-            failures += VerifyMatrixCopy(empty_float_matrix, 
+            failures += VerifyMatrixCopy(empty_float_matrix,
                                          empty_float_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_float_matrix",
                                          "empty_float_matrix_copy");
-            
-            failures += VerifyMatrixCopy(empty_int_matrix, 
+
+            failures += VerifyMatrixCopy(empty_int_matrix,
                                          empty_int_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_int_matrix",
                                          "empty_int_matrix_copy");
-            
-            failures += VerifyMatrixCopy(empty_matrix_matrix0, 
+
+            failures += VerifyMatrixCopy(empty_matrix_matrix0,
                                          empty_matrix_matrix0_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix0",
                                          "empty_matrix_matrix0_copy");
-            
-            failures += VerifyMatrixCopy(empty_matrix_matrix1, 
+
+            failures += VerifyMatrixCopy(empty_matrix_matrix1,
                                          empty_matrix_matrix1_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix1",
                                          "empty_matrix_matrix1_copy");
-            
-            failures += VerifyMatrixCopy(empty_matrix_matrix2, 
+
+            failures += VerifyMatrixCopy(empty_matrix_matrix2,
                                          empty_matrix_matrix2_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix2",
                                          "empty_matrix_matrix2_copy");
-            
-            failures += VerifyMatrixCopy(empty_nominal_matrix, 
+
+            failures += VerifyMatrixCopy(empty_nominal_matrix,
                                          empty_nominal_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_nominal_matrix",
                                          "empty_nominal_matrix_copy");
-            
-            failures += VerifyMatrixCopy(empty_pred_matrix, 
+
+            failures += VerifyMatrixCopy(empty_pred_matrix,
                                          empty_pred_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_pred_matrix",
                                          "empty_pred_matrix_copy");
-            
-            failures += VerifyMatrixCopy(empty_text_matrix, 
+
+            failures += VerifyMatrixCopy(empty_text_matrix,
                                          empty_text_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_text_matrix",
                                          "empty_text_matrix_copy");
-            
-            failures += VerifyMatrixCopy(float_matrix, 
+
+            failures += VerifyMatrixCopy(float_matrix,
                                          float_matrix_copy,
                                          outStream,
                                          verbose,
                                          "float_matrix",
                                          "float_matrix_copy");
-            
-            failures += VerifyMatrixCopy(int_matrix, 
+
+            failures += VerifyMatrixCopy(int_matrix,
                                          int_matrix_copy,
                                          outStream,
                                          verbose,
                                          "int_matrix",
                                          "int_matrix_copy");
-            
-            failures += VerifyMatrixCopy(matrix_matrix0, 
+
+            failures += VerifyMatrixCopy(matrix_matrix0,
                                          matrix_matrix0_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix0",
                                          "matrix_matrix0_copy");
-            
-            failures += VerifyMatrixCopy(matrix_matrix1, 
+
+            failures += VerifyMatrixCopy(matrix_matrix1,
                                          matrix_matrix1_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix1",
                                          "matrix_matrix1_copy");
-            
-            failures += VerifyMatrixCopy(matrix_matrix2, 
+
+            failures += VerifyMatrixCopy(matrix_matrix2,
                                          matrix_matrix2_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix2",
                                          "matrix_matrix2_copy");
-            
-            failures += VerifyMatrixCopy(nominal_matrix, 
+
+            failures += VerifyMatrixCopy(nominal_matrix,
                                          nominal_matrix_copy,
                                          outStream,
                                          verbose,
                                          "nominal_matrix",
                                          "nominal_matrix_copy");
-            
-            failures += VerifyMatrixCopy(pred_matrix, 
+
+            failures += VerifyMatrixCopy(pred_matrix,
                                          pred_matrix_copy,
                                          outStream,
                                          verbose,
                                          "pred_matrix",
                                          "pred_matrix_copy");
-            
-            failures += VerifyMatrixCopy(text_matrix, 
+
+            failures += VerifyMatrixCopy(text_matrix,
                                          text_matrix_copy,
                                          outStream,
                                          verbose,
                                          "text_matrix",
                                          "text_matrix_copy");
         }
-        
-        /* now verify that the copy constructor fails when passed an invalid 
-         * reference to a Matrix.  For now, this just means passing in a 
+
+        /* now verify that the copy constructor fails when passed an invalid
+         * reference to a Matrix.  For now, this just means passing in a
          * null.
          */
         m0 = null;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             m0 = new Matrix((Matrix)null);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
+
         if ( ( m0 != null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( m0 != null )
                 {
                     outStream.print("new Matrix(null) != null.\n");
                 }
-                
+
                 if ( completed )
                 {
                     outStream.print("new Matrix(null) completed.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new Matrix(null) " +
                                     "didn't throw a SystemErrorException.\n");
                 }
             }
-        }        
-        
+        }
+
 
         if ( failures > 0 )
         {
@@ -14734,25 +14734,25 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::TestCopyConstructor() */
-    
+
 
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the to string methods for this 
+     *
+     * Run a battery of tests on the to string methods for this
      * class.
-     * 
+     *
      *                                              JRM -- 10/29/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -14801,7 +14801,7 @@ public class Matrix
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database and pve's
         threwSystemErrorException = false;
         completed = false;
@@ -14809,15 +14809,15 @@ public class Matrix
         try
         {
             db = new ODBCDatabase();
-            
+
             pve = new PredicateVocabElement(db, "pve");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve.appendFormalArg(farg);
             pveID = db.addPredVE(pve);
-            
+
             // get a copy of the databases version of pve with ids assigned
             pve = db.getPredVE(pveID);
-            
+
             mve0 = new MatrixVocabElement(db, "mve0");
             mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -14837,15 +14837,15 @@ public class Matrix
             mve0.setVarLen(true);
             db.vl.addElement(mve0);
             mve0ID = mve0.getID();
-            
-            
+
+
             mve1 = new MatrixVocabElement(db, "mve1");
             mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db, "<arg>");
             mve1.appendFormalArg(farg);
             db.vl.addElement(mve1);
             mve1ID = mve1.getID();
-            
+
             completed = true;
         }
 
@@ -14854,7 +14854,7 @@ public class Matrix
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve == null ) ||
              ( pveID == DBIndex.INVALID_ID ) ||
@@ -14866,44 +14866,44 @@ public class Matrix
              ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve == null )
                 {
                     outStream.print("creation of pve failed.\n");
                 }
-                
+
                 if ( pveID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pveID not initialized.\n");
                 }
-                
+
                 if ( mve0 == null )
                 {
                     outStream.print("creation of mve0 failed.\n");
                 }
-                
+
                 if ( mve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("mve0ID not initialized.\n");
                 }
-                
+
                 if ( mve1 == null )
                 {
                     outStream.print("creation of mve1 failed.\n");
                 }
-                
+
                 if ( mve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("mve1ID not initialized.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
@@ -14912,15 +14912,15 @@ public class Matrix
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("mve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             SystemErrorExceptionString);
                 }
             }
         }
-        
-        // Setup the matricies that we will used for the toString and 
+
+        // Setup the matricies that we will used for the toString and
         // toDBString tests.
-        
+
         threwSystemErrorException = false;
         completed = false;
 
@@ -14928,7 +14928,7 @@ public class Matrix
         {
             String testString0 = "(1.0, 2, a_nominal, pve(<arg>), " +
                                  "\"q-string\", 00:00:00:000, <untyped>)";
-            String testDBString0 = 
+            String testDBString0 =
                 "(Matrix (mveID 3) " +
                         "(varLen true) " +
                         "(argList " +
@@ -14989,9 +14989,9 @@ public class Matrix
                                 "(itsCellID 500) " +
                                 "(itsValue <untyped>) " +
                                 "(subRange false))))))";
-                         
+
             String testString1 = "(99)";
-            String testDBString1 = 
+            String testDBString1 =
                 "(Matrix (mveID 21) " +
                         "(varLen false) " +
                         "(argList " +
@@ -15003,7 +15003,7 @@ public class Matrix
                                 "(subRange false) " +
                                 "(minVal 0) " +
                                 "(maxVal 0))))))";
-            
+
             try
             {
                 argList0 = new Vector<DataValue>();
@@ -15024,16 +15024,16 @@ public class Matrix
                 arg = new QuoteStringDataValue(db, fargID, "q-string");
                 argList0.add(arg);
                 fargID = mve0.getFormalArg(5).getID();
-                arg = new TimeStampDataValue(db, fargID, 
+                arg = new TimeStampDataValue(db, fargID,
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = mve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID, 
+                arg = new UndefinedDataValue(db, fargID,
                                              mve0.getFormalArg(6).getFargName());
                 argList0.add(arg);
 
                 m0 = new Matrix(db, mve0ID, argList0);
-                
+
                 // set argument IDs to dummy values to test toDBString()
                 m0.argList.get(0).setID(100);
                 m0.argList.get(1).setID(101);
@@ -15042,7 +15042,7 @@ public class Matrix
                 m0.argList.get(4).setID(104);
                 m0.argList.get(5).setID(105);
                 m0.argList.get(6).setID(106);
-                
+
                 // set argument cellIDs to dummy values to test toDBString()
                 m0.argList.get(0).itsCellID = 500;
                 m0.argList.get(1).itsCellID = 500;
@@ -15051,18 +15051,18 @@ public class Matrix
                 m0.argList.get(4).itsCellID = 500;
                 m0.argList.get(5).itsCellID = 500;
                 m0.argList.get(6).itsCellID = 500;
-                
+
                 argList1 = new Vector<DataValue>();
 
                 fargID = mve1.getFormalArg(0).getID();
                 arg = new IntDataValue(db, fargID, 99);
                 argList1.add(arg);
-                
+
                 m1 = new Matrix(db, mve1ID, argList1);
-                
+
                 // set argument IDs to dummy values to test toDBString()
                 m1.argList.get(0).setID(107);
-                
+
                 // set argument cellIDs to dummy values to test toDBString()
                 m1.argList.get(0).itsCellID = 501;
 
@@ -15074,7 +15074,7 @@ public class Matrix
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( argList0 == null ) ||
                  ( argList0.size() != 7 ) ||
                  ( m0 == null ) ||
@@ -15083,7 +15083,7 @@ public class Matrix
                  ( m1 == null ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( argList0 == null )
@@ -15095,7 +15095,7 @@ public class Matrix
                         outStream.printf("unexpected argList0.size(): %d (7).\n",
                                          argList0.size());
                     }
-                    
+
                     if ( argList1 == null )
                     {
                         outStream.print("argList1 allocation failed.\n");
@@ -15105,14 +15105,14 @@ public class Matrix
                         outStream.printf("unexpected argList1.size(): %d (1).\n",
                                          argList1.size());
                     }
-                     
+
                     if ( ( m0 == null ) ||
                          ( m1 == null ) )
                     {
                         outStream.print("one or more Matrix allocation(s) " +
                                         "failed.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.print("test predicate allocation failed " +
@@ -15122,7 +15122,7 @@ public class Matrix
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("test matrix allocation threw a " +
-                                         "SystemErrorException: \"%s\".\n", 
+                                         "SystemErrorException: \"%s\".\n",
                                          SystemErrorExceptionString);
                     }
                 }
@@ -15137,17 +15137,17 @@ public class Matrix
                       ( m1.argList.get(0).getID() != 107 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected m?.argList arg ID(s): " +
                             "%d %d %d %d %d %d %d - %d\n",
-                            m0.argList.get(0).getID(), 
-                            m0.argList.get(1).getID(), 
-                            m0.argList.get(2).getID(), 
-                            m0.argList.get(3).getID(), 
-                            m0.argList.get(4).getID(), 
-                            m0.argList.get(5).getID(), 
+                            m0.argList.get(0).getID(),
+                            m0.argList.get(1).getID(),
+                            m0.argList.get(2).getID(),
+                            m0.argList.get(3).getID(),
+                            m0.argList.get(4).getID(),
+                            m0.argList.get(5).getID(),
                             m0.argList.get(6).getID(),
                             m1.argList.get(0).getID());
                 }
@@ -15156,7 +15156,7 @@ public class Matrix
                       ( m1.toString().compareTo(testString1) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( m0.toString().compareTo(testString0) != 0 )
@@ -15164,7 +15164,7 @@ public class Matrix
                        outStream.printf("Unexpected m0.toString)(): \"%s\"\n",
                                          m0.toString());
                     }
-                    
+
                     if ( m1.toString().compareTo(testString1) != 0 )
                     {
                        outStream.printf("Unexpected m1.toString)(): \"%s\"\n",
@@ -15176,7 +15176,7 @@ public class Matrix
                       ( m1.toDBString().compareTo(testDBString1) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( m0.toDBString().compareTo(testDBString0) != 0 )
@@ -15185,7 +15185,7 @@ public class Matrix
                                "Unexpected m0.toDBString)(): \"%s\"\n",
                                m0.toDBString());
                     }
-                    
+
                     if ( m1.toDBString().compareTo(testDBString1) != 0 )
                     {
                        outStream.printf(
@@ -15195,7 +15195,7 @@ public class Matrix
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -15224,16 +15224,16 @@ public class Matrix
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* Matrix::TestToStringMethods() */
 
-    
+
     /**
      * VerifyArgListAssignment()
      *
-     * Verify that the specified replacement of an argument list 
+     * Verify that the specified replacement of an argument list
      * entry succeeds.
      *                                              JRM -- 11/8/07
      *
@@ -15252,7 +15252,7 @@ public class Matrix
     {
         String systemErrorExceptionString = null;
         boolean completed = false;
-        boolean threwSystemErrorException = false;     
+        boolean threwSystemErrorException = false;
         int failures = 0;
         DataValue old_dv = null;
         DataValue new_dv = null;
@@ -15260,30 +15260,30 @@ public class Matrix
         try
         {
             old_dv = target.getArg(idx);
-            
+
             target.replaceArg(idx, newArg);
-            
+
             new_dv = target.getArg(idx);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( old_dv == null ) ||
              ( old_dv.getItsFargID() == DBIndex.INVALID_ID ) ||
              ( new_dv == null ) ||
              ( new_dv != newArg ) ||
-             ( old_dv.getItsFargID() != new_dv.getItsFargID() ) ||  
+             ( old_dv.getItsFargID() != new_dv.getItsFargID() ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( old_dv == null )
@@ -15292,21 +15292,21 @@ public class Matrix
                             "initial %s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( old_dv.getItsFargID() == DBIndex.INVALID_ID )
                 {
                     outStream.printf("initial %s.getArg(%d).getItsFargID() " +
                             "returned INVALID_ID.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( new_dv == null )
                 {
                     outStream.printf(
                             "%s.replaceArg(%d, %s) failed to complete.\n",
                             targetDesc, idx, newArgDesc);
                 }
-                
+
                 if ( new_dv != newArg )
                 {
                     outStream.printf(
@@ -15314,33 +15314,33 @@ public class Matrix
                         idx, targetDesc, idx, newArgDesc);
                 }
 
-                if ( old_dv.getItsFargID() != new_dv.getItsFargID() )  
+                if ( old_dv.getItsFargID() != new_dv.getItsFargID() )
                 {
                     outStream.printf("unexpected itsFargID after %s.replace" +
                             "Arg(%d, %s). old = %d, new = %d\n",
                             targetDesc, idx, newArgDesc,
                             old_dv.getItsFargID(), new_dv.getItsFargID());
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "%s.replaceArg(%d, %s) test failed to complete.\n",
                         targetDesc, idx, newArgDesc);
-                    
+
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test threw a " +
                             "system error(1): \"%s\"\n",
                             targetDesc, idx, newArgDesc,
                             systemErrorExceptionString);
-                    
+
                 }
             }
         }
-        
+
         if ( new_dv instanceof UndefinedDataValue )
         {
             long target_mve_ID = DBIndex.INVALID_ID;
@@ -15348,7 +15348,7 @@ public class Matrix
             String new_dv_val = null;
             String farg_name = null;
             MatrixVocabElement target_mve = null;
-            
+
             try
             {
                 if ( old_dv instanceof UndefinedDataValue )
@@ -15360,13 +15360,13 @@ public class Matrix
                 target_mve = target.db.getMatrixVE(target_mve_ID);
                 farg_name = target_mve.getFormalArg(idx).getFargName();
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -15376,12 +15376,12 @@ public class Matrix
                                 targetDesc, idx, newArgDesc,
                                 systemErrorExceptionString);
             }
-            
+
             if ( ( old_dv instanceof UndefinedDataValue ) &&
                  ( old_dv_val == null ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test started " +
@@ -15389,11 +15389,11 @@ public class Matrix
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
+
             if ( new_dv_val == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -15401,11 +15401,11 @@ public class Matrix
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
+
             if ( ( old_dv_val != null ) && ( old_dv_val == new_dv_val ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -15413,12 +15413,12 @@ public class Matrix
                         targetDesc, idx, newArgDesc);
                 }
             }
-            
-            if ( ( old_dv_val != null ) && 
+
+            if ( ( old_dv_val != null ) &&
                  ( old_dv_val.compareTo(new_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -15427,11 +15427,11 @@ public class Matrix
                         targetDesc, idx, newArgDesc, old_dv_val, new_dv_val);
                 }
             }
-            
+
             if ( farg_name == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test couldn't " +
@@ -15439,13 +15439,13 @@ public class Matrix
                             targetDesc, idx, newArgDesc);
                 }
             }
-            
+
             if ( ( farg_name != null ) &&
                  ( old_dv_val != null ) &&
                  ( farg_name.compareTo(old_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test started " +
@@ -15454,12 +15454,12 @@ public class Matrix
                         targetDesc, idx, newArgDesc, farg_name, old_dv_val);
                 }
             }
-            
+
             if ( ( farg_name != null ) &&
                  ( farg_name.compareTo(new_dv_val) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test finished " +
@@ -15471,14 +15471,14 @@ public class Matrix
         }
 
         return failures;
-        
+
     } /* VerifyArgListAssignment() */
 
 
     /**
      * VerifyArgListAsgnmntFails()
      *
-     * Verify that the specified replacement of an argument list 
+     * Verify that the specified replacement of an argument list
      * entry fails.
      *                                              JRM -- 11/8/07
      *
@@ -15497,7 +15497,7 @@ public class Matrix
     {
         String systemErrorExceptionString = null;
         boolean completed = false;
-        boolean threwSystemErrorException = false;     
+        boolean threwSystemErrorException = false;
         int failures = 0;
         DataValue old_dv = null;
         DataValue new_dv = null;
@@ -15505,24 +15505,24 @@ public class Matrix
         try
         {
             old_dv = target.getArg(idx);
-            
+
             target.replaceArg(idx, newArg);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( old_dv == null ) ||
              ( completed ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( old_dv == null )
@@ -15531,48 +15531,48 @@ public class Matrix
                             "%s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                                
+
                 if ( completed )
                 {
                     outStream.printf(
                         "%s.replaceArg(%d, %s) test completed.\n",
                         targetDesc, idx, newArgDesc);
-                    
+
                 }
-                                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.printf("%s.replaceArg(%d, %s) test " +
                             "failed to throw a system error.\n",
                             targetDesc, idx, newArgDesc);
-                    
+
                 }
             }
         }
 
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             new_dv = target.getArg(idx);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( new_dv == null ) ||
              ( new_dv != old_dv ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( new_dv == null )
@@ -15581,43 +15581,43 @@ public class Matrix
                             "%s.getArg(%d) failed to complete.\n",
                             targetDesc, idx);
                 }
-                
+
                 if ( new_dv != old_dv )
                 {
                     outStream.printf(
                         "unexpected getArg(%d) after %s.replaceArg(%d, %s).\n",
                         idx, targetDesc, idx, newArgDesc);
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "%s.getArg(%d) test failed to complete.\n",
                         targetDesc, idx);
-                    
+
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("%s.getArg(%d) test threw " +
                             "system error: \"%s\"\n",
                             targetDesc, idx,
                             systemErrorExceptionString);
-                    
+
                 }
             }
         }
 
         return failures;
-        
+
     } /* Matrix::VerifyArgListAsgnmntFails() */
 
 
     /**
      * VerifyMatrixCopy()
      *
-     * Verify that the supplied instances of Matrix are distinct, 
-     * that they contain no common references (other than db), and that they 
+     * Verify that the supplied instances of Matrix are distinct,
+     * that they contain no common references (other than db), and that they
      * have the same value.
      *                                              JRM -- 11/8/07
      *
@@ -15635,7 +15635,7 @@ public class Matrix
     {
         int failures = 0;
         int i;
-        
+
         if ( base == null )
         {
             failures++;
@@ -15649,7 +15649,7 @@ public class Matrix
         else if ( base == copy )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
@@ -15658,7 +15658,7 @@ public class Matrix
         else if ( base.db != copy.db )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.db != %s.db.\n", baseDesc, copyDesc);
@@ -15667,7 +15667,7 @@ public class Matrix
         else if ( base.mveID != copy.mveID )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.mveID != %s.mveID.\n", baseDesc, copyDesc);
@@ -15676,27 +15676,27 @@ public class Matrix
         else if ( base.varLen != copy.varLen )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.varLen != %s.varLen.\n", 
+                outStream.printf("%s.varLen != %s.varLen.\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.argList == copy.argList )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.argList == %s.argList.\n", 
+                outStream.printf("%s.argList == %s.argList.\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.argList == null )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.argList == null.\n", baseDesc);
@@ -15705,7 +15705,7 @@ public class Matrix
         else if ( copy.argList == null )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.argList == null.\n", copyDesc);
@@ -15714,31 +15714,31 @@ public class Matrix
         else if ( base.argList.size() != copy.argList.size() )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.argList.size() == %s.argList.size().\n", 
+                outStream.printf("%s.argList.size() == %s.argList.size().\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toString().compareTo(copy.toString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toDBString().compareTo(copy.toDBString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }
@@ -15756,9 +15756,9 @@ public class Matrix
                 i++;
             }
         }
-        
+
         return failures;
-        
+
     } /* Matrix::VerifyMatrixCopy() */
-       
+
 } /* class Matrix */

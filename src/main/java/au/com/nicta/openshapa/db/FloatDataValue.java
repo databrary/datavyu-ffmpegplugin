@@ -566,18 +566,18 @@ public class FloatDataValue extends DataValue {
     }
 
 //<<<<<<< HEAD:src/main/java/au/com/nicta/openshapa/db/FloatDataValue.java
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for FloatDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -587,13 +587,13 @@ public class FloatDataValue extends DataValue {
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
      *         Construct a FloatDataValue for the formal argument of the mve
      *         by passing a reference to the database and the id of the formal
-     *         argument.  Verify that the FloatDataValue's itsFargID, 
+     *         argument.  Verify that the FloatDataValue's itsFargID,
      *         itsFargType, subRange, minVal, and maxVal fields matches
      *         thos of the formal argument, and that all other fields are set
      *         to the expected defaults.
@@ -605,34 +605,34 @@ public class FloatDataValue extends DataValue {
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      FloatDataValue -- perhaps after havign been modified to match
      *      the subrange.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a  FloatDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a  FloatDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         FloatDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         FloatDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
-     * 
+     *
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
      *      Verify that the getItsValue(), setItsValue() and coerceToRange()
      *      methods perform correctly.  Verify that the inherited accessors
-     *      function correctly via calls to the DataValue.TestAccessors() 
+     *      function correctly via calls to the DataValue.TestAccessors()
      *      method.
      *
      *      Given compiler error checking, there isn't any way to feed
@@ -641,9 +641,9 @@ public class FloatDataValue extends DataValue {
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -657,46 +657,46 @@ public class FloatDataValue extends DataValue {
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassFloatDataValue(java.io.PrintStream outStream,
                                                   boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class FloatDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -707,25 +707,25 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("All tests passed for class FloatDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::TestClassFloatDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -748,33 +748,33 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             fdv = new FloatDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( fdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -788,13 +788,13 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new FloatDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                             "new FloatDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new FloatDataValue(db) threw " +
@@ -806,13 +806,13 @@ public class FloatDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, fdv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, fdv, outStream,
                                                            verbose);
 
             if ( fdv.itsValue != fdv.itsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -824,7 +824,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.maxVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of fdv.maxVal: %f.\n",
@@ -835,7 +835,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.minVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of fdv.minVal: %f.\n",
@@ -843,7 +843,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -864,9 +864,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -891,7 +891,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -920,25 +920,25 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -967,17 +967,17 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa = new FloatFormalArg(db);
@@ -985,7 +985,7 @@ public class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve);
 
             fdv = new FloatDataValue(db, ffa.getID());
-            
+
             float_mve_sr = new MatrixVocabElement(db, "float_mve_sr");
             float_mve_sr.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa_sr = new FloatFormalArg(db);
@@ -994,16 +994,16 @@ public class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve_sr);
 
             fdv_sr = new FloatDataValue(db, ffa_sr.getID());
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( ffa == null ) ||
@@ -1012,10 +1012,10 @@ public class FloatDataValue extends DataValue {
              ( ffa_sr == null ) ||
              ( fdv_sr == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1023,12 +1023,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( float_mve == null )
                 {
                     outStream.print("allocation of float_mve failed.\n");
                 }
-                
+
                 if ( ffa == null )
                 {
                     outStream.print("allocation of ffa failed.");
@@ -1039,12 +1039,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                         "new FloatDataValue(db, ffa.getID()) returned null.\n");
                 }
-                
+
                 if ( float_mve_sr == null )
                 {
                     outStream.print("allocation of float_mve_sr failed.\n");
                 }
-                
+
                 if ( ffa_sr == null )
                 {
                     outStream.print("allocation of ffa_sr failed.");
@@ -1055,12 +1055,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa_sr.getID()) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1072,28 +1072,28 @@ public class FloatDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ffa, 
-                                                               fdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ffa,
+                                                               fdv,
+                                                               outStream,
                                                                verbose,
                                                               "fdv");
 
             if ( fdv.subRange != ffa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "fdv.subRange doesn't match ffa.getSubRange().\n");
                 }
             }
-            
+
             if ( fdv.itsValue != fdv.itsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1105,7 +1105,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.maxVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1117,7 +1117,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.minVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1126,28 +1126,28 @@ public class FloatDataValue extends DataValue {
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ffa_sr, 
-                                                               fdv_sr,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ffa_sr,
+                                                               fdv_sr,
+                                                               outStream,
                                                                verbose,
                                                                "fdv_sr");
 
             if ( fdv_sr.subRange != ffa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv_sr.subRange doesn't match " +
                                      "ffa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( fdv_sr.itsValue != fdv_sr.itsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1159,7 +1159,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr.maxVal != ffa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1171,7 +1171,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr.minVal != ffa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1180,7 +1180,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1201,9 +1201,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1229,7 +1229,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1252,9 +1252,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1280,7 +1280,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1303,9 +1303,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1332,7 +1332,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1361,25 +1361,25 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1409,17 +1409,17 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa = new FloatFormalArg(db);
@@ -1427,7 +1427,7 @@ public class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve);
 
             fdv = new FloatDataValue(db, ffa.getID(), 200.0);
-            
+
             float_mve_sr = new MatrixVocabElement(db, "float_mve_sr");
             float_mve_sr.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa_sr = new FloatFormalArg(db);
@@ -1437,16 +1437,16 @@ public class FloatDataValue extends DataValue {
 
             fdv_sr0 = new FloatDataValue(db, ffa_sr.getID(), 1.0);
             fdv_sr1 = new FloatDataValue(db, ffa_sr.getID(), 200.0);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( ffa == null ) ||
@@ -1456,10 +1456,10 @@ public class FloatDataValue extends DataValue {
              ( fdv_sr0 == null ) ||
              ( fdv_sr1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1467,12 +1467,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( float_mve == null )
                 {
                     outStream.print("allocation of float_mve failed.\n");
                 }
-                
+
                 if ( ffa == null )
                 {
                     outStream.print("allocation of ffa failed.");
@@ -1483,12 +1483,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( float_mve_sr == null )
                 {
                     outStream.print("allocation of float_mve_sr failed.\n");
                 }
-                
+
                 if ( ffa_sr == null )
                 {
                     outStream.print("allocation of ffa_sr failed.");
@@ -1505,12 +1505,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa_sr.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1522,28 +1522,28 @@ public class FloatDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ffa, 
-                                                               fdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ffa,
+                                                               fdv,
+                                                               outStream,
                                                                verbose,
                                                                "fdv");
 
             if ( fdv.subRange != ffa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "fdv.subRange doesn't match ffa.getSubRange().\n");
                 }
             }
-            
+
             if ( fdv.itsValue != 200.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv.itsValue = %f != 200.0.\n",
@@ -1554,7 +1554,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.maxVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1566,7 +1566,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv.minVal != 0.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1575,28 +1575,28 @@ public class FloatDataValue extends DataValue {
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ffa_sr, 
-                                                               fdv_sr0,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ffa_sr,
+                                                               fdv_sr0,
+                                                               outStream,
                                                                verbose,
                                                                "fdv_sr0");
 
             if ( fdv_sr0.subRange != ffa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv_sr0.subRange doesn't match " +
                                      "ffa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( fdv_sr0.itsValue != 1.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv_sr.itsValue = %f != 1.0.\n",
@@ -1607,7 +1607,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr0.maxVal != ffa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1619,7 +1619,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr0.minVal != ffa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1628,28 +1628,28 @@ public class FloatDataValue extends DataValue {
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ffa_sr, 
-                                                               fdv_sr1,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ffa_sr,
+                                                               fdv_sr1,
+                                                               outStream,
                                                                verbose,
                                                                "fdv_sr1");
 
             if ( fdv_sr1.subRange != ffa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv_sr0.subRange doesn't match " +
                                      "ffa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( fdv_sr1.itsValue != ffa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv_sr1.itsValue = %f != %f.\n",
@@ -1660,7 +1660,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr1.maxVal != ffa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1672,7 +1672,7 @@ public class FloatDataValue extends DataValue {
             if ( fdv_sr1.minVal != ffa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1681,7 +1681,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1702,9 +1702,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1731,7 +1731,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1754,9 +1754,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1783,7 +1783,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1806,9 +1806,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1835,7 +1835,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1864,24 +1864,24 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -1911,18 +1911,18 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv0 = null;
         fdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa = new FloatFormalArg(db);
@@ -1931,7 +1931,7 @@ public class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve);
 
             fdv0 = new FloatDataValue(db, ffa.getID(), 200.0);
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -1940,16 +1940,16 @@ public class FloatDataValue extends DataValue {
 
             fdv1 = new FloatDataValue(db, ufa.getID(), 2000.0);
             fdv2 = new FloatDataValue(db, ufa.getID(), 999.999);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( ffa == null ) ||
@@ -1959,10 +1959,10 @@ public class FloatDataValue extends DataValue {
              ( fdv1 == null ) ||
              ( fdv2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1970,12 +1970,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( float_mve == null )
                 {
                     outStream.print("allocation of float_mve failed.\n");
                 }
-                
+
                 if ( ffa == null )
                 {
                     outStream.print("allocation of ffa failed.\n");
@@ -1986,12 +1986,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2013,7 +2013,7 @@ public class FloatDataValue extends DataValue {
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2022,105 +2022,105 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
 
         if ( failures == 0 )
         {
             failures += DataValue.TestAccessors(db, ffa, matrix_mve, ufa,
                                                 fdv0, outStream, verbose);
-            
+
 
             if ( fdv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv0.getSubRange() != false");
                 }
             }
-            
+
             if ( fdv0.getItsValue() != 200.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv.getItsValue() != 200.0\n");
                 }
             }
-            
+
             fdv0.setItsValue(3.14159);
 
-            
+
             if ( fdv0.getItsValue() != 3.14159 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv0.getItsValue() != 3.14159\n");
                 }
             }
-            
+
             /************************************/
 
             if ( fdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv1.getSubRange() != false\n");
                 }
             }
-            
+
             if ( fdv1.getItsValue() != 2000.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv1.getItsValue() != 2000.0\n");
                 }
             }
-            
-        
+
+
             failures += DataValue.TestAccessors(db, ufa, float_mve, ffa,
                                                 fdv1, outStream, verbose);
 
             if ( fdv1.getSubRange() != true )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv1.getSubRange() != true\n");
                 }
             }
-            
+
             if ( fdv1.getItsValue() != 1000.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv1.getItsValue() != 1000.0\n");
                 }
             }
-            
+
             fdv1.setItsValue(-50000.0);
-            
+
             if ( fdv1.getItsValue() != -1000.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv1.getItsValue() != -1000.0\n");
                 }
             }
-            
+
             if ( ( fdv1.coerceToRange(1000.0001) != 1000.0 ) ||
                  ( fdv1.coerceToRange(1000.0) != 1000.0 ) ||
                  ( fdv1.coerceToRange(999.9999) != 999.9999 ) ||
@@ -2132,30 +2132,30 @@ public class FloatDataValue extends DataValue {
                  ( fdv1.coerceToRange(-1000.00001) != -1000.0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "unexpected results from fdv1.coerceToRange()\n");
                 }
             }
-            
+
             /************************************/
-            
+
             failures += DataValue.TestAccessors(db, ufa, float_mve, ffa,
                                                 fdv2, outStream, verbose);
 
             if ( fdv2.getItsValue() != 999.999 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("fdv2.getItsValue() != 999.999\n");
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2184,25 +2184,25 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2235,18 +2235,18 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         /* setup the base entries for the copy test */
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa = new FloatFormalArg(db);
@@ -2254,7 +2254,7 @@ public class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve);
 
             fdv = new FloatDataValue(db, ffa.getID(), 200.0);
-            
+
             float_mve_sr = new MatrixVocabElement(db, "float_mve_sr");
             float_mve_sr.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa_sr = new FloatFormalArg(db);
@@ -2264,16 +2264,16 @@ public class FloatDataValue extends DataValue {
 
             fdv_sr0 = new FloatDataValue(db, ffa_sr.getID(), 1.0);
             fdv_sr1 = new FloatDataValue(db, ffa_sr.getID(), 200.0);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( ffa == null ) ||
@@ -2283,10 +2283,10 @@ public class FloatDataValue extends DataValue {
              ( fdv_sr0 == null ) ||
              ( fdv_sr1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2294,12 +2294,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( float_mve == null )
                 {
                     outStream.print("allocation of float_mve failed.\n");
                 }
-                
+
                 if ( ffa == null )
                 {
                     outStream.print("allocation of ffa failed.");
@@ -2310,12 +2310,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( float_mve_sr == null )
                 {
                     outStream.print("allocation of float_mve_sr failed.\n");
                 }
-                
+
                 if ( ffa_sr == null )
                 {
                     outStream.print("allocation of ffa_sr failed.");
@@ -2332,12 +2332,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa_sr.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2346,7 +2346,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             fdv_copy = null;
@@ -2371,12 +2371,12 @@ public class FloatDataValue extends DataValue {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( fdv_copy == null ) ||
                  ( fdv_sr0_copy == null ) ||
                  ( fdv_sr1_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2417,17 +2417,17 @@ public class FloatDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(fdv, fdv_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(fdv, fdv_copy, outStream,
                                                verbose, "fdv", "fdv_copy");
 
-            failures += DataValue.VerifyDVCopy(fdv_sr0, fdv_sr0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(fdv_sr0, fdv_sr0_copy, outStream,
                                             verbose, "fdv_sr0", "fdv_sr0_copy");
 
-            failures += DataValue.VerifyDVCopy(fdv_sr1, fdv_sr1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(fdv_sr1, fdv_sr1_copy, outStream,
                                             verbose, "fdv_sr1", "fdv_sr1_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -2448,9 +2448,9 @@ public class FloatDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( fdv != null ) || 
+            if ( ( fdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2476,7 +2476,7 @@ public class FloatDataValue extends DataValue {
             }
         }
 
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2505,25 +2505,25 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2570,18 +2570,18 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         fdv0 = null;
         fdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             ffa = new FloatFormalArg(db);
@@ -2592,7 +2592,7 @@ public class FloatDataValue extends DataValue {
             fdv0 = new FloatDataValue(db, ffa.getID(), 200.0);
             fdv0.id = 100;        // invalid value for print test
             fdv0.itsCellID = 500; // invalid value for print test
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -2602,16 +2602,16 @@ public class FloatDataValue extends DataValue {
             fdv1 = new FloatDataValue(db, ufa.getID(), 2000.0);
             fdv1.id = 101;        // invalid value for print test
             fdv1.itsCellID = 501; // invalid value for print test
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( float_mve == null ) ||
              ( ffa == null ) ||
@@ -2620,10 +2620,10 @@ public class FloatDataValue extends DataValue {
              ( ufa == null ) ||
              ( fdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2631,12 +2631,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( float_mve == null )
                 {
                     outStream.print("allocation of float_mve failed.\n");
                 }
-                
+
                 if ( ffa == null )
                 {
                     outStream.print("allocation of ffa failed.\n");
@@ -2647,12 +2647,12 @@ public class FloatDataValue extends DataValue {
                     outStream.print("new FloatDataValue(db, ffa.getID(), " +
                                     "200.0) returned null.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2668,7 +2668,7 @@ public class FloatDataValue extends DataValue {
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2683,40 +2683,40 @@ public class FloatDataValue extends DataValue {
             if ( fdv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected fdv0.toString(): \"%s\".\n",
                                      fdv0.toString());
                 }
             }
-            
+
             if ( fdv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected fdv0.toDBString(): \"%s\".\n",
                                      fdv0.toDBString());
                 }
             }
-            
+
             if ( fdv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected fdv1.toString(): \"%s\".\n",
                                      fdv1.toString());
                 }
             }
-            
+
             if ( fdv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected fdv1.toDBString(): \"%s\".\n",
@@ -2724,7 +2724,7 @@ public class FloatDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2753,17 +2753,17 @@ public class FloatDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatDataValue::TestToStringMethods() */
-    
-    
+
+
     /**
      * VerifyFloatDVCopy()
      *
-     * Verify that the supplied instances of FloatDataValue are distinct, that 
-     * they contain no common references (other than db), and that they have 
+     * Verify that the supplied instances of FloatDataValue are distinct, that
+     * they contain no common references (other than db), and that they have
      * the same value.
      *                                              JRM -- 11/8/07
      *
@@ -2771,7 +2771,7 @@ public class FloatDataValue extends DataValue {
      *
      *    - None
      */
-    
+
     public static int VerifyFloatDVCopy(FloatDataValue base,
                                         FloatDataValue copy,
                                         java.io.PrintStream outStream,
@@ -2780,23 +2780,23 @@ public class FloatDataValue extends DataValue {
                                         String copyDesc)
     {
         int failures = 0;
-        
+
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyFloatDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyFloatDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyFloatDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyFloatDVCopy: %s null on entry.\n",
                               copyDesc);
         }
         else if ( base == copy )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
@@ -2805,7 +2805,7 @@ public class FloatDataValue extends DataValue {
         else if ( base.db != copy.db )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.db != %s.db.\n", baseDesc, copyDesc);
@@ -2814,61 +2814,61 @@ public class FloatDataValue extends DataValue {
         else if ( base.itsValue != copy.itsValue )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.itsValue != %s.itsValue.\n", 
+                outStream.printf("%s.itsValue != %s.itsValue.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.maxVal != copy.maxVal )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.maxVal != %s.maxVal.\n", 
+                outStream.printf("%s.maxVal != %s.maxVal.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.minVal != copy.minVal )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.minVal != %s.minVal.\n", 
+                outStream.printf("%s.minVal != %s.minVal.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.toString().compareTo(copy.toString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toDBString().compareTo(copy.toDBString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
                 outStream.printf(
-                        "%s.toDBString() = \"%s\".\n%s.toDBString() = \"%s\".\n", 
-                        baseDesc, base.toDBString(), 
+                        "%s.toDBString() = \"%s\".\n%s.toDBString() = \"%s\".\n",
+                        baseDesc, base.toDBString(),
                         copyDesc, copy.toDBString());
             }
         }
-        
+
         return failures;
-        
+
     } /* FloatDataValue::VerifyFloatDVCopy() */
 
     /** tolerance value for comparing two doubles for equality */

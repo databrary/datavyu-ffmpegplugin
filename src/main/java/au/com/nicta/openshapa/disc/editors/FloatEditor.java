@@ -19,5 +19,5 @@ public class FloatEditor extends Editor
   public FloatEditor()
   {
   } // End of FloatEditor Constructor
-  
+
 } //End of FloatEditor class definition

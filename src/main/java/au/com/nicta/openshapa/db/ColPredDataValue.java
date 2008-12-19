@@ -12,10 +12,10 @@ package au.com.nicta.openshapa.db;
 import java.util.Vector;
 
 /**
- * An instance of ColPredDataValue is used to store a column predicate data 
+ * An instance of ColPredDataValue is used to store a column predicate data
  * value that has been assigned to a formal argument.
  *
- * Recall that a column predicate is the predicate implied by a 
+ * Recall that a column predicate is the predicate implied by a
  * MatrixVocabElement.
  *
  * @author mainzer
@@ -26,119 +26,119 @@ public class ColPredDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsValue: Instance of ColPred containing a representation of the 
+     * itsValue: Instance of ColPred containing a representation of the
      *      current value assigned to the predicate.
      *
-     * minVal & maxVal don't appear in PredDataValue as a subrange of 
+     * minVal & maxVal don't appear in PredDataValue as a subrange of
      *      predicates is expressed as a set of allowed predicates.  Given the
-     *      potential size of this set, we don't keep a copy of it here -- 
+     *      potential size of this set, we don't keep a copy of it here --
      *      referring directly to the associated formal argument when needed
-     *      instead.  
+     *      instead.
      */
- 
+
     /** ID of the represented predicate */
     protected ColPred itsValue = null;
-      
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * ColPredDataValue()
      *
-     * Constructor for instances of ColPredDataValue.  
-     * 
-     * Five versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of ColPredDataValue.
+     *
+     * Five versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
-     * The second takes a reference to a database, and a formal argument ID, and 
+     * The second takes a reference to a database, and a formal argument ID, and
      * attempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of ColPredDataValue as an
      * argument, and uses it to create a copy.
      *
-     * The fifth is much the same as the fourth, save that it takes the 
-     * additional blindCopy parameter.  If this parameter is true, the 
-     * PredDataValue is copied without reference to the pve's underlying 
+     * The fifth is much the same as the fourth, save that it takes the
+     * additional blindCopy parameter.  If this parameter is true, the
+     * PredDataValue is copied without reference to the pve's underlying
      * any predicates.  This is necessary if a pve has changed, and we need
      * a copy of the old predicate so we can touch it up for changes in the
      * associated pve.
      *
-     *                                              JRM -- 8/10/08 
+     *                                              JRM -- 8/10/08
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public ColPredDataValue(Database db)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsValue(null);
-        
+
     } /* ColPredDataValue::ColPredDataValue(db) */
-    
+
     public ColPredDataValue(Database db,
                             long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsValue(null);
-        
+
         this.setItsFargID(fargID);
-    
+
     } /* ColPredDataValue::ColPredDataValue(db, fargID) */
-    
+
     public ColPredDataValue(Database db,
                             long fargID,
                             ColPred value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsValue(value);
 
         this.setItsFargID(fargID);
-    
+
     } /* ColPredDataValue::ColPredDataValue(db, fargID, value) */
-    
+
     public ColPredDataValue(ColPredDataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         if ( dv.itsValue != null )
         {
             this.itsValue  = new ColPred(dv.itsValue);
         }
-        
+
     } /* ColPredDataValue::ColPredDataValue(dv) */
-    
+
     protected ColPredDataValue(ColPredDataValue dv,
                                boolean blindCopy)
         throws SystemErrorException
     {
         super(dv);
-        
+
         if ( dv.itsValue != null )
         {
             this.itsValue  = new ColPred(dv.itsValue, blindCopy);
         }
-        
+
     } /* ColPredDataValue::ColPredDataValue(dv, blindCopy) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -154,22 +154,22 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public ColPred getItsValue()
         throws SystemErrorException
     {
-        
+
         return new ColPred(this.itsValue);
-    
+
     } /* ColPredDataValue::getItsValue() */
-    
+
 
     /**
      * getItsValueBlind()
      *
      * Return a blind copy of the current value of the data value.
      *
-     * This is necessary if we are adjusting for a change in the definition 
+     * This is necessary if we are adjusting for a change in the definition
      * of a predicate, as a change in a predicate's argument list may cause
      * the normal sanity checks to fail.
      *
@@ -179,21 +179,21 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected ColPred getItsValueBlind()
         throws SystemErrorException
     {
-        
+
         return new ColPred(this.itsValue, true);
-    
+
     } /* ColPredDataValue::getItsValueBlind() */
-    
-    
+
+
     /**
      * getItsValueMveID()
      *
-     * If itsValue is an instance of the column predicate implied by a 
-     * MatrixVocabElement, return the ID assigned to that mve, or the 
+     * If itsValue is an instance of the column predicate implied by a
+     * MatrixVocabElement, return the ID assigned to that mve, or the
      * INVALID_ID if it is not.
      *
      *                                      JRM -- 8/10/08
@@ -202,22 +202,22 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected long getItsValueMveID()
         throws SystemErrorException
     {
         long pveID = DBIndex.INVALID_ID;
-        
+
         if ( this.itsValue != null )
         {
             pveID = this.itsValue.getMveID();
         }
-        
+
         return pveID;
-        
+
     } /* ColPredDataValue::getItsValueMveID() */
 
-    
+
     /**
      * setItsValue()
      *
@@ -229,29 +229,29 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void setItsValue(ColPred value)
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::setItsValue(): ";
         DBElement dbe;
         ColPredFormalArg cpfa;
-        
+
         if ( ( value != null ) &&
              ( value.getDB() != this.db ) )
         {
             throw new SystemErrorException(mName + "value.getDB() != this.db");
         }
-        
+
         if ( ( value != null ) &&
              ( value.getMveID() != DBIndex.INVALID_ID ) &&
              ( ! db.vl.matrixInVocabList(value.getMveID()) ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "! db.vl.matrixInVocabList(value.getMatrixID())");
         }
-        
-        if ( ( value == null ) || 
+
+        if ( ( value == null ) ||
              ( value.getMveID() == DBIndex.INVALID_ID ) )
         {
             this.itsValue = new ColPred(this.db);
@@ -260,16 +260,16 @@ public class ColPredDataValue extends DataValue
         {
             this.itsValue = new ColPred(value);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * clearID()
      *
@@ -282,23 +282,23 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void clearID()
         throws SystemErrorException
     {
         super.clearID();
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.clearID();
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::clearID() */
-    
-    
-    /** 
+
+
+    /**
      * insertInIndex()
      *
      * Call the super, and then pass the insert in index message down to the
@@ -310,26 +310,26 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void insertInIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::insertInIndex(): ";
-        
+
         super.insertInIndex(DCID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         this.itsValue.insertInIndex(DCID);
-        
+
         return;
-        
+
     } /* ColPredDataValue::insertInIndex(DCID) */
-    
-    /** 
+
+    /**
      * removeFromIndex()
      *
      * Call the super, and then pass the remove from index message down to the
@@ -341,30 +341,30 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void removeFromIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::removeFromIndex(): ";
-        
+
         super.removeFromIndex(DCID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         this.itsValue.removeFromIndex(DCID);
-        
+
         return;
-        
+
     } /* ColPredDataValue::removeFromIndex(DCID) */
-    
-    
+
+
     /**
      * replaceInIndex()
      *
-     * Call the super, and then pass an update index for replacement message 
+     * Call the super, and then pass an update index for replacement message
      * down to the predicate.
      *
      *                                          JRM -- 2/20/08
@@ -373,7 +373,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void replaceInIndex(DataValue old_dv,
                                   long DCID,
                                   boolean cascadeMveMod,
@@ -386,48 +386,48 @@ public class ColPredDataValue extends DataValue
     {
         final String mName = "ColPredDataValue::replaceInIndex(): ";
         ColPredDataValue old_cpdv;
-        
-        super.replaceInIndex(old_dv, 
-                             DCID, 
+
+        super.replaceInIndex(old_dv,
+                             DCID,
                              cascadeMveMod,
                              cascadeMveDel,
                              cascadeMveID,
                              cascadePveMod,
-                             cascadePveDel, 
+                             cascadePveDel,
                              cascadePveID);
-        
+
         if ( this.itsValue == null )
         {
             throw new SystemErrorException(mName + "itsValue is null?!?");
         }
-        
+
         if ( ! ( old_dv instanceof ColPredDataValue ) )
         {
             throw new SystemErrorException(mName + "old_dv not a pred dv?!?");
         }
-        
+
         old_cpdv = (ColPredDataValue)old_dv;
-        
+
         if ( old_cpdv.itsValue == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "old_cpdv.itsValue is null?!?");
         }
-        
-        this.itsValue.updateIndexForReplacement(old_cpdv.itsValue, 
-                                                DCID, 
-                                                cascadeMveMod, 
+
+        this.itsValue.updateIndexForReplacement(old_cpdv.itsValue,
+                                                DCID,
+                                                cascadeMveMod,
                                                 cascadeMveDel,
-                                                cascadeMveID, 
+                                                cascadeMveID,
                                                 cascadePveMod,
-                                                cascadePveDel, 
+                                                cascadePveDel,
                                                 cascadePveID);
 
         return;
-        
+
     } /* ColPredDataValue::replaceInIndex() */
 
-    
+
     /**
      * toString()
      *
@@ -441,7 +441,7 @@ public class ColPredDataValue extends DataValue
      *
      *     - None.
      */
-    
+
     public String toString()
     {
         if ( this.itsValue == null )
@@ -458,7 +458,7 @@ public class ColPredDataValue extends DataValue
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -470,11 +470,11 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-  
+
     public String toDBString()
     {
         final String mName = "ColPredDataValue::toDBString(): ";
-        
+
         if ( ( this.itsValue == null ) ||
              ( this.itsValue.getMveID() == DBIndex.INVALID_ID ) )
         {
@@ -494,14 +494,14 @@ public class ColPredDataValue extends DataValue
                     ") (itsValue " + this.itsValue.toDBString() +
                     ") (subRange " + this.subRange + "))");
         }
-            
+
     } /* ColPredDataValue::toDBString() */
-    
-    
+
+
     /**
      * updateForMVEDefChange()
      *
-     * If the associated column predicate is defined, pass an update for 
+     * If the associated column predicate is defined, pass an update for
      * matrix vocab element definition change message to it.
      *
      *                                          JRM -- 8/10/08
@@ -510,7 +510,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDefChange(
                                  Database db,
                                  long pveID,
@@ -543,26 +543,26 @@ public class ColPredDataValue extends DataValue
     {
         final String mName = "ColPredDataValue::updateForMVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "pveID doesn't refer to a pve.");
         }
-        
-        
+
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForMVEDefChange(db,
@@ -593,55 +593,55 @@ public class ColPredDataValue extends DataValue
                                                 oldCPFargList,
                                                 newCPFargList);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateForPVEDefChange() */
-    
-    
+
+
     /**
      * updateForMVEDeletion()
      *
-     * If the associated column predicate is defined, pass an update for 
+     * If the associated column predicate is defined, pass an update for
      * matrix vocab element deletion message to it.
-     * 
+     *
      *                                          JRM -- 8/10/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateForMVEDeletion(Database db,
                                         long mveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( mveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "mveID invalid.");
         }
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForMVEDeletion(db, mveID);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateForMVEDeletion() */
-    
-    
+
+
     /**
      * updateForMVEDefChange()
      *
-     * If the associated column predicate is defined, pass an update for 
+     * If the associated column predicate is defined, pass an update for
      * predicate vocab element definition change message to it.
      *
      *                                          JRM -- 8/10/08
@@ -650,7 +650,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDefChange(
                                  Database db,
                                  long pveID,
@@ -674,26 +674,26 @@ public class ColPredDataValue extends DataValue
     {
         final String mName = "ColPredDataValue::updateForPVEDefChange(): ";
         DBElement dbe = null;
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "pveID doesn't refer to a pve.");
         }
-        
-        
+
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForPVEDefChange(db,
@@ -715,52 +715,52 @@ public class ColPredDataValue extends DataValue
                                                 oldFargList,
                                                 newFargList);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateForPVEDefChange() */
-    
-    
+
+
     /**
      * updateForPVEDeletion()
      *
-     * If the associated column predicate is defined, pass an update for 
+     * If the associated column predicate is defined, pass an update for
      * predicate vocab element deletion message to it.
-     * 
+     *
      *                                          JRM -- 8/10/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateForPVEDeletion(Database db,
                                         long pveID)
         throws SystemErrorException
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
-        
+
         if ( this.db != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "pveID invalid.");
         }
-        
+
         if ( this.itsValue != null )
         {
             this.itsValue.updateForPVEDeletion(db, pveID);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateForPVEDeletion() */
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -771,7 +771,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -780,53 +780,53 @@ public class ColPredDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if any) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.  For now, we simply
      * coerce to the empty predicate if subrange is true and the current
@@ -841,17 +841,17 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof ColPredFormalArg )
         {
             this.subRange = false;
@@ -862,18 +862,18 @@ public class ColPredDataValue extends DataValue
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
@@ -886,7 +886,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public ColPred coerceToRange(ColPred value)
         throws SystemErrorException
     {
@@ -894,7 +894,7 @@ public class ColPredDataValue extends DataValue
         DBElement dbe;
         ColPredFormalArg pfa;
         ColPred retVal;
-        
+
         if ( value == null )
         {
             retVal = new ColPred(this.db);
@@ -907,18 +907,18 @@ public class ColPredDataValue extends DataValue
         {
             retVal = value;
         }
-        
+
         return retVal;
-        
+
     } /* ColPredDataValue::coerceToRange() */
 
-    
+
     /**
      * deregisterPreds()
      *
-     * If this.itsValue isn't null, call its deregisterWithMve() method to 
+     * If this.itsValue isn't null, call its deregisterWithMve() method to
      * cause it to deregister with its associated MVE (if any), and pass
-     * the message down to any column predicates or predicates that may 
+     * the message down to any column predicates or predicates that may
      * appear in its argument list.
      *                                              JRM -- 3/24/08
      *
@@ -926,7 +926,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void deregisterPreds(boolean cascadeMveDel,
                                    long cascadeMveID,
                                    boolean cascadePveDel,
@@ -937,21 +937,21 @@ public class ColPredDataValue extends DataValue
         {
             this.itsValue.deregisterWithMve(cascadeMveDel,
                                             cascadeMveID,
-                                            cascadePveDel, 
+                                            cascadePveDel,
                                             cascadePveID);
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::deregisterPreds() */
 
-    
+
     /**
      * registerPreds()
      *
-     * If this.itsValue isn't null, call its registerWithMve() method to 
+     * If this.itsValue isn't null, call its registerWithMve() method to
      * cause it to register with its associated MVE (if any), and pass
-     * the message down to any column predicates or predicates that may 
+     * the message down to any column predicates or predicates that may
      * appear in its argument list.
      *                                              JRM -- 3/24/08
      *
@@ -959,7 +959,7 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void registerPreds()
         throws SystemErrorException
     {
@@ -967,24 +967,24 @@ public class ColPredDataValue extends DataValue
         {
             this.itsValue.registerWithMve();
         }
-        
+
         return;
-        
+
     } /* ColPredDataValue::registerPreds() */
 
-    
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-      
+
     /**
      * ColPredDataValuesAreLogicallyEqual()
      *
-     * Given two instances of ColPredDataValue, return true if they contain 
+     * Given two instances of ColPredDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
      *                                              JRM -- 8/10/08
@@ -993,31 +993,31 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected static boolean ColPredDataValuesAreLogicallyEqual(
                                                         ColPredDataValue cpdv0,
                                                         ColPredDataValue cpdv1)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "ColPredDataValue::ColPredDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( cpdv0 == null ) || ( cpdv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": cpdv0 or cpdv1 null on entry.");
         }
         else if ( ( cpdv0.itsValue == null ) || ( cpdv1.itsValue == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": cpdv0.itsValue or cpdv1.itsValue null on entry.");
         }
-        
+
         if ( cpdv0 != cpdv1 )
         {
             if ( ( cpdv0.itsValue != cpdv1.itsValue ) &&
-                 ( ! ColPred.ColPredsAreLogicallyEqual(cpdv0.itsValue, 
+                 ( ! ColPred.ColPredsAreLogicallyEqual(cpdv0.itsValue,
                                                        cpdv1.itsValue) ) )
             {
                 dataValuesAreEqual = false;
@@ -1025,21 +1025,21 @@ public class ColPredDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* ColPredDataValue::ColPredDataValuesAreLogicallyEqual() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Construct an instance of ColPredDataValue with the specified 
+     * Construct an instance of ColPredDataValue with the specified
      * initialization.
      *
-     * Returns a reference to the newly constructed ColPredDataValue if 
+     * Returns a reference to the newly constructed ColPredDataValue if
      * successful.  Throws a system error exception on failure.
      *
      *                                              JRM -- 3/31/08
@@ -1048,37 +1048,37 @@ public class ColPredDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static ColPredDataValue Construct(Database db,
                                              ColPred cp)
         throws SystemErrorException
     {
         final String mName = "ColPredDataValue::Construct(db, cp)";
         ColPredDataValue cpdv = null;
-        
+
         cpdv = new ColPredDataValue(db);
-        
+
         if ( cpdv != null )
         {
             cpdv.setItsValue(cp);
         }
-        
+
         return cpdv;
-        
+
     } /* ColPredDataValue::Construct(db, cp) */
 
 
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for ColPredDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -1088,15 +1088,15 @@ public class ColPredDataValue extends DataValue
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
      *         Construct a ColPredDataValue for the formal argument of the mve
      *         by passing a reference to the database and the id of the formal
-     *         argument.  Verify that the PredDataValue's itsFargID, 
-     *         itsFargType, and subRange fields match those of the formal 
-     *         argument, and that all other fields are set to the expected 
+     *         argument.  Verify that the PredDataValue's itsFargID,
+     *         itsFargType, and subRange fields match those of the formal
+     *         argument, and that all other fields are set to the expected
      *         defaults.
      *
      *         Repeat for a variety of formal argument types and settings.
@@ -1106,45 +1106,45 @@ public class ColPredDataValue extends DataValue
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      PredDataValue -- perhaps after having been modified to match
      *      the subrange.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a PredDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a PredDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         PredDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         PredDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
-     * 
+     *
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
      *      Verify that the getItsValue(), setItsValue() and coerceToRange()
      *      methods perform correctly.  Verify that the inherited accessors
-     *      function correctly via calls to the DataValue.TestAccessors() 
+     *      function correctly via calls to the DataValue.TestAccessors()
      *      method.
      *
-     *      Verify that setItsValue() and coerceToRange() fail on invalid 
+     *      Verify that setItsValue() and coerceToRange() fail on invalid
      *      input.
      *
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -1158,36 +1158,36 @@ public class ColPredDataValue extends DataValue
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassColPredDataValue(java.io.PrintStream outStream,
                                                     boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class ColPredDataValue:\n");
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1199,25 +1199,25 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print("All tests passed for class ColPredDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestClassColPredDataValue() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 10/10/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1267,8 +1267,8 @@ public class ColPredDataValue extends DataValue
         Vector<DataValue> nominal_cp_arg_list = null;
         Vector<DataValue> pred_cp_arg_list = null;
         Vector<DataValue> text_cp_arg_list = null;
-        ColPred float_cp0 = null;        
-        ColPred int_cp0 = null;        
+        ColPred float_cp0 = null;
+        ColPred int_cp0 = null;
         ColPred matrix_cp0 = null;
         ColPred matrix_cp1 = null;
         ColPred matrix_cp2 = null;
@@ -1284,7 +1284,7 @@ public class ColPredDataValue extends DataValue
         ColPredDataValue nominal_cpdv0 = null;
         ColPredDataValue pred_cpdv0 = null;
         ColPredDataValue text_cpdv0 = null;
-        
+
 
         outStream.print(testBanner);
 
@@ -1292,28 +1292,28 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's needed for testing.
         //
         // For now, at least, the selection of mve's and cp's used in this
         // test is overkill.  But since I didn't figure this out until I had
         // already prepared them, I may as well leave them and use them all.
         // The day may come when they actually do something useful.
-        
+
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve0.appendFormalArg(farg);
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
@@ -1322,21 +1322,21 @@ public class ColPredDataValue extends DataValue
             pve1_ID = db.addPredVE(pve1);
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -1357,7 +1357,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -1368,7 +1368,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -1376,38 +1376,38 @@ public class ColPredDataValue extends DataValue
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( pve1 == null ) ||
@@ -1443,74 +1443,74 @@ public class ColPredDataValue extends DataValue
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
-                if ( pve1 == null ) 
+
+
+                if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-             
+
                 if ( pve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -1521,18 +1521,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -1543,18 +1543,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mv1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -1565,65 +1565,65 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve2.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1632,8 +1632,8 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         // now create a selection of column predicates for testing
         if ( failures == 0 )
         {
@@ -1717,7 +1717,7 @@ public class ColPredDataValue extends DataValue
                 arg = new ColPredDataValue(db, fargID,
                                      new ColPred(db, float_mve_ID));
                 matrix_cp0_arg_list.add(arg);
-                matrix_cp0 = new ColPred(db, matrix_mve0_ID, 
+                matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
 
 
@@ -1829,7 +1829,7 @@ public class ColPredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_cp_arg_list == null ) ||
                  ( float_cp0 == null ) ||
                  ( int_cp_arg_list == null ) ||
@@ -1848,7 +1848,7 @@ public class ColPredDataValue extends DataValue
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_cp_arg_list == null )
@@ -1856,93 +1856,93 @@ public class ColPredDataValue extends DataValue
                         outStream.printf(
                             "allocation of float_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( float_cp0 == null )
                     {
                         outStream.printf("allocation of float_cp0 failed.\n");
                     }
-                    
+
                     if ( int_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( int_cp0 == null )
                     {
                         outStream.printf("allocation of int_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp1 failed.\n");
                     }
-                    
+
                     if ( matrix_cp2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp2 failed.\n");
                     }
-                    
+
                     if ( nominal_cp_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_cp0 failed.\n");
                     }
-                    
+
                     if ( pred_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_cp0 == null )
                     {
                         outStream.printf("allocation of pred_cp0 failed.\n");
                     }
-                    
+
                     if ( text_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( text_cp0 == null )
                     {
                         outStream.printf("allocation of text_cp0 failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("Creation of test column predicates " +
@@ -1958,29 +1958,29 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            String testString0 = 
+            String testString0 =
                     "()";
-            String testString1 = 
+            String testString1 =
                     "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
-            String testString2 = 
+            String testString2 =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
-            String testString3 = 
+            String testString3 =
                     "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
 //                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(<ord>, <onset>, <offset>, 0.0))";
-            String testString4 = 
+            String testString4 =
                     "matrix_mve1(34, 00:00:00:034, 00:00:34:000, \" a q string \", <arg2>, 88)";
-            String testString5 = 
+            String testString5 =
                     "matrix_mve2(35, 00:00:00:035, 00:00:35:000, <arg1>)";
-            String testString6 = 
+            String testString6 =
                     "nominal_mve(44, 00:00:00:044, 00:00:44:000, another_nominal)";
-            String testString7 = 
+            String testString7 =
                     "pred_mve(55, 00:00:00:055, 00:00:55:000, pve0(<arg>))";
-            String testString8 = 
+            String testString8 =
                     "text_mve(66, 00:00:01:006, 00:01:06:000, a text string)";
-            
+
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
@@ -1991,13 +1991,13 @@ public class ColPredDataValue extends DataValue
                 assert( farg.getFargType() == FormalArgument.fArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assert( untyped_farg_ID != DBIndex.INVALID_ID );
-                
+
                 col_pred_farg = matrix_mve0.getFormalArg(7);
-                assert( col_pred_farg.getFargType() == 
+                assert( col_pred_farg.getFargType() ==
                         FormalArgument.fArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assert( col_pred_farg_ID != DBIndex.INVALID_ID );
-                
+
                 cpdv = new ColPredDataValue(db, untyped_farg_ID, null);
                 float_cpdv0 = new ColPredDataValue(db, col_pred_farg_ID, float_cp0);
                 int_cpdv0 = new ColPredDataValue(db, untyped_farg_ID, int_cp0);
@@ -2027,7 +2027,7 @@ public class ColPredDataValue extends DataValue
                  ( pred_cpdv0 == null ) ||
                  ( text_cpdv0 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2103,7 +2103,7 @@ public class ColPredDataValue extends DataValue
                       ( text_cpdv0.toString().compareTo(testString8) != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( cpdv.toString().compareTo(testString0) != 0 )
@@ -2111,56 +2111,56 @@ public class ColPredDataValue extends DataValue
                        outStream.printf("Unexpected cpdv.toString)(): \"%s\"\n",
                                          cpdv.toString());
                     }
-                    
+
                     if ( float_cpdv0.toString().compareTo(testString1) != 0 )
                     {
                        outStream.printf(
                                "Unexpected float_cpdv0.toString)(): \"%s\"\n",
                                float_cpdv0.toString());
                     }
-                    
+
                     if ( int_cpdv0.toString().compareTo(testString2) != 0 )
                     {
                        outStream.printf(
                                "Unexpected int_cpdv0.toString)(): \"%s\"\n",
                                int_cpdv0.toString());
                     }
-                    
+
                     if ( matrix_cpdv0.toString().compareTo(testString3) != 0 )
                     {
                        outStream.printf(
                                "Unexpected matrix_cpdv0.toString)(): \"%s\"\n",
                                matrix_cpdv0.toString());
                     }
-                    
+
                     if ( matrix_cpdv1.toString().compareTo(testString4) != 0 )
                     {
                        outStream.printf(
                                "Unexpected matrix_cpdv1.toString)(): \"%s\"\n",
                                matrix_cpdv1.toString());
                     }
-                    
+
                     if ( matrix_cpdv2.toString().compareTo(testString5) != 0 )
                     {
                        outStream.printf(
                                "Unexpected matrix_cpdv2.toString)(): \"%s\"\n",
                                matrix_cpdv2.toString());
                     }
-                    
+
                     if ( nominal_cpdv0.toString().compareTo(testString6) != 0 )
                     {
                        outStream.printf(
                                "Unexpected nominal_cpdv0.toString)(): \"%s\"\n",
                                nominal_cpdv0.toString());
                     }
-                    
+
                     if ( pred_cpdv0.toString().compareTo(testString7) != 0 )
                     {
                        outStream.printf(
                                "Unexpected pred_cpdv0.toString)(): \"%s\"\n",
                                pred_cpdv0.toString());
                     }
-                    
+
                     if ( text_cpdv0.toString().compareTo(testString8) != 0 )
                     {
                        outStream.printf(
@@ -2170,20 +2170,20 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-    
+
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               cpdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               cpdv,
+                                                               outStream,
                                                                verbose,
                                                                "cpdv");
-            
+
             if ( cpdv.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("cpdv.itsValue null.\n");
@@ -2191,27 +2191,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(new ColPred(db), 
-                                                      cpdv.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new ColPred(db)", 
+                failures += ColPred.VerifyColPredCopy(new ColPred(db),
+                                                      cpdv.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "new ColPred(db)",
                                                       "cpdv.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               col_pred_farg, 
-                                                               float_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               col_pred_farg,
+                                                               float_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "float_cpdv0");
-            
+
             if ( float_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("float_cpdv0.itsValue null.\n");
@@ -2219,27 +2219,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(float_cp0, 
-                                                      float_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "float_cp0", 
+                failures += ColPred.VerifyColPredCopy(float_cp0,
+                                                      float_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "float_cp0",
                                                       "float_cpdv0.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               int_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               int_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "int_cpdv0");
-            
+
             if ( int_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("int_cpdv0.itsValue null.\n");
@@ -2247,27 +2247,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(int_cp0, 
-                                                      int_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "int_cp0", 
+                failures += ColPred.VerifyColPredCopy(int_cp0,
+                                                      int_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "int_cp0",
                                                       "int_cpdv0.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               col_pred_farg, 
-                                                               matrix_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               col_pred_farg,
+                                                               matrix_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "matrix_cpdv0");
-            
+
             if ( matrix_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("matrix_cpdv0.itsValue null.\n");
@@ -2275,27 +2275,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(matrix_cp0, 
-                                                      matrix_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "matrix_cp0", 
+                failures += ColPred.VerifyColPredCopy(matrix_cp0,
+                                                      matrix_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "matrix_cp0",
                                                       "matrix_cpdv0.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               matrix_cpdv1,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               matrix_cpdv1,
+                                                               outStream,
                                                                verbose,
                                                                "matrix_cpdv1");
-            
+
             if ( matrix_cpdv1.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("matrix_cpdv1.itsValue null.\n");
@@ -2303,27 +2303,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(matrix_cp1, 
-                                                      matrix_cpdv1.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "matrix_cp1", 
+                failures += ColPred.VerifyColPredCopy(matrix_cp1,
+                                                      matrix_cpdv1.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "matrix_cp1",
                                                       "matrix_cpdv1.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               col_pred_farg, 
-                                                               matrix_cpdv2,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               col_pred_farg,
+                                                               matrix_cpdv2,
+                                                               outStream,
                                                                verbose,
                                                                "matrix_cpdv2");
-            
+
             if ( matrix_cpdv2.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("matrix_cpdv2.itsValue null.\n");
@@ -2331,27 +2331,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(matrix_cp2, 
-                                                      matrix_cpdv2.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "matrix_cp2", 
+                failures += ColPred.VerifyColPredCopy(matrix_cp2,
+                                                      matrix_cpdv2.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "matrix_cp2",
                                                       "matrix_cpdv2.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               nominal_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               nominal_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "nominal_cpdv0");
-            
+
             if ( nominal_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("nominal_cpdv0.itsValue null.\n");
@@ -2359,27 +2359,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(nominal_cp0, 
-                                                      nominal_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "nominal_cp0", 
+                failures += ColPred.VerifyColPredCopy(nominal_cp0,
+                                                      nominal_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "nominal_cp0",
                                                       "nominal_cpdv0.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               col_pred_farg, 
-                                                               pred_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               col_pred_farg,
+                                                               pred_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "pred_cpdv0");
-            
+
             if ( pred_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pred_cpdv0.itsValue null.\n");
@@ -2387,27 +2387,27 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(pred_cp0, 
-                                                      pred_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "pred_cp0", 
+                failures += ColPred.VerifyColPredCopy(pred_cp0,
+                                                      pred_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "pred_cp0",
                                                       "pred_cpdv0.itsValue");
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               text_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               text_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "text_cpdv0");
-            
+
             if ( text_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("text_cpdv0.itsValue null.\n");
@@ -2415,15 +2415,15 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(text_cp0, 
-                                                      text_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "text_cp0", 
+                failures += ColPred.VerifyColPredCopy(text_cp0,
+                                                      text_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "text_cp0",
                                                       "text_cpdv0.itsValue");
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -2434,7 +2434,7 @@ public class ColPredDataValue extends DataValue
 
             try
             {
-                cpdv = new ColPredDataValue((Database)null, untyped_farg_ID, 
+                cpdv = new ColPredDataValue((Database)null, untyped_farg_ID,
                                             float_cp0);
                 completed = true;
             }
@@ -2445,9 +2445,9 @@ public class ColPredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( cpdv != null ) || 
+            if ( ( cpdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2475,7 +2475,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -2498,9 +2498,9 @@ public class ColPredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( cpdv != null ) || 
+            if ( ( cpdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2527,7 +2527,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -2550,9 +2550,9 @@ public class ColPredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( cpdv != null ) || 
+            if ( ( cpdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2580,7 +2580,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2609,24 +2609,24 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -2662,7 +2662,7 @@ public class ColPredDataValue extends DataValue
         DataValue arg = null;
         Vector<DataValue> float_cp_arg_list = null;
         Vector<DataValue> matrix_cp0_arg_list = null;
-        ColPred float_cp0 = null;        
+        ColPred float_cp0 = null;
         ColPred matrix_cp0 = null;
         ColPredDataValue cpdv = null;
         ColPredDataValue float_cpdv0 = null;
@@ -2679,23 +2679,23 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's needed for testing.
-        
+
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve0.appendFormalArg(farg);
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
@@ -2704,14 +2704,14 @@ public class ColPredDataValue extends DataValue
             pve1_ID = db.addPredVE(pve1);
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-                        
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -2732,7 +2732,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<untyped>");
@@ -2740,7 +2740,7 @@ public class ColPredDataValue extends DataValue
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
             matrix_mve1 = db.getMatrixVE(matrix_mve1_ID);
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new ColPredFormalArg(db, "<colpred>");
@@ -2748,17 +2748,17 @@ public class ColPredDataValue extends DataValue
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
             matrix_mve2 = db.getMatrixVE(matrix_mve2_ID);
-                        
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( pve1 == null ) ||
@@ -2782,58 +2782,58 @@ public class ColPredDataValue extends DataValue
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
-                if ( pve1 == null ) 
+
+
+                if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-             
+
                 if ( pve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -2844,18 +2844,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -2866,18 +2866,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -2888,18 +2888,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve2.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2_ID == INVALID_ID.\n");
                 }
 
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2908,8 +2908,8 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         // now create a selection of column predicates for testing
         if ( failures == 0 )
         {
@@ -2975,7 +2975,7 @@ public class ColPredDataValue extends DataValue
                 arg = new ColPredDataValue(db, fargID,
                                      new ColPred(db, float_mve_ID));
                 matrix_cp0_arg_list.add(arg);
-                matrix_cp0 = new ColPred(db, matrix_mve0_ID, 
+                matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
 
                 completed = true;
@@ -2986,7 +2986,7 @@ public class ColPredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_cp_arg_list == null ) ||
                  ( float_cp0 == null ) ||
                  ( matrix_cp0_arg_list == null ) ||
@@ -2995,7 +2995,7 @@ public class ColPredDataValue extends DataValue
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_cp_arg_list == null )
@@ -3003,24 +3003,24 @@ public class ColPredDataValue extends DataValue
                         outStream.printf(
                             "allocation of float_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( float_cp0 == null )
                     {
                         outStream.printf("allocation of float_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp0 failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("Creation of test column predicates " +
@@ -3036,7 +3036,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -3049,13 +3049,13 @@ public class ColPredDataValue extends DataValue
                 assert( untyped_farg.getFargType() == FormalArgument.fArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assert( untyped_farg_ID != DBIndex.INVALID_ID );
-                
+
                 col_pred_farg = matrix_mve2.getFormalArg(0);
-                assert( col_pred_farg.getFargType() == 
+                assert( col_pred_farg.getFargType() ==
                         FormalArgument.fArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assert( col_pred_farg_ID != DBIndex.INVALID_ID );
-                
+
                 cpdv = new ColPredDataValue(db, untyped_farg_ID, null);
                 float_cpdv0 = new ColPredDataValue(db, col_pred_farg_ID, float_cp0);
                 matrix_cpdv0 = new ColPredDataValue(db, untyped_farg_ID, matrix_cp0);
@@ -3073,7 +3073,7 @@ public class ColPredDataValue extends DataValue
                  ( float_cpdv0 == null ) ||
                  ( matrix_cpdv0 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -3109,20 +3109,20 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-    
+
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               cpdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               cpdv,
+                                                               outStream,
                                                                verbose,
                                                                "cpdv");
-            
+
             if ( cpdv.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("cpdv.itsValue null (1).\n");
@@ -3130,17 +3130,17 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(new ColPred(db), 
-                                                      cpdv.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new ColPred(db)", 
+                failures += ColPred.VerifyColPredCopy(new ColPred(db),
+                                                      cpdv.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "new ColPred(db)",
                                                       "cpdv.itsValue");
-                
-                failures += DataValue.TestAccessors(db, untyped_farg, 
+
+                failures += DataValue.TestAccessors(db, untyped_farg,
                         matrix_mve2, col_pred_farg, cpdv, outStream, verbose);
             }
-            
+
             if ( failures == 0 )
             {
                 cpdv.setItsValue(float_cp0);
@@ -3156,28 +3156,28 @@ public class ColPredDataValue extends DataValue
                 }
                 else
                 {
-                    failures += ColPred.VerifyColPredCopy(float_cp0, 
-                                                          cpdv.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "float_cp0", 
+                    failures += ColPred.VerifyColPredCopy(float_cp0,
+                                                          cpdv.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "float_cp0",
                                                           "cpdv.itsValue");
                 }
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               col_pred_farg, 
-                                                               float_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               col_pred_farg,
+                                                               float_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "float_cpdv0");
-            
+
             if ( float_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("float_cpdv0.itsValue null (1).\n");
@@ -3185,18 +3185,18 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(float_cp0, 
-                                                      float_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "float_cp0", 
+                failures += ColPred.VerifyColPredCopy(float_cp0,
+                                                      float_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "float_cp0",
                                                       "float_cpdv0.itsValue");
-                
-                failures += DataValue.TestAccessors(db, col_pred_farg, 
-                        matrix_mve1, untyped_farg, float_cpdv0, outStream, 
+
+                failures += DataValue.TestAccessors(db, col_pred_farg,
+                        matrix_mve1, untyped_farg, float_cpdv0, outStream,
                         verbose);
             }
-            
+
             if ( failures == 0 )
             {
                 float_cpdv0.setItsValue(matrix_cp0);
@@ -3213,28 +3213,28 @@ public class ColPredDataValue extends DataValue
                 }
                 else
                 {
-                    failures += ColPred.VerifyColPredCopy(matrix_cp0, 
-                                                          float_cpdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "matrix_cp0", 
+                    failures += ColPred.VerifyColPredCopy(matrix_cp0,
+                                                          float_cpdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "matrix_cp0",
                                                           "float_cpdv0.itsValue");
                 }
             }
-            
+
             /**********************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               untyped_farg, 
-                                                               matrix_cpdv0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               untyped_farg,
+                                                               matrix_cpdv0,
+                                                               outStream,
                                                                verbose,
                                                                "matrix_cpdv0");
-            
+
             if ( matrix_cpdv0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("matrix_cpdv0.itsValue null (1).\n");
@@ -3242,18 +3242,18 @@ public class ColPredDataValue extends DataValue
             }
             else
             {
-                failures += ColPred.VerifyColPredCopy(matrix_cp0, 
-                                                      matrix_cpdv0.itsValue, 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "matrix_cp0", 
+                failures += ColPred.VerifyColPredCopy(matrix_cp0,
+                                                      matrix_cpdv0.itsValue,
+                                                      outStream,
+                                                      verbose,
+                                                      "matrix_cp0",
                                                       "matrix_cpdv0.itsValue");
-                
-                failures += DataValue.TestAccessors(db, untyped_farg, 
-                        matrix_mve2, col_pred_farg, matrix_cpdv0, outStream, 
+
+                failures += DataValue.TestAccessors(db, untyped_farg,
+                        matrix_mve2, col_pred_farg, matrix_cpdv0, outStream,
                         verbose);
             }
-            
+
             if ( failures == 0 )
             {
                 matrix_cpdv0.setItsValue(null);
@@ -3270,21 +3270,21 @@ public class ColPredDataValue extends DataValue
                 }
                 else
                 {
-                    failures += ColPred.VerifyColPredCopy(new ColPred(db), 
-                                                          matrix_cpdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new ColPred(db)", 
+                    failures += ColPred.VerifyColPredCopy(new ColPred(db),
+                                                          matrix_cpdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new ColPred(db)",
                                                           "matrix_cpdv0.itsValue");
                 }
             }
         }
-        
-        /* For now at least, there is no real need to test setItsValue with 
+
+        /* For now at least, there is no real need to test setItsValue with
          * invalid values.  The compiler requires that the supplied parameter
          * is an instance of ColPred, and the value supplied (if not null or
-         * an empty ColPred) is passed through to the target formal arguments 
-         * isValidValue routine.  Since we already have tests for these 
+         * an empty ColPred) is passed through to the target formal arguments
+         * isValidValue routine.  Since we already have tests for these
          * routines, there is no need to test them here.
          *
          * That said, against changes in the code, it is probably worth while
@@ -3292,7 +3292,7 @@ public class ColPredDataValue extends DataValue
          *
          * Start with setup for test:
          */
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -3301,7 +3301,7 @@ public class ColPredDataValue extends DataValue
             try
             {
                 alt_db = new ODBCDatabase();
-            
+
                 alt_float_mve0 = new MatrixVocabElement(alt_db, "alt_float_mve0");
                 alt_float_mve0.setType(MatrixVocabElement.MatrixType.FLOAT);
                 farg = new FloatFormalArg(alt_db);
@@ -3309,7 +3309,7 @@ public class ColPredDataValue extends DataValue
                 alt_db.vl.addElement(alt_float_mve0);
                 alt_float_mve0_ID = alt_float_mve0.getID();
 
-                
+
                 alt_float_cp0_arg_list = new Vector<DataValue>();
                 fargID = alt_float_mve0.getCPFormalArg(0).getID();
                 arg = new IntDataValue(alt_db, fargID, 11);
@@ -3325,9 +3325,9 @@ public class ColPredDataValue extends DataValue
                 fargID = alt_float_mve0.getCPFormalArg(3).getID();
                 arg = new FloatDataValue(alt_db, fargID, 11.0);
                 alt_float_cp0_arg_list.add(arg);
-                alt_float_cp0 = new ColPred(alt_db, alt_float_mve0_ID, 
+                alt_float_cp0 = new ColPred(alt_db, alt_float_mve0_ID,
                                             alt_float_cp0_arg_list);
-                
+
                 completed = true;
             }
 
@@ -3342,8 +3342,8 @@ public class ColPredDataValue extends DataValue
                  ( alt_float_mve0_ID == DBIndex.INVALID_ID ) ||
                  ( alt_float_cp0_arg_list == null ) ||
                  ( alt_float_cp0 == null ) ||
-                 ( ! completed ) || 
-                 ( threwSystemErrorException ) ) 
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -3384,13 +3384,13 @@ public class ColPredDataValue extends DataValue
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("alt float cp setup threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -3408,12 +3408,12 @@ public class ColPredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( completed )
@@ -3421,7 +3421,7 @@ public class ColPredDataValue extends DataValue
                         outStream.printf(
                                 "cpdv.setItsValue(alt_float_cp0) completed.\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf("cpdv.setItsValue(alt_float_cp0) " +
@@ -3430,7 +3430,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -3459,25 +3459,25 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -3527,8 +3527,8 @@ public class ColPredDataValue extends DataValue
         Vector<DataValue> nominal_cp_arg_list = null;
         Vector<DataValue> pred_cp_arg_list = null;
         Vector<DataValue> text_cp_arg_list = null;
-        ColPred float_cp0 = null;        
-        ColPred int_cp0 = null;        
+        ColPred float_cp0 = null;
+        ColPred int_cp0 = null;
         ColPred matrix_cp0 = null;
         ColPred matrix_cp1 = null;
         ColPred matrix_cp2 = null;
@@ -3553,7 +3553,7 @@ public class ColPredDataValue extends DataValue
         ColPredDataValue pred_cpdv0_copy = null;
         ColPredDataValue text_cpdv0 = null;
         ColPredDataValue text_cpdv0_copy = null;
-        
+
 
         outStream.print(testBanner);
 
@@ -3561,28 +3561,28 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's needed for testing.
         //
         // For now, at least, the selection of mve's and cp's used in this
         // test is overkill.  But since I didn't figure this out until I had
         // already prepared them, I may as well leave them and use them all.
         // The day may come when they actually do something useful.
-        
+
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve0.appendFormalArg(farg);
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
@@ -3591,21 +3591,21 @@ public class ColPredDataValue extends DataValue
             pve1_ID = db.addPredVE(pve1);
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             farg = new IntFormalArg(db);
             int_mve.appendFormalArg(farg);
             db.vl.addElement(int_mve);
             int_mve_ID = int_mve.getID();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -3626,7 +3626,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -3637,7 +3637,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve1.appendFormalArg(farg);
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<arg1>");
@@ -3645,38 +3645,38 @@ public class ColPredDataValue extends DataValue
             matrix_mve2.setVarLen(true);
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
-            
+
             nominal_mve = new MatrixVocabElement(db, "nominal_mve");
             nominal_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
             farg = new NominalFormalArg(db);
             nominal_mve.appendFormalArg(farg);
             db.vl.addElement(nominal_mve);
             nominal_mve_ID = nominal_mve.getID();
-            
+
             pred_mve = new MatrixVocabElement(db, "pred_mve");
             pred_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
             farg = new PredFormalArg(db);
             pred_mve.appendFormalArg(farg);
             db.vl.addElement(pred_mve);
             pred_mve_ID = pred_mve.getID();
-            
+
             text_mve = new MatrixVocabElement(db, "text_mve");
             text_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             farg = new TextStringFormalArg(db);
             text_mve.appendFormalArg(farg);
             db.vl.addElement(text_mve);
             text_mve_ID = text_mve.getID();
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( pve1 == null ) ||
@@ -3712,74 +3712,74 @@ public class ColPredDataValue extends DataValue
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
-                if ( pve1 == null ) 
+
+
+                if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-             
+
                 if ( pve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( int_mve == null )
                 {
                     outStream.print("creation of int_mve failed.\n");
                 }
-                else if ( int_mve.getType() != 
+                else if ( int_mve.getType() !=
                         MatrixVocabElement.MatrixType.INTEGER )
                 {
                     outStream.print("unexpected int_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("int_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -3790,18 +3790,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve0_ID == INVALID_ID.\n");
                 }
-                                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -3812,18 +3812,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mv1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -3834,65 +3834,65 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve2.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2 == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( nominal_mve == null )
                 {
                     outStream.print("creation of nominal_mve failed.\n");
                 }
-                else if ( nominal_mve.getType() != 
+                else if ( nominal_mve.getType() !=
                         MatrixVocabElement.MatrixType.NOMINAL )
                 {
                     outStream.print("unexpected nominal_mve.getType().\n");
                 }
-                
+
                 if ( nominal_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("nominal_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( pred_mve == null )
                 {
                     outStream.print("creation of pred_mve failed.\n");
                 }
-                else if ( pred_mve.getType() != 
+                else if ( pred_mve.getType() !=
                         MatrixVocabElement.MatrixType.PREDICATE )
                 {
                     outStream.print("unexpected pred_mve.getType().\n");
                 }
-                
+
                 if ( pred_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pred_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( text_mve == null )
                 {
                     outStream.print("creation of text_mve failed.\n");
                 }
-                else if ( text_mve.getType() != 
+                else if ( text_mve.getType() !=
                         MatrixVocabElement.MatrixType.TEXT )
                 {
                     outStream.print("unexpected text_mve.getType().\n");
                 }
-                
+
                 if ( text_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("text_mve_ID == INVALID_ID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -3901,8 +3901,8 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         // now create a selection of column predicates for testing
         if ( failures == 0 )
         {
@@ -3986,7 +3986,7 @@ public class ColPredDataValue extends DataValue
                 arg = new ColPredDataValue(db, fargID,
                                      new ColPred(db, float_mve_ID));
                 matrix_cp0_arg_list.add(arg);
-                matrix_cp0 = new ColPred(db, matrix_mve0_ID, 
+                matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
 
 
@@ -4098,7 +4098,7 @@ public class ColPredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_cp_arg_list == null ) ||
                  ( float_cp0 == null ) ||
                  ( int_cp_arg_list == null ) ||
@@ -4117,7 +4117,7 @@ public class ColPredDataValue extends DataValue
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_cp_arg_list == null )
@@ -4125,93 +4125,93 @@ public class ColPredDataValue extends DataValue
                         outStream.printf(
                             "allocation of float_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( float_cp0 == null )
                     {
                         outStream.printf("allocation of float_cp0 failed.\n");
                     }
-                    
+
                     if ( int_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of int_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( int_cp0 == null )
                     {
                         outStream.printf("allocation of int_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp1_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp1_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp1 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp1 failed.\n");
                     }
-                    
+
                     if ( matrix_cp2_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp2_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp2 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp2 failed.\n");
                     }
-                    
+
                     if ( nominal_cp_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of nominal_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( nominal_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of nominal_cp0 failed.\n");
                     }
-                    
+
                     if ( pred_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of pred_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( pred_cp0 == null )
                     {
                         outStream.printf("allocation of pred_cp0 failed.\n");
                     }
-                    
+
                     if ( text_cp_arg_list == null )
                     {
                         outStream.printf(
                                 "allocation of text_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( text_cp0 == null )
                     {
                         outStream.printf("allocation of text_cp0 failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("Creation of test column predicates " +
@@ -4228,7 +4228,7 @@ public class ColPredDataValue extends DataValue
             }
         }
 
-        
+
         // now create a set of column predicate data values for copying:
         if ( failures == 0 )
         {
@@ -4242,13 +4242,13 @@ public class ColPredDataValue extends DataValue
                 assert( farg.getFargType() == FormalArgument.fArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assert( untyped_farg_ID != DBIndex.INVALID_ID );
-                
+
                 col_pred_farg = matrix_mve0.getFormalArg(7);
-                assert( col_pred_farg.getFargType() == 
+                assert( col_pred_farg.getFargType() ==
                         FormalArgument.fArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assert( col_pred_farg_ID != DBIndex.INVALID_ID );
-                
+
                 cpdv = new ColPredDataValue(db, untyped_farg_ID, null);
                 float_cpdv0 = new ColPredDataValue(db, col_pred_farg_ID, float_cp0);
                 int_cpdv0 = new ColPredDataValue(db, untyped_farg_ID, int_cp0);
@@ -4278,7 +4278,7 @@ public class ColPredDataValue extends DataValue
                  ( pred_cpdv0 == null ) ||
                  ( text_cpdv0 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4345,9 +4345,9 @@ public class ColPredDataValue extends DataValue
             }
         }
 
-        
+
         // use the copy constructor to create copies of the col pred data values:
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -4385,7 +4385,7 @@ public class ColPredDataValue extends DataValue
                  ( pred_cpdv0_copy == null ) ||
                  ( text_cpdv0_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4451,34 +4451,34 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(cpdv, cpdv_copy, 
+            failures += DataValue.VerifyDVCopy(cpdv, cpdv_copy,
                     outStream, verbose, "cpdv", "cpdv_copy");
 
-            failures += DataValue.VerifyDVCopy(float_cpdv0, float_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(float_cpdv0, float_cpdv0_copy,
                     outStream, verbose, "float_cpdv0", "float_cpdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(int_cpdv0, int_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(int_cpdv0, int_cpdv0_copy,
                     outStream, verbose, "int_cpdv0", "int_cpdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(matrix_cpdv0, matrix_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(matrix_cpdv0, matrix_cpdv0_copy,
                     outStream, verbose, "matrix_cpdv0", "matrix_cpdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(matrix_cpdv1, matrix_cpdv1_copy, 
+            failures += DataValue.VerifyDVCopy(matrix_cpdv1, matrix_cpdv1_copy,
                     outStream, verbose, "matrix_cpdv1", "matrix_cpdv1_copy");
 
-            failures += DataValue.VerifyDVCopy(matrix_cpdv2, matrix_cpdv2_copy, 
+            failures += DataValue.VerifyDVCopy(matrix_cpdv2, matrix_cpdv2_copy,
                     outStream, verbose, "matrix_cpdv2", "matrix_cpdv2_copy");
 
-            failures += DataValue.VerifyDVCopy(nominal_cpdv0, nominal_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(nominal_cpdv0, nominal_cpdv0_copy,
                     outStream, verbose, "nominal_cpdv0", "nominal_cpdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(pred_cpdv0, pred_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(pred_cpdv0, pred_cpdv0_copy,
                     outStream, verbose, "pred_cpdv0", "pred_cpdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(text_cpdv0, text_cpdv0_copy, 
+            failures += DataValue.VerifyDVCopy(text_cpdv0, text_cpdv0_copy,
                     outStream, verbose, "text_cpdv0", "text_cpdv0_copy");
         }
 
@@ -4502,9 +4502,9 @@ public class ColPredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( cpdv != null ) || 
+            if ( ( cpdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4530,8 +4530,8 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -4560,25 +4560,25 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 10/11/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -4588,16 +4588,16 @@ public class ColPredDataValue extends DataValue
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String testString0 = "()";
-        String testDBString0 = 
+        String testDBString0 =
                 "(ColPredDataValue (id 1000) (itsFargID 33) (itsFargType UNTYPED) (itsCellID 1001) (itsValue ()) (subRange false))";
         String testString1 = "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
-        String testDBString1 = 
+        String testDBString1 =
                 "(ColPredDataValue (id 2000) (itsFargID 39) (itsFargType COL_PREDICATE) (itsCellID 2001) (itsValue (colPred (id 0) (mveID 6) (mveName float_mve) (varLen false) (argList ((IntDataValue (id 0) (itsFargID 8) (itsFargType INTEGER) (itsCellID 0) (itsValue 11) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 0) (itsFargID 9) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:00:011)) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 10) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:11:000)) (subRange false)), (FloatDataValue (id 0) (itsFargID 11) (itsFargType FLOAT) (itsCellID 0) (itsValue 11.0) (subRange false) (minVal 0.0) (maxVal 0.0))))))) (subRange false))";
 //                "(ColPredDataValue (id 2000) (itsFargID 39) (itsFargType COL_PREDICATE) (itsCellID 2001) (itsValue (colPred (id 0) (mveID 6) (mveName float_mve) (varLen false) (argList ((IntDataValue (id 0) (itsFargID 8) (itsFargType UNTYPED) (itsCellID 0) (itsValue 11) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 0) (itsFargID 9) (itsFargType UNTYPED) (itsCellID 0) (itsValue (60,00:00:00:011)) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 10) (itsFargType UNTYPED) (itsCellID 0) (itsValue (60,00:00:11:000)) (subRange false)), (FloatDataValue (id 0) (itsFargID 11) (itsFargType FLOAT) (itsCellID 0) (itsValue 11.0) (subRange false) (minVal 0.0) (maxVal 0.0))))))) (subRange false))";
-        String testString2 = 
+        String testString2 =
                 "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
 //                "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(<ord>, <onset>, <offset>, 0.0))";
-        String testDBString2 = 
+        String testDBString2 =
                 "(ColPredDataValue (id 3000) (itsFargID 33) (itsFargType UNTYPED) (itsCellID 3001) (itsValue (colPred (id 0) (mveID 12) (mveName matrix_mve0) (varLen false) (argList ((IntDataValue (id 0) (itsFargID 21) (itsFargType INTEGER) (itsCellID 0) (itsValue 33) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 0) (itsFargID 22) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:00:033)) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 23) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:33:000)) (subRange false)), (FloatDataValue (id 0) (itsFargID 24) (itsFargType FLOAT) (itsCellID 0) (itsValue 1.0) (subRange false) (minVal 0.0) (maxVal 0.0)), (IntDataValue (id 0) (itsFargID 25) (itsFargType INTEGER) (itsCellID 0) (itsValue 2) (subRange false) (minVal 0) (maxVal 0)), (NominalDataValue (id 0) (itsFargID 26) (itsFargType NOMINAL) (itsCellID 0) (itsValue a_nominal) (subRange false)), (PredDataValue (id 0) (itsFargID 27) (itsFargType PREDICATE) (itsCellID 0) (itsValue (predicate (id 0) (predID 1) (predName pve0) (varLen false) (argList ((UndefinedDataValue (id 0) (itsFargID 2) (itsFargType UNTYPED) (itsCellID 0) (itsValue <arg>) (subRange false))))))) (subRange false)), (QuoteStringDataValue (id 0) (itsFargID 28) (itsFargType QUOTE_STRING) (itsCellID 0) (itsValue q-string) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 29) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:01:000)) (subRange false)), (UndefinedDataValue (id 0) (itsFargID 30) (itsFargType UNTYPED) (itsCellID 0) (itsValue <untyped>) (subRange false)), (ColPredDataValue (id 0) (itsFargID 31) (itsFargType COL_PREDICATE) (itsCellID 0) (itsValue (colPred (id 0) (mveID 6) (mveName float_mve) (varLen false) (argList ((IntDataValue (id 0) (itsFargID 8) (itsFargType INTEGER) (itsCellID 0) (itsValue 0) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 0) (itsFargID 9) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:00:000)) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 10) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:00:000)) (subRange false)), (FloatDataValue (id 0) (itsFargID 11) (itsFargType FLOAT) (itsCellID 0) (itsValue 0.0) (subRange false) (minVal 0.0) (maxVal 0.0))))))) (subRange false))))))) (subRange false))";
 //                "(ColPredDataValue (id 3000) (itsFargID 33) (itsFargType UNTYPED) (itsCellID 3001) (itsValue (colPred (id 0) (mveID 12) (mveName matrix_mve0) (varLen false) (argList ((IntDataValue (id 0) (itsFargID 21) (itsFargType UNTYPED) (itsCellID 0) (itsValue 33) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 0) (itsFargID 22) (itsFargType UNTYPED) (itsCellID 0) (itsValue (60,00:00:00:033)) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 23) (itsFargType UNTYPED) (itsCellID 0) (itsValue (60,00:00:33:000)) (subRange false)), (FloatDataValue (id 0) (itsFargID 24) (itsFargType FLOAT) (itsCellID 0) (itsValue 1.0) (subRange false) (minVal 0.0) (maxVal 0.0)), (IntDataValue (id 0) (itsFargID 25) (itsFargType INTEGER) (itsCellID 0) (itsValue 2) (subRange false) (minVal 0) (maxVal 0)), (NominalDataValue (id 0) (itsFargID 26) (itsFargType NOMINAL) (itsCellID 0) (itsValue a_nominal) (subRange false)), (PredDataValue (id 0) (itsFargID 27) (itsFargType PREDICATE) (itsCellID 0) (itsValue (predicate (id 0) (predID 1) (predName pve0) (varLen false) (argList ((UndefinedDataValue (id 0) (itsFargID 2) (itsFargType UNTYPED) (itsCellID 0) (itsValue <arg>) (subRange false))))))) (subRange false)), (QuoteStringDataValue (id 0) (itsFargID 28) (itsFargType QUOTE_STRING) (itsCellID 0) (itsValue q-string) (subRange false)), (TimeStampDataValue (id 0) (itsFargID 29) (itsFargType TIME_STAMP) (itsCellID 0) (itsValue (60,00:00:01:000)) (subRange false)), (UndefinedDataValue (id 0) (itsFargID 30) (itsFargType UNTYPED) (itsCellID 0) (itsValue <untyped>) (subRange false)), (ColPredDataValue (id 0) (itsFargID 31) (itsFargType COL_PREDICATE) (itsCellID 0) (itsValue (colPred (id 0) (mveID 6) (mveName float_mve) (varLen false) (argList ((UndefinedDataValue (id 0) (itsFargID 8) (itsFargType UNTYPED) (itsCellID 0) (itsValue <ord>) (subRange false)), (UndefinedDataValue (id 0) (itsFargID 9) (itsFargType UNTYPED) (itsCellID 0) (itsValue <onset>) (subRange false)), (UndefinedDataValue (id 0) (itsFargID 10) (itsFargType UNTYPED) (itsCellID 0) (itsValue <offset>) (subRange false)), (FloatDataValue (id 0) (itsFargID 11) (itsFargType FLOAT) (itsCellID 0) (itsValue 0.0) (subRange false) (minVal 0.0) (maxVal 0.0))))))) (subRange false))))))) (subRange false))";
         String systemErrorExceptionString = null;
@@ -4627,7 +4627,7 @@ public class ColPredDataValue extends DataValue
         DataValue arg = null;
         Vector<DataValue> float_cp_arg_list = null;
         Vector<DataValue> matrix_cp0_arg_list = null;
-        ColPred float_cp0 = null;        
+        ColPred float_cp0 = null;
         ColPred matrix_cp0 = null;
         ColPredDataValue cpdv = null;
         ColPredDataValue float_cpdv0 = null;
@@ -4639,23 +4639,23 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by creating a selection of mve's needed for testing.
-        
+
         completed = false;
         threwSystemErrorException = false;
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve0.appendFormalArg(farg);
             pve0_ID = db.addPredVE(pve0);
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0_ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve1.appendFormalArg(farg);
@@ -4664,14 +4664,14 @@ public class ColPredDataValue extends DataValue
             pve1_ID = db.addPredVE(pve1);
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1_ID);
-            
+
             float_mve = new MatrixVocabElement(db, "float_mve");
             float_mve.setType(MatrixVocabElement.MatrixType.FLOAT);
             farg = new FloatFormalArg(db);
             float_mve.appendFormalArg(farg);
             db.vl.addElement(float_mve);
             float_mve_ID = float_mve.getID();
-                        
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new FloatFormalArg(db, "<float>");
@@ -4692,7 +4692,7 @@ public class ColPredDataValue extends DataValue
             matrix_mve0.appendFormalArg(farg);
             db.vl.addElement(matrix_mve0);
             matrix_mve0_ID = matrix_mve0.getID();
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new UnTypedFormalArg(db, "<untyped>");
@@ -4700,7 +4700,7 @@ public class ColPredDataValue extends DataValue
             db.vl.addElement(matrix_mve1);
             matrix_mve1_ID = matrix_mve1.getID();
             matrix_mve1 = db.getMatrixVE(matrix_mve1_ID);
-            
+
             matrix_mve2 = new MatrixVocabElement(db, "matrix_mve2");
             matrix_mve2.setType(MatrixVocabElement.MatrixType.MATRIX);
             farg = new ColPredFormalArg(db, "<colpred>");
@@ -4708,17 +4708,17 @@ public class ColPredDataValue extends DataValue
             db.vl.addElement(matrix_mve2);
             matrix_mve2_ID = matrix_mve2.getID();
             matrix_mve2 = db.getMatrixVE(matrix_mve2_ID);
-                        
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
-        if ( ( db == null ) || 
+
+        if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0_ID == DBIndex.INVALID_ID ) ||
              ( pve1 == null ) ||
@@ -4742,58 +4742,58 @@ public class ColPredDataValue extends DataValue
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
-                
-                if ( pve0 == null ) 
+
+
+                if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-             
+
                 if ( pve0_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0_ID == INVALID_ID.\n");
                 }
-                
-                
-                if ( pve1 == null ) 
+
+
+                if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-             
+
                 if ( pve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( float_mve == null )
                 {
                     outStream.print("creation of float_mve failed.\n");
                 }
-                else if ( float_mve.getType() != 
+                else if ( float_mve.getType() !=
                         MatrixVocabElement.MatrixType.FLOAT )
                 {
                     outStream.print("unexpected float_mve.getType().\n");
                 }
-                
+
                 if ( float_mve_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("float_mve_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("creation of matrix_mve0 failed.\n");
                 }
-                else if ( matrix_mve0.getType() != 
+                else if ( matrix_mve0.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve0.getType().\n");
@@ -4804,18 +4804,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve0.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("creation of matrix_mve1 failed.\n");
                 }
-                else if ( matrix_mve1.getType() != 
+                else if ( matrix_mve1.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve1.getType().\n");
@@ -4826,18 +4826,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve1.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve1_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve1_ID == INVALID_ID.\n");
                 }
-                
-                
+
+
                 if ( matrix_mve2 == null )
                 {
                     outStream.print("creation of matrix_mve2 failed.\n");
                 }
-                else if ( matrix_mve2.getType() != 
+                else if ( matrix_mve2.getType() !=
                         MatrixVocabElement.MatrixType.MATRIX )
                 {
                     outStream.print("unexpected matrix_mve2.getType().\n");
@@ -4848,18 +4848,18 @@ public class ColPredDataValue extends DataValue
                                      "unexpected value: %d.\n",
                                      matrix_mve2.getNumFormalArgs());
                 }
-                
+
                 if ( matrix_mve2_ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("matrix_mve2_ID == INVALID_ID.\n");
                 }
 
-                
+
                 if ( ! completed )
                 {
                     outStream.print("Creation of test mve's failed to complete");
                 }
-                 
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -4868,8 +4868,8 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         // now create a selection of column predicates for testing
         if ( failures == 0 )
         {
@@ -4935,7 +4935,7 @@ public class ColPredDataValue extends DataValue
                 arg = new ColPredDataValue(db, fargID,
                                      new ColPred(db, float_mve_ID));
                 matrix_cp0_arg_list.add(arg);
-                matrix_cp0 = new ColPred(db, matrix_mve0_ID, 
+                matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
 
                 completed = true;
@@ -4946,7 +4946,7 @@ public class ColPredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( float_cp_arg_list == null ) ||
                  ( float_cp0 == null ) ||
                  ( matrix_cp0_arg_list == null ) ||
@@ -4955,7 +4955,7 @@ public class ColPredDataValue extends DataValue
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( float_cp_arg_list == null )
@@ -4963,24 +4963,24 @@ public class ColPredDataValue extends DataValue
                         outStream.printf(
                             "allocation of float_cp_arg_list failed.\n");
                     }
-                    
+
                     if ( float_cp0 == null )
                     {
                         outStream.printf("allocation of float_cp0 failed.\n");
                     }
-                    
+
                     if ( matrix_cp0_arg_list == null )
                     {
                         outStream.printf(
                             "allocation of matrix_cp0_arg_list failed.\n");
                     }
-                    
+
                     if ( matrix_cp0 == null )
                     {
                         outStream.printf(
                                 "allocation of matrix_cp0 failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("Creation of test column predicates " +
@@ -4996,7 +4996,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -5009,23 +5009,23 @@ public class ColPredDataValue extends DataValue
                 assert( untyped_farg.getFargType() == FormalArgument.fArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assert( untyped_farg_ID != DBIndex.INVALID_ID );
-                
+
                 col_pred_farg = matrix_mve2.getFormalArg(0);
-                assert( col_pred_farg.getFargType() == 
+                assert( col_pred_farg.getFargType() ==
                         FormalArgument.fArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assert( col_pred_farg_ID != DBIndex.INVALID_ID );
-                
+
                 cpdv = new ColPredDataValue(db, untyped_farg_ID, null);
                 cpdv.id = 1000;               // fake value for testing
                 cpdv.itsCellID = 1001;        // fake value for testing
                 cpdv.itsPredID = 1002;        // fake value for testing
-                
+
                 float_cpdv0 = new ColPredDataValue(db, col_pred_farg_ID, float_cp0);
                 float_cpdv0.id = 2000;        // fake value for testing
                 float_cpdv0.itsCellID = 2001; // fake value for testing
                 float_cpdv0.itsPredID = 2002; // fake value for testing
-                
+
                 matrix_cpdv0 = new ColPredDataValue(db, untyped_farg_ID, matrix_cp0);
                 matrix_cpdv0.id = 3000;        // fake value for testing
                 matrix_cpdv0.itsCellID = 3001; // fake value for testing
@@ -5044,7 +5044,7 @@ public class ColPredDataValue extends DataValue
                  ( float_cpdv0 == null ) ||
                  ( matrix_cpdv0 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -5080,35 +5080,35 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( cpdv.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected cpdv.toString(): \"%s\".\n",
                                      cpdv.toString());
                 }
             }
-            
+
             if ( cpdv.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected cpdv.toDBString(): \"%s\".\n",
                                      cpdv.toDBString());
                 }
             }
-            
+
             if ( float_cpdv0.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -5116,11 +5116,11 @@ public class ColPredDataValue extends DataValue
                             float_cpdv0.toString());
                 }
             }
-            
+
             if ( float_cpdv0.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -5128,11 +5128,11 @@ public class ColPredDataValue extends DataValue
                             float_cpdv0.toDBString());
                 }
             }
-            
+
             if ( matrix_cpdv0.toString().compareTo(testString2) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -5140,11 +5140,11 @@ public class ColPredDataValue extends DataValue
                             matrix_cpdv0.toString());
                 }
             }
-            
+
             if ( matrix_cpdv0.toDBString().compareTo(testDBString2) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -5153,7 +5153,7 @@ public class ColPredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -5182,17 +5182,17 @@ public class ColPredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredDataValue::TestToStringMethods() */
 
 
     /**
      * VerifyColPredDVCopy()
      *
-     * Verify that the supplied instances of ColPredDataValue are distinct, that 
-     * they contain no common references (other than db), and that they have 
+     * Verify that the supplied instances of ColPredDataValue are distinct, that
+     * they contain no common references (other than db), and that they have
      * the same value.
      *                                              JRM -- 10/3/08
      *
@@ -5213,13 +5213,13 @@ public class ColPredDataValue extends DataValue
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyColPredDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyColPredDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyColPredDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyColPredDVCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -5247,7 +5247,7 @@ public class ColPredDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a Predicate.\n", 
+                outStream.printf("%s and %s share a Predicate.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -5263,7 +5263,7 @@ public class ColPredDataValue extends DataValue
                         baseDesc, copyDesc);
             }
         }
-        else if ( ( base.itsValue != null ) && 
+        else if ( ( base.itsValue != null ) &&
                   ( copy.itsValue == null ) )
         {
             failures++;
@@ -5275,14 +5275,14 @@ public class ColPredDataValue extends DataValue
                         copyDesc, baseDesc);
             }
         }
-        else if ( ( base.itsValue != null ) && 
+        else if ( ( base.itsValue != null ) &&
                   ( base.toString().compareTo(copy.toString()) != 0 ) )
         {
             failures++;
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -5293,14 +5293,14 @@ public class ColPredDataValue extends DataValue
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }
         else if ( base.itsValue != null )
         {
-            failures += ColPred.VerifyColPredCopy(base.itsValue, 
-                                                  copy.itsValue, 
+            failures += ColPred.VerifyColPredCopy(base.itsValue,
+                                                  copy.itsValue,
                                                   outStream, verbose,
                                                   baseDesc + ".itsValue",
                                                   copyDesc + ".itsValue");

@@ -20,7 +20,7 @@ public class ColPredDataValueTest {
     private long matrix_mve_ID;
     private FormalArgument untypedFarg;
     private FormalArgument colPredFarg;
-    private MatrixVocabElement float_mve;    
+    private MatrixVocabElement float_mve;
 
     /**
      * Default test constructor.
@@ -94,7 +94,7 @@ public class ColPredDataValueTest {
         assertNotNull(cpdv);
 
         assertNotNull(cpdv.itsValue);
-        assertEquals(cpdv.itsValue.getMveID(), DBIndex.INVALID_ID);        
+        assertEquals(cpdv.itsValue.getMveID(), DBIndex.INVALID_ID);
     }
 
     @Test (expected = SystemErrorException.class)
@@ -109,7 +109,7 @@ public class ColPredDataValueTest {
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
-        
+
         assertEquals(untypedFarg.getFargType(),
                      FormalArgument.fArgType.UNTYPED);
 
@@ -127,7 +127,7 @@ public class ColPredDataValueTest {
         assertNotNull(cpdv1);
         assertNotNull(cp);
 
-        assertNotNull(cpdv0.itsValue);        
+        assertNotNull(cpdv0.itsValue);
         assertEquals(cpdv0.db, cp.db);
         assertEquals(cpdv0.db, db);
         assertEquals(cpdv0.getID(), DBIndex.INVALID_ID);
@@ -184,14 +184,14 @@ public class ColPredDataValueTest {
     public void test3ArgConstructor() throws SystemErrorException {
         long fargID = matrix_mve.getCPFormalArg(10).getID();
         new ColPredDataValue(db, fargID, new ColPred(db, float_mve.getID()));
-        
-    }    
+
+    }
 
     /**
      * Test of getItsValue method, of class ColPredDataValue.
      */
     @Test
-    public void testGetItsValue() throws SystemErrorException {        
+    public void testGetItsValue() throws SystemErrorException {
         Vector<DataValue> float_cp_arg_list = new Vector<DataValue>();
         long fargID = float_mve.getCPFormalArg(0).getID();
         DataValue arg = new IntDataValue(db, fargID, 11);

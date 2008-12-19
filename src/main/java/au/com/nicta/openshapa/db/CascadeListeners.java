@@ -11,13 +11,13 @@ package au.com.nicta.openshapa.db;
 
 /**
  * Class CascadeListeners
- * 
+ *
  * Instances of this class are used to manage the mechanics registering and
- * de-registering internal and external listeners for notification of the 
- * beginning and end of cascades of changes through the database. 
- * 
- *                                              JRM -- 2/11/08 
- * 
+ * de-registering internal and external listeners for notification of the
+ * beginning and end of cascades of changes through the database.
+ *
+ *                                              JRM -- 2/11/08
+ *
  * @author mainzer
  */
 public class CascadeListeners extends Listeners
@@ -27,11 +27,11 @@ public class CascadeListeners extends Listeners
     /*************************************************************************/
 
     /**
-     * refCount:  Integer field used to deal with nested calls to the 
-     *      notify methods.  
-     * 
-     *      The start cascade messages are sent iff refCount is zero on 
-     *      entry to notifyListenersOfCascadeBegin().  In any case, this 
+     * refCount:  Integer field used to deal with nested calls to the
+     *      notify methods.
+     *
+     *      The start cascade messages are sent iff refCount is zero on
+     *      entry to notifyListenersOfCascadeBegin().  In any case, this
      *      method increments refcount.
      *
      *      Similarly, the end cascade messages are sent iff refCOunt is one
@@ -40,23 +40,23 @@ public class CascadeListeners extends Listeners
      */
 
     int refCount = 0;
-    
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
+
     /**
      * CascadeListeners
-     * 
+     *
      * For now at least, only one constructor.  The column List listeners
      * class is very simple, so all the construtor does is call the super and
-     * then set itsCL.  
-     * 
+     * then set itsCL.
+     *
      *                                              JRM -- 2/11/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
 
@@ -64,28 +64,28 @@ public class CascadeListeners extends Listeners
         throws SystemErrorException
     {
         super(db);
-        
+
         return;
-            
+
     } /* CascadeListeners::CascadeListeners(db) */
-     
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
 
     /*** none ***/
-    
-    
+
+
     /*************************************************************************/
     /************************** Change Logging: ******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * notifyListenersOfCascadeBegin()
      *
-     * If this.refCount is 0 on entry, Advise the listeners of the beginning 
-     * of a cascade of changes.  Notify external listeners first, and then the 
+     * If this.refCount is 0 on entry, Advise the listeners of the beginning
+     * of a cascade of changes.  Notify external listeners first, and then the
      * internal listeners.  In any case, increment this.refCount.
      *
      *                                                  JRM -- 2/11/08
@@ -94,22 +94,22 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void notifyListenersOfCascadeBegin()
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::notifyListenersOfCascadeBegin()";
         DBElement dbe = null;
         ExternalCascadeListener el;
         InternalCascadeListener il;
-        
+
         if ( this.refCount < 0 )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": refCount negative on entry.");
         }
-        
+
         this.refCount++;
 
         if ( this.refCount == 1 )
@@ -119,7 +119,7 @@ public class CascadeListeners extends Listeners
             {
                 if ( ! ( o instanceof ExternalCascadeListener ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             ": o not a ExternalCascadeBoundyListener.");
                 }
 
@@ -135,26 +135,26 @@ public class CascadeListeners extends Listeners
 
                 if ( ! ( dbe instanceof InternalCascadeListener ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             ": dbe not a InternalCascadeBoundryListener.");
                 }
-                
+
                 il = (InternalCascadeListener)dbe;
-                
+
                 il.beginCascade(this.db);
             }
         }
-        
+
         return;
-        
+
     } /* CascadeListeners::notifyListenersOfCascadeBegin() */
-    
-    
-    /** 
+
+
+    /**
      * notifyListenersOfCascadeEnd()
      *
-     * If this.refCount is 1 on entry, Advise the listeners of the end 
-     * of a cascade of changes.  Notify internal listeners first, and then the 
+     * If this.refCount is 1 on entry, Advise the listeners of the end
+     * of a cascade of changes.  Notify internal listeners first, and then the
      * external listeners.  In any case, decrement this.refCount.
      *
      *                                                  JRM -- 2/11/08
@@ -163,22 +163,22 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void notifyListenersOfCascadeEnd()
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::notifyListenersOfCascadeEnd()";
         DBElement dbe = null;
         ExternalCascadeListener el;
         InternalCascadeListener il;
-        
+
         if ( this.refCount <= 0 )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": refCount non-positive on entry.");
         }
-        
+
         if ( this.refCount == 1 )
         {
             // Notify the internal listeners first...
@@ -188,12 +188,12 @@ public class CascadeListeners extends Listeners
 
                 if ( ! ( dbe instanceof InternalCascadeListener ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             ": dbe not a InternalCascadeBoundryListener.");
                 }
-                
+
                 il = (InternalCascadeListener)dbe;
-                
+
                 il.endCascade(this.db);
             }
 
@@ -202,7 +202,7 @@ public class CascadeListeners extends Listeners
             {
                 if ( ! ( o instanceof ExternalCascadeListener ) )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             ": o not a ExternalCascadeBoundyListener.");
                 }
 
@@ -211,24 +211,24 @@ public class CascadeListeners extends Listeners
                 el.beginCascade(this.db);
             }
         }
-        
+
         this.refCount--;
-        
+
         if ( this.refCount < 0 )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": refCount negative on exit.");
         }
-        
+
         return;
-        
+
     } /* CascadeListeners::notifyListenersOfCascadeEnd() */
-    
-    
+
+
     /*************************************************************************/
     /*********************** Listener Management: ****************************/
     /*************************************************************************/
-    
+
     /**
      * deregisterExternalListener()
      *
@@ -240,25 +240,25 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void deregisterExternalListener(ExternalCascadeListener el)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::deregisterExternalListener()";
-        
+
         if ( el == null )
         {
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
-        
+
         this.DeleteExternalListener(el);
-        
+
         return;
-        
+
     } /* CascadeListeners::deregisterExternalListener() */
-    
-    
+
+
     /**
      * deregisterInternalListener()
      *
@@ -271,25 +271,25 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void deregisterInternalListener(long ID)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::deregisterInternalListener()";
-        
+
         if ( ID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + ": ID is invalid on entry.");
         }
-        
+
         this.DeleteInternalListener(ID);
-        
+
         return;
-        
+
     } /* CascadeListeners::deregisterInternalListener() */
-    
-    
+
+
     /**
      * registerExternalListener()
      *
@@ -301,25 +301,25 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void registerExternalListener(ExternalCascadeListener el)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::registerExternalListener()";
-        
+
         if ( el == null )
         {
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
-        
+
         this.AddExternalListener(el);
-        
+
         return;
-        
+
     } /* CascadeListeners::registerExternalListener() */
-    
-    
+
+
     /**
      * registerInternalListener()
      *
@@ -332,31 +332,31 @@ public class CascadeListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void registerInternalListener(long ID)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "CascadeBoundryListeners::registerInternalListener()";
         DBElement dbe = null;
-        
+
         if ( ID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + ": ID is invalid on entry.");
         }
-        
+
         dbe = this.db.idx.getElement(ID); // throws system error on failure
-        
+
         if ( ! ( dbe instanceof InternalCascadeListener ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": dbe not a InternalCascadeBoundryListener.");
         }
-        
+
         this.AddInternalListener(ID);
-        
+
         return;
-        
+
     } /* CascadeListeners::registerExternalListener() */
-        
+
 } // class CascadeListeners

@@ -561,14 +561,14 @@ public class IntDataValue extends DataValue
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for IntDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -578,13 +578,13 @@ public class IntDataValue extends DataValue
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
      *         Construct a IntDataValue for the formal argument of the mve
      *         by passing a reference to the database and the id of the formal
-     *         argument.  Verify that the IntDataValue's itsFargID, 
+     *         argument.  Verify that the IntDataValue's itsFargID,
      *         itsFargType, subRange, minVal, and maxVal fields matches
      *         thos of the formal argument, and that all other fields are set
      *         to the expected defaults.
@@ -596,34 +596,34 @@ public class IntDataValue extends DataValue
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      IntDataValue -- perhaps after havign been modified to match
      *      the subrange.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a  IntDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a  IntDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         IntDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         IntDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
-     * 
+     *
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
      *      Verify that the getItsValue(), setItsValue() and coerceToRange()
      *      methods perform correctly.  Verify that the inherited accessors
-     *      function correctly via calls to the DataValue.TestAccessors() 
+     *      function correctly via calls to the DataValue.TestAccessors()
      *      method.
      *
      *      Given compiler error checking, there isn't any way to feed
@@ -632,9 +632,9 @@ public class IntDataValue extends DataValue
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -648,46 +648,46 @@ public class IntDataValue extends DataValue
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassIntDataValue(java.io.PrintStream outStream,
                                                   boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class IntDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -698,25 +698,25 @@ public class IntDataValue extends DataValue
         {
             outStream.print("All tests passed for class IntDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::TestClassIntDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -739,33 +739,33 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         idv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             idv = new IntDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( idv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -779,13 +779,13 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new IntDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                             "new IntDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new IntDataValue(db) threw " +
@@ -797,13 +797,13 @@ public class IntDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, idv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, idv, outStream,
                                                            verbose);
 
             if ( idv.itsValue != idv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -815,7 +815,7 @@ public class IntDataValue extends DataValue
             if ( idv.maxVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of idv.maxVal: %d.\n",
@@ -826,7 +826,7 @@ public class IntDataValue extends DataValue
             if ( idv.minVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of idv.minVal: %d.\n",
@@ -834,7 +834,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -855,9 +855,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -882,7 +882,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -911,25 +911,25 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -958,15 +958,15 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa = new IntFormalArg(db);
@@ -974,7 +974,7 @@ public class IntDataValue extends DataValue
             db.vl.addElement(int_mve);
 
             idv = new IntDataValue(db, ifa.getID());
-            
+
             int_mve_sr = new MatrixVocabElement(db, "int_mve_sr");
             int_mve_sr.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa_sr = new IntFormalArg(db);
@@ -983,16 +983,16 @@ public class IntDataValue extends DataValue
             db.vl.addElement(int_mve_sr);
 
             idv_sr = new IntDataValue(db, ifa_sr.getID());
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( int_mve == null ) ||
              ( ifa == null ) ||
@@ -1001,10 +1001,10 @@ public class IntDataValue extends DataValue
              ( ifa_sr == null ) ||
              ( idv_sr == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1012,12 +1012,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( int_mve == null )
                 {
                     outStream.print("allocation of int_mve failed.\n");
                 }
-                
+
                 if ( ifa == null )
                 {
                     outStream.print("allocation of ifa failed.");
@@ -1028,12 +1028,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                         "new IntDataValue(db, ifa.getID()) returned null.\n");
                 }
-                
+
                 if ( int_mve_sr == null )
                 {
                     outStream.print("allocation of int_mve_sr failed.\n");
                 }
-                
+
                 if ( ifa_sr == null )
                 {
                     outStream.print("allocation of ifa_sr failed.");
@@ -1044,12 +1044,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa_sr.getID()) " +
                                     "returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1061,28 +1061,28 @@ public class IntDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ifa, 
-                                                               idv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ifa,
+                                                               idv,
+                                                               outStream,
                                                                verbose,
                                                               "idv");
 
             if ( idv.subRange != ifa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "idv.subRange doesn't match ifa.getSubRange().\n");
                 }
             }
-            
+
             if ( idv.itsValue != idv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1094,7 +1094,7 @@ public class IntDataValue extends DataValue
             if ( idv.maxVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1106,7 +1106,7 @@ public class IntDataValue extends DataValue
             if ( idv.minVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1115,28 +1115,28 @@ public class IntDataValue extends DataValue
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ifa_sr, 
-                                                               idv_sr,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ifa_sr,
+                                                               idv_sr,
+                                                               outStream,
                                                                verbose,
                                                                "idv_sr");
 
             if ( idv_sr.subRange != ifa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv_sr.subRange doesn't match " +
                                      "ifa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( idv_sr.itsValue != idv_sr.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1148,7 +1148,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr.maxVal != ifa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1160,7 +1160,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr.minVal != ifa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1169,7 +1169,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1190,9 +1190,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1218,7 +1218,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1241,9 +1241,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1269,7 +1269,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          *refer to a formal argument.
          */
@@ -1292,9 +1292,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1321,7 +1321,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1350,25 +1350,25 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1398,17 +1398,17 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         idv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa = new IntFormalArg(db);
@@ -1416,7 +1416,7 @@ public class IntDataValue extends DataValue
             db.vl.addElement(int_mve);
 
             idv = new IntDataValue(db, ifa.getID(), 200);
-            
+
             int_mve_sr = new MatrixVocabElement(db, "int_mve_sr");
             int_mve_sr.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa_sr = new IntFormalArg(db);
@@ -1426,16 +1426,16 @@ public class IntDataValue extends DataValue
 
             idv_sr0 = new IntDataValue(db, ifa_sr.getID(), 1);
             idv_sr1 = new IntDataValue(db, ifa_sr.getID(), 200);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( int_mve == null ) ||
              ( ifa == null ) ||
@@ -1445,10 +1445,10 @@ public class IntDataValue extends DataValue
              ( idv_sr0 == null ) ||
              ( idv_sr1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1456,12 +1456,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( int_mve == null )
                 {
                     outStream.print("allocation of int_mve failed.\n");
                 }
-                
+
                 if ( ifa == null )
                 {
                     outStream.print("allocation of ifa failed.");
@@ -1472,12 +1472,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( int_mve_sr == null )
                 {
                     outStream.print("allocation of int_mve_sr failed.\n");
                 }
-                
+
                 if ( ifa_sr == null )
                 {
                     outStream.print("allocation of ifa_sr failed.");
@@ -1494,12 +1494,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa_sr.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1511,28 +1511,28 @@ public class IntDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ifa, 
-                                                               idv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ifa,
+                                                               idv,
+                                                               outStream,
                                                                verbose,
                                                                "idv");
 
             if ( idv.subRange != ifa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "idv.subRange doesn't match ifa.getSubRange().\n");
                 }
             }
-            
+
             if ( idv.itsValue != 200 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv.itsValue = %d != 200.\n",
@@ -1543,7 +1543,7 @@ public class IntDataValue extends DataValue
             if ( idv.maxVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1555,7 +1555,7 @@ public class IntDataValue extends DataValue
             if ( idv.minVal != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1564,28 +1564,28 @@ public class IntDataValue extends DataValue
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ifa_sr, 
-                                                               idv_sr0,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ifa_sr,
+                                                               idv_sr0,
+                                                               outStream,
                                                                verbose,
                                                                "idv_sr0");
 
             if ( idv_sr0.subRange != ifa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv_sr0.subRange doesn't match " +
                                      "ifa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( idv_sr0.itsValue != 1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv_sr.itsValue = %d != 1.\n",
@@ -1596,7 +1596,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr0.maxVal != ifa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1608,7 +1608,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr0.minVal != ifa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1617,28 +1617,28 @@ public class IntDataValue extends DataValue
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               ifa_sr, 
-                                                               idv_sr1,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               ifa_sr,
+                                                               idv_sr1,
+                                                               outStream,
                                                                verbose,
                                                                "idv_sr1");
 
             if ( idv_sr1.subRange != ifa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv_sr0.subRange doesn't match " +
                                      "ifa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( idv_sr1.itsValue != ifa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv_sr1.itsValue = %d != %d.\n",
@@ -1649,7 +1649,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr1.maxVal != ifa_sr.getMaxVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1661,7 +1661,7 @@ public class IntDataValue extends DataValue
             if ( idv_sr1.minVal != ifa_sr.getMinVal() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1670,7 +1670,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1691,9 +1691,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1720,7 +1720,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1743,9 +1743,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1772,7 +1772,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1795,9 +1795,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1824,7 +1824,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1853,24 +1853,24 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -1900,18 +1900,18 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         idv0 = null;
         idv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa = new IntFormalArg(db);
@@ -1920,7 +1920,7 @@ public class IntDataValue extends DataValue
             db.vl.addElement(int_mve);
 
             idv0 = new IntDataValue(db, ifa.getID(), 200);
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -1929,16 +1929,16 @@ public class IntDataValue extends DataValue
 
             idv1 = new IntDataValue(db, ufa.getID(), 2000);
             idv2 = new IntDataValue(db, ufa.getID(), 999);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( int_mve == null ) ||
              ( ifa == null ) ||
@@ -1948,10 +1948,10 @@ public class IntDataValue extends DataValue
              ( idv1 == null ) ||
              ( idv2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1959,12 +1959,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( int_mve == null )
                 {
                     outStream.print("allocation of int_mve failed.\n");
                 }
-                
+
                 if ( ifa == null )
                 {
                     outStream.print("allocation of ifa failed.\n");
@@ -1975,12 +1975,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2002,7 +2002,7 @@ public class IntDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2016,97 +2016,97 @@ public class IntDataValue extends DataValue
         {
             failures += DataValue.TestAccessors(db, ifa, matrix_mve, ufa,
                                                 idv0, outStream, verbose);
-            
+
             if ( idv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv0.getSubRange() != false");
                 }
             }
-            
+
             if ( idv0.getItsValue() != 200 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv.getItsValue() != 200\n");
                 }
             }
-            
+
             idv0.setItsValue(3);
 
-            
+
             if ( idv0.getItsValue() != 3 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv0.getItsValue() != 3\n");
                 }
             }
-            
+
             /************************************/
 
             if ( idv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv1.getSubRange() != false\n");
                 }
             }
-            
+
             if ( idv1.getItsValue() != 2000 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv1.getItsValue() != 2000\n");
                 }
             }
-            
+
             failures += DataValue.TestAccessors(db, ufa, int_mve, ifa,
                                                 idv1, outStream, verbose);
 
             if ( idv1.getSubRange() != true )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv1.getSubRange() != true\n");
                 }
             }
-            
+
             if ( idv1.getItsValue() != 1000 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv1.getItsValue() != 1000\n");
                 }
             }
-            
+
             idv1.setItsValue(-50000);
-            
+
             if ( idv1.getItsValue() != -1000 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv1.getItsValue() != -1000\n");
                 }
             }
-            
+
             if ( ( idv1.coerceToRange(1001) != 1000 ) ||
                  ( idv1.coerceToRange(1000) != 1000 ) ||
                  ( idv1.coerceToRange(999) != 999 ) ||
@@ -2118,23 +2118,23 @@ public class IntDataValue extends DataValue
                  ( idv1.coerceToRange(-1001) != -1000 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "unexpected results from idv1.coerceToRange()\n");
                 }
             }
-            
+
             /************************************/
-            
+
             failures += DataValue.TestAccessors(db, ufa, int_mve, ifa,
                                                 idv2, outStream, verbose);
 
             if ( idv2.getItsValue() != 999 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("idv2.getItsValue() != 999\n");
@@ -2142,7 +2142,7 @@ public class IntDataValue extends DataValue
             }
 
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2171,25 +2171,25 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2222,18 +2222,18 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         idv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         /* setup the base entries for the copy test */
         try
         {
             db = new ODBCDatabase();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa = new IntFormalArg(db);
@@ -2241,7 +2241,7 @@ public class IntDataValue extends DataValue
             db.vl.addElement(int_mve);
 
             idv = new IntDataValue(db, ifa.getID(), 200);
-            
+
             int_mve_sr = new MatrixVocabElement(db, "int_mve_sr");
             int_mve_sr.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa_sr = new IntFormalArg(db);
@@ -2251,16 +2251,16 @@ public class IntDataValue extends DataValue
 
             idv_sr0 = new IntDataValue(db, ifa_sr.getID(), 1);
             idv_sr1 = new IntDataValue(db, ifa_sr.getID(), 200);
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( int_mve == null ) ||
              ( ifa == null ) ||
@@ -2270,10 +2270,10 @@ public class IntDataValue extends DataValue
              ( idv_sr0 == null ) ||
              ( idv_sr1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2281,12 +2281,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( int_mve == null )
                 {
                     outStream.print("allocation of int_mve failed.\n");
                 }
-                
+
                 if ( ifa == null )
                 {
                     outStream.print("allocation of ifa failed.");
@@ -2297,12 +2297,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( int_mve_sr == null )
                 {
                     outStream.print("allocation of int_mve_sr failed.\n");
                 }
-                
+
                 if ( ifa_sr == null )
                 {
                     outStream.print("allocation of ifa_sr failed.");
@@ -2319,12 +2319,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa_sr.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2333,7 +2333,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             idv_copy = null;
@@ -2358,12 +2358,12 @@ public class IntDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( idv_copy == null ) ||
                  ( idv_sr0_copy == null ) ||
                  ( idv_sr1_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2404,17 +2404,17 @@ public class IntDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(idv, idv_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(idv, idv_copy, outStream,
                                                verbose, "idv", "idv_copy");
 
-            failures += DataValue.VerifyDVCopy(idv_sr0, idv_sr0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(idv_sr0, idv_sr0_copy, outStream,
                                             verbose, "idv_sr0", "idv_sr0_copy");
 
-            failures += DataValue.VerifyDVCopy(idv_sr1, idv_sr1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(idv_sr1, idv_sr1_copy, outStream,
                                             verbose, "idv_sr1", "idv_sr1_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -2435,9 +2435,9 @@ public class IntDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( idv != null ) || 
+            if ( ( idv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2463,7 +2463,7 @@ public class IntDataValue extends DataValue
             }
         }
 
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2492,25 +2492,25 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2557,18 +2557,18 @@ public class IntDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         idv0 = null;
         idv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             int_mve = new MatrixVocabElement(db, "int_mve");
             int_mve.setType(MatrixVocabElement.MatrixType.INTEGER);
             ifa = new IntFormalArg(db);
@@ -2579,7 +2579,7 @@ public class IntDataValue extends DataValue
             idv0 = new IntDataValue(db, ifa.getID(), 200);
             idv0.id = 100;        // invalid value for print test
             idv0.itsCellID = 500; // invalid value for print test
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -2589,16 +2589,16 @@ public class IntDataValue extends DataValue
             idv1 = new IntDataValue(db, ufa.getID(), 2000);
             idv1.id = 101;        // invalid value for print test
             idv1.itsCellID = 501; // invalid value for print test
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( int_mve == null ) ||
              ( ifa == null ) ||
@@ -2607,10 +2607,10 @@ public class IntDataValue extends DataValue
              ( ufa == null ) ||
              ( idv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2618,12 +2618,12 @@ public class IntDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( int_mve == null )
                 {
                     outStream.print("allocation of int_mve failed.\n");
                 }
-                
+
                 if ( ifa == null )
                 {
                     outStream.print("allocation of ifa failed.\n");
@@ -2634,12 +2634,12 @@ public class IntDataValue extends DataValue
                     outStream.print("new IntDataValue(db, ifa.getID(), " +
                                     "200) returned null.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2655,7 +2655,7 @@ public class IntDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2670,40 +2670,40 @@ public class IntDataValue extends DataValue
             if ( idv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected idv0.toString(): \"%s\".\n",
                                      idv0.toString());
                 }
             }
-            
+
             if ( idv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected idv0.toDBString(): \"%s\".\n",
                                      idv0.toDBString());
                 }
             }
-            
+
             if ( idv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected idv1.toString(): \"%s\".\n",
                                      idv1.toString());
                 }
             }
-            
+
             if ( idv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected idv1.toDBString(): \"%s\".\n",
@@ -2711,7 +2711,7 @@ public class IntDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2740,17 +2740,17 @@ public class IntDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* IntDataValue::TestToStringMethods() */
-     
-    
+
+
     /**
      * VerifyIntDVCopy()
      *
-     * Verify that the supplied instances of IntDataValue are distinct, that 
-     * they contain no common references (other than db), and that they have 
+     * Verify that the supplied instances of IntDataValue are distinct, that
+     * they contain no common references (other than db), and that they have
      * the same value.
      *                                              JRM -- 11/8/07
      *
@@ -2758,7 +2758,7 @@ public class IntDataValue extends DataValue
      *
      *    - None
      */
-    
+
     public static int VerifyIntDVCopy(IntDataValue base,
                                       IntDataValue copy,
                                       java.io.PrintStream outStream,
@@ -2767,7 +2767,7 @@ public class IntDataValue extends DataValue
                                       String copyDesc)
     {
         int failures = 0;
-        
+
         if ( base == null )
         {
             failures++;
@@ -2783,7 +2783,7 @@ public class IntDataValue extends DataValue
         else if ( base == copy )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
@@ -2792,7 +2792,7 @@ public class IntDataValue extends DataValue
         else if ( base.db != copy.db )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.db != %s.db.\n", baseDesc, copyDesc);
@@ -2801,56 +2801,56 @@ public class IntDataValue extends DataValue
         else if ( base.itsValue != copy.itsValue )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.itsValue != %s.itsValue.\n", 
+                outStream.printf("%s.itsValue != %s.itsValue.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.maxVal != copy.maxVal )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.maxVal != %s.maxVal.\n", 
+                outStream.printf("%s.maxVal != %s.maxVal.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.minVal != copy.minVal )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.minVal != %s.minVal.\n", 
+                outStream.printf("%s.minVal != %s.minVal.\n",
                                   baseDesc, copyDesc);
             }
         }
         else if ( base.toString().compareTo(copy.toString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toDBString().compareTo(copy.toDBString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }
-        
+
         return failures;
-        
+
     } /* IntDataValue::VerifyIntDVCopy() */
 } /* IntDataValue */

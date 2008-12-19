@@ -10,19 +10,19 @@ package au.com.nicta.openshapa.db;
 /**
  * Class DataValue
  *
- * Instances of subclasses of the abstract class DataValue are used to 
- * store individual pieces of data in the database, or as headers of 
+ * Instances of subclasses of the abstract class DataValue are used to
+ * store individual pieces of data in the database, or as headers of
  * predicates.
  *
  * Each DataValue is associated with with a formal argument, and is
  * constrained to the type (if any) of that formal argument.  The DataValue
  * must listen for changes in the formal argument, and accomodate itself
- * to them. 
+ * to them.
  *
- * Each type of data value will have fields specific to its type, but 
+ * Each type of data value will have fields specific to its type, but
  * their common fields and methods are defined here.
  *
- *                                              JRM -- 7/21/07  
+ *                                              JRM -- 7/21/07
  *
  * @author FGA
  */
@@ -33,12 +33,12 @@ public abstract class DataValue extends DBElement
     /*************************************************************************/
     /*
      * itsFargID:   Long containingthe ID of the formal argument of which this
-     *      DataValue is an assignment.  In the rare case in which this 
+     *      DataValue is an assignment.  In the rare case in which this
      *      instance is not associated with any formal argument, this field
      *      must be set to DBIndex.INVALID_ID.
      *
-     * itsFargType: fArgType indicating the type of the formal argument 
-     *      specified in itsFargID above.  Set this field to UNDEFINED if 
+     * itsFargType: fArgType indicating the type of the formal argument
+     *      specified in itsFargID above.  Set this field to UNDEFINED if
      *      itsFargID is DBIndex.INVALID_ID.
      *
      * subRange:  Boolean flag set to true iff the associated formal argument
@@ -53,78 +53,78 @@ public abstract class DataValue extends DBElement
      *      checking.
      *
      * itsPredID:  Long containing the ID of the predicate or column predicate
-     *      in whose argument list this data value appears (if any).  When the 
-     *      DatavValue doesn't appear in any predicate, the field is set to 
+     *      in whose argument list this data value appears (if any).  When the
+     *      DatavValue doesn't appear in any predicate, the field is set to
      *      DBIndex.INVALID_ID.
      */
 
     /** ID of associated formal argument */
     long itsFargID = DBIndex.INVALID_ID;
-    
+
     /** type of associated formal argument */
     FormalArgument.fArgType itsFargType = FormalArgument.fArgType.UNDEFINED;
-    
+
     /** whether the associated formal argument is subtyped */
     boolean subRange = false;
-    
+
     /** id of the cell in which the DataValue resides */
     long itsCellID = DBIndex.INVALID_ID;
-    
+
     /** id of the Predicate in which which the DataValue resides -- if any. */
     long itsPredID = DBIndex.INVALID_ID;
-    
+
 //    /** Data Value Change Listeners */
-//    java.util.Vector<DataValueChangeListener> changeListeners = 
+//    java.util.Vector<DataValueChangeListener> changeListeners =
 //            new java.util.Vector<DataValueChangeListener>();
-  
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * DataValue()
      *
-     * Constructor for instances of DataValue.  
-     * 
+     * Constructor for instances of DataValue.
+     *
      * Two versions of this constructor.  One that takes a reference to
-     * a database as its parameter and just calls the super() constructor, 
+     * a database as its parameter and just calls the super() constructor,
      * and one that is used to create a copies of subclasses of DataValue.
      *
-     *                                              JRM -- 2/28/07  
+     *                                              JRM -- 2/28/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public DataValue(Database db)
         throws SystemErrorException
     {
         super(db);
     }
-    
+
     public DataValue(DataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         final String mName = "DataValue::DataValue(): ";
-        
+
         if ( ! ( dv instanceof DataValue ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "dv not an instance of DataValue.");
         }
-        
+
         this.itsFargID = dv.itsFargID;
         this.itsFargType = dv.itsFargType;
         this.subRange = dv.subRange;
         this.itsCellID = dv.itsCellID;
         this.itsPredID = dv.itsPredID;
-        
-//        /* Could do this with a call to clone(), but this way shuts up 
+
+//        /* Could do this with a call to clone(), but this way shuts up
 //         * the compiler.
 //         */
 //        for ( int i = 0; i < dv.changeListeners.size(); i++ )
@@ -132,12 +132,12 @@ public abstract class DataValue extends DBElement
 //            this.addChangeListener(dv.changeListeners.get(i));
 //        }
     } /* DataValue::DataValue() */
-    
-        
+
+
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/
     /*************************************************************************/
-    
+
     /**
      * toString()
      *
@@ -148,23 +148,23 @@ public abstract class DataValue extends DBElement
      *
      *     - None.
      */
-    
+
     public abstract String toString();
 
 
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      * @return the string value.
      */
-  
+
     public abstract String toDBString();
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -175,20 +175,20 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public abstract void updateForFargChange(boolean fargNameChanged,
                                              boolean fargSubRangeChanged,
                                              boolean fargRangeChanged,
                                              FormalArgument oldFA,
                                              FormalArgument newFA)
         throws SystemErrorException;
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if ant) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.
      *
@@ -201,11 +201,11 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     protected abstract void updateSubRange(FormalArgument fa)
         throws SystemErrorException;
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -213,7 +213,7 @@ public abstract class DataValue extends DBElement
     /**
      * getItsFargID()
      *
-     * Return the ID associated with the formal argument with which this 
+     * Return the ID associated with the formal argument with which this
      * DataValue is associated.
      *                                              JRM -- 7/22/07
      *
@@ -221,16 +221,16 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public long getItsFargID()
     {
         return this.itsFargID;
     }
-    
+
     /**
      * getItsFargType()
      *
-     * Return the type of the formal argument with which this DataValue is 
+     * Return the type of the formal argument with which this DataValue is
      * associated.
      *
      * Note that there is no setItsFargType() method, as the itsFargType
@@ -242,16 +242,16 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public FormalArgument.fArgType getItsFargType()
     {
         return this.itsFargType;
     }
-    
+
     /**
      * getSubRange()
      *
-     * Return the value of the subRange flag.  Observe that there is no 
+     * Return the value of the subRange flag.  Observe that there is no
      * setSubRange() method as this field is set in passing by setItsFargID(),
      * and can only be changed by a listener call.
      *
@@ -261,42 +261,42 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public boolean getSubRange()
     {
         return this.subRange;
     }
-    
-    
+
+
     /**
      * setItsCellID()
      *
-     * Set the ID associated with the cell with which this 
-     * DataValue is associated.  In passing, verify that the target 
+     * Set the ID associated with the cell with which this
+     * DataValue is associated.  In passing, verify that the target
      * cell exists.
-     * 
-     * If the DataValue is not associated with a predicate (i.e. itsPredID 
+     *
+     * If the DataValue is not associated with a predicate (i.e. itsPredID
      * == INVALID_ID), then the MatrixVocabElement of the Column in which
-     * cell appears must contain the formal argument whose ID is stored in 
+     * cell appears must contain the formal argument whose ID is stored in
      * itsFargID.
      *
      * If, on the other hand, the data value is associated with a predicate,
      * then the supplied cell ID must match the itsCellID of that predicate.
-     * 
+     *
      * In either case, verify these invarients.
      *
-     * Note: if the DataValue does appear in a predicate, then the 
-     * PredicateVocabElement associated with the predicate must contain the 
+     * Note: if the DataValue does appear in a predicate, then the
+     * PredicateVocabElement associated with the predicate must contain the
      * formal argument whose ID is stored in itsFargID.  However, we already
      * checked this when we set itsPredID, so no need to check it again here.
-     * 
+     *
      *                                              JRM -- 11/14/07
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void setItsCellID(long ID)
         throws SystemErrorException
     {
@@ -309,18 +309,18 @@ public abstract class DataValue extends DBElement
         MatrixVocabElement mve = null;
         FormalArgument fa = null;
         Predicate pred = null;
-        
+
         if ( this.itsFargID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsFargID INVALID on entry.");
         }
-        
+
         if ( ID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "ID == INVALID_ID");    
+            throw new SystemErrorException(mName + "ID == INVALID_ID");
         }
-        
+
         if ( this.itsPredID == DBIndex.INVALID_ID )
         {
             /* The data value must be a top level argument of a data cell.
@@ -342,7 +342,7 @@ public abstract class DataValue extends DBElement
 
             if ( ! ( dbe instanceof DataCell ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "ID doesn't refer to a DataCell");
             }
 
@@ -353,7 +353,7 @@ public abstract class DataValue extends DBElement
 
             if ( mveID == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName + "mveID == INVALID_ID");    
+                throw new SystemErrorException(mName + "mveID == INVALID_ID");
             }
 
             dbe = this.db.idx.getElement(mveID);
@@ -365,7 +365,7 @@ public abstract class DataValue extends DBElement
 
             if ( ! ( dbe instanceof MatrixVocabElement ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "mveID doesn't refer to a MatrixVocabElement");
             }
 
@@ -387,53 +387,53 @@ public abstract class DataValue extends DBElement
             {
                 // todo: delete the following line eventually
                 // int j = 1/0;
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "Target cell's mve does not contain itsFarg");
             }
         }
         else /* this.itsPredID != DBIndex.INVALID_ID */
         {
             /* The data value must be a top level argument of the predicate
-             * indicated by this.itsPredID.  Verify that the supplied ID 
+             * indicated by this.itsPredID.  Verify that the supplied ID
              * matches the cell ID of the containining predicate.
              */
             dbe = this.db.idx.getElement(this.itsPredID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "this.itsPredID has no referent");
             }
 
             if ( ! ( dbe instanceof Predicate ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "this.itsPredID doesn't refer to a Predicate");
             }
 
             /* If we get this far, we know that dbe is a Predicate */
             pred = (Predicate)dbe;
-            
+
             if ( pred.getCellID() != ID )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "ID != pred.getCellID()");
             }
         }
-        
+
         this.itsCellID = ID;
-        
+
         return;
-        
+
     } /* DataValue::SetItsCellID() */
-    
+
 
     /**
      * setItsFargID()
      *
-     * Set the ID associated with the formal argument with which this 
-     * DataValue is associated.  In passing, verify that the target 
-     * formal argument exists, and set itsFargType to match the type 
+     * Set the ID associated with the formal argument with which this
+     * DataValue is associated.  In passing, verify that the target
+     * formal argument exists, and set itsFargType to match the type
      * of the formal argument.
      *                                              JRM -- 7/22/07
      *
@@ -441,7 +441,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public void setItsFargID(long ID)
         throws SystemErrorException
     {
@@ -449,30 +449,30 @@ public abstract class DataValue extends DBElement
         DBElement dbe = null;
         FormalArgument fa = null;
         FormalArgument.fArgType fargType;
-        
+
         if ( ID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "ID == INVALID_ID");    
+            throw new SystemErrorException(mName + "ID == INVALID_ID");
         }
-        
+
         dbe = this.db.idx.getElement(ID);
-        
+
         if ( dbe == null )
         {
             throw new SystemErrorException(mName + "ID has no referent");
         }
-        
+
         if ( ! ( dbe instanceof FormalArgument ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "ID doesn't refer to a formal argument");
         }
-        
+
         /* If we get this far, we know that dbe is a FormalArgument */
         fa = (FormalArgument)dbe;
         this.subRange = false; /* will change later if appropriate */
         fargType = fa.getFargType();
-        
+
         switch ( fargType )
         {
             case COL_PREDICATE:
@@ -485,48 +485,48 @@ public abstract class DataValue extends DBElement
                 this.itsFargType = fargType;
                 this.updateSubRange(fa);
                 break;
-            
+
             case QUOTE_STRING:
             case TEXT:
             case UNTYPED:
                 this.itsFargID = ID;
                 this.itsFargType = fargType;
                 break;
-                
+
             case UNDEFINED:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "formal arg type undefined???");
                 /* break statement commented out to keep the compiler happy */
                 // break;
-                
+
             default:
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "Unknown Formal Arg Type");
                 /* break statement commented out to keep the compiler happy */
                 // break;
         }
-        
+
         return;
-        
+
     } /* DataValue::SetItsFargID() */
-    
-    
+
+
     /**
      * setItsPredID()
      *
-     * Set the ID associated with the Predicate with which this 
-     * DataValue is associated.  In passing, verify that the target 
-     * instance of Predicate exists, and that its associated 
-     * PredicateVocabElement contains the formal argument whose ID is 
+     * Set the ID associated with the Predicate with which this
+     * DataValue is associated.  In passing, verify that the target
+     * instance of Predicate exists, and that its associated
+     * PredicateVocabElement contains the formal argument whose ID is
      * stored in itsFargID.
-     * 
+     *
      *                                              JRM -- 11/14/07
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void setItsPredID(long ID)
         throws SystemErrorException
     {
@@ -538,54 +538,54 @@ public abstract class DataValue extends DBElement
         Predicate pred = null;
         PredicateVocabElement pve = null;
         FormalArgument fa = null;
-        
+
         if ( this.itsFargID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsFargID INVALID on entry.");
         }
-        
+
         if ( ID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "ID == INVALID_ID");    
+            throw new SystemErrorException(mName + "ID == INVALID_ID");
         }
-        
+
         dbe = this.db.idx.getElement(ID);
-        
+
         if ( dbe == null )
         {
             throw new SystemErrorException(mName + "ID has no referent");
         }
-        
+
         if ( ! ( dbe instanceof Predicate ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "ID doesn't refer to a Predicate");
         }
-        
+
         /* If we get this far, we know that dbe is a DataCell */
         pred = (Predicate)dbe;
-        
+
         pveID = pred.getPveID();
-        
+
         if ( pveID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "pveID == INVALID_ID");    
+            throw new SystemErrorException(mName + "pveID == INVALID_ID");
         }
-        
+
         dbe = this.db.idx.getElement(pveID);
-        
+
         if ( dbe == null )
         {
             throw new SystemErrorException(mName + "pveID has no referent");
         }
-        
+
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "pveID doesn't refer to a PredicateVocabElement");
         }
-        
+
         /* If we get this far, we know that dbe is a PredicateVocabElement */
         pve = (PredicateVocabElement)dbe;
 
@@ -599,33 +599,33 @@ public abstract class DataValue extends DBElement
             }
             i++;
         }
-        
+
         if ( ! matchFound )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "Target pred's pve does not contain itsFarg");
         }
-        
+
         this.itsPredID = ID;
-        
+
         return;
-        
+
     } /* DataValue::SetItsPredID() */
-    
-  
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * insertInIndex()
      *
      * This method is called when the DataCell, part of whose value is stored in
-     * this instance of DataValue, is first inserted in the database and becomes 
-     * the first cannonical version of the DataCell.  It is also called if a 
-     * new DataValue (i.e. that is a DataValue whose ID has not been assigned) 
+     * this instance of DataValue, is first inserted in the database and becomes
+     * the first cannonical version of the DataCell.  It is also called if a
+     * new DataValue (i.e. that is a DataValue whose ID has not been assigned)
      * appears in a new incarnation of the host DataCell.
-     * 
+     *
      * The method makes note of the DataCell's ID, and inserts the DataValue
      * in the index.
      *
@@ -638,35 +638,35 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     protected void insertInIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "DataValue::insertInIndex(): ";
-        
+
         // this call does all the sanity checking we need;
         this.setItsCellID(DCID);
-        
+
         // for now at least, DataValue is a subclass of DBElement.  Thus we
         // must insert the DataValue in the index.
-        
+
         this.db.idx.addElement(this);
-        
+
         return;
-        
+
     } /* DataValue::insertInIndex(DCID) */
-    
-    
-    /** 
+
+
+    /**
      * removeFromIndex()
      *
      * This method is called when the DataCell part of whose value is stored in
      * this instance of DataValue is deleted from the DataBase.  It is also
-     * called if a DataValue is replaced with a new DataValue (i.e. that is 
+     * called if a DataValue is replaced with a new DataValue (i.e. that is
      * a DataValue whose ID has not been assigned) in a new incarnation of the
      * host DataCell.
-     * 
-     * The method verifies that the supplied DataCell ID matches the one it 
+     *
+     * The method verifies that the supplied DataCell ID matches the one it
      * has on file, and then removes itself from the index.
      *
      * Note that PredDataValue must override this method so that its predicate
@@ -678,26 +678,26 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     protected void removeFromIndex(long DCID)
         throws SystemErrorException
     {
         final String mName = "DataValue::removeFromIndex(): ";
-        
+
         if ( DCID != this.itsCellID )
         {
             throw new SystemErrorException(mName + "cell ID mismatch.");
         }
-        
+
         // Remove the DataValue from the index.
-        
+
         this.db.idx.removeElement(this.id);
-        
+
         return;
-        
+
     } /* DataValue::removeFromIndex(DCID) */
-    
-    
+
+
     /**
      * replaceInIndex()
      *
@@ -713,7 +713,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     protected void replaceInIndex(DataValue old_dv,
                                   long DCID,
                                   boolean cascadeMveMod,
@@ -725,7 +725,7 @@ public abstract class DataValue extends DBElement
         throws SystemErrorException
     {
         final String mName = "DataValue::replaceInIndex(): ";
-        
+
         if ( ( this.id != old_dv.id ) ||
              ( this.itsCellID != old_dv.itsCellID ) ||
              ( this.itsFargID != old_dv.itsFargID ) ||
@@ -733,19 +733,19 @@ public abstract class DataValue extends DBElement
         {
             throw new SystemErrorException(mName + "mis-match with old_dv?!?");
         }
-        
+
         if ( this.itsCellID != DCID )
         {
             throw new SystemErrorException(mName + "DCID mis-match!?!");
         }
-        
+
         this.db.idx.replaceElement(this);
-        
+
         return;
-        
+
     } /* DataValue::replaceInIndex() */
 
-    
+
 //    /*************************************************************************/
 //    /****************** Change Listener List Management: *********************/
 //    /*************************************************************************/
@@ -761,13 +761,13 @@ public abstract class DataValue extends DBElement
 //     *
 //     *    - None.
 //     */
-//  
+//
 //    public void addChangeListener(DataValueChangeListener listener)
 //    {
 //        this.changeListeners.add(listener);
-//        
+//
 //        return;
-//        
+//
 //    } /* DataValue::addChangeListener() */
 //
 //    /**
@@ -781,13 +781,13 @@ public abstract class DataValue extends DBElement
 //     *
 //     *    - None.
 //     */
-//  
+//
 //    public void removeChangeListener(DataValueChangeListener listener)
 //    {
 //        this.changeListeners.remove(listener);
-//        
+//
 //        return;
-//        
+//
 //    } /* DataValue::removeChangeListener() */
 //
 //    /**
@@ -799,20 +799,20 @@ public abstract class DataValue extends DBElement
 //     *
 //     *    - None
 //     */
-//  
+//
 //    protected void notifyListeners()
 //    {
 //        // Loop through vector calling listeners
-//        for (int i=0; i<this.changeListeners.size(); i++) 
+//        for (int i=0; i<this.changeListeners.size(); i++)
 //        {
 //            ((DataValueChangeListener)this.changeListeners.elementAt(i)).dataValueChanged(this);
 //        }
-//        
+//
 //        return;
-//        
+//
 //    }  /* DataValue::notifyListeners() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
@@ -821,7 +821,7 @@ public abstract class DataValue extends DBElement
      * Copy()
      *
      * Given a DataValue, return a copy.  Only minimal sanity checking.
-     * Even less if blindCopy is true. 
+     * Even less if blindCopy is true.
      *
      *                                              JRM -- 3/20/08
      *
@@ -829,19 +829,19 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public static DataValue Copy(DataValue dv,
                                  boolean blindCopy)
         throws SystemErrorException
     {
         final String mName = "DataValue::CopyDataValue(): ";
         DataValue copy = null;
-        
+
         if ( dv == null )
         {
             throw new SystemErrorException(mName + "dv null on entry.");
         }
-        
+
         if ( dv instanceof ColPredDataValue )
         {
             copy = new ColPredDataValue((ColPredDataValue)dv);
@@ -880,15 +880,15 @@ public abstract class DataValue extends DBElement
         }
         else
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "Unknown data value sub-type");
         }
-        
+
         return copy;
-        
+
     } /* "DataValue::Copy() */
-    
-    
+
+
     /**
      * DataValuesAreLogicallyEqual()
      *
@@ -900,19 +900,19 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public static boolean DataValuesAreLogicallyEqual(DataValue dv0,
                                                       DataValue dv1)
         throws SystemErrorException
     {
         final String mName = "DataValue::DataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( dv0 == null ) || ( dv1 == null ) )
         {
             throw new SystemErrorException(mName + ": dv0 or dv1 null on entry.");
         }
-        
+
         if ( dv0 != dv1 )
         {
             if ( ( dv0.db != dv1.db ) ||
@@ -930,11 +930,11 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = FloatDataValue.
-                           FloatDataValuesAreLogicallyEqual((FloatDataValue)dv0, 
-                                                            (FloatDataValue)dv1);    
+                           FloatDataValuesAreLogicallyEqual((FloatDataValue)dv0,
+                                                            (FloatDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof IntDataValue )
@@ -943,11 +943,11 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = IntDataValue.
-                           IntDataValuesAreLogicallyEqual((IntDataValue)dv0, 
-                                                          (IntDataValue)dv1);    
+                           IntDataValuesAreLogicallyEqual((IntDataValue)dv0,
+                                                          (IntDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof NominalDataValue )
@@ -956,12 +956,12 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = NominalDataValue.
                                 NominalDataValuesAreLogicallyEqual
-                                        ((NominalDataValue)dv0, 
-                                         (NominalDataValue)dv1);    
+                                        ((NominalDataValue)dv0,
+                                         (NominalDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof PredDataValue )
@@ -970,12 +970,12 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = PredDataValue.
                                 PredDataValuesAreLogicallyEqual
-                                        ((PredDataValue)dv0, 
-                                         (PredDataValue)dv1);    
+                                        ((PredDataValue)dv0,
+                                         (PredDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof QuoteStringDataValue )
@@ -984,12 +984,12 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = QuoteStringDataValue.
                                 QuoteStringDataValuesAreLogicallyEqual
-                                        ((QuoteStringDataValue)dv0, 
-                                         (QuoteStringDataValue)dv1);    
+                                        ((QuoteStringDataValue)dv0,
+                                         (QuoteStringDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof TextStringDataValue )
@@ -998,12 +998,12 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = TextStringDataValue.
                                 TextStringDataValuesAreLogicallyEqual
-                                        ((TextStringDataValue)dv0, 
-                                         (TextStringDataValue)dv1);    
+                                        ((TextStringDataValue)dv0,
+                                         (TextStringDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof TimeStampDataValue )
@@ -1012,12 +1012,12 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = TimeStampDataValue.
                                 TimeStampDataValuesAreLogicallyEqual
-                                        ((TimeStampDataValue)dv0, 
-                                         (TimeStampDataValue)dv1);    
+                                        ((TimeStampDataValue)dv0,
+                                         (TimeStampDataValue)dv1);
                     }
                 }
                 else if ( dv0 instanceof UndefinedDataValue )
@@ -1026,25 +1026,25 @@ public abstract class DataValue extends DBElement
                     {
                         dataValuesAreEqual = false;
                     }
-                    else 
+                    else
                     {
                         dataValuesAreEqual = UndefinedDataValue.
                                 UndefinedDataValuesAreLogicallyEqual
-                                        ((UndefinedDataValue)dv0, 
-                                         (UndefinedDataValue)dv1);    
+                                        ((UndefinedDataValue)dv0,
+                                         (UndefinedDataValue)dv1);
                     }
                 }
                 else
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             ": unknown DataValue subtype.");
                 }
             }
-            
+
         }
-            
+
         return dataValuesAreEqual;
-        
+
     } /* DataValue::DataValuesAreLogicallyEqual() */
 
     /**
@@ -1086,7 +1086,7 @@ public abstract class DataValue extends DBElement
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -1094,7 +1094,7 @@ public abstract class DataValue extends DBElement
      * as expected in the supplied instance of some subclass.
      *
      * The test assumes that:
-     * 
+     *
      * 1) The itsFargID field has been set to match the id of fa0.
      *
      * 2) The itsCellID field has not been assigned.
@@ -1108,8 +1108,8 @@ public abstract class DataValue extends DBElement
      *    TextStringDataValue, then both fa0 and fa1 must be instances of
      *    TextStringFormalArg
      *
-     * 4) mve1 is a single element matrix vocab element, and fa1 is its single 
-     *    formal argument.  If dv is an instance of TextStringDataValue, 
+     * 4) mve1 is a single element matrix vocab element, and fa1 is its single
+     *    formal argument.  If dv is an instance of TextStringDataValue,
      *    mve1 must be of type TEXT.  Otherwise, mve1 must be either of
      *    of type MATRIX or of type matching dv.
      *
@@ -1119,7 +1119,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
-    
+
     public static int TestAccessors(Database db,
                                     FormalArgument fa0,
                                     MatrixVocabElement mve1,
@@ -1136,31 +1136,31 @@ public abstract class DataValue extends DBElement
         long cellID = DBIndex.INVALID_ID;
         DataColumn col = null;
         DataCell dc = null;
-        
+
         if ( db == null )
         {
             failures++;
             outStream.printf("TestAccessors: db null on entry.\n");
         }
-        
+
         if ( fa0 == null )
         {
             failures++;
             outStream.printf("TestAccessors: fa0 null on entry.\n");
         }
-        
+
         if ( fa1 == null )
         {
             failures++;
             outStream.printf("TestAccessors: fa1 null on entry.\n");
         }
-        
+
         if ( dv == null )
         {
             failures++;
             outStream.printf("TestAccessors: dv null on entry.\n");
         }
-        
+
         if ( dv.getItsFargID() != fa0.getID() )
         {
             failures++;
@@ -1170,7 +1170,7 @@ public abstract class DataValue extends DBElement
                 outStream.printf("dv.getItsFargID() != fa0.getID().\n");
             }
         }
-        
+
         if ( dv.getItsFargType() != fa0.getFargType() )
         {
             failures++;
@@ -1186,7 +1186,7 @@ public abstract class DataValue extends DBElement
         try
         {
             dv.setItsFargID(fa1.getID());
-            
+
             completed = true;
         }
 
@@ -1195,12 +1195,12 @@ public abstract class DataValue extends DBElement
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( ! completed ) || 
+
+        if ( ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( ! completed )
@@ -1209,11 +1209,11 @@ public abstract class DataValue extends DBElement
                             "dv.setItsFargID() failed to completed.\n");
                 }
             }
-                
+
             if ( threwSystemErrorException )
             {
                 outStream.printf("dv.setItsFargID() threw a system error " +
-                                 "exception: \"%s\"", 
+                                 "exception: \"%s\"",
                                  systemErrorExceptionString);
             }
         }
@@ -1240,7 +1240,7 @@ public abstract class DataValue extends DBElement
                 }
             }
         }
-        
+
         if ( dv.itsCellID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1265,16 +1265,16 @@ public abstract class DataValue extends DBElement
             else
             {
                 col = new DataColumn(db, mve1.getName(), false, false, mve1.getID());
-            
+
                 db.cl.addColumn(col);
             }
 
             dc = new DataCell(db, col.getID(), mve1.getID());
-            
+
             cellID = db.appendCell(dc);
-            
+
             dv.setItsCellID(cellID);
-            
+
             completed = true;
         }
 
@@ -1283,7 +1283,7 @@ public abstract class DataValue extends DBElement
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( col == null ) ||
              ( dc == null ) ||
              ( cellID == DBIndex.INVALID_ID ) ||
@@ -1291,34 +1291,34 @@ public abstract class DataValue extends DBElement
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( col == null )
                 {
                     outStream.printf("DataColumn allocation failed.\n");
                 }
-                
+
                 if ( dc == null )
                 {
                     outStream.printf("DataCell allocation failed.\n");
                 }
-                
+
                 if ( cellID == DBIndex.INVALID_ID )
                 {
                     outStream.printf("*cellID is INVALID.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                             "setItsCellID() test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("setItsCellID() test threw a system " +
-                                     "error exception: \"%s\"", 
+                                     "error exception: \"%s\"",
                                      systemErrorExceptionString);
                 }
             }
@@ -1328,23 +1328,23 @@ public abstract class DataValue extends DBElement
             if ( dv.itsCellID != cellID )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("dv.itsCellID != cellID.\n");
                 }
             }
         }
-        
+
         return failures;
-    
+
     } /* DataValue::TestAccessors() */
-    
-    
+
+
     /**
      * Verify1ArgInitialization()
      *
-     * Verify that the supplied instance of DataValue has been correctly 
+     * Verify that the supplied instance of DataValue has been correctly
      * initialized by a one argument constructor.
      *
      *                                              JRM -- 11/13/07
@@ -1353,20 +1353,20 @@ public abstract class DataValue extends DBElement
      *
      *    - None
      */
-    
+
     public static int Verify1ArgInitialization(Database db,
                                                DataValue dv,
                                                java.io.PrintStream outStream,
                                                boolean verbose)
     {
         int failures = 0;
-        
+
         if ( db == null )
         {
             failures++;
             outStream.printf("Verify1ArgInitialization: db null on entry.\n");
         }
-        
+
         if ( dv == null )
         {
             failures++;
@@ -1382,7 +1382,7 @@ public abstract class DataValue extends DBElement
                 outStream.print("dv.db not initialized correctly.\n");
             }
         }
-        
+
         if ( dv.id != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1393,7 +1393,7 @@ public abstract class DataValue extends DBElement
                                  dv.id);
             }
         }
-        
+
         if ( dv.itsCellID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1405,7 +1405,7 @@ public abstract class DataValue extends DBElement
                         dv.itsCellID);
             }
         }
-        
+
         if ( dv.itsFargID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1417,7 +1417,7 @@ public abstract class DataValue extends DBElement
                         dv.itsFargID);
             }
         }
-        
+
         if ( dv.itsFargType != FormalArgument.fArgType.UNDEFINED )
         {
             failures++;
@@ -1428,7 +1428,7 @@ public abstract class DataValue extends DBElement
                         "dv.itsFargType not initialized correctly.\n");
             }
         }
-        
+
         if ( dv.lastModUID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1440,7 +1440,7 @@ public abstract class DataValue extends DBElement
                         dv.lastModUID);
             }
         }
-                
+
         if ( dv.subRange )
         {
             failures++;
@@ -1450,16 +1450,16 @@ public abstract class DataValue extends DBElement
                 outStream.printf("dv.subRange not set to false.\n");
             }
         }
-                
+
         return failures;
-        
+
     } /* DataValue::Verify1ArgInitialization() */
 
-    
+
     /**
      * Verify2ArgInitialization()
      *
-     * Verify that the supplied instance of DataValue has been correctly 
+     * Verify that the supplied instance of DataValue has been correctly
      * initialized by a two or more argument constructor.
      *
      *                                              JRM -- 11/13/07
@@ -1468,7 +1468,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None
      */
-    
+
     public static int Verify2PlusArgInitialization(Database db,
                                                    FormalArgument fa,
                                                    DataValue dv,
@@ -1478,14 +1478,14 @@ public abstract class DataValue extends DBElement
         throws SystemErrorException
     {
         int failures = 0;
-        
+
         if ( dv == null )
         {
             failures++;
             outStream.printf(
                     "Verify2PlusArgInitialization: dv null on entry.\n");
         }
-        
+
         if ( fa == null )
         {
             failures++;
@@ -1508,7 +1508,7 @@ public abstract class DataValue extends DBElement
                 outStream.printf("%s.db not initialized correctly.\n", dvDesc);
             }
         }
-        
+
         if ( dv.id != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1519,7 +1519,7 @@ public abstract class DataValue extends DBElement
                                  dvDesc, dv.id);
             }
         }
-        
+
         if ( dv.itsCellID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1531,7 +1531,7 @@ public abstract class DataValue extends DBElement
                         dvDesc, dv.itsCellID);
             }
         }
-        
+
         if ( dv.itsFargID != fa.getID() )
         {
             failures++;
@@ -1543,18 +1543,18 @@ public abstract class DataValue extends DBElement
                         dvDesc, dv.itsFargID, fa.getID());
             }
         }
-        
+
         if ( dv.itsFargType != fa.getFargType() )
         {
             failures++;
 
             if ( verbose )
             {
-                outStream.printf("%s.itsFargType not initialized correctly.\n", 
+                outStream.printf("%s.itsFargType not initialized correctly.\n",
                                  dvDesc);
             }
         }
-        
+
         if ( dv.lastModUID != DBIndex.INVALID_ID )
         {
             failures++;
@@ -1566,12 +1566,12 @@ public abstract class DataValue extends DBElement
                         dvDesc, dv.lastModUID);
             }
         }
-                
+
         return failures;
-        
+
     } /* DataValue::Verify2ArgInitialization() */
 
-    
+
     /**
      * VerifyDVCopy()
      *
@@ -1587,7 +1587,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None
      */
-    
+
     protected static int VerifyDVCopy(DataValue base,
                                       DataValue copy,
                                       java.io.PrintStream outStream,
@@ -1596,7 +1596,7 @@ public abstract class DataValue extends DBElement
                                       String copyDesc)
     {
         int failures = 0;
-        
+
         if ( base == null )
         {
             failures++;
@@ -1610,7 +1610,7 @@ public abstract class DataValue extends DBElement
         else if ( base == copy )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
@@ -1619,7 +1619,7 @@ public abstract class DataValue extends DBElement
         else if ( base.db != copy.db )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("%s.db != %s.db.\n", baseDesc, copyDesc);
@@ -1628,55 +1628,55 @@ public abstract class DataValue extends DBElement
         else if ( base.itsFargID != copy.itsFargID )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.itsFargID != %s.itsFargID.\n", 
+                outStream.printf("%s.itsFargID != %s.itsFargID.\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.itsFargType != copy.itsFargType )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.itsFargType != %s.itsFargType.\n", 
+                outStream.printf("%s.itsFargType != %s.itsFargType.\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.subRange != copy.subRange )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.itsFargType != %s.itsFargType.\n", 
+                outStream.printf("%s.itsFargType != %s.itsFargType.\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toString().compareTo(copy.toString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
         else if ( base.toDBString().compareTo(copy.toDBString()) != 0 )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
                 outStream.printf(
-                        "%s.toDBString() = \"%s\".\n%s.toDBString() = \"%s\".\n", 
-                        baseDesc, base.toDBString(), 
+                        "%s.toDBString() = \"%s\".\n%s.toDBString() = \"%s\".\n",
+                        baseDesc, base.toDBString(),
                         copyDesc, copy.toDBString());
             }
         }
@@ -1687,24 +1687,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof ColPredDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a ColPredDataValue but %s is not.\n", 
+                                "%s is a ColPredDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         ColPredDataValue.
                             VerifyColPredDVCopy((ColPredDataValue)base,
                                                 (ColPredDataValue)copy,
                                                 outStream,
                                                 verbose,
                                                 baseDesc,
-                                                copyDesc);    
+                                                copyDesc);
                 }
             }
             else if ( base instanceof FloatDataValue )
@@ -1712,23 +1712,23 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof FloatDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a FloatDataValue but %s is not.\n", 
+                                "%s is a FloatDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         FloatDataValue.VerifyFloatDVCopy((FloatDataValue)base,
                                                          (FloatDataValue)copy,
                                                          outStream,
                                                          verbose,
                                                          baseDesc,
-                                                         copyDesc);    
+                                                         copyDesc);
                 }
             }
             else if ( base instanceof IntDataValue )
@@ -1736,23 +1736,23 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof IntDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a IntDataValue but %s is not.\n", 
+                                "%s is a IntDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         IntDataValue.VerifyIntDVCopy((IntDataValue)base,
                                                      (IntDataValue)copy,
                                                      outStream,
                                                      verbose,
                                                      baseDesc,
-                                                     copyDesc);    
+                                                     copyDesc);
                 }
             }
             else if ( base instanceof NominalDataValue )
@@ -1760,24 +1760,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof NominalDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a NominalDataValue but %s is not.\n", 
+                                "%s is a NominalDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         NominalDataValue.
                             VerifyNominalDVCopy((NominalDataValue)base,
                                                 (NominalDataValue)copy,
                                                 outStream,
                                                 verbose,
                                                 baseDesc,
-                                                copyDesc);    
+                                                copyDesc);
                 }
             }
             else if ( base instanceof PredDataValue )
@@ -1785,24 +1785,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof PredDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a PredDataValue but %s is not.\n", 
+                                "%s is a PredDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         PredDataValue.
                             VerifyPredDVCopy((PredDataValue)base,
                                              (PredDataValue)copy,
                                              outStream,
                                              verbose,
                                              baseDesc,
-                                             copyDesc);    
+                                             copyDesc);
                 }
             }
             else if ( base instanceof QuoteStringDataValue )
@@ -1810,24 +1810,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof QuoteStringDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a QuoteStringDataValue but %s is not.\n", 
+                                "%s is a QuoteStringDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         QuoteStringDataValue.
                             VerifyQuoteStringDVCopy((QuoteStringDataValue)base,
                                                     (QuoteStringDataValue)copy,
                                                     outStream,
                                                     verbose,
                                                     baseDesc,
-                                                    copyDesc);    
+                                                    copyDesc);
                 }
             }
             else if ( base instanceof TextStringDataValue )
@@ -1835,24 +1835,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof TextStringDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a TextStringDataValue but %s is not.\n", 
+                                "%s is a TextStringDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         TextStringDataValue.
                             VerifyTextStringDVCopy((TextStringDataValue)base,
                                                    (TextStringDataValue)copy,
                                                    outStream,
                                                    verbose,
                                                    baseDesc,
-                                                   copyDesc);    
+                                                   copyDesc);
                 }
             }
             else if ( base instanceof TimeStampDataValue )
@@ -1860,24 +1860,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof TimeStampDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a TimeStampDataValue but %s is not.\n", 
+                                "%s is a TimeStampDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         TimeStampDataValue.
                             VerifyTimeStampDVCopy((TimeStampDataValue)base,
                                                   (TimeStampDataValue)copy,
                                                   outStream,
                                                   verbose,
                                                   baseDesc,
-                                                  copyDesc);    
+                                                  copyDesc);
                 }
             }
             else if ( base instanceof UndefinedDataValue )
@@ -1885,24 +1885,24 @@ public abstract class DataValue extends DBElement
                 if ( ! ( copy instanceof UndefinedDataValue ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf(
-                                "%s is a UndefinedDataValue but %s is not.\n", 
+                                "%s is a UndefinedDataValue but %s is not.\n",
                                 baseDesc, copyDesc);
                     }
                 }
-                else 
+                else
                 {
-                    failures += 
+                    failures +=
                         UndefinedDataValue.
                             VerifyUndefinedDVCopy((UndefinedDataValue)base,
                                                   (UndefinedDataValue)copy,
                                                   outStream,
                                                   verbose,
                                                   baseDesc,
-                                                  copyDesc);    
+                                                  copyDesc);
                 }
             }
             else
@@ -1912,9 +1912,9 @@ public abstract class DataValue extends DBElement
                                  baseDesc);
             }
         }
-        
+
         return failures;
-        
+
     } /* DataValue::VerifyDVCopy() */
 
 } //End of DataValue class definition

@@ -13,53 +13,53 @@ package au.com.nicta.openshapa.db;
  * Class NominalFormalArg
  *
  * Intance of this class are used for formal arguments which have been strongly
- * typed to nominals.  
+ * typed to nominals.
  *
  * @author mainzer
  */
 
-public class NominalFormalArg extends FormalArgument 
+public class NominalFormalArg extends FormalArgument
 {
-    
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /**     
+    /**
      *
-     * subRange: Boolean flag indicating whether the formal argument can be 
-     *      replaced by any valid nominal, or only by some nominal that 
-     *      appears in the approvedSet (see below). 
-     *        
-     * approvedSet: Set of nominals that may be used to replace this 
-     *      formal argument.  The field is ignored and should be null if 
+     * subRange: Boolean flag indicating whether the formal argument can be
+     *      replaced by any valid nominal, or only by some nominal that
+     *      appears in the approvedSet (see below).
+     *
+     * approvedSet: Set of nominals that may be used to replace this
+     *      formal argument.  The field is ignored and should be null if
      *      subRange is false,
      *
      *      At present, the approvedSet is implemented with TreeSet, so as
-     *      to quickly provide a sorted list of approved nominals.  If this 
+     *      to quickly provide a sorted list of approved nominals.  If this
      *      turns out to be unnecessary, we should use HashSet instead.
      */
-    
+
     /** Whether values are restricted to members of the approvedList */
     boolean subRange = false;
-    
+
     /** If subRange is true, set of nominal that may replace the formal arg. */
     java.util.SortedSet<String> approvedSet = null;
-    
-    
-    
-    
+
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * NominalFormalArg()
      *
-     * Constructors for nominal typed formal arguments.  
+     * Constructors for nominal typed formal arguments.
      *
-     * Three versions of this constructor -- one that takes only a database 
+     * Three versions of this constructor -- one that takes only a database
      * referenece, one that takes a database reference and the formal argument
-     * name as a parameters, and one that takes a reference to an instance of 
+     * name as a parameters, and one that takes a reference to an instance of
      * NominalFormalArg and uses it to create a copy.
      *
      *                                          JRM -- 3/15/07
@@ -67,55 +67,55 @@ public class NominalFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public NominalFormalArg(Database db) 
+    public NominalFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.NOMINAL;
-        
+
     } /* NominalFormalArg() -- no parameters */
-    
+
     public NominalFormalArg(Database db,
-                            String name) 
+                            String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-        
+
         this.fargType = fArgType.NOMINAL;
-        
+
     } /* NominalFormalArg() -- one parameter */
-    
+
     public NominalFormalArg(NominalFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "NominalFormalArg::NominalFormalArg(): ";  
-        
+        final String mName = "NominalFormalArg::NominalFormalArg(): ";
+
         this.fargType = fArgType.NOMINAL;
-        
+
         if ( ! ( fArg instanceof NominalFormalArg ) )
         {
             throw new SystemErrorException(mName + "fArg not a NominalFormalArg");
         }
-        
+
         // copy over fields.
-        
+
         this.subRange = fArg.getSubRange();
-        
+
         if ( this.subRange )
         {
             /* copy over the approved list from fArg. */
             java.util.Vector<String> approvedVector = fArg.getApprovedVector();
-            
+
             this.approvedSet = new java.util.TreeSet<String>();
-            
+
             for ( String s : approvedVector )
             {
                 this.addApproved(s);
@@ -123,18 +123,18 @@ public class NominalFormalArg extends FormalArgument
         }
 
     } /* NominalFormalArg() -- make copy */
-    
-    
-        
+
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-      
+
     /**
      * getSubRange() & setSubRange()
      *
      * Accessor routine used to get and set the subRange field.
-     * 
+     *
      * In addition, if subRange is changed from false to true, we must allocate
      * the approvedSet.  Similarly, if subrange is changed from true to false,
      * we discard the approved list by setting the approvedList field to null.
@@ -144,18 +144,18 @@ public class NominalFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public boolean getSubRange() 
-    { 
+
+    public boolean getSubRange()
+    {
         return subRange;
     }
-    
+
     public void setSubRange(boolean subRange)
     {
         final String mName = "NominalFormalArg::setSubRange(): ";
-        
+
         if ( this.subRange != subRange )
         {
             /* we have work to do. */
@@ -167,42 +167,42 @@ public class NominalFormalArg extends FormalArgument
             else
             {
                 this.subRange = false;
-                
+
                 /* discard the approved set */
                 approvedSet = null;
             }
         }
-        
+
         return;
-        
+
     } /* NominalFormalArg::setSubRange() */
-     
-        
+
+
     /*************************************************************************/
     /************************ Approved Set Management: ***********************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of NominalDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of NominalDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * NominalDataValue otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         NominalDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new NominalDataValue(this.db, this.id); 
+            retVal = new NominalDataValue(this.db, this.id);
         }
         else if ( salvage instanceof NominalDataValue )
         {
@@ -227,14 +227,14 @@ public class NominalFormalArg extends FormalArgument
         }
         else
         {
-            retVal = new NominalDataValue(this.db, this.id); 
+            retVal = new NominalDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* NominalDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * addApproved()
      *
@@ -244,17 +244,17 @@ public class NominalFormalArg extends FormalArgument
      * if passed an invalid nominal, or if the approved list already contains
      * the supplied nominal.
      *                                          JRM -- 3/15/07
-     * 
+     *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void addApproved(String s)
         throws SystemErrorException
     {
         final String mName = "NominalFormalArg::addApproved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -271,12 +271,12 @@ public class NominalFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "s already in approved set.");
         }
-        
+
         return;
-       
+
     } /* NominalFormalArg::addApproved() */
- 
-    
+
+
     /**
      * approved()
      *
@@ -292,12 +292,12 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public boolean approved(String test)
         throws SystemErrorException
     {
         final String mName = "NominalFormalArg::approved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -310,12 +310,12 @@ public class NominalFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "test is not a nominal.");
         }
-        
+
         return approvedSet.contains(test);
-       
+
     } /* NominalFormalArg::approved() */
 
-    
+
     /**
      * approvedSetToString()
      *
@@ -327,43 +327,43 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     private String approvedSetToString()
     {
         final String mName = "NominalFormalArg::approvedSetToString(): ";
         String s = null;
         int i;
         java.util.Iterator<String> iterator = null;
-        
+
         if ( subRange )
         {
             if ( this.approvedSet == null )
             {
-                s = "(" + mName + 
+                s = "(" + mName +
                     " (subRange && (approvedSet == null)) syserr?? )";
             }
-            
+
             iterator = this.approvedSet.iterator();
-            
+
             s = "(";
-            
+
             if ( iterator.hasNext() )
             {
                 s += iterator.next();
             }
-            
+
             while ( iterator.hasNext() )
             {
                 s += ", " + iterator.next();
             }
-            
+
             s += ")";
         }
         else
         {
             s = "()";
         }
-        
+
         return s;
     }
 
@@ -376,17 +376,17 @@ public class NominalFormalArg extends FormalArgument
      * if passed an invalid nominal, or if the approved list does not contain
      * the supplied nominal.
      *                                          JRM -- 3/15/07
-     * 
+     *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void deleteApproved(String s)
         throws SystemErrorException
     {
         final String mName = "NominalFormalArg::deleteApproved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -403,16 +403,16 @@ public class NominalFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "s not in approved set.");
         }
-        
+
         return;
-       
+
     } /* NominalFormalArg::deleteApproved() */
-    
-    
+
+
     /**
      * getApprovedVector()
      *
-     * Return an vector of String containing an alphabetical list of all 
+     * Return an vector of String containing an alphabetical list of all
      * entries in the approved set, or null if the approved list is empty.
      *
      * The method throws a system error if subRange is false.
@@ -423,14 +423,14 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     java.util.Vector<String> getApprovedVector()
         throws SystemErrorException
     {
         final String mName = "NominalFormalArg::getApprovedList(): ";
         java.util.Vector<String> approvedVector = null;
         int i;
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -439,56 +439,56 @@ public class NominalFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "approvedSet is null?!?!");
         }
-        
+
         if ( this.approvedSet.size() > 0 )
         {
             /* make copies of all strings in the approved set and then insert
-             * them in the approvedVector.  We make copies so that 
+             * them in the approvedVector.  We make copies so that
              * they can't be changed out from under the approved set.
              *
              * From reading the documentation, it is not completely clear that
              * this is necessary, but better safe than sorry.
              */
             approvedVector = new java.util.Vector<String>();
-            
+
             for ( String s : this.approvedSet )
             {
                 approvedVector.add(new String(s));
             }
         }
-        
+
         return approvedVector;
-        
+
     } /* NominalFormalArg::getApprovedVector() */
-        
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of NominalDataValue initialized as appropriate for 
+     * Return an instance of NominalDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new NominalDataValue(this.db, this.id);
-         
+
      } /* NominalFormalArg::constructEmptyArg() */
- 
+
 
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -500,29 +500,29 @@ public class NominalFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
-        return ("(NominalFormalArg " + getID() + " " + getFargName() + " " + 
+
+        return ("(NominalFormalArg " + getID() + " " + getFargName() + " " +
                 getSubRange() + " " + approvedSetToString() + ")");
-        
+
     } /* NominalFormalArg::toDBString() */
-    
-     
+
+
     /**
      * isValidValue() -- Override of abstract method in FormalArgument
-     * 
-     * Boolean metho that returns true iff the provided value is an acceptable 
+     *
+     * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
-     * 
+     *
      *                                             JRM -- 2/5/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
@@ -530,18 +530,18 @@ public class NominalFormalArg extends FormalArgument
         {
             return false;
         }
-      
+
         return true;
-        
+
     } /*  NominalFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /*** TODO: Review test code. ***/
-    
+
     /**
      * TestAccessors()
      *
@@ -551,7 +551,7 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -574,26 +574,26 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -601,7 +601,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                             "new NominalFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new NominalFormalArg(db) threw " +
@@ -610,27 +610,27 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("AbstractFormalArgument.TestAccessors." +
@@ -638,18 +638,18 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* NominalFormalArg adds subRange and approvedSet.  We must test 
-         * the routines supporting these fields as well. 
+
+        /* NominalFormalArg adds subRange and approvedSet.  We must test
+         * the routines supporting these fields as well.
          */
-        
+
         /* First verify correct initialization */
         if ( failures == 0 )
         {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("\"arg.getSubRange()\" returned " +
@@ -660,7 +660,7 @@ public class NominalFormalArg extends FormalArgument
             else if ( arg.approvedSet != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -668,17 +668,17 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now set subRange to true, and verify that approvedSet is allocated */
         if ( failures == 0 )
         {
             arg.setSubRange(true);
-            
+
             if ( ( arg.subRange != true ) ||
                  ( arg.getSubRange() != true ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -690,7 +690,7 @@ public class NominalFormalArg extends FormalArgument
                       ( arg.approvedSet.size() != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -699,9 +699,9 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now test the approvedSet management functions.  Start with just a 
-         * simple smoke check that verifies that the methods do more or 
+
+        /* now test the approvedSet management functions.  Start with just a
+         * simple smoke check that verifies that the methods do more or
          * less as they should, and then verify that they fail when they
          * should.
          */
@@ -709,7 +709,7 @@ public class NominalFormalArg extends FormalArgument
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.addApproved("charlie");
@@ -719,12 +719,12 @@ public class NominalFormalArg extends FormalArgument
                 arg.addApproved("alpha");
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -745,7 +745,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().
@@ -761,7 +761,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -778,7 +778,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -805,14 +805,14 @@ public class NominalFormalArg extends FormalArgument
                       ( approvedVector.get(2).compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected approvedVector(1).\n");
                 }
             }
         }
-        
+
         /* try several invalid additions to the approved set */
         if ( failures == 0 )
         {
@@ -829,7 +829,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -851,7 +851,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -867,7 +867,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -889,7 +889,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -905,7 +905,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -927,7 +927,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* try invalid calls to arg.approved() */
         if ( failures == 0 )
         {
@@ -944,7 +944,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -966,7 +966,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -982,7 +982,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1004,7 +1004,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* try invalid deletions from the approved set */
          if ( failures == 0 )
         {
@@ -1021,7 +1021,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1043,7 +1043,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-       
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1059,7 +1059,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1080,8 +1080,8 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-       
+
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1097,7 +1097,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1118,25 +1118,25 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         /* now reduce the size of the approved set to 1 */
         if ( failures == 0 )
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.deleteApproved("alpha");
                 arg.deleteApproved("charlie");
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1157,11 +1157,11 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that getApprovedVector() and getApprovedString() work as they
          * should with zero entries.
          */
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1178,7 +1178,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1203,15 +1203,15 @@ public class NominalFormalArg extends FormalArgument
                      ( approvedVector.get(0).compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected approvedVector(2).\n");
                 }
             }
         }
-        
-         
+
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().compareTo("(delta)") != 0 )
@@ -1225,24 +1225,24 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         /* now reduce the size of the approved set to 0 */
         if ( failures == 0 )
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.deleteApproved("delta");
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1263,11 +1263,11 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that getApprovedVector() and getApprovedString() work as they
          * should with no entries.
          */
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1284,7 +1284,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1308,14 +1308,14 @@ public class NominalFormalArg extends FormalArgument
             else if ( approvedVector != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected approvedVector(3).\n");
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().compareTo("()") != 0 )
@@ -1329,21 +1329,21 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now set subRange back to false.  Verify that approvedSet is set to
-         * null, and that all approved set manipulation methods thow a system 
+         * null, and that all approved set manipulation methods thow a system
          * error if invoked.
          */
-        
+
         if ( failures == 0 )
         {
             arg.setSubRange(false);
-            
+
             if ( ( arg.subRange != false ) ||
                  ( arg.getSubRange() != false ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -1354,7 +1354,7 @@ public class NominalFormalArg extends FormalArgument
             else if ( arg.approvedSet != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -1363,8 +1363,8 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
- 
-        /* finally, verify that all the approved list management routines 
+
+        /* finally, verify that all the approved list management routines
          * flag a system error if invoked when subRange is false.
          */
         if ( failures == 0 )
@@ -1382,7 +1382,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1405,7 +1405,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1421,7 +1421,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1444,7 +1444,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1460,7 +1460,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1483,7 +1483,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1499,7 +1499,7 @@ public class NominalFormalArg extends FormalArgument
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1522,7 +1522,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1551,23 +1551,23 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -1588,26 +1588,26 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1615,7 +1615,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                             "new NominalFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new NominalFormalArg(db) threw " +
@@ -1624,18 +1624,18 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -1644,7 +1644,7 @@ public class NominalFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -1652,7 +1652,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1681,12 +1681,12 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassNominalFormalArg()
      *
@@ -1698,51 +1698,51 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassNominalFormalArg(java.io.PrintStream outStream,
                                                     boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class NominalFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1753,22 +1753,22 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("All tests passed for class NominalFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Database::TestDatabase() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1790,26 +1790,26 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1817,7 +1817,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                             "new NominalFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new NominalFormalArg(db) threw " +
@@ -1826,13 +1826,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -1840,13 +1840,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -1854,20 +1854,20 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails if passed a bad db */
         if ( failures == 0 )
         {
@@ -1888,9 +1888,9 @@ public class NominalFormalArg extends FormalArgument
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( methodReturned ) || 
-                 ( arg != null ) || 
-                 ( ! threwSystemErrorException ) ) 
+            if ( ( methodReturned ) ||
+                 ( arg != null ) ||
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1915,7 +1915,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1944,22 +1944,22 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1979,22 +1979,22 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -2002,7 +2002,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                         "new NominalFormalArg(db, \"<valid>\") returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new NominalFormalArg(db, \"<valid>\") " +
@@ -2010,13 +2010,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -2024,13 +2024,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -2038,39 +2038,39 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db. */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new NominalFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -2078,7 +2078,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                         "new NominalFormalArg(null, \"<alid>>\") != null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new NominalFormalArg(null, \"<valid>\") "
@@ -2086,29 +2086,29 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -2116,7 +2116,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                         "new NominalFormalArg(db, \"<<valid>>\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new NominalFormalArg(db, \"<<invalid>>\") "
@@ -2124,7 +2124,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2153,23 +2153,23 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -2191,25 +2191,25 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of NominalFormalArg to be copied: */
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase(), "<copy_this>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -2217,7 +2217,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                         "new NominalFormalArg(\"<copy_this>\")\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new NominalFormalArg(\"<copy_this>\")\" " +
@@ -2225,25 +2225,25 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setHidden(true);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("\"arg.setHidden(true)\" threw a " +
@@ -2253,17 +2253,17 @@ public class NominalFormalArg extends FormalArgument
             else if ( ! arg.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg */
-        
+
         if ( failures == 0 )
         {
             copyArg = null;
@@ -2279,7 +2279,7 @@ public class NominalFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg == null ) || 
+            if ( ( copyArg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2300,15 +2300,15 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copy is good */
-        
+
         if ( failures == 0 )
         {
             if ( arg == copyArg )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg == copyArg) ==> " +
@@ -2316,13 +2316,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getFargName().compareTo(copyArg.getFargName()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.fargName = \"%s\" != \" " +
@@ -2331,13 +2331,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != copyArg.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.hidden = %b != " +
@@ -2346,13 +2346,13 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != copyArg.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.getItsVocabElement() != \" " +
@@ -2362,7 +2362,7 @@ public class NominalFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -2381,7 +2381,7 @@ public class NominalFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -2402,15 +2402,15 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of NominalFormalArg, 
+
+        /* now corrupt the fargName field of and instance of NominalFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -2423,7 +2423,7 @@ public class NominalFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -2444,7 +2444,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2473,12 +2473,12 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -2494,7 +2494,7 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -2565,26 +2565,26 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new NominalFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -2592,7 +2592,7 @@ public class NominalFormalArg extends FormalArgument
                     outStream.print(
                             "new NominalFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new NominalFormalArg(db) threw " +
@@ -2601,7 +2601,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             while ( testNum < numTestObjects )
@@ -2609,7 +2609,7 @@ public class NominalFormalArg extends FormalArgument
                 if ( verbose )
                 {
                     outStream.printf("test %d: arg.isValidValue(%s) --> %b: ",
-                            testNum, testDesc[testNum], 
+                            testNum, testDesc[testNum],
                             expectedResult[testNum]);
                 }
 
@@ -2622,7 +2622,7 @@ public class NominalFormalArg extends FormalArgument
                 }
                 catch (SystemErrorException e)
                 {
-                    threwSystemErrorException = true; 
+                    threwSystemErrorException = true;
                 }
 
                 if ( ( threwSystemErrorException ) ||
@@ -2649,8 +2649,8 @@ public class NominalFormalArg extends FormalArgument
                 testNum++;
             }
         }
-        
-        /* Now verify that isValidValue() throws a system error when passed 
+
+        /* Now verify that isValidValue() throws a system error when passed
          * a null.
          */
 
@@ -2674,7 +2674,7 @@ public class NominalFormalArg extends FormalArgument
             }
             catch (SystemErrorException e)
             {
-                threwSystemErrorException = true; 
+                threwSystemErrorException = true;
             }
 
             if ( ( result != false ) ||
@@ -2706,7 +2706,7 @@ public class NominalFormalArg extends FormalArgument
 
             testNum++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2735,12 +2735,12 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* NominalFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -2752,7 +2752,7 @@ public class NominalFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2773,7 +2773,7 @@ public class NominalFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -2788,7 +2788,7 @@ public class NominalFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( arg == null ) || 
+            if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2807,11 +2807,11 @@ public class NominalFormalArg extends FormalArgument
                                          "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg != null )
@@ -2837,14 +2837,14 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now set subRange, add some approved nominals, and verify that 
+
+        /* now set subRange, add some approved nominals, and verify that
          * this is reflected in the output from toDBString().
          */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setSubRange(true);
@@ -2852,12 +2852,12 @@ public class NominalFormalArg extends FormalArgument
                 arg.addApproved("bravo");
                 arg.addApproved("delta");
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -2869,7 +2869,7 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg != null )
@@ -2895,8 +2895,8 @@ public class NominalFormalArg extends FormalArgument
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2927,7 +2927,7 @@ public class NominalFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* NominalFormalArg::TestToStringMethods() */
-    
+
 } /* class NominalFormalArg */

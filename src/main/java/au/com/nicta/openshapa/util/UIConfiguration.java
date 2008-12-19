@@ -69,7 +69,7 @@ public class UIConfiguration
   public static Font  dialogFont            = DEFAULT_FONT;
   public static Color dialogBackgroundColor = DEFAULT_BACKGROUND;
   public static Color dialogForegroundColor = DEFAULT_FOREGROUND;
-  
+
   /**
    * Spreadsheet Variables
    */
@@ -82,8 +82,8 @@ public class UIConfiguration
   public static Color spreadsheetBorderColor      = DEFAULT_BORDER;
 
   /**
-   * Parses a configuration 
-   * @param config 
+   * Parses a configuration
+   * @param config
    */
   public final static void parseConfiguration(Configuration config)
   {
@@ -118,7 +118,7 @@ public class UIConfiguration
     if (config.getElements(SSFGCOL) != null) {
       spreadsheetForegroundColor = parseColor(config.getElements(SSFGCOL)[0].getValue());
     }
-    
+
     if(config.getElements(SSSELCOL) != null) {
         spreadsheetSelectedColor = parseColor(config.getElements(SSSELCOL)[0].getValue());
     }
@@ -157,7 +157,7 @@ public class UIConfiguration
 
     return(new Font(type, style, size));
   }
-  
+
   /**
    * Parses a string for font style
    * @param style string containing style (PLAIN, BOLD, ITALIC, BOLD&ITALIC"

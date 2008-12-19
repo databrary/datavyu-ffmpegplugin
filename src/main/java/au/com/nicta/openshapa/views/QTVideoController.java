@@ -515,7 +515,7 @@ implements ContinuousDataController {
         if (!this.videoProgressBar.getValueIsAdjusting()) {
         }
     }//GEN-LAST:event_videoProgressBarStateChanged
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JButton createNewCellButton;

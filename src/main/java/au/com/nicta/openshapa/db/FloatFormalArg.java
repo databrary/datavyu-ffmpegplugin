@@ -15,7 +15,7 @@ package au.com.nicta.openshapa.db;
  * Intance of this class are used for formal argument which have been strongly
  * type to float.  Note that we implement the float type with a double, so at
  * first blush, it would make more sense to call this class "DoubleFormalArg".
- * However, for historical reasons, and because floating point values are 
+ * However, for historical reasons, and because floating point values are
  * referred to as "floats" in the user interface, it seems to make more sense
  * to use the "FloatFormalArg" name.
  *
@@ -23,47 +23,47 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class FloatFormalArg extends FormalArgument 
+public class FloatFormalArg extends FormalArgument
 {
-    
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /**     
+    /**
      *
-     * subRange: Boolean flag indicating whether the formal argument can be 
-     *      replaced by any double, or only by some double that lies within 
-     *      the closed interval defined by the minVal and maxVal fields 
+     * subRange: Boolean flag indicating whether the formal argument can be
+     *      replaced by any double, or only by some double that lies within
+     *      the closed interval defined by the minVal and maxVal fields
      *      discussed below
      *
-     * minVal:  Double field used to specify the minimum floating point value 
-     *      that can be used to replace the formal argument if subRange is 
+     * minVal:  Double field used to specify the minimum floating point value
+     *      that can be used to replace the formal argument if subRange is
      *      true.  If subRange is false, this field is ignored.
      *
-     * maxVal:  Double field used to specify the maximum floating point value 
-     *      that can be used to replace the formal argument if subRange is 
+     * maxVal:  Double field used to specify the maximum floating point value
+     *      that can be used to replace the formal argument if subRange is
      *      true.  If subRange is false, this field is ignored.
      */
-    
+
     boolean subRange = false;
     double minVal = (-1.0 * Double.MAX_VALUE);
     double maxVal = Double.MAX_VALUE;
-    
-    
-    
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * FloatFormalArg()
      *
-     * Constructors for integer typed formal arguments.  
+     * Constructors for integer typed formal arguments.
      *
-     * Four versions of this constructor -- one that takes only a database 
-     * reference as an argument, one that takes a database reference and the 
+     * Four versions of this constructor -- one that takes only a database
+     * reference as an argument, one that takes a database reference and the
      * formal argument name as parameters, one that takes a database referemce,
-     * a formal argument name, minimum value, and maximum value as parameters, 
+     * a formal argument name, minimum value, and maximum value as parameters,
      * and one that takes a reference to an instance of FloatFormalArg as its
      * parameter, and uses it to create a copy.
      *
@@ -72,48 +72,48 @@ public class FloatFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public FloatFormalArg(Database db) 
+    public FloatFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.FLOAT;
-        
+
     } /* FloatFormalArg() -- no parameters */
-    
+
     public FloatFormalArg(Database db,
-                          String name) 
+                          String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-         
+
         this.fargType = fArgType.FLOAT;
-       
+
     } /* FloatFormalArg() -- one parameter */
-    
-    public FloatFormalArg(Database db, 
-                          String name, 
-                          double minVal, 
+
+    public FloatFormalArg(Database db,
+                          String name,
+                          double minVal,
                           double maxVal)
           throws SystemErrorException
     {
         super(db, name);
-       
-        final String mName = "FloatFormalArg::FloatFormalArg(): "; 
-         
+
+        final String mName = "FloatFormalArg::FloatFormalArg(): ";
+
         this.fargType = fArgType.FLOAT;
-        
+
         if ( minVal >= maxVal )
-            
+
         {
             throw new SystemErrorException(mName + "minVal >= maxVal");
         }
-        else if ( ( minVal < (-1.0 * Double.MAX_VALUE) ) || 
+        else if ( ( minVal < (-1.0 * Double.MAX_VALUE) ) ||
                   ( maxVal > Double.MAX_VALUE ) )
         {
             /* I don't think this can happen, but we will test for it anyway */
@@ -132,41 +132,41 @@ public class FloatFormalArg extends FormalArgument
             this.minVal = (-1.0 * Double.MAX_VALUE);
         }
    } /* FloatFormalArg() -- three parameters */
-     
-    public FloatFormalArg(FloatFormalArg fArg) 
-        throws SystemErrorException    
+
+    public FloatFormalArg(FloatFormalArg fArg)
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "FloatFormalArg::FloatFormalArg(): ";  
-         
+        final String mName = "FloatFormalArg::FloatFormalArg(): ";
+
         this.fargType = fArgType.FLOAT;
-        
+
         if ( ! ( fArg instanceof FloatFormalArg ) )
         {
             throw new SystemErrorException(mName + "fArg not a FloatFormalArg");
         }
-        
+
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());
 
     } /* FloatFormalArg() -- make copy */
 
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-      
+
     /**
      * setRange()
      *
      * Set the range of legal values that this formal arguement can assume.
      *
-     * If the new minVal and maxVal describe the full range of the underlying 
-     * type (i.e.  minVal == Long.MIN_VALUE and maxVal == Long.MAX_VALUE), set 
-     * subRange to false.  
-     * 
+     * If the new minVal and maxVal describe the full range of the underlying
+     * type (i.e.  minVal == Long.MIN_VALUE and maxVal == Long.MAX_VALUE), set
+     * subRange to false.
+     *
      * Otherwise, set subRange to true, and set the new minVal and maxVal.
      *
      *                                          JRM -- 2/5/07
@@ -174,7 +174,7 @@ public class FloatFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public void setRange(double minVal, double maxVal)
         throws SystemErrorException
@@ -185,13 +185,13 @@ public class FloatFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "minVal >= maxVal");
         }
-        else if ( ( minVal < (-1.0 * Double.MAX_VALUE) ) || 
+        else if ( ( minVal < (-1.0 * Double.MAX_VALUE) ) ||
                   ( maxVal > Double.MAX_VALUE ) )
         {
             /* I don't think this can happen, but we will test for it anyway */
             throw new SystemErrorException(mName + "minVal or maxVal out of range");
         }
-        else if ( ( minVal == (-1.0 * Double.MAX_VALUE) ) && 
+        else if ( ( minVal == (-1.0 * Double.MAX_VALUE) ) &&
                   ( maxVal == Double.MAX_VALUE ) )
         {
             this.subRange = false;
@@ -204,65 +204,65 @@ public class FloatFormalArg extends FormalArgument
             this.maxVal = maxVal;
             this.minVal = minVal;
         }
-        
+
         return;
-    
+
     } /* FloatFormalArg::setRange() */
-    
+
     /**
      * getSubRange(), getMinVal(), and getMaxVal()
      *
-     * Accessor routines used to obtain the current values of the subRange, 
+     * Accessor routines used to obtain the current values of the subRange,
      * minVal, and maxVal fields.
      *                                          JRM -- 2/11/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public boolean getSubRange() 
-    { 
+
+    public boolean getSubRange()
+    {
         return subRange;
     }
-    
+
     public double getMinVal()
     {
         return minVal;
     }
-    
+
     public double getMaxVal()
     {
         return maxVal;
     }
-     
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of FloatDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of FloatDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * FloatDataValue otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         FloatDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new FloatDataValue(this.db, this.id); 
+            retVal = new FloatDataValue(this.db, this.id);
         }
         else if ( salvage instanceof FloatDataValue )
         {
@@ -276,38 +276,38 @@ public class FloatFormalArg extends FormalArgument
         }
         else
         {
-            retVal = new FloatDataValue(this.db, this.id); 
+            retVal = new FloatDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* FloatDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of FloatDataValue initialized as appropriate for 
+     * Return an instance of FloatDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new FloatDataValue(this.db, this.id);
-         
+
      } /* FloatFormalArg::constructEmptyArg() */
 
-     
+
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -317,19 +317,19 @@ public class FloatFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
-        return ("(FloatFormalArg " + getID() + " " + getFargName() + " " + 
+
+        return ("(FloatFormalArg " + getID() + " " + getFargName() + " " +
                 subRange + " " + minVal + " " + maxVal +")");
-        
+
     } /* FloatFormalArg::toDBString() */
-    
-    
+
+
     /* isValidValue() -- Override of abstract method in FormalArgument
      *
-     * Boolean method that returns true iff the provided value is an acceptable 
+     * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
      *                                             JRM -- 2/5/07
@@ -337,9 +337,9 @@ public class FloatFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
@@ -347,23 +347,23 @@ public class FloatFormalArg extends FormalArgument
         {
             return false;
         }
-        
+
         /* If we get this far, obj must be a long */
-        
+
         if ( ( subRange ) && ( ( (Double)obj < minVal ) || ( (Double)obj > maxVal ) ) )
         {
             return false;
         }
-        
+
         return true;
-        
+
     } /* FloatFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -373,7 +373,7 @@ public class FloatFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -394,26 +394,26 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -421,7 +421,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                             "new FloatFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new FloatFormalArg(db) threw " +
@@ -430,18 +430,18 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestAccessors(arg, outStream, 
+                failures += FormalArgument.TestAccessors(arg, outStream,
                                                          verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -450,7 +450,7 @@ public class FloatFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("AbstractFormalArgument.TestAccessors()" +
@@ -458,16 +458,16 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* Now test accessors specific to FloatFormalArg. */
-        
+
         /* start by verifying the default values */
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected subRange(1): %b.\n",
@@ -475,13 +475,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected minVal(1): %f.\n",
@@ -489,13 +489,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMaxVal() != Double.MAX_VALUE )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected maxVal(1): %f.\n",
@@ -503,7 +503,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now set the subRange... */
         if ( failures == 0 )
         {
@@ -511,19 +511,19 @@ public class FloatFormalArg extends FormalArgument
             {
                 arg.setRange(1, 100);
             }
-            
+
             catch ( SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-             
+
             if ( ( threwSystemErrorException ) ||
                   ( arg.getSubRange() != true ) ||
                   ( arg.getMinVal() != 1 ) ||
                   ( arg.getMaxVal() != 100 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( threwSystemErrorException )
@@ -531,19 +531,19 @@ public class FloatFormalArg extends FormalArgument
                         outStream.printf("\"arg.setRange(1, 100)\" threw a " +
                                           "SystemErrorException.\n");
                     }
-                    
+
                     if ( arg.getSubRange() != true )
                     {
                         outStream.printf("Unexpected subRange(2): %b.\n",
                                           arg.getSubRange());
                     }
-                    
+
                     if ( arg.getMinVal() != 1 )
                     {
                         outStream.printf("Unexpected minVal(2): %f.\n",
                                           arg.getMinVal());
                     }
-                    
+
                     if ( arg.getMaxVal() != 100 )
                     {
                         outStream.printf("Unexpected maxVal(2): %f.\n",
@@ -560,19 +560,19 @@ public class FloatFormalArg extends FormalArgument
             {
                 arg.setRange((-1.0 * Double.MAX_VALUE), Double.MAX_VALUE);
             }
-            
+
             catch ( SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( ( threwSystemErrorException ) ||
                   ( arg.getSubRange() != false ) ||
                   ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) ) ||
                   ( arg.getMaxVal() != Double.MAX_VALUE ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( threwSystemErrorException )
@@ -581,19 +581,19 @@ public class FloatFormalArg extends FormalArgument
                                 "\"arg.setRange(-1.0 * MAX_VALUE, MAX_VALUE)\""
                                 + " threw a SystemErrorException.\n");
                     }
-                    
+
                     if ( arg.getSubRange() != false )
                     {
                         outStream.printf("Unexpected subRange(3): %b.\n",
                                           arg.getSubRange());
                     }
-                    
+
                     if ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) )
                     {
                         outStream.printf("Unexpected minVal(3): %f.\n",
                                           arg.getMinVal());
                     }
-                    
+
                     if ( arg.getMaxVal() != Double.MAX_VALUE )
                     {
                         outStream.printf("Unexpected maxVal(3): %f.\n",
@@ -602,7 +602,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* Now attempt to set an invalid subrange */
         if ( failures == 0 )
         {
@@ -610,19 +610,19 @@ public class FloatFormalArg extends FormalArgument
             {
                 arg.setRange(0.0, 0.0);
             }
-            
+
             catch ( SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( ( ! threwSystemErrorException ) ||
                   ( arg.getSubRange() != false ) ||
                   ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) ) ||
                   ( arg.getMaxVal() != Double.MAX_VALUE ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! threwSystemErrorException )
@@ -630,19 +630,19 @@ public class FloatFormalArg extends FormalArgument
                         outStream.printf("\"arg.setRange(0.0, 0.0)\""
                                 + " didn't throw a SystemErrorException.\n");
                     }
-                    
+
                     if ( arg.getSubRange() != false )
                     {
                         outStream.printf("Unexpected subRange(4): %b.\n",
                                           arg.getSubRange());
                     }
-                    
+
                     if ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) )
                     {
                         outStream.printf("Unexpected minVal(4): %f.\n",
                                           arg.getMinVal());
                     }
-                    
+
                     if ( arg.getMaxVal() != Double.MAX_VALUE )
                     {
                         outStream.printf("Unexpected maxVal(4): %f.\n",
@@ -651,7 +651,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -680,23 +680,23 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -717,26 +717,26 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -744,7 +744,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                             "new FloatFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new FloatFormalArg(db) threw " +
@@ -753,18 +753,18 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -773,7 +773,7 @@ public class FloatFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -781,7 +781,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -810,12 +810,12 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::TestVEAccessors() */
-    
-    
+
+
     /**
      * TestClassFloatFormalArg()
      *
@@ -827,56 +827,56 @@ public class FloatFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassFloatFormalArg(java.io.PrintStream outStream,
                                                   boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class FloatFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test4ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -887,23 +887,23 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("All tests passed for class FloatFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Database::TestClassFloatFormalArg() */
 
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -924,26 +924,26 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -951,7 +951,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                             "new FloatFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new FloatFormalArg(db) threw " +
@@ -960,13 +960,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -974,13 +974,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -988,26 +988,26 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of subRange: %b.\n",
@@ -1015,13 +1015,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of minVal: %f.\n",
@@ -1029,13 +1029,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMaxVal() != Double.MAX_VALUE )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of maxVal: %f.\n",
@@ -1043,7 +1043,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1072,22 +1072,22 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1107,22 +1107,22 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1130,7 +1130,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                         "new FloatFormalArg(db, \"<valid>\") returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new FloatFormalArg(db, \"<valid>\") " +
@@ -1138,13 +1138,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -1152,13 +1152,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -1166,26 +1166,26 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of subRange: %b.\n",
@@ -1193,13 +1193,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMinVal() != (-1.0 * Double.MAX_VALUE) )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of minVal: %f.\n",
@@ -1207,13 +1207,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMaxVal() != Double.MAX_VALUE )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of maxVal: %f.\n",
@@ -1221,27 +1221,27 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new FloatFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-                
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -1249,7 +1249,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                         "new FloatFormalArg(null, \"<valid>\") != null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new FloatFormalArg(null, \"<valid>\") " +
@@ -1257,29 +1257,29 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -1287,7 +1287,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print(
                         "new FloatFormalArg(db, \"<<invalid>>\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new FloatFormalArg(db, \"<<invalid>>\") "
@@ -1295,7 +1295,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1324,23 +1324,23 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * Test4ArgConstructor()
-     * 
-     * Run a battery of tests on the four argument constructor for this 
+     *
+     * Run a battery of tests on the four argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test4ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1360,22 +1360,22 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<valid>", 0.0, 19.0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
 
-        if ( ( arg == null ) || 
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1384,7 +1384,7 @@ public class FloatFormalArg extends FormalArgument
                             "new FloatFormalArg(db, \"<valid>\", 0.0, 19.0)\" " +
                             "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print(
@@ -1393,13 +1393,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName: \"%s\".\n",
@@ -1407,13 +1407,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -1421,26 +1421,26 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getSubRange() != true )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of subRange: %b.\n",
@@ -1448,13 +1448,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMinVal() != 0.0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of minVal: %f.\n",
@@ -1462,13 +1462,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getMaxVal() != 19.0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of maxVal: %f.\n",
@@ -1476,30 +1476,30 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* verify that the constructor fails when passed an invalid 
+
+        /* verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<<invalid>>",
                                      0.0, 99.0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -1508,7 +1508,7 @@ public class FloatFormalArg extends FormalArgument
                             "new FloatFormalArg(db, \"<<invalid>>\", 0.0, 99.0)\"" +
                             " != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -1517,30 +1517,30 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
-        
-        /* verify that the constructor fails when passed an invalid 
+
+
+        /* verify that the constructor fails when passed an invalid
          * minVal, maxVal pair.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<valid>", 0.0, 0.0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -1548,7 +1548,7 @@ public class FloatFormalArg extends FormalArgument
                     outStream.print("new FloatFormalArg(db, \"<valid>\", " +
                                      "0.0, 0.0)\" != null.\n");
                 }
-               
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -1557,7 +1557,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1586,23 +1586,23 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::Test4ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1624,26 +1624,26 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of FloatFormalArg to be copied: */
         threwSystemErrorException = false;
-        
+
         try
         {
-            arg = new FloatFormalArg(new ODBCDatabase(), "<copy_this>", 
+            arg = new FloatFormalArg(new ODBCDatabase(), "<copy_this>",
                                      -10.0, 10.0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
 
-        if ( ( arg == null ) || 
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1652,7 +1652,7 @@ public class FloatFormalArg extends FormalArgument
                             "new FloatFormalArg(db, \"<copy_this>\", -10.0, " +
                             "10.0)\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print(
@@ -1661,16 +1661,16 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setHidden(true);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -1679,7 +1679,7 @@ public class FloatFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("\"arg.setHidden(true)\" threw a " +
@@ -1689,17 +1689,17 @@ public class FloatFormalArg extends FormalArgument
             else if ( ! arg.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg */
-        
+
         if ( failures == 0 )
         {
             copyArg = null;
@@ -1715,7 +1715,7 @@ public class FloatFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg == null ) || 
+            if ( ( copyArg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1736,15 +1736,15 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copy is good */
-        
+
         if ( failures == 0 )
         {
             if ( arg == copyArg )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg == copyArg) ==> " +
@@ -1752,13 +1752,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getFargName().compareTo(copyArg.getFargName()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.fargName = \"%s\" != \" " +
@@ -1767,13 +1767,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != copyArg.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.hidden = %b != " +
@@ -1782,13 +1782,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != copyArg.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.getItsVocabElement() != \" " +
@@ -1796,13 +1796,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getSubRange() != copyArg.getSubRange() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.subRange = %b != " +
@@ -1811,13 +1811,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getMinVal() != copyArg.getMinVal() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.minVal = %f != " +
@@ -1826,13 +1826,13 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getMaxVal() != copyArg.getMaxVal() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.maxVal = %f != " +
@@ -1843,7 +1843,7 @@ public class FloatFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -1861,7 +1861,7 @@ public class FloatFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1882,15 +1882,15 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of an instance of FloatFormalArg, 
+
+        /* now corrupt the fargName field of an instance of FloatFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -1903,7 +1903,7 @@ public class FloatFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1924,15 +1924,15 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the minVal & maxVal fields of an instance of FloatFormalArg, 
+
+        /* now corrupt the minVal & maxVal fields of an instance of FloatFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<a_valid_name>";
             munged.minVal = 0.0;
             munged.maxVal = 0.0;
@@ -1947,7 +1947,7 @@ public class FloatFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1968,7 +1968,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1997,12 +1997,12 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -2018,7 +2018,7 @@ public class FloatFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -2109,30 +2109,30 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new FloatFormalArg(new ODBCDatabase(), "<arg>", 0.0, 5.0);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
 
-        
+
         if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
                 {
                     outStream.print("new FloatFormalArg()\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new FloatFormalArg()\" threw a system " +
@@ -2140,7 +2140,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( arg != null )
         {
             while ( testNum < numTestObjects )
@@ -2148,7 +2148,7 @@ public class FloatFormalArg extends FormalArgument
                 if ( verbose )
                 {
                     outStream.printf("test %d: arg.isValidValue(%s) --> %b: ",
-                            testNum, testDesc[testNum], 
+                            testNum, testDesc[testNum],
                             expectedResult[testNum]);
                 }
 
@@ -2161,7 +2161,7 @@ public class FloatFormalArg extends FormalArgument
                 }
                 catch (SystemErrorException e)
                 {
-                    threwSystemErrorException = true; 
+                    threwSystemErrorException = true;
                 }
 
                 if ( ( threwSystemErrorException ) ||
@@ -2188,8 +2188,8 @@ public class FloatFormalArg extends FormalArgument
                 testNum++;
             }
         }
-        
-        /* Now verify that isValidValue() throws a system error when passed 
+
+        /* Now verify that isValidValue() throws a system error when passed
          * a null.
          */
 
@@ -2211,10 +2211,10 @@ public class FloatFormalArg extends FormalArgument
                 result = arg.isValidValue(null);
                 methodReturned = true;
             }
-            
+
             catch (SystemErrorException e)
             {
-                threwSystemErrorException = true; 
+                threwSystemErrorException = true;
             }
 
             if ( ( result != false ) ||
@@ -2229,12 +2229,12 @@ public class FloatFormalArg extends FormalArgument
                     {
                         outStream.print("failed -- unexpected exception.\n");
                     }
-                    
+
                     if ( methodReturned )
                     {
                         outStream.print("failed -- unexpected return.\n");
                     }
-                    
+
                     if ( result )
                     {
                         outStream.print("failed -- unexpected result.\n");
@@ -2248,7 +2248,7 @@ public class FloatFormalArg extends FormalArgument
 
             testNum++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2277,12 +2277,12 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* FloatFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -2294,7 +2294,7 @@ public class FloatFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2315,14 +2315,14 @@ public class FloatFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
 
             try
             {
-                arg = new FloatFormalArg(new ODBCDatabase(), "<test>", 
+                arg = new FloatFormalArg(new ODBCDatabase(), "<test>",
                                          0.1, 10.1);
             }
 
@@ -2331,7 +2331,7 @@ public class FloatFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( arg == null ) || 
+            if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2352,17 +2352,17 @@ public class FloatFormalArg extends FormalArgument
                                 " threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( arg != null )
         {
             if ( arg.toString().compareTo("<test>") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -2371,15 +2371,15 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( arg != null )
         {
             if ( arg.toDBString().
-                    compareTo("(FloatFormalArg 0 <test> true 0.1 10.1)") 
+                    compareTo("(FloatFormalArg 0 <test> true 0.1 10.1)")
                 != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -2388,7 +2388,7 @@ public class FloatFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2419,7 +2419,7 @@ public class FloatFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* FloatFormalArg::TestToStringMethods() */
-    
+
 } /* class FloatFormalArg */

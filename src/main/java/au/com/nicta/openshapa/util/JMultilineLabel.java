@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.font.*;
 import java.text.*;
 import javax.swing.*;
- 
+
 public class JMultilineLabel extends JComponent {
     private String text;
     private Insets margin = new Insets(1,1,1,1);
@@ -14,16 +14,16 @@ public class JMultilineLabel extends JComponent {
     private boolean justify;
     private final FontRenderContext frc =
         new FontRenderContext(null, false, false);
- 
+
     private void morph() {
         revalidate();
         repaint();
     }
- 
+
     public String getText() {
         return text;
     }
- 
+
     public void setText(String text) {
         String old = this.text;
         this.text = text;
@@ -31,11 +31,11 @@ public class JMultilineLabel extends JComponent {
         if ((old == null) ? text!=null : !old.equals(text))
             morph();
     }
- 
+
     public int getMaxWidth() {
         return maxWidth;
     }
- 
+
     public void setMaxWidth(int maxWidth) {
         if (maxWidth <= 0)
             throw new IllegalArgumentException();
@@ -45,11 +45,11 @@ public class JMultilineLabel extends JComponent {
         if (old !=  this.maxWidth)
             morph();
     }
- 
+
     public boolean isJustified() {
         return justify;
     }
- 
+
     public void setJustified(boolean justify) {
         boolean old = this.justify;
         this.justify = justify;
@@ -57,22 +57,22 @@ public class JMultilineLabel extends JComponent {
         if (old != this.justify)
             repaint();
     }
- 
+
     public Dimension getPreferredSize() {
         return paintOrGetSize(null, getMaxWidth());
     }
- 
+
     public Dimension getMinimumSize() {
         //return getPreferredSize();
       Dimension d = this.getPreferredSize();
       return (new Dimension(d.width, this.getFontMetrics(this.getFont()).getHeight()));
     }
- 
+
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         paintOrGetSize((Graphics2D)g, getWidth());
     }
- 
+
     private Dimension paintOrGetSize(Graphics2D g, int width) {
         Insets insets = getInsets();
         width -= insets.left + insets.right + margin.left + margin.right;

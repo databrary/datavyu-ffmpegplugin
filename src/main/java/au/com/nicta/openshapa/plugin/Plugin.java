@@ -15,5 +15,5 @@ package au.com.nicta.openshapa.plugin;
  */
 public interface Plugin
 {
-  
+
 } //End of Plugin interface definition

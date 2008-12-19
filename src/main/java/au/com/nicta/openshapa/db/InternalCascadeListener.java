@@ -11,14 +11,14 @@ package au.com.nicta.openshapa.db;
 
 /**
  * Interface InternalCascadeListener
- * 
+ *
  * Objects internal to the database that wish to be informed of the beginning
- * and end of a cascade of changes should implement this interface and 
+ * and end of a cascade of changes should implement this interface and
  * register with the database.
- * 
- *                                                  JRM -- 2/11/08 
- * 
- * 
+ *
+ *                                                  JRM -- 2/11/08
+ *
+ *
  * @author mainzer
  */
 public interface InternalCascadeListener
@@ -34,10 +34,10 @@ public interface InternalCascadeListener
      *
      *    - None.
      */
-    
+
     void beginCascade(Database db)
         throws SystemErrorException;
-    
+
     /**
      * endCascade()
      *
@@ -49,8 +49,8 @@ public interface InternalCascadeListener
      *
      *    - None.
      */
-    
+
     void endCascade(Database db)
         throws SystemErrorException;
-        
+
 } // interface InternalCascadeListener

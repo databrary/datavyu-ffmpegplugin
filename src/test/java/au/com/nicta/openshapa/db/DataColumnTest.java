@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  * Unit test for simple App.
  */
 public final class DataColumnTest {
-    
+
     private Database db = null;
     private long f_mve0ID = DBIndex.INVALID_ID;
     private long f_mve1ID = DBIndex.INVALID_ID;
@@ -529,10 +529,10 @@ public final class DataColumnTest {
         TimeStamp f_onset0 = new TimeStamp(db.getTicks(), 60);
         TimeStamp f_offset0 = new TimeStamp(db.getTicks(), 120);
         long fargID = f_mve0.getFormalArg(0).getID();
-        Vector<DataValue> f_arg_list0 = new Vector<DataValue>();        
+        Vector<DataValue> f_arg_list0 = new Vector<DataValue>();
         FloatDataValue arg = new FloatDataValue(db, fargID, 0.0);
         f_arg_list0.add(arg);
-        
+
         Matrix f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
         f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
 
@@ -576,7 +576,7 @@ public final class DataColumnTest {
 
         f_col0.setItsCells(saved_f_col0_cells);
         assertTrue(saved_f_col0_cells == f_col0.getItsCells());
-        assertTrue(f_col0.getNumCells() == 3);        
+        assertTrue(f_col0.getNumCells() == 3);
     }
 
     public void testAccessorFailure0() {
@@ -645,7 +645,7 @@ public final class DataColumnTest {
                                             f_mve0.id,
                                             f_onset0, f_offset0, f_matrix0);
             newCol.setItsMveID(f_cell0.getID());
-            
+
             fail("Accessor should have thrown SystemErrorException.");
         } catch (SystemErrorException e) {
             // Do nothing - pass the test.

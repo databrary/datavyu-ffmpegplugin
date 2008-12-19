@@ -11,5 +11,5 @@ package au.com.nicta.openshapa.cont;
  */
 public interface ContinuousDataListener
 {
-    
+
 }

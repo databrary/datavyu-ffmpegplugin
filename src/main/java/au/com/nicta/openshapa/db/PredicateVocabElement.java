@@ -10,7 +10,7 @@ package au.com.nicta.openshapa.db;
 /**
  * Class PredicateVocabElement
  *
- * Instances of PredicateVocabElement are used to store vocab data on 
+ * Instances of PredicateVocabElement are used to store vocab data on
  * predicates, both system and user defined.
  *
  *                                          JRM -- 3/05/07
@@ -20,27 +20,27 @@ package au.com.nicta.openshapa.db;
 
 public class PredicateVocabElement extends VocabElement
 {
-    
+
     /*************************************************************************/
     /************************** Type Definitions: ****************************/
     /*************************************************************************/
-    
+
     /* None */
-    
+
 
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    
+
     /* None */
-    
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
 
-    
-    /** 
+
+    /**
      * PredicateVocabElement()
      *
      * Constructor for instances of PredicateVocabElement.
@@ -55,69 +55,69 @@ public class PredicateVocabElement extends VocabElement
      *    - Added copy constructor.                 JRM -- 4/30/07
      *
      */
-       
+
     public PredicateVocabElement(Database db,
                                  String name)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
-        final String mName = 
+
+        final String mName =
                 "PredicateVocabElement::PredicateVocabElement(db, name): ";
-        
+
         if ( ! Database.IsValidPredName(name) )
         {
             throw new SystemErrorException(mName + "name is invalid");
         }
-                      
+
         this.name = (new String(name));
-        
+
     } /* PredicateVocabElement::PredicateVocabElement(db, name) */
-    
+
     public PredicateVocabElement(PredicateVocabElement ve)
         throws SystemErrorException
     {
         super(ve);
-        
-        final String mName = 
+
+        final String mName =
                 "PredicateVocabElement::PredicateVocabElement(ve): ";
-        
+
         if ( ( ve == null ) || ( ! ( ve instanceof PredicateVocabElement ) ) )
         {
             throw new SystemErrorException(mName + "bad ve");
         }
-        
+
         if ( ! Database.IsValidPredName(ve.name) )
         {
             throw new SystemErrorException(mName + "name is invalid");
         }
-        
+
     } /* PredicateVocabElement::PredicateVocabElement(ve) */
-     
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-  
+
     /* None */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * isWellFormed() -- override of abstract method in VocabElement
      *
-     * Examine the predicate vocab element and return true if it is well formed  
+     * Examine the predicate vocab element and return true if it is well formed
      * and thus acceptable for insertion into the vocab list, and false if it
      * is not.
      *
-     * For predicate vocab elements, a vocab element is well formed if it 
+     * For predicate vocab elements, a vocab element is well formed if it
      * contains at least one formal argument, the ve name is non-empty and
-     * valid, and each formal argument has a name that is unique within the 
-     * formal argument list.  The VocabElement code should enforce the latter 
+     * valid, and each formal argument has a name that is unique within the
+     * formal argument list.  The VocabElement code should enforce the latter
      * two, so we flag a system error if they do not obtain.
      *
      * If the vocab element is new (i.e. it is about to be inserted into the
@@ -131,7 +131,7 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
+
     public boolean isWellFormed(boolean newVE)
         throws SystemErrorException
     {
@@ -141,7 +141,7 @@ public class PredicateVocabElement extends VocabElement
         int j;
         FormalArgument fArg = null;
         FormalArgument scanfArg = null;
-        
+
         if ( this.getName().length() == 0 )
         {
             wellFormed = false;
@@ -154,8 +154,8 @@ public class PredicateVocabElement extends VocabElement
         {
             wellFormed = false;
         }
-        else if ( ( ! newVE ) && 
-                  ( ( this.getID() == DBIndex.INVALID_ID) || 
+        else if ( ( ! newVE ) &&
+                  ( ( this.getID() == DBIndex.INVALID_ID) ||
                     ( ! this.db.vl.inVocabList(this.getID()) ) ) )
         {
             wellFormed = false;
@@ -172,23 +172,23 @@ public class PredicateVocabElement extends VocabElement
         else
         {
             i = 0;
-            
+
             while ( ( i < this.fArgList.size() ) && (  wellFormed ) )
             {
                 fArg = this.fArgList.get(i);
-                
+
                 j = 0;
                 while ( ( j < this.fArgList.size() ) && (  wellFormed ) )
                 {
                     if ( i != j )
                     {
                         scanfArg = this.fArgList.get(j);
-                        
+
                         if ( fArg.getFargName().
                                 compareTo(scanfArg.getFargName()) == 0 )
                         {
                             wellFormed = false;
-                            throw new SystemErrorException(mName + 
+                            throw new SystemErrorException(mName +
                                     "non unique fArg name");
                         }
                     }
@@ -199,23 +199,23 @@ public class PredicateVocabElement extends VocabElement
                 if ( fArg instanceof TextStringFormalArg )
                 {
                     wellFormed = false;
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                             "pred contains text string fArg");
                 }
-                
+
                 i++;
             }
         }
-        
+
         return wellFormed;
-        
+
     } /* PredicateVocabElement::isWellFormed() */
 
 
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -225,13 +225,13 @@ public class PredicateVocabElement extends VocabElement
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString()
         throws SystemErrorException
     {
         String s;
-        
+
         try
         {
             s = "((PredicateVocabElement: ";
@@ -246,17 +246,17 @@ public class PredicateVocabElement extends VocabElement
             s += fArgListToDBString();
             s += ")";
         }
-        
+
         catch (SystemErrorException e)
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-       
+
         return s;
-        
+
     } /* PredicateVocabElement::toDBString() */
 
-    
+
     /**
      * toString() -- Override of abstract method in DataValue
      *
@@ -267,12 +267,12 @@ public class PredicateVocabElement extends VocabElement
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    public String toString() 
+    public String toString()
     {
         String s;
-        
+
         try
         {
             s = getName();
@@ -283,17 +283,17 @@ public class PredicateVocabElement extends VocabElement
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-               
+
         return (s);
-        
+
     } /* PredicateVocabElement::toString() */
-    
-    
+
+
     /*** accessor overrides ***/
-    
+
     /* setName() -- Override of method in VocabElement
      *
-     * Does some additional error checking and then calls the superclass 
+     * Does some additional error checking and then calls the superclass
      * version of the method.
      *
      *                                              JRM -- 3/04/07
@@ -302,36 +302,36 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
-    public void setName(String name) 
-        throws SystemErrorException 
+
+    public void setName(String name)
+        throws SystemErrorException
     {
         final String mName = "PredicateVocabElement::setName(): ";
-        
+
         if ( ! Database.IsValidPredName(name) )
         {
             throw new SystemErrorException(mName + "Bad name param");
         }
-                      
+
         super.setName(name);
-        
+
         return;
-        
+
     } /* PredicateVocabElement::setName() */
 
-    
+
     /*** formal argument list management overrides ***/
-    
+
     /**
-     * appendFormalArg() 
-     * 
-     * Make FormalArgument::appendFormalArg() accessible to 
+     * appendFormalArg()
+     *
+     * Make FormalArgument::appendFormalArg() accessible to
      * the outside world, but add some error checking.
-     * 
+     *
      *                                          JRM -- 3/04/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
     public void appendFormalArg(FormalArgument newArg)
@@ -339,126 +339,126 @@ public class PredicateVocabElement extends VocabElement
     {
 
         super.appendFormalArg(newArg);
-        
+
         return;
-        
+
     } /* PredicateVocabElement::appendFormalArg() */
-    
-       
+
+
     /**
      * deleteFormalArg()
-     * 
-     * Make FormalArgument::deleteFormalArg() accessible to 
+     *
+     * Make FormalArgument::deleteFormalArg() accessible to
      * the outside world.
-     * 
+     *
      *                                          JRM -- 3/4/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
-     */  
-    
+     */
+
     public void deleteFormalArg(int n)
         throws SystemErrorException
     {
 
         super.deleteFormalArg(n);
-        
+
         return;
-        
+
     } /* PredicateVocabElement::deleteFormalArg() */
 
-    
+
     /**
-     * getFormalArg() 
-     * 
-     * Make FormalArgument::getFormalArg() accessible to 
+     * getFormalArg()
+     *
+     * Make FormalArgument::getFormalArg() accessible to
      * the outside world.
-     * 
+     *
      *                                          JRM -- 3/4/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *   - None.
      */
     public FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
-         
+
         return super.getFormalArg(n);
-        
+
     } /* PredicateVocabElement::getFormalArg() */
-    
-    
+
+
     /**
      * getNumFormalArgs()
-     * 
+     *
      * Make VocabElement::getNumFormalArgs() public.
-     * 
+     *
      *                                      JRM 3/04/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public int getNumFormalArgs()
         throws SystemErrorException
     {
-        
+
         return super.getNumFormalArgs();
-        
+
     } /* PredicateVocabElement::getNumFormalArgs() */
 
     /**
      * insertFormalArg()
-     * 
-     * 
+     *
+     *
      * Make VocabElement::insertFormalArgs() public.
-     * 
+     *
      *                                          JRM -- 3/04/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
-    public void insertFormalArg(FormalArgument newArg, 
+
+    public void insertFormalArg(FormalArgument newArg,
                                 int n)
         throws SystemErrorException
     {
 
         super.insertFormalArg(newArg, n);
-                
-        return;        
-        
+
+        return;
+
     } /* PredicateVocabElement::insertFormalArg() */
-    
-    
+
+
     /**
      * replaceFormalArg()
-     * 
+     *
      * Make VocabElement::replaceFormalArg() public.
-     * 
+     *
      *                                          JRM -- 3/04/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
-    public void replaceFormalArg(FormalArgument newArg, 
+
+    public void replaceFormalArg(FormalArgument newArg,
                                  int n)
         throws SystemErrorException
     {
         super.replaceFormalArg(newArg, n);
-        
+
         return;
-        
+
     } /* PredicateVocabElement::replaceFormalArg() */
-  
-    
-        
+
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
@@ -472,19 +472,19 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-  
+
     public int getNumElements()
         throws SystemErrorException
     {
         return (this.getNumFormalArgs());
-    
+
     } /* PredicateFormalArgument::getNumElements() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -494,7 +494,7 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -518,40 +518,40 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("\n");
         }
-        
+
         ve = new PredicateVocabElement(new ODBCDatabase(), "test");
-        
+
         if ( ve == null )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.print("new PredicateVocabElement() returned null.\n");
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += VocabElement.TestAccessors(ve, false, 
+                failures += VocabElement.TestAccessors(ve, false,
                                                        outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("AbstractFormalArgument.TestAccessors()" +
@@ -560,7 +560,7 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         /* PredicateVocabElement adds no new fields, but it does do a little
          * extra error testing.  Verify that we flag errors as appropriate.
          */
@@ -568,19 +568,19 @@ public class PredicateVocabElement extends VocabElement
         {
             methodReturned = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 ve.setName("in valid");
                 methodReturned = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-        
-            
+
+
             if ( ( methodReturned ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -603,7 +603,7 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-         
+
         if ( failures > 0 )
         {
             pass = false;
@@ -632,15 +632,15 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredicateVocabElement::TestAccessors() */
-    
+
     /**
      * TestArgListManagement()
      *
-     * Run a battery of tests on the formal argument list management methods 
+     * Run a battery of tests on the formal argument list management methods
      * for this class.
      *                                          JRM -- 3/18/07
      *
@@ -648,7 +648,7 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
+
     public static boolean TestArgListManagement(java.io.PrintStream outStream,
                                                 boolean verbose)
         throws SystemErrorException
@@ -671,41 +671,41 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("\n");
         }
-        
+
         ve = new PredicateVocabElement(new ODBCDatabase(), "test");
-        
+
         if ( ve == null )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.print("new PredicateVocabElement() returned null.\n");
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += VocabElement.TestfArgListManagement(ve, 
+                failures += VocabElement.TestfArgListManagement(ve,
                                                                 outStream,
                                                                 verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 SystemErrorExceptionString = e.toString();
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -715,25 +715,25 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         /* PredicateVocabElement makes few changes to formal argument list
-         * management methods, so we are almost done.  The only change is 
+         * management methods, so we are almost done.  The only change is
          * the addition of the getNumElements() method, which is just another
-         * name for getNumFormalArgs().  Thus it is probably sufficient to 
+         * name for getNumFormalArgs().  Thus it is probably sufficient to
          * just call getNumElements() and verify that it returns the expected
          * value.
          *
          * As it happens, the above inherited test routine leaves the predicate
-         * vocab element with 7 arguments.  Call getNumElements() now and 
+         * vocab element with 7 arguments.  Call getNumElements() now and
          * verify that it returns 7.
          */
-        
+
         if ( failures == 0 )
         {
             if ( ve.getNumElements() != 7 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -742,7 +742,7 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-         
+
         if ( failures > 0 )
         {
             pass = false;
@@ -771,12 +771,12 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredicateVocabElement::TestArgListManagement() */
 
-    
+
     /**
      * TestClassPredicateVocabElement()
      *
@@ -788,7 +788,7 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassPredicateVocabElement(
             java.io.PrintStream outStream,
             boolean verbose)
@@ -796,39 +796,39 @@ public class PredicateVocabElement extends VocabElement
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class PredicateVocabElement:\n");
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestArgListManagement(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsWellFormed(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -839,23 +839,23 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("All tests passed for class PredicateVocabElement.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* PredicateVocabElement::TestClassPredicateVocabElement() */
 
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -875,22 +875,22 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             ve = new PredicateVocabElement(new ODBCDatabase(), "valid");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( ve == null ) || 
+
+        if ( ( ve == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( ve == null )
@@ -898,7 +898,7 @@ public class PredicateVocabElement extends VocabElement
                     outStream.print("new PredicateVocabElement(db, \"valid\")"
                             + " returned null.\n");
                 }
-                                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new PredicateVocabElement(db, \"valid\")\""
@@ -906,13 +906,13 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( ve.getName().compareTo("valid") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial name \"%s\".\n",
@@ -920,13 +920,13 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ve.getSystem() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of system: %b.\n",
@@ -934,13 +934,13 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ve.getVarLen() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of varLen: %b.\n",
@@ -948,26 +948,26 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db. */
         ve = null;
-        
+
         try
         {
             ve = new PredicateVocabElement(null, "valid");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( ve != null ) || 
+
+        if ( ( ve != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( ve != null )
@@ -975,7 +975,7 @@ public class PredicateVocabElement extends VocabElement
                     outStream.print(
                         "new PredicateVocabElement(null, \"valid\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new PredicateVocabElement(null, " +
@@ -983,28 +983,28 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-                
-        /* Verify that the constructor fails when passed an invalid 
+
+        /* Verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         ve = null;
-        
+
         try
         {
             ve = new PredicateVocabElement(new ODBCDatabase(), "in valid");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( ve != null ) || 
+
+        if ( ( ve != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( ve != null )
@@ -1012,7 +1012,7 @@ public class PredicateVocabElement extends VocabElement
                     outStream.print(
                         "new PredicateVocabElement(\"in valid\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new PredicateVocabElement(\"in valid\")\" "
@@ -1020,7 +1020,7 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1049,23 +1049,23 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredicateVocabElement::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1137,9 +1137,9 @@ public class PredicateVocabElement extends VocabElement
                 base_ve.lastModUID = 2;
                 base_ve.varLen = true;
                 base_ve.system = true;
-                
+
                 /* add the base_ve to the vocab list to assign an id */
-                db.vl.addElement(base_ve); 
+                db.vl.addElement(base_ve);
 
                 completed = true;
             }
@@ -1158,7 +1158,7 @@ public class PredicateVocabElement extends VocabElement
                  ( delta == null ) ||
                  ( echo == null ) ||
                  ( foxtrot == null ) ||
-                 ( base_ve == null ) || 
+                 ( base_ve == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1192,17 +1192,17 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
-        /* Now run the copy constructor on base_ve, and verify that the 
+
+        /* Now run the copy constructor on base_ve, and verify that the
          * result is a copy.
          */
-        
+
         if ( failures == 0 )
-        {      
+        {
             copy_ve = null;
             completed = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 copy_ve = new PredicateVocabElement(base_ve);
@@ -1214,13 +1214,13 @@ public class PredicateVocabElement extends VocabElement
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( copy_ve == null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -1242,13 +1242,13 @@ public class PredicateVocabElement extends VocabElement
 
                 }
             }
-            /* Use the toString and toDBString methods to verify that the 
+            /* Use the toString and toDBString methods to verify that the
              * base and copy contain the same data.
              */
             else if ( base_ve.toString().compareTo(copy_ve.toString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1261,7 +1261,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve.toDBString().compareTo(copy_ve.toDBString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1278,7 +1278,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve == copy_ve )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("base_ve == copy_ve(1)\n");
@@ -1288,31 +1288,31 @@ public class PredicateVocabElement extends VocabElement
             {
                 for ( i = 0; i < base_ve.getNumFormalArgs(); i++ )
                 {
-                    /* This should never happen, but it if did, it could 
+                    /* This should never happen, but it if did, it could
                      * hide other failures.  Thus test for it anyway.
                      */
                     if ( base_ve.getFormalArg(i) != base_ve.getFormalArg(i) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "unexpected return from getFormalArg() (1)");
-                        
+
                     }
-                    
+
                     if ( base_ve.fArgList == copy_ve.fArgList )
                     {
                         failures++;
-                        
+
                         if ( verbose )
                         {
                             outStream.printf("base_ve.fArgList == " +
                                              "copy_ve.fArgList)\n");
                         }
                     }
-                    
+
                     if ( base_ve.getFormalArg(i) == copy_ve.getFormalArg(i) )
                     {
                         failures++;
-                        
+
                         if ( verbose )
                         {
                             outStream.printf("base_ve.getFormalArg(%d) == " +
@@ -1320,7 +1320,7 @@ public class PredicateVocabElement extends VocabElement
                                              i, i);
                         }
                     }
-                    else if (base_ve.getFormalArg(i).getClass() != 
+                    else if (base_ve.getFormalArg(i).getClass() !=
                              copy_ve.getFormalArg(i).getClass() )
                     {
                         outStream.printf("class mismatch detected in copy " +
@@ -1330,7 +1330,7 @@ public class PredicateVocabElement extends VocabElement
                 if ( ( failures == 0 ) && ( i != 6 ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("Unexpected number of formal " +
@@ -1339,7 +1339,7 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             /* now create a base predicate vocab element, and loading it
@@ -1371,9 +1371,9 @@ public class PredicateVocabElement extends VocabElement
                 base_ve.lastModUID = 4;
                 base_ve.varLen = false;
                 base_ve.system = true;
-                
+
                 /* add the base_ve to the vocab list to assign an id */
-                db.vl.addElement(base_ve); 
+                db.vl.addElement(base_ve);
 
                 completed = true;
             }
@@ -1386,7 +1386,7 @@ public class PredicateVocabElement extends VocabElement
 
             if ( ( ! completed ) ||
                  ( db == null ) ||
-                ( base_ve == null ) || 
+                ( base_ve == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1416,17 +1416,17 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
-        /* Now run the copy constructor on base_ve, and verify that the 
+
+        /* Now run the copy constructor on base_ve, and verify that the
          * result is a copy.
          */
-        
+
         if ( failures == 0 )
-        {      
+        {
             copy_ve = null;
             completed = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 copy_ve = new PredicateVocabElement(base_ve);
@@ -1438,13 +1438,13 @@ public class PredicateVocabElement extends VocabElement
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( copy_ve == null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -1466,13 +1466,13 @@ public class PredicateVocabElement extends VocabElement
 
                 }
             }
-            /* Use the toString and toDBString methods to verify that the 
+            /* Use the toString and toDBString methods to verify that the
              * base and copy contain the same data.
              */
             else if ( base_ve.toString().compareTo(copy_ve.toString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1485,7 +1485,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve.toDBString().compareTo(copy_ve.toDBString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1502,7 +1502,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve == copy_ve )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("base_ve == copy_ve(2)\n");
@@ -1512,20 +1512,20 @@ public class PredicateVocabElement extends VocabElement
             {
                 for ( i = 0; i < base_ve.getNumFormalArgs(); i++ )
                 {
-                    /* This should never happen, but it if did, it could 
+                    /* This should never happen, but it if did, it could
                      * hide other failures.  Thus test for it anyway.
                      */
                     if ( base_ve.getFormalArg(i) != base_ve.getFormalArg(i) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "unexpected return from getFormalArg() (2)");
-                        
+
                     }
-                    
+
                     if ( base_ve.getFormalArg(i) == copy_ve.getFormalArg(i) )
                     {
                         failures++;
-                        
+
                         if ( verbose )
                         {
                             outStream.printf("base_ve.getFormalArg(%d) == " +
@@ -1533,7 +1533,7 @@ public class PredicateVocabElement extends VocabElement
                                              i, i);
                         }
                     }
-                    else if (base_ve.getFormalArg(i).getClass() != 
+                    else if (base_ve.getFormalArg(i).getClass() !=
                              copy_ve.getFormalArg(i).getClass() )
                     {
                         outStream.printf("class mismatch detected in copy " +
@@ -1543,7 +1543,7 @@ public class PredicateVocabElement extends VocabElement
                 if ( ( failures == 0 ) && ( i != 1 ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("Unexpected number of formal " +
@@ -1553,7 +1553,7 @@ public class PredicateVocabElement extends VocabElement
             }
         }
 
-        
+
         if ( failures == 0 )
         {
             /* now create a base predicate vocab element, and don't load it
@@ -1577,9 +1577,9 @@ public class PredicateVocabElement extends VocabElement
                 base_ve.lastModUID = 6;
                 base_ve.varLen = false;
                 base_ve.system = false;
-                
+
                 /* add the base_ve to the vocab list to assign an id */
-                db.vl.addElement(base_ve); 
+                db.vl.addElement(base_ve);
 
                 completed = true;
             }
@@ -1592,7 +1592,7 @@ public class PredicateVocabElement extends VocabElement
 
             if ( ( ! completed ) ||
                  ( db == null ) ||
-                 ( base_ve == null ) || 
+                 ( base_ve == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1622,17 +1622,17 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
-        /* Now run the copy constructor on base_ve, and verify that the 
+
+        /* Now run the copy constructor on base_ve, and verify that the
          * result is a copy.
          */
-        
+
         if ( failures == 0 )
-        {      
+        {
             copy_ve = null;
             completed = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 copy_ve = new PredicateVocabElement(base_ve);
@@ -1644,13 +1644,13 @@ public class PredicateVocabElement extends VocabElement
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( copy_ve == null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -1672,13 +1672,13 @@ public class PredicateVocabElement extends VocabElement
 
                 }
             }
-            /* Use the toString and toDBString methods to verify that the 
+            /* Use the toString and toDBString methods to verify that the
              * base and copy contain the same data.
              */
             else if ( base_ve.toString().compareTo(copy_ve.toString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1691,7 +1691,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve.toDBString().compareTo(copy_ve.toDBString()) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1708,7 +1708,7 @@ public class PredicateVocabElement extends VocabElement
             else if ( base_ve == copy_ve )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("base_ve == copy_ve(3)\n");
@@ -1718,20 +1718,20 @@ public class PredicateVocabElement extends VocabElement
             {
                 for ( i = 0; i < base_ve.getNumFormalArgs(); i++ )
                 {
-                    /* This should never happen, but it if did, it could 
+                    /* This should never happen, but it if did, it could
                      * hide other failures.  Thus test for it anyway.
                      */
                     if ( base_ve.getFormalArg(i) != base_ve.getFormalArg(i) )
                     {
-                        throw new SystemErrorException(mName + 
+                        throw new SystemErrorException(mName +
                                 "unexpected return from getFormalArg() (3)");
-                        
+
                     }
-                    
+
                     if ( base_ve.getFormalArg(i) == copy_ve.getFormalArg(i) )
                     {
                         failures++;
-                        
+
                         if ( verbose )
                         {
                             outStream.printf("base_ve.getFormalArg(%d) == " +
@@ -1739,18 +1739,18 @@ public class PredicateVocabElement extends VocabElement
                                              i, i);
                         }
                     }
-                    else if (base_ve.getFormalArg(i).getClass() != 
+                    else if (base_ve.getFormalArg(i).getClass() !=
                              copy_ve.getFormalArg(i).getClass() )
                     {
                         outStream.printf("class mismatch detected in copy " +
                                 "of %dth formal argument(3).\n", i);
                     }
                 }
-                
+
                 if ( ( failures == 0 ) && ( i != 0 ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("Unexpected number of formal " +
@@ -1759,32 +1759,32 @@ public class PredicateVocabElement extends VocabElement
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed a null predicate
-         * vocab element. 
+         * vocab element.
          */
-        
+
         base_ve = null;
         copy_ve = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             copy_ve = new PredicateVocabElement(base_ve);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( copy_ve != null ) || 
+
+        if ( ( copy_ve != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( copy_ve != null )
@@ -1792,15 +1792,15 @@ public class PredicateVocabElement extends VocabElement
                     outStream.print(
                         "new PredicateVocabElement(null) != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new PredicateVocabElement(null) " +
                         "didn't throw an SystemErrorException.\n");
                 }
             }
-        }                
-        
+        }
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1829,11 +1829,11 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredicateVocabElement::TestCopyConstructor() */
-    
+
     /**
      * TestIsWellFormedMethods()
      *
@@ -1845,7 +1845,7 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
+
     public static boolean TestIsWellFormed(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -1907,8 +1907,8 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("\n");
         }
-        
-        /* construct a selection of predicate vocab elements & run some 
+
+        /* construct a selection of predicate vocab elements & run some
          * initial tests on isWellFormed()
          */
         if ( failures == 0 )
@@ -1916,7 +1916,7 @@ public class PredicateVocabElement extends VocabElement
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
-                    
+
             try
             {
                 db = new ODBCDatabase();
@@ -1942,7 +1942,7 @@ public class PredicateVocabElement extends VocabElement
                 reno    = new UnTypedFormalArg(db, "<reno>");
                 sierra  = new UnTypedFormalArg(db, "<sierra>");
                 tango   = new UnTypedFormalArg(db, "<tango>");
-                
+
                 p0    = VocabList.ConstructTestPred(
                         db, "p0", alpha, bravo, charlie, delta);
                 p1    = VocabList.ConstructTestPred(
@@ -1961,7 +1961,7 @@ public class PredicateVocabElement extends VocabElement
                         db, "p6", sierra, null, null, null);
                 p7    = VocabList.ConstructTestPred(
                         db, "p7", tango, null, null, null);
-                
+
                 wellFormed0 = p0.isWellFormed(true);
                 wellFormed1 = p0.isWellFormed(false);
                 wellFormed2 = p1.isWellFormed(true);
@@ -1972,23 +1972,23 @@ public class PredicateVocabElement extends VocabElement
                 wellFormed7 = p3.isWellFormed(false);
                 wellFormed8 = p4.isWellFormed(true);
                 wellFormed9 = p4.isWellFormed(false);
-                
+
                 db.vl.addElement(p0);
                 db.vl.addElement(p1);
                 db.vl.addElement(p2);
                 db.vl.addElement(p3);
- 
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
-                 ( alpha == null ) || ( bravo == null ) || 
+                 ( alpha == null ) || ( bravo == null ) ||
                  ( charlie == null ) || ( delta == null ) ||
                  ( echo == null ) || ( foxtrot == null ) ||
                  ( golf == null ) || ( hotel == null ) ||
@@ -2009,15 +2009,15 @@ public class PredicateVocabElement extends VocabElement
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
                     {
                         outStream.print("test failed to complete(2).\n");
                     }
-                    
-                    if ( ( alpha == null ) || ( bravo == null ) || 
+
+                    if ( ( alpha == null ) || ( bravo == null ) ||
                          ( charlie == null ) || ( delta == null ) ||
                          ( echo == null ) || ( foxtrot == null ) ||
                          ( golf == null ) || ( hotel == null ) ||
@@ -2030,14 +2030,14 @@ public class PredicateVocabElement extends VocabElement
                     {
                         outStream.print("formal arg alloc(s) failed.\n");
                     }
-                    
+
                     if ( ( p0 == null ) || ( p1 == null ) || ( p2 == null ) ||
                          ( p3 == null ) || ( p4 == null ) || ( p5 == null ) ||
                          ( p6 == null ) || ( p7 == null ) )
                     {
                         outStream.print("predicate alloc(s) failed.\n");
                     }
-                    
+
                     if ( ( wellFormed0 != true ) || ( wellFormed1 != false ) ||
                          ( wellFormed2 != true ) || ( wellFormed3 != false ) ||
                          ( wellFormed4 != true ) || ( wellFormed5 != false ) ||
@@ -2046,25 +2046,25 @@ public class PredicateVocabElement extends VocabElement
                     {
                         outStream.print("Unexpected isWellFormed() results.\n");
                     }
-                                        
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("unexpected system error " +
-                                "exception(2): \"%s\".\n", 
+                                "exception(2): \"%s\".\n",
                                 systemErrorExceptionString);
                     }
                 }
-            }            
+            }
         }
-        
 
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2095,9 +2095,9 @@ public class PredicateVocabElement extends VocabElement
         }
 
         return pass;
-        
+
     } /* PredicateVocabElement::TestIsWellFormed() */
-    
+
     /**
      * TestToStringMethods()
      *
@@ -2109,13 +2109,13 @@ public class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
     {
         final String expectedString = "test(<a>, <b>, <c>, <d>, <e>, <f>)";
-        final String expectedDBString = 
+        final String expectedDBString =
             "((PredicateVocabElement: 0 test) " +
              "(system: true) " +
              "(varLen: true) " +
@@ -2145,7 +2145,7 @@ public class PredicateVocabElement extends VocabElement
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             methodReturned = false;
@@ -2171,7 +2171,7 @@ public class PredicateVocabElement extends VocabElement
                 systemErrorExceptionString = e.toString();
             }
 
-            if ( ( ! methodReturned ) || 
+            if ( ( ! methodReturned ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2191,11 +2191,11 @@ public class PredicateVocabElement extends VocabElement
                                 systemErrorExceptionString);
                     }
                 }
-                
+
                 ve = null;
             }
         }
-        
+
         if ( ve != null )
         {
             if ( ve.toString().compareTo(expectedString) != 0 )
@@ -2206,7 +2206,7 @@ public class PredicateVocabElement extends VocabElement
                         ve.toString());
             }
         }
-        
+
         if ( ve != null )
         {
             if ( ve.toDBString().compareTo(expectedDBString) != 0 )
@@ -2217,7 +2217,7 @@ public class PredicateVocabElement extends VocabElement
                         ve.toDBString());
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2248,7 +2248,7 @@ public class PredicateVocabElement extends VocabElement
         }
 
         return pass;
-        
+
     } /* PredicateVocabElement::TestToStringMethods() */
 
 } /* Class PredicateVocabElement */

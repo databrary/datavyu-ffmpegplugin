@@ -13,12 +13,12 @@ package au.com.nicta.openshapa.disc.editors;
  */
 public class StringEditor extends Editor
 {
-  
+
   /**
    * Creates a new instance of StringEditor
    */
   public StringEditor()
   {
   } // End of StringEditor Constructor
-  
+
 } //End of StringEditor class definition

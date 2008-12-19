@@ -69,7 +69,7 @@ public class TextStringDataValueTest {
         assertNotNull(t_value);
 
         assertNull(t_value.ItsDefault);
-        assertEquals(t_value.itsValue, t_value.ItsDefault);        
+        assertEquals(t_value.itsValue, t_value.ItsDefault);
     }
 
     /**
@@ -151,7 +151,7 @@ public class TextStringDataValueTest {
 
         assertEquals(t_value.subRange, tfa.getSubRange());
         assertNotNull(t_value.itsValue);
-        assertEquals(t_value.itsValue, "echo");        
+        assertEquals(t_value.itsValue, "echo");
     }
 
     /**
@@ -230,7 +230,7 @@ public class TextStringDataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
-        TextStringDataValue t_value = 
+        TextStringDataValue t_value =
                             new TextStringDataValue((TextStringDataValue) null);
     }
 
@@ -243,7 +243,7 @@ public class TextStringDataValueTest {
     public void testGetItsValue() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db, tfa.getID(),
                                                               "bravo");
-        
+
         assertEquals(t_value.getItsValue(), "bravo");
     }
 

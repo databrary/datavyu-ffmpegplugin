@@ -65,5 +65,5 @@ public class ODBCDatabaseTest extends DatabaseTest {
         assertTrue(db.getVersion() > 0.0);
     }
 
-    
+
 }

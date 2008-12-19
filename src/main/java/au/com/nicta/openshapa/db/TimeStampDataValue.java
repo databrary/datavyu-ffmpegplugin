@@ -21,23 +21,23 @@ public class TimeStampDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all 
+     * itsDefault:  Constant containing the value to be assigned to all
      *      time stamp data values unless otherwise specified.  Note that we
      *      only take the ticks from this value -- ticks per second is drawn
      *      from the current value in the host database.
      *
-     * itsValue:   TimeStamp containing the value assigned to the formal 
+     * itsValue:   TimeStamp containing the value assigned to the formal
      *      argument.
      *
      * minVal:  If subRange is true, this field contains the minimum value
      *      that may be assigned to the formal argument associated with the
      *      data value.   This value should always be the same as the minVal
-     *      of the associated instance of TimeStampFormalArg.  
+     *      of the associated instance of TimeStampFormalArg.
      *
      *      To save space, when subRange is false, this field should be null.
      *
      *      Note that this data value may be used to hold an time stamp
-     *      value assigned to an untype formal argument, in which case 
+     *      value assigned to an untype formal argument, in which case
      *      subrange will always be false.
      *
      * maxVal:  If subRange is true, this field contains the maximum value
@@ -48,103 +48,103 @@ public class TimeStampDataValue extends DataValue
      *      To save space, when subRange is false, this field should be null.
      *
      *      Note that this data value may be used to hold an integer
-     *      value assigned to an untype formal argument, in which case 
+     *      value assigned to an untype formal argument, in which case
      *      subrange will always be false.
      */
-    
+
     /** default value for time stamps */
     final TimeStamp ItsDefault = new TimeStamp(Database.DEFAULT_TPS, 0);
-    
+
     /** the value assigned to the associated formal argument in this case */
     TimeStamp itsValue = new TimeStamp(ItsDefault);
-    
+
     /** the minimum value -- if subrange is true.  null otherwise */
     TimeStamp minVal = null;
-    
+
     /** the maximum value -- if subrange is true.  null otherwise */
     TimeStamp maxVal = null;
-  
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * TimeStampDataValue()
      *
-     * Constructor for instances of TimeStampDataValue.  
-     * 
-     * Four versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of TimeStampDataValue.
+     *
+     * Four versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
-     * The second takes a reference to a database, and a formal argument ID, and 
+     * The second takes a reference to a database, and a formal argument ID, and
      * attempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of TimeStampDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public TimeStampDataValue(Database db)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.itsValue.setTPS(db.getTicks());
-        
+
     } /* TimeStampDataValue::TimeStampDataValue(db) */
-    
+
     public TimeStampDataValue(Database db,
                               long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-    
+
     } /* TimeStampDataValue::TimeStampDataValue(db, fargID) */
-    
+
     public TimeStampDataValue(Database db,
                               long fargID,
                               TimeStamp value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
         this.setItsValue(value);
-        
-        // It is possible that this time stamp is coming from another 
-        // database, possibly with a different tps -- thus set the 
+
+        // It is possible that this time stamp is coming from another
+        // database, possibly with a different tps -- thus set the
         // tps to match that of the current data base.  This will almost
         // always be redundant, but better safe then sorry.
-        this.itsValue.setTPS(db.getTicks()); 
-    
+        this.itsValue.setTPS(db.getTicks());
+
     } /* TimeStampDataValue::TimeStampDataValue(db, fargID, value) */
-    
+
     public TimeStampDataValue(TimeStampDataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         this.itsValue  = new TimeStamp(dv.itsValue);
-        
+
         // make sure that the tps is correct
         this.itsValue.setTPS(db.getTicks());
-        
+
         if ( this.subRange )
         {
             this.minVal = new TimeStamp(dv.maxVal);
@@ -155,10 +155,10 @@ public class TimeStampDataValue extends DataValue
             this.minVal = null;
             this.maxVal = null;
         }
-        
+
     } /* TimeStampDataValue::TimeStampDataValue(dv) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -174,15 +174,15 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public TimeStamp getItsValue()
         throws SystemErrorException
     {
-        
+
         return new TimeStamp(this.itsValue);
-    
+
     } /* TimeStampDataValue::getItsValue() */
-    
+
     /**
      * setItsValue()
      *
@@ -190,7 +190,7 @@ public class TimeStampDataValue extends DataValue
      * value into the subrange.  Note that the time base of the supplied
      * value must equal the time base of the current value of the data value.
      *
-     * Observe that we don't bother to verify that the supplied value is in 
+     * Observe that we don't bother to verify that the supplied value is in
      * range for a TimeStamp.  The TimeStamp class will throw a system error
      * if this is the case.
      *
@@ -200,36 +200,36 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void setItsValue(TimeStamp value)
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::setItsValue(): ";
-        
+
         if ( value == null )
         {
             throw new SystemErrorException(mName + "value is null");
         }
-        
+
         if ( value.getTPS() != this.itsValue.getTPS() )
         {
             throw new SystemErrorException(mName + "value.TPS != itsValue.TPS");
         }
-        
+
         if ( this.subRange )
         {
             if ( ( this.minVal == null ) || ( this.maxVal == null ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "subRange && ((minVal == null) || (maxVal == null))");
             }
-            
+
             if ( ( this.itsValue.getTPS() != this.minVal.getTPS() ) ||
                  ( this.itsValue.getTPS() != this.maxVal.getTPS() ) )
             {
                 throw new SystemErrorException(mName + "TPS mismatch");
             }
-            
+
             if ( this.maxVal.lt(value) )
             {
                 this.itsValue.setTime(this.maxVal.getTime());
@@ -247,16 +247,16 @@ public class TimeStampDataValue extends DataValue
         {
             this.itsValue.setTime(value.getTime());
         }
-        
+
         return;
-        
+
     } /* TimeStampDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * toString()
      *
@@ -270,19 +270,19 @@ public class TimeStampDataValue extends DataValue
      *
      *     - None.
      */
-    
+
     public String toString()
     {
-        
+
         return this.itsValue.toString();
-        
+
     } /* TimeStampDataValue::toString() */
 
 
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -294,7 +294,7 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-  
+
     public String toDBString()
     {
         if ( this.subRange )
@@ -318,9 +318,9 @@ public class TimeStampDataValue extends DataValue
                     ") (subRange " + this.subRange + "))");
         }
     } /* TimeStampDataValue::toDBString() */
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -331,7 +331,7 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -340,53 +340,53 @@ public class TimeStampDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* TimeStampDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if any) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.
      *
@@ -399,39 +399,39 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof TimeStampFormalArg )
         {
             TimeStampFormalArg tsfa = (TimeStampFormalArg)fa;
-            
+
             this.subRange = tsfa.getSubRange();
-            
+
             if ( this.subRange )
             {
                 this.maxVal = tsfa.getMaxVal();
                 this.minVal = tsfa.getMinVal();
-                
+
                 if ( this.minVal.ge(this.maxVal) )
                 {
                     throw new SystemErrorException(mName + "minVal >= maxVal");
                 }
-                
+
                 if ( ( this.maxVal.getTPS() != this.maxVal.getTPS() ) ||
                      ( this.maxVal.getTPS() != this.itsValue.getTPS() ) )
                 {
                     throw new SystemErrorException(mName + "TPS mis-match");
                 }
-                
+
                 if ( this.itsValue.gt(this.maxVal) )
                 {
                     this.itsValue.setTime(this.maxVal.getTime());
@@ -453,18 +453,18 @@ public class TimeStampDataValue extends DataValue
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* TimeStampDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
@@ -477,36 +477,36 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public TimeStamp coerceToRange(TimeStamp value)
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::coerceToRange(): ";
-        
+
         if ( value == null )
         {
-            throw new SystemErrorException(mName + "value null on entry");    
+            throw new SystemErrorException(mName + "value null on entry");
         }
-        
+
         if ( value.getTPS() != this.itsValue.getTPS() )
         {
-            throw new SystemErrorException(mName + "TPS mismatch 1");    
+            throw new SystemErrorException(mName + "TPS mismatch 1");
         }
 
         if ( this.subRange )
         {
             if ( ( this.minVal == null ) || ( this.maxVal == null ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "subRange && ((minVal == null) || (maxVal == null))");
             }
-            
+
             if ( ( value.getTPS() != this.minVal.getTPS() ) ||
                  ( value.getTPS() != this.maxVal.getTPS() ) )
             {
                 throw new SystemErrorException(mName + "TPS mismatch 2");
             }
-            
+
             if ( this.maxVal.lt(value) )
             {
                 return new TimeStamp(this.maxVal);
@@ -516,23 +516,23 @@ public class TimeStampDataValue extends DataValue
                 return new TimeStamp(this.minVal);
             }
         }
-        
+
         return value;
-        
+
     } /* TimeStampDataValue::coerceToRange() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Construct an instance of TimeStampDataValue with the specified 
+     * Construct an instance of TimeStampDataValue with the specified
      * initialization.  Use the supplied database to provide tps.
      *
-     * Returns a reference to the newly constructed TimeStampDataValue if 
+     * Returns a reference to the newly constructed TimeStampDataValue if
      * successful.  Throws a system error exception on failure.
      *
      *                                              JRM -- 3/31/08
@@ -541,31 +541,31 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static TimeStampDataValue Construct(Database db,
                                                long ticks)
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::Construct(db, ticks)";
         TimeStampDataValue tsdv = null;
-        
+
         tsdv = new TimeStampDataValue(db);
-        
+
         tsdv.setItsValue(new TimeStamp(db.getTicks(), ticks));
-        
+
         return tsdv;
-        
+
     } /* TimeStampDataValue::Construct(db, ticks) */
 
-      
+
     /**
      * IntDataValuesAreLogicallyEqual()
      *
-     * Given two instances of IntDataValue, return true if they contain 
+     * Given two instances of IntDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
      *                                              JRM -- 2/7/08
@@ -574,27 +574,27 @@ public class TimeStampDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected static boolean TimeStampDataValuesAreLogicallyEqual
                                 (TimeStampDataValue tsdv0,
                                  TimeStampDataValue tsdv1)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "TimeStampDataValue::TimeStampDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( tsdv0 == null ) || ( tsdv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": tsdv0 or tsdv1 null on entry.");
         }
         else if ( ( tsdv0.itsValue == null ) || ( tsdv1.itsValue == null )  )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": tsdv0.itsValue or tsdv1.itsValue null on entry.");
         }
-        
+
         if ( tsdv0 != tsdv1 )
         {
             if ( ( tsdv0.itsValue != tsdv1.itsValue ) &&
@@ -607,18 +607,18 @@ public class TimeStampDataValue extends DataValue
                 dataValuesAreEqual = false;
             }
             else if ( ( tsdv0.minVal != tsdv1.minVal ) &&
-                      ( ( ( tsdv0.minVal == null ) && 
+                      ( ( ( tsdv0.minVal == null ) &&
                           ( tsdv1.minVal != null ) ) ||
-                        ( ( tsdv0.minVal != null ) && 
+                        ( ( tsdv0.minVal != null ) &&
                           ( tsdv1.minVal == null ) ) ||
                         ( tsdv0.minVal.ne(tsdv1.minVal) ) ) )
             {
                 dataValuesAreEqual = false;
             }
             else if ( ( tsdv0.maxVal != tsdv1.maxVal ) &&
-                      ( ( ( tsdv0.maxVal == null ) && 
+                      ( ( ( tsdv0.maxVal == null ) &&
                           ( tsdv1.maxVal != null ) ) ||
-                        ( ( tsdv0.maxVal != null ) && 
+                        ( ( tsdv0.maxVal != null ) &&
                           ( tsdv1.maxVal == null ) ) ||
                         ( tsdv0.minVal.ne(tsdv1.minVal) ) ) )
             {
@@ -627,7 +627,7 @@ public class TimeStampDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* TimeStampDataValue::TimeStampDataValuesAreLogicallyEqual() */
 
 
@@ -682,14 +682,14 @@ public class TimeStampDataValue extends DataValue
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for TimeStampDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -699,13 +699,13 @@ public class TimeStampDataValue extends DataValue
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
      *         Construct a TimeStampDataValue for the formal argument of the mve
      *         by passing a reference to the database and the id of the formal
-     *         argument.  Verify that the TimeStampDataValue's itsFargID, 
+     *         argument.  Verify that the TimeStampDataValue's itsFargID,
      *         itsFargType, subRange, minVal, and maxVal fields matches
      *         thos of the formal argument, and that all other fields are set
      *         to the expected defaults.
@@ -717,34 +717,34 @@ public class TimeStampDataValue extends DataValue
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      TimeStampDataValue -- perhaps after havign been modified to match
      *      the subrange.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a  TimeStampDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a  TimeStampDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         TimeStampDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         TimeStampDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
-     * 
+     *
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
      *      Verify that the getItsValue(), setItsValue() and coerceToRange()
      *      methods perform correctly.  Verify that the inherited accessors
-     *      function correctly via calls to the DataValue.TestAccessors() 
+     *      function correctly via calls to the DataValue.TestAccessors()
      *      method.
      *
      *      Given compiler error checking, there isn't any way to feed
@@ -753,9 +753,9 @@ public class TimeStampDataValue extends DataValue
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -769,7 +769,7 @@ public class TimeStampDataValue extends DataValue
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassTimeStampDataValue(
                                                 java.io.PrintStream outStream,
                                                 boolean verbose)
@@ -777,39 +777,39 @@ public class TimeStampDataValue extends DataValue
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class TimeStampDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -822,25 +822,25 @@ public class TimeStampDataValue extends DataValue
             outStream.print(
                     "All tests passed for class TimeStampDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::TestClassTimeStampDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -864,33 +864,33 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tsdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             tsdv = new TimeStampDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( tsdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -904,13 +904,13 @@ public class TimeStampDataValue extends DataValue
                     outStream.print(
                             "new TimeStampDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                             "new TimeStampDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TimeStampDataValue(db) threw " +
@@ -922,20 +922,20 @@ public class TimeStampDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, tsdv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, tsdv, outStream,
                                                            verbose);
 
             if ( ! tsdv.itsValue.eq(tsdv.ItsDefault) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv.itsValue = (%d,%d) != " +
                             "tsdv.ItsDefault = (%d,%d).\n",
-                            tsdv.itsValue.getTPS(), 
-                            tsdv.itsValue.getTicks(), 
-                            tsdv.ItsDefault.getTPS(), 
+                            tsdv.itsValue.getTPS(),
+                            tsdv.itsValue.getTicks(),
+                            tsdv.ItsDefault.getTPS(),
                             tsdv.ItsDefault.getTicks());
                 }
             }
@@ -943,7 +943,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv.maxVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.maxVal: %d.\n",
@@ -954,7 +954,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv.minVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.minVal: %d.\n",
@@ -962,7 +962,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -983,9 +983,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1011,7 +1011,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1040,25 +1040,25 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1087,15 +1087,15 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             ts_mve = new MatrixVocabElement(db, "ts_mve");
             ts_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
@@ -1103,26 +1103,26 @@ public class TimeStampDataValue extends DataValue
             db.vl.addElement(ts_mve);
 
             tsdv = new TimeStampDataValue(db, tsfa.getID());
-            
+
             ts_mve_sr = new MatrixVocabElement(db, "ts_mve_sr");
             ts_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
-            tsfa_sr.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
+            tsfa_sr.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
             ts_mve_sr.appendFormalArg(tsfa_sr);
             db.vl.addElement(ts_mve_sr);
 
             tsdv_sr = new TimeStampDataValue(db, tsfa_sr.getID());
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( ts_mve == null ) ||
              ( tsfa == null ) ||
@@ -1131,10 +1131,10 @@ public class TimeStampDataValue extends DataValue
              ( tsfa_sr == null ) ||
              ( tsdv_sr == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1142,12 +1142,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( ts_mve == null )
                 {
                     outStream.print("allocation of ts_mve failed.\n");
                 }
-                
+
                 if ( tsfa == null )
                 {
                     outStream.print("allocation of tsfa failed.");
@@ -1158,12 +1158,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print("new TimeStampDataValue(db, tsfa.getID())" +
                                     "returned null.\n");
                 }
-                
+
                 if ( ts_mve_sr == null )
                 {
                     outStream.print("allocation of ts_mve_sr failed.\n");
                 }
-                
+
                 if ( tsfa_sr == null )
                 {
                     outStream.print("allocation of tsfa_sr failed.");
@@ -1174,12 +1174,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print("new TimeStampDataValue(db, " +
                             "tsfa_sr.getID()) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1191,35 +1191,35 @@ public class TimeStampDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tsfa, 
-                                                               tsdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tsfa,
+                                                               tsdv,
+                                                               outStream,
                                                                verbose,
                                                               "tsdv");
 
             if ( tsdv.subRange != tsfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv.subRange doesn't match tsfa.getSubRange().\n");
                 }
             }
-            
+
             if ( ! tsdv.itsValue.eq(tsdv.ItsDefault) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv.itsValue = (%d,%d) != " +
                             "tsdv.ItsDefault = (%d,%d).\n",
-                            tsdv.itsValue.getTPS(), 
-                            tsdv.itsValue.getTicks(), 
-                            tsdv.ItsDefault.getTPS(), 
+                            tsdv.itsValue.getTPS(),
+                            tsdv.itsValue.getTicks(),
+                            tsdv.ItsDefault.getTPS(),
                             tsdv.ItsDefault.getTicks());
                 }
             }
@@ -1227,7 +1227,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv.maxVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.maxVal: " +
@@ -1239,7 +1239,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv.minVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.minVal: " +
@@ -1248,35 +1248,35 @@ public class TimeStampDataValue extends DataValue
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tsfa_sr, 
-                                                               tsdv_sr,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tsfa_sr,
+                                                               tsdv_sr,
+                                                               outStream,
                                                                verbose,
                                                                "tsdv_sr");
 
             if ( tsdv_sr.subRange != tsfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr.subRange doesn't match " +
                                      "tsfa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( tsdv_sr.itsValue.ne(tsfa_sr.getMinVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr.itsValue = (%d,%d) != " +
                             "tsfa_sr.getMinVal() = (%d,%d).\n",
-                            tsdv_sr.itsValue.getTPS(), 
-                            tsdv_sr.itsValue.getTicks(), 
-                            tsfa_sr.getMinVal().getTPS(), 
+                            tsdv_sr.itsValue.getTPS(),
+                            tsdv_sr.itsValue.getTicks(),
+                            tsfa_sr.getMinVal().getTPS(),
                             tsfa_sr.getMinVal().getTicks());
                 }
             }
@@ -1284,7 +1284,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv_sr.maxVal.ne(tsfa_sr.getMaxVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of fdv_sr.maxVal: " +
@@ -1299,7 +1299,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv_sr.minVal.ne(tsfa_sr.getMinVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of fdv_sr.minVal: " +
@@ -1311,7 +1311,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1332,9 +1332,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1360,7 +1360,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1383,9 +1383,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1412,7 +1412,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          *refer to a formal argument.
          */
@@ -1435,9 +1435,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1464,7 +1464,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1493,25 +1493,25 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1541,48 +1541,48 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tsdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             ts_mve = new MatrixVocabElement(db, "ts_mve");
             ts_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
             ts_mve.appendFormalArg(tsfa);
             db.vl.addElement(ts_mve);
 
-            tsdv = new TimeStampDataValue(db, tsfa.getID(), 
+            tsdv = new TimeStampDataValue(db, tsfa.getID(),
                                           new TimeStamp(db.getTicks(), 60));
-            
+
             ts_mve_sr = new MatrixVocabElement(db, "ts_mve_sr");
             ts_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
-            tsfa_sr.setRange(new TimeStamp(db.getTicks(), 0), 
+            tsfa_sr.setRange(new TimeStamp(db.getTicks(), 0),
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
             ts_mve_sr.appendFormalArg(tsfa_sr);
             db.vl.addElement(ts_mve_sr);
 
-            tsdv_sr0 = new TimeStampDataValue(db, tsfa_sr.getID(), 
+            tsdv_sr0 = new TimeStampDataValue(db, tsfa_sr.getID(),
                      new TimeStamp(db.getTicks(), 60 * db.getTicks()));
-            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(), 
+            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(),
                   new TimeStamp(db.getTicks(), (60 * 60 * db.getTicks()) + 1));
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( ts_mve == null ) ||
              ( tsfa == null ) ||
@@ -1592,10 +1592,10 @@ public class TimeStampDataValue extends DataValue
              ( tsdv_sr0 == null ) ||
              ( tsdv_sr1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1603,12 +1603,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( ts_mve == null )
                 {
                     outStream.print("allocation of ts_mve failed.\n");
                 }
-                
+
                 if ( tsfa == null )
                 {
                     outStream.print("allocation of tsfa failed.");
@@ -1618,12 +1618,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv failed.\n");
                 }
-                
+
                 if ( ts_mve_sr == null )
                 {
                     outStream.print("allocation of ts_mve_sr failed.\n");
                 }
-                
+
                 if ( tsfa_sr == null )
                 {
                     outStream.print("allocation of tsfa_sr failed.");
@@ -1638,12 +1638,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv_sr1 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1655,28 +1655,28 @@ public class TimeStampDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tsfa, 
-                                                               tsdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tsfa,
+                                                               tsdv,
+                                                               outStream,
                                                                verbose,
                                                                "tsdv");
 
             if ( tsdv.subRange != tsfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv.subRange doesn't match tsfa.getSubRange().\n");
                 }
             }
-            
+
             if ( ! tsdv.itsValue.eq(new TimeStamp(db.getTicks(), 60)) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv.itsValue = (%d,%d) != (%d,60).\n",
@@ -1685,11 +1685,11 @@ public class TimeStampDataValue extends DataValue
                                      db.getTicks());
                 }
             }
-            
+
             if ( tsdv.maxVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.maxVal: " +
@@ -1701,7 +1701,7 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv.minVal != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.minVal: " +
@@ -1711,30 +1711,30 @@ public class TimeStampDataValue extends DataValue
             }
 
             /**************************/
-            
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tsfa_sr, 
-                                                               tsdv_sr0,  
-                                                               outStream, 
+
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tsfa_sr,
+                                                               tsdv_sr0,
+                                                               outStream,
                                                                verbose,
                                                                "tsdv_sr0");
 
             if ( tsdv_sr0.subRange != tsfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr0.subRange doesn't match " +
                                      "tsfa_sr.getSubRange().\n");
                 }
             }
-            
-            if ( ! tsdv_sr0.itsValue.eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv_sr0.itsValue.eq(new TimeStamp(db.getTicks(),
                                                       60 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr0.itsValue = (%d,%d) != (%d,%d).\n",
@@ -1748,12 +1748,12 @@ public class TimeStampDataValue extends DataValue
             if ( ! tsdv_sr0.maxVal.eq(tsfa_sr.getMaxVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv_sr0.maxVal: " +
                             "(%d,%d) -- (%d,%d) expected.\n",
-                            tsdv_sr0.maxVal.getTPS(), 
+                            tsdv_sr0.maxVal.getTPS(),
                             tsdv_sr0.maxVal.getTicks(),
                             tsfa_sr.getMaxVal().getTPS(),
                             tsfa_sr.getMaxVal().getTicks());
@@ -1763,42 +1763,42 @@ public class TimeStampDataValue extends DataValue
             if ( ! tsdv_sr0.minVal.eq(tsfa_sr.getMinVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv_sr0.minVal: " +
                             "(%d,%d) -- (%d,%d) expected.\n",
-                            tsdv_sr0.minVal.getTPS(), 
+                            tsdv_sr0.minVal.getTPS(),
                             tsdv_sr0.minVal.getTicks(),
                             tsfa_sr.getMinVal().getTPS(),
                             tsfa_sr.getMinVal().getTicks());
                 }
             }
-            
+
             /*************************/
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tsfa_sr, 
-                                                               tsdv_sr1,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tsfa_sr,
+                                                               tsdv_sr1,
+                                                               outStream,
                                                                verbose,
                                                                "tsdv_sr1");
 
             if ( tsdv_sr1.subRange != tsfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr1.subRange doesn't match " +
                                      "tsfa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( ! tsdv_sr1.itsValue.eq(tsfa_sr.getMaxVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv_sr1.itsValue = (%d,%d) != (%d,%d).\n",
@@ -1812,12 +1812,12 @@ public class TimeStampDataValue extends DataValue
             if ( ! tsdv_sr1.maxVal.eq(tsfa_sr.getMaxVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv_sr1.maxVal: " +
                             "(%d,%d) -- (%d,%d) expected.\n",
-                            tsdv_sr1.maxVal.getTPS(), 
+                            tsdv_sr1.maxVal.getTPS(),
                             tsdv_sr1.maxVal.getTicks(),
                             tsfa_sr.getMaxVal().getTPS(),
                             tsfa_sr.getMaxVal().getTicks());
@@ -1827,19 +1827,19 @@ public class TimeStampDataValue extends DataValue
             if ( ! tsdv_sr1.minVal.eq(tsfa_sr.getMinVal()) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv_sr1.minVal: " +
                             "(%d,%d) -- (%d,%d) expected.\n",
-                            tsdv_sr1.minVal.getTPS(), 
+                            tsdv_sr1.minVal.getTPS(),
                             tsdv_sr1.minVal.getTicks(),
                             tsfa_sr.getMinVal().getTPS(),
                             tsfa_sr.getMinVal().getTicks());
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1850,7 +1850,7 @@ public class TimeStampDataValue extends DataValue
 
             try
             {
-                tsdv = new TimeStampDataValue((Database)null, tsfa.getID(), 
+                tsdv = new TimeStampDataValue((Database)null, tsfa.getID(),
                                               new TimeStamp(db.getTicks(), 0));
                 completed = true;
             }
@@ -1861,9 +1861,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1892,7 +1892,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1905,7 +1905,7 @@ public class TimeStampDataValue extends DataValue
 
             try
             {
-                tsdv = new TimeStampDataValue(db, DBIndex.INVALID_ID, 
+                tsdv = new TimeStampDataValue(db, DBIndex.INVALID_ID,
                                               new TimeStamp(db.getTicks(), 0));
                 completed = true;
             }
@@ -1916,9 +1916,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1947,7 +1947,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1971,9 +1971,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2002,7 +2002,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when supplied an invalid initial
          * value.
          */
@@ -2026,9 +2026,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2057,7 +2057,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2086,24 +2086,24 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -2133,47 +2133,47 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
+            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
             matrix_mve0.appendFormalArg(tsfa);
             db.vl.addElement(matrix_mve0);
 
-            tsdv0 = new TimeStampDataValue(db, tsfa.getID(), 
+            tsdv0 = new TimeStampDataValue(db, tsfa.getID(),
                     new TimeStamp(db.getTicks(), 60 * db.getTicks()));
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve1.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve1);
 
-            tsdv1 = new TimeStampDataValue(db, ufa.getID(), 
+            tsdv1 = new TimeStampDataValue(db, ufa.getID(),
                     new TimeStamp(db.getTicks(), (60 * 60 * db.getTicks()) + 1));
-            tsdv2 = new TimeStampDataValue(db, ufa.getID(), 
+            tsdv2 = new TimeStampDataValue(db, ufa.getID(),
                               new TimeStamp(db.getTicks(), 60 * db.getTicks()));
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( matrix_mve0 == null ) ||
              ( tsfa == null ) ||
@@ -2183,10 +2183,10 @@ public class TimeStampDataValue extends DataValue
              ( tsdv1 == null ) ||
              ( tsdv2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2194,12 +2194,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("allocation of matrix_mve0 failed.\n");
                 }
-                
+
                 if ( tsfa == null )
                 {
                     outStream.print("allocation of tsfa failed.\n");
@@ -2209,12 +2209,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv0 failed.\n");
                 }
-                
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("allocation of matrix_mve0 failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2234,7 +2234,7 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2248,190 +2248,190 @@ public class TimeStampDataValue extends DataValue
         {
             failures += DataValue.TestAccessors(db, tsfa, matrix_mve1, ufa,
                                                 tsdv0, outStream, verbose);
-            
+
             if ( tsdv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv0.getSubRange() != false");
                 }
             }
-            
-            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(),
                                                         60 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv0.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv0.itsValue.getTPS(),
                             tsdv0.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             60 * db.getTicks());
                 }
             }
-            
+
             tsdv0.setItsValue(new TimeStamp(db.getTicks(), 30 * db.getTicks()));
 
-            
-            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(),
                                                         30 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv0.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv0.itsValue.getTPS(),
                             tsdv0.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             60 * db.getTicks());
                 }
             }
-            
+
             /************************************/
-            
+
             if ( tsdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv1.getSubRange() != false\n");
                 }
             }
-            
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
                                                (60 * 60 * db.getTicks()) + 1)) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             (60 * 60 * db.getTicks()) + 1);
                 }
             }
-            
+
             failures += DataValue.TestAccessors(db, ufa, matrix_mve0, tsfa,
                                                 tsdv1, outStream, verbose);
 
             if ( tsdv1.getSubRange() != true )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv1.getSubRange() != true\n");
                 }
             }
-            
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
                                                      60 * 60 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             60 * 60 * db.getTicks());
                 }
             }
-            
+
             tsdv1.setItsValue(new TimeStamp(db.getTicks(), 9 * db.getTicks()));
-            
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(), 
+
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
                                                         10 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             10 * db.getTicks());
                 }
             }
-            
-            if ( ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (60 * 60 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(), 
+
+            if ( ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (60 * 60 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(),
                     (60 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (60 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (60 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
                     (60 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (60 * 60 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (60 * 60 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(),
                     (60 * 60 * db.getTicks()) - 1)) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (30 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (30 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
                     (30 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (10 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (10 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(),
                     (10 * db.getTicks()) + 1)) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (10 * db.getTicks()))).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (10 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
                     (10 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(), 
-                    (10 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(), 
+                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
+                    (10 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(),
                     (10 * db.getTicks()))) ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "unexpected results from tsdv1.coerceToRange()\n");
                 }
             }
-            
+
             /************************************/
-            
+
             failures += DataValue.TestAccessors(db, ufa, matrix_mve0, tsfa,
                                                 tsdv2, outStream, verbose);
 
             if ( tsdv2.getSubRange() != true )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tsdv2.getSubRange() != true\n");
                 }
             }
-            
-            if ( tsdv2.getItsValue().ne(new TimeStamp(db.getTicks(), 
+
+            if ( tsdv2.getItsValue().ne(new TimeStamp(db.getTicks(),
                                                       60 * db.getTicks())) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tsdv2.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv2.itsValue.getTPS(),
                             tsdv2.itsValue.getTicks(),
-                            db.getTicks(), 
+                            db.getTicks(),
                             60 * db.getTicks());
                 }
             }
         }
-        
+
         /* verivy that setItsValue() fails when provided an invalid value */
         if ( failures == 0 )
         {
@@ -2451,12 +2451,12 @@ public class TimeStampDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( completed )
@@ -2464,7 +2464,7 @@ public class TimeStampDataValue extends DataValue
                         outStream.printf(
                                 "tsdv2.setItsValue(invalid_ts) completed.\n");
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.printf("tsdv2.setItsValue(invalid_ts) " +
@@ -2472,9 +2472,9 @@ public class TimeStampDataValue extends DataValue
                     }
                 }
             }
-                    
+
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2503,25 +2503,25 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2561,19 +2561,19 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         /* setup the base entries for the copy test */
         try
         {
             db = new ODBCDatabase();
-            
+
             tsdv0 = new TimeStampDataValue(db);
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
@@ -2581,32 +2581,32 @@ public class TimeStampDataValue extends DataValue
             db.vl.addElement(matrix_mve);
 
             tsdv1 = new TimeStampDataValue(db, tsfa.getID());
-            tsdv2 = new TimeStampDataValue(db, tsfa.getID(), 
+            tsdv2 = new TimeStampDataValue(db, tsfa.getID(),
                     new TimeStamp(db.getTicks(), 24 * 60 * 60 * db.getTicks()));
-            
+
             matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
             matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa_sr = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
+            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
             matrix_mve_sr.appendFormalArg(tsfa_sr);
             db.vl.addElement(matrix_mve_sr);
 
             tsdv_sr0 = new TimeStampDataValue(db, tsfa_sr.getID());
-            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(), 
+            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(),
                     new TimeStamp(db.getTicks(), 12 * db.getTicks()));
-            tsdv_sr2 = new TimeStampDataValue(db, tsfa_sr.getID(), 
+            tsdv_sr2 = new TimeStampDataValue(db, tsfa_sr.getID(),
                     new TimeStamp(db.getTicks(), 12 * 60 * 60 * db.getTicks()));
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( tsdv0 == null ) ||
              ( matrix_mve == null ) ||
@@ -2619,10 +2619,10 @@ public class TimeStampDataValue extends DataValue
              ( tsdv_sr1 == null ) ||
              ( tsdv_sr2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2635,12 +2635,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv0 failed.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of ts_mve failed.\n");
                 }
-                
+
                 if ( tsfa == null )
                 {
                     outStream.print("allocation of tsfa failed.");
@@ -2655,12 +2655,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv2 failed.\n");
                 }
-                
+
                 if ( matrix_mve_sr == null )
                 {
                     outStream.print("allocation of ts_mve_sr failed.\n");
                 }
-                
+
                 if ( tsfa_sr == null )
                 {
                     outStream.print("allocation of tsfa_sr failed.");
@@ -2680,12 +2680,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv_sr2 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2694,7 +2694,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -2719,7 +2719,7 @@ public class TimeStampDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( tsdv0_copy == null ) ||
                  ( tsdv1_copy == null ) ||
                  ( tsdv2_copy == null ) ||
@@ -2727,7 +2727,7 @@ public class TimeStampDataValue extends DataValue
                  ( tsdv_sr1_copy == null ) ||
                  ( tsdv_sr2_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2786,26 +2786,26 @@ public class TimeStampDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(tsdv0, tsdv0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv0, tsdv0_copy, outStream,
                                                verbose, "tsdv0", "tsdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(tsdv1, tsdv1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv1, tsdv1_copy, outStream,
                                                verbose, "tsdv1", "tsdv1_copy");
 
-            failures += DataValue.VerifyDVCopy(tsdv2, tsdv2_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv2, tsdv2_copy, outStream,
                                                verbose, "tsdv2", "tsdv2_copy");
 
-            failures += DataValue.VerifyDVCopy(tsdv_sr0, tsdv_sr0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv_sr0, tsdv_sr0_copy, outStream,
                                             verbose, "tsdv_sr0", "tsdv_sr0_copy");
 
-            failures += DataValue.VerifyDVCopy(tsdv_sr1, tsdv_sr1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv_sr1, tsdv_sr1_copy, outStream,
                                             verbose, "tsdv_sr1", "tsdv_sr1_copy");
 
-            failures += DataValue.VerifyDVCopy(tsdv_sr2, tsdv_sr2_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tsdv_sr2, tsdv_sr2_copy, outStream,
                                             verbose, "tsdv_sr2", "tsdv_sr2_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -2826,9 +2826,9 @@ public class TimeStampDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) || 
+            if ( ( tsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2854,7 +2854,7 @@ public class TimeStampDataValue extends DataValue
             }
         }
 
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2883,25 +2883,25 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2946,54 +2946,54 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tsdv0 = null;
         tsdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
             matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
             tsfa = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()), 
+            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
                          new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
             matrix_mve_sr.appendFormalArg(tsfa);
             db.vl.addElement(matrix_mve_sr);
 
-            tsdv0 = new TimeStampDataValue(db, tsfa.getID(), 
+            tsdv0 = new TimeStampDataValue(db, tsfa.getID(),
                     new TimeStamp(db.getTicks(), 12 * db.getTicks()));
             tsdv0.id = 100;        // invalid value for print test
             tsdv0.itsCellID = 500; // invalid value for print test
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
             matrix_mve.appendFormalArg(ufa);
             db.vl.addElement(matrix_mve);
 
-            tsdv1 = new TimeStampDataValue(db, ufa.getID(), 
+            tsdv1 = new TimeStampDataValue(db, ufa.getID(),
                     new TimeStamp(db.getTicks(), 12 * 60 * 60 * db.getTicks()
                                                     + 10 * 60 * db.getTicks()
-                                                          + 5 * db.getTicks() 
+                                                          + 5 * db.getTicks()
                                                               + 12));
             tsdv1.id = 101;        // invalid value for print test
             tsdv1.itsCellID = 501; // invalid value for print test
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( matrix_mve_sr == null ) ||
              ( tsfa == null ) ||
@@ -3002,10 +3002,10 @@ public class TimeStampDataValue extends DataValue
              ( ufa == null ) ||
              ( tsdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -3013,12 +3013,12 @@ public class TimeStampDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( matrix_mve_sr == null )
                 {
                     outStream.print("allocation of matrix_mve_sr failed.\n");
                 }
-                
+
                 if ( tsfa == null )
                 {
                     outStream.print("allocation of tsfa failed.\n");
@@ -3028,12 +3028,12 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.print("allocation of tsdv0 failed.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -3048,7 +3048,7 @@ public class TimeStampDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -3063,40 +3063,40 @@ public class TimeStampDataValue extends DataValue
             if ( tsdv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tsdv0.toString(): \"%s\".\n",
                                      tsdv0.toString());
                 }
             }
-            
+
             if ( tsdv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tsdv0.toDBString(): \"%s\".\n",
                                      tsdv0.toDBString());
                 }
             }
-            
+
             if ( tsdv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tsdv1.toString(): \"%s\".\n",
                                      tsdv1.toString());
                 }
             }
-            
+
             if ( tsdv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tsdv1.toDBString(): \"%s\".\n",
@@ -3104,7 +3104,7 @@ public class TimeStampDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -3133,16 +3133,16 @@ public class TimeStampDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TimeStampDataValue::TestToStringMethods() */
-     
+
 
     /**
      * VerifyTimeStampDVCopy()
      *
-     * Verify that the supplied instances of TimeStampDataValue are distinct, 
+     * Verify that the supplied instances of TimeStampDataValue are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
      *                                              JRM -- 11/8/07
@@ -3164,13 +3164,13 @@ public class TimeStampDataValue extends DataValue
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyTimeStampDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyTimeStampDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyTimeStampDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyTimeStampDVCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -3198,7 +3198,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a value TimeStamp.\n", 
+                outStream.printf("%s and %s share a value TimeStamp.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3230,7 +3230,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s.itsValue and %s.itsValue are different.\n", 
+                outStream.printf("%s.itsValue and %s.itsValue are different.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3241,7 +3241,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a maxVal TimeStamp.\n", 
+                outStream.printf("%s and %s share a maxVal TimeStamp.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3276,7 +3276,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s.maxVal and %s.maxVal are different.\n", 
+                outStream.printf("%s.maxVal and %s.maxVal are different.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3287,7 +3287,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a minVal TimeStamp.\n", 
+                outStream.printf("%s and %s share a minVal TimeStamp.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3322,7 +3322,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s.minVal and %s.minVal are different.\n", 
+                outStream.printf("%s.minVal and %s.minVal are different.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -3332,7 +3332,7 @@ public class TimeStampDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -3343,7 +3343,7 @@ public class TimeStampDataValue extends DataValue
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }

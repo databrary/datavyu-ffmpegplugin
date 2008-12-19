@@ -560,14 +560,14 @@ public class QuoteStringDataValue extends DataValue {
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for QuoteStringDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -577,15 +577,15 @@ public class QuoteStringDataValue extends DataValue {
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
-     *         Construct a QuoteStringDataValue for the formal argument of the 
-     *         mve by passing a reference to the database and the id of the 
-     *         formal argument.  Verify that the QuoteStringDataValue's 
-     *         itsFargID, and itsFargType fields matches those of the formal 
-     *         argument, and that all other fields are set to the expected 
+     *         Construct a QuoteStringDataValue for the formal argument of the
+     *         mve by passing a reference to the database and the id of the
+     *         formal argument.  Verify that the QuoteStringDataValue's
+     *         itsFargID, and itsFargType fields matches those of the formal
+     *         argument, and that all other fields are set to the expected
      *         defaults.
      *
      *         Repeat for a variety of formal argument types and settings.
@@ -595,31 +595,31 @@ public class QuoteStringDataValue extends DataValue {
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      QuoteStringDataValue.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a  QuoteStringDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a  QuoteStringDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         QuoteStringDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         QuoteStringDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
-     *      Verify that the getItsValue(), and setItsValue() methods perform 
-     *      correctly.  Verify that the inherited accessors function correctly 
+     *      Verify that the getItsValue(), and setItsValue() methods perform
+     *      correctly.  Verify that the inherited accessors function correctly
      *      via calls to the DataValue.TestAccessors() method.
      *
      *      Given compiler error checking, there isn't any way to feed
@@ -628,9 +628,9 @@ public class QuoteStringDataValue extends DataValue {
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -644,7 +644,7 @@ public class QuoteStringDataValue extends DataValue {
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassQuoteStringDataValue(
                                                   java.io.PrintStream outStream,
                                                   boolean verbose)
@@ -652,39 +652,39 @@ public class QuoteStringDataValue extends DataValue {
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class QuoteStringDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -697,25 +697,25 @@ public class QuoteStringDataValue extends DataValue {
             outStream.print(
                     "All tests passed for class QuoteStringDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::TestClassQuoteStringDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -738,33 +738,33 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         qsdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             qsdv = new QuoteStringDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( qsdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -778,13 +778,13 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new QuoteStringDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "new QuoteStringDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new QuoteStringDataValue(db) threw " +
@@ -796,45 +796,45 @@ public class QuoteStringDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, qsdv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, qsdv, outStream,
                                                            verbose);
 
             if ( qsdv.ItsDefault != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(" qsdv.ItsDefault != null.\n");
                 }
             }
-            
+
             if ( qsdv.itsValue != qsdv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String s1;
                     String s2;
-                    
+
                     if ( qsdv.itsValue == null )
                         s1 = new String("<null>");
                     else
                         s1 = qsdv.itsValue;
-                    
+
                     if ( qsdv.ItsDefault == null )
                         s2 = new String("<null>");
                     else
                         s2 = qsdv.ItsDefault;
-                    
+
                     outStream.printf(
                             "qsdv.itsValue = %s != qsdv.ItsDefault = %s.\n",
                             s1, s2);
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -855,9 +855,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -882,7 +882,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -911,25 +911,25 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -955,15 +955,15 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             qs_mve = new MatrixVocabElement(db, "qs_mve");
             qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
@@ -971,25 +971,25 @@ public class QuoteStringDataValue extends DataValue {
             db.vl.addElement(qs_mve);
 
             qsdv = new QuoteStringDataValue(db, qsfa.getID());
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( qs_mve == null ) ||
              ( qsfa == null ) ||
              ( qsdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -997,12 +997,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( qs_mve == null )
                 {
                     outStream.print("allocation of qs_mve failed.\n");
                 }
-                
+
                 if ( qsfa == null )
                 {
                     outStream.print("allocation of qsfa failed.");
@@ -1013,12 +1013,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print("new QuoteStringDataValue(db, " +
                                     "qsfa.getID()) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1030,17 +1030,17 @@ public class QuoteStringDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               qsfa, 
-                                                               qsdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               qsfa,
+                                                               qsdv,
+                                                               outStream,
                                                                verbose,
                                                                "qsdv");
-            
+
             if ( qsdv.ItsDefault != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv.ItsDefault != null.\n");
@@ -1050,40 +1050,40 @@ public class QuoteStringDataValue extends DataValue {
             if ( qsdv.subRange != qsfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "qsdv.subRange doesn't match qsfa.getSubRange().\n");
                 }
             }
-            
+
             if ( qsdv.itsValue != qsdv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String s1;
                     String s2;
-                    
+
                     if ( qsdv.itsValue == null )
                         s1 = new String("<null>");
                     else
                         s1 = qsdv.itsValue;
-                    
+
                     if ( qsdv.ItsDefault == null )
                         s2 = new String("<null>");
                     else
                         s2 = qsdv.ItsDefault;
-                    
+
                     outStream.printf(
                             "qsdv.itsValue = %s != qsdv.ItsDefault = %s.\n",
                             s1, s2);
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1104,9 +1104,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1133,7 +1133,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1156,9 +1156,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1185,7 +1185,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1208,9 +1208,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1237,7 +1237,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1266,25 +1266,25 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1310,17 +1310,17 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         qsdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             qs_mve = new MatrixVocabElement(db, "qs_mve");
             qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
@@ -1328,25 +1328,25 @@ public class QuoteStringDataValue extends DataValue {
             db.vl.addElement(qs_mve);
 
             qsdv = new QuoteStringDataValue(db, qsfa.getID(), "echo");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( qs_mve == null ) ||
              ( qsfa == null ) ||
              ( qsdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1354,12 +1354,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( qs_mve == null )
                 {
                     outStream.print("allocation of qs_mve failed.\n");
                 }
-                
+
                 if ( qsfa == null )
                 {
                     outStream.print("allocation of qsfa failed.");
@@ -1371,12 +1371,12 @@ public class QuoteStringDataValue extends DataValue {
                             "new QuoteStringDataValue(db, qsfa.getID(), " +
                             "\"echo\") returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1388,36 +1388,36 @@ public class QuoteStringDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               qsfa, 
-                                                               qsdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               qsfa,
+                                                               qsdv,
+                                                               outStream,
                                                                verbose,
                                                                "qsdv");
 
             if ( qsdv.subRange != qsfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "qsdv.subRange doesn't match qsfa.getSubRange().\n");
                 }
             }
-            
+
             if ( ( qsdv.itsValue == null ) ||
                  ( qsdv.itsValue.compareTo("echo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv.itsValue != \"echo\".\n");
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1428,7 +1428,7 @@ public class QuoteStringDataValue extends DataValue {
 
             try
             {
-                qsdv = new QuoteStringDataValue((Database)null, qsfa.getID(), 
+                qsdv = new QuoteStringDataValue((Database)null, qsfa.getID(),
                                                 "alpha");
                 completed = true;
             }
@@ -1439,9 +1439,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1469,7 +1469,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1492,9 +1492,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1522,7 +1522,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1545,9 +1545,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1574,7 +1574,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid quote string.
          */
         if ( failures == 0 )
@@ -1586,7 +1586,7 @@ public class QuoteStringDataValue extends DataValue {
 
             try
             {
-                qsdv = new QuoteStringDataValue(db, qsfa.getID(), 
+                qsdv = new QuoteStringDataValue(db, qsfa.getID(),
                                                 "invalid \" string");
                 completed = true;
             }
@@ -1597,9 +1597,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1627,7 +1627,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1656,24 +1656,24 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -1702,18 +1702,18 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         qsdv0 = null;
         qsdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
@@ -1721,7 +1721,7 @@ public class QuoteStringDataValue extends DataValue {
             db.vl.addElement(matrix_mve0);
 
             qsdv0 = new QuoteStringDataValue(db, qsfa.getID(), "bravo");
-            
+
             matrix_mve1 = new MatrixVocabElement(db, "matrix_mve1");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -1729,16 +1729,16 @@ public class QuoteStringDataValue extends DataValue {
             db.vl.addElement(matrix_mve1);
 
             qsdv1 = new QuoteStringDataValue(db, ufa.getID(), "delta");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( matrix_mve0 == null ) ||
              ( qsfa == null ) ||
@@ -1747,10 +1747,10 @@ public class QuoteStringDataValue extends DataValue {
              ( ufa == null ) ||
              ( qsdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1758,12 +1758,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( matrix_mve0 == null )
                 {
                     outStream.print("allocation of matrix_mve0 failed.\n");
                 }
-                
+
                 if ( qsfa == null )
                 {
                     outStream.print("allocation of qsfa failed.\n");
@@ -1774,12 +1774,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print("new QuoteStringDataValue(db, qsfa.getID(), " +
                                     "\"bravo\") returned null.\n");
                 }
-                
+
                 if ( matrix_mve1 == null )
                 {
                     outStream.print("allocation of matrix_mve1 failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -1795,7 +1795,7 @@ public class QuoteStringDataValue extends DataValue {
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1809,103 +1809,103 @@ public class QuoteStringDataValue extends DataValue {
         {
             failures += DataValue.TestAccessors(db, qsfa, matrix_mve1, ufa,
                                                 qsdv0, outStream, verbose);
-            
+
             if ( qsdv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv0.getSubRange() != false");
                 }
             }
-            
+
             if ( ( qsdv0.getItsValue() == null ) ||
                  ( qsdv0.getItsValue().compareTo("bravo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv.getItsValue() != \"bravo\"\n");
                 }
             }
-            
+
             qsdv0.setItsValue("echo");
 
-            
+
             if ( ( qsdv0.getItsValue() == null ) ||
                  ( qsdv0.getItsValue().compareTo("echo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv0.getItsValue() != \"echo\"\n");
                 }
             }
-            
+
             /************************************/
 
             if ( qsdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv1.getSubRange() != false (1)\n");
                 }
             }
-            
+
             if ( ( qsdv1.getItsValue() == null ) ||
                  ( qsdv1.getItsValue().compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv1.getItsValue() != \"delta\"(1)\n");
                 }
             }
-            
+
             failures += DataValue.TestAccessors(db, ufa, matrix_mve0, qsfa,
                                                 qsdv1, outStream, verbose);
 
             if ( qsdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv1.getSubRange() != false (2)\n");
                 }
             }
-            
+
             if ( ( qsdv1.getItsValue() == null ) ||
                  ( qsdv1.getItsValue().compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv1.getItsValue() != \"delta\"(2)\n");
                 }
             }
-            
+
             qsdv1.setItsValue("alpha");
-            
+
             if ( ( qsdv1.getItsValue() == null ) ||
                  ( qsdv1.getItsValue().compareTo("alpha") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("qsdv1.getItsValue() != \"alpha\".\n");
                 }
             }
         }
-        
+
         /* verify that the setItsValue method fails when fed an invalid value */
         if ( failures == 0 )
         {
@@ -1926,7 +1926,7 @@ public class QuoteStringDataValue extends DataValue {
             }
 
             if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1947,7 +1947,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1976,25 +1976,25 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2026,19 +2026,19 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         /* setup the base entries for the copy test */
         try
         {
             db = new ODBCDatabase();
-            
+
             qsdv0 = new QuoteStringDataValue(db);
-            
+
             qs_mve = new MatrixVocabElement(db, "qs_mve");
             qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
@@ -2047,16 +2047,16 @@ public class QuoteStringDataValue extends DataValue {
 
             qsdv1 = new QuoteStringDataValue(db, qsfa.getID());
             qsdv2 = new QuoteStringDataValue(db, qsfa.getID(), "foxtrot");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( qs_mve == null ) ||
              ( qsfa == null ) ||
@@ -2064,10 +2064,10 @@ public class QuoteStringDataValue extends DataValue {
              ( qsdv1 == null ) ||
              ( qsdv2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2075,12 +2075,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( qs_mve == null )
                 {
                     outStream.print("allocation of qs_mve failed.\n");
                 }
-                
+
                 if ( qsfa == null )
                 {
                     outStream.print("allocation of qsfa failed.");
@@ -2091,25 +2091,25 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new QuoteStringDataValue(db) returned null.\n");
                 }
-                
+
                 if ( qsdv1 == null )
                 {
                     outStream.print("new QuoteStringDataValue(db, " +
                             "qsfa.getID()) returned null.\n");
                 }
-                
+
                 if ( qsdv2 == null )
                 {
                     outStream.print(
                             "new QuoteStringDataValue(db, qsfa.getID(), " +
                              "\"foxtrot\") returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2118,7 +2118,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -2140,12 +2140,12 @@ public class QuoteStringDataValue extends DataValue {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( qsdv0_copy == null ) ||
                  ( qsdv1_copy == null ) ||
                  ( qsdv2_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2186,17 +2186,17 @@ public class QuoteStringDataValue extends DataValue {
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(qsdv0, qsdv0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(qsdv0, qsdv0_copy, outStream,
                                                verbose, "qsdv0", "qsdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(qsdv1, qsdv1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(qsdv1, qsdv1_copy, outStream,
                                                verbose, "qsdv1", "qsdv1_copy");
 
-            failures += DataValue.VerifyDVCopy(qsdv2, qsdv2_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(qsdv2, qsdv2_copy, outStream,
                                                verbose, "qsdv2", "qsdv2_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -2217,9 +2217,9 @@ public class QuoteStringDataValue extends DataValue {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) || 
+            if ( ( qsdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2245,8 +2245,8 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2275,25 +2275,25 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2336,18 +2336,18 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         qsdv0 = null;
         qsdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             qs_mve = new MatrixVocabElement(db, "qs_mve");
             qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             qsfa = new QuoteStringFormalArg(db);
@@ -2357,7 +2357,7 @@ public class QuoteStringDataValue extends DataValue {
             qsdv0 = new QuoteStringDataValue(db, qsfa.getID(), "bravo");
             qsdv0.id = 100;        // invalid value for print test
             qsdv0.itsCellID = 500; // invalid value for print test
-            
+
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
             ufa = new UnTypedFormalArg(db, "<untyped>");
@@ -2367,16 +2367,16 @@ public class QuoteStringDataValue extends DataValue {
             qsdv1 = new QuoteStringDataValue(db, ufa.getID(), "nero");
             qsdv1.id = 101;        // invalid value for print test
             qsdv1.itsCellID = 501; // invalid value for print test
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( qs_mve == null ) ||
              ( qsfa == null ) ||
@@ -2385,10 +2385,10 @@ public class QuoteStringDataValue extends DataValue {
              ( ufa == null ) ||
              ( qsdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2396,12 +2396,12 @@ public class QuoteStringDataValue extends DataValue {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( qs_mve == null )
                 {
                     outStream.print("allocation of qs_mve failed.\n");
                 }
-                
+
                 if ( qsfa == null )
                 {
                     outStream.print("allocation of qsfa failed.\n");
@@ -2413,12 +2413,12 @@ public class QuoteStringDataValue extends DataValue {
                             "new QuoteStringDataValue(db, qsfa.getID(), " +
                             "\"bravo\") returned null.\n");
                 }
-                
+
                 if ( matrix_mve == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
-                
+
                 if ( ufa == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
@@ -2435,7 +2435,7 @@ public class QuoteStringDataValue extends DataValue {
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2450,40 +2450,40 @@ public class QuoteStringDataValue extends DataValue {
             if ( qsdv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected qsdv0.toString(): \"%s\".\n",
                                      qsdv0.toString());
                 }
             }
-            
+
             if ( qsdv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected qsdv0.toDBString(): \"%s\".\n",
                                      qsdv0.toDBString());
                 }
             }
-            
+
             if ( qsdv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected qsdv1.toString(): \"%s\".\n",
                                      qsdv1.toString());
                 }
             }
-            
+
             if ( qsdv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected qsdv1.toDBString(): \"%s\".\n",
@@ -2491,7 +2491,7 @@ public class QuoteStringDataValue extends DataValue {
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2520,17 +2520,17 @@ public class QuoteStringDataValue extends DataValue {
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringDataValue::TestToStringMethods() */
 
-    
+
     /**
      * VerifyQuoteStringDVCopy()
      *
-     * Verify that the supplied instances of QuoteStringDataValue are distinct, 
-     * that they contain no common references (other than db), and that they 
+     * Verify that the supplied instances of QuoteStringDataValue are distinct,
+     * that they contain no common references (other than db), and that they
      * have the same value.
      *                                              JRM -- 11/8/07
      *
@@ -2551,13 +2551,13 @@ public class QuoteStringDataValue extends DataValue {
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyQuoteStringDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyQuoteStringDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyQuoteStringDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyQuoteStringDVCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -2585,7 +2585,7 @@ public class QuoteStringDataValue extends DataValue {
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a string.\n", 
+                outStream.printf("%s and %s share a string.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -2621,7 +2621,7 @@ public class QuoteStringDataValue extends DataValue {
             if ( verbose )
             {
                 outStream.printf(
-                    "%sitsValue and %s.itsValue represent different values.\n", 
+                    "%sitsValue and %s.itsValue represent different values.\n",
                     baseDesc, copyDesc);
             }
         }
@@ -2631,7 +2631,7 @@ public class QuoteStringDataValue extends DataValue {
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -2642,7 +2642,7 @@ public class QuoteStringDataValue extends DataValue {
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }

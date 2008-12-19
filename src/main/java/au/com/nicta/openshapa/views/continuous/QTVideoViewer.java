@@ -436,7 +436,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * @param evt The event that triggered this action.
      */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        parentController.shutdown(this);        
+        parentController.shutdown(this);
     }//GEN-LAST:event_exitForm
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

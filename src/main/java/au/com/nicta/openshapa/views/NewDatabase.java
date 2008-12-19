@@ -21,8 +21,8 @@ public class NewDatabase extends OpenSHAPADialog {
      * user clicks on the OK button.
      */
     public NewDatabase(java.awt.Frame parent, boolean modal,
-                           ActionListener listener) {        
-        super(parent, modal);        
+                           ActionListener listener) {
+        super(parent, modal);
         initComponents();
 
         // Need to set a unique name so that we save and restore session data

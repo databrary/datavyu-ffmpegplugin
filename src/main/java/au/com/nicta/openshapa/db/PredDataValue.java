@@ -31,7 +31,7 @@ public class PredDataValue extends DataValue
      *      referring directly to the associated formal argument when needed
      *      instead.
      */
- 
+
     /** ID of the represented predicate. */
     protected Predicate itsValue = null;
 
@@ -1196,14 +1196,14 @@ public class PredDataValue extends DataValue
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for PredDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -1213,15 +1213,15 @@ public class PredDataValue extends DataValue
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
      *         Construct a PredDataValue for the formal argument of the mve
      *         by passing a reference to the database and the id of the formal
-     *         argument.  Verify that the PredDataValue's itsFargID, 
-     *         itsFargType, and subRange fields match those of the formal 
-     *         argument, and that all other fields are set to the expected 
+     *         argument.  Verify that the PredDataValue's itsFargID,
+     *         itsFargType, and subRange fields match those of the formal
+     *         argument, and that all other fields are set to the expected
      *         defaults.
      *
      *         Repeat for a variety of formal argument types and settings.
@@ -1231,45 +1231,45 @@ public class PredDataValue extends DataValue
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      PredDataValue -- perhaps after having been modified to match
      *      the subrange.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a PredDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a PredDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         PredDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         PredDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
-     * 
+     *
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
      *      Verify that the getItsValue(), setItsValue() and coerceToRange()
      *      methods perform correctly.  Verify that the inherited accessors
-     *      function correctly via calls to the DataValue.TestAccessors() 
+     *      function correctly via calls to the DataValue.TestAccessors()
      *      method.
      *
-     *      Verify that setItsValue() and coerceToRange() fail on invalid 
+     *      Verify that setItsValue() and coerceToRange() fail on invalid
      *      input.
      *
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -1283,46 +1283,46 @@ public class PredDataValue extends DataValue
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassPredDataValue(java.io.PrintStream outStream,
                                                  boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class PredDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1334,25 +1334,25 @@ public class PredDataValue extends DataValue
         {
             outStream.print("All tests passed for class PredDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestClassPredDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1375,33 +1375,33 @@ public class PredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         pdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             pdv = new PredDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( pdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1415,13 +1415,13 @@ public class PredDataValue extends DataValue
                     outStream.print(
                             "new PredDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                             "new PredDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new PredDataValue(db) threw " +
@@ -1433,13 +1433,13 @@ public class PredDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, pdv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, pdv, outStream,
                                                            verbose);
-            
+
             if ( pdv.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv.itsValue is null.\n");
@@ -1448,7 +1448,7 @@ public class PredDataValue extends DataValue
             else if ( pdv.itsValue.getPveID() != DBIndex.INVALID_ID )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1456,7 +1456,7 @@ public class PredDataValue extends DataValue
                 }
             }
        }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1477,9 +1477,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1504,7 +1504,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1533,25 +1533,25 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1596,39 +1596,39 @@ public class PredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database, and pve's
         threwSystemErrorException = false;
         completed = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -1636,26 +1636,26 @@ public class PredDataValue extends DataValue
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -1670,43 +1670,43 @@ public class PredDataValue extends DataValue
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
-            
-            
+
+
             completed = true;
         }
 
@@ -1715,7 +1715,7 @@ public class PredDataValue extends DataValue
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -1733,98 +1733,98 @@ public class PredDataValue extends DataValue
              ( pve6ID == DBIndex.INVALID_ID ) ||
              ( pve7 == null ) ||
              ( pve7ID == DBIndex.INVALID_ID ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve4 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve4ID not initialized.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -1833,13 +1833,13 @@ public class PredDataValue extends DataValue
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
-        
-        
+
+
         /* Now allocate mve's & PredFormalArg's with and without subranges.
          * Use the ID's of these PredFormalArgs to test the two argument
          * constructor.
@@ -1890,7 +1890,7 @@ public class PredDataValue extends DataValue
                  ( pfa_sr == null ) ||
                  ( pdv_sr == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1951,17 +1951,17 @@ public class PredDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               pfa, 
-                                                               pdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               pfa,
+                                                               pdv,
+                                                               outStream,
                                                                verbose,
                                                               "pdv");
-            
+
             if ( pdv.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv.itsValue == null.\n");
@@ -1969,18 +1969,18 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)",
                                                           "pdv.itsValue");
             }
 
             if ( pdv.subRange != pfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1988,28 +1988,28 @@ public class PredDataValue extends DataValue
                 }
             }
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               pfa_sr, 
-                                                               pdv_sr,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               pfa_sr,
+                                                               pdv_sr,
+                                                               outStream,
                                                                verbose,
                                                                "pdv_sr");
 
             if ( pdv_sr.subRange != pfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr.subRange doesn't match " +
                                      "pfa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( pdv_sr.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr.itsValue == null.\n");
@@ -2017,15 +2017,15 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv_sr.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv_sr.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)",
                                                           "pdv_sr.itsValue");
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -2046,9 +2046,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2074,7 +2074,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -2097,9 +2097,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2125,7 +2125,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          *refer to a formal argument.
          */
@@ -2148,9 +2148,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2177,7 +2177,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2206,25 +2206,25 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2279,43 +2279,43 @@ public class PredDataValue extends DataValue
             outStream.print("\n");
         }
 
-        
+
         // Start by setting up the needed database, pve's, and preds
         threwSystemErrorException = false;
         completed = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
+
             p0 = new Predicate(db, pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
+
             p1 = new Predicate(db, pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -2323,30 +2323,30 @@ public class PredDataValue extends DataValue
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
+
             p2 = new Predicate(db, pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
-            
+
             p3 = new Predicate(db, pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -2361,51 +2361,51 @@ public class PredDataValue extends DataValue
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
-            
+
             p4 = new Predicate(db, pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
-            
+
             p5 = new Predicate(db, pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
-            
+
             p6 = new Predicate(db, pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
-            
+
             p7 = new Predicate(db, pve7ID);
-            
-            
+
+
             completed = true;
         }
 
@@ -2414,7 +2414,7 @@ public class PredDataValue extends DataValue
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -2440,138 +2440,138 @@ public class PredDataValue extends DataValue
              ( pve7 == null ) ||
              ( pve7ID == DBIndex.INVALID_ID ) ||
              ( p7 == null ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( p0 == null )
                 {
                     outStream.print("creation of p0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( p1 == null )
                 {
                     outStream.print("creation of p1 failed.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( p2 == null )
                 {
                     outStream.print("creation of p2 failed.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( p3 == null )
                 {
                     outStream.print("creation of p3 failed.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve4 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve4ID not initialized.\n");
                 }
-                
+
                 if ( p4 == null )
                 {
                     outStream.print("creation of p4 failed.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( p5 == null )
                 {
                     outStream.print("creation of p5 failed.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( p6 == null )
                 {
                     outStream.print("creation of p6 failed.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( p7 == null )
                 {
                     outStream.print("creation of p7 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -2580,13 +2580,13 @@ public class PredDataValue extends DataValue
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
-        
-        
+
+
         if ( failures == 0 )
         {
             completed = false;
@@ -2635,7 +2635,7 @@ public class PredDataValue extends DataValue
                  ( pdv_sr0 == null ) ||
                  ( pdv_sr1 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2696,31 +2696,31 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-    
+
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               pfa, 
-                                                               pdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               pfa,
+                                                               pdv,
+                                                               outStream,
                                                                verbose,
                                                                "pdv");
 
             if ( pdv.subRange != pfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "pdv.subRange doesn't match pfa.getSubRange().\n");
                 }
             }
-            
+
             if ( pdv.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv.itsValue null.\n");
@@ -2728,38 +2728,38 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p0, 
-                                                          pdv.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p0", 
+                failures += Predicate.VerifyPredicateCopy(p0,
+                                                          pdv.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p0",
                                                           "pdv.itsValue");
             }
-            
+
             /**********************************/
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               pfa_sr, 
-                                                               pdv_sr0,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               pfa_sr,
+                                                               pdv_sr0,
+                                                               outStream,
                                                                verbose,
                                                                "pdv_sr0");
 
             if ( pdv_sr0.subRange != pfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr0.subRange doesn't match " +
                                      "pfa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( pdv_sr0.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr0.itsValue == null.\n");
@@ -2767,38 +2767,38 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p2, 
-                                                          pdv_sr0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p2", 
+                failures += Predicate.VerifyPredicateCopy(p2,
+                                                          pdv_sr0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p2",
                                                           "pdv_sr0.itsValue");
             }
-            
+
             /***************************************/
 
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               pfa_sr, 
-                                                               pdv_sr1,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               pfa_sr,
+                                                               pdv_sr1,
+                                                               outStream,
                                                                verbose,
                                                                "pdv_sr1");
 
             if ( pdv_sr1.subRange != pfa_sr.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr0.subRange doesn't match " +
                                      "pfa_sr.getSubRange().\n");
                 }
             }
-            
+
             if ( pdv_sr1.itsValue == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv_sr1.itsValue == null.\n");
@@ -2806,15 +2806,15 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv_sr1.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv_sr1.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)",
                                                           "pdv_sr1.itsValue");
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -2835,9 +2835,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2864,7 +2864,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -2887,9 +2887,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2916,7 +2916,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -2939,9 +2939,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2968,7 +2968,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2997,24 +2997,24 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -3078,43 +3078,43 @@ public class PredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database, pve's, and preds
         threwSystemErrorException = false;
         completed = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
+
             p0 = new Predicate(db, pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
+
             p1 = new Predicate(db, pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -3122,30 +3122,30 @@ public class PredDataValue extends DataValue
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
+
             p2 = new Predicate(db, pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
-            
+
             p3 = new Predicate(db, pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -3160,51 +3160,51 @@ public class PredDataValue extends DataValue
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
-            
+
             p4 = new Predicate(db, pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
-            
+
             p5 = new Predicate(db, pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
-            
+
             p6 = new Predicate(db, pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
-            
+
             p7 = new Predicate(db, pve7ID);
-            
-            
+
+
             completed = true;
         }
 
@@ -3213,7 +3213,7 @@ public class PredDataValue extends DataValue
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -3239,138 +3239,138 @@ public class PredDataValue extends DataValue
              ( pve7 == null ) ||
              ( pve7ID == DBIndex.INVALID_ID ) ||
              ( p7 == null ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( p0 == null )
                 {
                     outStream.print("creation of p0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( p1 == null )
                 {
                     outStream.print("creation of p1 failed.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( p2 == null )
                 {
                     outStream.print("creation of p2 failed.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( p3 == null )
                 {
                     outStream.print("creation of p3 failed.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve4 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve4ID not initialized.\n");
                 }
-                
+
                 if ( p4 == null )
                 {
                     outStream.print("creation of p4 failed.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( p5 == null )
                 {
                     outStream.print("creation of p5 failed.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( p6 == null )
                 {
                     outStream.print("creation of p6 failed.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( p7 == null )
                 {
                     outStream.print("creation of p7 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -3379,15 +3379,15 @@ public class PredDataValue extends DataValue
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
-        
-        /* now allocate test mve's, formal arguments, and data values for 
+
+        /* now allocate test mve's, formal arguments, and data values for
          * the test proper.
-         */   
+         */
         if ( failures == 0 )
         {
             completed = false;
@@ -3436,7 +3436,7 @@ public class PredDataValue extends DataValue
                  ( pdv1 == null ) ||
                  ( pdv2 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -3497,26 +3497,26 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-            
+
         if ( failures == 0 )
         {
             failures += DataValue.TestAccessors(db, pfa, matrix_mve, ufa,
                                                 pdv0, outStream, verbose);
-            
+
             if ( pdv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getSubRange() != false");
                 }
             }
-            
+
             if ( pdv0.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (1).\n");
@@ -3524,20 +3524,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p2, 
-                                                          pdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p2", 
+                failures += Predicate.VerifyPredicateCopy(p2,
+                                                          pdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p2",
                                                           "pdv0.itsValue");
             }
-            
+
             pdv0.setItsValue(null);
-            
+
             if ( pdv0.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (2).\n");
@@ -3545,20 +3545,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)1", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)1",
                                                           "pdv0.itsValue");
             }
 
             pdv0.setItsValue(p3);
-            
+
             if ( pdv0.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (3).\n");
@@ -3566,20 +3566,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p3, 
-                                                          pdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p3", 
+                failures += Predicate.VerifyPredicateCopy(p3,
+                                                          pdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p3",
                                                           "pdv0.itsValue");
             }
-            
+
             pdv0.setItsValue(new Predicate(db));
-            
+
             if ( pdv0.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (4).\n");
@@ -3587,30 +3587,30 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv0.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)2", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv0.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)2",
                                                           "pdv0.itsValue");
             }
-            
+
             /************************************/
 
             if ( pdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getSubRange() != false\n");
                 }
             }
-            
+
             if ( pdv1.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getItsValue() == null (1).\n");
@@ -3618,31 +3618,31 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p5, 
-                                                          pdv1.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p5", 
+                failures += Predicate.VerifyPredicateCopy(p5,
+                                                          pdv1.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p5",
                                                           "pdv1.itsValue");
             }
-            
+
             failures += DataValue.TestAccessors(db, ufa, pred_mve, pfa,
                                                 pdv1, outStream, verbose);
 
             if ( pdv1.getSubRange() != true )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getSubRange() != true\n");
                 }
             }
-            
+
             if ( pdv1.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getItsValue() == null (2)\n");
@@ -3650,20 +3650,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv1.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)1", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv1.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)1",
                                                           "pdv1.itsValue");
             }
-            
+
             pdv1.setItsValue(p4);
-            
+
             if ( pdv1.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getItsValue() == null (3).\n");
@@ -3671,20 +3671,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p4, 
-                                                          pdv1.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p4", 
+                failures += Predicate.VerifyPredicateCopy(p4,
+                                                          pdv1.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p4",
                                                           "pdv1.itsValue");
             }
-            
+
             pdv1.setItsValue(p7);
-            
+
             if ( pdv1.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv1.getItsValue() == null (4)\n");
@@ -3692,14 +3692,14 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv1.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)2", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv1.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)2",
                                                           "pdv1.itsValue");
             }
-            
+
             if ( ( pdv1.coerceToRange(p0) != p0 ) ||
                  ( pdv1.coerceToRange(p1) == null ) ||
                  ( pdv1.coerceToRange(p2) != p2 ) ||
@@ -3710,7 +3710,7 @@ public class PredDataValue extends DataValue
                  ( pdv1.coerceToRange(p7) == null ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -3719,41 +3719,41 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                      pdv1.coerceToRange(p1), 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                      pdv1.coerceToRange(p1),
+                                                      outStream,
+                                                      verbose,
+                                                      "new Predicate(db)",
                                                       "pdv1.coerceToRange(p1)");
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                      pdv1.coerceToRange(p3), 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                      pdv1.coerceToRange(p3),
+                                                      outStream,
+                                                      verbose,
+                                                      "new Predicate(db)",
                                                       "pdv1.coerceToRange(p3)");
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                      pdv1.coerceToRange(p5), 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                      pdv1.coerceToRange(p5),
+                                                      outStream,
+                                                      verbose,
+                                                      "new Predicate(db)",
                                                       "pdv1.coerceToRange(p5)");
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                      pdv1.coerceToRange(p7), 
-                                                      outStream, 
-                                                      verbose, 
-                                                      "new Predicate(db)", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                      pdv1.coerceToRange(p7),
+                                                      outStream,
+                                                      verbose,
+                                                      "new Predicate(db)",
                                                       "pdv1.coerceToRange(p7)");
             }
-            
+
             /*********************************/
-            
+
             failures += DataValue.TestAccessors(db, ufa, pred_mve, pfa,
                                                 pdv2, outStream, verbose);
-            
+
             if ( pdv2.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv2.getItsValue() == null(1).\n");
@@ -3761,20 +3761,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p6, 
-                                                          pdv2.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p6", 
+                failures += Predicate.VerifyPredicateCopy(p6,
+                                                          pdv2.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p6",
                                                           "pdv2.itsValue");
             }
-            
+
             pdv2.setItsValue(null);
-            
+
             if ( pdv2.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (2).\n");
@@ -3782,20 +3782,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv2.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)1", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv2.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)1",
                                                           "pdv2.itsValue");
             }
-            
+
             pdv2.setItsValue(p0);
-            
+
             if ( pdv2.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (3).\n");
@@ -3803,20 +3803,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(p0, 
-                                                          pdv2.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "p0", 
+                failures += Predicate.VerifyPredicateCopy(p0,
+                                                          pdv2.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "p0",
                                                           "pdv2.itsValue");
             }
-            
+
             pdv2.setItsValue(new Predicate(db));
-            
+
             if ( pdv2.getItsValue() == null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("pdv0.getItsValue() == null (4).\n");
@@ -3824,20 +3824,20 @@ public class PredDataValue extends DataValue
             }
             else
             {
-                failures += Predicate.VerifyPredicateCopy(new Predicate(db), 
-                                                          pdv2.itsValue, 
-                                                          outStream, 
-                                                          verbose, 
-                                                          "new Predicate(db)2", 
+                failures += Predicate.VerifyPredicateCopy(new Predicate(db),
+                                                          pdv2.itsValue,
+                                                          outStream,
+                                                          verbose,
+                                                          "new Predicate(db)2",
                                                           "pdv2.itsValue");
             }
         }
-        
-        /* For now at least, there is no real need to test setItsValue with 
+
+        /* For now at least, there is no real need to test setItsValue with
          * invalid values.  The compiler requires that the supplied parameter
          * is an instance of Predicate, and the value supplied (if not null or
-         * an empty Predicate) is passed through to the target formal arguments 
-         * isValidValue routine.  Since we already have tests for these 
+         * an empty Predicate) is passed through to the target formal arguments
+         * isValidValue routine.  Since we already have tests for these
          * routines, there is no need to test them here.
          *
          * That said, against changes in the code, it is probably worth while
@@ -3845,7 +3845,7 @@ public class PredDataValue extends DataValue
          *
          * Start with setup for test:
          */
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -3897,8 +3897,8 @@ public class PredDataValue extends DataValue
                  ( alt_p0 == null ) ||
                  ( alt_pve1 == null ) ||
                  ( alt_pve1ID == DBIndex.INVALID_ID ) ||
-                 ( ! completed ) || 
-                 ( threwSystemErrorException ) ) 
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -3947,13 +3947,13 @@ public class PredDataValue extends DataValue
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("alt allocations threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -3971,12 +3971,12 @@ public class PredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( completed )
@@ -3984,7 +3984,7 @@ public class PredDataValue extends DataValue
                         outStream.printf(
                                 "pdv0.setItsValue(alt_p0) completed.\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf("pdv0.setItsValue(alt_p0) failed " +
@@ -3992,8 +3992,8 @@ public class PredDataValue extends DataValue
                     }
                 }
             }
-            
-            
+
+
             threwSystemErrorException = false;
             completed = false;
 
@@ -4009,12 +4009,12 @@ public class PredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( completed )
@@ -4022,7 +4022,7 @@ public class PredDataValue extends DataValue
                         outStream.printf(
                                 "pdv1.setItsValue(alt_p1) completed.\n");
                     }
-                    
+
                     if ( completed )
                     {
                         outStream.printf("pdv1.setItsValue(alt_p1) failed " +
@@ -4031,7 +4031,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -4060,25 +4060,25 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -4146,44 +4146,44 @@ public class PredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
-        
+
+
         // Start by setting up the needed database, pve's, and preds
         threwSystemErrorException = false;
         completed = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
+
             p0 = new Predicate(db, pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
+
             p1 = new Predicate(db, pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -4191,30 +4191,30 @@ public class PredDataValue extends DataValue
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
+
             p2 = new Predicate(db, pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
-            
+
             p3 = new Predicate(db, pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -4229,51 +4229,51 @@ public class PredDataValue extends DataValue
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
-            
+
             p4 = new Predicate(db, pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
-            
+
             p5 = new Predicate(db, pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
-            
+
             p6 = new Predicate(db, pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
-            
+
             p7 = new Predicate(db, pve7ID);
-            
-            
+
+
             completed = true;
         }
 
@@ -4282,7 +4282,7 @@ public class PredDataValue extends DataValue
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -4308,138 +4308,138 @@ public class PredDataValue extends DataValue
              ( pve7 == null ) ||
              ( pve7ID == DBIndex.INVALID_ID ) ||
              ( p7 == null ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( p0 == null )
                 {
                     outStream.print("creation of p0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( p1 == null )
                 {
                     outStream.print("creation of p1 failed.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( p2 == null )
                 {
                     outStream.print("creation of p2 failed.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( p3 == null )
                 {
                     outStream.print("creation of p3 failed.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve4 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve4ID not initialized.\n");
                 }
-                
+
                 if ( p4 == null )
                 {
                     outStream.print("creation of p4 failed.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( p5 == null )
                 {
                     outStream.print("creation of p5 failed.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( p6 == null )
                 {
                     outStream.print("creation of p6 failed.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( p7 == null )
                 {
                     outStream.print("creation of p7 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -4448,12 +4448,12 @@ public class PredDataValue extends DataValue
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
-        
+
         /* Now create the instances of PredDataValue to be copied. */
         if ( failures == 0 )
         {
@@ -4484,7 +4484,7 @@ public class PredDataValue extends DataValue
 
                 pdv3 = new PredDataValue(db, ufa.getID());
                 pdv4 = new PredDataValue(db, ufa.getID(), p4);
-                
+
 
                 pred_mve_sr = new MatrixVocabElement(db, "pred_mve_sr");
                 pred_mve_sr.setType(MatrixVocabElement.MatrixType.PREDICATE);
@@ -4524,7 +4524,7 @@ public class PredDataValue extends DataValue
                  ( pdv_sr0 == null ) ||
                  ( pdv_sr1 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4615,7 +4615,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -4641,7 +4641,7 @@ public class PredDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( pdv0_copy == null ) ||
                  ( pdv1_copy == null ) ||
                  ( pdv2_copy == null ) ||
@@ -4650,7 +4650,7 @@ public class PredDataValue extends DataValue
                  ( pdv_sr0_copy == null ) ||
                  ( pdv_sr1_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4715,29 +4715,29 @@ public class PredDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(pdv0, pdv0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv0, pdv0_copy, outStream,
                                                verbose, "pdv0", "pdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv1, pdv1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv1, pdv1_copy, outStream,
                                                verbose, "pdv1", "pdv1_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv2, pdv2_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv2, pdv2_copy, outStream,
                                                verbose, "pdv2", "pdv2_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv3, pdv3_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv3, pdv3_copy, outStream,
                                                verbose, "pdv3", "pdv3_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv4, pdv4_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv4, pdv4_copy, outStream,
                                                verbose, "pdv4", "pdv4_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv_sr0, pdv_sr0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv_sr0, pdv_sr0_copy, outStream,
                                             verbose, "pdv_sr0", "pdv_sr0_copy");
 
-            failures += DataValue.VerifyDVCopy(pdv_sr1, pdv_sr1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(pdv_sr1, pdv_sr1_copy, outStream,
                                             verbose, "pdv_sr1", "pdv_sr1_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -4758,9 +4758,9 @@ public class PredDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( pdv != null ) || 
+            if ( ( pdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -4787,7 +4787,7 @@ public class PredDataValue extends DataValue
             }
         }
 
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -4816,25 +4816,25 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -4844,7 +4844,7 @@ public class PredDataValue extends DataValue
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String testString0 = "pve0(<arg1>, <arg2>)";
-        String testDBString0 = 
+        String testDBString0 =
                 "(PredDataValue (id 100) " +
                             "(itsFargID 14) " +
                             "(itsFargType PREDICATE) " +
@@ -4869,7 +4869,7 @@ public class PredDataValue extends DataValue
                                             "(subRange false))))))) " +
                             "(subRange true))";
         String testString1 = "pve3(<arg1>)";
-        String testDBString1 = 
+        String testDBString1 =
                 "(PredDataValue (id 101) " +
                             "(itsFargID 20) " +
                             "(itsFargType UNTYPED) " +
@@ -4919,43 +4919,43 @@ public class PredDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database, pve's, and preds
         threwSystemErrorException = false;
         completed = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
+
             p0 = new Predicate(db, pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
+
             p1 = new Predicate(db, pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -4963,28 +4963,28 @@ public class PredDataValue extends DataValue
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
+
             p2 = new Predicate(db, pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
-            
+
             p3 = new Predicate(db, pve3ID);
-            
-            
+
+
             completed = true;
         }
 
@@ -4993,7 +4993,7 @@ public class PredDataValue extends DataValue
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -5007,78 +5007,78 @@ public class PredDataValue extends DataValue
              ( pve3 == null ) ||
              ( pve3ID == DBIndex.INVALID_ID ) ||
              ( p3 == null ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( p0 == null )
                 {
                     outStream.print("creation of p0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( p1 == null )
                 {
                     outStream.print("creation of p1 failed.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( p2 == null )
                 {
                     outStream.print("creation of p2 failed.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( p3 == null )
                 {
                     outStream.print("creation of p3 failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -5087,13 +5087,13 @@ public class PredDataValue extends DataValue
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
 
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -5142,7 +5142,7 @@ public class PredDataValue extends DataValue
                  ( ufa == null ) ||
                  ( pdv1 == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -5204,40 +5204,40 @@ public class PredDataValue extends DataValue
             if ( pdv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pdv0.toString(): \"%s\".\n",
                                      pdv0.toString());
                 }
             }
-            
+
             if ( pdv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pdv0.toDBString(): \"%s\".\n",
                                      pdv0.toDBString());
                 }
             }
-            
+
             if ( pdv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pdv1.toString(): \"%s\".\n",
                                      pdv1.toString());
                 }
             }
-            
+
             if ( pdv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected pdv1.toDBString(): \"%s\".\n",
@@ -5245,7 +5245,7 @@ public class PredDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -5274,17 +5274,17 @@ public class PredDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredDataValue::TestToStringMethods() */
 
 
     /**
      * VerifyPredDVCopy()
      *
-     * Verify that the supplied instances of PredDataValue are distinct, that 
-     * they contain no common references (other than db), and that they have 
+     * Verify that the supplied instances of PredDataValue are distinct, that
+     * they contain no common references (other than db), and that they have
      * the same value.
      *                                              JRM -- 11/8/07
      *
@@ -5305,13 +5305,13 @@ public class PredDataValue extends DataValue
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyPredDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyPredDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredDVCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -5339,7 +5339,7 @@ public class PredDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a Predicate.\n", 
+                outStream.printf("%s and %s share a Predicate.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -5355,7 +5355,7 @@ public class PredDataValue extends DataValue
                         baseDesc, copyDesc);
             }
         }
-        else if ( ( base.itsValue != null ) && 
+        else if ( ( base.itsValue != null ) &&
                   ( copy.itsValue == null ) )
         {
             failures++;
@@ -5367,14 +5367,14 @@ public class PredDataValue extends DataValue
                         copyDesc, baseDesc);
             }
         }
-        else if ( ( base.itsValue != null ) && 
+        else if ( ( base.itsValue != null ) &&
                   ( base.toString().compareTo(copy.toString()) != 0 ) )
         {
             failures++;
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -5385,14 +5385,14 @@ public class PredDataValue extends DataValue
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }
         else if ( base.itsValue != null )
         {
-            failures += Predicate.VerifyPredicateCopy(base.itsValue, 
-                                                      copy.itsValue, 
+            failures += Predicate.VerifyPredicateCopy(base.itsValue,
+                                                      copy.itsValue,
                                                       outStream, verbose,
                                                       baseDesc + ".itsValue",
                                                       copyDesc + "itsValue");

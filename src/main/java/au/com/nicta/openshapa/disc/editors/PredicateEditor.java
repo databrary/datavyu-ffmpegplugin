@@ -13,12 +13,12 @@ package au.com.nicta.openshapa.disc.editors;
  */
 public class PredicateEditor extends Editor
 {
-  
+
   /**
    * Creates a new instance of PredicateEditor
    */
   public PredicateEditor()
   {
   } // End of PredicateEditor Constructor
-  
+
 } //End of PredicateEditor class definition
