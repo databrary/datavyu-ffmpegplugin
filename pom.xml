@@ -99,14 +99,6 @@
       <scope>test</scope>
     </dependency>
 
-<!--
-    <dependency>
-      <groupId>org.jruby</groupId>
-      <artifactId>jruby</artifactId>
-      <version>1.1RC3</version>
-    </dependency>
--->
-
     <dependency>
         <groupId>jruby</groupId>
         <artifactId>jruby_engine</artifactId>

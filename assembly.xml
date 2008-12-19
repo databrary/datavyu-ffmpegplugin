@@ -6,18 +6,26 @@
     <format>zip</format>
   </formats>
 
+  <!-- Include configuration for log4j. -->
   <files>
     <file>
       <source>log4j.properties</source>
     </file>
   </files>
 
+  <!-- Include the samples directory. -->
+  <fileSets>
+    <fileSet>
+      <directory>src/main/samples/</directory>
+      <outputDirectory>samples</outputDirectory>
+    </fileSet>
+  </fileSets>
+
   <binaries>
     <dependencySets>
       <dependencySet>
-          <includes/>          
+          <includes/>
       </dependencySet>
     </dependencySets>
   </binaries>
-  
 </assembly>
