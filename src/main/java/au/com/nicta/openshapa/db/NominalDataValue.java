@@ -16,19 +16,19 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class NominalDataValue extends DataValue
-{
+public class NominalDataValue extends DataValue {
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all 
+     * itsDefault:  Constant containing the value to be assigned to all
      *      float data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
      *
      * queryVar: Boolean that is set to true iff the the value of the nominal
-     *      is a valid query variable -- that is if the nominal starts with a 
+     *      is a valid query variable -- that is if the nominal starts with a
      *      '?', and is at least two characters long.
      *
      *      The concept of a query variable is a hold over from MacSHAPA, that
@@ -37,94 +37,93 @@ public class NominalDataValue extends DataValue
      *      we make it easy to ignore it in contexts other than the MacSHAPA
      *      query column variable.
      *
-     * minVal & maxVal don't appear in NominalDataValue as a subrange of 
+     * minVal & maxVal don't appear in NominalDataValue as a subrange of
      *      nominals is expressed as a set of allowed values.  Given the
-     *      potential size of this set, we don't keep a copy of it here -- 
+     *      potential size of this set, we don't keep a copy of it here --
      *      referring directly to the associated formal argument when needed
-     *      instead.  
+     *      instead.
      */
-    
-    /** default value for nominals */
+
+    /** default value for nominals. */
     final String ItsDefault = null;
-    
-    /** the value assigned to the associated formal argument in this case */
+
+    /** the value assigned to the associated formal argument in this case. */
     String itsValue = ItsDefault;
-    
+
     /** whether the value currently assigned to the Nominal is a valid query
      *  variable name.
      */
     boolean queryVar = false;
-      
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * NominalDataValue()
      *
-     * Constructor for instances of NominalDataValue.  
-     * 
-     * Four versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of NominalDataValue.
+     *
+     * Four versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
-     * The second takes a reference to a database, and a formal argument ID, and 
+     * The second takes a reference to a database, and a formal argument ID, and
      * ttempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of NominalDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public NominalDataValue(Database db)
-        throws SystemErrorException
-    {
-        
+        throws SystemErrorException {
+
         super(db);
-        
+
     } /* NominalDataValue::NominalDataValue(db) */
-    
+
     public NominalDataValue(Database db,
                            long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
     } /* NominalDataValue::NominalDataValue(db, fargID) */
-    
+
     public NominalDataValue(Database db,
                            long fargID,
                            String value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
         this.setItsValue(value);
-        
+
     } /* NominalDataValue::NominalDataValue(db, fargID, value) */
-    
+
     public NominalDataValue(NominalDataValue dv)
         throws SystemErrorException
     {
-        
+
         super(dv);
-        
+
         if ( dv.itsValue == null )
         {
             this.itsValue = null;
@@ -133,10 +132,10 @@ public class NominalDataValue extends DataValue
         {
             this.itsValue = new String(dv.itsValue);
         }
-    
+
     } /* NominalDataValue::NominalDataValue(dv) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -144,7 +143,7 @@ public class NominalDataValue extends DataValue
     /**
      * getItsValue()
      *
-     * If the data value is currently defined, return a string containing a 
+     * If the data value is currently defined, return a string containing a
      * copy of the the current value of the data value.  Otherwise return null.
      *
      *                          JRM -- 8/16/07
@@ -153,10 +152,10 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public String getItsValue()
     {
-        
+
         if ( this.itsValue == null )
         {
             return null;
@@ -165,15 +164,15 @@ public class NominalDataValue extends DataValue
         {
             return (new String(this.itsValue));
         }
-        
+
     } /* NominlDataValue::getItsValue() */
-    
+
     /**
      * setItsValue()
      *
      * Set itsValue to the specified value.  If subrange is true, coerce the
-     * value into the subrange.  That is hard to do with nominals, so for the 
-     * nonce, we just set itsValue to null -- indicating that the nominal 
+     * value into the subrange.  That is hard to do with nominals, so for the
+     * nonce, we just set itsValue to null -- indicating that the nominal
      * data value is undefined.
      *
      *                                              JRM -- 8/16/07
@@ -182,14 +181,14 @@ public class NominalDataValue extends DataValue
      *
      *    - Added code to maintain this.isQueryVar. JRM -- 10/20/08
      */
-    
+
     public void setItsValue(String value)
         throws SystemErrorException
     {
         final String mName = "NominalDataValue::setItsValue(): ";
         DBElement dbe;
         NominalFormalArg nfa;
-        
+
         if ( ( value == null ) || ( value.length() == 0 ) )
         {
             this.itsValue = null;
@@ -202,7 +201,7 @@ public class NominalDataValue extends DataValue
             }
             else
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "value not valid nominal");
             }
         }
@@ -210,31 +209,31 @@ public class NominalDataValue extends DataValue
         {
             if ( this.itsFargID == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
             else if ( itsFargType != FormalArgument.fArgType.NOMINAL )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargType != NOMINAL");
             }
-            
+
             dbe = this.db.idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof NominalFormalArg ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                        "itsFargID doesn't refer to a nominal");
             }
-            
+
             nfa = (NominalFormalArg)dbe;
-            
+
             if ( nfa.approved(value) )
             {
                 itsValue = new String(value);
@@ -244,7 +243,7 @@ public class NominalDataValue extends DataValue
                 this.itsValue = null;
             }
         }
-        
+
         if ( ( this.itsValue != null ) &&
              ( this.itsValue.length() >= 1 ) &&
              ( this.itsValue.charAt(0) == '?' ) )
@@ -255,16 +254,16 @@ public class NominalDataValue extends DataValue
         {
             this.queryVar = false;
         }
-        
+
         return;
-        
+
     } /* QuoteStringDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * toString()
      *
@@ -278,7 +277,7 @@ public class NominalDataValue extends DataValue
      *
      *     - None.
      */
-    
+
     public String toString()
     {
         if ( this.itsValue == null )
@@ -289,14 +288,14 @@ public class NominalDataValue extends DataValue
         {
             return new String(this.itsValue);
         }
-        
+
     } /* NominalDataValue::toString() */
 
 
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -308,7 +307,7 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-  
+
     public String toDBString()
     {
         if ( this.itsValue == null )
@@ -331,9 +330,9 @@ public class NominalDataValue extends DataValue
         }
 
     } /* NominalDataValue::toDBString() */
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -344,7 +343,7 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -353,53 +352,53 @@ public class NominalDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "NominalDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* NominalDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Determine if the formal argument associated with the data value is 
-     * subranged, and if it is, updates the data values representation of 
+     * Determine if the formal argument associated with the data value is
+     * subranged, and if it is, updates the data values representation of
      * the subrange (if ant) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.
      *
@@ -412,23 +411,23 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "NominalDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof NominalFormalArg )
         {
             NominalFormalArg nfa = (NominalFormalArg)fa;
-            
+
             this.subRange = nfa.getSubRange();
-            
+
             if ( this.subRange )
             {
                 if ( ( this.itsValue != null ) &&
@@ -438,7 +437,7 @@ public class NominalDataValue extends DataValue
                     this.itsValue = null;
                 }
             }
-            
+
         }
         else if ( fa instanceof UnTypedFormalArg )
         {
@@ -446,18 +445,18 @@ public class NominalDataValue extends DataValue
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* NominalDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
@@ -465,12 +464,12 @@ public class NominalDataValue extends DataValue
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
      *
-     * Coercing to the nearest valid value doesn't doesn't have an obvious 
+     * Coercing to the nearest valid value doesn't doesn't have an obvious
      * meaning in the case of nominals, so in this case, if subrange is true
      * and value contains a valid nominal that is not in the permitted list
      * for the associaged formal argument, just return false.
      *
-     * This method should never be passed an invalid nominal, so if it 
+     * This method should never be passed an invalid nominal, so if it
      * ever receives one, it will throw a system error exception.
      *
      *                                              JRM -- 07/08/18
@@ -479,7 +478,7 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public String coerceToRange(String value)
         throws SystemErrorException
     {
@@ -491,41 +490,41 @@ public class NominalDataValue extends DataValue
         {
             return value;
         }
-        
+
         if ( ! this.db.IsValidNominal(value) )
         {
-            throw new SystemErrorException(mName + "value isn't valid nominal"); 
+            throw new SystemErrorException(mName + "value isn't valid nominal");
         }
 
         if ( this.subRange )
         {
             if ( this.itsFargID == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
             else if ( itsFargType != FormalArgument.fArgType.NOMINAL )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargType != NOMINAL");
             }
-            
+
             dbe = this.db.idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof NominalFormalArg ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                        "itsFargID doesn't refer to a nominal");
             }
-            
+
             nfa = (NominalFormalArg)dbe;
-            
+
             if ( nfa.approved(value) )
             {
                 return (new String(value));
@@ -535,16 +534,16 @@ public class NominalDataValue extends DataValue
                 return null;
             }
         }
-        
+
         return value;
-        
+
     } /* NominalDataValue::coerceToRange() */
-    
-    
+
+
     /**
      * isQueryVar()
      *
-     * Return true if the current value of the nominal is a valid MacSHAPA 
+     * Return true if the current value of the nominal is a valid MacSHAPA
      * style query variable name, and false otherwise.
      *
      *                                              JRM -- 10/20/08
@@ -553,27 +552,27 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public boolean isQueryVar()
-    
+
     {
-        
+
         return this.queryVar;
-        
+
     } /* NominalDataValue::isQueryVar() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Construct an instance of NominalDataValue with the specified 
+     * Construct an instance of NominalDataValue with the specified
      * initialization.
      *
-     * Returns a reference to the newly constructed NominalDataValue if 
+     * Returns a reference to the newly constructed NominalDataValue if
      * successful.  Throws a system error exception on failure.
      *
      *                                              JRM -- 3/31/08
@@ -582,68 +581,68 @@ public class NominalDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static NominalDataValue Construct(Database db,
                                              String n)
         throws SystemErrorException
     {
         final String mName = "NominalDataValue::Construct(db, n)";
         NominalDataValue ndv = null;
-        
+
         ndv = new NominalDataValue(db);
-        
+
         ndv.setItsValue(n);
-        
+
         return ndv;
-        
+
     } /* NominalDataValue::Construct(db, n) */
-      
-    
+
+
     /**
      * NominalDataValuesAreLogicallyEqual()
      *
-     * Given two instances of NominalDataValue, return true if they contain 
+     * Given two instances of NominalDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
-     * 
+     *
      *                                              JRM -- 2/7/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected static boolean NominalDataValuesAreLogicallyEqual
             (NominalDataValue ndv0,
              NominalDataValue ndv1)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
                 "NominalDataValue::NominalDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( ndv0 == null ) || ( ndv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": ndv0 or ndv1 null on entry.");
         }
-        
+
         if ( ndv0 != ndv1 )
         {
             if ( ndv0.itsValue != ndv1.itsValue )
             {
-                if ( ( ( ndv0.itsValue == null ) 
+                if ( ( ( ndv0.itsValue == null )
                        &&
-                       ( ndv1.itsValue != null ) 
+                       ( ndv1.itsValue != null )
                      )
                      ||
-                     ( ( ndv0.itsValue != null ) 
+                     ( ( ndv0.itsValue != null )
                        &&
-                       ( ndv1.itsValue == null ) 
+                       ( ndv1.itsValue == null )
                      )
                    )
                 {
@@ -659,9 +658,49 @@ public class NominalDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* NominalDataValue::NominalDataValuesAreLogicallyEqual() */
 
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += (this.queryVar ? 1 : 0) * SEED1;
+        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED2;
+
+        return hash;
+    }
+
+    /**
+     * Compares this NominalDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        NominalDataValue n = (NominalDataValue) obj;
+        return ((itsValue == null && n.itsValue == null)
+                        || (itsValue != null && itsValue.equals(n.itsValue)))
+                && n.queryVar == this.queryVar
+                && super.equals(obj);
+    }
 
     /*************************************************************************/
     /**************************** Test Code: *********************************/

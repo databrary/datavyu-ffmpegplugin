@@ -631,6 +631,54 @@ public class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::TimeStampDataValuesAreLogicallyEqual() */
 
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += this.itsValue.hashCode() * SEED1;
+        hash += this.maxVal.hashCode() * SEED2;
+        hash += this.minVal.hashCode() * SEED3;
+
+        return hash;
+    }
+
+
+    /**
+     * Compares this TimeStampDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        TimeStampDataValue i = (TimeStampDataValue) obj;
+        return (itsValue == i.itsValue
+                        || (itsValue != null && itsValue.equals(i.itsValue)))
+            && (maxVal == i.maxVal
+                        || (maxVal != null && maxVal.equals(i.maxVal)))
+            && (minVal == i.minVal
+                        || (minVal != null && minVal.equals(i.minVal)))
+            && super.equals(obj);
+    }
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
