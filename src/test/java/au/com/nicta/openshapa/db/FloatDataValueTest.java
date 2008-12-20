@@ -352,7 +352,7 @@ public class FloatDataValueTest {
         FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 200.0);
         FloatDataValue f_copy = (FloatDataValue) f_value0.clone();
 
-        //assertEquals(f_value0, f_copy);
+        assertEquals(f_value0, f_copy);
     }
 
 

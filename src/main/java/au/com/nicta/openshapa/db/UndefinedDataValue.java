@@ -1,12 +1,3 @@
-/*
- * UndefinedDataValue.java
- *
- * Created on August 19, 2007, 4:18 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package au.com.nicta.openshapa.db;
 
 /**
@@ -26,7 +17,7 @@ public class UndefinedDataValue extends DataValue
      */
     
     /** the name of the associated formal arg */
-    String itsValue = "<val>";
+    private String itsValue = "<val>";
       
     
     /*************************************************************************/
@@ -382,52 +373,30 @@ public class UndefinedDataValue extends DataValue
      *    - None.
      */
     
-    public String coerceToRange(String value)
-        throws SystemErrorException
-    {
+    public String coerceToRange(String value) throws SystemErrorException {
         final String mName = "UndefinedDataValue::coerceToRange(): ";
 
-        if ( ! ( db.IsValidFargName(value) ) )
-        {
+        if (!db.IsValidFargName(value)) {
             throw new SystemErrorException(mName + 
                     "value not a valid formal argument name");
         }
         
-        if ( this.itsFargID != DBIndex.INVALID_ID )
-        {
-            DBElement dbe;
-            UnTypedFormalArg utfa;
-            
-            if ( itsFargType != FormalArgument.fArgType.UNTYPED )
-            {
-                throw new SystemErrorException(mName + 
-                                               "itsFargType != UNTYPED");
-            }
-            
-            dbe = this.db.idx.getElement(this.itsFargID);
+        if (this.itsFargID != DBIndex.INVALID_ID) {
+            DBElement dbe = this.db.idx.getElement(this.itsFargID);
 
-            if ( dbe == null )
-            {
+            if (dbe == null) {
                 throw new SystemErrorException(mName + 
                                                "itsFargID has no referent");
             }
+
+            FormalArgument fa = (FormalArgument) dbe;
             
-            if ( ! ( dbe instanceof UnTypedFormalArg ) )
-            {
-                throw new SystemErrorException(mName +
-                        "itsFargID doesn't refer to an untyped formal arg");
-            }
-            
-            utfa = (UnTypedFormalArg)dbe;
-            
-            if ( utfa.getFargName().compareTo(value) != 0 )
-            {
-                return new String(utfa.getFargName());
+            if (fa.getFargName().compareTo(value) != 0) {
+                return new String(fa.getFargName());
             }
         }
-        
-        return value;
-        
+
+        return value;        
     } /* UndefinedDataValue::coerceToRange() */
   
     
@@ -453,13 +422,8 @@ public class UndefinedDataValue extends DataValue
     
     public static UndefinedDataValue Construct(Database db)
         throws SystemErrorException
-    {
-        final String mName = "UndefinedDataValue::Construct(db)";
-        UndefinedDataValue udv = null;
-        
-        udv = new UndefinedDataValue(db);
-        
-        return udv;
+    {                
+        return new UndefinedDataValue(db);
         
     } /* UndefinedDataValue::Construct(db) */
 
@@ -484,7 +448,7 @@ public class UndefinedDataValue extends DataValue
      *
      *    - None.
      */
-    
+    @Deprecated
     protected static boolean UndefinedDataValuesAreLogicallyEqual
             (UndefinedDataValue udv0,
              UndefinedDataValue udv1)
@@ -521,6 +485,43 @@ public class UndefinedDataValue extends DataValue
         return dataValuesAreEqual;
         
     } /* UndefinedDataValue::UndefinedDataValuesAreLogicallyEqual() */
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /**
+     * Compares this UndefinedDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this
+     * UndefinedDataValue, or false otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        UndefinedDataValue u = (UndefinedDataValue) obj;
+        return u.itsValue.equals(this.itsValue) && super.equals(obj);
+    }
+
+    /**
+     * @return A hash value for this object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += this.itsValue.hashCode() * SEED1;
+
+        return hash;
+    }
 
     
     /*************************************************************************/
