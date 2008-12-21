@@ -11,10 +11,11 @@ import static org.junit.Assert.*;
  * 
  * @author cfreeman
  */
-public class NominalDataValueTest {
+public class NominalDataValueTest extends DataValueTest {
     private Database db;
     private MatrixVocabElement nom_mve;
     private NominalFormalArg nfa;
+    private NominalDataValue ndv;
 
     private MatrixVocabElement nom_mve2;
     private NominalFormalArg nfa2;
@@ -26,6 +27,11 @@ public class NominalDataValueTest {
      * Default test constructor.
      */
     public NominalDataValueTest() {
+    }
+
+    @Override
+    public DataValue getInstance() {
+        return ndv;
     }
 
     /**
@@ -58,6 +64,7 @@ public class NominalDataValueTest {
         ufa = new UnTypedFormalArg(db, "<untyped>");
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);
+        ndv = new NominalDataValue(db);
     }
 
     /**
@@ -409,8 +416,10 @@ public class NominalDataValueTest {
 
 
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         NominalDataValue value0 =
                                 new NominalDataValue(db, nfa.getID(), "bravo");
         NominalDataValue value1 =

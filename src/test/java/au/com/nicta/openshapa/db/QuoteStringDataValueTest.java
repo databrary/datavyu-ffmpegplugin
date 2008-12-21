@@ -10,16 +10,22 @@ import static org.junit.Assert.*;
  * 
  * @author cfreeman
  */
-public class QuoteStringDataValueTest {
+public class QuoteStringDataValueTest extends DataValueTest {
     private Database db;
     private MatrixVocabElement qs_mve;
     private QuoteStringFormalArg qsfa;
+    private QuoteStringDataValue qsdv;
 
     private MatrixVocabElement qs_mve2;
     private QuoteStringFormalArg qsfa2;
 
     private MatrixVocabElement matrix_mve;
     private UnTypedFormalArg ufa;
+
+    @Override
+    public DataValue getInstance() {
+        return qsdv;
+    }
 
     /**
      * Default test constructor.
@@ -58,6 +64,7 @@ public class QuoteStringDataValueTest {
         ufa = new UnTypedFormalArg(db, "<untyped>");
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);
+        qsdv = new QuoteStringDataValue(db);
     }
 
     /**
@@ -433,10 +440,11 @@ public class QuoteStringDataValueTest {
         assertEquals(value0, copy);
     }
 
-
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         QuoteStringDataValue value0 =
                             new QuoteStringDataValue(db, qsfa.getID(), "bravo");
         QuoteStringDataValue value1 =

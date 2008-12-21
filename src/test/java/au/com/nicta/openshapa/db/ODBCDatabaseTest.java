@@ -37,13 +37,11 @@ public class ODBCDatabaseTest extends DatabaseTest {
     }
 
     @Before
-    @Override
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
     }
 
     @After
-    @Override
     public void tearDown() {
         db = null;
     }

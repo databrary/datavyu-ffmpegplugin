@@ -10,13 +10,17 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class UndefinedDataValueTest {
+public class UndefinedDataValueTest extends DataValueTest {
 
     /** Database for tests. */
     private Database db;
     /** UndefinedDatavalue to use for tests. */
     private UndefinedDataValue uDataValue;
 
+    @Override
+    public DataValue getInstance() {
+        return uDataValue;
+    }
 
     public UndefinedDataValueTest() {
     }
@@ -149,8 +153,10 @@ public class UndefinedDataValueTest {
      * implemented for the undefined data value.
      */
     @Test
+    @Override
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         uDataValue.setItsValue("<oink>");
         UndefinedDataValue uValue = new UndefinedDataValue(db);
         uValue.setItsValue("<oink>");

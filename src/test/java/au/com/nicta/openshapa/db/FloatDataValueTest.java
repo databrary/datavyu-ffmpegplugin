@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class FloatDataValueTest {
+public class FloatDataValueTest extends DataValueTest {
     /** tolerance for double comparisons in tests. */
     private static final double DELTA = 0.001;
 
@@ -20,11 +20,18 @@ public class FloatDataValueTest {
     private MatrixVocabElement floatMve;
     /** FloatFormalArg for tests. */
     private FloatFormalArg ffa;
+    /** A basic fload data value. */
+    private FloatDataValue fdv;
 
     /** MatrixVocalElement 2 for tests. */
     private MatrixVocabElement floatMve2;
     /** FloatFormalArg 2 for tests. */
     private FloatFormalArg ffa2;
+
+    @Override
+    public DataValue getInstance() {
+        return fdv;
+    }
 
     /**
      * Default test constructor.
@@ -56,6 +63,7 @@ public class FloatDataValueTest {
         ffa2.setRange(-100.0, 100.0);
         floatMve2.appendFormalArg(ffa2);
         db.vl.addElement(floatMve2);
+        fdv = new FloatDataValue(db);
     }
 
     /**
@@ -357,8 +365,10 @@ public class FloatDataValueTest {
 
 
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 300.003);
         FloatDataValue f_value1 = new FloatDataValue(db, ffa.getID(), 300.003);
         FloatDataValue f_value2 = new FloatDataValue(db, ffa.getID(), 300.003);

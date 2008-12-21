@@ -10,10 +10,11 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class IntDataValueTest {
+public class IntDataValueTest extends DataValueTest {
     private Database db;
     private MatrixVocabElement int_mve;
     private IntFormalArg ifa;
+    private IntDataValue idv;
 
     private MatrixVocabElement int_mve2;
     private IntFormalArg ifa2;
@@ -22,6 +23,11 @@ public class IntDataValueTest {
      * Default test constructor.
      */
     public IntDataValueTest() {
+    }
+
+    @Override
+    public DataValue getInstance() {
+        return idv;
     }
 
     /**
@@ -46,6 +52,7 @@ public class IntDataValueTest {
         ifa2.setRange(-100, 100);
         int_mve2.appendFormalArg(ifa2);
         db.vl.addElement(int_mve2);
+        idv = new IntDataValue(db);
     }
 
     /**
@@ -344,8 +351,10 @@ public class IntDataValueTest {
 
 
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         IntDataValue value0 = new IntDataValue(db, ifa.getID(), 300);
         IntDataValue value1 = new IntDataValue(db, ifa.getID(), 300);
         IntDataValue value2 = new IntDataValue(db, ifa.getID(), 300);

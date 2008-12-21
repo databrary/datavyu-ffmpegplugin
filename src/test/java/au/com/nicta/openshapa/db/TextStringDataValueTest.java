@@ -10,14 +10,20 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class TextStringDataValueTest {
+public class TextStringDataValueTest extends DataValueTest {
     Database db;
 
     MatrixVocabElement txt_mve;
     TextStringFormalArg tfa;
+    TextStringDataValue tsdv;
 
     MatrixVocabElement txt_mve2;
     TextStringFormalArg tfa2;
+
+    @Override
+    public DataValue getInstance() {
+        return tsdv;
+    }
 
     /**
      * Default test constructor.
@@ -46,6 +52,7 @@ public class TextStringDataValueTest {
         tfa2 = new TextStringFormalArg(db);
         txt_mve2.appendFormalArg(tfa2);
         db.vl.addElement(txt_mve2);
+        tsdv = new TextStringDataValue(db);
     }
 
     /**
@@ -367,8 +374,10 @@ public class TextStringDataValueTest {
 
 
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         TextStringDataValue value0 =
                             new TextStringDataValue(db, tfa.getID(), "bravo");
         TextStringDataValue value1 =

@@ -32,6 +32,7 @@ public abstract class DatabaseTest {
     public static void tearDownClass() throws Exception {
     }
 
+    /*
     @Before
     public void setUp() throws SystemErrorException {
     }
@@ -39,6 +40,7 @@ public abstract class DatabaseTest {
     @After
     public void tearDown() {
     }
+     */
 
     /**
      * Test of getType method, of class Database.

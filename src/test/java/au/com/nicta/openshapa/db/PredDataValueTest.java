@@ -10,16 +10,22 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class PredDataValueTest {
+public class PredDataValueTest extends DataValueTest {
     private Database db;
     private MatrixVocabElement nom_mve;
     private NominalFormalArg nfa;
+    private PredDataValue pdv;
 
     private MatrixVocabElement nom_mve2;
     private NominalFormalArg nfa2;
 
     private MatrixVocabElement matrix_mve;
     private UnTypedFormalArg ufa;
+
+    @Override
+    public DataValue getInstance() {
+        return pdv;
+    }
 
     /**
      * Default test constructor.
@@ -57,6 +63,7 @@ public class PredDataValueTest {
         ufa = new UnTypedFormalArg(db, "<untyped>");
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);
+        pdv = new PredDataValue(db);
     }
 
     /**
@@ -66,8 +73,6 @@ public class PredDataValueTest {
     @After
     public void tearDown() {
     }
-
-
 
     @Test
     public void testClone()
@@ -81,8 +86,10 @@ public class PredDataValueTest {
 
 
     @Test
+    @Override
     public void testEquals()
-    throws SystemErrorException {
+    throws SystemErrorException, CloneNotSupportedException {
+        super.testEquals();
         PredDataValue value0 = new PredDataValue(db);
         PredDataValue value1 = new PredDataValue(db);
         PredDataValue value2 = new PredDataValue(db);

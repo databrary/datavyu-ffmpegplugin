@@ -148,7 +148,7 @@ public abstract class DataValue extends DBElement
      *
      *     - None.
      */
-    
+    @Override
     public abstract String toString();
 
 
@@ -160,7 +160,7 @@ public abstract class DataValue extends DBElement
      * <i>This function is intended for debugging purposses.</i>
      * @return the string value.
      */
-  
+    @Override
     public abstract String toDBString();
     
     
@@ -827,9 +827,11 @@ public abstract class DataValue extends DBElement
      *
      * Changes:
      *
+     * @Deprecated Should use clone in place of this.
+     *
      *    - None.
      */
-    
+    @Deprecated
     public static DataValue Copy(DataValue dv,
                                  boolean blindCopy)
         throws SystemErrorException
@@ -898,9 +900,11 @@ public abstract class DataValue extends DBElement
      *
      * Changes:
      *
+     * @Deprecated Should use equals in place of this.
+     *
      *    - None.
      */
-    
+    @Deprecated
     public static boolean DataValuesAreLogicallyEqual(DataValue dv0,
                                                       DataValue dv1)
         throws SystemErrorException
