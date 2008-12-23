@@ -17,9 +17,9 @@ public class UndefinedDataValue extends DataValue
      */
     
     /** the name of the associated formal arg */
-    private String itsValue = "<val>";
-      
-    
+    String itsValue = "<val>";
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/

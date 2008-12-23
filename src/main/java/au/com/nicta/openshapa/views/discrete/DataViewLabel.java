@@ -80,7 +80,7 @@ public class DataViewLabel
     this.updateStrings();
     this.repaint();
   }
-  
+
   public void setWrapWidth(int width)
   {
     this.setMaxWidth(width);
@@ -95,7 +95,7 @@ public class DataViewLabel
   {
     this.editable = value;
   }
-  
+
   public boolean isEditable()
   {
     return(this.editable);
@@ -140,17 +140,17 @@ public class DataViewLabel
                                            me.getClickCount(),
                                            me.isPopupTrigger()));
   }
-  
+
   public void mouseEntered(MouseEvent me)
   {
     this.redispathMouseEvent(me);
   }
-  
+
   public void mouseExited(MouseEvent me)
   {
     this.redispathMouseEvent(me);
   }
-  
+
   public void mousePressed(MouseEvent me)
   {
     if (!this.isEditable()) {
@@ -164,7 +164,7 @@ public class DataViewLabel
       this.redispathMouseEvent(me);
     }
   }
-  
+
   public void mouseClicked(MouseEvent me)
   {
     if (this.isEditable() && (this.value != null)) {
@@ -191,37 +191,37 @@ public class DataViewLabel
       this.redispathMouseEvent(me);
     }
   }
-  
+
   public FloatEditor getFloatEditor()
   {
     return (this.floatEditor);
   }
-  
+
   public IntegerEditor getIntegerEditor()
   {
     return (this.integerEditor);
   }
-  
+
   public MatrixEditor getMatrixEditor()
   {
     return (this.matrixEditor);
   }
-  
+
   public NominalEditor getNominalEditor()
   {
     return (this.nominalEditor);
   }
-  
+
   public PredicateEditor getPredicateEditor()
   {
     return (this.predicateEditor);
   }
-  
+
   public StringEditor getStringEditor()
   {
     return (this.stringEditor);
   }
-  
+
   public TimeStampEditor getTimeStampEditor()
   {
     return (this.timeStampEditor);

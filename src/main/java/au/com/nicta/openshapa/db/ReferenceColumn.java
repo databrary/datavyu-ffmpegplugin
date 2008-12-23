@@ -29,41 +29,41 @@ public class ReferenceColumn extends Column
      *      of the column.  This Vector is created when the column is inserted
      *      into the column list, and not copied in the copy constructor.
      */
-     
+
     /** Vector of ReferenceCells for Column */
     private Vector<ReferenceCell> itsCells = null;
-  
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * ReferenceColumn()
      *
-     * Constructors for instances of ReferenceColumn.  
-     * 
+     * Constructors for instances of ReferenceColumn.
+     *
      * Three versions of this constructor.
-     * 
+     *
      * The first takes only a reference to a database, and a name
-     * as its parameters.  This is the constructor that will typically be 
+     * as its parameters.  This is the constructor that will typically be
      * used when a new column is created in the spreadsheet.
      *
-     * The second takes a reference to a database, a name, and initial values 
-     * for the  hidden and readOnly field.  This constructor is intended for 
-     * use when loading a Database from file.  
+     * The second takes a reference to a database, a name, and initial values
+     * for the  hidden and readOnly field.  This constructor is intended for
+     * use when loading a Database from file.
      *
-     *  The third takes an instance of ReferenceColum as its parameter, and returns 
+     *  The third takes an instance of ReferenceColum as its parameter, and returns
      *  a copy.  Note that the itsCells field is NOT copied.
      *
-     *                                              JRM -- 8/29/07  
+     *                                              JRM -- 8/29/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     public ReferenceColumn(Database db,
                            String name)
         throws SystemErrorException
@@ -71,11 +71,11 @@ public class ReferenceColumn extends Column
         super(db);
 
         final String mName = "ReferenceColumn::ReferenceColumn(db, name): ";
-        
+
         this.setName(name);
-        
+
     } /* ReferenceColumn::ReferenceColumn(db, name, type) */
-    
+
     public ReferenceColumn(Database db,
                       String name,
                       boolean hidden,
@@ -85,26 +85,26 @@ public class ReferenceColumn extends Column
         super(db, name, hidden, readOnly);
 
     } /* ReferenceColumn::ReferenceColumn(db, name, hidden, readOnly) */
-    
+
     public ReferenceColumn(ReferenceColumn rc)
         throws SystemErrorException
     {
- 
+
         super((Column)rc);
-        
+
     } /* ReferenceColumn::ReferenceColumn(rc) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-    
+
     /**
      * getItsCells() & setItsCells()
      *
      * Get and set the current value of itsCells.  Note that these methods
      * are protected and should only be called from within the openshapa.db
-     * package.  We will use them to transfer the vector of cells from one 
+     * package.  We will use them to transfer the vector of cells from one
      * incarnation of the ReferencesColumn header to the next.
      *
      * Update numCells in passing.
@@ -115,19 +115,19 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected Vector<ReferenceCell> getItsCells()
     {
-        
+
         return this.itsCells;
-        
+
     } /* ReferenceColumn::getItsCells() */
-    
+
     protected void setItsCells(Vector<ReferenceCell> cells)
     {
-        
+
         this.itsCells = cells;
-        
+
         if ( this.itsCells == null )
         {
             this.numCells = 0;
@@ -136,18 +136,18 @@ public class ReferenceColumn extends Column
         {
             this.numCells = this.itsCells.size();
         }
-        
+
     } /* ReferenceColumn::setItsCells(cells) */
-    
-         
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
    /**
      * toDBString()
-     * 
-     * Returns a String representation of the ReferenceColumn for comparison 
+     *
+     * Returns a String representation of the ReferenceColumn for comparison
      * against the expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -157,33 +157,33 @@ public class ReferenceColumn extends Column
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     public String toDBString()
     {
         String s;
-        
+
         try
         {
             s = "( ReferenceColumn (name " + this.name +
                 ") (id " + this.getID() +
-                ") (hidden " + this.hidden + 
+                ") (hidden " + this.hidden +
                 ") (readOnly " + this.readOnly +
                 ") (numCells " + this.numCells +
                 this.itsCellsToDBString() +  "))";
         }
-        
+
         catch (SystemErrorException e)
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-       
+
         return s;
-        
+
     } /* ReferenceColumn::toDBString() */
 
-    
+
     /**
      * toString()
      *
@@ -194,12 +194,12 @@ public class ReferenceColumn extends Column
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    public String toString() 
+    public String toString()
     {
         String s;
-        
+
         try
         {
             s = "(" + this.getName()  + ", " + this.itsCellsToString() + ")";
@@ -209,21 +209,21 @@ public class ReferenceColumn extends Column
         {
              s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
-               
+
         return (s);
-        
+
     } /* ReferenceColumn::toString() */
-    
-  
-  
+
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * constructItsCells()
      *
-     * Allocate the Vector of ReferenceCell used to store cells.  This method 
+     * Allocate the Vector of ReferenceCell used to store cells.  This method
      * should only be called when the ReferenceColumn is being inserted in the
      * column list.
      *
@@ -233,41 +233,41 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected void constructItsCells()
         throws SystemErrorException
     {
         final String mName = "ReferenceColumn::constructItsCells(): ";
-        
+
         if ( this.itsCells != null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells already allocated?");
         }
-        
+
         // TODO: add more sanity checks?
-        
+
         this.itsCells = new Vector<ReferenceCell>();
-        
+
         return;
-         
+
     } /* ReferenceColumn::constructItsCells() */
 
-    
+
     /**
      * itsCellsToDBString()
      *
      * Construct a string containing the values of the cells in a
-     * format that displays the full status of the arguments and 
-     * facilitates debugging.  
+     * format that displays the full status of the arguments and
+     * facilitates debugging.
      *                                          JRM -- 8/30/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String itsCellsToDBString()
         throws SystemErrorException
     {
@@ -289,36 +289,36 @@ public class ReferenceColumn extends Column
             }
 
             s = new String("(itsCells (");
-                
+
             while ( i < (this.numCells - 1) )
             {
                 s += this.getCell(i).toDBString() + ", ";
                 i++;
             }
-            
+
             s += this.getCell(i).toDBString();
 
             s += "))";
         }
-        
+
         return s;
-        
+
     } /* ReferenceColumn::itsCellsToDBString() */
-        
-    
+
+
     /**
      * itsCellsToString()
      *
      * Construct a string containing the values of the cells in the column.
-     *  
+     *
      *                                          JRM -- 8/30/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
+
     protected String itsCellsToString()
         throws SystemErrorException
     {
@@ -338,29 +338,29 @@ public class ReferenceColumn extends Column
             {
                 throw new SystemErrorException(mName + "numCells <= 0");
             }
-            
+
             s = new String("(");
-        
+
             while ( i < (numCells - 1) )
             {
                 s += this.getCell(i).toString() + ", ";
                 i++;
             }
-            
+
             s += getCell(i).toString();
 
             s += ")";
         }
-        
+
         return s;
-        
+
     } /* ReferenceColumn::itsCellsToString() */
-    
-  
+
+
     /*************************************************************************/
     /************************* Cells Management: *****************************/
     /*************************************************************************/
-    
+
     /**
      * appendCell()
      *
@@ -372,41 +372,41 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected void appendCell(ReferenceCell newCell)
         throws SystemErrorException
     {
         final String mName = "ReferenceColumn::appendCell(): ";
         ReferenceCell rc = null;
-        
+
         if ( this.itsCells == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells not initialized?!?");
         }
-        
+
         if ( ! this.validCell(newCell))
         {
             throw new SystemErrorException(mName + "invalid cell");
         }
-        
+
         // make a copy of the cell for insertion
         rc = new ReferenceCell(newCell);
 
         this.itsCells.add(rc);
         this.numCells = this.itsCells.size();
         rc.setOrd(this.numCells);
-        
+
         if ( itsCells.elementAt(rc.getOrd() - 1) != rc )
         {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
-        
+
         return;
-        
+
     } /* ReferenceColumn::appendCell(newCell) */
-    
-    
+
+
     /**
      * getCell()
      *
@@ -420,37 +420,37 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected ReferenceCell getCell(int ord)
         throws SystemErrorException
     {
         final String mName = "ReferenceColumn::getCell(): ";
         ReferenceCell retVal = null;
-        
+
         if ( ( ord < 1 ) || ( ord > this.numCells ) )
         {
             throw new SystemErrorException(mName + "ord out of range");
         }
-        
+
         if ( this.itsCells == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells not initialized?!?");
         }
-        
+
         retVal = this.itsCells.get(ord - 1);
-        
+
         if ( retVal.getOrd() != ord )
         {
             throw new SystemErrorException(mName + "unexpected ord");
         }
-        
+
         return retVal;
-        
+
     } /* ReferenceColumn::getCell() */
-    
-    
-    /** 
+
+
+    /**
      * getCellCopy()
      *
      * Return a copy of the cell at the specified ord.
@@ -461,16 +461,16 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected ReferenceCell getCellCopy(int ord)
         throws SystemErrorException
     {
-        
+
         return new ReferenceCell(this.getCell(ord));
-        
+
     } /* ReferenceColumn::getCell() */
-    
-    
+
+
     /**
      * insertCell()
      *
@@ -483,7 +483,7 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected void insertCell(ReferenceCell newCell,
                               int ord)
        throws SystemErrorException
@@ -491,57 +491,57 @@ public class ReferenceColumn extends Column
         final String mName = "ReferenceColumn::insertCell(): ";
         int i;
         ReferenceCell rc = null;
-        
+
         if ( ( ord < 1 ) || ( ( ord > this.numCells ) && ( ord != 1 ) ) )
         {
             throw new SystemErrorException(mName + "ord out of range");
         }
-        
+
         if ( ! this.validCell(newCell))
         {
             throw new SystemErrorException(mName + "invalid cell");
         }
-        
+
         if ( this.itsCells == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells not initialized?!?");
         }
-        
+
         // make a copy of the cell for insertion & set its ord
         rc = new ReferenceCell(newCell);
         rc.setOrd(ord);
-        
+
         // insert the cell & update numCells
         this.itsCells.insertElementAt(rc, (ord - 1));
         this.numCells = this.itsCells.size();
-        
+
         // verify ord of new cell
         if ( itsCells.get(rc.getOrd() - 1) != rc )
         {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
-        
+
         // Update ords for insertion
         for ( i = ord; i < this.numCells; i++ )
         {
             rc = itsCells.elementAt(i);
-            
+
             if ( rc.getOrd() != i )
             {
                 throw new SystemErrorException(mName + "unexpected old ord" + i);
             }
-            
+
             /* update the ord */
             rc.setOrd(i + 1);
         }
     } /* ReferenceColumn::insertCell(newCell, ord) */
- 
-    
+
+
     /**
      * removeCell()
      *
-     * Remove the cell indicated by the supplied ord from itsCells.  As a 
+     * Remove the cell indicated by the supplied ord from itsCells.  As a
      * sanity check, verify that the target cell has the indicated ID.
      * After the removal, update the ords of the remaining cells.
      *
@@ -550,10 +550,10 @@ public class ReferenceColumn extends Column
      *                                      JRM -- 8/30/07
      *
      * Changes:
-     *   
+     *
      *    - None.
      */
-    
+
     protected ReferenceCell removeCell(int targetOrd,
                                        long targetID)
         throws SystemErrorException
@@ -562,8 +562,8 @@ public class ReferenceColumn extends Column
         int i;
         ReferenceCell rc = null;
         ReferenceCell retVal = null;
-        
-        
+
+
         if ( ( targetOrd < 1 ) || ( targetOrd > this.numCells ) )
         {
             throw new SystemErrorException(mName + "targetOrd out of range");
@@ -571,58 +571,58 @@ public class ReferenceColumn extends Column
 
         if ( this.itsCells == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells not initialized?!?");
         }
 
         rc = itsCells.elementAt(targetOrd - 1);
-         
+
         if ( rc == null )
         {
             throw new SystemErrorException(mName + "can't get target cell");
         }
-        
+
         if ( rc.getID() != targetID )
         {
             throw new SystemErrorException(mName + "target ID mismatch");
         }
-        
+
         if ( rc != this.itsCells.remove(targetOrd -1) )
         {
             throw new SystemErrorException(mName + "remove failed?!?!");
         }
-        
+
         retVal = rc;
-        
+
         this.numCells = this.itsCells.size();
-        
+
         for ( i = targetOrd - 1; i < this.numCells; i++)
         {
             rc = this.itsCells.get(i);
-            
+
             if ( rc == null )
             {
                 throw new SystemErrorException(mName + "can't get cell" + i);
             }
-            
+
             if ( rc.getOrd() != i )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "unexpected cell ord " + i);
             }
-            
+
             rc.setOrd(i + 1);
         }
-        
+
         return retVal;
-        
+
     } /* ReferenceColumn::removeCell */
-    
-    
+
+
     /**
      * replaceCell()
      *
-     * Replace the ReferenceCell at targetOrd in this.itsCells with the supplied 
+     * Replace the ReferenceCell at targetOrd in this.itsCells with the supplied
      * ReferenceCell.  Return the old ReferenceCell.
      *                                              JRM -- 8/30/07
      *
@@ -630,7 +630,7 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected ReferenceCell replaceCell(ReferenceCell newCell,
                                         int targetOrd)
         throws SystemErrorException
@@ -639,55 +639,55 @@ public class ReferenceColumn extends Column
         int i;
         ReferenceCell rc = null;
         ReferenceCell retVal = null;
-        
+
         if ( ( targetOrd < 1 ) || ( targetOrd > this.numCells ) )
         {
             throw new SystemErrorException(mName + "targetOrd out of range");
         }
-        
+
         if ( ! this.validCell(newCell))
         {
             throw new SystemErrorException(mName + "invalid cell");
         }
-        
+
         if ( this.itsCells == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "itsCells not initialized?!?");
         }
-        
+
         newCell.setOrd(targetOrd);
-        
+
         rc = this.itsCells.get(targetOrd);
-        
+
         if ( rc == null )
         {
             throw new SystemErrorException(mName + "can't get old cell.");
         }
-        
+
         retVal = this.itsCells.set(targetOrd - 1, newCell);
-        
+
         if ( retVal != rc )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "unexpected return from set()");
         }
-        
+
         // verify ord of new cell
         if ( itsCells.get(newCell.getOrd() - 1) != newCell )
         {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
-        
+
         return retVal;
-        
+
     } /* ReferenceColumn::replaceCell() */
-    
-    
+
+
     /**
      * sortItsCells()
      *
-     * 
+     *
      * Sort itsCells by cell onset.
      *                                              JRM -- 3/20/08
      *
@@ -695,21 +695,21 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     protected void sortItsCells()
         throws SystemErrorException
     {
         final String mName = "ReferenceColumn::sortItsCells(): ";
-        
+
         throw new SystemErrorException(mName + "method not implemented");
-    
+
     } /* ReferenceColumn::sortItsCells() */
-    
-    
+
+
     /**
      * validCell()
      *
-     * Verify that a cell has been correctly initialized for insertion into 
+     * Verify that a cell has been correctly initialized for insertion into
      * itsCells.  Return true if it has been, and false otherwise.
      *
      *                                              JRM -- 8/30/07
@@ -718,54 +718,54 @@ public class ReferenceColumn extends Column
      *
      *    - None.
      */
-    
+
     private boolean validCell(ReferenceCell cell)
         throws SystemErrorException
     {
         final String mName = "ReferenceColumn::validCell(): ";
         long targetID;
         DBElement dbe;
-        
+
         if ( cell == null )
         {
             throw new SystemErrorException(mName + "cell null on entry.");
         }
-        
+
         if ( cell.getDB() != this.getDB() )
         {
             return false;
         }
-         
+
         if ( cell.getItsColID() != this.getID() )
         {
             return false;
         }
-        
+
         targetID = cell.getTargetID();
-        
+
         if ( targetID == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "cells target ID invalid");
         }
-        
+
         dbe = this.db.idx.getElement(targetID);
-        
+
         if ( dbe == null )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "cells target ID has no referent");
         }
-        
+
         if ( ! ( dbe instanceof ReferenceCell ) )
         {
             throw new SystemErrorException(mName +
                     "cells target ID doesn't refer to a ReferenceCell");
         }
-        
+
         // other sanity checks needed?
-        
+
         return true;
-        
+
     } /* ReferenceColumn::validCell() */
 
 } /* Class ReferenceColumn */

@@ -88,7 +88,7 @@ public class ConfigurationObject
 
   /**
    * Sets the configurations name
-   * @param name 
+   * @param name
    */
   public void setName(String name)
   {
@@ -106,7 +106,7 @@ public class ConfigurationObject
 
   /**
    * Sets the value
-   * @param value 
+   * @param value
    */
   public void setValue(String value)
   {
@@ -121,10 +121,10 @@ public class ConfigurationObject
   {
     return (this.value);
   }
- 
+
   /**
    * Sets the attributes list
-   * @param attributes 
+   * @param attributes
    */
   public void setAttributes(Attributes attributes)
   {
@@ -142,7 +142,7 @@ public class ConfigurationObject
 
   /**
    * Sets the parent element
-   * @param parent 
+   * @param parent
    */
   public void setParent(ConfigurationObject parent)
   {
@@ -160,7 +160,7 @@ public class ConfigurationObject
 
   /**
    * Adds a child elements to the configuration
-   * @param element 
+   * @param element
    */
   public void addElement(ConfigurationObject element)
   {
@@ -168,7 +168,7 @@ public class ConfigurationObject
   }
 
   /**
-   * Returns a string representation of the configuration 
+   * Returns a string representation of the configuration
    * @return string representation "name=value"
    */
   public String toString()
@@ -182,7 +182,7 @@ public class ConfigurationObject
 
     return (sb.toString());
   }
-  
+
   /**
    * Returns a full heirarchical path representation string of object
    * @return heirarchical path string "root.element.element. ... .parent.object"
@@ -239,10 +239,10 @@ public class ConfigurationObject
 
     return (sb.toString());
   }
-  
+
   /**
    * Returns the child element with the given name
-   * @param name 
+   * @param name
    * @return the child element
    */
   public ConfigurationObject getElement(String name)

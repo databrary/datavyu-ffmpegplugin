@@ -16,7 +16,7 @@ public class ODBCDatabase extends Database
 {
   public final static String DB_TYPE = "ODBC Database";
   public final static float DB_VERSION = 2.0f;
-  
+
   /**
    * Creates a new instance of ODBCDatabase
    */
@@ -52,7 +52,7 @@ public class ODBCDatabase extends Database
   {
     int prevTPS = this.tps;
     this.tps = tps;
-    
+
     throw new SystemErrorException("Not fully implemented");
 
 //    // Notify all listeners of TPS change
@@ -76,7 +76,7 @@ public class ODBCDatabase extends Database
    */
   public void setUseStartTime(boolean useStartTime)
   {
-    this.useStartTime = useStartTime; 
+    this.useStartTime = useStartTime;
   } //End of setUseStartTime() method
 
   /**
@@ -97,7 +97,7 @@ public class ODBCDatabase extends Database
   {
     long prevST = this.startTime;
     this.startTime = startTime;
-    
+
     throw new SystemErrorException("not fully implemented");
 
 //    // Notify all listeners of TPS change
@@ -138,7 +138,7 @@ public class ODBCDatabase extends Database
 //    return (this.getCell(column.getID(), cellID));
 //  } //End of getCell() method
 
-  
+
 //  /**
 //   * Gets the column associated with the given id
 //   * @param columnID the id of the column
@@ -178,7 +178,7 @@ public class ODBCDatabase extends Database
    * <LI>COLUMN_TYPE_DATA</LI> or
    * <LI>COLUMN_TYPE_REFERENCE</LI>
    * </UL>
-   * @return the newly created column object 
+   * @return the newly created column object
    */
   public Column createColumn(int columnType)
   {

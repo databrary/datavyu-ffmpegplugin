@@ -12,58 +12,58 @@ package au.com.nicta.openshapa.db;
 /**
  * Class PredFormalArg
  *
- * Instances of this class are usef for formal arguments that have been 
+ * Instances of this class are usef for formal arguments that have been
  * strongly typed to predicates.
  *
  * @author mainzer
  */
 public class PredFormalArg extends FormalArgument
 {
-        
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /**     
+    /**
      *
-     * subRange: Boolean flag indicating whether the formal argument can be 
-     *      replaced by any valid nominal, or only by some nominal that 
-     *      appears in the approvedSet (see below). 
-     *        
-     * approvedSet: Set of representing the predicates that may be used to 
+     * subRange: Boolean flag indicating whether the formal argument can be
+     *      replaced by any valid nominal, or only by some nominal that
+     *      appears in the approvedSet (see below).
+     *
+     * approvedSet: Set of representing the predicates that may be used to
      *      replace this formal argument.  The elements of the set are the IDs
-     *      of the approved predicates, which must all be listed in the 
+     *      of the approved predicates, which must all be listed in the
      *      associated database's vocab list.
-     * 
-     *      The field is ignored and should be null if subRange is false,  
+     *
+     *      The field is ignored and should be null if subRange is false,
      *
      *      At present, the approvedSet is implemented with TreeSet, so as
-     *      to quickly provide a sorted list of approved predicate IDs.  If 
+     *      to quickly provide a sorted list of approved predicate IDs.  If
      *      this turns out to be unnecessary, we should use HashSet instead.
      */
-    
+
     /** Whether values are restricted to members of the approvedList */
     boolean subRange = false;
-    
-    /** If subRange is true, set of IDs of predicates that may replace the 
-     *  formal arg. 
+
+    /** If subRange is true, set of IDs of predicates that may replace the
+     *  formal arg.
      */
     java.util.TreeSet<java.lang.Long> approvedSet = null;
-    
-    
-    
-    
+
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * PredFormalArg()
      *
-     * Constructors for predicate typed formal arguments.  
+     * Constructors for predicate typed formal arguments.
      *
-     * Three versions of this constructor -- one that takes only a database 
+     * Three versions of this constructor -- one that takes only a database
      * referenece, one that takes a database reference and the formal argument
-     * name as a parameters, and one that takes a reference to an instance of 
+     * name as a parameters, and one that takes a reference to an instance of
      * PredFormalArg and uses it to create a copy.
      *
      *                                          JRM -- 6/15/07
@@ -71,55 +71,55 @@ public class PredFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public PredFormalArg(Database db) 
+    public PredFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.PREDICATE;
-        
+
     } /* NominalFormalArg() -- no parameters */
-    
+
     public PredFormalArg(Database db,
-                         String name) 
+                         String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-        
+
         this.fargType = fArgType.PREDICATE;
-        
+
     } /* NominalFormalArg() -- one parameter */
-    
+
     public PredFormalArg(PredFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "PredFormalArg::PredFormalArg(): ";  
-        
+        final String mName = "PredFormalArg::PredFormalArg(): ";
+
         this.fargType = fArgType.PREDICATE;
-        
+
         if ( ! ( fArg instanceof PredFormalArg ) )
         {
             throw new SystemErrorException(mName + "fArg not PredFormalArg");
         }
-        
+
         // copy over fields.
-        
+
         this.subRange = fArg.getSubRange();
-        
+
         if ( this.subRange )
         {
             /* copy over the approved predicates IDs list from fArg. */
             java.util.Vector<java.lang.Long> approvedVector = fArg.getApprovedVector();
-            
+
             this.approvedSet = new java.util.TreeSet<java.lang.Long>();
-            
+
             for ( long i : approvedVector )
             {
                 this.addApproved(i);
@@ -127,18 +127,18 @@ public class PredFormalArg extends FormalArgument
         }
 
     } /* PredFormalArg() -- make copy */
-    
-    
-        
+
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-      
+
     /**
      * getSubRange() & setSubRange()
      *
      * Accessor routine used to get and set the subRange field.
-     * 
+     *
      * In addition, if subRange is changed from false to true, we must allocate
      * the approvedSet.  Similarly, if subrange is changed from true to false,
      * we discard the approved list by setting the approvedList field to null.
@@ -148,18 +148,18 @@ public class PredFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public boolean getSubRange() 
-    { 
+
+    public boolean getSubRange()
+    {
         return subRange;
     }
-    
+
     public void setSubRange(boolean subRange)
     {
         final String mName = "PredFormalArg::setSubRange(): ";
-        
+
         if ( this.subRange != subRange )
         {
             /* we have work to do. */
@@ -171,21 +171,21 @@ public class PredFormalArg extends FormalArgument
             else
             {
                 this.subRange = false;
-                
+
                 /* discard the approved set */
                 approvedSet = null;
             }
         }
-        
+
         return;
-        
+
     } /* NominalFormalArg::setSubRange() */
-     
-        
+
+
     /*************************************************************************/
     /************************ Approved Set Management: ***********************/
     /*************************************************************************/
-    
+
     /**
      * addApproved()
      *
@@ -195,17 +195,17 @@ public class PredFormalArg extends FormalArgument
      * if passed an invalid nominal, or if the approved list already contains
      * the supplied nominal.
      *                                          JRM -- 6/15/07
-     * 
+     *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void addApproved(long predID)
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::addApproved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -220,15 +220,15 @@ public class PredFormalArg extends FormalArgument
         }
         else if ( ! this.approvedSet.add(predID) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "predID already in approved set.");
         }
-        
+
         return;
-       
+
     } /* NominalFormalArg::addApproved() */
- 
-    
+
+
     /**
      * approved()
      *
@@ -244,12 +244,12 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public boolean approved(long predID )
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::approved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -260,15 +260,15 @@ public class PredFormalArg extends FormalArgument
         }
         else if ( ! this.db.vl.predInVocabList(predID) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "id not associated with a pred.");
         }
-        
+
         return approvedSet.contains(predID);
-       
+
     } /* NominalFormalArg::approved() */
 
-    
+
     /**
      * approvedSetToString()
      *
@@ -280,45 +280,45 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     private String approvedSetToString()
     {
         final String mName = "PredFormalArg::approvedSetToString(): ";
         String s = null;
         java.lang.Long predID;
         java.util.Iterator<java.lang.Long> iterator = null;
-        
+
         if ( subRange )
         {
             if ( this.approvedSet == null )
             {
-                s = "(" + mName + 
+                s = "(" + mName +
                     " (subRange && (approvedSet == null)) syserr?? )";
             }
-            
+
             iterator = this.approvedSet.iterator();
-            
+
             s = "(";
-            
+
             if ( iterator.hasNext() )
             {
                 predID = iterator.next();
                 s += predID.toString();
             }
-            
+
             while ( iterator.hasNext() )
             {
                 predID = iterator.next();
                 s += ", " + predID.toString();
             }
-            
+
             s += ")";
         }
         else
         {
             s = "()";
         }
-        
+
         return s;
     }
 
@@ -327,21 +327,21 @@ public class PredFormalArg extends FormalArgument
      *
      * Delete the supplied predicate ID from the approved set.
      *
-     * The method throws a system error if subRange is false, if passed the 
-     * invalid ID, or if the approved list does not contain the supplied 
+     * The method throws a system error if subRange is false, if passed the
+     * invalid ID, or if the approved list does not contain the supplied
      * predicate ID.
      *                                          JRM -- 6/15/07
-     * 
+     *
      * Changes:
      *
      *    - None.
      */
-    
+
     public void deleteApproved(long predID)
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::deleteApproved(): ";
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -352,23 +352,23 @@ public class PredFormalArg extends FormalArgument
         }
         else if ( ! this.db.vl.predInVocabList(predID) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     "predID not associated with a predicate.");
         }
         else if ( ! this.approvedSet.remove(predID) )
         {
             throw new SystemErrorException(mName + "predID not in approved set.");
         }
-        
+
         return;
-       
+
     } /* PredFormalArg::deleteApproved() */
-    
-    
+
+
     /**
      * getApprovedVector()
      *
-     * Return an vector of long containing an increasing order list of all 
+     * Return an vector of long containing an increasing order list of all
      * entries in the approved set, or null if the approved list is empty.
      *
      * The method throws a system error if subRange is false.
@@ -379,13 +379,13 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     java.util.Vector<java.lang.Long> getApprovedVector()
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::getApprovedList(): ";
         java.util.Vector<java.lang.Long> approvedVector = null;
-        
+
         if ( ! this.subRange )
         {
             throw new SystemErrorException(mName + "subRange is false.");
@@ -394,46 +394,46 @@ public class PredFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "approvedSet is null?!?!");
         }
-        
+
         if ( this.approvedSet.size() > 0 )
         {
             approvedVector = new java.util.Vector<java.lang.Long>();
-            
+
             for ( long predID : this.approvedSet )
             {
                 approvedVector.add(predID);
             }
         }
-        
+
         return approvedVector;
-        
+
     } /* PredFormalArg::getApprovedVector() */
-        
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of PredDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of PredDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * PredDataValue otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         PredDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new PredDataValue(this.db, this.id); 
+            retVal = new PredDataValue(this.db, this.id);
         }
         else if ( salvage instanceof PredDataValue )
         {
@@ -442,38 +442,38 @@ public class PredFormalArg extends FormalArgument
         }
         else
         {
-            retVal = new PredDataValue(this.db, this.id); 
+            retVal = new PredDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* PredDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of PredDataValue initialized as appropriate for 
+     * Return an instance of PredDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new PredDataValue(this.db, this.id);
-         
+
      } /* PredFormalArg::constructEmptyArg() */
 
-     
+
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -485,50 +485,50 @@ public class PredFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
-        return ("(PredFormalArg " + getID() + " " + getFargName() + " " + 
+
+        return ("(PredFormalArg " + getID() + " " + getFargName() + " " +
                 getSubRange() + " " + approvedSetToString() + ")");
-        
+
     } /* PredFormalArg::toDBString() */
-    
-     
+
+
     /**
      * isValidValue() -- Override of abstract method in FormalArgument
-     * 
-     * Boolean method that returns true iff the provided value is an acceptable 
+     *
+     * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
-     * 
+     *
      *                                             JRM -- 6/15/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::isValidValue(): ";
         Predicate pred = null;
-        
+
         if ( obj instanceof Predicate )
         {
             pred = (Predicate)obj;
-            
+
             if ( pred.getDB() != this.db )
             {
                 return false;
             }
-            
+
             if ( this.subRange )
             {
                 long pveID;
-                
+
                 pveID = pred.getPveID();
-                
+
                 if ( ( pveID != DBIndex.INVALID_ID ) &&
                      ( this.approved(pveID) ) )
                 {
@@ -542,16 +542,16 @@ public class PredFormalArg extends FormalArgument
         }
 
         return false;
-        
+
     } /*  PredFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /*** TODO: Review test code. ***/
-    
+
     /**
      * TestAccessors()
      *
@@ -561,7 +561,7 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -613,41 +613,41 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             arg = new PredFormalArg(db);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( db == null ) || 
-             ( arg == null ) || 
-             ( threwSystemErrorException ) ) 
+
+        if ( ( db == null ) ||
+             ( arg == null ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( arg == null )
                 {
                     outStream.print("new PredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new PredFormalArg(db) threw " +
@@ -656,27 +656,27 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestAccessors." +
@@ -684,18 +684,18 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* PredFormalArg adds subRange and approvedSet.  We must test 
-         * the routines supporting these fields as well. 
+
+        /* PredFormalArg adds subRange and approvedSet.  We must test
+         * the routines supporting these fields as well.
          */
-        
+
         /* First verify correct initialization */
         if ( failures == 0 )
         {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("\"arg.getSubRange()\" returned " +
@@ -706,7 +706,7 @@ public class PredFormalArg extends FormalArgument
             else if ( arg.approvedSet != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -714,10 +714,10 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now set subRange to true, and verify that approvedSet is allocated.
          *
-         * Start by allocating a bunch of predicate vocab elements for test 
+         * Start by allocating a bunch of predicate vocab elements for test
          * purposes.
          */
         if ( failures == 0 )
@@ -745,7 +745,7 @@ public class PredFormalArg extends FormalArgument
             testFinished = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
-                    
+
             try
             {
                 alpha   = new UnTypedFormalArg(db, "<alpha>");
@@ -761,22 +761,22 @@ public class PredFormalArg extends FormalArgument
                 lima    = new UnTypedFormalArg(db, "<lima>");
                 mike    = new UnTypedFormalArg(db, "<mike>");
                 nero    = new UnTypedFormalArg(db, "<nero>");
-                
-                p0 = VocabList.ConstructTestPred(db, "p0", 
+
+                p0 = VocabList.ConstructTestPred(db, "p0",
                                                  alpha, null, null, null);
-                p1 = VocabList.ConstructTestPred(db, "p1", 
+                p1 = VocabList.ConstructTestPred(db, "p1",
                                                  bravo, charlie, null, null);
-                p2 = VocabList.ConstructTestPred(db, "p2", 
+                p2 = VocabList.ConstructTestPred(db, "p2",
                                                  delta, echo, foxtrot, null);
-                p3 = VocabList.ConstructTestPred(db, "p3", 
+                p3 = VocabList.ConstructTestPred(db, "p3",
                                                  hotel, india, juno, kilo);
-                p4 = VocabList.ConstructTestPred(db, "p4", 
+                p4 = VocabList.ConstructTestPred(db, "p4",
                                                  lima, null, null, null);
-                p5 = VocabList.ConstructTestPred(db, "p5", 
+                p5 = VocabList.ConstructTestPred(db, "p5",
                                                  mike, null, null, null);
-                p6 = VocabList.ConstructTestPred(db, "p6", 
+                p6 = VocabList.ConstructTestPred(db, "p6",
                                                  nero, null, null, null);
-                
+
                 db.vl.addElement(p0);
                 db.vl.addElement(p1);
                 db.vl.addElement(p2);
@@ -784,32 +784,32 @@ public class PredFormalArg extends FormalArgument
                 db.vl.addElement(p4);
                 db.vl.addElement(p5);
                 db.vl.addElement(p6);
-                
+
                 testFinished = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! testFinished ) ||
-                 ( alpha == null ) || ( bravo == null ) || 
+                 ( alpha == null ) || ( bravo == null ) ||
                  ( charlie == null ) || ( delta == null ) ||
                  ( echo == null ) || ( foxtrot == null ) ||
-                 ( hotel == null ) || ( india == null ) ||  
+                 ( hotel == null ) || ( india == null ) ||
                  ( juno == null ) || ( kilo == null ) ||
                  ( lima == null ) || ( mike == null ) ||
-                 ( nero == null ) || 
-                 ( p0 == null ) || ( p1 == null ) || 
-                 ( p2 == null ) || ( p3 == null ) || 
+                 ( nero == null ) ||
+                 ( p0 == null ) || ( p1 == null ) ||
+                 ( p2 == null ) || ( p3 == null ) ||
                  ( p4 == null ) || ( p5 == null ) ||
                  ( p6 == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! testFinished )
@@ -817,29 +817,29 @@ public class PredFormalArg extends FormalArgument
                         outStream.print("Setup for approved set test " +
                                         "failed to complete.\n");
                     }
-                    
-                    if ( ( alpha == null ) || ( bravo == null ) || 
+
+                    if ( ( alpha == null ) || ( bravo == null ) ||
                          ( charlie == null ) || ( delta == null ) ||
                          ( echo == null ) || ( foxtrot == null ) ||
-                         ( hotel == null ) || ( india == null ) ||  
+                         ( hotel == null ) || ( india == null ) ||
                          ( juno == null ) || ( kilo == null ) ||
                          ( lima == null ) || ( mike == null ) ||
-                         ( nero == null ) ) 
+                         ( nero == null ) )
                     {
                         outStream.print(
                                 "one or more formal arg allocations failed.\n");
                     }
-                    
-                    if ( ( p0 == null ) || ( p1 == null ) || 
+
+                    if ( ( p0 == null ) || ( p1 == null ) ||
                          ( p2 == null ) || ( p3 == null ) ||
-                         ( p4 == null ) || ( p5 == null ) || 
+                         ( p4 == null ) || ( p5 == null ) ||
                          ( p6 == null ) )
-                        
+
                     {
                         outStream.print(
                                 "one or more pred allocations failed.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("Unexpected system error exception " +
@@ -849,17 +849,17 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now verify that setSubRange works as expected */
         if ( failures == 0 )
         {
             arg.setSubRange(true);
-            
+
             if ( ( arg.subRange != true ) ||
                  ( arg.getSubRange() != true ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -871,7 +871,7 @@ public class PredFormalArg extends FormalArgument
                       ( arg.approvedSet.size() != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -880,9 +880,9 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now test the approvedSet management functions.  Start with just a 
-         * simple smoke check that verifies that the methods do more or 
+
+        /* now test the approvedSet management functions.  Start with just a
+         * simple smoke check that verifies that the methods do more or
          * less as they should, and then verify that they fail when they
          * should.
          */
@@ -890,7 +890,7 @@ public class PredFormalArg extends FormalArgument
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.addApproved(p0.getID());
@@ -907,22 +907,22 @@ public class PredFormalArg extends FormalArgument
                 approved6 = arg.approved(p6.getID());
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( approved0 != false ) || ( approved1 != false ) ||
                  ( approved2 != true )  || ( approved3 != false ) ||
                  ( approved4 != true )  || ( approved5 != false ) ||
-                 ( approved6 != true )  || 
+                 ( approved6 != true )  ||
                  ( ! testFinished ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ( approved0 != false ) || ( approved1 != false ) ||
@@ -932,22 +932,22 @@ public class PredFormalArg extends FormalArgument
                     {
                         outStream.print("unexpected approved results(1).\n");
                     }
-                    
+
                     if ( ! testFinished )
                     {
                         outStream.print("approved set test incomplete(1).\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("SystemErrorException thrown in " +
-                                         "approved set test(1): %s.\n", 
+                                         "approved set test(1): %s.\n",
                                          systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().
@@ -962,7 +962,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -980,7 +980,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1007,14 +1007,14 @@ public class PredFormalArg extends FormalArgument
                       ( approvedVector.get(2) != 19 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected approvedVector(1).\n");
                 }
             }
         }
-        
+
         /* try several invalid additions to the approved set */
         if ( failures == 0 )
         {
@@ -1032,7 +1032,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1054,7 +1054,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1071,7 +1071,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1092,7 +1092,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1109,7 +1109,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1130,7 +1130,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* try invalid calls to arg.approved() */
         if ( failures == 0 )
         {
@@ -1148,7 +1148,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1170,7 +1170,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* try invalid deletions from the approved set */
          if ( failures == 0 )
         {
@@ -1188,7 +1188,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1209,7 +1209,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-       
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1226,7 +1226,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( ! threwSystemErrorException )
             {
                 failures++;
@@ -1248,13 +1248,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-                 
+
         /* now reduce the size of the approved set to 1 */
         if ( failures == 0 )
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.deleteApproved(p2.getID());
@@ -1268,22 +1268,22 @@ public class PredFormalArg extends FormalArgument
                 approved6 = arg.approved(p6.getID());
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( approved0 != false ) || ( approved1 != false ) ||
                  ( approved2 != false ) || ( approved3 != false ) ||
                  ( approved4 != true )  || ( approved5 != false ) ||
-                 ( approved6 != false ) || 
-                 ( ! testFinished ) || 
+                 ( approved6 != false ) ||
+                 ( ! testFinished ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ( approved0 != false ) || ( approved1 != false ) ||
@@ -1293,26 +1293,26 @@ public class PredFormalArg extends FormalArgument
                     {
                         outStream.print("unexpected approved results(2).\n");
                     }
-                    
+
                     if ( ! testFinished )
                     {
                         outStream.print("approved set test incomplete(2).\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("SystemErrorException thrown in " +
-                                         "approved set test(2): %s.\n", 
+                                         "approved set test(2): %s.\n",
                                          systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         /* verify that getApprovedVector() and getApprovedString() work as they
          * should with one and zero entries.
          */
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1330,7 +1330,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-           
+
             if ( threwSystemErrorException )
             {
                 failures++;
@@ -1355,15 +1355,15 @@ public class PredFormalArg extends FormalArgument
                       ( approvedVector.get(0) != 15 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected approvedVector(2).\n");
                 }
             }
         }
-        
-         
+
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().compareTo("(15)") != 0 )
@@ -1377,13 +1377,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         /* now reduce the size of the approved set to 0 */
         if ( failures == 0 )
         {
             testFinished = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.deleteApproved(p4.getID());
@@ -1396,22 +1396,22 @@ public class PredFormalArg extends FormalArgument
                 approved6 = arg.approved(p6.getID());
                 testFinished = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( approved0 != false ) || ( approved1 != false ) ||
                  ( approved2 != false ) || ( approved3 != false ) ||
                  ( approved4 != false ) || ( approved5 != false ) ||
                  ( approved6 != false ) ||
-                 ( ! testFinished ) || 
+                 ( ! testFinished ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ( approved0 != false ) || ( approved1 != false ) ||
@@ -1421,26 +1421,26 @@ public class PredFormalArg extends FormalArgument
                     {
                         outStream.print("unexpected approved results(3).\n");
                     }
-                    
+
                     if ( ! testFinished )
                     {
                         outStream.print("approved set test incomplete(3).\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("SystemErrorException thrown in " +
-                                         "approved set test(3): %s.\n", 
+                                         "approved set test(3): %s.\n",
                                          systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         /* verify that getApprovedVector() and getApprovedString() work as they
          * should with no entries.
          */
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1458,25 +1458,25 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( approvedVector != null ) ||
-                 ( ! testFinished ) || 
+                 ( ! testFinished ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( approvedVector != null )
                     {
                         outStream.print("Unexpected approvedVector(3).\n");
                     }
-                    
+
                     if ( ! testFinished )
                     {
                         outStream.print("test incomplete(5).\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("SystemErrorException thrown in " +
@@ -1486,7 +1486,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             if ( arg.approvedSetToString().compareTo("()") != 0 )
@@ -1500,21 +1500,21 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* now set subRange back to false.  Verify that approvedSet is set to
-         * null, and that all approved set manipulation methods thow a system 
+         * null, and that all approved set manipulation methods thow a system
          * error if invoked.
          */
-        
+
         if ( failures == 0 )
         {
             arg.setSubRange(false);
-            
+
             if ( ( arg.subRange != false ) ||
                  ( arg.getSubRange() != false ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -1525,7 +1525,7 @@ public class PredFormalArg extends FormalArgument
             else if ( arg.approvedSet != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print(
@@ -1534,8 +1534,8 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
- 
-        /* finally, verify that all the approved list management routines 
+
+        /* finally, verify that all the approved list management routines
          * flag a system error if invoked when subRange is false.
          */
         if ( failures == 0 )
@@ -1554,11 +1554,11 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( testFinished ) || ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( testFinished )
@@ -1576,7 +1576,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1593,11 +1593,11 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( testFinished ) || ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( testFinished )
@@ -1605,7 +1605,7 @@ public class PredFormalArg extends FormalArgument
                         outStream.print(
                             "test completed with subrange == false (2).\n");
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.print(
@@ -1615,7 +1615,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1632,11 +1632,11 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( testFinished ) || ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( testFinished )
@@ -1644,7 +1644,7 @@ public class PredFormalArg extends FormalArgument
                         outStream.print(
                             "test completed with subrange == false (3).\n");
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.print(
@@ -1654,7 +1654,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures == 0 )
         {
             testFinished = false;
@@ -1671,11 +1671,11 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( testFinished ) || ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( testFinished )
@@ -1683,7 +1683,7 @@ public class PredFormalArg extends FormalArgument
                         outStream.print(
                             "test completed with subrange == false (4).\n");
                     }
-                    
+
                     if ( ! threwSystemErrorException )
                     {
                         outStream.print(
@@ -1693,7 +1693,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1722,23 +1722,23 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -1759,26 +1759,26 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new PredFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1786,7 +1786,7 @@ public class PredFormalArg extends FormalArgument
                     outStream.print(
                             "new PredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new PredFormalArg(db) threw " +
@@ -1795,18 +1795,18 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -1815,7 +1815,7 @@ public class PredFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -1823,7 +1823,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1852,12 +1852,12 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassPredFormalArg()
      *
@@ -1869,51 +1869,51 @@ public class PredFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassPredFormalArg(java.io.PrintStream outStream,
                                                  boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class PredFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1924,22 +1924,22 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("All tests passed for class PredFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestClassPredFormalArg() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1961,33 +1961,33 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new PredFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
                 {
                     outStream.print("new PredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new PredFormalArg(db) threw " +
@@ -1996,13 +1996,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -2010,13 +2010,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -2024,20 +2024,20 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails if passed a bad db */
         if ( failures == 0 )
         {
@@ -2058,9 +2058,9 @@ public class PredFormalArg extends FormalArgument
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( methodReturned ) || 
-                 ( arg != null ) || 
-                 ( ! threwSystemErrorException ) ) 
+            if ( ( methodReturned ) ||
+                 ( arg != null ) ||
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2085,7 +2085,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2114,22 +2114,22 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -2149,22 +2149,22 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new PredFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -2172,7 +2172,7 @@ public class PredFormalArg extends FormalArgument
                     outStream.print(
                         "new PredFormalArg(db, \"<valid>\") returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new PredFormalArg(db, \"<valid>\") " +
@@ -2180,13 +2180,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -2194,13 +2194,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -2208,39 +2208,39 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db. */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new PredFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -2248,7 +2248,7 @@ public class PredFormalArg extends FormalArgument
                     outStream.print(
                         "new PredFormalArg(null, \"<alid>>\") != null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new PredFormalArg(null, \"<valid>\") "
@@ -2256,29 +2256,29 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new PredFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -2286,7 +2286,7 @@ public class PredFormalArg extends FormalArgument
                     outStream.print(
                         "new PredFormalArg(db, \"<<valid>>\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new PredFormalArg(db, \"<<invalid>>\") "
@@ -2294,7 +2294,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2323,23 +2323,23 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -2388,7 +2388,7 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of PredFormalArg to be copied: */
         alpha   = null;
         bravo   = null;
@@ -2413,13 +2413,13 @@ public class PredFormalArg extends FormalArgument
         progress = 0;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             progress++;
-            
+
             alpha   = new UnTypedFormalArg(db, "<alpha>");
             bravo   = new UnTypedFormalArg(db, "<bravo>");
             charlie = new UnTypedFormalArg(db, "<charlie>");
@@ -2433,24 +2433,24 @@ public class PredFormalArg extends FormalArgument
             lima    = new UnTypedFormalArg(db, "<lima>");
             mike    = new UnTypedFormalArg(db, "<mike>");
             nero    = new UnTypedFormalArg(db, "<nero>");
-            
+
             progress++;
 
-            p0 = VocabList.ConstructTestPred(db, "p0", 
+            p0 = VocabList.ConstructTestPred(db, "p0",
                                              alpha, null, null, null);
-            p1 = VocabList.ConstructTestPred(db, "p1", 
+            p1 = VocabList.ConstructTestPred(db, "p1",
                                              bravo, charlie, null, null);
-            p2 = VocabList.ConstructTestPred(db, "p2", 
+            p2 = VocabList.ConstructTestPred(db, "p2",
                                              delta, echo, foxtrot, null);
-            p3 = VocabList.ConstructTestPred(db, "p3", 
+            p3 = VocabList.ConstructTestPred(db, "p3",
                                              hotel, india, juno, kilo);
-            p4 = VocabList.ConstructTestPred(db, "p4", 
+            p4 = VocabList.ConstructTestPred(db, "p4",
                                              lima, null, null, null);
-            p5 = VocabList.ConstructTestPred(db, "p5", 
+            p5 = VocabList.ConstructTestPred(db, "p5",
                                              mike, null, null, null);
-            p6 = VocabList.ConstructTestPred(db, "p6", 
+            p6 = VocabList.ConstructTestPred(db, "p6",
                                              nero, null, null, null);
-            
+
             progress++;
 
             db.vl.addElement(p0);
@@ -2460,66 +2460,66 @@ public class PredFormalArg extends FormalArgument
             db.vl.addElement(p4);
             db.vl.addElement(p5);
             db.vl.addElement(p6);
-            
+
             progress++;
 
             arg0 = new PredFormalArg(db, "<copy_this_0>");
             arg0.setHidden(true);
             p0.appendFormalArg(arg0);
-            
+
             progress++;
-            
+
             arg1 = new PredFormalArg(db, "<copy_this_1>");
             arg1.setSubRange(true);
             arg1.addApproved(p5.getID());
             arg1.addApproved(p2.getID());
             p1.appendFormalArg(arg1);
-            
+
             progress++;
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( ! completed ) ||
              ( db == null ) ||
-             ( arg0 == null ) || 
+             ( arg0 == null ) ||
              ( arg1 == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("progress = %s\n", progress);
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
                 }
-                
+
                 if ( db == null )
                 {
                     outStream.print("new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( arg0 == null )
                 {
                     outStream.print(
                         "new PredFormalArg(\"<copy_this_0>\") returned null.\n");
                 }
-                
+
                 if ( arg1 == null )
                 {
                     outStream.print(
                         "new PredFormalArg(\"<copy_this_1>\") returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("test setup threw an unexpected system " +
@@ -2527,23 +2527,23 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ! arg0.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg0.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg0 */
-        
+
         if ( failures == 0 )
         {
             copyArg0 = null;
@@ -2563,7 +2563,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( copyArg0 == null ) || ( copyArg1 == null ) ||
                  ( completed == false ) || ( threwSystemErrorException ) )
             {
@@ -2576,7 +2576,7 @@ public class PredFormalArg extends FormalArgument
                         outStream.print(
                             "new PredFormalArg(arg0)\" returned null.\n");
                     }
-                    
+
                     if ( copyArg1 == null )
                     {
                         outStream.print(
@@ -2592,15 +2592,15 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copies are good */
-        
+
         if ( failures == 0 )
         {
             if ( arg0 == copyArg0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg0 == copyArg0) ==> " +
@@ -2608,13 +2608,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1 == copyArg1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg1 == copyArg1) ==> " +
@@ -2622,43 +2622,43 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.toDBString().compareTo(copyArg0.toDBString()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.toDBString() = \"%s\" != \" " +
-                            "copyArg0.toDBString() = \"%s\".\n", 
+                            "copyArg0.toDBString() = \"%s\".\n",
                             arg0.toDBString(), copyArg0.toDBString());
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.toDBString().compareTo(copyArg1.toDBString()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.toDBString() = \"%s\" != \" " +
-                            "copyArg1.toDBString() = \"%s\".\n", 
+                            "copyArg1.toDBString() = \"%s\".\n",
                             arg0.toDBString(), copyArg0.toDBString());
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getHidden() != copyArg0.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.hidden = %b != " +
@@ -2667,13 +2667,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getHidden() != copyArg0.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.hidden = %b != " +
@@ -2682,13 +2682,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getItsVocabElement() != copyArg0.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.getItsVocabElement() != \" " +
@@ -2696,13 +2696,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.getItsVocabElement() != copyArg1.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.getItsVocabElement() != \" " +
@@ -2710,13 +2710,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getItsVocabElementID() != copyArg0.getItsVocabElementID() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.getItsVocabElementID() != \" " +
@@ -2724,13 +2724,13 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.getItsVocabElementID() != copyArg1.getItsVocabElementID() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.getItsVocabElementID() != \" " +
@@ -2740,7 +2740,7 @@ public class PredFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -2759,7 +2759,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg0 != null ) || 
+            if ( ( copyArg0 != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -2780,15 +2780,15 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of PredFormalArg, 
+
+        /* now corrupt the fargName field of and instance of PredFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg0 = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -2801,7 +2801,7 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg0 != null ) || 
+            if ( ( copyArg0 != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -2822,7 +2822,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2851,18 +2851,18 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
      * Verify that isValidValue() does the right thing.
      *
-     * This test didn't get written for quite a while, as it depends on 
+     * This test didn't get written for quite a while, as it depends on
      * other classes that didn't exit yet when the PredicateFormalArg
      * class was created.
      *
@@ -2872,7 +2872,7 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -2935,7 +2935,7 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         // Start by setting up the needed database, pve's, and preds
         threwSystemErrorException = false;
         completed = false;
@@ -2943,35 +2943,35 @@ public class PredFormalArg extends FormalArgument
         try
         {
             db = new ODBCDatabase();
-            
+
             pve0 = new PredicateVocabElement(db, "pve0");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve0.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve0.appendFormalArg(farg);
-            
+
             pve0ID = db.addPredVE(pve0);
-            
+
             // get a copy of the databases version of pve0 with ids assigned
             pve0 = db.getPredVE(pve0ID);
-            
+
             p0 = new Predicate(db, pve0ID);
-            
-            
+
+
             pve1 = new PredicateVocabElement(db, "pve1");
             farg = new IntFormalArg(db, "<int>");
             pve1.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg2>");
             pve1.appendFormalArg(farg);
-            
+
             pve1ID = db.addPredVE(pve1);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve1 = db.getPredVE(pve1ID);
-            
+
             p1 = new Predicate(db, pve1ID);
-            
-            
+
+
             pve2 = new PredicateVocabElement(db, "pve2");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve2.appendFormalArg(farg);
@@ -2979,30 +2979,30 @@ public class PredFormalArg extends FormalArgument
             pve2.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<arg3>");
             pve2.appendFormalArg(farg);
-            
+
             pve2ID = db.addPredVE(pve2);
-            
+
             // get a copy of the databases version of pve1 with ids assigned
             pve2 = db.getPredVE(pve2ID);
-            
+
             p2 = new Predicate(db, pve2ID);
-            
-            
+
+
             pve3 = new PredicateVocabElement(db, "pve3");
             farg = new UnTypedFormalArg(db, "<arg1>");
             pve3.appendFormalArg(farg);
             pve3.setVarLen(true);
-            
+
             pve3ID = db.addPredVE(pve3);
-            
+
             // get a copy of the databases version of pve3 with ids assigned
             pve3 = db.getPredVE(pve3ID);
-            
+
             p3 = new Predicate(db, pve3ID);
 
-            
+
             pve4 = new PredicateVocabElement(db, "pve4");
-            
+
             farg = new FloatFormalArg(db, "<float>");
             pve4.appendFormalArg(farg);
             farg = new IntFormalArg(db, "<int>");
@@ -3017,67 +3017,67 @@ public class PredFormalArg extends FormalArgument
             pve4.appendFormalArg(farg);
             farg = new UnTypedFormalArg(db, "<untyped>");
             pve4.appendFormalArg(farg);
-            
+
             pve4ID = db.addPredVE(pve4);
-            
+
             // get a copy of the databases version of pve4 with ids assigned
             pve4 = db.getPredVE(pve4ID);
-            
+
             p4 = new Predicate(db, pve4ID);
 
-            
+
             pve5 = new PredicateVocabElement(db, "pve5");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve5.appendFormalArg(farg);
-            
+
             pve5ID = db.addPredVE(pve5);
-            
+
             // get a copy of the databases version of pve5 with ids assigned
             pve5 = db.getPredVE(pve5ID);
-            
+
             p5 = new Predicate(db, pve5ID);
 
-            
+
             pve6 = new PredicateVocabElement(db, "pve6");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve6.appendFormalArg(farg);
-            
+
             pve6ID = db.addPredVE(pve6);
-            
+
             // get a copy of the databases version of pve6 with ids assigned
             pve6 = db.getPredVE(pve6ID);
-            
+
             p6 = new Predicate(db, pve6ID);
 
-            
+
             pve7 = new PredicateVocabElement(db, "pve7");
             farg = new UnTypedFormalArg(db, "<arg>");
             pve7.appendFormalArg(farg);
-            
+
             pve7ID = db.addPredVE(pve7);
-            
+
             // get a copy of the databases version of pve7 with ids assigned
             pve7 = db.getPredVE(pve7ID);
-            
+
             p7 = new Predicate(db, pve7ID);
-            
-            
-            
+
+
+
             alt_db = new ODBCDatabase();
 
-            
+
             alt_pve = new PredicateVocabElement(alt_db, "alt_pve");
             farg = new UnTypedFormalArg(alt_db, "<alt_pve>");
             alt_pve.appendFormalArg(farg);
-            
+
             alt_pveID = alt_db.addPredVE(alt_pve);
-            
+
             // get a copy of the alt_db's version of alt_pve with ids assigned
             alt_pve = db.getPredVE(alt_pveID);
-            
+
             alt_p = new Predicate(alt_db, alt_pveID);
 
-            
+
             completed = true;
         }
 
@@ -3086,7 +3086,7 @@ public class PredFormalArg extends FormalArgument
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
-        
+
         if ( ( db == null ) ||
              ( pve0 == null ) ||
              ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -3115,153 +3115,153 @@ public class PredFormalArg extends FormalArgument
              ( alt_pve == null ) ||
              ( alt_pveID == DBIndex.INVALID_ID ) ||
              ( alt_p == null ) ||
-             ( ! completed ) || 
-             ( threwSystemErrorException ) ) 
+             ( ! completed ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-                    
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new Database() returned null.\n");
                 }
-                
+
                 if ( pve0 == null )
                 {
                     outStream.print("creation of pve0 failed.\n");
                 }
-                
+
                 if ( pve0ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve0ID not initialized.\n");
                 }
-                
+
                 if ( p0 == null )
                 {
                     outStream.print("creation of p0 failed.\n");
                 }
-                
+
                 if ( pve1 == null )
                 {
                     outStream.print("creation of pve1 failed.\n");
                 }
-                
+
                 if ( pve1ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve1ID not initialized.\n");
                 }
-                
+
                 if ( p1 == null )
                 {
                     outStream.print("creation of p1 failed.\n");
                 }
-                
+
                 if ( pve2 == null )
                 {
                     outStream.print("creation of pve2 failed.\n");
                 }
-                
+
                 if ( pve2ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve2ID not initialized.\n");
                 }
-                
+
                 if ( p2 == null )
                 {
                     outStream.print("creation of p2 failed.\n");
                 }
-                
+
                 if ( pve3 == null )
                 {
                     outStream.print("creation of pve3 failed.\n");
                 }
-                
+
                 if ( pve3ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve3ID not initialized.\n");
                 }
-                
+
                 if ( p3 == null )
                 {
                     outStream.print("creation of p3 failed.\n");
                 }
-                
+
                 if ( pve4 == null )
                 {
                     outStream.print("creation of pve4 failed.\n");
                 }
-                
+
                 if ( pve4ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve4ID not initialized.\n");
                 }
-                
+
                 if ( p4 == null )
                 {
                     outStream.print("creation of p4 failed.\n");
                 }
-                
+
                 if ( pve5 == null )
                 {
                     outStream.print("creation of pve5 failed.\n");
                 }
-                
+
                 if ( pve5ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve5ID not initialized.\n");
                 }
-                
+
                 if ( p5 == null )
                 {
                     outStream.print("creation of p5 failed.\n");
                 }
-                
+
                 if ( pve6 == null )
                 {
                     outStream.print("creation of pve6 failed.\n");
                 }
-                
+
                 if ( pve6ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve6ID not initialized.\n");
                 }
-                
+
                 if ( p6 == null )
                 {
                     outStream.print("creation of p6 failed.\n");
                 }
-                
+
                 if ( pve7 == null )
                 {
                     outStream.print("creation of pve7 failed.\n");
                 }
-                
+
                 if ( pve7ID == DBIndex.INVALID_ID )
                 {
                     outStream.print("pve7ID not initialized.\n");
                 }
-                
+
                 if ( p7 == null )
                 {
                     outStream.print("creation of p7 failed.\n");
                 }
-                
+
                 if ( alt_pve == null )
                 {
                     outStream.print("creation of alt_pve failed.\n");
                 }
-                
+
                 if ( alt_pveID == DBIndex.INVALID_ID )
                 {
                     outStream.print("alt_pveID not initialized.\n");
                 }
-                
+
                 if ( alt_p == null )
                 {
                     outStream.print("creation of alt_p failed.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete (1).\n");
@@ -3270,12 +3270,12 @@ public class PredFormalArg extends FormalArgument
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("pve allocations threw a " +
-                            "SystemErrorException: \"%s\".\n", 
+                            "SystemErrorException: \"%s\".\n",
                             systemErrorExceptionString);
                 }
             }
         }
-        
+
         /* Now set up the test formal arguments */
         if ( failures == 0 )
         {
@@ -3285,7 +3285,7 @@ public class PredFormalArg extends FormalArgument
             try
             {
                 pfa = new PredFormalArg(db, "<pfa>");
-                
+
                 pfa_sr = new PredFormalArg(db, "<pfa_sr>");
                 pfa_sr.setSubRange(true);
                 pfa_sr.addApproved(pve0ID);
@@ -3301,26 +3301,26 @@ public class PredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pfa == null ) ||
                  ( pfa_sr == null ) ||
                  ( ! completed ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pfa == null )
                     {
                         outStream.print("creation of pfa failed.\n");
                     }
-                    
+
                     if ( pfa_sr == null  )
                     {
                         outStream.print("creation of pfa_sr failed.\n");
                     }
-                
+
                     if ( ! completed )
                     {
                         outStream.print("test setup failed to complete (2).\n");
@@ -3329,7 +3329,7 @@ public class PredFormalArg extends FormalArgument
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("pfa allocations threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 systemErrorExceptionString);
                     }
                 }
@@ -3345,7 +3345,7 @@ public class PredFormalArg extends FormalArgument
                 p6_is_valid = pfa.isValidValue(p6);
                 p7_is_valid = pfa.isValidValue(p7);
                 alt_p_is_valid = pfa.isValidValue(alt_p);
-                
+
                 if ( ( ! p0_is_valid ) ||
                      ( ! p1_is_valid ) ||
                      ( ! p2_is_valid ) ||
@@ -3357,7 +3357,7 @@ public class PredFormalArg extends FormalArgument
                      ( alt_p_is_valid ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("Unexpected results from " +
@@ -3373,7 +3373,7 @@ public class PredFormalArg extends FormalArgument
                             alt_p_is_valid);
                     }
                 }
-                
+
                 p0_is_valid = pfa_sr.isValidValue(p0);
                 p1_is_valid = pfa_sr.isValidValue(p1);
                 p2_is_valid = pfa_sr.isValidValue(p2);
@@ -3383,7 +3383,7 @@ public class PredFormalArg extends FormalArgument
                 p6_is_valid = pfa_sr.isValidValue(p6);
                 p7_is_valid = pfa_sr.isValidValue(p7);
                 alt_p_is_valid = pfa_sr.isValidValue(alt_p);
-                
+
                 if ( ( ! p0_is_valid ) ||
                      ( p1_is_valid ) ||
                      ( ! p2_is_valid ) ||
@@ -3395,7 +3395,7 @@ public class PredFormalArg extends FormalArgument
                      ( alt_p_is_valid ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("Unexpected results from " +
@@ -3411,28 +3411,28 @@ public class PredFormalArg extends FormalArgument
                             alt_p_is_valid);
                     }
                 }
-                 
+
                 if ( ( pfa.isValidValue(1.0) ) ||
                      ( pfa.isValidValue(1) ) ||
                      ( pfa.isValidValue("a string") ) ||
                      ( pfa.isValidValue(new TimeStamp(db.getTicks(), 0)) ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.print("pfa.isValidValue() accepted one or " +
                                         "more non-Predicates.\n");
                     }
                 }
-                
+
                 if ( ( pfa_sr.isValidValue(1.0) ) ||
                      ( pfa_sr.isValidValue(1) ) ||
                      ( pfa_sr.isValidValue("a string") ) ||
                      ( pfa_sr.isValidValue(new TimeStamp(db.getTicks(), 0)) ) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.print("pfa_sr.isValidValue() accepted one " +
@@ -3441,7 +3441,7 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -3470,12 +3470,12 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -3487,7 +3487,7 @@ public class PredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -3531,7 +3531,7 @@ public class PredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -3548,7 +3548,7 @@ public class PredFormalArg extends FormalArgument
             }
 
             if ( ( db == null ) ||
-                 ( arg == null ) || 
+                 ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -3572,11 +3572,11 @@ public class PredFormalArg extends FormalArgument
                                          "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg != null )
@@ -3602,8 +3602,8 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now set subRange, add some approved nominals, and verify that 
+
+        /* now set subRange, add some approved nominals, and verify that
          * this is reflected in the output from toDBString().
          *
          * Must do some setup first.
@@ -3633,7 +3633,7 @@ public class PredFormalArg extends FormalArgument
             methodReturned = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
-                    
+
             try
             {
                 alpha   = new UnTypedFormalArg(db, "<alpha>");
@@ -3649,22 +3649,22 @@ public class PredFormalArg extends FormalArgument
                 lima    = new UnTypedFormalArg(db, "<lima>");
                 mike    = new UnTypedFormalArg(db, "<mike>");
                 nero    = new UnTypedFormalArg(db, "<nero>");
-                
-                p0 = VocabList.ConstructTestPred(db, "p0", 
+
+                p0 = VocabList.ConstructTestPred(db, "p0",
                                                  alpha, null, null, null);
-                p1 = VocabList.ConstructTestPred(db, "p1", 
+                p1 = VocabList.ConstructTestPred(db, "p1",
                                                  bravo, charlie, null, null);
-                p2 = VocabList.ConstructTestPred(db, "p2", 
+                p2 = VocabList.ConstructTestPred(db, "p2",
                                                  delta, echo, foxtrot, null);
-                p3 = VocabList.ConstructTestPred(db, "p3", 
+                p3 = VocabList.ConstructTestPred(db, "p3",
                                                  hotel, india, juno, kilo);
-                p4 = VocabList.ConstructTestPred(db, "p4", 
+                p4 = VocabList.ConstructTestPred(db, "p4",
                                                  lima, null, null, null);
-                p5 = VocabList.ConstructTestPred(db, "p5", 
+                p5 = VocabList.ConstructTestPred(db, "p5",
                                                  mike, null, null, null);
-                p6 = VocabList.ConstructTestPred(db, "p6", 
+                p6 = VocabList.ConstructTestPred(db, "p6",
                                                  nero, null, null, null);
-                
+
                 db.vl.addElement(p0);
                 db.vl.addElement(p1);
                 db.vl.addElement(p2);
@@ -3672,32 +3672,32 @@ public class PredFormalArg extends FormalArgument
                 db.vl.addElement(p4);
                 db.vl.addElement(p5);
                 db.vl.addElement(p6);
-                
+
                 methodReturned = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! methodReturned ) ||
-                 ( alpha == null ) || ( bravo == null ) || 
+                 ( alpha == null ) || ( bravo == null ) ||
                  ( charlie == null ) || ( delta == null ) ||
                  ( echo == null ) || ( foxtrot == null ) ||
-                 ( hotel == null ) || ( india == null ) ||  
+                 ( hotel == null ) || ( india == null ) ||
                  ( juno == null ) || ( kilo == null ) ||
                  ( lima == null ) || ( mike == null ) ||
-                 ( nero == null ) || 
-                 ( p0 == null ) || ( p1 == null ) || 
-                 ( p2 == null ) || ( p3 == null ) || 
+                 ( nero == null ) ||
+                 ( p0 == null ) || ( p1 == null ) ||
+                 ( p2 == null ) || ( p3 == null ) ||
                  ( p4 == null ) || ( p5 == null ) ||
                  ( p6 == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! methodReturned )
@@ -3705,29 +3705,29 @@ public class PredFormalArg extends FormalArgument
                         outStream.print("Setup for approved set test " +
                                         "failed to complete.\n");
                     }
-                    
-                    if ( ( alpha == null ) || ( bravo == null ) || 
+
+                    if ( ( alpha == null ) || ( bravo == null ) ||
                          ( charlie == null ) || ( delta == null ) ||
                          ( echo == null ) || ( foxtrot == null ) ||
-                         ( hotel == null ) || ( india == null ) ||  
+                         ( hotel == null ) || ( india == null ) ||
                          ( juno == null ) || ( kilo == null ) ||
                          ( lima == null ) || ( mike == null ) ||
-                         ( nero == null ) ) 
+                         ( nero == null ) )
                     {
                         outStream.print(
                                 "one or more formal arg allocations failed.\n");
                     }
-                    
-                    if ( ( p0 == null ) || ( p1 == null ) || 
+
+                    if ( ( p0 == null ) || ( p1 == null ) ||
                          ( p2 == null ) || ( p3 == null ) ||
-                         ( p4 == null ) || ( p5 == null ) || 
+                         ( p4 == null ) || ( p5 == null ) ||
                          ( p6 == null ) )
-                        
+
                     {
                         outStream.print(
                                 "one or more pred allocations failed.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("Unexpected system error exception " +
@@ -3737,12 +3737,12 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             methodReturned = false;
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setSubRange(true);
@@ -3751,17 +3751,17 @@ public class PredFormalArg extends FormalArgument
                 arg.addApproved(p5.getID());
                 methodReturned = true;
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! methodReturned ) || ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! methodReturned )
@@ -3769,17 +3769,17 @@ public class PredFormalArg extends FormalArgument
                         outStream.print(
                                 "Approved set setup failed to complete.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("Unexpected SystemErrorExcetpion " +
-                                "in approved set setup: %s", 
+                                "in approved set setup: %s",
                                 systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg != null )
@@ -3805,8 +3805,8 @@ public class PredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -3837,7 +3837,7 @@ public class PredFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* PredFormalArg::TestToStringMethods() */
-    
+
 } /* class PredFormalArg */

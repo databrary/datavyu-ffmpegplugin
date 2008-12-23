@@ -28,7 +28,7 @@ public class VocabEditorPanel extends javax.swing.JPanel
   {
     this(null);
   }
-  
+
   /** Creates new form VocabEditorPanel */
   public VocabEditorPanel(Database db)
   {
@@ -56,13 +56,13 @@ public class VocabEditorPanel extends javax.swing.JPanel
 
     try {
       Vector<MatrixVocabElement> mve = database.getMatrixVEs();
-      
+
     } catch (SystemErrorException se) {
       JOptionPane.showMessageDialog(this, "An error occurred getting Matrix Vocab Elements: " + se);
       return;
     }
   }
-  
+
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -162,7 +162,7 @@ public class VocabEditorPanel extends javax.swing.JPanel
   private javax.swing.JList vocabList;
   private javax.swing.JScrollPane vocabScrollPane;
   // End of variables declaration//GEN-END:variables
-  
+
 
   /*
   public final static void main(String argv[])

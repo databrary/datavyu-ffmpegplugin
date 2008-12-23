@@ -16,14 +16,14 @@ package au.com.nicta.openshapa.db;
  * MacSHAPA database.
  *
  * In essence, the class is just the Database class with some additional fields
- * needed to store and maintain data paricular to MacSHAPA.  
+ * needed to store and maintain data paricular to MacSHAPA.
  *
  * In its first incarnation, there are no safeguards to keep the user from
  * inserting things in the database that can't be represented in a MacSHAPA
- * ODB file.  For now, at least, we will simply ignore such features when 
+ * ODB file.  For now, at least, we will simply ignore such features when
  * saving to file.
  *
- * Eventually, it would be useful to add code to prevent the addition of such 
+ * Eventually, it would be useful to add code to prevent the addition of such
  * elements to begin with.  Specifically, we should have code to prevent:
  *
  *      Typed predicate and matrix formal arguments
@@ -38,39 +38,39 @@ package au.com.nicta.openshapa.db;
  *
  *                                              JRM -- 7/13/08
  *
- *  
+ *
  * @author mainzer
  */
 public class MacshapaDatabase extends Database
 {
-    
+
     /*************************************************************************/
     /*************************** Constants: **********************************/
     /*************************************************************************/
-    
+
     public final static String DB_TYPE = "MacSHAPA Database";
     public final static float DB_VERSION = 1.0f;
-  
+
     public final static long MAX_INT = 10000;
     public final static long MIN_INT = -10000;
-    
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    
 
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
+
     /**
      * Database()
      *
      * Constructor for Database.  Sets up data structures used by all flavors
-     * of databases.  
-     * 
-     * Since this is a MacSHAPA database, also setup the extra structures 
+     * of databases.
+     *
+     * Since this is a MacSHAPA database, also setup the extra structures
      * needed to store a MacSHAPA database.
      *
      *                                              JRM -- 4/30/07
@@ -79,52 +79,52 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     public MacshapaDatabase()
         throws SystemErrorException
     {
         super();
-        
+
         setupSystemPreds();
-        
+
         return;
-        
+
     } /* MacshapaDatabase::MacshapaDatabase() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-        
+
     /**
      * getVersion()
      *
      * Gets the database version number<br>
      * (eg 2.1)
      */
-  
+
     public float getVersion()
     {
-        
+
         return (DB_VERSION);
-        
+
     } /* MacshapaDatabase::getVersion() */
 
-    
+
     /**
      * getType()
      *
      * Gets the database type string<br>
      * (eg ODB File)
      */
-  
+
     public String getType()
     {
-        
+
         return (DB_TYPE);
-    
+
     } /* MacshapaDatabase::getType() */
-    
+
     /*************************************************************************/
     /****************** Supported Features -- Overrides: *********************/
     /*************************************************************************/
@@ -134,27 +134,27 @@ public class MacshapaDatabase extends Database
     /* MacSHAPA databases.                                                   */
     /*                                                                       */
     /*************************************************************************/
-    
+
     public boolean floatSubrangeSupported()         { return false; }
     public boolean integerSubrangeSupported()       { return false; }
     public boolean nominalSubrangeSupported()       { return false; }
     public boolean predSubrangeSupported()          { return false; }
     public boolean tickSizeAgjustmentSupported()    { return false; }
     public boolean typedFormalArgsSupported()       { return false; }
-   
-          
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * constructPVE()
      *
      * Construct a predicate vocab element for a MacSHAPA database.  Do not
      * insert the pve in the database, but instead return a reference to it.
-     * 
-     * Several versions of this method, to accomodate different numbers of 
-     * parameters  
+     *
+     * Several versions of this method, to accomodate different numbers of
+     * parameters
      *
      *                                              JRM -- 7/20/08
      *
@@ -162,20 +162,20 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     private PredicateVocabElement constructPVE(String name,
                                                String arg1)
         throws SystemErrorException
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = new PredicateVocabElement(this, name);
         fa = new UnTypedFormalArg(this, arg1);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1) */
 
     private PredicateVocabElement constructPVE(String name,
@@ -185,13 +185,13 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1);
         fa = new UnTypedFormalArg(this, arg2);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2) */
 
     private PredicateVocabElement constructPVE(String name,
@@ -202,13 +202,13 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2);
         fa = new UnTypedFormalArg(this, arg3);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2, arg3) */
 
     private PredicateVocabElement constructPVE(String name,
@@ -220,13 +220,13 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3);
         fa = new UnTypedFormalArg(this, arg4);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2, arg3, arg4) */
 
     private PredicateVocabElement constructPVE(String name,
@@ -239,13 +239,13 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4);
         fa = new UnTypedFormalArg(this, arg5);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2, arg3, arg4, arg5) */
 
     private PredicateVocabElement constructPVE(String name,
@@ -259,15 +259,15 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5);
         fa = new UnTypedFormalArg(this, arg6);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2, ... arg6) */
-    
+
     private PredicateVocabElement constructPVE(String name,
                                                String arg1,
                                                String arg2,
@@ -280,26 +280,26 @@ public class MacshapaDatabase extends Database
     {
         FormalArgument fa = null;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6);
         fa = new UnTypedFormalArg(this, arg7);
         pve.appendFormalArg(fa);
 
         return pve;
-        
+
     } /* MacshapaDatabase::constructPVE(name, arg1, arg2, ... arg7) */
 
-    
+
     /**
      * definePVE()
      *
      * Construct a predicate vocab element for a MacSHAPA database with the
      * indicated name, formal arguments, variable length and system flags,
-     * and then insert it into the database. Return the ID assigned to the 
+     * and then insert it into the database. Return the ID assigned to the
      * pve.
-     * 
-     * Several versions of this method, to accomodate different numbers of 
-     * parameters  
+     *
+     * Several versions of this method, to accomodate different numbers of
+     * parameters
      *
      *                                              JRM -- 7/20/08
      *
@@ -307,7 +307,7 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     private long definePVE(String name,
                            String arg1,
                            boolean vLen,
@@ -316,20 +316,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -339,20 +339,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, arg2, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -363,20 +363,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, ... arg3, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -388,20 +388,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, ... arg4, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -414,20 +414,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, ... arg5, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -441,20 +441,20 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, ... arg6, vLen, system) */
-    
+
     private long definePVE(String name,
                            String arg1,
                            String arg2,
@@ -469,31 +469,31 @@ public class MacshapaDatabase extends Database
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
-        
+
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
         pve.setVarLen(vLen);
-        if ( system ) 
+        if ( system )
         {
             pve.setSystem();
         }
-        
+
         pve_id = this.addPredVE(pve);
-        
+
         return pve_id;
-        
+
     } /* MacshapaDatabase::definePVE(name, arg1, ... arg7, vLen, system) */
 
-    
+
     /**
      * defineSystemPVE()
      *
      * Construct a predicate vocab element for a MacSHAPA database with the
-     * indicated name, formal arguments, and variable length flag, and then 
-     * insert it into the database as a system pve. Return the ID assigned 
+     * indicated name, formal arguments, and variable length flag, and then
+     * insert it into the database as a system pve. Return the ID assigned
      * to the pve.
-     * 
-     * Several versions of this method, to accomodate different numbers of 
-     * parameters  
+     *
+     * Several versions of this method, to accomodate different numbers of
+     * parameters
      *
      *                                              JRM -- 7/20/08
      *
@@ -501,7 +501,7 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    boolean vLen)
@@ -509,7 +509,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -518,7 +518,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -528,7 +528,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -539,7 +539,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -551,7 +551,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -564,7 +564,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, vLen, true);
     }
-    
+
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    String arg2,
@@ -579,17 +579,17 @@ public class MacshapaDatabase extends Database
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7, vLen, true);
     }
 
-    
+
     /**
      * defineUserPVE()
      *
      * Construct a predicate vocab element for a MacSHAPA database with the
-     * indicated name, formal arguments, and variable length flag, and then 
-     * insert it into the database as a non-system pve. Return the ID 
+     * indicated name, formal arguments, and variable length flag, and then
+     * insert it into the database as a non-system pve. Return the ID
      * assigned to the pve.
-     * 
-     * Several versions of this method, to accomodate different numbers of 
-     * parameters  
+     *
+     * Several versions of this method, to accomodate different numbers of
+     * parameters
      *
      *                                              JRM -- 7/20/08
      *
@@ -597,7 +597,7 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  boolean vLen)
@@ -605,7 +605,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -614,7 +614,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -624,7 +624,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -635,7 +635,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -647,7 +647,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -660,7 +660,7 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, vLen, false);
     }
-    
+
     protected long defineUserPVE(String name,
                                  String arg1,
                                  String arg2,
@@ -674,15 +674,15 @@ public class MacshapaDatabase extends Database
     {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7, vLen, false);
     }
-    
+
     /**
      * setupSystemPreds()
-     * 
+     *
      * Create the system predicates that exist in every MacSHAPA database.
-     * 
+     *
      *                                              JRM -- 7/19/08
      * Changes:
-     * 
+     *
      *    - None
      */
 
@@ -690,17 +690,17 @@ public class MacshapaDatabase extends Database
         throws SystemErrorException
     {
         final String mName = "MacshapaDatabase::constructSystemPreds()";
-        
+
         defineSystemPVE("rule", "<condition>", "<action>", false);
         defineSystemPVE("query", "<condition>", "<action>", false);
-        defineSystemPVE("or", "<arg1>", "<arg2>", "<arg3>", 
+        defineSystemPVE("or", "<arg1>", "<arg2>", "<arg3>",
                         "<arg4>", "<arg5>", "<arg6>", "<arg7>", true);
-        defineSystemPVE("and", "<arg1>", "<arg2>", "<arg3>", 
+        defineSystemPVE("and", "<arg1>", "<arg2>", "<arg3>",
                         "<arg4>", "<arg5>", "<arg6>", "<arg7>", true);
         defineSystemPVE("not", "<arg1>", false);
         defineSystemPVE("assign", "<query-var>", "<val>", false);
-        
-        
+
+
         /* boolean predicates */
 	defineSystemPVE("lt", "<x>", "<y>", false);
 	defineSystemPVE("gt", "<x>", "<y>", false);
@@ -718,10 +718,10 @@ public class MacshapaDatabase extends Database
 	defineSystemPVE("istext", "<arg>", false);
 	defineSystemPVE("ispred", "<arg>", false);
 	defineSystemPVE("isempty", "<arg>", false);
-        
-        
+
+
         /* executable predicates */
-	defineSystemPVE("print", "<arg1>", "<arg2>", "<arg3>", 
+	defineSystemPVE("print", "<arg1>", "<arg2>", "<arg3>",
                             "<arg4>", "<arg5>", "<arg6>", "<arg7>", true);
 	defineSystemPVE("count", "<form>", false);
         defineSystemPVE("insert", "<var>", true);
@@ -733,8 +733,8 @@ public class MacshapaDatabase extends Database
 	defineSystemPVE("cmin", "<val>", false);
 	defineSystemPVE("cmax", "<val>", false);
 	defineSystemPVE("cmean", "<val>", false);
-        
-        
+
+
         /* data predicates */
 	defineSystemPVE("times", "<x>", "<y>", false);
 	defineSystemPVE("divide", "<x>", "<y>", false);
@@ -753,16 +753,16 @@ public class MacshapaDatabase extends Database
 	defineSystemPVE("abs", "<x>", false);
 	defineSystemPVE("mod", "<x>", "<y>", false);
 	defineSystemPVE("rem", "<x>", "<y>", false);
-        
-        
+
+
 	/* macro predicates */
-	defineSystemPVE("aftero", "<base-var>", "<successor-var>", 
+	defineSystemPVE("aftero", "<base-var>", "<successor-var>",
                         "<min-ord>", "<max-ord>", false);
-	defineSystemPVE("aftert", "<base-var>", "<successor-var>", 
+	defineSystemPVE("aftert", "<base-var>", "<successor-var>",
                         "<min-time>", "<max-time>", false);
 	defineSystemPVE("beforeo", "<base-var>", "<predecessor-var>",
                         "<min-ord>", "<max-ord>", false);
-	defineSystemPVE("beforet", "<base-var>", "<predecessor-var>", 
+	defineSystemPVE("beforet", "<base-var>", "<predecessor-var>",
                         "<min-time>", "<max-time>", false);
 	defineSystemPVE("during1", "<base-var>", "<contemporary-var>", false);
 	defineSystemPVE("during2", "<base-var>", "<contemporary-var>", false);
@@ -779,12 +779,12 @@ public class MacshapaDatabase extends Database
 	defineSystemPVE("previnstt", "<base-var>", "<predecessor-var>", false);
 	defineSystemPVE("prevo", "<base-var>", "<predecessor-var>", false);
 	defineSystemPVE("prevt", "<base-var>", "<predecessor-var>", false);
-        
+
         return;
-        
+
     } /* MacshapaDatabase::setupSystemPreds() */
-    
-    
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
@@ -800,7 +800,7 @@ public class MacshapaDatabase extends Database
      *
      *    - None.
      */
-    
+
     public static boolean TestAPIExamples(java.io.PrintStream outStream,
                                           boolean verbose)
         throws SystemErrorException
@@ -811,17 +811,17 @@ public class MacshapaDatabase extends Database
         String failBanner = "FAILED\n";
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print(testBanner);
 
         if ( verbose )
         {
             outStream.print("\n");
         }
-        
+
         failures += TestAPIExample_01(outStream, verbose);
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -835,7 +835,7 @@ public class MacshapaDatabase extends Database
         {
             outStream.print("All tests passed.\n");
         }
-        
+
         if ( verbose )
         {
             /* print the banner again. */
@@ -850,31 +850,31 @@ public class MacshapaDatabase extends Database
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* MacshapaDatabase::TestAPIExamples() */
-    
-    
+
+
     /**
      * TestAPIExample_01()
      *
      * MacSHAPA Database API example test 01:
      *
-     * 1) Allocate a MacSHAPA data base.  Set its name to "API test 01". 
+     * 1) Allocate a MacSHAPA data base.  Set its name to "API test 01".
      *    Set the description.  Use db.toString() to verify that the database
-     *    is initialized as it should be. 
-     * 
-     * 2) Call the type and version check method to verify that we get the 
-     *    expected values.  Also call getName() and getDescription() to 
+     *    is initialized as it should be.
+     *
+     * 2) Call the type and version check method to verify that we get the
+     *    expected values.  Also call getName() and getDescription() to
      *    verify that they perform as expected.
-     * 
+     *
      * 3) Create float, int, nominal, and text data columns.  Use db.toString()
      *    to verify that the creations succeeded.
-     * 
+     *
      * 4) Get copies of some of the data column headers using both column name
-     *    and ID based methods.  Modify the column headers, and then use 
-     *    db.toString() to verify that the changes took.  
+     *    and ID based methods.  Modify the column headers, and then use
+     *    db.toString() to verify that the changes took.
      *
      * 5) Append some cells to one of the columns in out of time sequence order.
      *    Verify that the cells appear in append order.
@@ -882,16 +882,16 @@ public class MacshapaDatabase extends Database
      *    Turn on temporal ordering.  Verify that the cells are now sorted
      *    in increasing onset order.  Turn temporal ordering back off.
      *
-     * 6) Insert some cells into one of the columns out of temporal sequence 
+     * 6) Insert some cells into one of the columns out of temporal sequence
      *    order.  Verify that the cells were inserted in the expected locations.
-     *    
+     *
      *    Turn on temporal ordering.  Verify that the cells are now sorted.
      *
-     *    Try to insert a cell out of temporal order.  Verify that the cell 
+     *    Try to insert a cell out of temporal order.  Verify that the cell
      *    gets inserted in temporal order.  Turn temporal ordering back off.
      *
      * 7) Delete several cells, and verify that the expected cells were deleted.
-     *    Note that here it doesn't matter whether temporal ordering is turned 
+     *    Note that here it doesn't matter whether temporal ordering is turned
      *    on or off.
      *
      * 8) Edit several cells, including onsets and offsets with temporal ordering
@@ -904,12 +904,12 @@ public class MacshapaDatabase extends Database
      *    that the cells appear in temporal order in the column.
      *
      * 9) Delete two columns -- one with cells and one without.  Add a column
-     *    and insert some cells.  Verify that the database contains the 
+     *    and insert some cells.  Verify that the database contains the
      *    expected data.  Demonstrate the use of db.getColumns() in
      *    passing.
      *
      * 10) Delete all columns.  Verify that the database is empty.
-     * 
+     *
      *
      * Return the number of failures.
      *
@@ -938,12 +938,12 @@ public class MacshapaDatabase extends Database
         final String fdcName2 = "float_data_col_2";
         String systemErrorExceptionString = "";
         // this is a toString() dump of a newly created empty MacshapaDatabase.
-        // Only the name and description have been modified -- all else is 
+        // Only the name and description have been modified -- all else is
         // as the database was created.
         // Note the long list of predicates in the vocab list -- these predicates
         // are all needed by the Query Language.  Expect this list to change a
         // bit as I get to implementing it.
-        String expectedString0 =  
+        String expectedString0 =
         "(API test 1 " +
           "(Description: This is a test MacSHAPA database created for " +
                         "purposes of demonstrating the API.) " +
@@ -1018,14 +1018,14 @@ public class MacshapaDatabase extends Database
                "rule(<condition>, <action>), " +
                "times(<x>, <y>)))) " +
           "((ColumnList) (cl_contents: ())))";
-        // This is a toString() dump of the MacSHAPA database after we have 
+        // This is a toString() dump of the MacSHAPA database after we have
         // added float, int, nominal, and text data columns.  Note that not
         // only do the new columns appear in the ColumnList, but the associated
-        // matrix vocab elements appear in the VocabList.  With the exception 
+        // matrix vocab elements appear in the VocabList.  With the exception
         // of the matrix vocab element associated with matrix data columns,
-        // matrix vocab elements may not be edited by users, and are thus 
+        // matrix vocab elements may not be edited by users, and are thus
         // marked as system.
-        String expectedString1 = 
+        String expectedString1 =
         "(API test 1 " +
           "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
           "((VocabList) " +
@@ -1200,21 +1200,21 @@ public class MacshapaDatabase extends Database
         // with temporal ording off.
         // Note that a toString dump of just a data column is not available
         // at the user level.
-        String expectedString3 = 
+        String expectedString3 =
                 "(float_data_column, " +
                     "((1, 00:00:03:000, 00:00:04:000, (3.0)), " +
                      "(2, 00:00:02:000, 00:00:03:000, (2.0)), " +
                      "(3, 00:00:01:000, 00:00:02:000, (1.0))))";
         // This is a toString dump of fdc without further modifications after
         // we have turned temporal ordering on.
-        String expectedString4 = 
+        String expectedString4 =
                 "(float_data_column, " +
                     "((1, 00:00:01:000, 00:00:02:000, (1.0)), " +
                      "(2, 00:00:02:000, 00:00:03:000, (2.0)), " +
                      "(3, 00:00:03:000, 00:00:04:000, (3.0))))";
         // This is a toString dump of fdc after inserting three cells
         // out of temporal order with temporal ordering turned off.
-        String expectedString5 = 
+        String expectedString5 =
                 "(float_data_column, " +
                     "((1, 00:00:04:000, 00:00:05:000, (4.0)), " +
                      "(2, 00:00:01:000, 00:00:02:000, (1.0)), " +
@@ -1224,7 +1224,7 @@ public class MacshapaDatabase extends Database
                      "(6, 00:00:00:000, 00:00:10:000, (0.0))))";
         // This is a toString dump of fdc without further modifications after
         // we have turned temporal ordering back on.
-        String expectedString6 = 
+        String expectedString6 =
                 "(float_data_column, " +
                     "((1, 00:00:00:000, 00:00:10:000, (0.0)), " +
                      "(2, 00:00:01:000, 00:00:02:000, (1.0)), " +
@@ -1234,7 +1234,7 @@ public class MacshapaDatabase extends Database
                      "(6, 00:00:05:000, 00:00:06:000, (5.0))))";
         // This is a toString dump of fdc after several cells have been inserted
         // out of temporal order while temporal ordering is turned off.
-        String expectedString7 = 
+        String expectedString7 =
                 "(float_data_column, " +
                     "((1, 00:00:00:000, 00:00:10:000, (0.0)), " +
                      "(2, 00:00:01:000, 00:00:02:000, (1.0)), " +
@@ -1245,9 +1245,9 @@ public class MacshapaDatabase extends Database
                      "(7, 00:00:06:000, 00:00:07:000, (6.0)), " +
                      "(8, 00:00:07:000, 00:00:08:000, (7.0)), " +
                      "(9, 00:00:08:000, 00:00:09:000, (8.0))))";
-        // This is a toString dump of fdc after we have removed cells with 
+        // This is a toString dump of fdc after we have removed cells with
         // ords 9, 5, and 1 in that order.
-        String expectedString8 = 
+        String expectedString8 =
                 "(float_data_column, " +
                     "((1, 00:00:01:000, 00:00:02:000, (1.0)), " +
                      "(2, 00:00:02:000, 00:00:03:000, (2.0)), " +
@@ -1255,9 +1255,9 @@ public class MacshapaDatabase extends Database
                      "(4, 00:00:05:000, 00:00:06:000, (5.0)), " +
                      "(5, 00:00:06:000, 00:00:07:000, (6.0)), " +
                      "(6, 00:00:07:000, 00:00:08:000, (7.0))))";
-        // This is a toString dump of fdc after several cell edits with 
+        // This is a toString dump of fdc after several cell edits with
         // temporal ordering turned off
-        String expectedString9 = 
+        String expectedString9 =
                 "(float_data_column, " +
                     "((1, 00:00:10:000, 00:00:11:000, (9.0)), " +
                      "(2, 00:00:02:000, 00:00:03:000, (2.0)), " +
@@ -1267,7 +1267,7 @@ public class MacshapaDatabase extends Database
                      "(6, 00:00:00:000, 00:00:01:000, (0.0))))";
         // This is a toString dump of fdc without further modifications after
         // we have turned temporal ordering back on.
-        String expectedString10 = 
+        String expectedString10 =
                 "(float_data_column, " +
                     "((1, 00:00:00:000, 00:00:01:000, (0.0)), " +
                      "(2, 00:00:02:000, 00:00:03:000, (2.0)), " +
@@ -1377,12 +1377,12 @@ public class MacshapaDatabase extends Database
                    "(6, 00:00:11:000, 00:00:12:000, (10.0))))))))";
         // this is a toString dump of the vector returned by db.getColumns()
         // before any column deletions.
-        String expectedString13 = 
+        String expectedString13 =
                 "[(text_data_column, ()), " +
                  "(int_data_column, ()), " +
                  "(nominal_data_column, ()), " +
                  "(float_data_column, ())]";
-        // this is a toString dump of the database after the deletion of 
+        // this is a toString dump of the database after the deletion of
         // two columns -- fdc and ndc.
         String expectedString14 =
         "(API test 1 " +
@@ -1469,7 +1469,7 @@ public class MacshapaDatabase extends Database
         String expectedString15 = "[(text_data_column, ()), (int_data_column, ())]";
         // this is a toString dump of the database after the adding the fdc2
         // column and appending several cells to tdc.
-        String expectedString16 = 
+        String expectedString16 =
         "(API test 1 " +
           "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
           "((VocabList) " +
@@ -1556,7 +1556,7 @@ public class MacshapaDatabase extends Database
                "(int_data_column, ())))))";
         // this is a toString() dump of the vector returned by db.getColumns()
         // after the insertion of fdc2.
-        String expectedString17 = 
+        String expectedString17 =
                 "[(text_data_column, ()), " +
                  "(float_data_col_2, ()), " +
                  "(int_data_column, ())]";
@@ -1669,36 +1669,36 @@ public class MacshapaDatabase extends Database
         DataCell dc1 = null;
         DataCell dc2 = null;
 
-        // 1) Allocate a MacSHAPA data base.  Set its name to "API test 01". 
+        // 1) Allocate a MacSHAPA data base.  Set its name to "API test 01".
         //    Set the description.  Use db.toString() to verify that the database
-        //    is initialized as it should be. 
+        //    is initialized as it should be.
         if ( failures == 0 )
         {
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
                 // allocate a new database
-                
+
                 db = new MacshapaDatabase();
-                
+
                 db.setName("API test 1");
                 db.setDescription(description);
-                
+
                 // create the test string
                 testStringA = db.toString();
-                
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( db == null ) ||
                  ( testStringA == null ) ||
@@ -1706,7 +1706,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -1714,14 +1714,14 @@ public class MacshapaDatabase extends Database
                         outStream.printf("%s db allocation failed to complete.\n",
                                          header);
                     }
-                    
+
                     if ( db == null )
                     {
                         outStream.printf(
                                 "%s new MacshapaDatabase() returned null.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -1732,27 +1732,27 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString0.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in db allocation: \"%s\".\n", 
+                                "exception in db allocation: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
             }
         }
-        
-        
-        // 2) Call the type and version check method to verify that we get the 
-        //    expected values.  Also call getName() and getDescription() to 
+
+
+        // 2) Call the type and version check method to verify that we get the
+        //    expected values.  Also call getName() and getDescription() to
         //    verify that they perform as expected.
         if ( failures == 0 )
         {
             if ( db.getType().compareTo("MacSHAPA Database") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1760,11 +1760,11 @@ public class MacshapaDatabase extends Database
                         header, db.getType());
                 }
             }
-            
+
             if ( db.getVersion() != 1.0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1772,11 +1772,11 @@ public class MacshapaDatabase extends Database
                         header, db.getVersion());
                 }
             }
-            
+
             if ( db.getName().compareTo("API test 1") != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -1784,11 +1784,11 @@ public class MacshapaDatabase extends Database
                         header, db.getName());
                 }
             }
-            
+
             if ( db.getDescription().compareTo(description) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s db.getDescription() returns " +
@@ -1797,8 +1797,8 @@ public class MacshapaDatabase extends Database
                 }
             }
         }
-        
-        
+
+
         // 3) Create float, int, nominal, and text data columns.  Use db.toString()
         //    to verify that the creations succeeded.
         if ( failures == 0 )
@@ -1806,42 +1806,42 @@ public class MacshapaDatabase extends Database
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
                 // allocate and insert a float data column
-                fdc = new DataColumn(db, fdcName0, 
+                fdc = new DataColumn(db, fdcName0,
                         MatrixVocabElement.MatrixType.FLOAT);
                 fdcID = db.addColumn(fdc);
-                
+
                 // allocate and insert an integer data column
-                idc = new DataColumn(db, idcName0, 
+                idc = new DataColumn(db, idcName0,
                         MatrixVocabElement.MatrixType.INTEGER);
                 idcID = db.addColumn(idc);
-                
+
                 // allocate and insert a nominal data column
-                ndc = new DataColumn(db, ndcName0, 
+                ndc = new DataColumn(db, ndcName0,
                         MatrixVocabElement.MatrixType.INTEGER);
                 ndcID = db.addColumn(ndc);
-                
+
                 // allocate and insert a text data column
-                tdc = new DataColumn(db, tdcName0, 
+                tdc = new DataColumn(db, tdcName0,
                         MatrixVocabElement.MatrixType.TEXT);
                 tdcID = db.addColumn(tdc);
-                
-                
+
+
                 // create the test string
                 testStringA = db.toString();
-                
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( fdc == null ) ||
                  ( fdcID == DBIndex.INVALID_ID ) ||
@@ -1856,7 +1856,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -1865,7 +1865,7 @@ public class MacshapaDatabase extends Database
                                 "%s column allocation failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( fdc == null )
                     {
                         outStream.printf("%s allocation of fdc failed.\n",
@@ -1873,10 +1873,10 @@ public class MacshapaDatabase extends Database
                     }
                     else if ( fdcID == DBIndex.INVALID_ID )
                     {
-                        outStream.printf("%s fdcID is invalid!?!\n", 
+                        outStream.printf("%s fdcID is invalid!?!\n",
                                 header);
                     }
-                    
+
                     if ( idc == null )
                     {
                         outStream.printf("%s allocation of idc failed.\n",
@@ -1884,10 +1884,10 @@ public class MacshapaDatabase extends Database
                     }
                     else if ( idcID == DBIndex.INVALID_ID )
                     {
-                        outStream.printf("%s idcID is invalid?!?\n", 
+                        outStream.printf("%s idcID is invalid?!?\n",
                                 header);
                     }
-                    
+
                     if ( ndc == null )
                     {
                         outStream.printf("%s allocation of ndc failed.\n",
@@ -1895,10 +1895,10 @@ public class MacshapaDatabase extends Database
                     }
                     else if ( ndcID == DBIndex.INVALID_ID )
                     {
-                        outStream.printf("%s ndcID is invalid?!?.\n", 
+                        outStream.printf("%s ndcID is invalid?!?.\n",
                                 header);
                     }
-                    
+
                     if ( tdc == null )
                     {
                         outStream.printf("%s allocation of tdc failed.\n",
@@ -1906,10 +1906,10 @@ public class MacshapaDatabase extends Database
                     }
                     else if ( tdcID == DBIndex.INVALID_ID )
                     {
-                        outStream.printf("%s tdcID is invalid?!?\n", 
+                        outStream.printf("%s tdcID is invalid?!?\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -1920,85 +1920,85 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString1.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in column allocation: \"%s\".\n", 
+                                "exception in column allocation: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
             }
         }
-        
-        
+
+
         // 4) Get copies of some of the data column headers using both column name
-        //    and ID based methods.  Modify the column headers, and then use 
-        //    db.toString() to verify that the changes took.  
+        //    and ID based methods.  Modify the column headers, and then use
+        //    db.toString() to verify that the changes took.
         if ( failures == 0 )
         {
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
-                // get copies of the current values of the data columns in 
+                // get copies of the current values of the data columns in
                 // the database.  Since we have the IDs of all the columns,
                 // we could use those, but just to be interesting, get some
                 // using the column name instead.  Also, use both getColumn
-                // and getDataColumn.  For MacSHAPA database, and for all 
-                // databases until reference columns are implemented, all 
+                // and getDataColumn.  For MacSHAPA database, and for all
+                // databases until reference columns are implemented, all
                 // columns are DataColumns.
-                
+
                 fdc = db.getDataColumn(fdcID);
                 idc = db.getDataColumn(idcName0);
                 ndc = (DataColumn)db.getColumn(ndcID);
                 tdc = (DataColumn)db.getColumn(tdcName0);
-                
+
                 // set the names of all the data columns to versions of their
                 // names with the qhite space replaced with underscores.
-                
+
                 fdc.setName(fdcName1);
                 idc.setName(idcName1);
                 ndc.setName(ndcName1);
                 tdc.setName(tdcName1);
-                
+
                 // mark idc and tdc as hidden
                 idc.setHidden(true);
                 tdc.setHidden(true);
-                
+
                 // replace the old version with the new
                 db.replaceColumn(fdc);
                 db.replaceColumn(idc);
                 db.replaceColumn(ndc);
                 db.replaceColumn(tdc);
-                
+
                 // get fresh copies of the columns for test purposes
                 fdc = db.getDataColumn(fdcID);
                 idc = db.getDataColumn(idcID);
                 ndc = db.getDataColumn(ndcID);
                 tdc = db.getDataColumn(tdcID);
-                
+
                 // create the test string
                 testStringA = db.toString();
-                
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString2.compareTo(testStringA) != 0 ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2007,7 +2007,7 @@ public class MacshapaDatabase extends Database
                                 "%s column mods failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2018,11 +2018,11 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString2.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in column mods: \"%s\".\n", 
+                                "exception in column mods: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
@@ -2033,7 +2033,7 @@ public class MacshapaDatabase extends Database
                       ( tdc.getHidden() != true ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s unexpected column hidden settings.\n" +
@@ -2049,7 +2049,7 @@ public class MacshapaDatabase extends Database
                 }
             }
         }
-        
+
         // 5) Append some cells to one of the columns in out of time sequence order.
         //    Verify that the cells appear in append order.
         //
@@ -2060,15 +2060,15 @@ public class MacshapaDatabase extends Database
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
                 fdc_mveID = fdc.getItsMveID();
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        fdcID, 
+                        db,
+                        fdcID,
                         fdc_mveID,
                         180,
                         240,
@@ -2076,11 +2076,11 @@ public class MacshapaDatabase extends Database
                             db,
                             fdc_mveID,
                             FloatDataValue.Construct(db, 3.0))));
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        fdcID, 
+                        db,
+                        fdcID,
                         fdc_mveID,
                         120,
                         180,
@@ -2088,11 +2088,11 @@ public class MacshapaDatabase extends Database
                             db,
                             fdc_mveID,
                             FloatDataValue.Construct(db, 2.0))));
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        fdcID, 
+                        db,
+                        fdcID,
                         fdc_mveID,
                         60,
                         120,
@@ -2100,32 +2100,32 @@ public class MacshapaDatabase extends Database
                             db,
                             fdc_mveID,
                             FloatDataValue.Construct(db, 1.0))));
-                
+
                 // create the test string -- we cheat a bit here by getting only
                 // the string for fdc.  This isn't available at the user level.
                 testStringA = db.cl.getColumn(fdcID).toString();
-                
+
                 // turn on temporal ordering
                 db.setTemporalOrdering(true);
-                
+
                 // get another test string
                 testStringB = db.cl.getColumn(fdcID).toString();
-                
+
                 // turn off temporal ordering
                 db.setTemporalOrdering(false);
-                  
+
                 // get fresh copy of fdc for test purposes
                 fdc = db.getDataColumn(fdcID);
-               
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString3.compareTo(testStringA) != 0 ) ||
@@ -2134,7 +2134,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2143,7 +2143,7 @@ public class MacshapaDatabase extends Database
                                 "%s cell appends 1 failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2154,7 +2154,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString3.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( testStringB == null )
                     {
                         outStream.printf("%s testStringB is null.\n", header);
@@ -2165,11 +2165,11 @@ public class MacshapaDatabase extends Database
                              "%s testStringB doesn't match expectedString4.\n" +
                              "testString = \"%s\".\n", header, testStringB);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in cell appends 1: \"%s\".\n", 
+                                "exception in cell appends 1: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
@@ -2177,7 +2177,7 @@ public class MacshapaDatabase extends Database
             else if ( fdc.getNumCells() != 3 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s fdc.getNumCells() returned " +
@@ -2187,14 +2187,14 @@ public class MacshapaDatabase extends Database
                 }
             }
         }
-        
-        
-        // 6) Insert some cells into one of the columns out of temporal sequence 
+
+
+        // 6) Insert some cells into one of the columns out of temporal sequence
         //    order.  Verify that the cells were inserted in the expected locations.
-        //    
+        //
         //    Turn on temporal ordering.  Verify that the cells are now sorted.
         //
-        //    Try to insert a cell out of temporal order.  Verify that the cell 
+        //    Try to insert a cell out of temporal order.  Verify that the cell
         //    gets inserted in temporal order.  Turn temporal ordering back off.
         if ( failures == 0 )
         {
@@ -2203,15 +2203,15 @@ public class MacshapaDatabase extends Database
             testStringA = null;
             testStringB = null;
             testStringC = null;
-            
+
             try
             {
                 fdc_mveID = fdc.getItsMveID();
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             240,
                             300,
@@ -2220,11 +2220,11 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 4.0))),
                         1);
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             300,
                             360,
@@ -2233,11 +2233,11 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 5.0))),
                         3);
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             0,
                             600,
@@ -2246,23 +2246,23 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 0.0))),
                         6);
-                
+
                 // create the test string -- we cheat a bit here by getting only
                 // the string for fdc.  This isn't available at the user level.
                 testStringA = db.cl.getColumn(fdcID).toString();
-                
+
                 // turn on temporal ordering
                 db.setTemporalOrdering(true);
-                
+
                 // get another test string
                 testStringB = db.cl.getColumn(fdcID).toString();
-                
+
                 // Insert several more cells with temporal ordering turned on.
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             360,
                             420,
@@ -2271,11 +2271,11 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 6.0))),
                         7);
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             420,
                             480,
@@ -2284,11 +2284,11 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 7.0))),
                         4);
-                
+
                 db.insertdCell(
                         DataCell.Construct(
-                            db, 
-                            fdcID, 
+                            db,
+                            fdcID,
                             fdc_mveID,
                             480,
                             540,
@@ -2297,25 +2297,25 @@ public class MacshapaDatabase extends Database
                                 fdc_mveID,
                                 FloatDataValue.Construct(db, 8.0))),
                         1);
-                
+
                 // get another test string
                 testStringC = db.cl.getColumn(fdcID).toString();
-                
+
                 // turn off temporal ordering
                 db.setTemporalOrdering(false);
-                 
+
                 // get fresh copy of fdc for test purposes
                 fdc = db.getDataColumn(fdcID);
-               
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString5.compareTo(testStringA) != 0 ) ||
@@ -2326,7 +2326,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2335,7 +2335,7 @@ public class MacshapaDatabase extends Database
                                 "%s cell inserts 1 failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2346,7 +2346,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString5.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( testStringB == null )
                     {
                         outStream.printf("%s testStringB is null.\n", header);
@@ -2357,7 +2357,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringB doesn't match expectedString6.\n" +
                              "testString = \"%s\".\n", header, testStringB);
                     }
-                    
+
                     if ( testStringC == null )
                     {
                         outStream.printf("%s testStringC is null.\n", header);
@@ -2368,11 +2368,11 @@ public class MacshapaDatabase extends Database
                              "%s testStringC doesn't match expectedString7.\n" +
                              "testString = \"%s\".\n", header, testStringC);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in cell inserts 1: \"%s\".\n", 
+                                "exception in cell inserts 1: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
@@ -2380,7 +2380,7 @@ public class MacshapaDatabase extends Database
             else if ( fdc.getNumCells() != 9 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s fdc.getNumCells() returned " +
@@ -2390,48 +2390,48 @@ public class MacshapaDatabase extends Database
                 }
             }
         }
-        
-        
-        // 7) Delete several cells, and verify that the expected cells were 
-        //    deleted.  Note that here it doesn't matter whether temporal 
+
+
+        // 7) Delete several cells, and verify that the expected cells were
+        //    deleted.  Note that here it doesn't matter whether temporal
         //    ordering is turned on or off.
         if ( failures == 0 )
         {
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
                 fdc_mveID = fdc.getItsMveID();
-                
+
                 db.removeCell(db.getCell(fdcID, 9).getID());
                 db.removeCell(db.getCell(fdcID, 5).getID());
                 db.removeCell(db.getCell(fdcID, 1).getID());
-                
+
                 // create the test string -- we cheat a bit here by getting only
                 // the string for fdc.  This isn't available at the user level.
                 testStringA = db.cl.getColumn(fdcID).toString();
-                               
+
                 // get fresh copy of fdc for test purposes
                 fdc = db.getDataColumn(fdcID);
-               
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString8.compareTo(testStringA) != 0 ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2440,7 +2440,7 @@ public class MacshapaDatabase extends Database
                                 "%s cell removes 1 failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2451,11 +2451,11 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString8.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in cell removes 1: \"%s\".\n", 
+                                "exception in cell removes 1: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
@@ -2463,7 +2463,7 @@ public class MacshapaDatabase extends Database
             else if ( fdc.getNumCells() != 6 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s fdc.getNumCells() returned " +
@@ -2474,12 +2474,12 @@ public class MacshapaDatabase extends Database
             }
         }
 
-        
-        // 8) Edit several cells, including onsets and offsets with temporal 
-        //    ordering turned off.  Verify that the cells don't change location 
+
+        // 8) Edit several cells, including onsets and offsets with temporal
+        //    ordering turned off.  Verify that the cells don't change location
         //    the column.
         //
-        //    Turn temporal ordering on.  Verify that the cells are now sorted 
+        //    Turn temporal ordering on.  Verify that the cells are now sorted
         //    in temporal order.
         //
         //    Edit several more cells, including their onsets and offsets.
@@ -2491,87 +2491,87 @@ public class MacshapaDatabase extends Database
             testStringA = null;
             testStringB = null;
             testStringC = null;
-            
+
             try
             {
                 fdc_mveID = fdc.getItsMveID();
-                
+
                 // do a few cell edits
                 dc0 = (DataCell)db.getCell(fdcID, 1);
                 dc1 = (DataCell)db.getCell(fdcID, 3);
                 dc2 = (DataCell)db.getCell(fdcID, 6);
-                
+
                 dc0.setOnset(new TimeStamp(db.getTicks(), 600));
                 dc0.setOffset(new TimeStamp(db.getTicks(), 660));
                 dc0.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 9.0)));
-                
+
                 dc1.setOnset(new TimeStamp(db.getTicks(), 240));
                 dc1.setOffset(new TimeStamp(db.getTicks(), 300));
                 dc1.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 4.0)));
-                
+
                 dc2.setOnset(new TimeStamp(db.getTicks(), 0));
                 dc2.setOffset(new TimeStamp(db.getTicks(), 60));
                 dc2.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 0.0)));
-                
+
                 db.replaceCell(dc0);
                 db.replaceCell(dc1);
                 db.replaceCell(dc2);
-                
+
                 // create the test string -- we cheat a bit here by getting only
                 // the string for fdc.  This isn't available at the user level.
                 testStringA = db.cl.getColumn(fdcID).toString();
-                
+
                 // turn on temporal ordering
                 db.setTemporalOrdering(true);
-                
+
                 // get another test string
                 testStringB = db.cl.getColumn(fdcID).toString();
-                
+
                 // do some more cell edits, this time with temporal ordering on
                 dc0 = (DataCell)db.getCell(fdcID, 2);
                 dc1 = (DataCell)db.getCell(fdcID, 4);
                 dc2 = (DataCell)db.getCell(fdcID, 5);
-                
+
                 dc0.setOnset(new TimeStamp(db.getTicks(), 60));
                 dc0.setOffset(new TimeStamp(db.getTicks(), 120));
                 dc0.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 1.0)));
-                
+
                 dc1.setOnset(new TimeStamp(db.getTicks(), 660));
                 dc1.setOffset(new TimeStamp(db.getTicks(), 720));
                 dc1.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 10.0)));
-                
+
                 dc2.setOnset(new TimeStamp(db.getTicks(), 180));
                 dc2.setOffset(new TimeStamp(db.getTicks(), 240));
                 dc2.setVal(Matrix.Construct(db, fdc_mveID,
                                 FloatDataValue.Construct(db, 3.0)));
-                
+
                 db.replaceCell(dc0);
                 db.replaceCell(dc1);
                 db.replaceCell(dc2);
 
                 // get another test string
                 testStringC = db.cl.getColumn(fdcID).toString();
-                
+
                 // get fresh copy of fdc for test purposes
                 fdc = db.getDataColumn(fdcID);
-                
+
                 // turn off temporal ordering
                 db.setTemporalOrdering(false);
-               
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString9.compareTo(testStringA) != 0 ) ||
@@ -2582,7 +2582,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2591,7 +2591,7 @@ public class MacshapaDatabase extends Database
                                 "%s cell edits 1 failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2602,7 +2602,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString9.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( testStringB == null )
                     {
                         outStream.printf("%s testStringB is null.\n", header);
@@ -2613,7 +2613,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringB doesn't match expectedString10.\n" +
                              "testString = \"%s\".\n", header, testStringB);
                     }
-                    
+
                     if ( testStringC == null )
                     {
                         outStream.printf("%s testStringC is null.\n", header);
@@ -2624,11 +2624,11 @@ public class MacshapaDatabase extends Database
                              "%s testStringC doesn't match expectedString11.\n" +
                              "testString = \"%s\".\n", header, testStringC);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in cell edits 1: \"%s\".\n", 
+                                "exception in cell edits 1: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
@@ -2636,7 +2636,7 @@ public class MacshapaDatabase extends Database
             else if ( fdc.getNumCells() != 6 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("%s fdc.getNumCells() returned " +
@@ -2647,9 +2647,9 @@ public class MacshapaDatabase extends Database
             }
         }
 
-        
-        // 9) Delete two columns -- one with cells and one without.  Add a 
-        //    column and insert some cells.  Verify that the database contains  
+
+        // 9) Delete two columns -- one with cells and one without.  Add a
+        //    column and insert some cells.  Verify that the database contains
         //    the expected data.  Demonstrate the use of db.getColumns() in
         //    passing.
         if ( failures == 0 )
@@ -2662,13 +2662,13 @@ public class MacshapaDatabase extends Database
             testStringD = null;
             testStringE = null;
             testStringF = null;
-            
+
             try
             {
                 // get some test strings
                 testStringA = db.toString();
                 testStringB = db.getColumns().toString();
-                
+
                 // Delete two columns -- one with cells, one without.  Note
                 // that we must delete all cells in a column before we delete
                 // it.
@@ -2680,25 +2680,25 @@ public class MacshapaDatabase extends Database
                 db.removeColumn(fdcID);
                 // we know that ndc has no cells, so just remove it.
                 db.removeColumn(ndcID);
-                
+
                 // get some more test strings
                 testStringC = db.toString();
                 testStringD = db.getColumns().toString();
-                
+
                 // allocate and insert a new float data column
-                fdc2 = new DataColumn(db, fdcName2, 
+                fdc2 = new DataColumn(db, fdcName2,
                         MatrixVocabElement.MatrixType.FLOAT);
                 fdc2ID = db.addColumn(fdc2);
-                
-                // append some cells to the text data column -- note that 
+
+                // append some cells to the text data column -- note that
                 // temporal ordering is off
                 tdc = db.getDataColumn(tdcID);
                 tdc_mveID = tdc.getItsMveID();
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        tdcID, 
+                        db,
+                        tdcID,
                         tdc_mveID,
                         180,
                         240,
@@ -2706,11 +2706,11 @@ public class MacshapaDatabase extends Database
                             db,
                             tdc_mveID,
                             TextStringDataValue.Construct(db, "three"))));
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        tdcID, 
+                        db,
+                        tdcID,
                         tdc_mveID,
                         120,
                         180,
@@ -2718,11 +2718,11 @@ public class MacshapaDatabase extends Database
                             db,
                             tdc_mveID,
                             TextStringDataValue.Construct(db, "two"))));
-                
+
                 db.appendCell(
                     DataCell.Construct(
-                        db, 
-                        tdcID, 
+                        db,
+                        tdcID,
                         tdc_mveID,
                         60,
                         120,
@@ -2730,20 +2730,20 @@ public class MacshapaDatabase extends Database
                             db,
                             tdc_mveID,
                             TextStringDataValue.Construct(db, "one"))));
-                
+
                 // get some more test strings
                 testStringE = db.toString();
                 testStringF = db.getColumns().toString();
-               
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( fdc2 == null ) ||
                  ( fdc2ID == DBIndex.INVALID_ID ) ||
@@ -2762,7 +2762,7 @@ public class MacshapaDatabase extends Database
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2771,7 +2771,7 @@ public class MacshapaDatabase extends Database
                                 "%s col deletions 1 failed to complete.\n",
                                 header);
                     }
-                    
+
                     if ( fdc2 == null )
                     {
                         outStream.printf("%s allocation of fdc2 failed.\n",
@@ -2779,10 +2779,10 @@ public class MacshapaDatabase extends Database
                     }
                     else if ( fdc2ID == DBIndex.INVALID_ID )
                     {
-                        outStream.printf("%s fdc2ID is invalid!?!\n", 
+                        outStream.printf("%s fdc2ID is invalid!?!\n",
                                 header);
                     }
-                    
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2793,7 +2793,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString12.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                    
+
                     if ( testStringB == null )
                     {
                         outStream.printf("%s testStringB is null.\n", header);
@@ -2804,7 +2804,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringB doesn't match expectedString13.\n" +
                              "testString = \"%s\".\n", header, testStringB);
                     }
-                    
+
                     if ( testStringC == null )
                     {
                         outStream.printf("%s testStringC is null.\n", header);
@@ -2815,7 +2815,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringC doesn't match expectedString14.\n" +
                              "testString = \"%s\".\n", header, testStringC);
                     }
-                    
+
                     if ( testStringD == null )
                     {
                         outStream.printf("%s testStringD is null.\n", header);
@@ -2826,7 +2826,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringD doesn't match expectedString15.\n" +
                              "testString = \"%s\".\n", header, testStringD);
                     }
-                    
+
                     if ( testStringE == null )
                     {
                         outStream.printf("%s testStringE is null.\n", header);
@@ -2837,7 +2837,7 @@ public class MacshapaDatabase extends Database
                              "%s testStringE doesn't match expectedString16.\n" +
                              "testString = \"%s\".\n", header, testStringE);
                     }
-                    
+
                     if ( testStringF == null )
                     {
                         outStream.printf("%s testStringF is null.\n", header);
@@ -2848,25 +2848,25 @@ public class MacshapaDatabase extends Database
                              "%s testStringF doesn't match expectedString17.\n" +
                              "testString = \"%s\".\n", header, testStringF);
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in col deletions 1: \"%s\".\n", 
+                                "exception in col deletions 1: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
             }
         }
 
-        
+
         // 10) Delete all columns.  Verify that the database is empty.
         if ( failures == 0 )
         {
             completed = false;
             threwSystemErrorException = false;
             testStringA = null;
-            
+
             try
             {
                 // Delete the remaining columns.
@@ -2876,31 +2876,31 @@ public class MacshapaDatabase extends Database
                     db.removeCell(db.getCell(tdcID, 1).getID());
                 }
                 db.removeColumn(tdcID);
-                
+
                 // we know that ndc and fdc2 have no cells, so just remove them.
                 db.removeColumn(idcID);
                 db.removeColumn(fdc2ID);
-                
+
                 // get a test strings
                 testStringA = db.toString();
-                
-               
+
+
                 completed = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! completed ) ||
                  ( testStringA == null ) ||
                  ( expectedString18.compareTo(testStringA) != 0 ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! completed )
@@ -2909,7 +2909,7 @@ public class MacshapaDatabase extends Database
                                 "%s col deletions 2 failed to complete.\n",
                                 header);
                     }
-                                       
+
                     if ( testStringA == null )
                     {
                         outStream.printf("%s testStringA is null.\n", header);
@@ -2920,19 +2920,19 @@ public class MacshapaDatabase extends Database
                              "%s testStringA doesn't match expectedString18.\n" +
                              "testString = \"%s\".\n", header, testStringA);
                     }
-                                        
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("%s unexpected system error " +
-                                "exception in col deletions 2: \"%s\".\n", 
+                                "exception in col deletions 2: \"%s\".\n",
                                 header, systemErrorExceptionString);
                     }
                 }
             }
         }
-        
+
         return failures;
-        
+
     } /* MacshapaDatavase::TestAPIExample_01() */
 
 
@@ -2941,35 +2941,35 @@ public class MacshapaDatabase extends Database
      *
      * Main routine for all test code for the MacshapaDatabase class proper.
      *
-     * For the most part, everything should be tested already by the time 
+     * For the most part, everything should be tested already by the time
      * we get this far, so the only major testing needed here is verification
      * that the restrictions on MacSHAPA databases are in fact being enforced.
      *
      * The code to do this doesn't exist at this point, so there is nothing to
-     * test in that department.  However, this is also a good place to test 
-     * the API example in the context of a MacSHAPA database.  
-     * 
+     * test in that department.  However, this is also a good place to test
+     * the API example in the context of a MacSHAPA database.
+     *
      *                                          JRM -- 11/18/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestClassMacshapaDatabase(java.io.PrintStream outStream,
                                                     boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class MacshapaDatabase:\n");
-        
+
         if ( ! TestAPIExamples(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2981,9 +2981,9 @@ public class MacshapaDatabase extends Database
         {
             outStream.print("All tests passed for class MacshapaDatabase.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Database::TestClassMacshapaDatabase() */
-    
+
 }

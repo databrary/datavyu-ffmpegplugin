@@ -13,12 +13,12 @@ package au.com.nicta.openshapa.disc.editors;
  */
 public class NominalEditor extends Editor
 {
-  
+
   /**
    * Creates a new instance of NominalEditor
    */
   public NominalEditor()
   {
   } // End of NominalEditor Constructor
-  
+
 } //End of NominalEditor class definition

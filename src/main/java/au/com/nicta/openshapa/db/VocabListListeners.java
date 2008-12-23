@@ -11,13 +11,13 @@ package au.com.nicta.openshapa.db;
 
 /**
  * Class VocabListListeners
- * 
+ *
  * Instances of this class are used to manage the mechanics registering and
  * de-registering internal and external listeners for changes in the vocab
- * list, and sending notifications. 
- * 
- *                                              JRM -- 2/2/08 
- * 
+ * list, and sending notifications.
+ *
+ *                                              JRM -- 2/2/08
+ *
  * @author mainzer
  */
 public class VocabListListeners extends Listeners
@@ -26,28 +26,28 @@ public class VocabListListeners extends Listeners
     /***************************** Fields: ***********************************/
     /*************************************************************************/
 
-    /* itsVL:   Pointer to the instance of VocabList with which this 
+    /* itsVL:   Pointer to the instance of VocabList with which this
      *      instance of VocabListListeners is associated.
      */
-  
+
     VocabList itsVL = null;
-    
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
+
     /**
      * VocabListListeners
-     * 
+     *
      * For now at least, only one constructor.  The Vocab List listeners
      * class is very simple, so all the construtor does is call the super and
-     * then set itsVL.  
-     * 
+     * then set itsVL.
+     *
      *                                              JRM -- 2/6/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
 
@@ -56,33 +56,33 @@ public class VocabListListeners extends Listeners
         throws SystemErrorException
     {
         super(db);
-        
+
         final String mName = "VLChangeListeners::VLChangeListeners()";
-        
+
         if ( vl == null )
         {
             throw new SystemErrorException(mName + "vl null on entry.");
         }
-        
+
         this.itsVL = vl;
-        
+
         return;
-            
+
     } /* VocabListListeners::VocabListListeners(db, vl) */
-     
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
 
     /*** none ***/
-    
-    
+
+
     /*************************************************************************/
     /************************** Change Logging: ******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * notifyListenersOfVEDeletion()
      *
      * Advise the listeners of the deletion of a VocabElement of the specified
@@ -94,36 +94,36 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void notifyListenersOfVEDeletion(long VEID)
         throws SystemErrorException
     {
         final String mName = "VLChangeListeners::notifyListenersOfVEDeletion()";
         ExternalVocabListListener el;
-        
+
         // No internal listeners for now.
 
-        
+
         // Notify the external listeners.
         for ( Object o : this.els )
         {
             if ( ! ( o instanceof ExternalVocabListListener ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         ": o not a ExternalVLChangeListener.");
             }
 
             el = (ExternalVocabListListener)o;
-            
+
             el.VLDeletion(this.db, VEID);
         }
-        
+
         return;
-        
+
     } /* VocabListListeners::notifyListenersOfVEDeletion() */
-    
-    
-    /** 
+
+
+    /**
      * notifyListenersOfInsertion()
      *
      * Advise the listeners of the inserion of a VocabElement of the specified
@@ -135,39 +135,39 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void notifyListenersOfVEInsertion(long VEID)
         throws SystemErrorException
     {
         final String mName = "VLChangeListeners::notifyListenersOfInsertion()";
         ExternalVocabListListener el;
-        
+
         // No internal listeners for now.
 
-        
+
         // Notify the external listeners.
         for ( Object o : this.els )
         {
             if ( ! ( o instanceof ExternalVocabListListener ) )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         ": o not a ExternalVLChangeListener.");
             }
 
             el = (ExternalVocabListListener)o;
-            
+
             el.VLInsertion(this.db, VEID);
         }
-        
+
         return;
-        
+
     } /* VocabListListeners::notifyListenersOfInsertion() */
-    
-    
+
+
     /*************************************************************************/
     /*********************** Listener Management: ****************************/
     /*************************************************************************/
-    
+
     /**
      * deregisterExternalListener()
      *
@@ -179,24 +179,24 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void deregisterExternalListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
         final String mName = "VEChangeListener::deregisterExternalListener()";
-        
+
         if ( el == null )
         {
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
-        
+
         this.DeleteExternalListener(el);
-        
+
         return;
-        
+
     } /* VocabListListeners::deregisterExternalListener() */
-    
-    
+
+
     /**
      * deregisterInternalListener()
      *
@@ -209,20 +209,20 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void deregisterInternalListener(long ID)
         throws SystemErrorException
     {
         final String mName = "VEChangeListener::deregisterInternalListener()";
-        
-        throw new SystemErrorException(mName + 
+
+        throw new SystemErrorException(mName +
                 ": Internal listeners not supported.");
-        
+
         // return; /* commented out to keep the compiler happy */
-        
+
     } /* VocabListListeners::deregisterInternalListener() */
-    
-    
+
+
     /**
      * registerExternalListener()
      *
@@ -234,30 +234,30 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void registerExternalListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
         final String mName = "VLChangeListeners::registerExternalListener()";
-        
+
         if ( el == null )
         {
             throw new SystemErrorException(mName + ": el is null on entry.");
         }
-        
+
         if ( ! ( el instanceof ExternalVocabListListener ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                     ": el not an ExternalVLChangeListener.");
         }
-        
+
         this.AddExternalListener(el);
-        
+
         return;
-        
+
     } /* VocabListListeners::registerExternalListener() */
-    
-    
+
+
     /**
      * registerInternalListener()
      *
@@ -270,17 +270,17 @@ public class VocabListListeners extends Listeners
      *
      *    - None.
      */
-    
+
     protected void registerInternalListener(long ID)
         throws SystemErrorException
     {
         final String mName = "VLChangeListeners::registerInternalListener()";
-        
-        throw new SystemErrorException(mName + 
+
+        throw new SystemErrorException(mName +
                 ": Internal listeners not supported.");
-        
+
         // return; /* commented out to keep the compiler happy */
-        
+
     } /* VocabListListeners::registerExternalListener() */
-        
+
 } /* class VocabListListeners */

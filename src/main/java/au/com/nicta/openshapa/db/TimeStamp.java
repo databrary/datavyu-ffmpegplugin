@@ -16,24 +16,24 @@ package au.com.nicta.openshapa.db;
  *
  *    - Changed the name of the class from Timestamp to TimeStamp and reworked
  *      it to refer to ticks per second instead of frames per second.  Neither
- *      of these changes were logically significant -- the first was to 
- *      regularize the spelling with the rest of the database code, and the 
+ *      of these changes were logically significant -- the first was to
+ *      regularize the spelling with the rest of the database code, and the
  *      second was to conform to the historical notion of referring to time
- *      in ticks.  
+ *      in ticks.
  *
- *      Also added the MIN_TICKS, MAX_TICKS, MIN_TPS, and MAX_TPS class 
+ *      Also added the MIN_TICKS, MAX_TICKS, MIN_TPS, and MAX_TPS class
  *      constants.
  *
  *                                              JRM -- 2/12/07
  *
- *    - Added override of equals() method.  Added comparison methods 
+ *    - Added override of equals() method.  Added comparison methods
  *      (gt(), ge(), lt(), le(), eq(), & ne()).  Added copy constructor.
  *
  *                                              JRM -- 3/13/07
  *
- *    - Reworked the class again.  This time, I turned it into a proper 
+ *    - Reworked the class again.  This time, I turned it into a proper
  *      primative class, so it is no longer a subclass of DataValue.  Also
- *      removed all callback facilities -- supporting such callbacks as are 
+ *      removed all callback facilities -- supporting such callbacks as are
  *      necessary will now be the responsibility of the containing object.
  *      Similarly, advising the TimeStamp of changes in the number of ticks
  *      per second is also the responsibility of the containing object.
@@ -50,24 +50,24 @@ package au.com.nicta.openshapa.db;
 public class TimeStamp
 {
   /** Class constants **/
-    
+
   static final long MIN_TICKS = 0L;
   static final long MAX_TICKS = Long.MAX_VALUE;
-  
+
   /* the value for MAX_TPS has been chosen somewhat arbitrarily -- it restricts
    * us to no better than a milisecond resolution.  From a database perspective,
-   * it can be changed to any positive value.  However, if it is increased 
+   * it can be changed to any positive value.  However, if it is increased
    * beyond 1000, there will be implication for time stamp display in the GUI.
    *
    *                                            JRM -- 2/12/07
    */
   static final int MIN_TPS = 1;
   static final int MAX_TPS = 1000;
-  
-  
+
+
   /** Number formatters **/
   private final static NumberFormatter NUMFORM = new NumberFormatter();
-  
+
   /** The number of ticks per second for this timestamp **/
   private int  tps  = 0;
 
@@ -86,14 +86,14 @@ public class TimeStamp
     this.setTPS(tps);
     this.setTime(ticks);
   } //End of TimeStamp() constructor
-  
+
   public TimeStamp(TimeStamp t)
         throws SystemErrorException
   {
     super();
- 
-    final String mName = "TimeStamp::TimeStamp(): ";  
-        
+
+    final String mName = "TimeStamp::TimeStamp(): ";
+
     if ( t == null )
     {
       throw new SystemErrorException(mName + "t is null");
@@ -102,12 +102,12 @@ public class TimeStamp
     {
       throw new SystemErrorException(mName + "t not a TimeStamp");
     }
-     
+
     this.setTPS(t.getTPS());
     this.setTime(t.getTime());
-    
+
   } /* TimeStamp::TimeStamp() -- copy constructor */
-  
+
   /**
    * Creates a new instance of Timestamp with the given ticks per second.
    * Defaults timestamp to 0 ticks;
@@ -118,7 +118,7 @@ public class TimeStamp
   {
     this(tps, 0);
   } //End of TimeStamp() constructor
-  
+
   /**
    * Returns the timestamp value in ticks.
    * @return the timestamp value in ticks.
@@ -137,18 +137,18 @@ public class TimeStamp
         throws SystemErrorException
    {
      final String mName = "TimeStamp::setTime(): ";
-     
+
      if ( ( ticks < MIN_TICKS ) || ( ticks > MAX_TICKS ) )
      {
          throw new SystemErrorException(mName + "new ticks out of range.");
      }
-     
+
      this.ticks = ticks;
-     
+
      // Notify the listeners of the value change
      // this.notifyListeners(); -- now the responsibility of the containing object
      // todo -- delete this eventually
-    
+
    } //End of setTime() method
 
   /**
@@ -175,7 +175,7 @@ public class TimeStamp
         throws SystemErrorException
    {
      final String mName = "TimeStamp::setTPS(): ";
-     
+
      if ( ( tps < MIN_TPS ) || ( tps > MAX_TPS ) )
      {
          throw new SystemErrorException(mName + "new tps out of range.");
@@ -283,8 +283,8 @@ public class TimeStamp
 
    /**
     * Returns the number of ticks to display in the ticks field of the text
-    * representation of the timestamp.  This is simply total ticks modulo 
-    * the current ticks per second.  It will be a value in the closed 
+    * representation of the timestamp.  This is simply total ticks modulo
+    * the current ticks per second.  It will be a value in the closed
     * interval [0-(tps-1)].
     *
     * @param time The time in ticks.
@@ -294,11 +294,11 @@ public class TimeStamp
    public final static int getTicks(int tps, long ticks)
    {
      return ((int)(ticks%tps));
-     
+
    } //End of getTicks() method
 
    /**
-    * Returns the number of ticks for purposes of displaying the timestamp 
+    * Returns the number of ticks for purposes of displaying the timestamp
     * in text format.  This is simply total ticks modulo ticks per second.  It
     * will be a value in the closed interval [0-(tps-1)].
     * <br/>
@@ -346,7 +346,7 @@ public class TimeStamp
 
    /**
     * Overwrites default toString method.
-    * 
+    *
     * --FGA 07/18/07
     *
     * Calls toHMSFString()
@@ -356,7 +356,7 @@ public class TimeStamp
    {
      return (toHMSFString());
    }
-   
+
    /**
     * Returns a string representation of the timestamp.
     * @return string representation of timestamp
@@ -398,12 +398,12 @@ public class TimeStamp
      System.out.println(t1 + "\t" + t1.toHMSFString());
    } //End of main() method
 
-     
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-   
+
     /**
      * equals() -- Override of Object::equals()
      *
@@ -413,11 +413,11 @@ public class TimeStamp
      *
      *    - None.
      */
-   
+
      public boolean equals(Object obj)
      {
          boolean equal = true;
-     
+
          if ( obj == null )
          {
              equal = false;
@@ -426,26 +426,26 @@ public class TimeStamp
          {
              equal =  false;
          }
-         else if ( ( obj != this ) && 
+         else if ( ( obj != this ) &&
                     ( ( this.tps != ((TimeStamp)obj).getTPS()) ||
                       ( this.ticks != ((TimeStamp)obj).getTime() ) ) )
          {
              equal = false;
          }
          return equal;
-         
+
      } /* TimeStamp::equals() */
 
-     
+
     /*************************************************************************/
     /************************* Comparison Methods: ***************************/
     /*************************************************************************/
-  
+
     /**
      * eq()
      *
-     * Equality testing method for TimeStamps.  Unlike equals(), this method 
-     * (and all the other TimeStamp comparison mthods) throws a system error 
+     * Equality testing method for TimeStamps.  Unlike equals(), this method
+     * (and all the other TimeStamp comparison mthods) throws a system error
      * if the tps fields of the instances to be compared are not equal.
      *
      *                                      JRM -- 3/13/07
@@ -454,7 +454,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean eq(TimeStamp t)
         throws SystemErrorException
      {
@@ -468,20 +468,20 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks == t.getTime() );
-        
+
      } /* TimeStamp::eq() */
-   
-  
+
+
     /**
      * ge()
      *
      * Method comparing this TimeStamp with another.  Returns true iff the
-     * value of this TimeStamp is greater than or equal to that of the 
+     * value of this TimeStamp is greater than or equal to that of the
      * test TimeStamp
-     * 
-     * This method (and all the other TimeStamp comparison mthods) throws a 
+     *
+     * This method (and all the other TimeStamp comparison mthods) throws a
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
@@ -491,7 +491,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean ge(TimeStamp t)
         throws SystemErrorException
      {
@@ -505,19 +505,19 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks >= t.getTime() );
-        
+
      } /* TimeStamp::ge() */
-   
-  
+
+
     /**
      * gt()
      *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is greater than that of the test TimeStamp
-     * 
-     * This method (and all the other TimeStamp comparison mthods) throws a 
+     *
+     * This method (and all the other TimeStamp comparison mthods) throws a
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
@@ -527,7 +527,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean gt(TimeStamp t)
         throws SystemErrorException
      {
@@ -541,16 +541,16 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks > t.getTime() );
-        
+
      } /* TimeStamp::gt() */
-   
-  
+
+
     /**
      * insane_gt()
      *
-     * Just like gt() but without the sanity checks -- needed to implement 
+     * Just like gt() but without the sanity checks -- needed to implement
      * Comparator.
      *
      *
@@ -560,24 +560,24 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean insane_gt(TimeStamp t)
      {
         final String mName = "TimeStamp::insane_gt(): ";
 
         return( this.ticks > t.getTime() );
-        
+
      } /* TimeStamp::insane_gt() */
-   
-  
+
+
     /**
      * le()
      *
      * Method comparing this TimeStamp with another.  Returns true iff the
-     * value of this TimeStamp is less than or equal to that of the 
+     * value of this TimeStamp is less than or equal to that of the
      * test TimeStamp
-     * 
-     * This method (and all the other TimeStamp comparison mthods) throws a 
+     *
+     * This method (and all the other TimeStamp comparison mthods) throws a
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
@@ -587,7 +587,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean le(TimeStamp t)
         throws SystemErrorException
      {
@@ -601,19 +601,19 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks <= t.getTime() );
-        
+
      } /* TimeStamp::le() */
-   
-  
+
+
     /**
      * lt()
      *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is less than that of the test TimeStamp
-     * 
-     * This method (and all the other TimeStamp comparison mthods) throws a 
+     *
+     * This method (and all the other TimeStamp comparison mthods) throws a
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
@@ -623,7 +623,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean lt(TimeStamp t)
         throws SystemErrorException
      {
@@ -637,12 +637,12 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks < t.getTime() );
-        
+
      } /* TimeStamp::lt() */
-   
-  
+
+
     /**
      * insane_lt()
      *
@@ -656,24 +656,24 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean insane_lt(TimeStamp t)
      {
         final String mName = "TimeStamp::insane_lt(): ";
-        
+
         return( this.ticks < t.getTime() );
-        
+
      } /* TimeStamp::insane_lt() */
-   
-   
-  
+
+
+
     /**
      * ne()
      *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is not equal to that of the test TimeStamp
-     * 
-     * This method (and all the other TimeStamp comparison mthods) throws a 
+     *
+     * This method (and all the other TimeStamp comparison mthods) throws a
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
@@ -683,7 +683,7 @@ public class TimeStamp
      *
      *    - None.
      */
-  
+
      public boolean ne(TimeStamp t)
         throws SystemErrorException
      {
@@ -697,12 +697,12 @@ public class TimeStamp
          {
             throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
          }
-        
+
         return( this.ticks != t.getTime() );
-        
+
      } /* TimeStamp::ne() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
@@ -710,8 +710,8 @@ public class TimeStamp
      /**
      * VerifyTimeStampCopy()
      *
-     * Verify that the supplied instances of TimeStamp are distinct, 
-     * that they contain no common references, and that they 
+     * Verify that the supplied instances of TimeStamp are distinct,
+     * that they contain no common references, and that they
      * represent the same value.
      *                                              JRM -- 12/1/07
      *
@@ -728,17 +728,17 @@ public class TimeStamp
                                           String copyDesc)
     {
         int failures = 0;
- 
+
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyPredicateCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredicateCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyPredicateCopy: %s null on entry.\n", 
+            outStream.printf("VerifyPredicateCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -756,7 +756,7 @@ public class TimeStamp
 
             if ( verbose )
             {
-                outStream.printf("%s.tps == %d != %s.tps == %d.\n", 
+                outStream.printf("%s.tps == %d != %s.tps == %d.\n",
                                  baseDesc, base.tps, copyDesc, copy.tps);
             }
         }
@@ -766,7 +766,7 @@ public class TimeStamp
 
             if ( verbose )
             {
-                outStream.printf("%s.ticks == %d != %s.ticks == %d.\n", 
+                outStream.printf("%s.ticks == %d != %s.ticks == %d.\n",
                                  baseDesc, base.ticks, copyDesc, copy.ticks);
             }
         }
@@ -774,8 +774,8 @@ public class TimeStamp
         return failures;
 
     } /* TimeStamp::VerifyTimeStampCopy() */
-   
-     
+
+
 } //End of Timestamp class definition
 
 /**
@@ -788,7 +788,7 @@ class NumberFormatter
 {
   /** Static instances for use accross classes **/
   public static java.text.NumberFormat numF2 = java.text.NumberFormat.getInstance();
-  public static java.text.NumberFormat numF3 = java.text.NumberFormat.getInstance();  
+  public static java.text.NumberFormat numF3 = java.text.NumberFormat.getInstance();
 
   /**
    * Creates a new instance of NumberFormatter

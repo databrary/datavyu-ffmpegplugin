@@ -22,91 +22,91 @@ public class TextStringDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all 
+     * itsDefault:  Constant containing the value to be assigned to all
      *      float data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
      *
-     * minVal & maxVal don't appear in TextStringDataValue as at present, 
+     * minVal & maxVal don't appear in TextStringDataValue as at present,
      *      we don't support subranging in quote strings
      */
-    
+
     /** default value for text strings */
     final String ItsDefault = null;
-    
+
     /** the value assigned to the associated formal argument in this case */
     String itsValue = ItsDefault;
-      
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * TextStringDataValue()
      *
-     * Constructor for instances of TextStringDataValue.  
-     * 
-     * Four versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
+     * Constructor for instances of TextStringDataValue.
+     *
+     * Four versions of this constructor.
+     *
+     * The first takes a reference to a database as its parameter and just
      * calls the super() constructor.
      *
-     * The second takes a reference to a database, and a formal argument ID, and 
+     * The second takes a reference to a database, and a formal argument ID, and
      * attempts to set the itsFargID field of the data value accordingly.
      *
-     * The third takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
+     * The third takes a reference to a database, a formal argument ID, and
+     * a value as arguments, and attempts to set the itsFargID and itsValue
      * of the data value accordingly.
      *
      * The fourth takes a reference to an instance of TextStringDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07  
+     *                                              JRM -- 8/16/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
- 
+
     public TextStringDataValue(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
     } /* TextStringDataValue::TextStringDataValue(db) */
-    
+
     public TextStringDataValue(Database db,
                                long fargID)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
     } /* TextStringDataValue::TextStringDataValue(db, fargID) */
-    
+
     public TextStringDataValue(Database db,
                                long fargID,
                                String value)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.setItsFargID(fargID);
-        
+
         this.setItsValue(value);
-        
+
     } /* TextStringDataValue::TextStringDataValue(db, fargID, value) */
-    
+
     public TextStringDataValue(TextStringDataValue dv)
         throws SystemErrorException
     {
-        
+
         super(dv);
-        
+
         if ( dv.itsValue != null )
         {
             this.itsValue = new String(dv.itsValue);
@@ -115,10 +115,10 @@ public class TextStringDataValue extends DataValue
         {
             this.itsValue = null;
         }
-    
+
     } /* TextStringDataValue::TextStringDataValue(dv) */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
@@ -126,7 +126,7 @@ public class TextStringDataValue extends DataValue
     /**
      * getItsValue()
      *
-     * If the data value is currently defined, return a string containing a 
+     * If the data value is currently defined, return a string containing a
      * copy of the the current value of the data value.  Otherwise return null.
      *
      *                          JRM -- 8/16/07
@@ -135,10 +135,10 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public String getItsValue()
     {
-        
+
         if ( this.itsValue == null )
         {
             return null;
@@ -147,9 +147,9 @@ public class TextStringDataValue extends DataValue
         {
             return (new String(this.itsValue));
         }
-        
+
     } /* TextStringDataValue::getItsValue() */
-    
+
 
     /**
      * setItsValue()
@@ -163,35 +163,35 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void setItsValue(String value)
         throws SystemErrorException
     {
         final String mName = "TextStringDataValue::setItsValue(): ";
-        
+
         if ( ( value == null ) || ( value.length() == 0 ) )
         {
             this.itsValue = null;
         }
         else if ( ! ( db.IsValidTextString(value) ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "value not valid quote string");
         }
         else
         {
             this.itsValue = new String(value);
         }
-        
+
         return;
-        
+
     } /* TextStringDataValue::setItsValue() */
-  
-        
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/
-    
+
     /**
      * toString()
      *
@@ -205,7 +205,7 @@ public class TextStringDataValue extends DataValue
      *
      *     - None.
      */
-    
+
     public String toString()
     {
         if ( this.itsValue == null )
@@ -216,14 +216,14 @@ public class TextStringDataValue extends DataValue
         {
             return new String(this.itsValue);
         }
-        
+
     } /* TextStringDataValue::toString() */
 
 
     /**
      * toDBString()
      *
-     * Returns a database String representation of the DBValue for comparison 
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
@@ -235,7 +235,7 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-  
+
     public String toDBString()
     {
         if ( this.itsValue == null )
@@ -258,9 +258,9 @@ public class TextStringDataValue extends DataValue
         }
 
     } /* TextStringDataValue::toDBString() */
-    
-    
-    /** 
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.
@@ -271,7 +271,7 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -280,58 +280,58 @@ public class TextStringDataValue extends DataValue
         throws SystemErrorException
     {
         final String mName = "TextStringDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         return;
-        
+
     } /* TextStringDataValue::updateForFargChange() */
-    
-    
+
+
     /**
      * updateSubRange()
      *
-     * Nominally, this method should determine if the formal argument 
+     * Nominally, this method should determine if the formal argument
      * associated with the data value is subranged, and if it is, update
-     * the data values representation of  the subrange (if ant) accordingly.  
-     * In passing, it should coerce the value of  the datavalue into the 
+     * the data values representation of  the subrange (if ant) accordingly.
+     * In passing, it should coerce the value of  the datavalue into the
      * subrange if necessary.
      *
-     * However, text strings can't be subranged at present, so all we do 
+     * However, text strings can't be subranged at present, so all we do
      * is verify that the formal argument doesn't think otherwise.
      *
      * The fa argument is a reference to the current representation of the
@@ -343,53 +343,53 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "TextStringDataValue::updateSubRange(): ";
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof TextStringFormalArg )
         {
             TextStringFormalArg tfa = (TextStringFormalArg)fa;
-            
-            if ( tfa.getSubRange() != false ) 
+
+            if ( tfa.getSubRange() != false )
             {
                 throw new SystemErrorException(mName +
-                                               "tfa.getSubRange() != FALSE"); 
+                                               "tfa.getSubRange() != FALSE");
             }
-            
+
             this.subRange = false;
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         return;
-        
+
     } /* TextStringDataValue::updateSubRange() */
-  
-        
+
+
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-    
+
     /**
      * coerceToRange()
      *
-     * Nominally, this function tests to see if the supplied value is 
+     * Nominally, this function tests to see if the supplied value is
      * in range for the associated formal argument, returns it if it
      * is, and coerces it into range if it isn't.
      *
      * However, we don't support subranges for text strings.
      *
-     * Thus we simply check to see if the value is valid, and return the 
+     * Thus we simply check to see if the value is valid, and return the
      * value if it is.  If it isn't, throw a system error.
      *
      *                                              JRM -- 07/08/18
@@ -398,7 +398,7 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public String coerceToRange(String value)
         throws SystemErrorException
     {
@@ -408,29 +408,29 @@ public class TextStringDataValue extends DataValue
         {
             return value;
         }
-        
+
         if ( ! this.db.IsValidTextString(value) )
         {
-            throw new SystemErrorException(mName + 
-                                           "value isn't valid quote string"); 
+            throw new SystemErrorException(mName +
+                                           "value isn't valid quote string");
         }
-        
+
         return value;
-        
+
     } /* TextStringDataValue::coerceToRange() */
-  
-    
+
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
-    
+
     /**
      * Construct()
      *
-     * Construct an instance of TextStringDataValue with the specified 
+     * Construct an instance of TextStringDataValue with the specified
      * initialization.
      *
-     * Returns a reference to the newly constructed TextStringDataValue if 
+     * Returns a reference to the newly constructed TextStringDataValue if
      * successful.  Throws a system error exception on failure.
      *
      *                                              JRM -- 3/31/08
@@ -439,68 +439,68 @@ public class TextStringDataValue extends DataValue
      *
      *    - None.
      */
-    
+
     public static TextStringDataValue Construct(Database db,
                                                 String t)
         throws SystemErrorException
     {
         final String mName = "TextStringDataValue::Construct(db, t)";
         TextStringDataValue tdv = null;
-        
+
         tdv = new TextStringDataValue(db);
-        
+
         tdv.setItsValue(t);
-        
+
         return tdv;
-        
+
     } /* TextStringDataValue::Construct(db, t) */
-      
-      
+
+
     /**
      * TextStringDataValuesAreLogicallyEqual()
      *
-     * Given two instances of TextStringDataValue, return true if they contain 
+     * Given two instances of TextStringDataValue, return true if they contain
      * identical data, and false otherwise.
      *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
+     * Note that this method does only tests specific to this subclass of
+     * DataValue -- the presumption is that this method has been called by
      * DataValue.DataValuesAreLogicallyEqual() which has already done all
      * generic tests.
-     * 
+     *
      *                                              JRM -- 2/7/08
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected static boolean TextStringDataValuesAreLogicallyEqual
             (TextStringDataValue tdv0,
              TextStringDataValue tdv1)
         throws SystemErrorException
     {
-        final String mName = 
+        final String mName =
             "TextStringDataValue::TextStringDataValuesAreLogicallyEqual()";
         boolean dataValuesAreEqual = true;
-        
+
         if ( ( tdv0 == null ) || ( tdv1 == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            ": tdv0 or tdv1 null on entry.");
         }
-        
+
         if ( tdv0 != tdv1 )
         {
             if ( tdv0.itsValue != tdv1.itsValue )
             {
-                if ( ( ( tdv0.itsValue == null ) 
+                if ( ( ( tdv0.itsValue == null )
                        &&
-                       ( tdv1.itsValue != null ) 
+                       ( tdv1.itsValue != null )
                      )
                      ||
-                     ( ( tdv0.itsValue != null ) 
+                     ( ( tdv0.itsValue != null )
                        &&
-                       ( tdv1.itsValue == null ) 
+                       ( tdv1.itsValue == null )
                      )
                    )
                 {
@@ -516,7 +516,7 @@ public class TextStringDataValue extends DataValue
         }
 
         return dataValuesAreEqual;
-        
+
     } /* TextStringDataValue::TextStringDataValuesAreLogicallyEqual() */
 
 
@@ -560,14 +560,14 @@ public class TextStringDataValue extends DataValue
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-   
+
     /*************************************************************************
      *
      *                             Test Spec:
      *
      * 1) One argument constructor:
      *
-     *      a) Construct a database.  Using this database, call the one 
+     *      a) Construct a database.  Using this database, call the one
      *         argument constructor for TextStringDataValue.  Verify that all
      *         fields are set to the expected defaults.
      *
@@ -577,15 +577,15 @@ public class TextStringDataValue extends DataValue
      *
      * 2) Two argument constructor:
      *
-     *      a) Construct a database, and a mve (matrix vocab element) with one 
-     *         formal argument.  Insert the mve into the database, and make 
+     *      a) Construct a database, and a mve (matrix vocab element) with one
+     *         formal argument.  Insert the mve into the database, and make
      *         note of the IDs assigned to them (including the formal argument).
      *
-     *         Construct a TextStringDataValue for the formal argument of the 
-     *         mve by passing a reference to the database and the id of the 
-     *         formal argument.  Verify that the TextStringDataValue's 
-     *         itsFargID, and itsFargType fields matches those of the formal 
-     *         argument, and that all other fields are set to the expected 
+     *         Construct a TextStringDataValue for the formal argument of the
+     *         mve by passing a reference to the database and the id of the
+     *         formal argument.  Verify that the TextStringDataValue's
+     *         itsFargID, and itsFargType fields matches those of the formal
+     *         argument, and that all other fields are set to the expected
      *         defaults.
      *
      *         Repeat for a variety of formal argument types and settings.
@@ -595,31 +595,31 @@ public class TextStringDataValue extends DataValue
      *
      * 3) Three argument constructor:
      *
-     *      As per two argument constructor, save that a value is supplied 
-     *      to the constructor.  Verify that this value appears in the 
+     *      As per two argument constructor, save that a value is supplied
+     *      to the constructor.  Verify that this value appears in the
      *      TextStringDataValue.
-     *              
+     *
      * 4) Copy constructor:
      *
-     *      a) Construct a database and possibly a mve (matrix vocab element) 
-     *         and such formal arguments as are necessary.  If an mve is 
-     *         created, insert it into the database, and make note of the IDs 
-     *         assigned.  Then create a  TextStringDataValue (possibly using 
+     *      a) Construct a database and possibly a mve (matrix vocab element)
+     *         and such formal arguments as are necessary.  If an mve is
+     *         created, insert it into the database, and make note of the IDs
+     *         assigned.  Then create a  TextStringDataValue (possibly using
      *         the using a formal argument ID).
      *
-     *         Now use the copy constructor to create a copy of the 
-     *         TextStringDataValue, and verify that the copy is correct. 
+     *         Now use the copy constructor to create a copy of the
+     *         TextStringDataValue, and verify that the copy is correct.
      *
      *         Repeat the test for a variety of instances of FloatFormalArg.
      *
      *      b) Verify that the constructor fails when passed bad data.  Given
-     *         the compiler's error checking, null should be the only bad 
+     *         the compiler's error checking, null should be the only bad
      *         value that has to be tested.
      *
      * 5) Accessors:
      *
-     *      Verify that the getItsValue(), and setItsValue() methods perform 
-     *      correctly.  Verify that the inherited accessors function correctly 
+     *      Verify that the getItsValue(), and setItsValue() methods perform
+     *      correctly.  Verify that the inherited accessors function correctly
      *      via calls to the DataValue.TestAccessors() method.
      *
      *      Given compiler error checking, there isn't any way to feed
@@ -628,9 +628,9 @@ public class TextStringDataValue extends DataValue
      * 6) toString methods:
      *
      *      Verify that all fields are displayed correctly by the toString
-     *      and toDBString() methods. 
+     *      and toDBString() methods.
      *
-     * 
+     *
      *************************************************************************/
 
     /**
@@ -644,7 +644,7 @@ public class TextStringDataValue extends DataValue
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassTextStringDataValue(
                                                   java.io.PrintStream outStream,
                                                   boolean verbose)
@@ -652,39 +652,39 @@ public class TextStringDataValue extends DataValue
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class TextStringDataValue:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test3ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -697,25 +697,25 @@ public class TextStringDataValue extends DataValue
             outStream.print(
                     "All tests passed for class TextStringDataValue.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::TestClassTextStringDataValue() */
-    
-    
+
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -738,33 +738,33 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             tdv = new TextStringDataValue(db);
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -778,13 +778,13 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new TextStringDataValue(db) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf(
                         "new TextStringDataValue(db) failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TextStringDataValue(db) threw " +
@@ -796,45 +796,45 @@ public class TextStringDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify1ArgInitialization(db, tdv, outStream, 
+            failures += DataValue.Verify1ArgInitialization(db, tdv, outStream,
                                                            verbose);
 
             if ( tdv.ItsDefault != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(" tdv.ItsDefault != null.\n");
                 }
             }
-            
+
             if ( tdv.itsValue != tdv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String s1;
                     String s2;
-                    
+
                     if ( tdv.itsValue == null )
                         s1 = new String("<null>");
                     else
                         s1 = tdv.itsValue;
-                    
+
                     if ( tdv.ItsDefault == null )
                         s2 = new String("<null>");
                     else
                         s2 = tdv.ItsDefault;
-                    
+
                     outStream.printf(
                             "tdv.itsValue = %s != tdv.ItsDefault = %s.\n",
                             s1, s2);
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -855,9 +855,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -882,7 +882,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -911,25 +911,25 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -955,15 +955,15 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             txt_mve = new MatrixVocabElement(db, "txt_mve");
             txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa = new TextStringFormalArg(db);
@@ -971,25 +971,25 @@ public class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve);
 
             tdv = new TextStringDataValue(db, tfa.getID());
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( txt_mve == null ) ||
              ( tfa == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -997,12 +997,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( txt_mve == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
-                
+
                 if ( tfa == null )
                 {
                     outStream.print("allocation of tfa failed.");
@@ -1013,12 +1013,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print("new TextStringDataValue(db, " +
                                     "tfa.getID()) returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1030,17 +1030,17 @@ public class TextStringDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tfa, 
-                                                               tdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tfa,
+                                                               tdv,
+                                                               outStream,
                                                                verbose,
                                                                "tdv");
-            
+
             if ( tdv.ItsDefault != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv.ItsDefault != null.\n");
@@ -1050,40 +1050,40 @@ public class TextStringDataValue extends DataValue
             if ( tdv.subRange != tfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tdv.subRange doesn't match tfa.getSubRange().\n");
                 }
             }
-            
+
             if ( tdv.itsValue != tdv.ItsDefault )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     String s1;
                     String s2;
-                    
+
                     if ( tdv.itsValue == null )
                         s1 = new String("<null>");
                     else
                         s1 = tdv.itsValue;
-                    
+
                     if ( tdv.ItsDefault == null )
                         s2 = new String("<null>");
                     else
                         s2 = tdv.ItsDefault;
-                    
+
                     outStream.printf(
                             "tdv.itsValue = %s != tdv.ItsDefault = %s.\n",
                             s1, s2);
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1104,9 +1104,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1133,7 +1133,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1156,9 +1156,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1185,7 +1185,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1208,9 +1208,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1237,7 +1237,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1266,25 +1266,25 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::Test2ArgConstructor() */
-    
-    
+
+
     /**
      * Test3ArgConstructor()
-     * 
-     * Run a battery of tests on the three argument constructor for this 
+     *
+     * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1310,17 +1310,17 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tdv = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             txt_mve = new MatrixVocabElement(db, "txt_mve");
             txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa = new TextStringFormalArg(db);
@@ -1328,25 +1328,25 @@ public class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve);
 
             tdv = new TextStringDataValue(db, tfa.getID(), "echo");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( txt_mve == null ) ||
              ( tfa == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1354,12 +1354,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( txt_mve == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
-                
+
                 if ( tfa == null )
                 {
                     outStream.print("allocation of tfa failed.");
@@ -1371,12 +1371,12 @@ public class TextStringDataValue extends DataValue
                             "new TextStringDataValue(db, tfa.getID(), " +
                             "\"echo\") returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1388,36 +1388,36 @@ public class TextStringDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.Verify2PlusArgInitialization(db, 
-                                                               tfa, 
-                                                               tdv,  
-                                                               outStream, 
+            failures += DataValue.Verify2PlusArgInitialization(db,
+                                                               tfa,
+                                                               tdv,
+                                                               outStream,
                                                                verbose,
                                                                "tdv");
 
             if ( tdv.subRange != tfa.getSubRange() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
                             "tdv.subRange doesn't match tfa.getSubRange().\n");
                 }
             }
-            
+
             if ( ( tdv.itsValue == null ) ||
                  ( tdv.itsValue.compareTo("echo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv.itsValue != \"echo\".\n");
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -1428,7 +1428,7 @@ public class TextStringDataValue extends DataValue
 
             try
             {
-                tdv = new TextStringDataValue((Database)null, tfa.getID(), 
+                tdv = new TextStringDataValue((Database)null, tfa.getID(),
                                                 "alpha");
                 completed = true;
             }
@@ -1439,9 +1439,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1469,7 +1469,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid formal
          * argument id.
          */
@@ -1492,9 +1492,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1522,7 +1522,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an ID that does not
          * refer to a formal argument.
          */
@@ -1545,9 +1545,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1574,7 +1574,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-         
+
         /* verify that the constructor fails when given an invalid quote string.
          */
         if ( failures == 0 )
@@ -1586,7 +1586,7 @@ public class TextStringDataValue extends DataValue
 
             try
             {
-                tdv = new TextStringDataValue(db, tfa.getID(), 
+                tdv = new TextStringDataValue(db, tfa.getID(),
                                                 "invalid \b text string");
                 completed = true;
             }
@@ -1597,9 +1597,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1628,7 +1628,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1657,24 +1657,24 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::Test3ArgConstructor() */
-    
-    
+
+
     /**
      * TestAccessors()
-     * 
+     *
      * Run a battery of tests on the accessors supported by this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
         throws SystemErrorException
@@ -1703,16 +1703,16 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             txt_mve0 = new MatrixVocabElement(db, "txt_mve0");
             txt_mve0.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa0 = new TextStringFormalArg(db);
@@ -1720,7 +1720,7 @@ public class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve0);
 
             tdv0 = new TextStringDataValue(db, tfa0.getID(), "bravo");
-            
+
             txt_mve1 = new MatrixVocabElement(db, "txt_mve1");
             txt_mve1.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa1 = new TextStringFormalArg(db);
@@ -1728,16 +1728,16 @@ public class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve1);
 
             tdv1 = new TextStringDataValue(db, tfa1.getID(), "delta");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( txt_mve0 == null ) ||
              ( tfa0 == null ) ||
@@ -1746,10 +1746,10 @@ public class TextStringDataValue extends DataValue
              ( tfa1 == null ) ||
              ( tdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -1757,12 +1757,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( txt_mve0 == null )
                 {
                     outStream.print("allocation of txt_mve0 failed.\n");
                 }
-                
+
                 if ( tfa0 == null )
                 {
                     outStream.print("allocation of tfa0 failed.\n");
@@ -1774,12 +1774,12 @@ public class TextStringDataValue extends DataValue
                             "new TextStringDataValue(db, tfao.getID(), " +
                             "\"bravo\") returned null.\n");
                 }
-                
+
                 if ( txt_mve1 == null )
                 {
                     outStream.print("allocation of txt_mve1 failed.\n");
                 }
-                
+
                 if ( tfa1 == null )
                 {
                     outStream.print("allocation of tfa1 failed.\n");
@@ -1796,7 +1796,7 @@ public class TextStringDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -1810,103 +1810,103 @@ public class TextStringDataValue extends DataValue
         {
             failures += DataValue.TestAccessors(db, tfa0, txt_mve1, tfa1,
                                                 tdv0, outStream, verbose);
-            
+
             if ( tdv0.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv0.getSubRange() != false");
                 }
             }
-            
+
             if ( ( tdv0.getItsValue() == null ) ||
                  ( tdv0.getItsValue().compareTo("bravo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv.getItsValue() != \"bravo\"\n");
                 }
             }
-            
+
             tdv0.setItsValue("echo");
 
-            
+
             if ( ( tdv0.getItsValue() == null ) ||
                  ( tdv0.getItsValue().compareTo("echo") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv0.getItsValue() != \"echo\"\n");
                 }
             }
-            
+
             /************************************/
 
             if ( tdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv1.getSubRange() != false (1)\n");
                 }
             }
-            
+
             if ( ( tdv1.getItsValue() == null ) ||
                  ( tdv1.getItsValue().compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv1.getItsValue() != \"delta\"(1)\n");
                 }
             }
-            
+
             failures += DataValue.TestAccessors(db, tfa1, txt_mve0, tfa0,
                                                 tdv1, outStream, verbose);
 
             if ( tdv1.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv1.getSubRange() != false (2)\n");
                 }
             }
-            
+
             if ( ( tdv1.getItsValue() == null ) ||
                  ( tdv1.getItsValue().compareTo("delta") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv1.getItsValue() != \"delta\"(2)\n");
                 }
             }
-            
+
             tdv1.setItsValue("alpha");
-            
+
             if ( ( tdv1.getItsValue() == null ) ||
                  ( tdv1.getItsValue().compareTo("alpha") != 0 ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("tdv1.getItsValue() != \"alpha\".\n");
                 }
             }
         }
-        
+
         /* verify that the setItsValue method fails when fed an invalid value */
         if ( failures == 0 )
         {
@@ -1927,7 +1927,7 @@ public class TextStringDataValue extends DataValue
             }
 
             if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -1949,7 +1949,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1978,25 +1978,25 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::TestAccessors() */
 
-    
+
     /**
      * TestCopyConstructor()
-     * 
-     * Run a battery of tests on the copy constructor for this 
+     *
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2028,19 +2028,19 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         /* setup the base entries for the copy test */
         try
         {
             db = new ODBCDatabase();
-            
+
             tdv0 = new TextStringDataValue(db);
-            
+
             txt_mve = new MatrixVocabElement(db, "txt_mve");
             txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa = new TextStringFormalArg(db);
@@ -2049,16 +2049,16 @@ public class TextStringDataValue extends DataValue
 
             tdv1 = new TextStringDataValue(db, tfa.getID());
             tdv2 = new TextStringDataValue(db, tfa.getID(), "foxtrot");
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( txt_mve == null ) ||
              ( tfa == null ) ||
@@ -2066,10 +2066,10 @@ public class TextStringDataValue extends DataValue
              ( tdv1 == null ) ||
              ( tdv2 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2077,12 +2077,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( txt_mve == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
-                
+
                 if ( tfa == null )
                 {
                     outStream.print("allocation of tfa failed.");
@@ -2093,25 +2093,25 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new TextStringDataValue(db) returned null.\n");
                 }
-                
+
                 if ( tdv1 == null )
                 {
                     outStream.print("new TextStringDataValue(db, " +
                             "tfa.getID()) returned null.\n");
                 }
-                
+
                 if ( tdv2 == null )
                 {
                     outStream.print(
                             "new TextStringDataValue(db, tfa.getID(), " +
                              "\"foxtrot\") returned null.\n");
                 }
-                
+
                 if ( ! completed )
                 {
                     outStream.printf("Test setup failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2120,7 +2120,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             completed = false;
@@ -2142,12 +2142,12 @@ public class TextStringDataValue extends DataValue
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-        
+
             if ( ( tdv0_copy == null ) ||
                  ( tdv1_copy == null ) ||
                  ( tdv2_copy == null ) ||
                  ( ! completed ) ||
-                 ( threwSystemErrorException ) ) 
+                 ( threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2188,17 +2188,17 @@ public class TextStringDataValue extends DataValue
 
         if ( failures == 0 )
         {
-            failures += DataValue.VerifyDVCopy(tdv0, tdv0_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tdv0, tdv0_copy, outStream,
                                                verbose, "tdv0", "tdv0_copy");
 
-            failures += DataValue.VerifyDVCopy(tdv1, tdv1_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tdv1, tdv1_copy, outStream,
                                                verbose, "tdv1", "tdv1_copy");
 
-            failures += DataValue.VerifyDVCopy(tdv2, tdv2_copy, outStream, 
+            failures += DataValue.VerifyDVCopy(tdv2, tdv2_copy, outStream,
                                                verbose, "tdv2", "tdv2_copy");
         }
-        
-        
+
+
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
@@ -2219,9 +2219,9 @@ public class TextStringDataValue extends DataValue
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tdv != null ) || 
+            if ( ( tdv != null ) ||
                  ( completed ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -2247,8 +2247,8 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2277,25 +2277,25 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestToStringMethods()
-     * 
-     * Run a battery of tests on the toString methods supported by 
+     *
+     * Run a battery of tests on the toString methods supported by
      * this class.
-     * 
+     *
      *                                              JRM -- 11/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2338,18 +2338,18 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print("\n");
         }
-        
+
         db = null;
         tdv0 = null;
         tdv1 = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             txt_mve0 = new MatrixVocabElement(db, "txt_mve0");
             txt_mve0.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa0 = new TextStringFormalArg(db);
@@ -2359,7 +2359,7 @@ public class TextStringDataValue extends DataValue
             tdv0 = new TextStringDataValue(db, tfa0.getID(), "bravo");
             tdv0.id = 100;        // invalid value for print test
             tdv0.itsCellID = 500; // invalid value for print test
-            
+
             txt_mve1 = new MatrixVocabElement(db, "txt_mve1");
             txt_mve1.setType(MatrixVocabElement.MatrixType.TEXT);
             tfa1 = new TextStringFormalArg(db);
@@ -2369,16 +2369,16 @@ public class TextStringDataValue extends DataValue
             tdv1 = new TextStringDataValue(db, tfa1.getID(), "nero");
             tdv1.id = 101;        // invalid value for print test
             tdv1.itsCellID = 501; // invalid value for print test
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( db == null ) ||
              ( txt_mve0 == null ) ||
              ( tfa0 == null ) ||
@@ -2387,10 +2387,10 @@ public class TextStringDataValue extends DataValue
              ( tfa1 == null ) ||
              ( tdv1 == null ) ||
              ( ! completed ) ||
-             ( threwSystemErrorException ) ) 
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
@@ -2398,12 +2398,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( txt_mve0 == null )
                 {
                     outStream.print("allocation of txt_mve0 failed.\n");
                 }
-                
+
                 if ( tfa0 == null )
                 {
                     outStream.print("allocation of tfa0 failed.\n");
@@ -2414,12 +2414,12 @@ public class TextStringDataValue extends DataValue
                     outStream.print("new TextStringDataValue(db, tfa.getID(), " +
                                     "\"bravo\") returned null.\n");
                 }
-                
+
                 if ( txt_mve1 == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
-                
+
                 if ( tfa1 == null )
                 {
                     outStream.print("allocation of tfa1 failed.\n");
@@ -2435,7 +2435,7 @@ public class TextStringDataValue extends DataValue
                 {
                     outStream.printf("Test failed to complete.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf(
@@ -2450,40 +2450,40 @@ public class TextStringDataValue extends DataValue
             if ( tdv0.toString().compareTo(testString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tdv0.toString(): \"%s\".\n",
                                      tdv0.toString());
                 }
             }
-            
+
             if ( tdv0.toDBString().compareTo(testDBString0) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tdv0.toDBString(): \"%s\".\n",
                                      tdv0.toDBString());
                 }
             }
-            
+
             if ( tdv1.toString().compareTo(testString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tdv1.toString(): \"%s\".\n",
                                      tdv1.toString());
                 }
             }
-            
+
             if ( tdv1.toDBString().compareTo(testDBString1) != 0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected tdv1.toDBString(): \"%s\".\n",
@@ -2491,7 +2491,7 @@ public class TextStringDataValue extends DataValue
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2520,17 +2520,17 @@ public class TextStringDataValue extends DataValue
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringDataValue::TestToStringMethods() */
 
 
     /**
      * VerifyTextStringDVCopy()
      *
-     * Verify that the supplied instances of IntDataValue are distinct, that 
-     * they contain no common references (other than db), and that they have 
+     * Verify that the supplied instances of IntDataValue are distinct, that
+     * they contain no common references (other than db), and that they have
      * the same value.
      *                                              JRM -- 11/8/07
      *
@@ -2551,13 +2551,13 @@ public class TextStringDataValue extends DataValue
         if ( base == null )
         {
             failures++;
-            outStream.printf("VerifyTextStringDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyTextStringDVCopy: %s null on entry.\n",
                              baseDesc);
         }
         else if ( copy == null )
         {
             failures++;
-            outStream.printf("VerifyTextStringDVCopy: %s null on entry.\n", 
+            outStream.printf("VerifyTextStringDVCopy: %s null on entry.\n",
                              copyDesc);
         }
         else if ( base == copy )
@@ -2585,7 +2585,7 @@ public class TextStringDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s and %s share a string.\n", 
+                outStream.printf("%s and %s share a string.\n",
                                   baseDesc, copyDesc);
             }
         }
@@ -2602,7 +2602,7 @@ public class TextStringDataValue extends DataValue
             }
         }
         else if ( ( base.itsValue != null ) &&
-                  ( copy.itsValue == null ) )                 
+                  ( copy.itsValue == null ) )
         {
             failures++;
 
@@ -2621,7 +2621,7 @@ public class TextStringDataValue extends DataValue
             if ( verbose )
             {
                 outStream.printf(
-                    "%s.itsValue and %s.itsValue represent different values.\n", 
+                    "%s.itsValue and %s.itsValue represent different values.\n",
                     baseDesc, copyDesc);
             }
         }
@@ -2631,7 +2631,7 @@ public class TextStringDataValue extends DataValue
 
             if ( verbose )
             {
-                outStream.printf("%s.toString() doesn't match %s.toString().\n", 
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
                                  baseDesc, copyDesc);
             }
         }
@@ -2642,7 +2642,7 @@ public class TextStringDataValue extends DataValue
             if ( verbose )
             {
                 outStream.printf(
-                        "%s.toDBString() doesn't match %s.toDBString().\n", 
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
                         baseDesc, copyDesc);
             }
         }

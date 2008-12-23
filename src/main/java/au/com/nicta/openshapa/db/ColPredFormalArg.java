@@ -12,7 +12,7 @@ package au.com.nicta.openshapa.db;
 /**
  * Class PredFormalArg
  *
- * Instances of this class are used for formal arguments that have been 
+ * Instances of this class are used for formal arguments that have been
  * strongly typed to column predicates.  Note that this class is quite similar
  * to the PredFormalArg class, differing mainly in the lack of any facility
  * for subranging, and in the fact that instances of it must be replaces with
@@ -23,28 +23,28 @@ package au.com.nicta.openshapa.db;
  */
 public class ColPredFormalArg extends FormalArgument
 {
-        
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    
+
     /*** None ***/
-    
-    
-    
-    
+
+
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * ColPredFormalArg()
      *
-     * Constructors for column predicate typed formal arguments.  
+     * Constructors for column predicate typed formal arguments.
      *
-     * Three versions of this constructor -- one that takes only a database 
+     * Three versions of this constructor -- one that takes only a database
      * referenece, one that takes a database reference and the formal argument
-     * name as a parameters, and one that takes a reference to an instance of 
+     * name as a parameters, and one that takes a reference to an instance of
      * ColPredFormalArg and uses it to create a copy.
      *
      *                                          JRM -- 8/6/08
@@ -52,59 +52,59 @@ public class ColPredFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public ColPredFormalArg(Database db) 
+    public ColPredFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.COL_PREDICATE;
-        
+
     } /* NominalFormalArg() -- no parameters */
-    
+
     public ColPredFormalArg(Database db,
-                            String name) 
+                            String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-        
+
         this.fargType = fArgType.COL_PREDICATE;
-        
+
     } /* NominalFormalArg() -- one parameter */
-    
+
     public ColPredFormalArg(ColPredFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "ColPredFormalArg::ColPredFormalArg(): ";  
-        
+        final String mName = "ColPredFormalArg::ColPredFormalArg(): ";
+
         this.fargType = fArgType.COL_PREDICATE;
 
     } /* PredFormalArg() -- make copy */
-    
-    
-        
+
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
 
     /*** None ***/
-     
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of ColPredDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of ColPredDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * PredDataValue otherwise.
      *                                      JRM -- 8/6/08
      *
@@ -112,16 +112,16 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         ColPredDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new ColPredDataValue(this.db, this.id); 
+            retVal = new ColPredDataValue(this.db, this.id);
         }
         else if ( salvage instanceof ColPredDataValue )
         {
@@ -130,18 +130,18 @@ public class ColPredFormalArg extends FormalArgument
         }
         else
         {
-            retVal = new ColPredDataValue(this.db, this.id); 
+            retVal = new ColPredDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* ColPredDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of ColPredDataValue initialized as appropriate for 
+     * Return an instance of ColPredDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      *                                      JRM -- 8/6/08
@@ -150,20 +150,20 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new ColPredDataValue(this.db, this.id);
-         
+
      } /* PredFormalArg::constructEmptyArg() */
 
-     
+
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -175,38 +175,38 @@ public class ColPredFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
+
         return ("(ColPredFormalArg " + getID() + " " + getFargName() + ")");
-        
+
     } /* ColPredFormalArg::toDBString() */
-    
-     
+
+
     /**
      * isValidValue() -- Override of abstract method in FormalArgument
-     * 
-     * Boolean method that returns true iff the provided value is an acceptable 
+     *
+     * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
-     * 
+     *
      *                                      JRM -- 8/6/08
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
         final String mName = "PredFormalArg::isValidValue(): ";
         ColPred cPred = null;
-        
+
         if ( obj instanceof ColPred )
         {
             cPred = (ColPred)obj;
-            
+
             if ( cPred.getDB() != this.db )
             {
                 return false;
@@ -218,16 +218,16 @@ public class ColPredFormalArg extends FormalArgument
         }
 
         return false;
-        
+
     } /*  ColPredFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /*** TODO: Review test code. ***/
-    
+
     /**
      * TestAccessors()
      *
@@ -241,7 +241,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -264,41 +264,41 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             db = new ODBCDatabase();
             arg = new ColPredFormalArg(db);
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( db == null ) || 
-             ( arg == null ) || 
-             ( threwSystemErrorException ) ) 
+
+        if ( ( db == null ) ||
+             ( arg == null ) ||
+             ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.print("new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( arg == null )
                 {
                     outStream.print("new ColPredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new ColPredFormalArg(db) threw " +
@@ -307,27 +307,27 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestAccessors." +
@@ -335,7 +335,7 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -364,23 +364,23 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -401,26 +401,26 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new ColPredFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -428,7 +428,7 @@ public class ColPredFormalArg extends FormalArgument
                     outStream.print(
                             "new ColPredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new ColPredFormalArg(db) threw " +
@@ -437,18 +437,18 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -457,7 +457,7 @@ public class ColPredFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -465,7 +465,7 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -494,12 +494,12 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassColPredFormalArg()
      *
@@ -511,51 +511,51 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassColPredFormalArg(java.io.PrintStream outStream,
                                                     boolean verbose)
         throws SystemErrorException
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class ColPredFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -567,22 +567,22 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("All tests passed for class ColPredFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::TestClassPredFormalArg() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -604,33 +604,33 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-         
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new ColPredFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
                 {
                     outStream.print("new ColPredFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new ColPredFormalArg(db) threw " +
@@ -639,13 +639,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -653,13 +653,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -667,20 +667,20 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails if passed a bad db */
         if ( failures == 0 )
         {
@@ -701,9 +701,9 @@ public class ColPredFormalArg extends FormalArgument
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( methodReturned ) || 
-                 ( arg != null ) || 
-                 ( ! threwSystemErrorException ) ) 
+            if ( ( methodReturned ) ||
+                 ( arg != null ) ||
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -729,7 +729,7 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -758,22 +758,22 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -793,22 +793,22 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new ColPredFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -816,7 +816,7 @@ public class ColPredFormalArg extends FormalArgument
                     outStream.print("new ColPredFormalArg(db, \"<valid>\") " +
                                     "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new ColPredFormalArg(db, \"<valid>\") " +
@@ -824,13 +824,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -838,13 +838,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -852,39 +852,39 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db. */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new ColPredFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -892,7 +892,7 @@ public class ColPredFormalArg extends FormalArgument
                     outStream.print(
                         "new ColPredFormalArg(null, \"<alid>>\") != null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new ColPredFormalArg(null, \"<valid>\") "
@@ -900,29 +900,29 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new ColPredFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -930,7 +930,7 @@ public class ColPredFormalArg extends FormalArgument
                     outStream.print(
                         "new ColPredFormalArg(db, \"<<valid>>\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new ColPredFormalArg(db, \"<<invalid>>\") "
@@ -938,7 +938,7 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -967,23 +967,23 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1016,93 +1016,93 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of ColPredFormalArg to be copied: */
         p0      = null;
         m0      = null;
         progress = 0;
         completed = false;
         threwSystemErrorException = false;
-        
+
         try
         {
             db = new ODBCDatabase();
-            
+
             progress++;
-            
+
             alpha   = new UnTypedFormalArg(db, "<alpha>");
             bravo   = new UnTypedFormalArg(db, "<bravo>");
             charlie = new UnTypedFormalArg(db, "<charlie>");
-            
+
             progress++;
 
-            p0 = VocabList.ConstructTestPred(db, "p0", 
+            p0 = VocabList.ConstructTestPred(db, "p0",
                                              alpha, null, null, null);
             m0 = VocabList.ConstructTestMatrix(db, "m0",
                     MatrixVocabElement.MatrixType.MATRIX,
                     bravo, charlie, null, null);
-            
+
             progress++;
 
             db.vl.addElement(p0);
             db.vl.addElement(m0);
-            
+
             progress++;
 
             arg0 = new ColPredFormalArg(db, "<copy_this_0>");
             arg0.setHidden(true);
             p0.appendFormalArg(arg0);
-            
+
             progress++;
-            
+
             arg1 = new ColPredFormalArg(db, "<copy_this_1>");
             m0.appendFormalArg(arg1);
-            
+
             progress++;
-            
+
             completed = true;
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
+
         if ( ( ! completed ) ||
              ( db == null ) ||
-             ( arg0 == null ) || 
+             ( arg0 == null ) ||
              ( arg1 == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 outStream.printf("progress = %s\n", progress);
-                
+
                 if ( ! completed )
                 {
                     outStream.print("test setup failed to complete.\n");
                 }
-                
+
                 if ( db == null )
                 {
                     outStream.print("new ODBCDatabase() returned null.\n");
                 }
-                
+
                 if ( arg0 == null )
                 {
                     outStream.print(
                         "new ColPredFormalArg(\"<copy_this_0>\") returned null.\n");
                 }
-                
+
                 if ( arg1 == null )
                 {
                     outStream.print(
                         "new ColPredFormalArg(\"<copy_this_1>\") returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("test setup threw an unexpected system " +
@@ -1110,23 +1110,23 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( ! arg0.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg0.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg0 */
-        
+
         if ( failures == 0 )
         {
             copyArg0 = null;
@@ -1146,7 +1146,7 @@ public class ColPredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( copyArg0 == null ) || ( copyArg1 == null ) ||
                  ( completed == false ) || ( threwSystemErrorException ) )
             {
@@ -1159,7 +1159,7 @@ public class ColPredFormalArg extends FormalArgument
                         outStream.print(
                             "new ColPredFormalArg(arg0)\" returned null.\n");
                     }
-                    
+
                     if ( copyArg1 == null )
                     {
                         outStream.print(
@@ -1175,15 +1175,15 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copies are good */
-        
+
         if ( failures == 0 )
         {
             if ( arg0 == copyArg0 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg0 == copyArg0) ==> " +
@@ -1191,13 +1191,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1 == copyArg1 )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg1 == copyArg1) ==> " +
@@ -1205,43 +1205,43 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.toDBString().compareTo(copyArg0.toDBString()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.toDBString() = \"%s\" != " +
-                            "copyArg0.toDBString() = \"%s\".\n", 
+                            "copyArg0.toDBString() = \"%s\".\n",
                             arg0.toDBString(), copyArg0.toDBString());
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.toDBString().compareTo(copyArg1.toDBString()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.toDBString() = \"%s\" != " +
-                            "copyArg1.toDBString() = \"%s\".\n", 
+                            "copyArg1.toDBString() = \"%s\".\n",
                             arg0.toDBString(), copyArg0.toDBString());
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getHidden() != copyArg0.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.hidden = %b != " +
@@ -1250,13 +1250,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getHidden() != copyArg0.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.hidden = %b != " +
@@ -1265,13 +1265,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getItsVocabElement() != copyArg0.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.getItsVocabElement() != " +
@@ -1279,13 +1279,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.getItsVocabElement() != copyArg1.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.getItsVocabElement() != " +
@@ -1293,13 +1293,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg0.getItsVocabElementID() != copyArg0.getItsVocabElementID() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg0.getItsVocabElementID() != " +
@@ -1307,13 +1307,13 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg1.getItsVocabElementID() != copyArg1.getItsVocabElementID() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg1.getItsVocabElementID() != \" " +
@@ -1323,7 +1323,7 @@ public class ColPredFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -1342,7 +1342,7 @@ public class ColPredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg0 != null ) || 
+            if ( ( copyArg0 != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1363,15 +1363,15 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of ColPredFormalArg, 
+
+        /* now corrupt the fargName field of and instance of ColPredFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg0 = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -1384,7 +1384,7 @@ public class ColPredFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg0 != null ) || 
+            if ( ( copyArg0 != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1405,7 +1405,7 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1434,12 +1434,12 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* ColPredFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -1451,7 +1451,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -1514,7 +1514,7 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-//        
+//
 //        // Start by setting up the needed database, pve's, and preds
 //        threwSystemErrorException = false;
 //        completed = false;
@@ -1522,35 +1522,35 @@ public class ColPredFormalArg extends FormalArgument
 //        try
 //        {
 //            db = new ODBCDatabase();
-//            
+//
 //            pve0 = new PredicateVocabElement(db, "pve0");
 //            farg = new UnTypedFormalArg(db, "<arg1>");
 //            pve0.appendFormalArg(farg);
 //            farg = new UnTypedFormalArg(db, "<arg2>");
 //            pve0.appendFormalArg(farg);
-//            
+//
 //            pve0ID = db.addPredVE(pve0);
-//            
+//
 //            // get a copy of the databases version of pve0 with ids assigned
 //            pve0 = db.getPredVE(pve0ID);
-//            
+//
 //            p0 = new Predicate(db, pve0ID);
-//            
-//            
+//
+//
 //            pve1 = new PredicateVocabElement(db, "pve1");
 //            farg = new IntFormalArg(db, "<int>");
 //            pve1.appendFormalArg(farg);
 //            farg = new UnTypedFormalArg(db, "<arg2>");
 //            pve1.appendFormalArg(farg);
-//            
+//
 //            pve1ID = db.addPredVE(pve1);
-//            
+//
 //            // get a copy of the databases version of pve1 with ids assigned
 //            pve1 = db.getPredVE(pve1ID);
-//            
+//
 //            p1 = new Predicate(db, pve1ID);
-//            
-//            
+//
+//
 //            pve2 = new PredicateVocabElement(db, "pve2");
 //            farg = new UnTypedFormalArg(db, "<arg1>");
 //            pve2.appendFormalArg(farg);
@@ -1558,30 +1558,30 @@ public class ColPredFormalArg extends FormalArgument
 //            pve2.appendFormalArg(farg);
 //            farg = new UnTypedFormalArg(db, "<arg3>");
 //            pve2.appendFormalArg(farg);
-//            
+//
 //            pve2ID = db.addPredVE(pve2);
-//            
+//
 //            // get a copy of the databases version of pve1 with ids assigned
 //            pve2 = db.getPredVE(pve2ID);
-//            
+//
 //            p2 = new Predicate(db, pve2ID);
-//            
-//            
+//
+//
 //            pve3 = new PredicateVocabElement(db, "pve3");
 //            farg = new UnTypedFormalArg(db, "<arg1>");
 //            pve3.appendFormalArg(farg);
 //            pve3.setVarLen(true);
-//            
+//
 //            pve3ID = db.addPredVE(pve3);
-//            
+//
 //            // get a copy of the databases version of pve3 with ids assigned
 //            pve3 = db.getPredVE(pve3ID);
-//            
+//
 //            p3 = new Predicate(db, pve3ID);
 //
-//            
+//
 //            pve4 = new PredicateVocabElement(db, "pve4");
-//            
+//
 //            farg = new FloatFormalArg(db, "<float>");
 //            pve4.appendFormalArg(farg);
 //            farg = new IntFormalArg(db, "<int>");
@@ -1596,67 +1596,67 @@ public class ColPredFormalArg extends FormalArgument
 //            pve4.appendFormalArg(farg);
 //            farg = new UnTypedFormalArg(db, "<untyped>");
 //            pve4.appendFormalArg(farg);
-//            
+//
 //            pve4ID = db.addPredVE(pve4);
-//            
+//
 //            // get a copy of the databases version of pve4 with ids assigned
 //            pve4 = db.getPredVE(pve4ID);
-//            
+//
 //            p4 = new Predicate(db, pve4ID);
 //
-//            
+//
 //            pve5 = new PredicateVocabElement(db, "pve5");
 //            farg = new UnTypedFormalArg(db, "<arg>");
 //            pve5.appendFormalArg(farg);
-//            
+//
 //            pve5ID = db.addPredVE(pve5);
-//            
+//
 //            // get a copy of the databases version of pve5 with ids assigned
 //            pve5 = db.getPredVE(pve5ID);
-//            
+//
 //            p5 = new Predicate(db, pve5ID);
 //
-//            
+//
 //            pve6 = new PredicateVocabElement(db, "pve6");
 //            farg = new UnTypedFormalArg(db, "<arg>");
 //            pve6.appendFormalArg(farg);
-//            
+//
 //            pve6ID = db.addPredVE(pve6);
-//            
+//
 //            // get a copy of the databases version of pve6 with ids assigned
 //            pve6 = db.getPredVE(pve6ID);
-//            
+//
 //            p6 = new Predicate(db, pve6ID);
 //
-//            
+//
 //            pve7 = new PredicateVocabElement(db, "pve7");
 //            farg = new UnTypedFormalArg(db, "<arg>");
 //            pve7.appendFormalArg(farg);
-//            
+//
 //            pve7ID = db.addPredVE(pve7);
-//            
+//
 //            // get a copy of the databases version of pve7 with ids assigned
 //            pve7 = db.getPredVE(pve7ID);
-//            
+//
 //            p7 = new Predicate(db, pve7ID);
-//            
-//            
-//            
+//
+//
+//
 //            alt_db = new ODBCDatabase();
 //
-//            
+//
 //            alt_pve = new PredicateVocabElement(alt_db, "alt_pve");
 //            farg = new UnTypedFormalArg(alt_db, "<alt_pve>");
 //            alt_pve.appendFormalArg(farg);
-//            
+//
 //            alt_pveID = alt_db.addPredVE(alt_pve);
-//            
+//
 //            // get a copy of the alt_db's version of alt_pve with ids assigned
 //            alt_pve = db.getPredVE(alt_pveID);
-//            
+//
 //            alt_p = new Predicate(alt_db, alt_pveID);
 //
-//            
+//
 //            completed = true;
 //        }
 //
@@ -1665,7 +1665,7 @@ public class ColPredFormalArg extends FormalArgument
 //            threwSystemErrorException = true;
 //            systemErrorExceptionString = e.toString();
 //        }
-//        
+//
 //        if ( ( db == null ) ||
 //             ( pve0 == null ) ||
 //             ( pve0ID == DBIndex.INVALID_ID ) ||
@@ -1694,153 +1694,153 @@ public class ColPredFormalArg extends FormalArgument
 //             ( alt_pve == null ) ||
 //             ( alt_pveID == DBIndex.INVALID_ID ) ||
 //             ( alt_p == null ) ||
-//             ( ! completed ) || 
-//             ( threwSystemErrorException ) ) 
+//             ( ! completed ) ||
+//             ( threwSystemErrorException ) )
 //        {
 //            failures++;
-//                    
+//
 //            if ( verbose )
 //            {
 //                if ( db == null )
 //                {
 //                    outStream.print("new Database() returned null.\n");
 //                }
-//                
+//
 //                if ( pve0 == null )
 //                {
 //                    outStream.print("creation of pve0 failed.\n");
 //                }
-//                
+//
 //                if ( pve0ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve0ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p0 == null )
 //                {
 //                    outStream.print("creation of p0 failed.\n");
 //                }
-//                
+//
 //                if ( pve1 == null )
 //                {
 //                    outStream.print("creation of pve1 failed.\n");
 //                }
-//                
+//
 //                if ( pve1ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve1ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p1 == null )
 //                {
 //                    outStream.print("creation of p1 failed.\n");
 //                }
-//                
+//
 //                if ( pve2 == null )
 //                {
 //                    outStream.print("creation of pve2 failed.\n");
 //                }
-//                
+//
 //                if ( pve2ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve2ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p2 == null )
 //                {
 //                    outStream.print("creation of p2 failed.\n");
 //                }
-//                
+//
 //                if ( pve3 == null )
 //                {
 //                    outStream.print("creation of pve3 failed.\n");
 //                }
-//                
+//
 //                if ( pve3ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve3ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p3 == null )
 //                {
 //                    outStream.print("creation of p3 failed.\n");
 //                }
-//                
+//
 //                if ( pve4 == null )
 //                {
 //                    outStream.print("creation of pve4 failed.\n");
 //                }
-//                
+//
 //                if ( pve4ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve4ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p4 == null )
 //                {
 //                    outStream.print("creation of p4 failed.\n");
 //                }
-//                
+//
 //                if ( pve5 == null )
 //                {
 //                    outStream.print("creation of pve5 failed.\n");
 //                }
-//                
+//
 //                if ( pve5ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve5ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p5 == null )
 //                {
 //                    outStream.print("creation of p5 failed.\n");
 //                }
-//                
+//
 //                if ( pve6 == null )
 //                {
 //                    outStream.print("creation of pve6 failed.\n");
 //                }
-//                
+//
 //                if ( pve6ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve6ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p6 == null )
 //                {
 //                    outStream.print("creation of p6 failed.\n");
 //                }
-//                
+//
 //                if ( pve7 == null )
 //                {
 //                    outStream.print("creation of pve7 failed.\n");
 //                }
-//                
+//
 //                if ( pve7ID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("pve7ID not initialized.\n");
 //                }
-//                
+//
 //                if ( p7 == null )
 //                {
 //                    outStream.print("creation of p7 failed.\n");
 //                }
-//                
+//
 //                if ( alt_pve == null )
 //                {
 //                    outStream.print("creation of alt_pve failed.\n");
 //                }
-//                
+//
 //                if ( alt_pveID == DBIndex.INVALID_ID )
 //                {
 //                    outStream.print("alt_pveID not initialized.\n");
 //                }
-//                
+//
 //                if ( alt_p == null )
 //                {
 //                    outStream.print("creation of alt_p failed.\n");
 //                }
-//                
+//
 //                if ( ! completed )
 //                {
 //                    outStream.print("test setup failed to complete (1).\n");
@@ -1849,12 +1849,12 @@ public class ColPredFormalArg extends FormalArgument
 //                if ( threwSystemErrorException )
 //                {
 //                    outStream.printf("pve allocations threw a " +
-//                            "SystemErrorException: \"%s\".\n", 
+//                            "SystemErrorException: \"%s\".\n",
 //                            systemErrorExceptionString);
 //                }
 //            }
 //        }
-//        
+//
 //        /* Now set up the test formal arguments */
 //        if ( failures == 0 )
 //        {
@@ -1864,7 +1864,7 @@ public class ColPredFormalArg extends FormalArgument
 //            try
 //            {
 //                pfa = new PredFormalArg(db, "<pfa>");
-//                
+//
 //                pfa_sr = new PredFormalArg(db, "<pfa_sr>");
 //                pfa_sr.setSubRange(true);
 //                pfa_sr.addApproved(pve0ID);
@@ -1880,26 +1880,26 @@ public class ColPredFormalArg extends FormalArgument
 //                threwSystemErrorException = true;
 //                systemErrorExceptionString = e.toString();
 //            }
-//            
+//
 //            if ( ( pfa == null ) ||
 //                 ( pfa_sr == null ) ||
 //                 ( ! completed ) ||
 //                 ( threwSystemErrorException ) )
 //            {
 //                failures++;
-//                
+//
 //                if ( verbose )
 //                {
 //                    if ( pfa == null )
 //                    {
 //                        outStream.print("creation of pfa failed.\n");
 //                    }
-//                    
+//
 //                    if ( pfa_sr == null  )
 //                    {
 //                        outStream.print("creation of pfa_sr failed.\n");
 //                    }
-//                
+//
 //                    if ( ! completed )
 //                    {
 //                        outStream.print("test setup failed to complete (2).\n");
@@ -1908,7 +1908,7 @@ public class ColPredFormalArg extends FormalArgument
 //                    if ( threwSystemErrorException )
 //                    {
 //                        outStream.printf("pfa allocations threw a " +
-//                                "SystemErrorException: \"%s\".\n", 
+//                                "SystemErrorException: \"%s\".\n",
 //                                systemErrorExceptionString);
 //                    }
 //                }
@@ -1924,7 +1924,7 @@ public class ColPredFormalArg extends FormalArgument
 //                p6_is_valid = pfa.isValidValue(p6);
 //                p7_is_valid = pfa.isValidValue(p7);
 //                alt_p_is_valid = pfa.isValidValue(alt_p);
-//                
+//
 //                if ( ( ! p0_is_valid ) ||
 //                     ( ! p1_is_valid ) ||
 //                     ( ! p2_is_valid ) ||
@@ -1936,7 +1936,7 @@ public class ColPredFormalArg extends FormalArgument
 //                     ( alt_p_is_valid ) )
 //                {
 //                    failures++;
-//                    
+//
 //                    if ( verbose )
 //                    {
 //                        outStream.printf("Unexpected results from " +
@@ -1952,7 +1952,7 @@ public class ColPredFormalArg extends FormalArgument
 //                            alt_p_is_valid);
 //                    }
 //                }
-//                
+//
 //                p0_is_valid = pfa_sr.isValidValue(p0);
 //                p1_is_valid = pfa_sr.isValidValue(p1);
 //                p2_is_valid = pfa_sr.isValidValue(p2);
@@ -1962,7 +1962,7 @@ public class ColPredFormalArg extends FormalArgument
 //                p6_is_valid = pfa_sr.isValidValue(p6);
 //                p7_is_valid = pfa_sr.isValidValue(p7);
 //                alt_p_is_valid = pfa_sr.isValidValue(alt_p);
-//                
+//
 //                if ( ( ! p0_is_valid ) ||
 //                     ( p1_is_valid ) ||
 //                     ( ! p2_is_valid ) ||
@@ -1974,7 +1974,7 @@ public class ColPredFormalArg extends FormalArgument
 //                     ( alt_p_is_valid ) )
 //                {
 //                    failures++;
-//                    
+//
 //                    if ( verbose )
 //                    {
 //                        outStream.printf("Unexpected results from " +
@@ -1990,28 +1990,28 @@ public class ColPredFormalArg extends FormalArgument
 //                            alt_p_is_valid);
 //                    }
 //                }
-//                 
+//
 //                if ( ( pfa.isValidValue(1.0) ) ||
 //                     ( pfa.isValidValue(1) ) ||
 //                     ( pfa.isValidValue("a string") ) ||
 //                     ( pfa.isValidValue(new TimeStamp(db.getTicks(), 0)) ) )
 //                {
 //                    failures++;
-//                    
+//
 //                    if ( verbose )
 //                    {
 //                        outStream.print("pfa.isValidValue() accepted one or " +
 //                                        "more non-Predicates.\n");
 //                    }
 //                }
-//                
+//
 //                if ( ( pfa_sr.isValidValue(1.0) ) ||
 //                     ( pfa_sr.isValidValue(1) ) ||
 //                     ( pfa_sr.isValidValue("a string") ) ||
 //                     ( pfa_sr.isValidValue(new TimeStamp(db.getTicks(), 0)) ) )
 //                {
 //                    failures++;
-//                    
+//
 //                    if ( verbose )
 //                    {
 //                        outStream.print("pfa_sr.isValidValue() accepted one " +
@@ -2020,7 +2020,7 @@ public class ColPredFormalArg extends FormalArgument
 //                }
 //            }
 //        }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2049,14 +2049,14 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         outStream.printf("          --- TEST NOT IMPLEMENTED ---\n");
-        
+
         return pass;
-        
+
     } /* PredFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -2068,7 +2068,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -2091,7 +2091,7 @@ public class ColPredFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -2108,7 +2108,7 @@ public class ColPredFormalArg extends FormalArgument
             }
 
             if ( ( db == null ) ||
-                 ( arg == null ) || 
+                 ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -2132,11 +2132,11 @@ public class ColPredFormalArg extends FormalArgument
                                          "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg != null )
@@ -2162,8 +2162,8 @@ public class ColPredFormalArg extends FormalArgument
                 }
             }
         }
-        
-        
+
+
         if ( failures > 0 )
         {
             pass = false;
@@ -2194,7 +2194,7 @@ public class ColPredFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* PredFormalArg::TestToStringMethods() */
-    
+
 } /* class PredFormalArg */

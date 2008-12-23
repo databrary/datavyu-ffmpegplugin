@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class QuoteStringDataValue.
- * 
+ *
  * @author cfreeman
  */
 public class QuoteStringDataValueTest extends DataValueTest {

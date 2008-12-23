@@ -11,13 +11,13 @@ package au.com.nicta.openshapa.db;
 
 /**
  * Interface ExternalCascadeListener
- * 
+ *
  * Objects external to the database that wish to be informed of the beginning
- * and end of a cascade of changes should implement this interface and 
+ * and end of a cascade of changes should implement this interface and
  * register with the database of interest.
- * 
- *                                                  JRM -- 2/11/08 
- * 
+ *
+ *                                                  JRM -- 2/11/08
+ *
  * @author mainzer
  */
 public interface ExternalCascadeListener
@@ -33,9 +33,9 @@ public interface ExternalCascadeListener
      *
      *    - None.
      */
-    
+
     void beginCascade(Database db);
-    
+
     /**
      * endCascade()
      *
@@ -47,7 +47,7 @@ public interface ExternalCascadeListener
      *
      *    - None.
      */
-    
+
     void endCascade(Database db);
-    
+
 } // interface ExternalCascadeListener

@@ -17,35 +17,35 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class TextStringFormalArg extends FormalArgument 
+public class TextStringFormalArg extends FormalArgument
 {
-    
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /**     
+    /**
      *
-     * subRange: Boolean flag indicating whether the formal argument can be 
-     *      replaced by any valid text string, or only by some text string 
+     * subRange: Boolean flag indicating whether the formal argument can be
+     *      replaced by any valid text string, or only by some text string
      *      that matches some criteron.  At present, this will never be the
      *      case, so this field will always be false.
      */
-    
-    boolean subRange = false;    
-    
-    
+
+    boolean subRange = false;
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * TextStringFormalArg()
      *
-     * Constructors for integer typed formal arguments.  
+     * Constructors for integer typed formal arguments.
      *
      * Two versions of this constructor -- one takes only a database reference
-     * as its argument.  Since the names of instances of TextStringFormalArg 
-     * are never displayed, there is no need to set a formal argument name.  
+     * as its argument.  Since the names of instances of TextStringFormalArg
+     * are never displayed, there is no need to set a formal argument name.
      * Similarly, there is no subrange to be defined.
      *
      * The second version takes an instance of TextStringFormalArg and uses it
@@ -56,95 +56,95 @@ public class TextStringFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public TextStringFormalArg(Database db) 
+    public TextStringFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.TEXT;
-        
-    } /* TextStringFormalArg() -- no parameters */    
-    
+
+    } /* TextStringFormalArg() -- no parameters */
+
     public TextStringFormalArg(TextStringFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "TextStringFormalArg::TextStringFormalArg(): ";  
-        
+        final String mName = "TextStringFormalArg::TextStringFormalArg(): ";
+
         this.fargType = fArgType.TEXT;
-        
+
         if ( ! ( fArg instanceof TextStringFormalArg ) )
         {
             throw new SystemErrorException(
                     mName + "fArg not a TextStringFormalArg");
         }
-        
+
         // copy over fields.
-        
+
         this.subRange = fArg.getSubRange();
 
     } /* TextStringFormalArg() -- make copy */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-     
+
     /**
      * getSubRange()
      *
-     * Accessor routine used to obtain the current values of the subRange field. 
+     * Accessor routine used to obtain the current values of the subRange field.
      *
      *                                          JRM -- 2/12/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public boolean getSubRange() 
-    { 
+
+    public boolean getSubRange()
+    {
         return subRange;
     }
-    
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of TextStringDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of TextStringDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * TextStringDataValue otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         TextStringDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new TextStringDataValue(this.db, this.id); 
+            retVal = new TextStringDataValue(this.db, this.id);
         }
         else if ( ( salvage instanceof QuoteStringDataValue ) &&
                   ( ((QuoteStringDataValue)salvage).getItsValue() != null ) &&
                   ( Database.IsValidTextString
                         (((QuoteStringDataValue)salvage).getItsValue()) ) )
-                  
+
         {
             retVal = new TextStringDataValue(this.db, this.id,
                     ((QuoteStringDataValue)salvage).getItsValue());
@@ -159,38 +159,38 @@ public class TextStringFormalArg extends FormalArgument
         }
         else
         {
-            retVal = new TextStringDataValue(this.db, this.id); 
+            retVal = new TextStringDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* TextStringDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of TextStringDataValue initialized as appropriate for 
+     * Return an instance of TextStringDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new TextStringDataValue(this.db, this.id);
-         
+
      } /* TextStringFormalArg::constructEmptyArg() */
 
 
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -200,42 +200,42 @@ public class TextStringFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
+
         return ("(TextStringFormalArg " + getID() + " " + getFargName() + ")");
-        
+
     } /* TextStringFormalArg::toDBString() */
-    
-    
+
+
     /**
      * isValidValue() -- Override of abstract method in FormalArgument
-     * 
-     * Boolean metho that returns true iff the provided value is an acceptable 
+     *
+     * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
-     * 
+     *
      *                                             JRM -- 2/5/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
-    
-        return Database.IsValidTextString(obj);
-    
-    } /* TextStringFormalArg::isValidValue() */
-    
 
-    
+        return Database.IsValidTextString(obj);
+
+    } /* TextStringFormalArg::isValidValue() */
+
+
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -245,7 +245,7 @@ public class TextStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -267,26 +267,26 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new TextStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -294,7 +294,7 @@ public class TextStringFormalArg extends FormalArgument
                     outStream.print(
                             "new TextStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TextStringFormalArg(db) threw " +
@@ -303,27 +303,27 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("AbstractFormalArgument.TestAccessors." +
@@ -331,17 +331,17 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* TextStringFormalArg adds only subRange, and does not allow its
-         * value to be modified.  Thus all we need to do is verify that 
-         * arg.getSubRange() is false, and we are done. 
+         * value to be modified.  Thus all we need to do is verify that
+         * arg.getSubRange() is false, and we are done.
          */
         if ( failures == 0 )
         {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -350,7 +350,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures > 0 )
         {
             pass = false;
@@ -379,23 +379,23 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -416,26 +416,26 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new TextStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -443,7 +443,7 @@ public class TextStringFormalArg extends FormalArgument
                     outStream.print(
                             "new TextStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TextStringFormalArg(db) threw " +
@@ -452,18 +452,18 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -472,7 +472,7 @@ public class TextStringFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -480,7 +480,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -509,12 +509,12 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassTextStringFormalArg()
      *
@@ -526,7 +526,7 @@ public class TextStringFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassTextStringFormalArg(
             java.io.PrintStream outStream,
             boolean verbose)
@@ -534,39 +534,39 @@ public class TextStringFormalArg extends FormalArgument
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class TextStringFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -579,22 +579,22 @@ public class TextStringFormalArg extends FormalArgument
             outStream.print(
                     "All tests passed for class TextStringFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Database::TestDatabase() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -616,26 +616,26 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new TextStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -643,7 +643,7 @@ public class TextStringFormalArg extends FormalArgument
                     outStream.print(
                             "new TextStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TextStringFormalArg(db) threw " +
@@ -654,11 +654,11 @@ public class TextStringFormalArg extends FormalArgument
         }
 
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -666,13 +666,13 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -680,22 +680,22 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* verify that the constructor fails with an invalid db */
-        
+
         if ( failures == 0 )
         {
             arg = null;
@@ -715,9 +715,9 @@ public class TextStringFormalArg extends FormalArgument
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( methodReturned ) || 
-                 ( arg != null ) || 
-                 ( ! threwSystemErrorException ) ) 
+            if ( ( methodReturned ) ||
+                 ( arg != null ) ||
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -726,9 +726,9 @@ public class TextStringFormalArg extends FormalArgument
                     if ( methodReturned )
                     {
                         outStream.print(
-                                "new TextStringFormalArg(null) returned.\n");                        
+                                "new TextStringFormalArg(null) returned.\n");
                     }
-                    
+
                     if ( arg != null )
                     {
                         outStream.print("new TextStringFormalArg(null) "+
@@ -743,7 +743,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -772,23 +772,23 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringFormalArg::Test1ArgConstructor() */
-    
-    
+
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -810,37 +810,37 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of TextStringFormalArg to be copied: */
         threwSystemErrorException = false;
-        
+
         try
         {
             /* Text String formal arguments normally don't have any need
-             * for a formal argument name, so there is no costructor that 
+             * for a formal argument name, so there is no costructor that
              * sets the name.  For this test, we need to change something
-             * about the formal argument so we can verify that we have 
+             * about the formal argument so we can verify that we have
              * copied the right formal argument.  Thus we create the new
              * TextStringFormalArgument, and then set it name.
              */
             arg = new TextStringFormalArg(new ODBCDatabase());
-            
+
             if ( arg != null )
             {
                 arg.setFargName("<copy_this>");
             }
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -848,7 +848,7 @@ public class TextStringFormalArg extends FormalArgument
                     outStream.print(
                         "\"new TextStringFormalArg()\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     /* it is also possible that the call to arg.setFargName()
@@ -859,25 +859,25 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setHidden(true);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("\"arg.setHidden(true)\" threw a " +
@@ -887,17 +887,17 @@ public class TextStringFormalArg extends FormalArgument
             else if ( ! arg.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg */
-        
+
         if ( failures == 0 )
         {
             copyArg = null;
@@ -913,7 +913,7 @@ public class TextStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg == null ) || 
+            if ( ( copyArg == null ) ||
                   ( threwSystemErrorException ) )
             {
                 failures++;
@@ -934,15 +934,15 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copy is good */
-        
+
         if ( failures == 0 )
         {
             if ( arg == copyArg )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg == copyArg) ==> " +
@@ -950,13 +950,13 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getFargName().compareTo(copyArg.getFargName()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.fargName = \"%s\" != \" " +
@@ -965,13 +965,13 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != copyArg.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.hidden = %b != " +
@@ -980,13 +980,13 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != copyArg.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.getItsVocabElement() != \" " +
@@ -996,7 +996,7 @@ public class TextStringFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -1015,7 +1015,7 @@ public class TextStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1036,15 +1036,15 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of TextStringFormalArg, 
+
+        /* now corrupt the fargName field of and instance of TextStringFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -1057,7 +1057,7 @@ public class TextStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1078,7 +1078,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1107,12 +1107,12 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -1128,7 +1128,7 @@ public class TextStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -1199,26 +1199,26 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new TextStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1226,7 +1226,7 @@ public class TextStringFormalArg extends FormalArgument
                     outStream.print(
                             "new TextStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new TextStringFormalArg(db) threw " +
@@ -1235,7 +1235,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             while ( testNum < numTestObjects )
@@ -1243,7 +1243,7 @@ public class TextStringFormalArg extends FormalArgument
                 if ( verbose )
                 {
                     outStream.printf("test %d: arg.isValidValue(%s) --> %b: ",
-                            testNum, testDesc[testNum], 
+                            testNum, testDesc[testNum],
                             expectedResult[testNum]);
                 }
 
@@ -1256,7 +1256,7 @@ public class TextStringFormalArg extends FormalArgument
                 }
                 catch (SystemErrorException e)
                 {
-                    threwSystemErrorException = true; 
+                    threwSystemErrorException = true;
                 }
 
                 if ( ( threwSystemErrorException ) ||
@@ -1283,8 +1283,8 @@ public class TextStringFormalArg extends FormalArgument
                 testNum++;
             }
         }
-        
-        /* Now verify that isValidValue() throws a system error when passed 
+
+        /* Now verify that isValidValue() throws a system error when passed
          * a null.
          */
 
@@ -1306,10 +1306,10 @@ public class TextStringFormalArg extends FormalArgument
                 result = arg.isValidValue(null);
                 methodReturned = true;
             }
-            
+
             catch (SystemErrorException e)
             {
-                threwSystemErrorException = true; 
+                threwSystemErrorException = true;
             }
 
             if ( ( result != false ) ||
@@ -1341,7 +1341,7 @@ public class TextStringFormalArg extends FormalArgument
 
             testNum++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1370,12 +1370,12 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* TextStringFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -1387,7 +1387,7 @@ public class TextStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1408,7 +1408,7 @@ public class TextStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -1416,11 +1416,11 @@ public class TextStringFormalArg extends FormalArgument
             try
             {
                 /* Text String formal arguments normally don't have any need
-                 * for a formal argument name, so there is no costructor that 
+                 * for a formal argument name, so there is no costructor that
                  * sets the name.  For this test, it is useful to change the
                  * fargName so we can verify that we are grabbing the correct
-                 * data when we construct a string version of the  formal 
-                 * argument.  Thus we create the new TextStringFormalArgument, 
+                 * data when we construct a string version of the  formal
+                 * argument.  Thus we create the new TextStringFormalArgument,
                  * and then set itsname.
                  */
                 arg = new TextStringFormalArg(new ODBCDatabase());
@@ -1436,7 +1436,7 @@ public class TextStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( arg == null ) || 
+            if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1451,18 +1451,18 @@ public class TextStringFormalArg extends FormalArgument
 
                     if ( threwSystemErrorException )
                     {
-                        /* it is also possible that the call to 
+                        /* it is also possible that the call to
                          * arg.setFargName() threw the SystemErrorException.
                          */
                         outStream.print("\"new TextStringFormalArg()\" " +
                                          "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( arg != null )
         {
             if ( arg.toString().compareTo("<test>") != 0 )
@@ -1473,10 +1473,10 @@ public class TextStringFormalArg extends FormalArgument
                         arg.toString());
             }
         }
-        
+
         if ( arg != null )
         {
-            if ( arg.toDBString().compareTo("(TextStringFormalArg 0 <test>)") 
+            if ( arg.toDBString().compareTo("(TextStringFormalArg 0 <test>)")
                  != 0 )
             {
                 failures++;
@@ -1485,7 +1485,7 @@ public class TextStringFormalArg extends FormalArgument
                         arg.toDBString());
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1516,7 +1516,7 @@ public class TextStringFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* TextStringFormalArg::TestToStringMethods() */
-    
+
 } /* class TextStringFormalArg */

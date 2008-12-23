@@ -97,5 +97,5 @@ public interface ContinuousDataViewer {
     void setNewCellStopTime();
 
     void syncCtrl();
-    void sync();    
+    void sync();
 } //End of ContinuousDataViewer interface definition

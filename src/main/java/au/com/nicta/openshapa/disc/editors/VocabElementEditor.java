@@ -31,7 +31,7 @@ public class VocabElementEditor
     Database db = variable.getDB();
     db.registerDataColumnListener(variable.getID(), this);
     this.setVariable(variable);
-    
+
     // Add self as a listener
   }
 
@@ -41,7 +41,7 @@ public class VocabElementEditor
     this.column = column;
 
     DefaultTreeModel dtm = (DefaultTreeModel)this.variableTree.getModel();
-    
+
     DefaultMutableTreeNode dmtn = new DefaultMutableTreeNode(column);
 
     if (column instanceof DataColumn) {
@@ -68,16 +68,16 @@ System.out.println(mve.toDBString());
                                long colID,
                                long cellID)
   {
-     
+
   }
-       
+
   public void DColCellInsertion(Database db,
                                 long colID,
                                 long cellID)
   {
   }
-    
-    
+
+
   public void DColConfigChanged(Database db,
                                 long colID,
                                 boolean nameChanged,
@@ -97,13 +97,13 @@ System.out.println(mve.toDBString());
                                 boolean newSelected)
   {
   }
-    
-    
+
+
   public void DColDeleted(Database db,
                           long colID)
   {
   }
-  
+
   public final static void main(String[] argv)
   {
     try {
@@ -116,7 +116,7 @@ System.out.println(mve.toDBString());
       System.out.println(dc.toDBString());
       MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
       System.out.println(mve.toDBString());
-      
+
       QuoteStringFormalArg qsfa = new QuoteStringFormalArg(db);
       QuoteStringFormalArg qsfa1 = new QuoteStringFormalArg(db);
       TextStringFormalArg tsfa = new TextStringFormalArg(db);
@@ -127,12 +127,12 @@ System.out.println(mve.toDBString());
 
       qsfa.setFargName("<QSTestArgument>");
       qsfa1.setFargName("<QSTestArgument1>");
-      
+
       mve.appendFormalArg(tsfa);
       mve.appendFormalArg(tsfa1);
       mve.appendFormalArg(qsfa);
       mve.appendFormalArg(qsfa1);
-      
+
       System.out.println(mve.toDBString());
 
       db.replaceMatrixVE(mve);
@@ -150,12 +150,12 @@ System.out.println(mve.toDBString());
       e.printStackTrace();
     }
   }
-  
+
   public void dispose()
   {
-      
+
   }
-  
+
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -177,11 +177,11 @@ System.out.println(mve.toDBString());
 
     add(variableScrollPane, java.awt.BorderLayout.CENTER);
   }// </editor-fold>//GEN-END:initComponents
-  
-  
+
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane variableScrollPane;
   private javax.swing.JTree variableTree;
   // End of variables declaration//GEN-END:variables
-  
+
 }

@@ -50,7 +50,7 @@ public class Configuration extends DefaultHandler
   protected Stack<ConfigurationObject> parentStack = new Stack<ConfigurationObject>();
 
   protected Vector<ConfigurationObject> topLevelObjects = new Vector<ConfigurationObject>();
-  
+
   /**
    * Creates a new instance of Configuration
    * @param configPath the Configuration file to load
@@ -207,7 +207,7 @@ public class Configuration extends DefaultHandler
   } //End of endElement() method
 
 
-  
+
   /**
    * Loads a string file path into the classpath using a URLClassLoader
    * @param path the path to load
@@ -246,7 +246,7 @@ public class Configuration extends DefaultHandler
     Thread.currentThread().setContextClassLoader(aUrlCL);
   } //End of loadPath method
 
-  
+
     /**
    * Loads the object's classpath into main classpath and creates an instance
    * of the object's class.  Using the type field checks the objects type
@@ -278,7 +278,7 @@ public class Configuration extends DefaultHandler
 
     String classname = co.getElement("class").getValue();
     String classpath = co.getElement("path").getValue();
-    
+
     // Load classpath
     this.loadPath(classpath);
 
@@ -303,7 +303,7 @@ public class Configuration extends DefaultHandler
 
     return (o);
   } //End of getInstance() method
-  
+
 
 
 
@@ -454,7 +454,7 @@ public class Configuration extends DefaultHandler
         System.out.println(coa[i].dumpString());
       }
     }
-    
+
     System.out.println("\n\nDiscrete Viewers:");
     coa = conf.getDiscreteViewers();
     if (coa != null) {
@@ -462,7 +462,7 @@ public class Configuration extends DefaultHandler
         System.out.println(coa[i].dumpString());
       }
     }
-    
+
     System.out.println("\n\nContinuous Viewers:");
     coa = conf.getContinuousViewers();
     if (coa != null) {
@@ -470,7 +470,7 @@ public class Configuration extends DefaultHandler
         System.out.println(coa[i].dumpString());
       }
     }
-    
+
     System.out.println("\n\nPlugins:");
     coa = conf.getPlugins();
     if (coa != null) {
@@ -478,7 +478,7 @@ public class Configuration extends DefaultHandler
         System.out.println(coa[i].dumpString());
       }
     }
-    
+
   } //End of main() method
    */
 

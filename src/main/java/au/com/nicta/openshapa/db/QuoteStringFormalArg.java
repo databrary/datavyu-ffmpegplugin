@@ -17,37 +17,37 @@ package au.com.nicta.openshapa.db;
  * matrix and predicate argument lists.
  *
  *                                                      JRM -- 2/13/07
- * 
+ *
  *
  * @author mainzer
  */
 public class QuoteStringFormalArg extends FormalArgument
 {
-    
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /**     
+    /**
      *
-     * subRange: Boolean flag indicating whether the formal argument can be 
-     *      replaced by any valid quote string, or only by some quote string 
-     *      that meets some criteria.  
-     * 
+     * subRange: Boolean flag indicating whether the formal argument can be
+     *      replaced by any valid quote string, or only by some quote string
+     *      that meets some criteria.
+     *
      *      At present, subRange will always be false, as we have no immediate
      *      plans to support subrange types on quote strings.
      */
-    
+
     boolean subRange = false;
-    
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * QuoteStringFormalArg()
      *
-     * Constructors for quote string typed formal arguments.  
+     * Constructors for quote string typed formal arguments.
      *
      * Three versions of this constructor -- one that takes no arguments, one
      * that takes the formal argument name as a parameter, and one that takes
@@ -59,99 +59,99 @@ public class QuoteStringFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
 
-    public QuoteStringFormalArg(Database db) 
+    public QuoteStringFormalArg(Database db)
         throws SystemErrorException
     {
-        
+
         super(db);
-        
+
         this.fargType = fArgType.QUOTE_STRING;
-        
+
     } /* QuoteStringFormalArg() -- no parameters */
-    
+
     public QuoteStringFormalArg(Database db,
-                                String name) 
+                                String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-        
+
         this.fargType = fArgType.QUOTE_STRING;
-        
+
     } /* QuoteStringFormalArg() -- one parameter */
-    
+
     public QuoteStringFormalArg(QuoteStringFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "QuoteStringFormalArg::QuoteStringFormalArg(): ";  
-        
+        final String mName = "QuoteStringFormalArg::QuoteStringFormalArg(): ";
+
         this.fargType = fArgType.QUOTE_STRING;
-        
+
         if ( ! ( fArg instanceof QuoteStringFormalArg ) )
         {
             throw new SystemErrorException(mName + "fArg not a QuoteStringFormalArg");
         }
-        
+
         // copy over fields.
-        
+
         this.subRange = fArg.getSubRange();
 
     } /* QuoteStringFormalArg() -- make copy */
-    
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-      
+
     /**
      * getSubRange()
      *
-     * Accessor routine used to obtain the current value of the subRange. 
+     * Accessor routine used to obtain the current value of the subRange.
      *
      *                                          JRM -- 2/13/07
      *
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
-    
-    public boolean getSubRange() 
-    { 
+
+    public boolean getSubRange()
+    {
         return subRange;
     }
-     
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of QuoteStringDataValue initialized from salvage if 
-     * possible, and to the default for newly created instances of 
+     * Return an instance of QuoteStringDataValue initialized from salvage if
+     * possible, and to the default for newly created instances of
      * QuoteStringDataValue otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
         QuoteStringDataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new QuoteStringDataValue(this.db, this.id); 
+            retVal = new QuoteStringDataValue(this.db, this.id);
         }
         else if ( salvage instanceof QuoteStringDataValue )
         {
@@ -160,7 +160,7 @@ public class QuoteStringFormalArg extends FormalArgument
         }
         else if ( salvage instanceof NominalDataValue )
         {
-            retVal = new QuoteStringDataValue(this.db, this.id, 
+            retVal = new QuoteStringDataValue(this.db, this.id,
                                     ((NominalDataValue)salvage).getItsValue());
         }
         else if ( ( salvage instanceof TextStringDataValue ) &&
@@ -168,43 +168,43 @@ public class QuoteStringFormalArg extends FormalArgument
                   ( Database.IsValidQuoteString
                      (((TextStringDataValue)salvage).getItsValue())))
         {
-            retVal = new QuoteStringDataValue(this.db, this.id, 
+            retVal = new QuoteStringDataValue(this.db, this.id,
                                 ((TextStringDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new QuoteStringDataValue(this.db, this.id); 
+            retVal = new QuoteStringDataValue(this.db, this.id);
         }
-        
+
         return retVal;
-        
+
     } /* QuoteStringDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of QuoteStringDataValue initialized as appropriate for 
+     * Return an instance of QuoteStringDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new QuoteStringDataValue(this.db, this.id);
-         
+
      } /* QuoteStringFormalArg::constructEmptyArg() */
 
 
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -216,28 +216,28 @@ public class QuoteStringFormalArg extends FormalArgument
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
+
         return ("(QuoteStringFormalArg " + getID() + " " + getFargName() + ")");
-        
+
     } /* QuoteStringFormalArg::toDBString() */
-    
-     
+
+
     /**
      * isValidValue() -- Override of abstract method in FormalArgument
-     * 
-     * Boolean metho that returns true iff the provided value is an acceptable 
+     *
+     * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
-     * 
+     *
      *                                             JRM -- 2/5/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
@@ -245,16 +245,16 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             return false;
         }
-      
+
         return true;
-        
+
     } /*  QuoteStringFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -266,7 +266,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -287,26 +287,26 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -314,7 +314,7 @@ public class QuoteStringFormalArg extends FormalArgument
                     outStream.print(
                             "new QuoteStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new QuoteStringFormalArg(db) threw " +
@@ -323,27 +323,27 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("AbstractFormalArgument.TestAccessors." +
@@ -351,17 +351,17 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* QuoteStringFormalArg adds only subRange, and does not allow its
-         * value to be modified.  Thus all we need to do is verify that 
-         * arg.getSubRange() is false, and we are done. 
+         * value to be modified.  Thus all we need to do is verify that
+         * arg.getSubRange() is false, and we are done.
          */
         if ( failures == 0 )
         {
             if ( arg.getSubRange() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -370,7 +370,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-         
+
         if ( failures > 0 )
         {
             pass = false;
@@ -399,23 +399,23 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -436,26 +436,26 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -463,7 +463,7 @@ public class QuoteStringFormalArg extends FormalArgument
                     outStream.print(
                             "new QuoteStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new QuoteStringFormalArg(db) threw " +
@@ -472,18 +472,18 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -492,7 +492,7 @@ public class QuoteStringFormalArg extends FormalArgument
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -500,7 +500,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -529,12 +529,12 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassQuoteStringFormalArg()
      *
@@ -546,7 +546,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassQuoteStringFormalArg(
             java.io.PrintStream outStream,
             boolean verbose)
@@ -554,44 +554,44 @@ public class QuoteStringFormalArg extends FormalArgument
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class QuoteStringFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -604,24 +604,24 @@ public class QuoteStringFormalArg extends FormalArgument
             outStream.print(
                     "All tests passed for class QuoteStringFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestClassQuoteStringFormalArg() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 3/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -643,26 +643,26 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -670,7 +670,7 @@ public class QuoteStringFormalArg extends FormalArgument
                     outStream.print(
                             "new QuoteStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new QuoteStringFormalArg(db) threw " +
@@ -681,11 +681,11 @@ public class QuoteStringFormalArg extends FormalArgument
         }
 
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -693,13 +693,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -708,13 +708,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -722,7 +722,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
@@ -743,9 +743,9 @@ public class QuoteStringFormalArg extends FormalArgument
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( arg != null ) || 
+            if ( ( arg != null ) ||
                  ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) ) 
+                 ( ! threwSystemErrorException ) )
             {
                 failures++;
 
@@ -771,7 +771,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -800,24 +800,24 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      *                                              JRM -- 3/13/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -837,22 +837,22 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -861,7 +861,7 @@ public class QuoteStringFormalArg extends FormalArgument
                             "\"new QuoteStringFormalArg(db, \"<valid>\") " +
                             "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print(
@@ -870,13 +870,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -884,13 +884,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -899,13 +899,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf(
@@ -917,23 +917,23 @@ public class QuoteStringFormalArg extends FormalArgument
         /* Verify that the constructor fails when passed an invalid db */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -942,7 +942,7 @@ public class QuoteStringFormalArg extends FormalArgument
                             "\"new QuoteStringFormalArg(null, \"<valid>\") "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -951,29 +951,29 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-       
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -982,7 +982,7 @@ public class QuoteStringFormalArg extends FormalArgument
                             "\"new QuoteStringFormalArg(db, \"<<invalid>>\") "
                             + "!= null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print(
@@ -991,7 +991,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1020,16 +1020,16 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      *                                          JRM 3/13/07
@@ -1038,7 +1038,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1060,25 +1060,25 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of QuoteStringFormalArg to be copied: */
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase(), "<copy_this>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1087,7 +1087,7 @@ public class QuoteStringFormalArg extends FormalArgument
                             "\"new QuoteStringFormalArg(db, \"<copy_this>\") " +
                             "returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print(
@@ -1096,25 +1096,25 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setHidden(true);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("\"arg.setHidden(true)\" threw a " +
@@ -1124,17 +1124,17 @@ public class QuoteStringFormalArg extends FormalArgument
             else if ( ! arg.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg */
-        
+
         if ( failures == 0 )
         {
             copyArg = null;
@@ -1150,7 +1150,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg == null ) || 
+            if ( ( copyArg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1171,15 +1171,15 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         /* verify that the copy is good */
-        
+
         if ( failures == 0 )
         {
             if ( arg == copyArg )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg == copyArg) ==> " +
@@ -1187,13 +1187,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getFargName().compareTo(copyArg.getFargName()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.fargName = \"%s\" != \" " +
@@ -1202,13 +1202,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != copyArg.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.hidden = %b != " +
@@ -1217,13 +1217,13 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != copyArg.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.getItsVocabElement() != \" " +
@@ -1233,7 +1233,7 @@ public class QuoteStringFormalArg extends FormalArgument
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -1252,7 +1252,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1273,15 +1273,15 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of QuoteStringFormalArg, 
+
+        /* now corrupt the fargName field of and instance of QuoteStringFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -1294,7 +1294,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1316,7 +1316,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1345,12 +1345,12 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -1366,7 +1366,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -1437,26 +1437,26 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new QuoteStringFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1464,7 +1464,7 @@ public class QuoteStringFormalArg extends FormalArgument
                     outStream.print(
                             "new QuoteStringFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new QuoteStringFormalArg(db) threw " +
@@ -1473,7 +1473,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
             }
         }
-        
+
         if ( arg != null )
         {
             while ( testNum < numTestObjects )
@@ -1481,7 +1481,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 if ( verbose )
                 {
                     outStream.printf("test %d: arg.isValidValue(%s) --> %b: ",
-                            testNum, testDesc[testNum], 
+                            testNum, testDesc[testNum],
                             expectedResult[testNum]);
                 }
 
@@ -1494,7 +1494,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 }
                 catch (SystemErrorException e)
                 {
-                    threwSystemErrorException = true; 
+                    threwSystemErrorException = true;
                 }
 
                 if ( ( threwSystemErrorException ) ||
@@ -1521,8 +1521,8 @@ public class QuoteStringFormalArg extends FormalArgument
                 testNum++;
             }
         }
-        
-        /* Now verify that isValidValue() throws a system error when passed 
+
+        /* Now verify that isValidValue() throws a system error when passed
          * a null.
          */
 
@@ -1546,7 +1546,7 @@ public class QuoteStringFormalArg extends FormalArgument
             }
             catch (SystemErrorException e)
             {
-                threwSystemErrorException = true; 
+                threwSystemErrorException = true;
             }
 
             if ( ( result != false ) ||
@@ -1578,7 +1578,7 @@ public class QuoteStringFormalArg extends FormalArgument
 
             testNum++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1607,12 +1607,12 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -1624,7 +1624,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1645,7 +1645,7 @@ public class QuoteStringFormalArg extends FormalArgument
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -1660,7 +1660,7 @@ public class QuoteStringFormalArg extends FormalArgument
                 threwSystemErrorException = true;
             }
 
-            if ( ( arg == null ) || 
+            if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1681,11 +1681,11 @@ public class QuoteStringFormalArg extends FormalArgument
                                 "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( arg != null )
         {
             if ( arg.toString().compareTo("<test>") != 0 )
@@ -1696,10 +1696,10 @@ public class QuoteStringFormalArg extends FormalArgument
                         arg.toString());
             }
         }
-        
+
         if ( arg != null )
         {
-            if ( arg.toDBString().compareTo("(QuoteStringFormalArg 0 <test>)") 
+            if ( arg.toDBString().compareTo("(QuoteStringFormalArg 0 <test>)")
                  != 0 )
             {
                 failures++;
@@ -1708,7 +1708,7 @@ public class QuoteStringFormalArg extends FormalArgument
                         arg.toDBString());
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1739,7 +1739,7 @@ public class QuoteStringFormalArg extends FormalArgument
         }
 
         return pass;
-        
+
     } /* QuoteStringFormalArg::TestToStringMethods() */
-    
+
 } /* class QuoteStringFormalArg */

@@ -13,12 +13,12 @@ package au.com.nicta.openshapa.disc.editors;
  */
 public class IntegerEditor extends Editor
 {
-  
+
   /**
    * Creates a new instance of IntegerEditor
    */
   public IntegerEditor()
   {
   } // End of IntegerEditor Constructor
-  
+
 } //End of IntegerEditor class definition

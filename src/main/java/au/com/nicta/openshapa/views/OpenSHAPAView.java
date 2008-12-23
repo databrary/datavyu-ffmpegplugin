@@ -106,7 +106,7 @@ implements KeyEventDispatcher {
      * Action for invoking a script.
      */
     @Action
-    public void runScript() {        
+    public void runScript() {
         FileDialog c = new FileDialog(OpenSHAPA.getApplication().getMainFrame(),
                                       "Select ruby script file:",
                                       FileDialog.LOAD);

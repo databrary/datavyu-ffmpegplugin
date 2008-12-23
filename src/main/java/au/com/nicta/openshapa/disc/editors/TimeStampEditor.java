@@ -13,12 +13,12 @@ package au.com.nicta.openshapa.disc.editors;
  */
 public class TimeStampEditor extends Editor
 {
-  
+
   /**
    * Creates a new instance of TimeStampEditor
    */
   public TimeStampEditor()
   {
   } // End of TimeStampEditor Constructor
-  
+
 } //End of TimeStampEditor class definition

@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class NominalDataValue.
- * 
+ *
  * @author cfreeman
  */
 public class NominalDataValueTest extends DataValueTest {

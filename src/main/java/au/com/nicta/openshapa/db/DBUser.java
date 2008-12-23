@@ -18,10 +18,10 @@ public class DBUser
 
   /** User name */
   private String username;
-  
+
   /** Level flags */
   private int flags;
-  
+
   /**
    * Creates a new instance of DBUser
    * @param id the database userid

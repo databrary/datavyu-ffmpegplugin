@@ -1,10 +1,10 @@
 /*
  * UnTypedFormalArg.java
  *
- * Untyped formal argument in a matrix or predicate argument list.  
+ * Untyped formal argument in a matrix or predicate argument list.
  *
  * This is the old style MacSHAPA formal argument that can be replaced
- * with a value of integer, floating point, text, nominal, or predicate 
+ * with a value of integer, floating point, text, nominal, or predicate
  * type.
  *
  * Created on January 25, 2007, 4:50 PM
@@ -19,27 +19,27 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class UnTypedFormalArg 
-        extends FormalArgument         
+public class UnTypedFormalArg
+        extends FormalArgument
 {
-       
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    
+
     // None.
-     
-    
+
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-    
-    /** 
+
+    /**
      * UnTypedFormalArg()
      *
-     * Constructors for un-typed formal arguments.  
+     * Constructors for un-typed formal arguments.
      *
-     * Three versions of this constructor -- one that takes a formal 
+     * Three versions of this constructor -- one that takes a formal
      * argument name, one that doesn't, and one that accepts another
      * instance of UnTypedFormalArg and creates a copy.
      *
@@ -49,79 +49,79 @@ public class UnTypedFormalArg
      *
      *                                          JRM -- 1/25/07
      */
-    
-    public UnTypedFormalArg(Database db) 
+
+    public UnTypedFormalArg(Database db)
         throws SystemErrorException
     {
         super(db);
-        
+
         this.fargType = fArgType.UNTYPED;
-        
+
     } /* UnTypedFormalArg() -- one argument */
-    
+
     public UnTypedFormalArg(Database db,
                             String name)
         throws SystemErrorException
     {
-        
+
         super(db, name);
-        
+
         this.fargType = fArgType.UNTYPED;
 
     } /* UnTypedFormalArg() -- two arguments */
-    
+
     public UnTypedFormalArg(UnTypedFormalArg fArg)
-        throws SystemErrorException    
+        throws SystemErrorException
     {
         super(fArg);
 
-        final String mName = "UnTypedFormalArg::UnTypedFormalArg(): ";  
-        
+        final String mName = "UnTypedFormalArg::UnTypedFormalArg(): ";
+
         this.fargType = fArgType.UNTYPED;
-        
+
         if ( ! ( fArg instanceof UnTypedFormalArg ) )
         {
             throw new SystemErrorException(mName + "fArg not a UnTypedFormalArg");
         }
-        
+
         // copy over fields -- none in this case.
 
     } /* UnTypedFormalArg() -- make copy */
-       
-        
+
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-    
+
     // None.
-     
-        
+
+
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-    
+
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
-     * Return an instance of DataValue initialized from salvage if 
-     * possible, and an instance UndefinedDataValue initialized with the 
+     * Return an instance of DataValue initialized from salvage if
+     * possible, and an instance UndefinedDataValue initialized with the
      * formal argument name otherwise.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
-        final String mName = "UnTypedFormalArg::constructArgWithSalvage(): ";  
+        final String mName = "UnTypedFormalArg::constructArgWithSalvage(): ";
         DataValue retVal;
-        
+
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal =  new UndefinedDataValue(this.db, this.id, 
+            retVal =  new UndefinedDataValue(this.db, this.id,
                                              this.getFargName());
         }
         else if ( salvage instanceof ColPredDataValue )
@@ -152,17 +152,17 @@ public class UnTypedFormalArg
         else if ( salvage instanceof TextStringDataValue )
         {
             TextStringDataValue textDV = (TextStringDataValue)salvage;
-            
+
             if ( this.db.IsValidQuoteString(textDV.getItsValue()) )
             {
-                retVal = new QuoteStringDataValue(this.db, this.id, 
+                retVal = new QuoteStringDataValue(this.db, this.id,
                                                   textDV.getItsValue());
             }
             else
             {
                 // todo: Think of coercing the text string into a quote string
                 //       instead of just discarding it.
-                retVal =  new UndefinedDataValue(this.db, this.id, 
+                retVal =  new UndefinedDataValue(this.db, this.id,
                                              this.getFargName());
             }
         }
@@ -178,43 +178,43 @@ public class UnTypedFormalArg
         }
         else if ( salvage instanceof UndefinedDataValue )
         {
-            retVal =  new UndefinedDataValue(this.db, this.id, 
+            retVal =  new UndefinedDataValue(this.db, this.id,
                                              this.getFargName());
         }
         else
         {
             throw new SystemErrorException(mName + "salvage of unknown type");
         }
-        
+
         return retVal;
-        
+
     } /* UnTypedDataValue::constructArgWithSalvage(salvage) */
-    
-    
+
+
     /**
      * constructEmptyArg()  Override of abstract method in FormalArgument
      *
-     * Return an instance of UndefinedDataValue initialized with the 
+     * Return an instance of UndefinedDataValue initialized with the
      * formal argument name.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
-         
+
          return new UndefinedDataValue(this.db, this.id, this.getFargName());
-         
+
      } /* UnTypedFormalArg::constructEmptyArg() */
 
 
     /**
      * toDBString() -- Override of abstract method in DataValue
-     * 
-     * Returns a database String representation of the DBValue for comparison 
+     *
+     * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -224,36 +224,36 @@ public class UnTypedFormalArg
      * Changes:
      *
      *    - None.
-     *      
+     *
      */
     public String toDBString() {
-        
+
         return ("(UnTypedFormalArg " + getID() + " " + getFargName() + ")");
-        
+
     } /* UnTypedFormalArg::toDBString() */
-    
-    
+
+
     /**
      * isValidValue() -- Overide abstract method in FormalArgument
-     * 
-     * Boolean method that returns true iff the provided value is an acceptable 
-     * value to be assigned to this formal argument. 
-     * 
+     *
+     * Boolean method that returns true iff the provided value is an acceptable
+     * value to be assigned to this formal argument.
+     *
      * Note that the method will not accept valid text strings -- these can
      * only be used to replace instance of class TextStringFormalArg.
-     * 
+     *
      *                                             JRM -- 2/5/07
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
         String mName = "UnTypedFormalArg::isValidValue()";
-        
+
         if ( ( Database.IsValidInt(obj) ) ||
              ( Database.IsValidFloat(obj) ) ||
              ( Database.IsValidNominal(obj) ) ||
@@ -261,19 +261,19 @@ public class UnTypedFormalArg
         {
             return true;
         }
-        
+
         if ( Database.IsValidTimeStamp(obj) )
         {
             TimeStamp ts;
-            
+
             ts = (TimeStamp)obj;
-            
+
             if ( ts.getTPS() == this.db.getTicks() )
             {
                 return true;
             }
         }
-        
+
         if ( obj instanceof Predicate )
         {
             long pveID;
@@ -281,24 +281,24 @@ public class UnTypedFormalArg
             Predicate pred = null;
 
             pred = (Predicate)obj;
-            
+
             if ( pred.getDB() != this.db )
             {
                 return false;
             }
-            
+
             pveID = pred.getPveID();
-            
+
             if ( pveID != DBIndex.INVALID_ID )
             {
                 // lookup the target pve.  Throw a system error if
                 // the target pve doesn't exist.
-                
+
                 dbe = this.db.idx.getElement(pveID);
 
                 if ( dbe == null )
                 {
-                    throw new SystemErrorException(mName + 
+                    throw new SystemErrorException(mName +
                                                    "pveID has no referent");
                 }
 
@@ -311,16 +311,16 @@ public class UnTypedFormalArg
 
             return true;
         }
-        
+
         return false;
-        
+
     } /* UnTypedFormalArg::isValidValue() */
 
-    
+
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/
-    
+
     /**
      * TestAccessors()
      *
@@ -330,7 +330,7 @@ public class UnTypedFormalArg
      *
      *    - None.
      */
-    
+
     public static boolean TestAccessors(java.io.PrintStream outStream,
                                         boolean verbose)
     {
@@ -352,29 +352,29 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
             arg = null;
-            
+
             try
             {
                 arg = new UnTypedFormalArg(new ODBCDatabase());
             }
-            
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( arg == null )
@@ -382,7 +382,7 @@ public class UnTypedFormalArg
                         outStream.print(
                                 "new UnTypedFormalArg(db) returned null.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("new UnTypedFormalArg(db) " +
@@ -392,27 +392,27 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         /* test the inherited accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += 
+                failures +=
                         FormalArgument.TestAccessors(arg, outStream, verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("AbstractFormalArgument.TestAccessors." +
@@ -420,9 +420,9 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         /* UnTypedFormalArgument adds no new fields, so we are done. */
-         
+
         if ( failures > 0 )
         {
             pass = false;
@@ -451,23 +451,23 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::TestAccessors() */
-    
-    
+
+
     /**
      * TestVEAccessors()
      *
-     * Run a battery of tests on the itsVocabElement and itsVocabElementID 
+     * Run a battery of tests on the itsVocabElement and itsVocabElementID
      * accessor methods for this class.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestVEAccessors(java.io.PrintStream outStream,
                                           boolean verbose)
     {
@@ -488,26 +488,26 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
-        
+
         try
         {
             arg = new UnTypedFormalArg(new ODBCDatabase());
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg == null ) || ( threwSystemErrorException ) ) 
+
+        if ( ( arg == null ) || ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -515,7 +515,7 @@ public class UnTypedFormalArg
                     outStream.print(
                             "new UnTypedFormalArg(db) returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.printf("new UnTypedFormalArg(db) threw " +
@@ -524,18 +524,18 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         /* test the itsVocabElement & itsVocabElementID accessors */
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
-                failures += FormalArgument.TestVEAccessors(arg, outStream, 
+                failures += FormalArgument.TestVEAccessors(arg, outStream,
                                                            verbose);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
@@ -544,7 +544,7 @@ public class UnTypedFormalArg
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("FormalArgument.TestVEAccessors()" +
@@ -552,7 +552,7 @@ public class UnTypedFormalArg
                 }
             }
         }
-                
+
         if ( failures > 0 )
         {
             pass = false;
@@ -581,12 +581,12 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::TestVEAccessors() */
 
-    
+
     /**
      * TestClassUnTypedFormalArg()
      *
@@ -598,7 +598,7 @@ public class UnTypedFormalArg
      *
      *    - Non.
      */
-    
+
     public static boolean TestClassUnTypedFormalArg(
             java.io.PrintStream outStream,
             boolean verbose)
@@ -606,44 +606,44 @@ public class UnTypedFormalArg
     {
         boolean pass = true;
         int failures = 0;
-        
+
         outStream.print("Testing class UnTypedFormalArg:\n");
-        
+
         if ( ! Test1ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! Test2ArgConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestCopyConstructor(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestVEAccessors(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestIsValidValue(outStream, verbose) )
         {
             failures++;
         }
-        
+
         if ( ! TestToStringMethods(outStream, verbose) )
         {
             failures++;
         }
-       
+
         if ( failures > 0 )
         {
             pass = false;
@@ -654,22 +654,22 @@ public class UnTypedFormalArg
         {
             outStream.print("All tests passed for class UnTypedFormalArg.\n\n");
         }
-        
+
         return pass;
-        
+
     } /* Database::TestDatabase() */
-    
+
     /**
      * Test1ArgConstructor()
-     * 
-     * Run a battery of tests on the one argument constructor for this 
+     *
+     * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -691,32 +691,32 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             methodReturned = false;
             threwSystemErrorException = false;
             arg = null;
             systemErrorExceptionString = null;
-                    
+
             try
             {
                 arg = new UnTypedFormalArg(new ODBCDatabase());
                 methodReturned = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( ! methodReturned ) ||
                  ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( ! methodReturned )
@@ -724,13 +724,13 @@ public class UnTypedFormalArg
                         outStream.print(
                                 "new UntypedFormalArg(db) failed to return.\n");
                     }
-                    
+
                     if ( arg == null )
                     {
                         outStream.print(
                                 "new UntypedFormalArg(db) returned null.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("new UntypedFormalArg(db) threw " +
@@ -740,13 +740,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<val>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -754,13 +754,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -768,21 +768,21 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
-        
+
+
         /* Verify that the constructor fails when passed an invalid db. */
         if ( failures == 0 )
         {
@@ -790,25 +790,25 @@ public class UnTypedFormalArg
             threwSystemErrorException = false;
             arg = null;
             systemErrorExceptionString = null;
-                    
+
             try
             {
                 arg = new UnTypedFormalArg((Database)null);
                 methodReturned = true;
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
-            
+
             if ( ( methodReturned ) ||
                  ( arg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( methodReturned )
@@ -816,13 +816,13 @@ public class UnTypedFormalArg
                         outStream.print(
                                 "new UntypedFormalArg(null) returned.\n");
                     }
-                    
+
                     if ( arg != null )
                     {
                         outStream.print(
                              "new UntypedFormalArg(null) returned non-null.\n");
                     }
-                    
+
                     if ( threwSystemErrorException )
                     {
                         outStream.print("new UntypedFormalArg(db) failed to " +
@@ -831,7 +831,7 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -860,22 +860,22 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::Test1ArgConstructor() */
-    
+
     /**
      * Test2ArgConstructor()
-     * 
-     * Run a battery of tests on the two argument constructor for this 
+     *
+     * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
-     * 
+     *
      * Changes:
-     * 
+     *
      *    - None.
      */
-    
+
     public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -896,22 +896,22 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         try
         {
             arg = new UnTypedFormalArg(new ODBCDatabase(), "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -919,7 +919,7 @@ public class UnTypedFormalArg
                     outStream.print(
                         "new UnTypedFormalArg(db, \"<valid>\")\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new UnTypedFormalArg(db, \"<valid>\")\" " +
@@ -927,13 +927,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
-        {            
+        {
             if ( arg.getFargName().compareTo("<valid>") != 0 )
             {
                 failures++;
-            
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial fArgName \"%s\".\n",
@@ -941,13 +941,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != false )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("Unexpected initial value of hidden: %b.\n",
@@ -955,42 +955,42 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != null )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.printf("itsVocabElement not initialzed to null.\n");
                 }
             }
         }
-        
+
         /* Verify that the constructor fails when passed an invalid db. */
         arg = null;
         systemErrorExceptionString = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new UnTypedFormalArg(null, "<valid>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -998,7 +998,7 @@ public class UnTypedFormalArg
                     outStream.print(
                         "new UnTypedFormalArg(null, \"<valid>\")\" != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new UnTypedFormalArg(null, \"<valid>\")\""
@@ -1006,31 +1006,31 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
-        /* now verify that the constructor fails when passed an invalid 
+
+        /* now verify that the constructor fails when passed an invalid
          * formal argument name.
          */
         arg = null;
         systemErrorExceptionString = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new UnTypedFormalArg(new ODBCDatabase(), "<<invalid>>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
-        
-        if ( ( arg != null ) || 
+
+        if ( ( arg != null ) ||
              ( ! threwSystemErrorException ) )
         {
             failures++;
-            
-            
+
+
             if ( verbose )
             {
                 if ( arg != null )
@@ -1038,7 +1038,7 @@ public class UnTypedFormalArg
                     outStream.print(
                         "new UnTypedFormalArg(db, \"<<valid>>\") != null.\n");
                 }
-                
+
                 if ( ! threwSystemErrorException )
                 {
                     outStream.print("new UnTypedFormalArg(db, \"<<invalid>>\") "
@@ -1046,7 +1046,7 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1075,23 +1075,23 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::Test2ArgConstructor() */
 
-    
+
     /**
      * TestCopyConstructor()
      *
-     * Run a battery of tests on the copy constructor for this 
+     * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     public static boolean TestCopyConstructor(java.io.PrintStream outStream,
                                               boolean verbose)
     {
@@ -1113,25 +1113,25 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         /* first set up the instance of UnTypedFormalArg to be copied: */
         threwSystemErrorException = false;
-        
+
         try
         {
             arg = new UnTypedFormalArg(new ODBCDatabase(), "<copy_this>");
         }
-        
+
         catch (SystemErrorException e)
         {
             threwSystemErrorException = true;
         }
-        
-        if ( ( arg == null ) || 
+
+        if ( ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( arg == null )
@@ -1139,7 +1139,7 @@ public class UnTypedFormalArg
                     outStream.print(
                         "new UnTypedFormalArg(\"<copy_this>\")\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new UnTypedFormalArg(\"<copy_this>\")\" " +
@@ -1147,25 +1147,25 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
-            
+
             try
             {
                 arg.setHidden(true);
             }
-        
+
             catch (SystemErrorException e)
             {
                 threwSystemErrorException = true;
             }
-            
+
             if ( threwSystemErrorException )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("\"arg.setHidden(true)\" threw a " +
@@ -1175,17 +1175,17 @@ public class UnTypedFormalArg
             else if ( ! arg.getHidden() )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("Unexpected value of arg.hidden.\n");
                 }
             }
         }
-        
-        
+
+
         /* Now, try to make a copy of arg */
-        
+
         if ( failures == 0 )
         {
             copyArg = null;
@@ -1201,7 +1201,7 @@ public class UnTypedFormalArg
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg == null ) || 
+            if ( ( copyArg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1222,15 +1222,15 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         /* verify that the copy is good */
-        
+
         if ( failures == 0 )
         {
             if ( arg == copyArg )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     outStream.print("(arg == copyArg) ==> " +
@@ -1238,13 +1238,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getFargName().compareTo(copyArg.getFargName()) != 0 )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.fargName = \"%s\" != \" " +
@@ -1253,13 +1253,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getHidden() != copyArg.getHidden() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.hidden = %b != " +
@@ -1268,13 +1268,13 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             if ( arg.getItsVocabElement() != copyArg.getItsVocabElement() )
             {
                 failures++;
-                        
+
                 if ( verbose )
                 {
                     outStream.printf("arg.getItsVocabElement() != \" " +
@@ -1284,7 +1284,7 @@ public class UnTypedFormalArg
         }
 
         /* now verify that we fail when we should */
-        
+
         /* first ensure that the copy constructor failes when passed null */
         if ( failures == 0 )
         {
@@ -1303,7 +1303,7 @@ public class UnTypedFormalArg
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1324,15 +1324,15 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
-        /* now corrupt the fargName field of and instance of UnTypedFormalArg, 
+
+        /* now corrupt the fargName field of and instance of UnTypedFormalArg,
          * and verify that this causes a copy to fail.
          */
         if ( failures == 0 )
         {
             copyArg = null;
             threwSystemErrorException = false;
-            
+
             munged.fargName = "<an invalid name>";
 
             try
@@ -1345,7 +1345,7 @@ public class UnTypedFormalArg
                 threwSystemErrorException = true;
             }
 
-            if ( ( copyArg != null ) || 
+            if ( ( copyArg != null ) ||
                  ( ! threwSystemErrorException ) )
             {
                 failures++;
@@ -1366,7 +1366,7 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1395,12 +1395,12 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::TestCopyConstructor() */
-    
-    
+
+
     /**
      * TestIsValidValue()
      *
@@ -1416,7 +1416,7 @@ public class UnTypedFormalArg
      *
      *    - None.
      */
-    
+
     public static boolean TestIsValidValue(java.io.PrintStream outStream,
                                            boolean verbose)
         throws SystemErrorException
@@ -1496,40 +1496,40 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         arg = null;
         threwSystemErrorException = false;
-        
+
         try
         {
             db = new ODBCDatabase();
             arg = new UnTypedFormalArg(db);
         }
-        
+
         catch (SystemErrorException e)
         {
-            threwSystemErrorException = true; 
+            threwSystemErrorException = true;
         }
-        
-        if ( ( db == null ) || 
-             ( arg == null ) || 
+
+        if ( ( db == null ) ||
+             ( arg == null ) ||
              ( threwSystemErrorException ) )
         {
             failures++;
-            
+
             if ( verbose )
             {
                 if ( db == null )
                 {
                     outStream.printf("allocation of db failed.\n");
                 }
-                
+
                 if ( arg == null )
                 {
                     outStream.print(
                             "new UnTypedFormalArg(db)\" returned null.\n");
                 }
-                
+
                 if ( threwSystemErrorException )
                 {
                     outStream.print("new UnTypedFormalArg(db) threw a system " +
@@ -1537,7 +1537,7 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
+
         if ( failures == 0 )
         {
             while ( testNum < numTestObjects )
@@ -1545,7 +1545,7 @@ public class UnTypedFormalArg
                 if ( verbose )
                 {
                     outStream.printf("test %d: arg.isValidValue(%s) --> %b: ",
-                            testNum, testDesc[testNum], 
+                            testNum, testDesc[testNum],
                             expectedResult[testNum]);
                 }
 
@@ -1558,7 +1558,7 @@ public class UnTypedFormalArg
                 }
                 catch (SystemErrorException e)
                 {
-                    threwSystemErrorException = true; 
+                    threwSystemErrorException = true;
                 }
 
                 if ( ( threwSystemErrorException ) ||
@@ -1585,8 +1585,8 @@ public class UnTypedFormalArg
                 testNum++;
             }
         }
-        
-        /* we must verify that we handle predicates correctly as well -- 
+
+        /* we must verify that we handle predicates correctly as well --
          * start by allocating some test predicates, and then run the tests
          */
         if ( failures == 0 )
@@ -1606,7 +1606,7 @@ public class UnTypedFormalArg
 
                 p = new Predicate(db, pveID);
 
-            
+
                 alt_db = new ODBCDatabase();
 
 
@@ -1630,7 +1630,7 @@ public class UnTypedFormalArg
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
-            
+
             if ( ( pve == null ) ||
                  ( pveID == DBIndex.INVALID_ID ) ||
                  ( p == null ) ||
@@ -1642,44 +1642,44 @@ public class UnTypedFormalArg
                  ( threwSystemErrorException ) )
             {
                 failures++;
-                
+
                 if ( verbose )
                 {
                     if ( pve == null )
                     {
                         outStream.printf("allocation of pve failed.\n");
                     }
-                    
+
                     if ( pveID == DBIndex.INVALID_ID )
                     {
                         outStream.printf("pveID == DBIndex.INVALID_ID.\n");
                     }
-                    
+
                     if ( p == null )
                     {
                         outStream.printf("allocation of p failed.\n");
                     }
-                    
+
                     if ( alt_db == null )
                     {
                         outStream.printf("allocation of alt_db failed.\n");
                     }
-                    
+
                     if ( alt_pve == null )
                     {
                         outStream.printf("allocation of alt_pve failed.\n");
                     }
-                    
+
                     if ( alt_pveID == DBIndex.INVALID_ID )
                     {
                         outStream.printf("alt_pveID == DBIndex.INVALID_ID.\n");
                     }
-                    
+
                     if ( alt_p == null )
                     {
                         outStream.printf("allocation of alt_p failed.\n");
                     }
-                    
+
                     if ( ! completed )
                     {
                         outStream.printf(
@@ -1689,7 +1689,7 @@ public class UnTypedFormalArg
                     if ( threwSystemErrorException )
                     {
                         outStream.printf("pred test setup threw a " +
-                                "SystemErrorException: \"%s\".\n", 
+                                "SystemErrorException: \"%s\".\n",
                                 systemErrorExceptionString);
                     }
                 }
@@ -1699,17 +1699,17 @@ public class UnTypedFormalArg
                 if ( ! arg.isValidValue(p) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("arg.isValidValue(p) is false.\n");
                     }
                 }
-                
+
                 if ( arg.isValidValue(alt_p) )
                 {
                     failures++;
-                    
+
                     if ( verbose )
                     {
                         outStream.printf("arg.isValidValue(alt_p) is true.\n");
@@ -1717,8 +1717,8 @@ public class UnTypedFormalArg
                 }
             }
         }
-        
-        /* Now verify that isValidValue() throws a system error when passed 
+
+        /* Now verify that isValidValue() throws a system error when passed
          * a null.
          */
 
@@ -1740,10 +1740,10 @@ public class UnTypedFormalArg
                 result = arg.isValidValue(null);
                 completed = true;
             }
-            
+
             catch (SystemErrorException e)
             {
-                threwSystemErrorException = true; 
+                threwSystemErrorException = true;
             }
 
             if ( ( result != false ) ||
@@ -1775,7 +1775,7 @@ public class UnTypedFormalArg
 
             testNum++;
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1804,12 +1804,12 @@ public class UnTypedFormalArg
         {
             outStream.print(failBanner);
         }
-        
+
         return pass;
-        
+
     } /* UnTypedFormalArg::TestIsValidValue() */
-    
-    
+
+
     /**
      * TestToStringMethods()
      *
@@ -1821,7 +1821,7 @@ public class UnTypedFormalArg
      *
      *    - None.
      */
-    
+
     public static boolean TestToStringMethods(java.io.PrintStream outStream,
                                               boolean verbose)
         throws SystemErrorException
@@ -1842,7 +1842,7 @@ public class UnTypedFormalArg
         {
             outStream.print("\n");
         }
-        
+
         if ( failures == 0 )
         {
             threwSystemErrorException = false;
@@ -1857,7 +1857,7 @@ public class UnTypedFormalArg
                 threwSystemErrorException = true;
             }
 
-            if ( ( arg == null ) || 
+            if ( ( arg == null ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -1876,11 +1876,11 @@ public class UnTypedFormalArg
                                          "threw a SystemErrorException.\n");
                     }
                 }
-                
+
                 arg = null;
             }
         }
-        
+
         if ( arg != null )
         {
             if ( arg.toString().compareTo("<test>") != 0 )
@@ -1891,10 +1891,10 @@ public class UnTypedFormalArg
                         arg.toString());
             }
         }
-        
+
         if ( arg != null )
         {
-            if ( arg.toDBString().compareTo("(UnTypedFormalArg 0 <test>)") 
+            if ( arg.toDBString().compareTo("(UnTypedFormalArg 0 <test>)")
                  != 0 )
             {
                 failures++;
@@ -1903,7 +1903,7 @@ public class UnTypedFormalArg
                         arg.toDBString());
             }
         }
-        
+
         if ( failures > 0 )
         {
             pass = false;
@@ -1934,7 +1934,7 @@ public class UnTypedFormalArg
         }
 
         return pass;
-        
+
     } /* UnTypedFormalArg::TestToStringMethods() */
-    
+
 } /* class UnTypedFormalArg */
