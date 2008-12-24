@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  * @author cfreeman
  */
 public class PredDataValueTest {
-    private Database db;
+    private static Database db;
     private MatrixVocabElement nom_mve;
     private NominalFormalArg nfa;
 
@@ -72,11 +72,12 @@ public class PredDataValueTest {
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
-        PredDataValue value0 =
-                                new PredDataValue(db);
+        PredDataValue value0 = new PredDataValue(db);
         PredDataValue copy = (PredDataValue) value0.clone();
 
         assertEquals(value0, copy);
+
+
     }
 
 
@@ -116,5 +117,38 @@ public class PredDataValueTest {
         assertTrue(value2.hashCode() == value3.hashCode());
  * */
     }
+
+
+    /**
+     * Test 1 arg constructor of class PredDataValue.
+     *
+     * @throws SystemErrorException on failure.
+     */
+    @Test
+    public void test1ArgConstructor() throws SystemErrorException {
+        PredDataValue value = new PredDataValue(db);
+
+        assertNotNull(db);
+        assertNotNull(value);
+
+        assertEquals(value.getDB(), db);
+
+        assertNotNull(db);
+        assertNotNull(value);
+        assertEquals(value.db, db);
+        assertEquals(value.getDB(), db);
+        assertEquals(value.id, DBIndex.INVALID_ID);
+        assertEquals(value.itsCellID, DBIndex.INVALID_ID);
+        assertEquals(value.itsFargID, DBIndex.INVALID_ID);
+        assertEquals(value.itsFargType, FormalArgument.fArgType.UNDEFINED);
+        assertEquals(value.lastModUID, DBIndex.INVALID_ID);
+        assertFalse(value.subRange);
+
+        // When building a PredDataValue, at one point setItsValue(null)
+        // is called - this actually sets it to an empty predicate
+        assertNotNull(value.itsValue);
+        assertTrue(value.itsValue.getPveID() == DBIndex.INVALID_ID);
+
+    } /* PredDataValue::Test1ArgConstructor() */
 
 }

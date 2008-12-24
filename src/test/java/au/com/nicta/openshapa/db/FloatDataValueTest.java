@@ -349,10 +349,15 @@ public class FloatDataValueTest {
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
-        FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 200.0);
-        FloatDataValue f_copy = (FloatDataValue) f_value0.clone();
+        FloatDataValue value0 = new FloatDataValue(db, ffa.getID(), 100.001);
+        FloatDataValue copy = (FloatDataValue) value0.clone();
 
-        //assertEquals(f_value0, f_copy);
+        assertEquals(value0, copy);
+
+        value0.setItsValue(value0.getItsValue() * 3.0);
+        copy.setItsValue(copy.getItsValue() * 3.0);
+
+        assertEquals(value0, copy);
     }
 
 

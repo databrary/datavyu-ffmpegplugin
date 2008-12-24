@@ -7060,6 +7060,8 @@ public class Predicate extends DBElement
     private final static int SEED4 = 13;
     /** Seed value for generating hash codes. */
     private final static int SEED5 = 17;
+    /** Seed value for generating hash codes. */
+    private final static int SEED6 = 19;
 
     /**
      * @return A hash code value for the object.
@@ -7068,10 +7070,11 @@ public class Predicate extends DBElement
     public int hashCode() {
         int hash = super.hashCode();
         hash += (int)(pveID ^ (pveID >>> 32)) * SEED1;
-        hash += (this.predName == null ? 0 : this.predName.hashCode()) * SEED2;
-        hash += (this.varLen ? 1 : 0) * SEED3;
-        hash += (int)(cellID ^ (cellID >>> 32)) * SEED4;
-        hash += (this.queryVarOK ? 1 : 0) * SEED5;
+        hash += (predName == null ? 0 : predName.hashCode()) * SEED2;
+        hash += (argList == null ? 0 : argList.hashCode()) * SEED3;
+        hash += (varLen ? 1 : 0) * SEED4;
+        hash += (int)(cellID ^ (cellID >>> 32)) * SEED5;
+        hash += (queryVarOK ? 1 : 0) * SEED6;
 
         return hash;
     }
@@ -7094,8 +7097,10 @@ public class Predicate extends DBElement
         // Must be this class to be here
         Predicate p = (Predicate) obj;
         return pveID == p.pveID
-                && ((predName == null && p.predName == null)
-                        || (predName != null && predName.equals(p.predName)))
+                && (predName == null ? p.predName == null
+                        : predName.equals(p.predName))
+                && (argList == null ? p.argList == null
+                        : argList.equals(p.argList))
                 && varLen == p.varLen
                 && cellID == p.cellID
                 && queryVarOK == p.queryVarOK
