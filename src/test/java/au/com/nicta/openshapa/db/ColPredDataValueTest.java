@@ -82,6 +82,22 @@ public class ColPredDataValueTest {
     }
 
     /**
+     * Test of updateForFargChange method, of class ColPredDataValue.
+     */
+    @Test
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+
+    /**
+     * Test of updateSubRange method, of class ColPredDataValue.
+     */
+    @Test
+    public void testUpdateSubRange() throws Exception {
+    }
+
+
+    /**
      * Test 1 arg constructor, of class ColPredDataValue.
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.

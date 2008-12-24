@@ -1,7 +1,6 @@
 package au.com.nicta.openshapa.db;
 
 import au.com.nicta.openshapa.db.FormalArgument.fArgType;
-import java.io.PrintStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -20,31 +19,13 @@ public abstract class DataValueTest {
      * Test of updateForFargChange method, of class DataValue.
      */
     @Test
-    public void testUpdateForFargChange() throws Exception {
-        System.out.println("updateForFargChange");
-        boolean fargNameChanged = false;
-        boolean fargSubRangeChanged = false;
-        boolean fargRangeChanged = false;
-        FormalArgument oldFA = null;
-        FormalArgument newFA = null;
-        DataValue instance = null;
-        instance.updateForFargChange(fargNameChanged, fargSubRangeChanged, fargRangeChanged, oldFA, newFA);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    public abstract void testUpdateForFargChange() throws Exception;
 
     /**
      * Test of updateSubRange method, of class DataValue.
      */
     @Test
-    public void testUpdateSubRange() throws Exception {
-        System.out.println("updateSubRange");
-        FormalArgument fa = null;
-        DataValue instance = null;
-        instance.updateSubRange(fa);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    public abstract void testUpdateSubRange() throws Exception;
 
     /**
      * Test of getItsFargID method, of class DataValue.
@@ -124,35 +105,21 @@ public abstract class DataValueTest {
     /**
      * Test of replaceInIndex method, of class DataValue.
      */
-    @Test
+    @Test (expected = SystemErrorException.class)
     public void testReplaceInIndex() throws Exception {
-        System.out.println("replaceInIndex");
-        DataValue old_dv = null;
-        long DCID = 0L;
-        boolean cascadeMveMod = false;
-        boolean cascadeMveDel = false;
-        long cascadeMveID = 0L;
-        boolean cascadePveMod = false;
-        boolean cascadePveDel = false;
-        long cascadePveID = 0L;
-        DataValue instance = null;
-        instance.replaceInIndex(old_dv, DCID, cascadeMveMod, cascadeMveDel, cascadeMveID, cascadePveMod, cascadePveDel, cascadePveID);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DataValue original = getInstance();
+        original.replaceInIndex(original, 5, false, false, 5, false, false, 5);
     }
 
     /**
      * Test of hashCode method, of class DataValue.
      */
     @Test
-    public void testHashCode() {
-        System.out.println("hashCode");
-        DataValue instance = null;
-        int expResult = 0;
-        int result = instance.hashCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testHashCode() throws CloneNotSupportedException {
+        DataValue original = getInstance();
+        DataValue copy = (DataValue) original.clone();
+
+        assertEquals(original.hashCode(), copy.hashCode());
     }
 
     /**
@@ -161,13 +128,11 @@ public abstract class DataValueTest {
     @Test
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
-        System.out.println("equals");
-        Object obj = null;
-        DataValue instance = null;
-        boolean expResult = false;
-        boolean result = instance.equals(obj);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DataValue original = getInstance();
+        DataValue copy = (DataValue) original.clone();
+
+        assertEquals(original, copy);
+        assertEquals(copy, original);
+        assertFalse(original.equals(null));        
     }
 }

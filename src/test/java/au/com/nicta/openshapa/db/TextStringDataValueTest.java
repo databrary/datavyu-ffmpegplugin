@@ -64,6 +64,25 @@ public class TextStringDataValueTest extends DataValueTest {
     }
 
     /**
+     * Test of updateForFargChange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+    /**
+     * Test of updateSubRange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateSubRange() throws Exception {
+        TextStringDataValue t_value = new TextStringDataValue(db, tfa.getID(),
+                                                              "bravo");
+        assertEquals(t_value.getSubRange(), false);
+    }
+
+    /**
      * Test 1 arg constructor, of class TextStringDataValue.
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
@@ -317,18 +336,6 @@ public class TextStringDataValueTest extends DataValueTest {
         assertEquals(t_value1.toDBString(), testDBString1);
     }
      */
-
-    /**
-     * Test of updateSubRange method, of class TextStringDataValue.
-     *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testUpdateSubRange() throws SystemErrorException {
-        TextStringDataValue t_value = new TextStringDataValue(db, tfa.getID(),
-                                                              "bravo");
-        assertEquals(t_value.getSubRange(), false);
-    }
 
     /**
      * Test of Construct method, of class TextStringDataValue.

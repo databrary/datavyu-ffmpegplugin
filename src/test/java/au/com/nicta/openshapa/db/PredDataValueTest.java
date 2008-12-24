@@ -74,6 +74,22 @@ public class PredDataValueTest extends DataValueTest {
     public void tearDown() {
     }
 
+        /**
+     * Test of updateForFargChange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+    /**
+     * Test of updateSubRange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateSubRange() throws Exception {
+    }
+
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {

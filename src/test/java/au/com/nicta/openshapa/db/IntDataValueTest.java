@@ -64,6 +64,23 @@ public class IntDataValueTest extends DataValueTest {
     }
 
     /**
+     * Test of updateForFargChange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+
+    /**
+     * Test of updateSubRange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateSubRange() throws Exception {
+    }
+
+    /**
      * Test 1 arg constructor, of class IntDataValue.
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.

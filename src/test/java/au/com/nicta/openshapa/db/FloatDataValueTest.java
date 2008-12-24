@@ -75,6 +75,23 @@ public class FloatDataValueTest extends DataValueTest {
     }
 
     /**
+     * Test of updateForFargChange method, of class FloatDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+
+    /**
+     * Test of updateSubRange method, of class FloatDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateSubRange() throws Exception {
+    }
+
+    /**
      * Test 1 arg constructor, of class FloatDataValue.
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.

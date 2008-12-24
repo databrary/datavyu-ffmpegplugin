@@ -36,6 +36,22 @@ public class UndefinedDataValueTest extends DataValueTest {
     }
 
     /**
+     * Test of updateForFargChange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateForFargChange() throws Exception {
+    }
+
+    /**
+     * Test of updateSubRange method, of class IntDataValue.
+     */
+    @Test
+    @Override
+    public void testUpdateSubRange() throws Exception {
+    }
+
+    /**
      * Test of getItsValue method, of class UndefinedDataValue.
      */
     @Test
@@ -75,36 +91,6 @@ public class UndefinedDataValueTest extends DataValueTest {
                         "(itsCellID 0) " +
                         "(itsValue <val>) " +
                         "(subRange false))");
-    }
-
-    /**
-     * Test of updateForFargChange method, of class UndefinedDataValue.
-     */
-    @Test
-    public void testUpdateForFargChange() throws Exception {
-        System.out.println("updateForFargChange");
-        boolean fargNameChanged = false;
-        boolean fargSubRangeChanged = false;
-        boolean fargRangeChanged = false;
-        FormalArgument oldFA = null;
-        FormalArgument newFA = null;
-        UndefinedDataValue instance = null;
-        instance.updateForFargChange(fargNameChanged, fargSubRangeChanged, fargRangeChanged, oldFA, newFA);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of updateSubRange method, of class UndefinedDataValue.
-     */
-    @Test
-    public void testUpdateSubRange() throws Exception {
-        System.out.println("updateSubRange");
-        FormalArgument fa = null;
-        UndefinedDataValue instance = null;
-        instance.updateSubRange(fa);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
