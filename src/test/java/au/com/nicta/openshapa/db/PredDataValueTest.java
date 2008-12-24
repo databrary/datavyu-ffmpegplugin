@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  * @author cfreeman
  */
 public class PredDataValueTest extends DataValueTest {
-    private Database db;
+    private static Database db;
     private MatrixVocabElement nom_mve;
     private NominalFormalArg nfa;
     private PredDataValue pdv;

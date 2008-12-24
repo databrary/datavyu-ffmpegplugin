@@ -364,7 +364,12 @@ public class IntDataValueTest extends DataValueTest {
         IntDataValue copy = (IntDataValue) value0.clone();
 
         assertEquals(value0, copy);
-    }
+
+        value0.setItsValue(value0.getItsValue() * 3);
+        copy.setItsValue(copy.getItsValue() * 3);
+
+        assertEquals(value0, copy);
+}
 
 
     @Test

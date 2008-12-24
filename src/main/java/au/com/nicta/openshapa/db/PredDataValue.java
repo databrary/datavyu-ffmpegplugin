@@ -79,6 +79,7 @@ public class PredDataValue extends DataValue
         throws SystemErrorException {
         super(db);
 
+        // calling setItsValue(null) actually sets it to an empty predicate
         this.setItsValue(null);
 
     } /* PredDataValue::PredDataValue(db) */

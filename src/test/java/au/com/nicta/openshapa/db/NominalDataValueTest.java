@@ -428,6 +428,11 @@ public class NominalDataValueTest extends DataValueTest {
         NominalDataValue copy = (NominalDataValue) value0.clone();
 
         assertEquals(value0, copy);
+
+        value0.setItsValue(value0.getItsValue() + "1");
+        copy.setItsValue(copy.getItsValue() + "1");
+
+        assertEquals(value0, copy);
     }
 
 
