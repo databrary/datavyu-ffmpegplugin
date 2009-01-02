@@ -7373,10 +7373,8 @@ public class ColPred extends DBElement
 
                     while ( ( i < num_args ) && ( colPredsAreEqual ) )
                     {
-                        colPredsAreEqual =
-                                DataValue.DataValuesAreLogicallyEqual
-                                         (cp0.argList.get(i),
-                                          cp1.argList.get(i));
+                        colPredsAreEqual = cp0.argList.get(i)
+                                                    .equals(cp1.argList.get(i));
                         i++;
                     }
                 }

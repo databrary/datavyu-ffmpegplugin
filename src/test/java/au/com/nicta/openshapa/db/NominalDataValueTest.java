@@ -398,28 +398,6 @@ public class NominalDataValueTest extends DataValueTest {
         assertEquals(test.getItsValue(), "alpha");
     }
 
-    /**
-     * Test of NominalDataValuesAreLogicallyEqual method, of class
-     * NominalDataValue.
-     *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testNominalDataValuesAreLogicallyEqual()
-    throws SystemErrorException {
-        NominalDataValue n_value0 = new NominalDataValue(db, nfa.getID(),
-                                                         "bravo");
-        NominalDataValue n_value1 = new NominalDataValue(db, ufa.getID(),
-                                                         "nero");
-        NominalDataValue n_copy = new NominalDataValue(n_value0);
-
-        assertTrue(NominalDataValue.
-                   NominalDataValuesAreLogicallyEqual(n_value0, n_copy));
-        assertFalse(NominalDataValue.
-                    NominalDataValuesAreLogicallyEqual(n_value0,n_value1));
-    }
-
-
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
@@ -434,7 +412,6 @@ public class NominalDataValueTest extends DataValueTest {
 
         assertEquals(value0, copy);
     }
-
 
     @Test
     @Override

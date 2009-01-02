@@ -427,65 +427,6 @@ public class UndefinedDataValue extends DataValue
         
     } /* UndefinedDataValue::Construct(db) */
 
-      
-    /**
-     * UndefinedDataValuesAreLogicallyEqual()
-     *
-     * Given two instances of UndefinedDataValue, return true if they contain 
-     * identical data, and false otherwise.  Strange as it may seem, it is 
-     * possible for two undefined data values to have different values, as
-     * the value of an UndefinedDataValue is simply the name of the associated
-     * formal argument -- which can change.
-     *
-     * Note that this method does only tests specific to this subclass of 
-     * DataValue -- the presumption is that this method has been called by 
-     * DataValue.DataValuesAreLogicallyEqual() which has already done all
-     * generic tests.
-     * 
-     *                                              JRM -- 2/7/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Deprecated
-    protected static boolean UndefinedDataValuesAreLogicallyEqual
-            (UndefinedDataValue udv0,
-             UndefinedDataValue udv1)
-        throws SystemErrorException
-    {
-        final String mName = 
-            "UndefinedDataValue::UndefinedDataValuesAreLogicallyEqual()";
-        boolean dataValuesAreEqual = true;
-        
-        if ( ( udv0 == null ) || ( udv1 == null ) )
-        {
-            throw new SystemErrorException(mName + 
-                                           ": udv0 or udv1 null on entry.");
-        }
-        else if ( ( udv0.itsValue == null ) || ( udv1.itsValue == null ) )
-        {
-            throw new SystemErrorException(mName + 
-                    ": udv0.itsValue or udv1.itsValue null on entry.");
-        }
-        
-        if ( udv0 != udv1 )
-        {
-            if ( udv0.itsValue != udv1.itsValue )
-            {
-                // due to above tests, if we get this far, we know
-                // that both udv0.itsValue and udv1.itsValue are non-null.
-                if ( udv0.itsValue.compareTo(udv1.itsValue) != 0 )
-                {
-                    dataValuesAreEqual = false;
-                }
-            }
-        }
-
-        return dataValuesAreEqual;
-        
-    } /* UndefinedDataValue::UndefinedDataValuesAreLogicallyEqual() */
-
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;
 

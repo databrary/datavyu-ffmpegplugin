@@ -424,28 +424,6 @@ public class QuoteStringDataValueTest extends DataValueTest {
         assertEquals(test.getItsValue(), "alpha");
     }
 
-    /**
-     * Test of QuoteStringDataValuesAreLogicallyEqual method, of class
-     * QuoteStringDataValue.
-     *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testQuoteStringDataValuesAreLogicallyEqual()
-    throws SystemErrorException {
-        QuoteStringDataValue n_value0 = new QuoteStringDataValue(db, qsfa.getID(),
-                                                         "bravo");
-        QuoteStringDataValue n_value1 = new QuoteStringDataValue(db, ufa.getID(),
-                                                         "nero");
-        QuoteStringDataValue n_copy = new QuoteStringDataValue(n_value0);
-
-        assertTrue(QuoteStringDataValue.
-                   QuoteStringDataValuesAreLogicallyEqual(n_value0, n_copy));
-        assertFalse(QuoteStringDataValue.
-                    QuoteStringDataValuesAreLogicallyEqual(n_value0,n_value1));
-    }
-
-
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {

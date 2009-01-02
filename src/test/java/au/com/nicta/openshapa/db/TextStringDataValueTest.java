@@ -348,27 +348,6 @@ public class TextStringDataValueTest extends DataValueTest {
         assertEquals(test.getItsValue(), "alpha");
     }
 
-    /**
-     * Test of TextStringDataValuesAreLogicallyEqual method, of class TextStringDataValue.
-     *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testTextStringDataValuesAreLogicallyEqual()
-    throws SystemErrorException {
-        TextStringDataValue n_value0 = new TextStringDataValue(db, tfa.getID(),
-                                                               "bravo");
-        TextStringDataValue n_value1 = new TextStringDataValue(db, tfa2.getID(),
-                                                               "nero");
-        TextStringDataValue n_copy = new TextStringDataValue(n_value0);
-
-        assertTrue(TextStringDataValue.
-                   TextStringDataValuesAreLogicallyEqual(n_value0, n_copy));
-        assertFalse(TextStringDataValue.
-                    TextStringDataValuesAreLogicallyEqual(n_value0, n_value1));
-    }
-
-
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
@@ -378,7 +357,6 @@ public class TextStringDataValueTest extends DataValueTest {
 
         assertEquals(value0, copy);
     }
-
 
     @Test
     @Override

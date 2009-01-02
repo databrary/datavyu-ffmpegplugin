@@ -1065,60 +1065,6 @@ public class PredDataValue extends DataValue
 
     } /* PredDataValue::registerPreds() */
 
-
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-
-    /**
-     * PredDataValuesAreLogicallyEqual()
-     *
-     * Given two instances of PredDataValue, return true if they contain
-     * identical data, and false otherwise.
-     *
-     * Note that this method does only tests specific to this subclass of
-     * DataValue -- the presumption is that this method has been called by
-     * DataValue.DataValuesAreLogicallyEqual() which has already done all
-     * generic tests.
-     *                                              JRM -- 2/7/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-
-    protected static boolean PredDataValuesAreLogicallyEqual(PredDataValue pdv0,
-                                                             PredDataValue pdv1)
-        throws SystemErrorException
-    {
-        final String mName = "PredDataValue::PredDataValuesAreLogicallyEqual()";
-        boolean dataValuesAreEqual = true;
-
-        if ( ( pdv0 == null ) || ( pdv1 == null ) )
-        {
-            throw new SystemErrorException(mName +
-                                           ": pdv0 or pdv1 null on entry.");
-        }
-        else if ( ( pdv0.itsValue == null ) || ( pdv1.itsValue == null ) )
-        {
-            throw new SystemErrorException(mName +
-                    ": pdv0.itsValue or pdv1.itsValue null on entry.");
-        }
-
-        if ( pdv0 != pdv1 )
-        {
-            if ( ( pdv0.itsValue != pdv1.itsValue ) &&
-                 ( ! Predicate.PredicatesAreLogicallyEqual(pdv0.itsValue,
-                                                           pdv1.itsValue) ) )
-            {
-                dataValuesAreEqual = false;
-            }
-        }
-
-        return dataValuesAreEqual;
-
-    } /* PredDataValue::PredDataValuesAreLogicallyEqual() */
-
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;
 

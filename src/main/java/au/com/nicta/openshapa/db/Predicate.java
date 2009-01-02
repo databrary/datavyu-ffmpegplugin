@@ -7035,10 +7035,8 @@ public class Predicate extends DBElement
 
                     while ( ( i < num_args ) && ( predicatesAreEqual ) )
                     {
-                        predicatesAreEqual =
-                                DataValue.DataValuesAreLogicallyEqual
-                                         (p0.argList.get(i),
-                                          p1.argList.get(i));
+                        predicatesAreEqual = p0.argList.get(i)
+                                                     .equals(p1.argList.get(i));
                         i++;
                     }
                 }

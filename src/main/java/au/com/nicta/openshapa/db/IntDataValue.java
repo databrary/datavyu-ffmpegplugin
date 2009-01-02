@@ -468,52 +468,6 @@ public class IntDataValue extends DataValue
 
     } /* IntDataValue::Construct(db, i) */
 
-
-    /**
-     * IntDataValuesAreLogicallyEqual()
-     *
-     * Given two instances of IntDataValue, return true if they contain
-     * identical data, and false otherwise.
-     *
-     * Note that this method does only tests specific to this subclass of
-     * DataValue -- the presumption is that this method has been called by
-     * DataValue.DataValuesAreLogicallyEqual() which has already done all
-     * generic tests.
-     *                                              JRM -- 2/7/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-
-    protected static boolean IntDataValuesAreLogicallyEqual(IntDataValue idv0,
-                                                            IntDataValue idv1)
-        throws SystemErrorException
-    {
-        final String mName = "IntDataValue::IntDataValuesAreLogicallyEqual()";
-        boolean dataValuesAreEqual = true;
-
-        if ( ( idv0 == null ) || ( idv1 == null ) )
-        {
-            throw new SystemErrorException(mName +
-                                           ": idv0 or idv1 null on entry.");
-        }
-
-        if ( idv0 != idv1 )
-        {
-            if ( ( idv0.itsValue != idv1.itsValue ) ||
-                 ( idv0.maxVal != idv1.maxVal ) ||
-                 ( idv0.minVal != idv1.minVal ) )
-            {
-                dataValuesAreEqual = false;
-            }
-        }
-
-        return dataValuesAreEqual;
-
-    } /* IntDataValue::IntDataValuesAreLogicallyEqual() */
-
-
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;
     /** Seed value for generating hash codes. */

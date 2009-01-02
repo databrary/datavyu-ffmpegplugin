@@ -337,26 +337,6 @@ public class IntDataValueTest extends DataValueTest {
         assertEquals(test.getItsValue(), 50);
     }
 
-    /**
-     * Test of IntDataValuesAreLogicallyEqual method, of class IntDataValue.
-     *
-     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testIntDataValuesAreLogicallyEqual()
-    throws SystemErrorException {
-        IntDataValue int_value0 = new IntDataValue(db, ifa.getID(), 200);
-        IntDataValue int_value1 = new IntDataValue(db, ifa.getID(), 50);
-        IntDataValue int_copy = new IntDataValue(int_value0);
-
-        assertTrue(IntDataValue.IntDataValuesAreLogicallyEqual(int_value0,
-                                                               int_copy));
-        assertFalse(IntDataValue.IntDataValuesAreLogicallyEqual(int_value0,
-                                                                int_value1));
-    }
-
-
-
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
@@ -369,8 +349,7 @@ public class IntDataValueTest extends DataValueTest {
         copy.setItsValue(copy.getItsValue() * 3);
 
         assertEquals(value0, copy);
-}
-
+    }
 
     @Test
     @Override

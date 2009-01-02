@@ -904,6 +904,7 @@ public abstract class DataValue extends DBElement
      *
      *    - None.
      */
+    /*
     @Deprecated
     public static boolean DataValuesAreLogicallyEqual(DataValue dv0,
                                                       DataValue dv1)
@@ -1049,7 +1050,7 @@ public abstract class DataValue extends DBElement
             
         return dataValuesAreEqual;
         
-    } /* DataValue::DataValuesAreLogicallyEqual() */
+    } */ /* DataValue::DataValuesAreLogicallyEqual() */
 
     /**
      * @return A hash code value for the object.

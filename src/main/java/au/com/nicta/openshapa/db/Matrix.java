@@ -5011,11 +5011,8 @@ public class Matrix
                     while ( ( i < m0.argList.size() ) &&
                             ( matriciesAreEqual ) )
                     {
-                        matriciesAreEqual =
-                                DataValue.DataValuesAreLogicallyEqual
-                                         (m0.argList.get(i),
-                                          m1.argList.get(i));
-
+                        matriciesAreEqual = m0.argList.get(i)
+                                                     .equals(m1.argList.get(i));
                         i++;
                     }
                 }
