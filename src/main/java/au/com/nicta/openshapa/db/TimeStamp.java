@@ -378,28 +378,6 @@ public class TimeStamp
     return ("("+this.tps+","+this.toHMSFString()+")");
   } //End of toDBString() method
 
-   /**
-    * Main method for testing purposes.
-    */
-   public final static void main (String[] argv)
-        throws SystemErrorException
-   {
-     TimeStamp t1 = new TimeStamp(30, 333);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-     t1.setTPS(60);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-     t1.setTPS(25);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-     t1.setTPS(30);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-     t1.setTPS(120);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-     t1.setTPS(1000);
-     System.out.println(t1 + "\t" + t1.toHMSFString());
-   } //End of main() method
-
-
-
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/

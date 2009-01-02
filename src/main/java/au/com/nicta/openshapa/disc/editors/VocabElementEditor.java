@@ -104,6 +104,7 @@ System.out.println(mve.toDBString());
   {
   }
 
+  /*
   public final static void main(String[] argv)
   {
     try {
@@ -150,6 +151,7 @@ System.out.println(mve.toDBString());
       e.printStackTrace();
     }
   }
+   */
 
   public void dispose()
   {
