@@ -351,26 +351,6 @@ public class FloatDataValueTest extends DataValueTest {
         assertEquals(test.getItsValue(), 50.0);
     }
 
-    /**
-     * Test of FloatDataValuesAreLogicallyEqual method, of class FloatDataValue.
-     *
-     * @throws au.com.nictaopenshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testFloatDataValuesAreLogicallyEqual()
-    throws SystemErrorException {
-        FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 200.0);
-        FloatDataValue f_value1 = new FloatDataValue(db, ffa.getID(), 50.0);
-        FloatDataValue f_copy = new FloatDataValue(f_value0);
-
-        assertTrue(FloatDataValue.FloatDataValuesAreLogicallyEqual(f_value0,
-                                                                   f_copy));
-        assertFalse(FloatDataValue.FloatDataValuesAreLogicallyEqual(f_value0,
-                                                                    f_value1));
-        assertTrue(f_value0.equals(f_copy));
-        assertFalse(f_value0.equals(f_value1));
-    }
-
     @Test
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
@@ -384,7 +364,6 @@ public class FloatDataValueTest extends DataValueTest {
 
         assertEquals(value0, copy);
     }
-
 
     @Test
     @Override

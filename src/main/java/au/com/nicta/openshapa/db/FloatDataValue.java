@@ -469,56 +469,6 @@ public class FloatDataValue extends DataValue {
 
     } /* FloatDataValue::Construct(db, f) */
 
-
-    /**
-     * @deprecated Replaced by FloatDataValue.equals()
-     * @see equals
-     * FloatDataValuesAreLogicallyEqual()
-     *
-     * Given two instances of FloatDataValue, return true if they contain
-     * identical data, and false otherwise.
-     *
-     * Note that this method does only tests specific to this subclass of
-     * DataValue -- the presumption is that this method has been called by
-     * DataValue.DataValuesAreLogicallyEqual() which has already done all
-     * generic tests.
-     *                                              JRM -- 2/7/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-
-    @Deprecated
-    protected static boolean FloatDataValuesAreLogicallyEqual
-                             (FloatDataValue fdv0,
-                              FloatDataValue fdv1)
-        throws SystemErrorException
-    {
-        final String mName =
-                "FloatDataValue::FloatDataValuesAreLogicallyEqual()";
-        boolean dataValuesAreEqual = true;
-
-        if ( ( fdv0 == null ) || ( fdv1 == null ) )
-        {
-            throw new SystemErrorException(mName +
-                                           ": fdv0 or fdv1 null on entry.");
-        }
-
-        if ( fdv0 != fdv1 )
-        {
-            if ( ( fdv0.itsValue != fdv1.itsValue ) ||
-                 ( fdv0.maxVal != fdv1.maxVal ) ||
-                 ( fdv0.minVal != fdv1.minVal ) )
-            {
-                dataValuesAreEqual = false;
-            }
-        }
-
-        return dataValuesAreEqual;
-
-    } /* FloatDataValue::FloatDataValuesAreLogicallyEqual() */
-
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;
 
