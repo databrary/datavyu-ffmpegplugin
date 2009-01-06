@@ -98,24 +98,15 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue(db);
+        QuoteStringDataValue qv = new QuoteStringDataValue(db);
 
         // Could be in a DataValueTest.Verify1ArgInitialization method
         // common for PredDataValue, QuoteStringDataValue and TimeStampDataValue
-        assertNotNull(db);
-        assertNotNull(qsdv);
-        assertEquals(qsdv.db, db);
-        assertEquals(qsdv.getDB(), db);
-        assertEquals(qsdv.id, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsCellID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsFargID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsFargType, FormalArgument.fArgType.UNDEFINED);
-        assertEquals(qsdv.lastModUID, DBIndex.INVALID_ID);
-        assertFalse(qsdv.subRange);
+        DataValueTest.verify1ArgInitialization(db, qv);
 
         // QuoteString specific checks
-        assertNull(qsdv.ItsDefault);
-        assertEquals(qsdv.itsValue, qsdv.ItsDefault);
+        assertNull(qv.ItsDefault);
+        assertEquals(qv.itsValue, qv.ItsDefault);
     }
 
     /**
@@ -125,7 +116,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue((Database) null);
+        QuoteStringDataValue qv = new QuoteStringDataValue((Database) null);
     }
 
     /**
@@ -135,33 +126,34 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue(db, qsfa.getID());
+        QuoteStringDataValue qv = new QuoteStringDataValue(db, qsfa.getID());
 
         assertNotNull(db);
         assertNotNull(qs_mve);
         assertNotNull(qsfa);
 
-        assertNotNull(qsdv);
+        assertNotNull(qv);
 
         // Could be in a DataValueTest.Verify2PlusArgInitialization method
-        // common for PredDataValue, ColPredDataValue QuoteStringDataValue and TimeStampDataValue
+        // common for PredDataValue, ColPredDataValue QuoteStringDataValue
+        // and TimeStampDataValue
         assertNotNull(db);
-        assertNotNull(qsdv);
+        assertNotNull(qv);
         assertNotNull(qsfa);
         assertTrue(qsfa.getID() != DBIndex.INVALID_ID);
-        assertEquals(qsdv.db, db);
-        assertEquals(qsdv.getDB(), db);
-        assertEquals(qsdv.id, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsCellID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsFargID, qsfa.getID());
-        assertEquals(qsdv.itsFargType, qsfa.getFargType());
-        assertEquals(qsdv.lastModUID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.subRange, qsfa.getSubRange());
+        assertEquals(qv.db, db);
+        assertEquals(qv.getDB(), db);
+        assertEquals(qv.id, DBIndex.INVALID_ID);
+        assertEquals(qv.itsCellID, DBIndex.INVALID_ID);
+        assertEquals(qv.itsFargID, qsfa.getID());
+        assertEquals(qv.itsFargType, qsfa.getFargType());
+        assertEquals(qv.lastModUID, DBIndex.INVALID_ID);
+        assertEquals(qv.subRange, qsfa.getSubRange());
 
         // QuoteString specific
-        assertNull(qsdv.ItsDefault);
-        assertEquals(qsdv.subRange, qsfa.subRange);
-        assertEquals(qsdv.itsValue, qsdv.ItsDefault);
+        assertNull(qv.ItsDefault);
+        assertEquals(qv.subRange, qsfa.subRange);
+        assertEquals(qv.itsValue, qv.ItsDefault);
     }
 
     /**
@@ -171,7 +163,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue((Database)null,
+        QuoteStringDataValue qv = new QuoteStringDataValue((Database)null,
                                                         qsfa.getID());
     }
 
@@ -182,7 +174,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
                             = new QuoteStringDataValue(db, DBIndex.INVALID_ID);
     }
 
@@ -193,7 +185,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
                                 = new QuoteStringDataValue(db, qs_mve.getID());
     }
 
@@ -204,34 +196,35 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
-        QuoteStringDataValue qsdv =
+        QuoteStringDataValue qv =
                             new QuoteStringDataValue(db, qsfa.getID(), "echo");
 
         assertNotNull(db);
         assertNotNull(qs_mve);
         assertNotNull(qsfa);
 
-        assertNotNull(qsdv);
+        assertNotNull(qv);
 
         // Could be in a DataValueTest.Verify2PlusArgInitialization method
-        // common for PredDataValue, ColPredDataValue QuoteStringDataValue and TimeStampDataValue
+        // common for PredDataValue, ColPredDataValue QuoteStringDataValue
+        // and TimeStampDataValue
         assertNotNull(db);
-        assertNotNull(qsdv);
+        assertNotNull(qv);
         assertNotNull(qsfa);
         assertTrue(qsfa.getID() != DBIndex.INVALID_ID);
-        assertEquals(qsdv.db, db);
-        assertEquals(qsdv.getDB(), db);
-        assertEquals(qsdv.id, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsCellID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.itsFargID, qsfa.getID());
-        assertEquals(qsdv.itsFargType, qsfa.getFargType());
-        assertEquals(qsdv.lastModUID, DBIndex.INVALID_ID);
-        assertEquals(qsdv.subRange, qsfa.getSubRange());
+        assertEquals(qv.db, db);
+        assertEquals(qv.getDB(), db);
+        assertEquals(qv.id, DBIndex.INVALID_ID);
+        assertEquals(qv.itsCellID, DBIndex.INVALID_ID);
+        assertEquals(qv.itsFargID, qsfa.getID());
+        assertEquals(qv.itsFargType, qsfa.getFargType());
+        assertEquals(qv.lastModUID, DBIndex.INVALID_ID);
+        assertEquals(qv.subRange, qsfa.getSubRange());
 
         // QuoteString specific
-        assertEquals(qsdv.subRange, qsfa.getSubRange());
-        assertNotNull(qsdv.itsValue);
-        assertEquals(qsdv.itsValue, "echo");
+        assertEquals(qv.subRange, qsfa.getSubRange());
+        assertNotNull(qv.itsValue);
+        assertEquals(qv.itsValue, "echo");
     }
 
     /**
@@ -241,7 +234,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue((Database) null,
+        QuoteStringDataValue qv = new QuoteStringDataValue((Database) null,
                                                         qsfa.getID(), "alpha");
     }
 
@@ -252,7 +245,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
                    = new QuoteStringDataValue(db, DBIndex.INVALID_ID, "alpha");
     }
 
@@ -263,7 +256,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
                        = new QuoteStringDataValue(db, qs_mve.getID(), "alpha");
     }
 
@@ -274,7 +267,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void test3ArgConstructorFailure3() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
               = new QuoteStringDataValue(db, qsfa.getID(), "invalid \" string");
     }
 
@@ -296,18 +289,18 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue(db, qsfa.getID(),
+        QuoteStringDataValue qv = new QuoteStringDataValue(db, qsfa.getID(),
                                                         "foxtrot");
-        QuoteStringDataValue q_copy = new QuoteStringDataValue(qsdv);
+        QuoteStringDataValue q_copy = new QuoteStringDataValue(qv);
 
-        assertNotSame(qsdv, q_copy);
-        assertEquals(qsdv.getDB(), q_copy.getDB());
-        assertEquals(qsdv.itsFargID, q_copy.itsFargID);
-        assertEquals(qsdv.itsFargType, q_copy.itsFargType);
-        assertEquals(qsdv.subRange, q_copy.subRange);
-        assertEquals(qsdv.toString(), q_copy.toString());
-        assertEquals(qsdv.toDBString(), q_copy.toDBString());
-        assertEquals(qsdv.getClass(), q_copy.getClass());
+        assertNotSame(qv, q_copy);
+        assertEquals(qv.getDB(), q_copy.getDB());
+        assertEquals(qv.itsFargID, q_copy.itsFargID);
+        assertEquals(qv.itsFargType, q_copy.itsFargType);
+        assertEquals(qv.subRange, q_copy.subRange);
+        assertEquals(qv.toString(), q_copy.toString());
+        assertEquals(qv.toDBString(), q_copy.toDBString());
+        assertEquals(qv.getClass(), q_copy.getClass());
     }
 
     /**
@@ -317,7 +310,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test (expected = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
-        QuoteStringDataValue qsdv
+        QuoteStringDataValue qv
                         = new QuoteStringDataValue((QuoteStringDataValue)null);
     }
 
@@ -328,8 +321,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
-        QuoteStringDataValue n_value = new QuoteStringDataValue(db, qsfa.getID(),
-                                                        "bravo");
+        QuoteStringDataValue n_value = new QuoteStringDataValue(db,
+                                                        qsfa.getID(), "bravo");
 
         assertEquals(n_value.getItsValue(), "bravo");
     }
@@ -341,8 +334,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
-        QuoteStringDataValue n_value = new QuoteStringDataValue(db, qsfa.getID(),
-                                                        "bravo");
+        QuoteStringDataValue n_value = new QuoteStringDataValue(db,
+                                                        qsfa.getID(), "bravo");
 
         n_value.setItsValue("echo");
         assertEquals(n_value.getItsValue(), "echo");
@@ -355,13 +348,13 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void testToString() throws SystemErrorException {
-        QuoteStringDataValue qsdv = new QuoteStringDataValue(db, qsfa.getID(),
+        QuoteStringDataValue qv = new QuoteStringDataValue(db, qsfa.getID(),
                                                          "bravo");
-        QuoteStringDataValue qsdv2 = new QuoteStringDataValue(db, ufa.getID(),
+        QuoteStringDataValue qv2 = new QuoteStringDataValue(db, ufa.getID(),
                                                          "nero");
 
-        assertEquals(qsdv.toString(), "\"bravo\"");
-        assertEquals(qsdv2.toString(), "\"nero\"");
+        assertEquals(qv.toString(), "\"bravo\"");
+        assertEquals(qv2.toString(), "\"nero\"");
     }
 
     /**
@@ -386,11 +379,11 @@ public class QuoteStringDataValueTest extends DataValueTest {
                                     "(itsValue nero) " +
                                     "(subRange false))";
 
-        QuoteStringDataValue n_value0 = new QuoteStringDataValue(db, qsfa2.getID(),
-                                                         "bravo");
+        QuoteStringDataValue n_value0 = new QuoteStringDataValue(db,
+                                                    qsfa2.getID(), "bravo");
 
-        QuoteStringDataValue n_value1 = new QuoteStringDataValue(db, ufa.getID(),
-                                                         "nero");
+        QuoteStringDataValue n_value1 = new QuoteStringDataValue(db,
+                                                    ufa.getID(), "nero");
 
         assertEquals(n_value0.toDBString(), testDBString0);
         assertEquals(n_value1.toDBString(), testDBString1);
@@ -404,8 +397,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      */
     @Test
     public void testCoerceToRange() throws Exception {
-        QuoteStringDataValue n_value = new QuoteStringDataValue(db, qsfa2.getID(),
-                                                        "bravo");
+        QuoteStringDataValue n_value = new QuoteStringDataValue(db,
+                                                    qsfa2.getID(), "bravo");
 
         assertEquals(n_value.coerceToRange("alpha"), "alpha");
         assertEquals(n_value.coerceToRange("bravo"), "bravo");
@@ -428,7 +421,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
     public void testClone()
     throws SystemErrorException, CloneNotSupportedException {
         QuoteStringDataValue value0 =
-                                new QuoteStringDataValue(db, qsfa.getID(), "bravo");
+                                new QuoteStringDataValue(db, qsfa.getID(),
+                                                                       "bravo");
         QuoteStringDataValue copy = (QuoteStringDataValue) value0.clone();
 
         assertEquals(value0, copy);

@@ -177,7 +177,7 @@ implements KeyEventDispatcher {
         try {
             db.registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
-            logger.error("Unable register column list listener", e);
+            logger.error("Unable register column list listener: ", e);
         }
         OpenSHAPA.getApplication().show(listVarView);
     }

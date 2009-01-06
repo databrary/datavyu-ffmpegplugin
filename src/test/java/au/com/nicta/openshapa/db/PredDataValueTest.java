@@ -140,4 +140,28 @@ public class PredDataValueTest extends DataValueTest {
  * */
     }
 
+
+    /**
+     * Test 1 arg constructor of class PredDataValue.
+     *
+     * @throws SystemErrorException on failure.
+     */
+    @Test
+    public void test1ArgConstructor() throws SystemErrorException {
+        PredDataValue value = new PredDataValue(db);
+
+        assertNotNull(db);
+        assertNotNull(value);
+
+        assertEquals(value.getDB(), db);
+
+        DataValueTest.verify1ArgInitialization(db, value);
+
+        // When building a PredDataValue, at one point setItsValue(null)
+        // is called - this actually sets it to an empty predicate
+        assertNotNull(value.itsValue);
+        assertTrue(value.itsValue.getPveID() == DBIndex.INVALID_ID);
+
+    } /* PredDataValue::Test1ArgConstructor() */
+
 }
