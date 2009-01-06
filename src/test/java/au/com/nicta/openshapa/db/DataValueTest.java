@@ -135,4 +135,26 @@ public abstract class DataValueTest {
         assertEquals(copy, original);
         assertFalse(original.equals(null));        
     }
+
+    /**
+     * Verify that the supplied instance of DataValue has been correctly
+     * initialized by a one argument constructor.
+     *
+     * @param db Database
+     * @param dv DataValue
+     */
+    static void verify1ArgInitialization(final Database db,
+                                                final DataValue dv) {
+        assertNotNull(db);
+        assertNotNull(dv);
+        assertEquals(dv.db, db);
+        assertEquals(dv.getDB(), db);
+        assertEquals(dv.id, DBIndex.INVALID_ID);
+        assertEquals(dv.itsCellID, DBIndex.INVALID_ID);
+        assertEquals(dv.itsFargID, DBIndex.INVALID_ID);
+        assertEquals(dv.itsFargType, FormalArgument.fArgType.UNDEFINED);
+        assertEquals(dv.lastModUID, DBIndex.INVALID_ID);
+        assertFalse(dv.subRange);
+    }
+
 }
