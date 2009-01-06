@@ -35,7 +35,6 @@ implements KeyEventDispatcher {
      * @return true if the KeyboardFocusManager should take no further action
      * with regard to the KeyEvent; false  otherwise
      */
-    @Override
     public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
         // Pass the keyevent onto the keyswitchboard so that it can route it
         // to the correct action.

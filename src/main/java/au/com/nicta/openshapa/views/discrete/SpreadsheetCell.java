@@ -459,7 +459,6 @@ public class SpreadsheetCell
      * Invoked when the mouse enters a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseEntered(MouseEvent me) {
     }
 
@@ -467,7 +466,6 @@ public class SpreadsheetCell
      * Invoked when the mouse exits a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseExited(MouseEvent me) {
     }
 
@@ -475,7 +473,6 @@ public class SpreadsheetCell
      * Invoked when the mouse is pressed in a component. No function.
      * @param me event detail
      */
-    @Override
     public void mousePressed(MouseEvent me) {
     }
 
@@ -483,7 +480,6 @@ public class SpreadsheetCell
      * Invoked when the mouse is released in a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseReleased(MouseEvent me) {
     }
 
@@ -493,7 +489,6 @@ public class SpreadsheetCell
      * referred to.
      * @param me event detail
      */
-    @Override
     public void mouseClicked(MouseEvent me) {
         try {
             selected = !selected;
@@ -516,7 +511,6 @@ public class SpreadsheetCell
      * Called if the DataCell of interest is changed.
      * see ExternalDataCellListener.
      */
-    @Override
     public void DCellChanged(Database   db,
                            long       colID,
                            long       cellID,
@@ -568,7 +562,6 @@ public class SpreadsheetCell
     /**
      * Called if the DataCell of interest is deleted.
      */
-    @Override
     public void DCellDeleted(Database  db,
                            long      colID,
                            long      cellID) {

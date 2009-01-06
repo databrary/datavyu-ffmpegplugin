@@ -113,7 +113,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      *
      * @return Error code on failure, 0 on success.
      */
-    @Override
     public int execute(final Movie m) {
         try {
             double curTime = m.getTime() / (double) m.getTimeScale();
@@ -131,7 +130,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Creates a new cell in the database, and sets the start time (onset) of
      * that cell to the current time in the continuous data viewer.
      */
-    @Override
     public void createNewCell() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
@@ -145,7 +143,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Jogs the data stream backwards by a single unit (i.e. frame for movie)
      */
-    @Override
     public void jogBack() {
         try {
             this.jog(-1);
@@ -157,7 +154,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Stops the playback of the continous data stream.
      */
-    @Override
     public void stop() {
         try {
             if (movie != null) {
@@ -172,7 +168,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Jogs the data stream forwards by a single unit (i.e. frame for movie).
      */
-    @Override
     public void jogForward() {
         try {
             this.jog(1);
@@ -185,7 +180,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Shuttles the video stream backwards by the current shuttle speed.
      * Repetative calls to shuttleBack increases the speed at which we reverse.
      */
-    @Override
     public void shuttleBack() {
         try {
             if (movie != null) {
@@ -204,7 +198,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Pauses the playback of the continous data stream.
      */
-    @Override
     public void pause() {
         try {
             if (movie != null) {
@@ -221,7 +214,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Repetative calls to shuttleFoward increases the speed at which we fast
      * forward.
      */
-    @Override
     public void shuttleForward() {
         try {
             if (movie != null) {
@@ -240,7 +232,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Rewinds the continous data stream at a speed 32x normal.
      */
-    @Override
     public void rewind() {
         try {
             if (movie != null) {
@@ -255,7 +246,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Plays the continous data stream at a regular 1x normal speed.
      */
-    @Override
     public void play() {
         try {
             if (movie != null) {
@@ -270,7 +260,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     /**
      * Fast forwards a continous data stream at a speed 32x normal.
      */
-    @Override
     public void forward() {
         try {
             if (movie != null) {
@@ -286,7 +275,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Sets the stop time of the last cell that was created. The stop time is
      * set to the current time of the continuous data viewer.
      */
-    @Override
     public void setNewCellStopTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
@@ -301,7 +289,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Sets the cell starting time (onset - in the old terminology), from the
      * current time of the continous data stream.
      */
-    @Override
     public void setCellStartTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
@@ -314,7 +301,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * Sets the cell stopping time (offset - in the old terminology), from the
      * current time of the continous data stream.
      */
-    @Override
     public void setCellStopTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
@@ -330,7 +316,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * @param milliseconds The time within the continous data stream, specified
      * in milliseconds from the start of the stream.
      */
-    @Override
     public void find(final long milliseconds) {
         try {
             if (movie != null) {
@@ -355,7 +340,6 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      *
      * @param milliseconds The number of milliseconds to jump back by.
      */
-    @Override
     public void goBack(final long milliseconds) {
         try {
             if (movie != null) {
@@ -378,11 +362,9 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         }
     }
 
-    @Override
     public void syncCtrl() {
     }
 
-    @Override
     public void sync() {
     }
 

@@ -586,18 +586,15 @@ public class OpenHashtable<K,V>
         }
     }
 
-    public final class EmptyIterator<T> implements Iterator<T> {
-        @Override
+    public final class EmptyIterator<T> implements Iterator<T> { 
         public boolean hasNext() {
             return false;
         }
 
-        @Override
         public T next() {
             return null;
         }
 
-        @Override
         public void remove() {
         }        
     }

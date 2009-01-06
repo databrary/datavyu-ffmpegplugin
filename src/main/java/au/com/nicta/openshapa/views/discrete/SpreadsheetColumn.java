@@ -100,7 +100,6 @@ public class SpreadsheetColumn
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being deleted.
      */
-    @Override
     public final void DColCellDeletion(final Database db,
                                        final long colID,
                                        final long cellID) {
@@ -114,7 +113,6 @@ public class SpreadsheetColumn
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being inserted.
      */
-    @Override
     public final void DColCellInsertion(final Database db,
                                         final long colID,
                                         final long cellID) {
@@ -143,7 +141,6 @@ public class SpreadsheetColumn
      * @param oldSelected Old Selected value.
      * @param newSelected New Selected value.
      */
-    @Override
     public final void DColConfigChanged(final Database db,
                                       final long colID,
                                       final boolean nameChanged,
@@ -169,7 +166,6 @@ public class SpreadsheetColumn
      * @param db The database.
      * @param colID The ID assigned to the DataColumn.
      */
-    @Override
     public final void DColDeleted(final Database db,
                                   final long colID) {
         logger.warn("Not sure what to do in DColDeleted");

@@ -194,7 +194,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param db The database that the column has been removed from.
      * @param colID The id of the freshly removed column.
      */
-    @Override
     public final void colDeletion(final Database db, final long colID) {
         removeColumn(colID);
         validate();
@@ -206,7 +205,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param db The database that the column has been added to.
      * @param colID The id of the newly added column.
      */
-    @Override
     public final void colInsertion(final Database db, final long colID) {
         addColumn(db, colID);
         validate();
@@ -216,7 +214,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * Invoked when the mouse enters a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseEntered(final MouseEvent me) {
     }
 
@@ -224,7 +221,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * Invoked when the mouse exits a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseExited(final MouseEvent me) {
     }
 
@@ -232,7 +228,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * Invoked when the mouse is pressed in a component. No function.
      * @param me event detail
      */
-    @Override
     public void mousePressed(final MouseEvent me) {
     }
 
@@ -240,7 +235,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * Invoked when the mouse is released in a component. No function.
      * @param me event detail
      */
-    @Override
     public void mouseReleased(final MouseEvent me) {
     }
 
@@ -250,7 +244,6 @@ public class Spreadsheet extends OpenSHAPADialog
      * referred to.
      * @param me event detail
      */
-    @Override
     public void mouseClicked(final MouseEvent me) {
         // A column header has been clicked
         ColumnHeaderPanel clickedcol = (ColumnHeaderPanel) me.getComponent();
@@ -284,15 +277,15 @@ public class Spreadsheet extends OpenSHAPADialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 587, Short.MAX_VALUE)
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 587, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 402, Short.MAX_VALUE)
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 402, Short.MAX_VALUE)
         );
 
         pack();

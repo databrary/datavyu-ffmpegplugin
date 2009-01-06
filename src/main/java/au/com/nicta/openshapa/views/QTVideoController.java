@@ -36,7 +36,6 @@ implements ContinuousDataController {
         viewers = new Vector<QTVideoViewer>();
     }
 
-    @Override
     public void setCurrentLocation(final long milliseconds) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -49,7 +48,6 @@ implements ContinuousDataController {
         }
     }
 
-    @Override
     public TimeStamp getCurrentLocation() {
         return (this.currentTimestamp);
     }
@@ -59,7 +57,6 @@ implements ContinuousDataController {
      *
      * @param viewer The viewer to shutdown.
      */
-    @Override
     public void shutdown(final ContinuousDataViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {

@@ -523,7 +523,6 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    @Override
     public void VEChanged(Database db,
                          long VEID,
                          boolean nameChanged,
@@ -611,7 +610,6 @@ public class Predicate extends DBElement
      *
      *    - None.
      */
-    @Override
     public void VEDeleted(Database db,
                           long VEID)
         throws SystemErrorException

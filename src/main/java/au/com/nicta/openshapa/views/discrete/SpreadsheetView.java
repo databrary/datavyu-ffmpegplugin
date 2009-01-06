@@ -34,7 +34,6 @@ public class SpreadsheetView extends javax.swing.JPanel
      * @return the preferredSize of a <code>JViewport</code> whose view
      *    is this <code>SpreadsheetView</code>
      */
-    @Override
     public final Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
     }
@@ -42,7 +41,6 @@ public class SpreadsheetView extends javax.swing.JPanel
     /**
      * @return False - the spreadsheet can scroll left to right if needed.
      */
-    @Override
     public final boolean getScrollableTracksViewportWidth() {
         return false;
     }
@@ -50,7 +48,6 @@ public class SpreadsheetView extends javax.swing.JPanel
     /**
      * @return False - the spreadsheet can scroll up and down if needed.
      */
-    @Override
     public final boolean getScrollableTracksViewportHeight() {
         return false;
     }
@@ -65,7 +62,6 @@ public class SpreadsheetView extends javax.swing.JPanel
      * @return The "unit" increment for scrolling in the specified direction.
      *         This value should always be positive.
      */
-    @Override
     public final int getScrollableUnitIncrement(final Rectangle visibleRect,
                                                 final int orientation,
                                                 final int direction) {
@@ -105,7 +101,6 @@ public class SpreadsheetView extends javax.swing.JPanel
      * @return The "block" increment for scrolling in the specified direction.
      *         This value should always be positive.
      */
-    @Override
     public final int getScrollableBlockIncrement(final Rectangle visibleRect,
                                                  final int orientation,
                                                  final int direction) {
@@ -128,15 +123,15 @@ public class SpreadsheetView extends javax.swing.JPanel
 
         setName("Form"); // NOI18N
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 

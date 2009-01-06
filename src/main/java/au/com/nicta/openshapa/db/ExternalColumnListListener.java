@@ -45,8 +45,8 @@ public interface ExternalColumnListListener
      *    - None.
      */
 
-    void colDeletion(Database db,
-                     long colID);
+    void colDeletion(final Database db,
+                     final long colID);
 
 
     /**
@@ -68,7 +68,7 @@ public interface ExternalColumnListListener
      *    - None.
      */
 
-    void colInsertion(Database db,
-                      long colID);
+    void colInsertion(final Database db,
+                      final long colID);
 
 }

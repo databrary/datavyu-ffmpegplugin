@@ -52,7 +52,7 @@ public class ODBCDatabaseTest extends DatabaseTest {
     @Test
     @Override
     public void testGetType() {
-        assertFalse(db.getType().isEmpty());
+        assertTrue(db.getType().length() != 0);
     }
 
     /**

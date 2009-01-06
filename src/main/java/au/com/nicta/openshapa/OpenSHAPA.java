@@ -46,7 +46,6 @@ implements KeyEventDispatcher {
      * @return true if the KeyboardFocusManager should take no further action
      * with regard to the KeyEvent; false  otherwise
      */
-    @Override
     public boolean dispatchKeyEvent(final KeyEvent evt) {
         if (evt.getID() != KeyEvent.KEY_PRESSED) {
             return false;
@@ -333,7 +332,6 @@ implements KeyEventDispatcher {
          *
          * @param evt The event that triggered this action.
          */
-        @Override
         public void actionPerformed(final ActionEvent evt) {
             try {
                 db = new MacshapaDatabase();
@@ -361,7 +359,6 @@ implements KeyEventDispatcher {
          *
          * @param evt The event that triggered this action.
          */
-        @Override
         public void actionPerformed(final ActionEvent evt) {
             try {
                 DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
