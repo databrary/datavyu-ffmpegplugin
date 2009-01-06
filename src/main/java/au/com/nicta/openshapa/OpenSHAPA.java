@@ -12,6 +12,7 @@ import au.com.nicta.openshapa.views.NewDatabase;
 import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
+import au.com.nicta.openshapa.views.ScriptOutput;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
@@ -20,8 +21,11 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintWriter;
 import java.util.Vector;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -111,12 +115,22 @@ implements KeyEventDispatcher {
      */
     public void runScript(final File rubyFile) {
         try {
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            scriptOutputView = new ScriptOutput(mainFrame,
+                                                false,
+                                                scriptOutputStream);
+            OpenSHAPA.getApplication().show(scriptOutputView);
+
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
         } catch (ScriptException e) {
+            scriptWriter.println("***** SCRIPT ERRROR *****");
+            scriptWriter.println("@Line " + e.getLineNumber() + ":'"
+                                 + e.getMessage() + "'");
+            scriptWriter.println("*************************");
+            scriptWriter.flush();
+
             logger.error("Unable to execute script: ", e);
-            logger.error("Script Failure on line: " + e.getLineNumber());
-            logger.error("Script problem: " + e.getMessage());
         } catch (FileNotFoundException e) {
             logger.error("Unable to execute script: ", e);
         }
@@ -232,15 +246,23 @@ implements KeyEventDispatcher {
             // Build the ruby scripting engine.
             ScriptEngineManager m = new ScriptEngineManager();
             rubyEngine = m.getEngineByName("jruby");
-            ScriptContext context = rubyEngine.getContext();
-            context.setAttribute("database", db, ScriptContext.ENGINE_SCOPE);
+
+            // Build output streams for the scripting engine.
+            scriptOutputStream = new PipedInputStream();
+            PipedOutputStream sIn = new PipedOutputStream(scriptOutputStream);
+            scriptWriter = new PrintWriter(sIn);
+            rubyEngine.getContext().setWriter(scriptWriter);
+
+            // Place a reference to the database within the scripting engine.
             rubyEngine.put("db", db);
 
-            // Set ticks - this should be done above, next to the db creation
-            // but it is is currently throwing an exception.
+            // TODO- BugzID:79 This needs to move above showSpreadsheet,
+            // when setTicks is fully implemented.
             db.setTicks(TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
+        } catch (IOException e) {
+            logger.error("Unable to create scripting output streams", e);
         }
 
         show(new OpenSHAPAView(this));
@@ -304,6 +326,12 @@ implements KeyEventDispatcher {
     /** Ruby scripting engine to use for this instance of openshapa. */
     private ScriptEngine rubyEngine;
 
+    /** output stream for messages coming from the scripting engine. */
+    private PipedInputStream scriptOutputStream;
+
+    /** input stream for displaying messages from the scripting engine. */
+    private PrintWriter scriptWriter;
+
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
 
@@ -321,6 +349,9 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
+
+    /** The view to use when displaying the output of a user invoked script. */
+    private ScriptOutput scriptOutputView;
 
     /** The default number of ticks per second to use. */
     private final static int TICKS_PER_SECOND = 1000;
