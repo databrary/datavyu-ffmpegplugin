@@ -115,6 +115,8 @@ implements KeyEventDispatcher {
             rubyEngine.eval(reader);
         } catch (ScriptException e) {
             logger.error("Unable to execute script: ", e);
+            logger.error("Script Failure on line: " + e.getLineNumber());
+            logger.error("Script problem: " + e.getMessage());
         } catch (FileNotFoundException e) {
             logger.error("Unable to execute script: ", e);
         }

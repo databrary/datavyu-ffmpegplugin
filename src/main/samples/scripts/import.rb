@@ -12,7 +12,7 @@ import 'au.com.nicta.openshapa.db.DataCell'
 
 begin
   # Create a data column, for our new
-  puts "Begining import"
+  puts "Begining import.."
   col = DataColumn.new($db, "gait", MatrixVocabElement::MatrixType::FLOAT)
   $db.add_column(col)
 
@@ -20,7 +20,8 @@ begin
   data = Hash.new
 
   # Parse the CSV data file.
-  parsed_file = CSV::Reader.parse(File.open("samples\\scripts\\import_data.txt"))
+  f = File.open("samples/scripts/import_data.txt")
+  parsed_file = CSV::Reader.parse(f)
 
   # For each row in the parsed CSV value, inspect the values and store the
   # needed data.
@@ -31,6 +32,7 @@ begin
 
     # Create a data sample - only if we have a unique timestamp.
     if last_time != time
+      puts "Building time for data cell"
       last_time = time
       data[time] = row[7]
     end
