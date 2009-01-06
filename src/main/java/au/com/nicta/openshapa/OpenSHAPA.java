@@ -116,9 +116,11 @@ implements KeyEventDispatcher {
     public void runScript(final File rubyFile) {
         try {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            scriptOutputView = new ScriptOutput(mainFrame,
-                                                false,
-                                                scriptOutputStream);
+            if (scriptOutputView == null) {
+                scriptOutputView = new ScriptOutput(mainFrame,
+                                                    false,
+                                                    scriptOutputStream);
+            }
             OpenSHAPA.getApplication().show(scriptOutputView);
 
             FileReader reader = new FileReader(rubyFile);

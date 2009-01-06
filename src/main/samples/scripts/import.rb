@@ -60,6 +60,6 @@ begin
   end
   puts "Finished Import"
 
-rescue SystemErrorException => e
-  puts "SystemErrorException: #{e.message}"
+rescue NativeException => e
+    puts "OpenSHAPA Exception: '" + e + "'"
 end
