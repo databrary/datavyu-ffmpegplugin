@@ -21,7 +21,7 @@ begin
   data = Hash.new
 
   # Parse the CSV data file.
-  f = File.open("samples/scripts/import_data.txt")
+  f = File.open("src/main/samples/scripts/import_data.txt")
   parsed_file = CSV::Reader.parse(f)
 
   # For each row in the parsed CSV value, inspect the values and store the
