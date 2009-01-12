@@ -117,10 +117,7 @@ public abstract class VocabElement extends DBElement
         final String mName =
                 "VocabElement::VocabElement(db, name): ";
 
-        if ( ( name == null ) ||
-             ( ! ( name instanceof String ) ) ||
-             ( name.length() <= 0 ) )
-        {
+        if (name == null || name.length() <= 0) {
             throw new SystemErrorException(mName + "Bad name param");
         }
 
@@ -138,8 +135,7 @@ public abstract class VocabElement extends DBElement
         int fArgCount;
         FormalArgument fa;
 
-        if ( ( ve == null ) || ( ! ( ve instanceof VocabElement) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "Bad ve param");
         }
         else if ( ( ve.name != null ) && ( ve.name.length() <= 0 ) )
@@ -277,10 +273,7 @@ public abstract class VocabElement extends DBElement
                                    "Attempt to modify a system vocab element");
         }
 
-        if ( ( name == null ) ||
-             ( ! ( name instanceof String ) ) ||
-             ( name.length() <= 0 ) )
-        {
+        if (name == null || name.length() <= 0) {
             throw new SystemErrorException(mName + "Bad name param");
         }
 
@@ -413,11 +406,6 @@ public abstract class VocabElement extends DBElement
         {
             throw new SystemErrorException(mName +
                                    "Attempt to insert null formal argument");
-        }
-        else if ( ! ( newArg instanceof FormalArgument ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "newArg not a formal argument");
         }
         else if ( ! fArgNameIsUnique(newArg.getFargName()) )
         {
@@ -842,11 +830,6 @@ public abstract class VocabElement extends DBElement
         {
             throw new SystemErrorException(mName +
                                    "Attempt to insert null formal argument");
-        }
-        else if ( ! ( newArg instanceof FormalArgument ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "newArg not a formal argument");
         }
         else if ( ! fArgNameIsUnique(newArg.getFargName()) )
         {
@@ -1386,13 +1369,6 @@ public abstract class VocabElement extends DBElement
         if ( ve == null )
         {
             outStream.print(mName + "ve null on entry.\n");
-
-            throw new SystemErrorException(mName + "ve null on entry.");
-        }
-        else if ( ! ( ve instanceof VocabElement ) )
-        {
-            outStream.print(mName +
-                    "ve not instanceof AbstractFormalArgument.\n");
 
             throw new SystemErrorException(mName + "ve null on entry.");
         }
@@ -2031,13 +2007,6 @@ public abstract class VocabElement extends DBElement
         if ( ve == null )
         {
             outStream.print(mName + "ve null on entry.\n");
-
-            throw new SystemErrorException(mName + "ve null on entry.");
-        }
-        else if ( ! ( ve instanceof VocabElement ) )
-        {
-            outStream.print(mName +
-                    "ve not instanceof AbstractFormalArgument.\n");
 
             throw new SystemErrorException(mName + "ve null on entry.");
         }
@@ -3591,13 +3560,6 @@ public abstract class VocabElement extends DBElement
 
             throw new SystemErrorException(mName + "ve null on entry.");
         }
-        else if ( ! ( ve instanceof VocabElement ) )
-        {
-            outStream.print(mName +
-                    "ve not instanceof AbstractFormalArgument.\n");
-
-            throw new SystemErrorException(mName + "ve null on entry.");
-        }
         else if ( ve.fArgList == null )
         {
             outStream.print(mName + "ve.fArgList null on entry.\n");
@@ -3723,13 +3685,6 @@ public abstract class VocabElement extends DBElement
         if ( ve == null )
         {
             outStream.print(mName + "ve null on entry.\n");
-
-            throw new SystemErrorException(mName + "ve null on entry.");
-        }
-        else if ( ! ( ve instanceof VocabElement ) )
-        {
-            outStream.print(mName +
-                    "ve not instanceof AbstractFormalArgument.\n");
 
             throw new SystemErrorException(mName + "ve null on entry.");
         }

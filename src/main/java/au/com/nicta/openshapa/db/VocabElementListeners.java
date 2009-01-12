@@ -177,11 +177,6 @@ public class VocabElementListeners extends Listeners
             throw new SystemErrorException(mName + ": ve null on entry.");
         }
 
-        if ( ! ( ve instanceof VocabElement ) )
-        {
-             throw new SystemErrorException(mName + ": ve not a VocabElement.");
-        }
-
         if ( ve.getDB() != db )
         {
              throw new SystemErrorException(mName + ": ve.getDB() != db.");
@@ -223,11 +218,6 @@ public class VocabElementListeners extends Listeners
         if ( ve == null )
         {
             throw new SystemErrorException(mName + ": ve null on entry.");
-        }
-
-        if ( ! ( ve instanceof VocabElement ) )
-        {
-             throw new SystemErrorException(mName + ": ve not a VocabElement.");
         }
 
         if ( ve.getDB() != this.db )
