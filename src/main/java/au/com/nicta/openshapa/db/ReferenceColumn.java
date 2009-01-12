@@ -94,6 +94,19 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::ReferenceColumn(rc) */
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ReferenceColumn clone;
+
+        try {
+            clone = new ReferenceColumn(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
+
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

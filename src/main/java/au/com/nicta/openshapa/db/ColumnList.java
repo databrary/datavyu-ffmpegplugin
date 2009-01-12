@@ -548,44 +548,24 @@ public class ColumnList
      *
      *    - Modified method to return an empty vector instead of null if
      *      the column list is empty.
+     *
+     *    - Modified to use clone interface rather than instanceof CF-2009/01/12
      */
-
     protected java.util.Vector<Column> getColumns()
-        throws SystemErrorException
-    {
-        final String mName = "ColumnList::getColumns(): ";
-        java.util.Vector<Column> cols = null;
-        Column col;
-        Column copy;
+    throws SystemErrorException {
+        java.util.Vector<Column> cols = new java.util.Vector<Column>();
+        java.util.Enumeration<Column> entries = this.cl.elements();
 
-        java.util.Enumeration<Column> entries;
-
-        cols = new java.util.Vector<Column>();
-
-        entries = this.cl.elements();
-
-        while ( entries.hasMoreElements() )
-        {
-            col = entries.nextElement();
-
-            if ( col instanceof DataColumn )
-            {
-                copy = new DataColumn((DataColumn)col);
+        while (entries.hasMoreElements()) {
+            Column col = entries.nextElement();
+            try {
+                cols.add((Column) col.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone column.");
             }
-            else if ( col instanceof ReferenceColumn )
-            {
-                copy = new ReferenceColumn((ReferenceColumn)col);
-            }
-            else
-            {
-                throw new SystemErrorException(mName + "Unknown Column type");
-            }
-
-            cols.add(copy);
         }
 
         return cols;
-
     } /* ColumnList::getColumns() */
 
 

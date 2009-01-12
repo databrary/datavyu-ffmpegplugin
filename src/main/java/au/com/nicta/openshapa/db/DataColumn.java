@@ -194,6 +194,18 @@ public class DataColumn extends Column
 
     } /* DataColumn::DataColumn(dc) */
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        DataColumn clone;
+
+        try {
+            clone = new DataColumn(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/
