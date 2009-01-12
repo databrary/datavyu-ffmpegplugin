@@ -463,7 +463,7 @@ public abstract class VocabElement extends DBElement
 
         fArg = fArgList.get(n);
 
-        fArgCopy = FormalArgument.CopyFormalArg(fArg, false, true);
+        fArgCopy = fArg.CopyFormalArg(false, true);
 
         if ( fArgCopy == null )
         {

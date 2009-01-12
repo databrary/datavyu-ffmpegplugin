@@ -557,7 +557,7 @@ public class MatrixVocabElement extends VocabElement
 
         super.appendFormalArg(newArg);
 
-        this.appendCPFormalArg(FormalArgument.CopyFormalArg(newArg, true, true));
+        this.appendCPFormalArg(newArg.CopyFormalArg(true, true));
 
         return;
 
@@ -822,7 +822,7 @@ public class MatrixVocabElement extends VocabElement
 
         super.insertFormalArg(newArg, n);
 
-        this.insertCPFormalArg(FormalArgument.CopyFormalArg(newArg, true, true),
+        this.insertCPFormalArg(newArg.CopyFormalArg(true, true),
                                                             n + 3);
 
         return;
@@ -1184,7 +1184,7 @@ public class MatrixVocabElement extends VocabElement
                         "different type.");
             }
 
-            newCPArg = FormalArgument.CopyFormalArg(newArg, true, true);
+            newCPArg = newArg.CopyFormalArg(true, true);
 
             assert( oldCPArg.getFargType() == newCPArg.getFargType() );
 
@@ -1195,7 +1195,7 @@ public class MatrixVocabElement extends VocabElement
         }
         else
         {
-            newCPArg = FormalArgument.CopyFormalArg(newArg, true, true);
+            newCPArg = newArg.CopyFormalArg(true, true);
         }
 
         for ( FormalArgument t : this.cpfArgList )
@@ -1626,7 +1626,7 @@ public class MatrixVocabElement extends VocabElement
 
         fArg = cpfArgList.get(n);
 
-        fArgCopy = FormalArgument.CopyFormalArg(fArg, false, false);
+        fArgCopy = fArg.CopyFormalArg(false, false);
 
         if ( fArgCopy == null )
         {

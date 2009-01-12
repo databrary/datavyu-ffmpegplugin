@@ -426,11 +426,6 @@ public abstract class FormalArgument
 
     public abstract String toDBString();
 
-
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-
     /**
      * CopyFormalArg()
      *
@@ -447,44 +442,31 @@ public abstract class FormalArgument
      *
      *    - None.
      */
+    protected FormalArgument CopyFormalArg(boolean resetID, boolean resetItsVE)
+    throws SystemErrorException {
 
-    protected static FormalArgument CopyFormalArg(FormalArgument fa,
-                                                  boolean resetID,
-                                                  boolean resetItsVE)
-        throws SystemErrorException
-    {
-        final String mName = "FormalArgument::CopyFormalArg()";
-        FormalArgument fa_copy = null;
+        try {
+            FormalArgument fa_copy = (FormalArgument) this.clone();
 
-
-        if ( fa == null )
-        {
-            throw new SystemErrorException(mName + "fa null on entry.");
-        }
-        else
-        {
-            try {
-                fa_copy = (FormalArgument) fa.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new SystemErrorException("Unable to clone formal argument");
+            if (resetID) {
+                fa_copy.clearID();
             }
+
+            if (resetItsVE) {
+                fa_copy.setItsVocabElement(null);
+                fa_copy.setItsVocabElementID(DBIndex.INVALID_ID);
+            }
+
+            return fa_copy;
+        } catch (CloneNotSupportedException e) {
+            throw new SystemErrorException("Unable to clone formal arg");
         }
-
-        if ( resetID )
-        {
-            fa_copy.clearID();
-        }
-
-        if (resetItsVE )
-        {
-            fa_copy.setItsVocabElement(null);
-            fa_copy.setItsVocabElementID(DBIndex.INVALID_ID);
-        }
-
-        return fa_copy;
-
+               
     } /* FormalArgument::CopyFormalArg() */
 
+    /*************************************************************************/
+    /************************ Class Methods: *********************************/
+    /*************************************************************************/
 
     /**
      * FANameChanged()
