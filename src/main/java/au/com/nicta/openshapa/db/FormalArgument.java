@@ -463,101 +463,10 @@ public abstract class FormalArgument
         }
         else
         {
-            switch ( fa.getFargType() )
-            {
-                case COL_PREDICATE:
-                    if ( ! ( fa instanceof ColPredFormalArg ) )
-                    {
-                        throw new SystemErrorException(mName +
-                                "farg type / class mismatch (0).");
-                    }
-                    fa_copy = new ColPredFormalArg((ColPredFormalArg)fa);
-                    break;
-
-                 case FLOAT:
-                     if ( ! ( fa instanceof FloatFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (1).");
-                     }
-                     fa_copy = new FloatFormalArg((FloatFormalArg)fa);
-                     break;
-
-                 case INTEGER:
-                     if ( ! ( fa instanceof IntFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (2).");
-                     }
-                     fa_copy = new IntFormalArg((IntFormalArg)fa);
-                     break;
-
-                 case NOMINAL:
-                     if ( ! ( fa instanceof NominalFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (3).");
-                     }
-                     fa_copy = new NominalFormalArg((NominalFormalArg)fa);
-                     break;
-
-                 case PREDICATE:
-                     if ( ! ( fa instanceof PredFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (4).");
-                     }
-                     fa_copy = new PredFormalArg((PredFormalArg)fa);
-                     break;
-
-                 case QUOTE_STRING:
-                     if ( ! ( fa instanceof QuoteStringFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (5).");
-                     }
-                     fa_copy = new QuoteStringFormalArg((QuoteStringFormalArg)fa);
-                     break;
-
-                 case TEXT:
-                     if ( ! ( fa instanceof TextStringFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (6).");
-                     }
-                     fa_copy = new TextStringFormalArg((TextStringFormalArg)fa);
-                     break;
-
-                 case TIME_STAMP:
-                     if ( ! ( fa instanceof TimeStampFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (7).");
-                     }
-                     fa_copy = new TimeStampFormalArg((TimeStampFormalArg)fa);
-                     break;
-
-                 case UNTYPED:
-                     if ( ! ( fa instanceof UnTypedFormalArg ) )
-                     {
-                         throw new SystemErrorException(mName +
-                                 "farg type / class mismatch (8).");
-                     }
-                     fa_copy = new UnTypedFormalArg((UnTypedFormalArg)fa);
-                     break;
-
-                 case UNDEFINED:
-                     throw new SystemErrorException(mName +
-                             "fa of undefined type??");
-                     //break;
-
-                default:
-                    throw new SystemErrorException(mName +
-                            "fa of unknown type??");
-                    /* we comment out the following break statement to
-                     * keep the compiler from complaining.
-                     */
-                    //break;
+            try {
+                fa_copy = (FormalArgument) fa.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone formal argument");
             }
         }
 

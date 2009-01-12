@@ -152,8 +152,6 @@ public class TimeStampFormalArg extends FormalArgument
     {
         super(fArg);
 
-        final String mName = "TimeStampFormalArg::TimeStampFormalArg(): ";
-
         this.fargType = fArgType.TIME_STAMP;
 
         // copy over fields.

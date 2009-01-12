@@ -417,12 +417,6 @@ public class VocabElementListeners extends Listeners
                                                "newIncarnation is null(1)?!?");
             }
 
-            if ( ! ( newIncarnation instanceof FormalArgument ) )
-            {
-                throw new SystemErrorException(mName +
-                        "newIncarnation not a FormalArgument?!?");
-            }
-
             id = newIncarnation.getID();
 
             if ( id == DBIndex.INVALID_ID )
@@ -674,11 +668,6 @@ public class VocabElementListeners extends Listeners
     protected void notifyListenersOfChange()
         throws SystemErrorException
     {
-        final String mName = "VEChangeListener::NotifyListenersOfChanges()";
-        DBElement dbe;
-        ExternalVocabElementListener el;
-        InternalVocabElementListener il;
-
         if ( this.changeNoted )
         {
             // first, notify the intenal listeners...

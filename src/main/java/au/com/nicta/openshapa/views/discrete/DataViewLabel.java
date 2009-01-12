@@ -1,34 +1,27 @@
-/*
- * DataViewLabel.java
- *
- * Created on July 9, 2007, 3:17 PM
- *
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import au.com.nicta.openshapa.db.*;
-import au.com.nicta.openshapa.disc.editors.*;
-import au.com.nicta.openshapa.util.*;
+import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.util.JMultilineLabel;
+import au.com.nicta.openshapa.util.UIConfiguration;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author FGA
  */
-public class DataViewLabel
-    extends    au.com.nicta.openshapa.util.JMultilineLabel
-    implements MouseListener
-{
-  protected static FloatEditor     floatEditor     = new FloatEditor();
-  protected static IntegerEditor   integerEditor   = new IntegerEditor();
-  protected static MatrixEditor    matrixEditor    = new MatrixEditor();
-  protected static NominalEditor   nominalEditor   = new NominalEditor();
-  protected static PredicateEditor predicateEditor = new PredicateEditor();
-  protected static StringEditor    stringEditor    = new StringEditor();
-  protected static TimeStampEditor timeStampEditor = new TimeStampEditor();
+public class DataViewLabel extends JMultilineLabel implements MouseListener {
+  //protected static FloatEditor     floatEditor     = new FloatEditor();
+  //protected static IntegerEditor   integerEditor   = new IntegerEditor();
+  //protected static MatrixEditor    matrixEditor    = new MatrixEditor();
+  //protected static NominalEditor   nominalEditor   = new NominalEditor();
+  //protected static PredicateEditor predicateEditor = new PredicateEditor();
+  //protected static StringEditor    stringEditor    = new StringEditor();
+  //protected static TimeStampEditor timeStampEditor = new TimeStampEditor();
 
   protected DataValue value     = null;
   protected boolean   editable  = false;
@@ -167,6 +160,7 @@ public class DataViewLabel
 
   public void mouseClicked(MouseEvent me)
   {
+    /*
     if (this.isEditable() && (this.value != null)) {
       Editor e = this.stringEditor;
 
@@ -190,8 +184,10 @@ public class DataViewLabel
     } else {
       this.redispathMouseEvent(me);
     }
+     */
   }
 
+  /*
   public FloatEditor getFloatEditor()
   {
     return (this.floatEditor);
@@ -225,7 +221,7 @@ public class DataViewLabel
   public TimeStampEditor getTimeStampEditor()
   {
     return (this.timeStampEditor);
-  }
+  }*/
 
   /*
   public final static void main(String[] args)
