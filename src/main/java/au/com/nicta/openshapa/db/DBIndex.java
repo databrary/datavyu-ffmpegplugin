@@ -82,9 +82,7 @@ public class DBIndex
 
         final String mName = "DBIndex::DBIndex(db): ";
 
-        if ( ( db == null ) ||
-             ( ! ( db instanceof Database ) ) )
-        {
+        if (db == null) {
             throw new SystemErrorException(mName + "Bad db param");
         }
 
@@ -163,9 +161,7 @@ public class DBIndex
     {
         final String mName = "DBIndex::addElement(dbe): ";
 
-        if ( ( dbe == null ) ||
-             ( ! ( dbe instanceof DBElement ) ) )
-        {
+        if (dbe == null) {
             throw new SystemErrorException(mName + "Bad dbe param");
         }
         else if ( dbe.getDB() != db )
@@ -316,9 +312,7 @@ public class DBIndex
         final String mName = "DBIndex::replaceElement(dbe): ";
         DBElement old_dbe = null;
 
-        if ( ( dbe == null ) ||
-             ( ! ( dbe instanceof DBElement ) ) )
-        {
+        if (dbe == null) {
             throw new SystemErrorException(mName + "Bad dbe param");
         }
         else if ( dbe.getDB() != db )

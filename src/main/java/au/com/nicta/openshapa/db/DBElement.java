@@ -95,14 +95,11 @@ public abstract class DBElement implements Cloneable
 
          final String mName = "DBElement::DBElement(db): ";
 
-         if ( ( db == null ) ||
-              ( ! ( db instanceof Database ) ) )
-         {
+         if (db == null) {
              throw new SystemErrorException(mName + "Bad db param");
          }
 
          this.db = db;
-
      } /* DBElement::DBElement(db) */
 
      public DBElement(DBElement dbe)
@@ -112,12 +109,9 @@ public abstract class DBElement implements Cloneable
 
          final String mName = "DBElement::DBElement(dbe): ";
 
-         if ( ( dbe == null ) ||
-              ( ! ( dbe instanceof DBElement )  ) ||
-              ( dbe.db == null ) ||
-              ( ! ( dbe.db instanceof Database ) ) ||
-              ( ! ( dbe.db.isValidUID(dbe.lastModUID) ) ) )
-         {
+         if (dbe == null ||
+             dbe.db == null ||
+             !( dbe.db.isValidUID(dbe.lastModUID))) {
              throw new SystemErrorException(mName + "Bad dbe param");
          }
 
@@ -288,9 +282,7 @@ public abstract class DBElement implements Cloneable
     {
         final String mName = "DBElement::setLastModUID(uid): ";
 
-        if ( ( this.db == null ) ||
-             ( ! ( this.db instanceof Database ) ) )
-        {
+        if (this.db == null) {
             throw new SystemErrorException(mName + "Bad this.db on entry");
         }
         else
@@ -329,9 +321,7 @@ public abstract class DBElement implements Cloneable
     {
         final String mName = "DBElement::setLastModUID(uid): ";
 
-        if ( ( this.db == null ) ||
-             ( ! ( this.db instanceof Database ) ) )
-        {
+        if (this.db == null) {
             throw new SystemErrorException(mName + "Bad this.db on entry");
 
         }

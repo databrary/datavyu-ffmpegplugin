@@ -11,6 +11,8 @@ package au.com.nicta.openshapa.db;
 
 import java.util.HashMap;
 import au.com.nicta.openshapa.util.OpenHashtable;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * Class ColumnList
@@ -553,8 +555,8 @@ public class ColumnList
      */
     protected java.util.Vector<Column> getColumns()
     throws SystemErrorException {
-        java.util.Vector<Column> cols = new java.util.Vector<Column>();
-        java.util.Enumeration<Column> entries = this.cl.elements();
+        Vector<Column> cols = new Vector<Column>();
+        Enumeration<Column> entries = this.cl.elements();
 
         while (entries.hasMoreElements()) {
             Column col = entries.nextElement();
@@ -587,14 +589,10 @@ public class ColumnList
     protected java.util.Vector<DataColumn> getDataColumns()
         throws SystemErrorException
     {
-        java.util.Vector<DataColumn> cols = null;
+        Vector<DataColumn> cols = new Vector<DataColumn>();
+        Enumeration<Column> entries = this.cl.elements();
         Column col;
-        DataColumn dc;
-        java.util.Enumeration<Column> entries;
-
-        entries = this.cl.elements();
-
-        cols = new java.util.Vector<DataColumn>();
+        DataColumn dc;        
 
         while ( entries.hasMoreElements() )
         {
