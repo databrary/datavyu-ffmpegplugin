@@ -78,12 +78,6 @@ public class TextStringFormalArg extends FormalArgument
 
         this.fargType = fArgType.TEXT;
 
-        if ( ! ( fArg instanceof TextStringFormalArg ) )
-        {
-            throw new SystemErrorException(
-                    mName + "fArg not a TextStringFormalArg");
-        }
-
         // copy over fields.
 
         this.subRange = fArg.getSubRange();

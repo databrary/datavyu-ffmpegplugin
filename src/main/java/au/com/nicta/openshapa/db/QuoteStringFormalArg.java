@@ -88,14 +88,7 @@ public class QuoteStringFormalArg extends FormalArgument
     {
         super(fArg);
 
-        final String mName = "QuoteStringFormalArg::QuoteStringFormalArg(): ";
-
         this.fargType = fArgType.QUOTE_STRING;
-
-        if ( ! ( fArg instanceof QuoteStringFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a QuoteStringFormalArg");
-        }
 
         // copy over fields.
 

@@ -83,8 +83,7 @@ public final class PredicateVocabElement extends VocabElement
         final String mName =
                 "PredicateVocabElement::PredicateVocabElement(ve): ";
 
-        if ( ( ve == null ) || ( ! ( ve instanceof PredicateVocabElement ) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "bad ve");
         }
 

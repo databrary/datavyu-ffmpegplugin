@@ -79,11 +79,6 @@ public class UnTypedFormalArg
 
         this.fargType = fArgType.UNTYPED;
 
-        if ( ! ( fArg instanceof UnTypedFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a UnTypedFormalArg");
-        }
-
         // copy over fields -- none in this case.
 
     } /* UnTypedFormalArg() -- make copy */

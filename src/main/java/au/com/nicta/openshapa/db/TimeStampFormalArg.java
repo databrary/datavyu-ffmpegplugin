@@ -156,11 +156,6 @@ public class TimeStampFormalArg extends FormalArgument
 
         this.fargType = fArgType.TIME_STAMP;
 
-        if ( ! ( fArg instanceof TimeStampFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a TimeStampFormalArg");
-        }
-
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());
 

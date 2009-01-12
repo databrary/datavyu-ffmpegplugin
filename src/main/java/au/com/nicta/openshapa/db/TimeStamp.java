@@ -98,10 +98,6 @@ public class TimeStamp
     {
       throw new SystemErrorException(mName + "t is null");
     }
-    else if ( ! ( t instanceof TimeStamp ) )
-    {
-      throw new SystemErrorException(mName + "t not a TimeStamp");
-    }
 
     this.setTPS(t.getTPS());
     this.setTime(t.getTime());
