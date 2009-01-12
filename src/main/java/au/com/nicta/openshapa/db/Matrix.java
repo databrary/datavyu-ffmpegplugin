@@ -122,9 +122,7 @@ public class Matrix
         DBElement dbe;
         MatrixVocabElement mve;
 
-        if ( ( db == null ) ||
-             ( ! ( db instanceof Database ) ) )
-        {
+        if (db == null) {
             throw new SystemErrorException(mName + "Bad db param");
         }
 
@@ -171,9 +169,7 @@ public class Matrix
         DBElement dbe;
         MatrixVocabElement mve;
 
-        if ( ( db == null ) ||
-             ( ! ( db instanceof Database ) ) )
-        {
+        if (db == null) {
             throw new SystemErrorException(mName + "Bad db param");
         }
 
@@ -804,11 +800,6 @@ public class Matrix
         if ( mve == null )
         {
             throw new SystemErrorException(mName + "mve == null");
-        }
-
-        if ( ! ( mve instanceof MatrixVocabElement ) )
-        {
-            throw new SystemErrorException(mName + "mve not a matrixVE");
         }
 
         numArgs = mve.getNumFormalArgs();

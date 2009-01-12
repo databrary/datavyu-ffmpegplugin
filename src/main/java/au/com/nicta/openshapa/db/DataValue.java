@@ -109,28 +109,12 @@ public abstract class DataValue extends DBElement
         throws SystemErrorException
     {
         super(dv);
-        
-        final String mName = "DataValue::DataValue(): ";
-        
-        if ( ! ( dv instanceof DataValue ) )
-        {
-            throw new SystemErrorException(mName + 
-                    "dv not an instance of DataValue.");
-        }
-        
+
         this.itsFargID = dv.itsFargID;
         this.itsFargType = dv.itsFargType;
         this.subRange = dv.subRange;
         this.itsCellID = dv.itsCellID;
         this.itsPredID = dv.itsPredID;
-        
-//        /* Could do this with a call to clone(), but this way shuts up 
-//         * the compiler.
-//         */
-//        for ( int i = 0; i < dv.changeListeners.size(); i++ )
-//        {
-//            this.addChangeListener(dv.changeListeners.get(i));
-//        }
     } /* DataValue::DataValue() */
     
         

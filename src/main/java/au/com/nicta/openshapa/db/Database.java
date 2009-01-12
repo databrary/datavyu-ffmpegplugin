@@ -2685,11 +2685,6 @@ public abstract class Database
         {
             throw new SystemErrorException(mName + "null mve.");
         }
-        else if ( ! ( mve instanceof MatrixVocabElement ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "mve not a MatrixVocabElement");
-        }
         else if ( (local_mve = new MatrixVocabElement(mve)) == null )
         {
             throw new SystemErrorException(mName + "couldn't copy mve");
@@ -2911,11 +2906,6 @@ public abstract class Database
         {
             throw new SystemErrorException(mName + "mve == null");
         }
-        else if ( ! ( mve instanceof MatrixVocabElement ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "mve not a MatrixVocabElement");
-        }
         else if ( (local_mve = new MatrixVocabElement(mve)) == null )
         {
             throw new SystemErrorException(mName + "couldn't copy mve");
@@ -2953,11 +2943,6 @@ public abstract class Database
         if ( pve == null )
         {
             throw new SystemErrorException(mName + "null pve.");
-        }
-        else if ( ! ( pve instanceof PredicateVocabElement ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "pve not a PredicateVocabElement");
         }
         else if ( (local_pve = new PredicateVocabElement(pve)) == null )
         {
@@ -3176,11 +3161,6 @@ public abstract class Database
         if ( pve == null )
         {
             throw new SystemErrorException(mName + "pve == null");
-        }
-        else if ( ! ( pve instanceof PredicateVocabElement ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "pve not a PredicateVocabElement");
         }
         else if ( (local_pve = new PredicateVocabElement(pve)) == null )
         {
@@ -3573,10 +3553,6 @@ public abstract class Database
 
             throw new SystemErrorException(mName + "name null on entry.");
 
-        } else if ( ! ( name instanceof String ) ) {
-
-            throw new SystemErrorException(mName + "name is not a string.");
-
         }
 
         len = name.length();
@@ -3832,10 +3808,6 @@ public abstract class Database
         {
             throw new SystemErrorException(mName + "name null on entry.");
         }
-        else if ( ! ( name instanceof String ) )
-        {
-            throw new SystemErrorException(mName + "name is not a string.");
-        }
 
         len = name.length();
 
@@ -3922,13 +3894,7 @@ public abstract class Database
         int len;
 
         if ( name == null ) {
-
             throw new SystemErrorException(mName + "name null on entry.");
-
-        } else if ( ! ( name instanceof String ) ) {
-
-            throw new SystemErrorException(mName + "name is not a string.");
-
         }
 
         len = name.length();

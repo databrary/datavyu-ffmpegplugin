@@ -131,14 +131,7 @@ public class IntFormalArg extends FormalArgument
     {
         super(fArg);
 
-        final String mName = "IntFormalArg::IntFormalArg(): ";
-
         this.fargType = fArgType.INTEGER;
-
-        if ( ! ( fArg instanceof IntFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a IntFormalArg");
-        }
 
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());

@@ -100,11 +100,6 @@ public class NominalFormalArg extends FormalArgument
 
         this.fargType = fArgType.NOMINAL;
 
-        if ( ! ( fArg instanceof NominalFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a NominalFormalArg");
-        }
-
         // copy over fields.
 
         this.subRange = fArg.getSubRange();

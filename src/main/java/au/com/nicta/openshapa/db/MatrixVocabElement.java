@@ -148,8 +148,7 @@ public class MatrixVocabElement extends VocabElement
 
         final String mName = "MatrixVocabElement::MatrixVocabElement(ve): ";
 
-        if ( ( ve == null ) || ( ! ( ve instanceof MatrixVocabElement ) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "bad ve");
         }
 
@@ -1276,11 +1275,6 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName +
                     "Attempt to insert null formal argument");
         }
-        else if ( ! ( newArg instanceof FormalArgument ) )
-        {
-            throw new SystemErrorException(mName +
-                    "newArg not a formal argument");
-        }
         else if ( ! cpfArgNameIsUnique(newArg.getFargName()) )
         {
             throw new SystemErrorException(mName + "newArg name not unique.");
@@ -1899,11 +1893,6 @@ public class MatrixVocabElement extends VocabElement
         {
             throw new SystemErrorException(mName +
                     "Attempt to insert null formal argument");
-        }
-        else if ( ! ( newArg instanceof FormalArgument ) )
-        {
-            throw new SystemErrorException(mName +
-                    "newArg not a formal argument");
         }
         else if ( ! cpfArgNameIsUnique(newArg.getFargName()) )
         {

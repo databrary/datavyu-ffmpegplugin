@@ -146,16 +146,7 @@ public abstract class FormalArgument
     public FormalArgument(FormalArgument fArg)
         throws SystemErrorException
     {
-
         super(fArg);
-
-        final String mName = "AbstractFormalArgument::AbstractFormalArgument(): ";
-
-        if ( ! ( fArg instanceof FormalArgument) )
-        {
-            throw new SystemErrorException(mName +
-                    "fArg not an instance of AbstractFormalArgument.");
-        }
 
         this.setFargName(fArg.getFargName());
         this.setHidden(fArg.getHidden());
@@ -300,14 +291,6 @@ public abstract class FormalArgument
     public void setItsVocabElement(VocabElement vocabElement)
         throws SystemErrorException
     {
-        final String mName = "AbstractFormalArgument::setItsVocabElement(): ";
-
-        if ( ( vocabElement != null ) &&
-             ( ! ( vocabElement instanceof VocabElement ) ) )
-        {
-            throw new SystemErrorException(mName + "bad vocabElement.");
-        }
-
         this.itsVocabElement = vocabElement;
 
         return;
@@ -1678,13 +1661,6 @@ public abstract class FormalArgument
 
             throw new SystemErrorException(mName + "arg null on entry.");
         }
-        else if ( ! ( arg instanceof FormalArgument ) )
-        {
-            outStream.print(mName +
-                            "arg not instanceof FormalArgument.\n");
-
-            throw new SystemErrorException(mName + "arg.db null on entry.");
-        }
 
         /*******************************************/
         /* Start by testing accessors for fArgName */
@@ -1926,14 +1902,6 @@ public abstract class FormalArgument
             outStream.print(mName + "arg null on entry.\n");
 
             throw new SystemErrorException(mName + "arg null on entry.");
-        }
-        else if ( ! ( arg instanceof FormalArgument ) )
-        {
-            outStream.print(mName +
-                    "arg not instanceof FormalArgument.\n");
-
-            throw new SystemErrorException(mName +
-                                           "arg not instanceof FormalArgument.");
         }
         else if ( (db = arg.getDB()) == null )
         {

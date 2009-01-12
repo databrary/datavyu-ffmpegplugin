@@ -138,14 +138,7 @@ public class FloatFormalArg extends FormalArgument
     {
         super(fArg);
 
-        final String mName = "FloatFormalArg::FloatFormalArg(): ";
-
         this.fargType = fArgType.FLOAT;
-
-        if ( ! ( fArg instanceof FloatFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not a FloatFormalArg");
-        }
 
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());

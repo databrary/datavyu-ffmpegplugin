@@ -87,9 +87,7 @@ public class ColumnList
 
         final String mName = "ColumnList::ColumnList(db): ";
 
-        if ( ( db == null ) ||
-             ( ! ( db instanceof Database ) ) )
-        {
+        if (db == null) {
             throw new SystemErrorException(mName + "Bad db param");
         }
 
@@ -322,9 +320,7 @@ public class ColumnList
         DBElement dbe;
         MatrixVocabElement mve = null;
 
-        if ( ( col == null ) ||
-             ( ! ( col instanceof Column ) ) )
-        {
+        if (col == null) {
             throw new SystemErrorException(mName + "Bad col param");
         }
         else if ( col.getDB() != db )
@@ -1050,12 +1046,10 @@ public class ColumnList
        throws SystemErrorException
     {
         final String mName = "ColumnList::replaceDataColumn(dbe): ";
-        boolean matchFound = false;
         Column col;
         DataColumn old_dc = null;
 
-        if ( ( new_dc == null ) || ( ! ( new_dc instanceof DataColumn ) ) )
-        {
+        if (new_dc == null) {
             throw new SystemErrorException(mName + "Bad new_dc param");
         }
         else if ( new_dc.getDB() != this.db )
@@ -1242,12 +1236,10 @@ public class ColumnList
        throws SystemErrorException
     {
         final String mName = "ColumnList::replaceReferenceColumn(dbe): ";
-        boolean matchFound = false;
         Column col;
         ReferenceColumn old_rc = null;
 
-        if ( ( new_rc == null ) || ( ! ( new_rc instanceof ReferenceColumn ) ) )
-        {
+        if (new_rc == null) {
             throw new SystemErrorException(mName + "Bad new_rc param");
         }
         else if ( new_rc.getDB() != this.db )

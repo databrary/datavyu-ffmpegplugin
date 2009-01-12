@@ -104,11 +104,6 @@ public class PredFormalArg extends FormalArgument
 
         this.fargType = fArgType.PREDICATE;
 
-        if ( ! ( fArg instanceof PredFormalArg ) )
-        {
-            throw new SystemErrorException(mName + "fArg not PredFormalArg");
-        }
-
         // copy over fields.
 
         this.subRange = fArg.getSubRange();
