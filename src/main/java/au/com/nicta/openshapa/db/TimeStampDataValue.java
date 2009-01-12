@@ -15,7 +15,7 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class TimeStampDataValue extends DataValue
+public final class TimeStampDataValue extends DataValue
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/

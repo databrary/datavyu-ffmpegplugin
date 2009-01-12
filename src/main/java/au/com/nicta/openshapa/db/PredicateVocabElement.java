@@ -18,7 +18,7 @@ package au.com.nicta.openshapa.db;
  * @author FGA
  */
 
-public class PredicateVocabElement extends VocabElement
+public final class PredicateVocabElement extends VocabElement
 {
 
     /*************************************************************************/

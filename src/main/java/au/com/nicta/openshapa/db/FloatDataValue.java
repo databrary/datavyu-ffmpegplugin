@@ -15,7 +15,7 @@ package au.com.nicta.openshapa.db;
  *
  * @author mainzer
  */
-public class FloatDataValue extends DataValue {
+public final class FloatDataValue extends DataValue {
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/

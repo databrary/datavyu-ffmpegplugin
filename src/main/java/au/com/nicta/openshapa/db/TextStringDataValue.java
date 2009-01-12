@@ -16,7 +16,7 @@ package au.com.nicta.openshapa.db;
  * @author mainzer
  */
 
-public class TextStringDataValue extends DataValue
+public final class TextStringDataValue extends DataValue
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/

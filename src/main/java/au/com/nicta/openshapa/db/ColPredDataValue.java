@@ -20,7 +20,7 @@ import java.util.Vector;
  *
  * @author mainzer
  */
-public class ColPredDataValue extends DataValue
+public final class ColPredDataValue extends DataValue
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/

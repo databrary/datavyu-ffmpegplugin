@@ -7,7 +7,7 @@ package au.com.nicta.openshapa.db;
  * @author mainzer
  */
 
-public class UndefinedDataValue extends DataValue
+public final class UndefinedDataValue extends DataValue
 {
     /*************************************************************************/
     /***************************** Fields: ***********************************/
