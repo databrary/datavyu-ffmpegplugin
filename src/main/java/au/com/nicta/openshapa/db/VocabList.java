@@ -87,9 +87,7 @@ public class VocabList
 
         final String mName = "VocabList::VocabList(db): ";
 
-        if ( ( db == null ) ||
-             ( ! ( db instanceof Database ) ) )
-        {
+        if (db == null) {
             throw new SystemErrorException(mName + "Bad db param");
         }
 
@@ -324,9 +322,7 @@ public class VocabList
         final String mName = "VocabList::addElement(ve): ";
         VocabElementListeners nl = null;
 
-        if ( ( ve == null ) ||
-             ( ! ( ve instanceof VocabElement ) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "Bad ve param");
         }
         else if ( ve.getDB() != db )
@@ -407,9 +403,7 @@ public class VocabList
         int numCPFormalArgs = 0;
         FormalArgument farg;
 
-        if ( ( ve == null ) ||
-             ( ! ( ve instanceof VocabElement ) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "Bad ve param");
         }
 
@@ -1345,9 +1339,7 @@ public class VocabList
         MatrixVocabElement mve = null;
         MatrixVocabElement old_mve = null;
 
-        if ( ( ve == null ) ||
-             ( ! ( ve instanceof VocabElement ) ) )
-        {
+        if (ve == null) {
             throw new SystemErrorException(mName + "Bad ve param");
         }
         else if ( ve.getDB() != this.db )
