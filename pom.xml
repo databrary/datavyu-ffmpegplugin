@@ -4,7 +4,7 @@
   <groupId>au.com.nicta.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.2</version>
+  <version>0.3</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -37,6 +37,21 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <ciManagement>
+    <system>continuum</system>
+    <url>http://openshapa.qrl.nicta.com.au:8080/dashboard/</url>
+  </ciManagement>
+
+  <issueManagement>
+    <system>Fogbugz</system>
+    <url>https://cose.fogbugz.com/</url>
+  </issueManagement>
+
+  <scm>
+    <tag>master</tag>
+    <url>http://openshapa.qrl.nicta.com.au/viewgit/?a=summary&amp;p=openshapa</url>
+  </scm>
 
   <!-- External repositories - where to find third-party dependancies. -->
   <repositories>
