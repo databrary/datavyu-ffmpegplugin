@@ -1023,45 +1023,18 @@ public class Matrix
                     break;
 
                 case UNTYPED:
-                    if ( dv instanceof FloatDataValue )
-                    {
-                        cdv = new FloatDataValue((FloatDataValue)dv);
-                    }
-                    else if ( dv instanceof IntDataValue )
-                    {
-                        cdv = new IntDataValue((IntDataValue)dv);
-                    }
-                    else if ( dv instanceof NominalDataValue )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
-                    }
-                    else if ( dv instanceof PredDataValue )
-                    {
-                        cdv = new PredDataValue((PredDataValue)dv);
-                    }
-                    else if ( dv instanceof TimeStampDataValue )
-                    {
-                        cdv = new TimeStampDataValue((TimeStampDataValue)dv);
-                    }
-                    else if ( dv instanceof QuoteStringDataValue )
-                    {
-                        cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
-                    }
-                    else if ( dv instanceof UndefinedDataValue )
-                    {
-                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( dv instanceof TextStringDataValue )
-                    {
+                    if (dv.getClass().equals(TextStringDataValue.class)) {
                         throw new SystemErrorException(mName +
                                 "Text String(s) can't be " +
                                 "substituted for untyped arguments.");
                     }
-                    else
-                    {
-                        throw new SystemErrorException(mName +
-                                "Unknown subtype of DataValue");
+
+                    try {
+                        cdv = (DataValue) dv.clone();
+                    } catch (CloneNotSupportedException e) {
+                        throw new SystemErrorException("Unable to clone dv.");
                     }
+
                     break;
 
                 case UNDEFINED:
