@@ -94,9 +94,17 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::ReferenceColumn(rc) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        ReferenceColumn clone;
+        ReferenceColumn clone = (ReferenceColumn) super.clone();
 
         try {
             clone = new ReferenceColumn(this);

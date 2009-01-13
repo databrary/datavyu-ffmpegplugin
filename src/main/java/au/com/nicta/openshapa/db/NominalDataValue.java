@@ -135,6 +135,25 @@ public final class NominalDataValue extends DataValue {
 
     } /* NominalDataValue::NominalDataValue(dv) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        NominalDataValue clone = (NominalDataValue) super.clone();
+        try {
+            clone = new NominalDataValue(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

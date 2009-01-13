@@ -263,6 +263,25 @@ public class Matrix
 
     } /* Matrix::Matrix(m, blindCopy) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Matrix clone = (Matrix) super.clone();
+        try {
+            clone = new Matrix(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

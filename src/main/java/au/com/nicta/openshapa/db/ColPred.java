@@ -294,6 +294,26 @@ public class ColPred extends DBElement
         }
     }/* ColPred::ColPred(colPred, blindCopy) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ColPred clone = (ColPred) super.clone();
+        try {
+            clone = new ColPred(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
+
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

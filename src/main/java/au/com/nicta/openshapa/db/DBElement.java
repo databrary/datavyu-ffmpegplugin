@@ -375,6 +375,14 @@ public abstract class DBElement implements Cloneable
 
     } /* DBElement::ResetID(dbe) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
         // Perform a shallow copy of this object.

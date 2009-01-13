@@ -194,9 +194,17 @@ public class DataColumn extends Column
 
     } /* DataColumn::DataColumn(dc) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        DataColumn clone;
+        DataColumn clone = (DataColumn) super.clone();
 
         try {
             clone = new DataColumn(this);

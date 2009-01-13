@@ -118,6 +118,26 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::TextStringDataValue(dv) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        TextStringDataValue clone = (TextStringDataValue) super.clone();
+
+        try {
+            clone = new TextStringDataValue(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

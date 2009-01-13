@@ -1464,49 +1464,10 @@ public class Predicate extends DBElement
                     break;
 
                 case UNTYPED:
-                    if ( dv instanceof ColPredDataValue )
-                    {
-                        cdv = new ColPredDataValue((ColPredDataValue)dv);
-                    }
-                    if ( dv instanceof FloatDataValue )
-                    {
-                        cdv = new FloatDataValue((FloatDataValue)dv);
-                    }
-                    else if ( dv instanceof IntDataValue )
-                    {
-                        cdv = new IntDataValue((IntDataValue)dv);
-                    }
-                    else if ( dv instanceof NominalDataValue )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
-                    }
-                    else if ( dv instanceof PredDataValue )
-                    {
-                        cdv = new PredDataValue((PredDataValue)dv);
-                    }
-                    else if ( dv instanceof TimeStampDataValue )
-                    {
-                        cdv = new TimeStampDataValue((TimeStampDataValue)dv);
-                    }
-                    else if ( dv instanceof QuoteStringDataValue )
-                    {
-                        cdv =
-                             new QuoteStringDataValue((QuoteStringDataValue)dv);
-                    }
-                    else if ( dv instanceof UndefinedDataValue )
-                    {
-                        cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( dv instanceof TextStringDataValue )
-                    {
-                        throw new SystemErrorException(mName +
-                                "A TextStringDataValue may not be used to " +
-                                "replace an untyped formal argument");
-                    }
-                    else
-                    {
-                        throw new SystemErrorException(mName +
-                                "Unknown subtype of DataValue");
+                    try {
+                        cdv = (DataValue) dv.clone();
+                    } catch (CloneNotSupportedException e) {
+                        throw new SystemErrorException("Unable to clone dv.");
                     }
                     break;
 

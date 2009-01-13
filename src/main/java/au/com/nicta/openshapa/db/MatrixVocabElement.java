@@ -1776,6 +1776,7 @@ public class MatrixVocabElement extends VocabElement
         {
             throw new SystemErrorException(mName + "cpfArg is null?!?");
         }
+
         if ( ! ( ( cpfArg instanceof UnTypedFormalArg ) ||
                  ( cpfArg instanceof ColPredFormalArg ) ||
                  ( cpfArg instanceof IntFormalArg ) ||
