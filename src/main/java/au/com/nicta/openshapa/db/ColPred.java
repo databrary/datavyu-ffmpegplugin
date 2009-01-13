@@ -5245,9 +5245,13 @@ public class ColPred extends DBElement
 
         ColPred c = (ColPred) obj;
 
-        return (c.db == this.db) && (c.id == this.id) && (c.mveID == this.mveID)
-               && (c.varLen == this.varLen) && (c.mveName.equals(this.mveName))
-               && c.argList.equals(this.argList);
+        return (c.db == this.db)
+            && (c.id == this.id)
+            && (c.mveID == this.mveID)
+            && (c.varLen == this.varLen)
+            && (c.mveName.equals(this.mveName))
+            && c.argList.equals(this.argList)
+            && super.equals(obj);
     }
 
 

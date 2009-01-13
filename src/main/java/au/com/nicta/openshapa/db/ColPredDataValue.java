@@ -972,59 +972,44 @@ public final class ColPredDataValue extends DataValue
 
     } /* ColPredDataValue::registerPreds() */
 
-
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
 
     /**
-     * ColPredDataValuesAreLogicallyEqual()
-     *
-     * Given two instances of ColPredDataValue, return true if they contain
-     * identical data, and false otherwise.
-     *
-     * Note that this method does only tests specific to this subclass of
-     * DataValue -- the presumption is that this method has been called by
-     * DataValue.DataValuesAreLogicallyEqual() which has already done all
-     * generic tests.
-     *                                              JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @return A hash code value for the object.
      */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += this.itsValue.hashCode() * SEED1;
 
-    protected static boolean ColPredDataValuesAreLogicallyEqual(
-                                                        ColPredDataValue cpdv0,
-                                                        ColPredDataValue cpdv1)
-        throws SystemErrorException
-    {
-        final String mName =
-                "ColPredDataValue::ColPredDataValuesAreLogicallyEqual()";
-        boolean dataValuesAreEqual = true;
+        return hash;
+    }
 
-        if ( ( cpdv0 == null ) || ( cpdv1 == null ) )
-        {
-            throw new SystemErrorException(mName +
-                                           ": cpdv0 or cpdv1 null on entry.");
-        }
-        else if ( ( cpdv0.itsValue == null ) || ( cpdv1.itsValue == null ) )
-        {
-            throw new SystemErrorException(mName +
-                    ": cpdv0.itsValue or cpdv1.itsValue null on entry.");
-        }
-
-        if ( cpdv0 != cpdv1 )
-        {
-            if (cpdv0.itsValue.equals(cpdv1.itsValue)) {
-                dataValuesAreEqual = false;
-            }
+    /**
+     * Compares this ColPredDataValue against another object.
+     * Assumption: ColPredDataValuess are not equal just because their id fields
+     * match. This function will test that db, id and lastModUID all match.
+     * If id can be proved to be enough for testing equality we should
+     * implement a simpler, faster version.
+     *
+     * @param obj The object to compare this against.
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
 
-        return dataValuesAreEqual;
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
 
-    } /* ColPredDataValue::ColPredDataValuesAreLogicallyEqual() */
-
+        ColPredDataValue cpdv = (ColPredDataValue) obj;
+        return this.itsValue.equals(cpdv.itsValue)
+            && super.equals(obj);
+    }
 
     /*************************************************************************/
     /************************ Class Methods: *********************************/
