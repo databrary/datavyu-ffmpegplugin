@@ -1016,10 +1016,7 @@ public final class ColPredDataValue extends DataValue
 
         if ( cpdv0 != cpdv1 )
         {
-            if ( ( cpdv0.itsValue != cpdv1.itsValue ) &&
-                 ( ! ColPred.ColPredsAreLogicallyEqual(cpdv0.itsValue,
-                                                       cpdv1.itsValue) ) )
-            {
+            if (cpdv0.itsValue.equals(cpdv1.itsValue)) {
                 dataValuesAreEqual = false;
             }
         }

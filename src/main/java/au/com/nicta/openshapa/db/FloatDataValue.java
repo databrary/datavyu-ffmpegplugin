@@ -515,8 +515,6 @@ public final class FloatDataValue extends DataValue {
             && super.equals(obj);
     }
 
-//<<<<<<< HEAD:src/main/java/au/com/nicta/openshapa/db/FloatDataValue.java
-
     /*************************************************************************/
     /**************************** Test Code: *********************************/
     /*************************************************************************/

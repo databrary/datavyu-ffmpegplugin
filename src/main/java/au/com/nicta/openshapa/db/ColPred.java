@@ -5189,86 +5189,66 @@ public class ColPred extends DBElement
 
     } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5) */
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED5 = 17;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED6 = 19;
 
     /**
-     * ColPredsAreLogicallyEqual()
-     *
-     * Given two instances of ColPred, return true if they contain
-     * identical data, and false otherwise.  Observe that the cp0 and
-     * cp1 may be null, as this indicates an undefined predicate value.
-     *
-     *                                              JRM -- 8/11/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @return A hash code value for the object.
      */
+    @Override
+    public int hashCode() {
+        long hash = super.hashCode();
+        hash += this.db == null ? 0 : this.db.hashCode() * SEED1;
+        hash += this.id * SEED2;
+        hash += this.mveID * SEED3;
+        hash += new Boolean(this.varLen).hashCode() * SEED4;
+        hash += this.mveName == null ? 0 : this.mveName.hashCode() * SEED5;
+        hash += this.argList == null ? 0 : this.argList.hashCode() * SEED6;
 
-    protected static boolean ColPredsAreLogicallyEqual(ColPred cp0,
-                                                       ColPred cp1)
-        throws SystemErrorException
-    {
-        final String mName = "ColPred::ColPredsAreLogicallyEqual()";
-        boolean colPredsAreEqual = true;
+        return (int) (hash ^ (hash >>> 32));
+    }
 
-        if ( ( cp0 != null ) && ( cp0.mveName == null ) )
-        {
-            throw new SystemErrorException(mName + ": cp0.mveName is null.");
+    /**
+     * Compares this ColPred against another object.
+     * Assumption: ColPreds are not equal just because their id fields match.
+     * This function will test that db, id and lastModUID all match.
+     * If id can be proved to be enough for testing equality we should
+     * implement a simpler, faster version.
+     *
+     * @param obj The object to compare this against.
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
 
-        if ( ( cp1 != null ) && ( cp1.mveName == null ) )
-        {
-            throw new SystemErrorException(mName + ": cp1.mveName is null.");
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
         }
 
-        if ( cp0 != cp1 )
-        {
-            if ( ( ( cp0 == null ) && ( cp1 != null ) ) ||
-                 ( ( cp0 != null ) && ( cp1 == null ) ) )
-            {
-                colPredsAreEqual = false;
-            }
-            else if ( ( cp0.db != cp1.db ) ||
-                      ( cp0.id != cp1.id ) ||
-                      ( cp0.mveID != cp1.mveID ) ||
-                      ( cp0.varLen != cp1.varLen ) )
-            {
-                colPredsAreEqual = false;
-            }
-            else if ( ( cp0.mveName != cp1.mveName ) &&
-                      ( cp0.mveName.compareTo(cp1.mveName) != 0 ) )
-            {
-                colPredsAreEqual = false;
-            }
-            else if ( ( ( cp0.argList == null ) && ( cp1.argList != null ) ) ||
-                      ( ( cp0.argList != null ) && ( cp1.argList == null ) ) )
-            {
-                colPredsAreEqual = false;
-            }
-            else if ( ( cp0.argList != null ) && ( cp1.argList != null ) )
-            {
-                if ( cp0.argList.size() != cp1.argList.size() )
-                {
-                    colPredsAreEqual = false;
-                }
-                else
-                {
-                    int i = 0;
-                    int num_args = cp0.argList.size();
+        ColPred c = (ColPred) obj;
 
-                    while ( ( i < num_args ) && ( colPredsAreEqual ) )
-                    {
-                        colPredsAreEqual = cp0.argList.get(i)
-                                                    .equals(cp1.argList.get(i));
-                        i++;
-                    }
-                }
-            }
-        }
-
-        return colPredsAreEqual;
-
-    } /* ColPred::colPredsAreLogicallyEqual() */
+        return (c.db == this.db) && (c.id == this.id) && (c.mveID == this.mveID)
+               && (c.varLen == this.varLen) && (c.mveName.equals(this.mveName))
+               && c.argList.equals(this.argList);
+    }
 
 
     /*************************************************************************/

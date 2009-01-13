@@ -226,7 +226,7 @@ public class ColPredDataValueTest {
         ColPredDataValue float_cpdv0 = new ColPredDataValue(db, colPredFarg.getID(), float_cp0);
         ColPred source = float_cpdv0.getItsValue();
 
-        assertEquals(ColPred.ColPredsAreLogicallyEqual(source, float_cp0), true);
+        assertEquals(source, float_cp0);
     }
 
     /**
@@ -254,7 +254,7 @@ public class ColPredDataValueTest {
         ColPred float_cp0 = new ColPred(db, float_mve.getID(), float_cp_arg_list);
         cpdv.setItsValue(float_cp0);
 
-        assertEquals(ColPred.ColPredsAreLogicallyEqual(float_cp0, cpdv.getItsValue()), true);
+        assertEquals(float_cp0, cpdv.getItsValue());
     }
 
 }
