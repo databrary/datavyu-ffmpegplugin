@@ -981,14 +981,14 @@ public final class ColPredDataValue extends DataValue
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.itsValue.hashCode() * SEED1;
+        hash += this.itsValue == null ? 0 : this.itsValue.hashCode() * SEED1;
 
         return hash;
     }
 
     /**
      * Compares this ColPredDataValue against another object.
-     * Assumption: ColPredDataValuess are not equal just because their id fields
+     * Assumption: ColPredDataValues are not equal just because their id fields
      * match. This function will test that db, id and lastModUID all match.
      * If id can be proved to be enough for testing equality we should
      * implement a simpler, faster version.
@@ -1006,9 +1006,9 @@ public final class ColPredDataValue extends DataValue
             return false;
         }
 
-        ColPredDataValue cpdv = (ColPredDataValue) obj;
-        return this.itsValue.equals(cpdv.itsValue)
-            && super.equals(obj);
+        ColPredDataValue c = (ColPredDataValue) obj;
+        return super.equals(obj)
+            && this.itsValue == null ? false : this.itsValue.equals(c.itsValue);
     }
 
     /*************************************************************************/

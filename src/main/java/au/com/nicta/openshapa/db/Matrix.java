@@ -4939,73 +4939,54 @@ public class Matrix
 
     } /* Matrix::Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) */
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
 
     /**
-     * MatriciesAreLogicallyEqual()
-     *
-     * Given two instances of Matrix, return true if they contain identical
-     * data, and false otherwise.
-     *                                              JRM -- 2/7/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @return A hash code value for the object.
      */
+    @Override
+    public int hashCode() {
+        long hash = super.hashCode();
+        hash += this.mveID * SEED1;
+        hash += new Boolean(this.varLen).hashCode() * SEED2;
+        hash += this.argList == null ? 0 : this.argList.hashCode() * SEED3;
 
-    public static boolean MatriciesAreLogicallyEqual(Matrix m0,
-                                                     Matrix m1)
-        throws SystemErrorException
-    {
-        final String mName = "Matrix::MatriciesAreLogicallyEqual()";
-        boolean matriciesAreEqual = true;
+        return (int) (hash ^ (hash >>> 32));
+    }
 
-        if ( ( m0 == null ) || ( m1 == null ) )
-        {
-            throw new SystemErrorException(mName + ": m0 or m1 null on entry.");
+    /**
+     * Compares this Matrix against another object.
+     * Assumption: Matrices are not equal just because their id fields match.
+     * This function will test that db, id and lastModUID all match.
+     * If id can be proved to be enough for testing equality we should
+     * implement a simpler, faster version.
+     *
+     * @param obj The object to compare this against.
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
 
-        if ( m0 != m1 )
-        {
-            if ( ( m0.db != m1.db ) ||
-                 ( m0.mveID != m1.mveID ) ||
-                 ( m0.varLen != m1.varLen ) )
-            {
-                matriciesAreEqual = false;
-            }
-
-            if ( ( m0.argList == null ) ||
-                 ( m1.argList == null ) )
-            {
-                throw new SystemErrorException(mName +
-                        ": m0.argList and/or m1.argList is null.");
-            }
-
-            if ( ( matriciesAreEqual ) &&
-                 ( m0.argList != m1.argList ) )
-            {
-                if ( m0.argList.size() != m1.argList.size() )
-                {
-                    matriciesAreEqual = false;
-                }
-                else
-                {
-                    int i = 0;
-
-                    while ( ( i < m0.argList.size() ) &&
-                            ( matriciesAreEqual ) )
-                    {
-                        matriciesAreEqual = m0.argList.get(i)
-                                                     .equals(m1.argList.get(i));
-                        i++;
-                    }
-                }
-            }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
         }
 
-        return matriciesAreEqual;
-
-    } /* Matrix::MatriciesAreLogicallyEqual() */
-
+        Matrix m = (Matrix) obj;
+        return this.mveID == m.mveID
+            && this.varLen == m.varLen
+            && this.argList == null ? false : this.argList.equals(m.argList)
+            && super.equals(obj);
+    }
 
     /*************************************************************************/
     /**************************** Test Code: *********************************/
