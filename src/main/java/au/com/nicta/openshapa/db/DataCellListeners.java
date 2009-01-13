@@ -347,7 +347,7 @@ public class DataCellListeners extends Listeners
         }
         this.newVal = newCell.getVal();
 
-        if ( ! Matrix.MatriciesAreLogicallyEqual(this.oldVal, this.newVal) )
+        if ( ! this.oldVal.equals(this.newVal) )
         {
             this.changeNoted = true;
             this.valChanged = true;
