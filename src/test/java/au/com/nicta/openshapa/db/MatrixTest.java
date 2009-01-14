@@ -1,5 +1,7 @@
 package au.com.nicta.openshapa.db;
 
+import java.io.PrintStream;
+import junitx.util.PrivateAccessor;
 import java.util.Vector;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -239,9 +241,10 @@ public class MatrixTest {
      *************************************************************************/
 
 // TODO - Refactor to JUnit style
-// Currently just a copy of John's tests with some refactor around glitches
-// Will pass within JUnit but output to System.Out Output window whether all
-// the tests truly pass.
+// Currently just a copy of John's tests with small refactors to handle
+// some private access to methods and fields.
+// Asserts at the end if anything fails then you need to review the output
+// to locate the cause of the fail.
 
     /**
      * TestClassMatrix()
@@ -256,11 +259,7 @@ public class MatrixTest {
      */
     @Test
     public void TestClassMatrix() throws SystemErrorException {
-//    public static boolean TestClassMatrix(java.io.PrintStream outStream,
-//                                          boolean verbose)
-//        throws SystemErrorException
-//    {
-        java.io.PrintStream outStream = System.out;
+        PrintStream outStream = System.out;
         boolean verbose = true;
 
         boolean pass = true;
@@ -311,7 +310,7 @@ public class MatrixTest {
             outStream.print("All tests passed for class Matrix.\n\n");
         }
 
-//        return pass;
+        assertTrue(pass);
 
     } /* Matrix::TestClassMatrix() */
 
@@ -4511,22 +4510,27 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-// TODO: test throw correctly
-// calls a private method of Matrix so commented out here
-//            try
-//            {
-//                fargID = pve0.getFormalArg(0).getID();
-//
-//                mve = float_matrix.lookupMatrixVE(fargID);
-//
-//                completed = true;
-//            }
-//
-//            catch (SystemErrorException e)
-//            {
-//                threwSystemErrorException = true;
-//                systemErrorExceptionString = e.toString();
-//            }
+            try
+            {
+                fargID = pve0.getFormalArg(0).getID();
+
+             //   mve = float_matrix.lookupMatrixVE(fargID);
+
+                Object obj = PrivateAccessor.invoke(float_matrix,
+                        "lookupMatrixVE",
+                        new Class[]{long.class}, new Object[]{fargID});
+                if (obj != null) {
+                    mve = (MatrixVocabElement) obj;
+                }
+
+                completed = true;
+            } catch (SystemErrorException e) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.toString();
+            } catch (Throwable th) {
+                outStream.printf("float_matrix.invoke threw unexpectedly");
+                failures++;
+            }
 
             if ( ( fargID == DBIndex.INVALID_ID ) ||
                  ( mve != null ) ||
@@ -4570,20 +4574,25 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-// TODO: test throw correctly
-// calls a private method of Matrix so commented out here
-//            try
-//            {
+            try
+            {
 //                mve = int_matrix.lookupMatrixVE(500);
-//
-//                completed = true;
-//            }
-//
-//            catch (SystemErrorException e)
-//            {
-//                threwSystemErrorException = true;
-//                systemErrorExceptionString = e.toString();
-//            }
+
+                Object obj = PrivateAccessor.invoke(int_matrix,
+                        "lookupMatrixVE",
+                        new Class[]{long.class}, new Object[]{500});
+                if (obj != null) {
+                    mve = (MatrixVocabElement) obj;
+                }
+
+                completed = true;
+            } catch (SystemErrorException e) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.toString();
+            } catch (Throwable th) {
+                outStream.printf("int_matrix.invoke threw unexpectedly");
+                failures++;
+            }
 
             if ( ( mve != null ) ||
                  ( completed ) ||
@@ -4620,20 +4629,28 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-// TODO: test throw correctly
-// calls a private method of Matrix so commented out here
-//            try
-//            {
+            try
+            {
 //                mve = matrix_matrix0.lookupMatrixVE(DBIndex.INVALID_ID);
-//
-//                completed = true;
-//            }
-//
-//            catch (SystemErrorException e)
-//            {
-//                threwSystemErrorException = true;
-//                systemErrorExceptionString = e.toString();
-//            }
+
+                Object obj = PrivateAccessor.invoke(matrix_matrix0,
+                        "lookupMatrixVE",
+                        new Class[]{long.class},
+                        new Object[]{DBIndex.INVALID_ID});
+                if (obj != null) {
+                    mve = (MatrixVocabElement) obj;
+                }
+
+
+                completed = true;
+            } catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.toString();
+            } catch (Throwable th) {
+                outStream.printf("matrix_matrix0.invoke threw unexpectedly");
+                failures++;
+            }
 
             if ( ( mve != null ) ||
                  ( completed ) ||
@@ -9653,112 +9670,112 @@ public class MatrixTest {
         // if failures == 0, check to see if the copies are valid */
         if ( failures == 0 )
         {
-            failures += Matrix.VerifyMatrixCopy(empty_float_matrix,
+            failures += VerifyMatrixCopy(empty_float_matrix,
                                          empty_float_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_float_matrix",
                                          "empty_float_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_int_matrix,
+            failures += VerifyMatrixCopy(empty_int_matrix,
                                          empty_int_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_int_matrix",
                                          "empty_int_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_matrix_matrix0,
+            failures += VerifyMatrixCopy(empty_matrix_matrix0,
                                          empty_matrix_matrix0_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix0",
                                          "empty_matrix_matrix0_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_matrix_matrix1,
+            failures += VerifyMatrixCopy(empty_matrix_matrix1,
                                          empty_matrix_matrix1_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix1",
                                          "empty_matrix_matrix1_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_matrix_matrix2,
+            failures += VerifyMatrixCopy(empty_matrix_matrix2,
                                          empty_matrix_matrix2_copy,
                                          outStream,
                                          verbose,
                                          "empty_matrix_matrix2",
                                          "empty_matrix_matrix2_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_nominal_matrix,
+            failures += VerifyMatrixCopy(empty_nominal_matrix,
                                          empty_nominal_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_nominal_matrix",
                                          "empty_nominal_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_pred_matrix,
+            failures += VerifyMatrixCopy(empty_pred_matrix,
                                          empty_pred_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_pred_matrix",
                                          "empty_pred_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(empty_text_matrix,
+            failures += VerifyMatrixCopy(empty_text_matrix,
                                          empty_text_matrix_copy,
                                          outStream,
                                          verbose,
                                          "empty_text_matrix",
                                          "empty_text_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(float_matrix,
+            failures += VerifyMatrixCopy(float_matrix,
                                          float_matrix_copy,
                                          outStream,
                                          verbose,
                                          "float_matrix",
                                          "float_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(int_matrix,
+            failures += VerifyMatrixCopy(int_matrix,
                                          int_matrix_copy,
                                          outStream,
                                          verbose,
                                          "int_matrix",
                                          "int_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(matrix_matrix0,
+            failures += VerifyMatrixCopy(matrix_matrix0,
                                          matrix_matrix0_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix0",
                                          "matrix_matrix0_copy");
 
-            failures += Matrix.VerifyMatrixCopy(matrix_matrix1,
+            failures += VerifyMatrixCopy(matrix_matrix1,
                                          matrix_matrix1_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix1",
                                          "matrix_matrix1_copy");
 
-            failures += Matrix.VerifyMatrixCopy(matrix_matrix2,
+            failures += VerifyMatrixCopy(matrix_matrix2,
                                          matrix_matrix2_copy,
                                          outStream,
                                          verbose,
                                          "matrix_matrix2",
                                          "matrix_matrix2_copy");
 
-            failures += Matrix.VerifyMatrixCopy(nominal_matrix,
+            failures += VerifyMatrixCopy(nominal_matrix,
                                          nominal_matrix_copy,
                                          outStream,
                                          verbose,
                                          "nominal_matrix",
                                          "nominal_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(pred_matrix,
+            failures += VerifyMatrixCopy(pred_matrix,
                                          pred_matrix_copy,
                                          outStream,
                                          verbose,
                                          "pred_matrix",
                                          "pred_matrix_copy");
 
-            failures += Matrix.VerifyMatrixCopy(text_matrix,
+            failures += VerifyMatrixCopy(text_matrix,
                                          text_matrix_copy,
                                          outStream,
                                          verbose,
@@ -10725,7 +10742,7 @@ public class MatrixTest {
 
 
     /**
-     * VerifyMatrixCopyUNUSED()
+     * VerifyMatrixCopy()
      *
      * Verify that the supplied instances of Matrix are distinct,
      * that they contain no common references (other than db), and that they
@@ -10735,11 +10752,9 @@ public class MatrixTest {
      * Changes:
      *
      *    - None
-     * This function still exists in Matrix while other classes rely
-     * on it in their test routines.
      */
 
-    public static int VerifyMatrixCopyUNUSED(Matrix base,
+    public static int VerifyMatrixCopy(Matrix base,
                                        Matrix copy,
                                        java.io.PrintStream outStream,
                                        boolean verbose,
@@ -10796,38 +10811,9 @@ public class MatrixTest {
                                  baseDesc, copyDesc);
             }
         }
-// TODO - Refactor - these test the references to private fields
-//        else if ( base.argList == copy.argList )
-//        {
-//            failures++;
-//
-//            if ( verbose )
-//            {
-//                outStream.printf("%s.argList == %s.argList.\n",
-//                                 baseDesc, copyDesc);
-//            }
-//        }
-//        else if ( base.argList == null )
-//        {
-//            failures++;
-//
-//            if ( verbose )
-//            {
-//                outStream.printf("%s.argList == null.\n", baseDesc);
-//            }
-//        }
-//        else if ( copy.argList == null )
-//        {
-//            failures++;
-//
-//            if ( verbose )
-//            {
-//                outStream.printf("%s.argList == null.\n", copyDesc);
-//            }
-//        }
         else if ( base.toString().compareTo(copy.toString()) != 0 )
         {
-            failures++;
+                failures++;
 
             if ( verbose )
             {
@@ -10848,21 +10834,57 @@ public class MatrixTest {
         }
         else
         {
-            try {
-                if ( base.getNumArgs() != copy.getNumArgs() )
-                {
-                    failures++;
+            Vector < DataValue > baseargList = null;
+            Vector < DataValue > copyargList = null;
 
-                    if ( verbose )
-                    {
-                        outStream
-                            .printf("%s.argList.size() == %s.argList.size().\n",
-                                         baseDesc, copyDesc);
-                    }
-                }
-            } catch (SystemErrorException e) {
+            try {
+                baseargList = (Vector < DataValue >) PrivateAccessor
+                        .getField(base, "argList");
+                copyargList = (Vector < DataValue >) PrivateAccessor
+                        .getField(copy, "argList");
+            } catch (NoSuchFieldException ns) {
+                outStream.printf("base or copy getfield threw unexpectedly");
                 failures++;
             }
+
+            if ( baseargList == copyargList )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("%s.argList == %s.argList.\n",
+                                     baseDesc, copyDesc);
+                }
+            }
+            else if ( baseargList == null )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("%s.argList == null.\n", baseDesc);
+                }
+            }
+            else if ( copyargList == null )
+            {
+                failures++;
+
+                if ( verbose )
+            {
+                    outStream.printf("%s.argList == null.\n", copyDesc);
+                }
+            }
+            else if ( baseargList.size() != copyargList.size() )
+                    {
+                        failures++;
+
+                        if ( verbose )
+                        {
+                    outStream.printf("%s.argList.size() == %s.argList.size().\n",
+                                             baseDesc, copyDesc);
+                        }
+                    }
 
             i = 0;
             try {

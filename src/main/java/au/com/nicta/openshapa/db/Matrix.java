@@ -4941,22 +4941,6 @@ public class Matrix implements Cloneable {
 
     }
 
-    /** Clone method to perform deep copy of Matrix and its DataValues. */
-//    @Override
-    protected Object otherclone() throws CloneNotSupportedException {
-        Matrix clone = (Matrix) super.clone();
-
-        // deep copy argList
-        if (argList != null) {
-            clone.argList.clear();
-            for (int i = 0; i < argList.size(); i++) {
-                clone.argList.add((DataValue) argList.get(i).clone());
-            }
-        }
-
-        return clone;
-    }
-
 
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;
