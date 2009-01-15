@@ -16,14 +16,6 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>com.atlassian.maven.plugins</groupId>
-        <artifactId>maven-clover2-plugin</artifactId>
-        <configuration>
-          <licenseLocation>C:\NICTA\Tools\clover.license</licenseLocation>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
@@ -69,12 +61,12 @@
   <!-- Build properties. -->
   <build>
     <plugins>
-      <!-- Stub for clover once we get our server up and running. -->
       <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <configuration>
-          <licenseLocation>C:\NICTA\Tools\clover.license</licenseLocation>
+          <licenseLocation>/var/clover/clover.license</licenseLocation>
+          <cloverDatabase>/var/clover/openshapa.db</cloverDatabase>
         </configuration>
       </plugin>
 
