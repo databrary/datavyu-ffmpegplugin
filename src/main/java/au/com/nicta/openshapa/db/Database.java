@@ -4437,10 +4437,10 @@ public abstract class Database
             failures++;
         }
 
-        if ( ! Matrix.TestClassMatrix(outStream, verbose) )
-        {
-            failures++;
-        }
+//        if ( ! Matrix.TestClassMatrix(outStream, verbose) )
+//        {
+//            failures++;
+//        }
 
         if ( ! ColPredDataValue.TestClassColPredDataValue(outStream, verbose) )
         {

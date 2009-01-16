@@ -44,7 +44,7 @@ public class SpreadsheetCell
     /** The Offset display component. */
     private DataViewLabel offset;
     /** The Value display component. */
-    private DataViewLabel value;
+    private MatrixViewLabel value;
 
     /** The Database the cell belongs to. */
     private Database db;
@@ -116,7 +116,7 @@ public class SpreadsheetCell
         this.ord    = new DataViewLabel(ordDV,  false, false, false);
         this.onset  = new DataViewLabel(onsetDV, true, false, false);
         this.offset = new DataViewLabel(offsetDV, true, false, false);
-        this.value  = new DataViewLabel(null, true, true, true);
+        this.value  = new MatrixViewLabel(null);
 
         initComponents();
 
@@ -272,23 +272,11 @@ public class SpreadsheetCell
     }
 
     /**
-     * Set the cell DataValue.
-     * @param dv DataValue to set.
-     */
-    private void setValue(DataValue dv) {
-        this.value.setValue(dv);
-    }
-
-    /**
-     * Set the cell DataValue given a matrix value.
-     * TODO: Confirm the behaviour/relation of Matrix to DataValue - should
-     * DataCells contain a Matrix instead of a DataValue?
+     * Set the cell Matrix value.
      * @param m The Matrix value to set in the cell
      */
     private void setValue(Matrix m) throws SystemErrorException {
-        for (int i = 0; i < m.getNumArgs(); i++) {
-            setValue(m.getArgCopy(i));
-        }
+        value.setMatrix(m);
     }
 
     /**
@@ -315,10 +303,10 @@ public class SpreadsheetCell
     }
 
     /**
-     * @return The DataValue of a datacell.
+     * @return The Matrix value of a datacell.
      */
-    public DataValue getValue() {
-        return (this.value.getValue());
+    public Matrix getValue() {
+        return (this.value.getMatrix());
     }
 
     /**
@@ -546,7 +534,7 @@ public class SpreadsheetCell
             }
 
             if (valChanged) {
-                this.value.setValue(newVal.getArgCopy(0));
+                this.value.setMatrix(newVal);
             }
 
             if (selectedChanged) {

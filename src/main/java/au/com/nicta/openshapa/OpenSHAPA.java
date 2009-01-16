@@ -3,6 +3,7 @@ package au.com.nicta.openshapa;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.DatabaseDemo;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
@@ -235,6 +236,13 @@ implements KeyEventDispatcher {
      */
     public void runRegressionTests() throws SystemErrorException {
         Database.TestDatabase(System.out);
+    }
+
+    /**
+     * Populate db with some demo data.
+     */
+    public void populateDemoData() throws SystemErrorException {
+        DatabaseDemo.populateDemoData(db);
     }
 
     /**

@@ -102,6 +102,18 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Action for populating db with data.
+     */
+    @Action
+    public void populateDemoData() {
+        try {
+            OpenSHAPA.getApplication().populateDemoData();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to populate demo data", e);
+        }
+    }
+
+    /**
      * Action for invoking a script.
      */
     @Action
@@ -145,6 +157,7 @@ implements KeyEventDispatcher {
         helpMenu1 = new javax.swing.JMenu();
         contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -236,6 +249,10 @@ implements KeyEventDispatcher {
         aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
         helpMenu1.add(aboutMenuItem1);
 
+        jMenuItem5.setAction(actionMap.get("populateDemoData")); // NOI18N
+        jMenuItem5.setName("jMenuItem5"); // NOI18N
+        helpMenu1.add(jMenuItem5);
+
         menuBar.add(helpMenu1);
         resourceMap.injectComponents(menuBar);
 
@@ -263,6 +280,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;
