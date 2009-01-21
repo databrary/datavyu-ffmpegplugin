@@ -257,4 +257,32 @@ public class ColPredDataValueTest {
         assertEquals(float_cp0, cpdv.getItsValue());
     }
 
+    /**
+     * Test of hashCode method, of class ColPredDataValue.
+     */
+    @Test
+    public void testHashCode() {
+        System.out.println("hashCode");
+        ColPredDataValue instance = null;
+        int expResult = 0;
+        int result = instance.hashCode();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of equals method, of class ColPredDataValue.
+     */
+    @Test
+    public void testEquals() {
+        System.out.println("equals");
+        Object obj = null;
+        ColPredDataValue instance = null;
+        boolean expResult = false;
+        boolean result = instance.equals(obj);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 }

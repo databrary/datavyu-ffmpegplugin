@@ -3,10 +3,7 @@ package au.com.nicta.openshapa.db;
 import java.io.PrintStream;
 import junitx.util.PrivateAccessor;
 import java.util.Vector;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -32,20 +29,6 @@ public class MatrixTest {
     }
 
     /**
-     * @throws Exception if trouble
-     */
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    /**
-     * @throws Exception if trouble
-     */
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    /**
      * @throws SystemErrorException if trouble
      */
     @Before
@@ -66,9 +49,73 @@ public class MatrixTest {
         testdb.vl.addElement(testMatrixMve2);
     }
 
+        /*
+    // The datatabase for testing.
+    private Database db;
+
+    private long matrixMveID;
+
+    public MatrixTest() {
+    }
+
+    @Before
+    public void setUp() throws SystemErrorException {
+        db = new ODBCDatabase();
+
+        MatrixVocabElement matrixMVE = new MatrixVocabElement(db, "matrixMVE0");
+        matrixMVE.setType(MatrixVocabElement.MatrixType.MATRIX);
+
+        matrixMVE.appendFormalArg(new FloatFormalArg(db, "<float>"));
+        matrixMVE.appendFormalArg(new IntFormalArg(db, "<int>"));
+        matrixMVE.appendFormalArg(new NominalFormalArg(db, "<nominal>"));
+        matrixMVE.appendFormalArg(new PredFormalArg(db, "<pred>"));
+        matrixMVE.appendFormalArg(new QuoteStringFormalArg(db, "<qstring>"));
+        matrixMVE.appendFormalArg(new TimeStampFormalArg(db, "<timestamp>"));
+        matrixMVE.appendFormalArg(new UnTypedFormalArg(db, "<untyped>"));
+        db.vl.addElement(matrixMVE);
+
+        matrixMveID = matrixMVE.getID();
+>>>>>>> Stashed changes:src/test/java/au/com/nicta/openshapa/db/MatrixTest.java
+    }
+
     @After
     public void tearDown() {
     }
+
+    @Test
+    public void testClone() throws Exception {
+        System.out.println("clone");
+        Matrix instance = null;
+        Object expResult = null;
+        Object result = instance.clone();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    @Test
+    public void testHashCode() {
+        System.out.println("hashCode");
+        Matrix instance = null;
+        int expResult = 0;
+        int result = instance.hashCode();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    @Test
+    public void testEquals() {
+        System.out.println("equals");
+        Object obj = null;
+        Matrix instance = null;
+        boolean expResult = false;
+        boolean result = instance.equals(obj);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+*/
 
     @Test
     public void testClone()
@@ -10906,5 +10953,4 @@ public class MatrixTest {
         return failures;
 
     }
-
 }

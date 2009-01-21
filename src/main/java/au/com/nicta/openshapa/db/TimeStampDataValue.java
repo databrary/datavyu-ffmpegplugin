@@ -590,9 +590,9 @@ public final class TimeStampDataValue extends DataValue
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.itsValue.hashCode() * SEED1;
-        hash += this.maxVal.hashCode() * SEED2;
-        hash += this.minVal.hashCode() * SEED3;
+        hash += itsValue == null ? 0 : itsValue.hashCode() * SEED1;
+        hash += maxVal == null ? 0 : maxVal.hashCode() * SEED2;
+        hash += minVal == null ? 0 : minVal.hashCode() * SEED3;
 
         return hash;
     }

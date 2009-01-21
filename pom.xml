@@ -32,7 +32,7 @@
 
   <ciManagement>
     <system>continuum</system>
-    <url>http://openshapa.qrl.nicta.com.au:8080/dashboard/</url>
+    <url>http://openshapa.qrl.nicta.com.au/dashboard/</url>
   </ciManagement>
 
   <issueManagement>
@@ -99,6 +99,7 @@
             </archive>           
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 
