@@ -4972,15 +4972,17 @@ public class Matrix implements Cloneable {
         if (this == obj) {
             return true;
         }
+
         if ((obj == null) || (obj.getClass() != this.getClass())) {
             return false;
         }
+
         // Must be this class to be here
         Matrix m = (Matrix) obj;
-        return mveID == m.mveID
-                && (argList == null ? m.argList == null
-                        : argList.equals(m.argList))
-                && varLen == m.varLen;
+        return (mveID == m.mveID)
+            && (varLen == m.varLen)
+            && (argList == null ? m.argList == null
+                                : argList.equals(m.argList));
     }
 
     /*************************************************************************/

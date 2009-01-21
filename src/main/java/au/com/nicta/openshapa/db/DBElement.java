@@ -393,14 +393,25 @@ public abstract class DBElement implements Cloneable
         return clone;
     }
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
-        // Assuming id is unique or nearly so, return an int based off it.
-        // >>> is unsigned right shift
-        return (int)(id ^ (id >>> 32));
+        int hash = lastModUID * SEED1;
+        hash += (int)(id ^ (id >>> 32)) * SEED2;
+        hash += db.hashCode() * SEED3;
+
+        return hash;
     }
 
     /**
@@ -421,11 +432,12 @@ public abstract class DBElement implements Cloneable
         if ((obj == null) || (obj.getClass() != this.getClass())) {
             return false;
         }
+
         // Must be this class to be here
         DBElement e = (DBElement) obj;
-        return id == e.id
-            && lastModUID == e.lastModUID
-            && (db == e.db || (db != null && db.equals(e.db)));
+        return (id == e.id)
+            && (lastModUID == e.lastModUID)
+            && (db == null ? e.db == null : db.equals(e.db));
     }
 
 

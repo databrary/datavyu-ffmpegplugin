@@ -650,10 +650,10 @@ public final class NominalDataValue extends DataValue {
         }
         // Must be this class to be here
         NominalDataValue n = (NominalDataValue) obj;
-        return ((itsValue == null && n.itsValue == null)
-                        || (itsValue != null && itsValue.equals(n.itsValue)))
-                && n.queryVar == this.queryVar
-                && super.equals(obj);
+        return super.equals(obj)
+            && (n.queryVar == this.queryVar)
+            && (itsValue == null ? n.itsValue == null
+                                 : itsValue.equals(n.itsValue));
     }
 
     /*************************************************************************/

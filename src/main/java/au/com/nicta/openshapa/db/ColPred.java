@@ -5250,8 +5250,10 @@ public class ColPred extends DBElement
             && (c.id == this.id)
             && (c.mveID == this.mveID)
             && (c.varLen == this.varLen)
-            && this.mveName == null ? false : c.mveName.equals(this.mveName)
-            && this.argList == null ? false : c.argList.equals(this.argList);
+            && (this.mveName == null ? c.mveName == null
+                                     : c.mveName.equals(this.mveName))
+            && (this.argList == null ? c.argList == null
+                                     : c.argList.equals(this.argList));
     }
 
 

@@ -261,14 +261,13 @@ public class ColPredDataValueTest {
      * Test of hashCode method, of class ColPredDataValue.
      */
     @Test
-    public void testHashCode() {
-        System.out.println("hashCode");
-        ColPredDataValue instance = null;
-        int expResult = 0;
-        int result = instance.hashCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testHashCode() throws SystemErrorException {
+        ColPredDataValue value0 = new ColPredDataValue(db, colPredFarg.getID());
+        ColPredDataValue value1 = new ColPredDataValue(db, colPredFarg.getID());
+        ColPredDataValue value2 = new ColPredDataValue(db, untypedFarg.getID());
+
+        assertTrue(value0.hashCode() == value1.hashCode());
+        assertTrue(value0.hashCode() != value2.hashCode());
     }
 
     /**
@@ -283,21 +282,21 @@ public class ColPredDataValueTest {
 
         // Reflexive
         assertTrue(value0.equals(value0));
+
         // Symmetric
         assertTrue(value0.equals(value1));
         assertTrue(value1.equals(value0));
+
         // Transitive
         assertTrue(value0.equals(value1));
         assertTrue(value0.equals(value2));
         assertTrue(value1.equals(value2));
         // Consistent not tested
+
         // Null
         assertFalse(value0.equals(null));
-        // Hashcode
-        assertTrue(value0.hashCode() == value1.hashCode());
 
         // Not equals tests
         assertFalse(value0.equals(value3));
-        assertTrue(value0.hashCode() != value3.hashCode());
     }
 }

@@ -1008,7 +1008,8 @@ public final class ColPredDataValue extends DataValue
 
         ColPredDataValue c = (ColPredDataValue) obj;
         return super.equals(obj)
-            && this.itsValue == null ? false : this.itsValue.equals(c.itsValue);
+            && (this.itsValue == null ? c.itsValue == null
+                                      : this.itsValue.equals(c.itsValue));
     }
 
     /*************************************************************************/

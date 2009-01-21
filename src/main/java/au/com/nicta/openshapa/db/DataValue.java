@@ -874,6 +874,17 @@ public abstract class DataValue extends DBElement
         
     } /* "DataValue::Copy() */
 
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
+    /** Seed value for generating hash codes. */
+    private final static int SEED5 = 17;
+
     /**
      * @return A hash code value for the object.
      */
@@ -881,7 +892,14 @@ public abstract class DataValue extends DBElement
     public int hashCode() {
         // Assuming id is unique or nearly so, return an int based off it.
         // >>> is unsigned right shift
-        return (int)(id ^ (id >>> 32));
+        int hash = super.hashCode();
+        hash += (int)(itsCellID ^ (itsCellID >>> 32)) * SEED1;
+        hash += (int)(itsFargID ^ (itsFargID >>> 32)) * SEED2;
+        hash += itsFargType.hashCode() * SEED3;
+        hash += (int)(itsPredID ^ (itsPredID >>> 32)) * SEED4;
+        hash += new Boolean(subRange).hashCode() * SEED5;
+
+        return hash;
     }
 
     /**
@@ -899,15 +917,20 @@ public abstract class DataValue extends DBElement
         if (this == obj) {
             return true;
         }
+
         if ((obj == null) || (obj.getClass() != this.getClass())) {
             return false;
         }
+
         // Must be this class to be here
         DataValue dv = (DataValue) obj;
-        return itsFargID == dv.itsFargID
-            && itsFargType == dv.itsFargType
-            && subRange == dv.subRange
-            && super.equals(obj);
+        return super.equals(obj)
+            && (itsCellID == dv.itsCellID)
+            && (itsFargID == dv.itsFargID)
+            && (itsPredID == dv.itsPredID)
+            && (subRange == dv.subRange)
+            && (itsFargType == null ? dv.itsFargType == null
+                                    : itsFargType.equals(dv.itsFargType));
     }
 
     /*************************************************************************/
