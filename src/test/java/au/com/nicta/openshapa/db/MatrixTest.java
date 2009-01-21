@@ -8,11 +8,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Test class for Matrix.
  *
  * @author swhitcher
  */
 public class MatrixTest {
-
     /** Test fixture database. */
     private static Database testdb;
     /** Test fixture MVE. */
@@ -49,73 +49,18 @@ public class MatrixTest {
         testdb.vl.addElement(testMatrixMve2);
     }
 
-        /*
-    // The datatabase for testing.
-    private Database db;
-
-    private long matrixMveID;
-
-    public MatrixTest() {
-    }
-
-    @Before
-    public void setUp() throws SystemErrorException {
-        db = new ODBCDatabase();
-
-        MatrixVocabElement matrixMVE = new MatrixVocabElement(db, "matrixMVE0");
-        matrixMVE.setType(MatrixVocabElement.MatrixType.MATRIX);
-
-        matrixMVE.appendFormalArg(new FloatFormalArg(db, "<float>"));
-        matrixMVE.appendFormalArg(new IntFormalArg(db, "<int>"));
-        matrixMVE.appendFormalArg(new NominalFormalArg(db, "<nominal>"));
-        matrixMVE.appendFormalArg(new PredFormalArg(db, "<pred>"));
-        matrixMVE.appendFormalArg(new QuoteStringFormalArg(db, "<qstring>"));
-        matrixMVE.appendFormalArg(new TimeStampFormalArg(db, "<timestamp>"));
-        matrixMVE.appendFormalArg(new UnTypedFormalArg(db, "<untyped>"));
-        db.vl.addElement(matrixMVE);
-
-        matrixMveID = matrixMVE.getID();
->>>>>>> Stashed changes:src/test/java/au/com/nicta/openshapa/db/MatrixTest.java
-    }
-
-    @After
-    public void tearDown() {
-    }
-
+    /**
+     * Test of hashCode method, of class Matrix.
+     */
     @Test
-    public void testClone() throws Exception {
-        System.out.println("clone");
-        Matrix instance = null;
-        Object expResult = null;
-        Object result = instance.clone();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    public void testHashCode() throws SystemErrorException {
+        Matrix value0 = new Matrix(testdb, testMatrixMve.getID());
+        Matrix value1 = new Matrix(testdb, testMatrixMve.getID());
+        Matrix value2 = new Matrix(testdb, testMatrixMve2.getID());
 
-    @Test
-    public void testHashCode() {
-        System.out.println("hashCode");
-        Matrix instance = null;
-        int expResult = 0;
-        int result = instance.hashCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(value0.hashCode() == value1.hashCode());
+        assertTrue(value0.hashCode() != value2.hashCode());
     }
-
-    @Test
-    public void testEquals() {
-        System.out.println("equals");
-        Object obj = null;
-        Matrix instance = null;
-        boolean expResult = false;
-        boolean result = instance.equals(obj);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-*/
 
     @Test
     public void testClone()
@@ -156,10 +101,6 @@ public class MatrixTest {
         assertTrue(value0.hashCode() != value3.hashCode());
 
         // TODO - modify value3 so it is equal to others
-//        value3. replace its mve2 with mve
-//        assertTrue(value0.equals(value3));
-//        assertTrue(value3.equals(value1));
-//        assertTrue(value2.hashCode() == value3.hashCode());
     }
 
 
