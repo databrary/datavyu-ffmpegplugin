@@ -374,41 +374,42 @@ public class TimeStamp
     return ("("+this.tps+","+this.toHMSFString()+")");
   } //End of toDBString() method
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
 
     /**
-     * equals() -- Override of Object::equals()
-     *
-     * Return true iff the supplied object is equal to this.
-     *
-     * Changes:
-     *
-     *    - None.
+     * @return A hash code value for the object.
      */
+    @Override
+    public int hashCode() {
+        int hash = (int) (ticks ^ (ticks >>> 32)) * SEED1;
+        hash += tps * SEED2;
 
-     public boolean equals(Object obj)
-     {
-         boolean equal = true;
+        return hash;
+    }
 
-         if ( obj == null )
-         {
-             equal = false;
-         }
-         else if ( ! ( obj instanceof TimeStamp ) )
-         {
-             equal =  false;
-         }
-         else if ( ( obj != this ) &&
-                    ( ( this.tps != ((TimeStamp)obj).getTPS()) ||
-                      ( this.ticks != ((TimeStamp)obj).getTime() ) ) )
-         {
-             equal = false;
-         }
-         return equal;
+    /**
+     * Compares this TimeStamp against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal.
+     */
+     @Override
+     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
 
-     } /* TimeStamp::equals() */
+        // Must be this class to be here
+        TimeStamp t = (TimeStamp) obj;
+        return tps == t.tps && ticks == t.ticks;
+     }
 
 
     /*************************************************************************/

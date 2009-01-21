@@ -48,7 +48,7 @@ public final class TimeStampDataValue extends DataValue
      *      To save space, when subRange is false, this field should be null.
      *
      *      Note that this data value may be used to hold an integer
-     *      value assigned to an untype formal argument, in which case
+     *      value assigned to an untype formal arhasgument, in which case
      *      subrange will always be false.
      */
 
@@ -583,6 +583,8 @@ public final class TimeStampDataValue extends DataValue
     private final static int SEED2 = 7;
     /** Seed value for generating hash codes. */
     private final static int SEED3 = 11;
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
 
     /**
      * @return A hash code value for the object.
@@ -593,6 +595,7 @@ public final class TimeStampDataValue extends DataValue
         hash += itsValue == null ? 0 : itsValue.hashCode() * SEED1;
         hash += maxVal == null ? 0 : maxVal.hashCode() * SEED2;
         hash += minVal == null ? 0 : minVal.hashCode() * SEED3;
+        hash += ItsDefault == null ? 0 : ItsDefault.hashCode() * SEED4;
 
         return hash;
     }
@@ -621,6 +624,8 @@ public final class TimeStampDataValue extends DataValue
                         || (maxVal != null && maxVal.equals(i.maxVal)))
             && (minVal == i.minVal
                         || (minVal != null && minVal.equals(i.minVal)))
+            && (ItsDefault == i.ItsDefault
+                        || (ItsDefault != null && ItsDefault.equals(i.ItsDefault)))
             && super.equals(obj);
     }
 

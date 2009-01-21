@@ -5212,15 +5212,15 @@ public class ColPred extends DBElement
      */
     @Override
     public int hashCode() {
-        long hash = super.hashCode();
+        int hash = super.hashCode();
         hash += this.db == null ? 0 : this.db.hashCode() * SEED1;
-        hash += this.id * SEED2;
-        hash += this.mveID * SEED3;
+        hash += (id ^ (id >>> 32)) * SEED2;
+        hash += (mveID ^ (mveID >>> 32)) * SEED3;
         hash += new Boolean(this.varLen).hashCode() * SEED4;
         hash += this.mveName == null ? 0 : this.mveName.hashCode() * SEED5;
         hash += this.argList == null ? 0 : this.argList.hashCode() * SEED6;
 
-        return (int) (hash ^ (hash >>> 32));
+        return hash; /*(int) (hash ^ (hash >>> 32));*/
     }
 
     /**
