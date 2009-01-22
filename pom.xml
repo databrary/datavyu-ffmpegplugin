@@ -84,6 +84,7 @@
           <descriptors>
             <descriptor>assembly.xml</descriptor>
           </descriptors>
+          <outputDirectory>target/site/download</outputDirectory>
         </configuration>
       </plugin>
 
@@ -105,6 +106,26 @@
                     <addClasspath>true</addClasspath>
                 </manifest>
             </archive>           
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0-beta-2</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <format>{0,date,yyyyMMddHHmmss}</format>
+          <items>
+            <item>timestamp</item>
+          </items>
         </configuration>
       </plugin>
 
