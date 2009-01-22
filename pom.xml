@@ -45,6 +45,13 @@
     <url>http://openshapa.qrl.nicta.com.au/viewgit/?a=summary&amp;p=openshapa</url>
   </scm>
 
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <url>scp://localhost/var/www/openshapa/</url>
+    </site>
+  </distributionManagement>
+
   <!-- External repositories - where to find third-party dependancies. -->
   <repositories>
     <repository>
