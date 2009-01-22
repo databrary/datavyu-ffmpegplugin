@@ -134,7 +134,7 @@ public class UndefinedDataValueTest extends DataValueTest {
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
         uDataValue.setItsValue("<oink>");
-        UndefinedDataValue uValue = new UndefinedDataValue(db);
+            UndefinedDataValue uValue = new UndefinedDataValue(db);
         uValue.setItsValue("<oink>");
         UndefinedDataValue uDifferent = new UndefinedDataValue(db);
         UndefinedDataValue uCopy = (UndefinedDataValue) uDataValue.clone();

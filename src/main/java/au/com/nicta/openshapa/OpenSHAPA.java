@@ -124,6 +124,9 @@ implements KeyEventDispatcher {
             }
             OpenSHAPA.getApplication().show(scriptOutputView);
 
+            // Place a reference to the database within the scripting engine.
+            rubyEngine.put("db", db);
+
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
         } catch (ScriptException e) {
@@ -233,6 +236,8 @@ implements KeyEventDispatcher {
 
     /**
      * Run John's older test suit.
+     *
+     * @throws SystemErrorException If unable to run John's older test suit.
      */
     public void runRegressionTests() throws SystemErrorException {
         Database.TestDatabase(System.out);
@@ -262,9 +267,6 @@ implements KeyEventDispatcher {
             PipedOutputStream sIn = new PipedOutputStream(scriptOutputStream);
             scriptWriter = new PrintWriter(sIn);
             rubyEngine.getContext().setWriter(scriptWriter);
-
-            // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", db);
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
