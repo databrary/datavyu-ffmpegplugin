@@ -69,7 +69,7 @@ public class MatrixViewLabel extends JMultilineLabel {
      */
     private void updateStrings() {
         if (mat != null) {
-            String t = mat.toString();
+            String t = mat.toCellValueString();
             this.setText(t);
             this.setToolTipText(t); // TODO: should tooltip be any different?
         }

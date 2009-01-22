@@ -658,15 +658,15 @@ public class MatrixTest {
         // initialized correctly.
         if ( failures == 0 )
         {
-            String float_matrix_string = "0.0";
-            String int_matrix_string = "0";
+            String float_matrix_string = "(0.0)";
+            String int_matrix_string = "(0)";
             String matrix_matrix0_string =
                     "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String matrix_matrix2_string = "(<arg1>)";
-            String nominal_matrix_string = "";
-            String pred_matrix_string = "()";
-            String text_matrix_string = "";
+            String nominal_matrix_string = "()";
+            String pred_matrix_string = "(())";
+            String text_matrix_string = "()";
             String float_matrix_DBstring =
                     "(Matrix (mveID 1) " +
                             "(varLen false) " +
@@ -1599,17 +1599,17 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "11.0";
-            String int_matrix_string = "22";
+            String float_matrix_string = "(11.0)";
+            String int_matrix_string = "(22)";
             String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
             String matrix_matrix1_string = "(\" a q string \", <arg2>, 88)";
             String matrix_matrix2_string = "(<arg1>)";
-            String nominal_matrix_string = "another_nominal";
-            String pred_matrix_string = "pve0(<arg1>, <arg2>)";
-            String text_matrix_string = "a text string";
+            String nominal_matrix_string = "(another_nominal)";
+            String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
+            String text_matrix_string = "(a text string)";
             String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
@@ -3767,17 +3767,17 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "11.0";
-            String int_matrix_string = "22";
+            String float_matrix_string = "(11.0)";
+            String int_matrix_string = "(22)";
             String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
             String matrix_matrix1_string = "(\" a q string \", <arg2>, 88)";
             String matrix_matrix2_string = "(<arg1>)";
-            String nominal_matrix_string = "another_nominal";
-            String pred_matrix_string = "pve0(<arg1>, <arg2>)";
-            String text_matrix_string = "a text string";
+            String nominal_matrix_string = "(another_nominal)";
+            String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
+            String text_matrix_string = "(a text string)";
             String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
@@ -5358,17 +5358,17 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "11.0";
-            String int_matrix_string = "22";
+            String float_matrix_string = "(11.0)";
+            String int_matrix_string = "(22)";
             String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
                                            "pve0(<arg>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
             String matrix_matrix1_string = "(\" a q string \", <arg2>, 88)";
             String matrix_matrix2_string = "(<arg1>)";
-            String nominal_matrix_string = "another_nominal";
-            String pred_matrix_string = "pve0(<arg>)";
-            String text_matrix_string = "a text string";
+            String nominal_matrix_string = "(another_nominal)";
+            String pred_matrix_string = "(pve0(<arg>))";
+            String text_matrix_string = "(a text string)";
             String float_matrix_DBstring =
                     "(Matrix (mveID 6) " +
                             "(varLen false) " +
@@ -8519,17 +8519,17 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "11.0";
-            String int_matrix_string = "22";
+            String float_matrix_string = "(11.0)";
+            String int_matrix_string = "(22)";
             String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
             String matrix_matrix1_string = "(\" a q string \", <arg2>, 88)";
             String matrix_matrix2_string = "(<arg1>)";
-            String nominal_matrix_string = "another_nominal";
-            String pred_matrix_string = "pve0(<arg1>, <arg2>)";
-            String text_matrix_string = "a text string";
+            String nominal_matrix_string = "(another_nominal)";
+            String pred_matrix_string = "(pve0(<arg1>, <arg2>))";
+            String text_matrix_string = "(a text string)";
             String float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
@@ -8701,15 +8701,15 @@ public class MatrixTest {
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
                                     "(subRange false))))))";
-            String empty_float_matrix_string = "0.0";
-            String empty_int_matrix_string = "0";
+            String empty_float_matrix_string = "(0.0)";
+            String empty_int_matrix_string = "(0)";
             String empty_matrix_matrix0_string =
                     "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String empty_matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String empty_matrix_matrix2_string = "(<arg1>)";
-            String empty_nominal_matrix_string = "";
-            String empty_pred_matrix_string = "()";
-            String empty_text_matrix_string = "";
+            String empty_nominal_matrix_string = "()";
+            String empty_pred_matrix_string = "(())";
+            String empty_text_matrix_string = "()";
             String empty_float_matrix_DBstring =
                     "(Matrix (mveID 4) " +
                             "(varLen false) " +
@@ -10101,7 +10101,7 @@ public class MatrixTest {
                                 "(itsValue <untyped>) " +
                                 "(subRange false))))))";
 
-            String testString1 = "99";
+            String testString1 = "(99)";
             String testDBString1 =
                 "(Matrix (mveID 21) " +
                         "(varLen false) " +

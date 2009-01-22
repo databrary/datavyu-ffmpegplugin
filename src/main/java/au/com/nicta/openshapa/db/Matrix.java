@@ -417,13 +417,9 @@ public class Matrix implements Cloneable {
         final String mName = "Matrix::argListToString(): ";
         int i = 0;
         int numArgs = 0;
-        String s;
+        String s = "";
 
-        if ( this.mveID == DBIndex.INVALID_ID )
-        {
-            s = "()";
-        }
-        else
+        if ( this.mveID != DBIndex.INVALID_ID )
         {
             if ( argList == null )
             {
@@ -438,15 +434,6 @@ public class Matrix implements Cloneable {
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
 
-            s = new String("");
-
-            boolean isMatrix = (numArgs > 1)
-                    || (lookupMatrixVE(getMveID()).getType()
-                                    == MatrixVocabElement.MatrixType.MATRIX);
-            if (isMatrix) {
-                s += "(";
-            }
-
             while ( i < (numArgs - 1) )
             {
                 s += this.getArg(i).toString() + ", ";
@@ -454,10 +441,6 @@ public class Matrix implements Cloneable {
             }
 
             s += getArg(i).toString();
-
-            if (isMatrix) {
-                s += ")";
-            }
         }
 
         return s;
@@ -685,13 +668,16 @@ public class Matrix implements Cloneable {
      *    - None.
      *
      */
+    @Override
     public String toString()
     {
         String s;
 
         try
         {
-            s = this.argListToString();
+            s = "(";
+            s += this.argListToString();
+            s += ")";
         }
 
         catch (SystemErrorException e)
@@ -702,6 +688,36 @@ public class Matrix implements Cloneable {
         return (s);
 
     } /* Matrix::toString() */
+
+
+    /**
+     * Returns a String representation for display on a Spreadsheet.
+     * Does not include surrounding brackets if MVE is not MATRIX type.
+     * @return String representation for display on a Spreadsheet.
+     */
+    public String toCellValueString() {
+        String s = "";
+
+        try
+        {
+            boolean isMatrix = (getNumArgs() > 1)
+                    || (lookupMatrixVE(getMveID()).getType()
+                                    == MatrixVocabElement.MatrixType.MATRIX);
+            if (isMatrix) {
+                s += "(";
+            }
+
+            s += argListToString();
+
+            if (isMatrix) {
+                s += ")";
+            }
+        } catch (SystemErrorException e) {
+             s = "Error \"" + e.toString() + "\")";
+        }
+
+        return s;
+    }
 
 
     /*************************************************************************/
