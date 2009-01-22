@@ -338,54 +338,22 @@ public class IntDataValueTest extends DataValueTest {
     }
 
     @Test
-    public void testClone()
-    throws SystemErrorException, CloneNotSupportedException {
-        IntDataValue value0 = new IntDataValue(db, ifa.getID(), 200);
-        IntDataValue copy = (IntDataValue) value0.clone();
+    public void testHashCode() throws SystemErrorException {
+        IntDataValue value0 = new IntDataValue(db, ifa.getID(), 300);
+        IntDataValue value1 = new IntDataValue(db, ifa.getID(), 300);
+        IntDataValue value2 = new IntDataValue(db, ifa.getID(), 100);
 
-        assertEquals(value0, copy);
-
-        value0.setItsValue(value0.getItsValue() * 3);
-        copy.setItsValue(copy.getItsValue() * 3);
-
-        assertEquals(value0, copy);
+        super.testHashCode(value0, value1, value2);
     }
 
     @Test
-    @Override
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
-        super.testEquals();
         IntDataValue value0 = new IntDataValue(db, ifa.getID(), 300);
         IntDataValue value1 = new IntDataValue(db, ifa.getID(), 300);
         IntDataValue value2 = new IntDataValue(db, ifa.getID(), 300);
         IntDataValue value3 = new IntDataValue(db, ifa.getID(), 100);
 
-        // Reflexive
-        assertTrue(value0.equals(value0));
-        // Symmetric
-        assertTrue(value0.equals(value1));
-        assertTrue(value1.equals(value0));
-        // Transitive
-        assertTrue(value0.equals(value1));
-        assertTrue(value0.equals(value2));
-        assertTrue(value1.equals(value2));
-        // Consistent not tested
-        // Null
-        assertFalse(value0.equals(null));
-        // Hashcode
-        assertTrue(value0.hashCode() == value1.hashCode());
-
-        // Not equals tests
-        assertFalse(value0.equals(value3));
-        assertTrue(value0.hashCode() != value3.hashCode());
-
-        // modify value3
-        long val = value3.getItsValue() * 3;
-        value3.setItsValue(val);
-        assertTrue(value0.equals(value3));
-        assertTrue(value3.equals(value1));
-        assertTrue(value2.hashCode() == value3.hashCode());
+        super.testEquals(value0, value1, value2, value3);
     }
-
 }

@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public abstract class DataValueTest {
+public abstract class DataValueTest extends DBElementTest {
 
     public abstract DataValue getInstance();
 
@@ -109,31 +109,6 @@ public abstract class DataValueTest {
     public void testReplaceInIndex() throws Exception {
         DataValue original = getInstance();
         original.replaceInIndex(original, 5, false, false, 5, false, false, 5);
-    }
-
-    /**
-     * Test of hashCode method, of class DataValue.
-     */
-    @Test
-    public void testHashCode() throws CloneNotSupportedException {
-        DataValue original = getInstance();
-        DataValue copy = (DataValue) original.clone();
-
-        assertEquals(original.hashCode(), copy.hashCode());
-    }
-
-    /**
-     * Test of equals method, of class DataValue.
-     */
-    @Test
-    public void testEquals()
-    throws SystemErrorException, CloneNotSupportedException {
-        DataValue original = getInstance();
-        DataValue copy = (DataValue) original.clone();
-
-        assertEquals(original, copy);
-        assertEquals(copy, original);
-        assertFalse(original.equals(null));        
     }
 
     /**

@@ -1,9 +1,6 @@
 package au.com.nicta.openshapa.db;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -11,31 +8,15 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class DBElementTest {
+public abstract class DBElementTest {
+
+    public abstract DBElement getInstance();
 
     public DBElementTest() {
     }
 
     @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test of toDBString method, of class DBElement.
-     */
-    @Test
-    public void testToDBString() throws Exception {
-        /*System.out.println("toDBString");
-        DBElement instance = null;
-        String expResult = "";
-        String result = instance.toDBString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");*/
+    public void setUp() throws SystemErrorException {
     }
 
     /**
@@ -148,43 +129,57 @@ public class DBElementTest {
      * Test of clone method, of class DBElement.
      */
     @Test
-    public void testClone() throws Exception {
-        /*System.out.println("clone");
-        DBElement instance = null;
-        Object expResult = null;
-        Object result = instance.clone();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");*/
+    public void testClone() throws CloneNotSupportedException {
+        DBElement element = getInstance();
+        DBElement clone = (DBElement) element.clone();
+
+        assertEquals(element, clone);
     }
 
     /**
      * Test of hashCode method, of class DBElement.
+     *
+     * @param a This DBElement should be logically equals to b, but not
+     * reference the same object.
+     * @param b This DBElement should be logically equals to a, but not
+     * reference the same object
+     * @param c This DBElement should logically different from a and b.
      */
-    @Test
-    public void testHashCode() {
-        /*System.out.println("hashCode");
-        DBElement instance = null;
-        int expResult = 0;
-        int result = instance.hashCode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");*/
+    public void testHashCode(DBElement a, DBElement b, DBElement c) {
+        assertTrue(a.hashCode() == b.hashCode());
+        assertTrue(a.hashCode() != c.hashCode());
     }
 
     /**
      * Test of equals method, of class DBElement.
+     *
+     * @param a This DBElement should be logically equals to b and c, but not
+     * reference the same object.
+     * @param b This DBElement should be logically equals to a and c, but not
+     * reference the same object.
+     * @param c This DBElement should be logically equals to a and b, but not
+     * reference the same object.
+     * @param d This DBElement should be logically different from a, b and c.
      */
-    @Test
-    public void testEquals() {
-        /*System.out.println("equals");
-        Object obj = null;
-        DBElement instance = null;
-        boolean expResult = false;
-        boolean result = instance.equals(obj);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");*/
+    public void testEquals(DBElement a, DBElement b, DBElement c, DBElement d) {
+        // Reflexive
+        assertTrue(a.equals(a));
+
+        // Symmetric
+        assertTrue(a.equals(b));
+        assertTrue(b.equals(a));
+
+        // Transitive
+        assertTrue(a.equals(b));
+        assertTrue(b.equals(c));
+        assertTrue(c.equals(a));
+        // Consistent not tested
+
+        // Null
+        assertFalse(a.equals(null));
+
+        // Not equals tests
+        assertFalse(a.equals(d));
     }
 
 }

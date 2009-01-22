@@ -352,53 +352,22 @@ public class FloatDataValueTest extends DataValueTest {
     }
 
     @Test
-    public void testClone()
-    throws SystemErrorException, CloneNotSupportedException {
-        FloatDataValue value0 = new FloatDataValue(db, ffa.getID(), 200.0);
-        FloatDataValue copy = (FloatDataValue) value0.clone();
+    public void testHashCode() throws SystemErrorException {
+        FloatDataValue value0 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue value1 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue value2 = new FloatDataValue(db, ffa.getID(), 100.001);
 
-        assertEquals(value0, copy);
-
-        value0.setItsValue(value0.getItsValue() * 3.0);
-        copy.setItsValue(copy.getItsValue() * 3.0);
-
-        assertEquals(value0, copy);
+        super.testHashCode(value0, value1, value2);
     }
 
     @Test
-    @Override
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
-        super.testEquals();
-        FloatDataValue f_value0 = new FloatDataValue(db, ffa.getID(), 300.003);
-        FloatDataValue f_value1 = new FloatDataValue(db, ffa.getID(), 300.003);
-        FloatDataValue f_value2 = new FloatDataValue(db, ffa.getID(), 300.003);
-        FloatDataValue f_value3 = new FloatDataValue(db, ffa.getID(), 100.001);
+        FloatDataValue value0 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue value1 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue value2 = new FloatDataValue(db, ffa.getID(), 300.003);
+        FloatDataValue value3 = new FloatDataValue(db, ffa.getID(), 100.001);
 
-        // Reflexive
-        assertTrue(f_value0.equals(f_value0));
-        // Symmetric
-        assertTrue(f_value0.equals(f_value1));
-        assertTrue(f_value1.equals(f_value0));
-        // Transitive
-        assertTrue(f_value0.equals(f_value1));
-        assertTrue(f_value0.equals(f_value2));
-        assertTrue(f_value1.equals(f_value2));
-        // Consistent not tested
-        // Null
-        assertFalse(f_value0.equals(null));
-        // Hashcode
-        assertTrue(f_value0.hashCode() == f_value1.hashCode());
-
-        // Not equals tests
-        assertFalse(f_value0.equals(f_value3));
-        assertTrue(f_value0.hashCode() != f_value3.hashCode());
-
-        // modify f_value3
-        double val = f_value3.getItsValue() * 3.0;
-        f_value3.setItsValue(val);
-        assertTrue(f_value0.equals(f_value3));
-        assertTrue(f_value3.equals(f_value1));
-        assertTrue(f_value2.hashCode() == f_value3.hashCode());
+        super.testEquals(value0, value1, value2, value3);
     }
 }

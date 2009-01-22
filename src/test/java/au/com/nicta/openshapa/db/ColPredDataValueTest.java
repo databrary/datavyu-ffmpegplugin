@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  *
  * @author cfreeman
  */
-public class ColPredDataValueTest {
+public class ColPredDataValueTest extends DataValueTest {
 
     private Database db;
 
@@ -21,6 +21,8 @@ public class ColPredDataValueTest {
     private FormalArgument untypedFarg;
     private FormalArgument colPredFarg;
     private MatrixVocabElement float_mve;
+
+    private ColPredDataValue cpdv;
 
     /**
      * Default test constructor.
@@ -71,6 +73,13 @@ public class ColPredDataValueTest {
         farg = new FloatFormalArg(db);
         float_mve.appendFormalArg(farg);
         db.vl.addElement(float_mve);
+
+        cpdv = new ColPredDataValue(db, colPredFarg.getID());
+    }
+
+    @Override
+    public DataValue getInstance() {
+        return cpdv;
     }
 
     /**
@@ -257,6 +266,18 @@ public class ColPredDataValueTest {
         assertEquals(float_cp0, cpdv.getItsValue());
     }
 
+    @Test
+    @Override
+    public void testGetItsFargType() {
+        assertEquals(cpdv.itsFargType, FormalArgument.fArgType.COL_PREDICATE);
+    }
+
+    @Test
+    @Override
+    public void testGetItsFargID() {
+        assertEquals(cpdv.itsFargID, 9);
+    }
+
     /**
      * Test of hashCode method, of class ColPredDataValue.
      */
@@ -266,8 +287,7 @@ public class ColPredDataValueTest {
         ColPredDataValue value1 = new ColPredDataValue(db, colPredFarg.getID());
         ColPredDataValue value2 = new ColPredDataValue(db, untypedFarg.getID());
 
-        assertTrue(value0.hashCode() == value1.hashCode());
-        assertTrue(value0.hashCode() != value2.hashCode());
+        super.testHashCode(value0, value1, value2);
     }
 
     /**
@@ -280,23 +300,6 @@ public class ColPredDataValueTest {
         ColPredDataValue value2 = new ColPredDataValue(db, colPredFarg.getID());
         ColPredDataValue value3 = new ColPredDataValue(db, untypedFarg.getID());
 
-        // Reflexive
-        assertTrue(value0.equals(value0));
-
-        // Symmetric
-        assertTrue(value0.equals(value1));
-        assertTrue(value1.equals(value0));
-
-        // Transitive
-        assertTrue(value0.equals(value1));
-        assertTrue(value0.equals(value2));
-        assertTrue(value1.equals(value2));
-        // Consistent not tested
-
-        // Null
-        assertFalse(value0.equals(null));
-
-        // Not equals tests
-        assertFalse(value0.equals(value3));
+        super.testEquals(value0, value1, value2, value3);
     }
 }

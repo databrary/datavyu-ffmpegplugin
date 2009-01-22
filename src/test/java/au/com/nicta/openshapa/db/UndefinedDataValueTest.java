@@ -112,22 +112,14 @@ public class UndefinedDataValueTest extends DataValueTest {
         assertEquals(uValue, uDataValue);
     }
 
-    /**
-     * Tests the implementation of the cloneable interface for the undefined
-     * data value.
-     *
-     * @throws au.com.nicta.openshapa.db.SystemErrorException If unable to
-     * create or manipulate undefined data values.
-     * @throws java.lang.CloneNotSupportedException If the clone method is not
-     * implemented for the undefined data value.
-     */
     @Test
-    public void testClone()
+    public void testHashCode()
     throws SystemErrorException, CloneNotSupportedException {
         uDataValue.setItsValue("<oink>");
+        UndefinedDataValue uDifferent = new UndefinedDataValue(db);
         UndefinedDataValue uCopy = (UndefinedDataValue) uDataValue.clone();
 
-        assertEquals(uDataValue, uCopy);
+        super.testHashCode(uDataValue, uCopy, uDifferent);
     }
 
     /**
@@ -139,41 +131,14 @@ public class UndefinedDataValueTest extends DataValueTest {
      * implemented for the undefined data value.
      */
     @Test
-    @Override
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
-        super.testEquals();
         uDataValue.setItsValue("<oink>");
         UndefinedDataValue uValue = new UndefinedDataValue(db);
         uValue.setItsValue("<oink>");
         UndefinedDataValue uDifferent = new UndefinedDataValue(db);
         UndefinedDataValue uCopy = (UndefinedDataValue) uDataValue.clone();
 
-        // Reflexive
-        assertTrue(uDataValue.equals(uCopy));
-
-        // Symmetric
-        assertTrue(uCopy.equals(uDataValue));
-
-        // Transitive
-        assertTrue(uDataValue.equals(uValue));
-        assertTrue(uValue.equals(uCopy));
-        assertTrue(uCopy.equals(uDataValue));
-        // Consistent not tested
-
-        // Null
-        assertFalse(uDataValue.equals(null));
-        // Hashcode
-
-        assertTrue(uDataValue.hashCode() == uCopy.hashCode());
-
-        // Not equals tests
-        assertFalse(uDataValue.equals(uDifferent));
-        assertTrue(uDataValue.hashCode() != uDifferent.hashCode());
-
-        // modify uDataValue
-        uDataValue.setItsValue("<val>");
-        assertTrue(uDataValue.equals(uDifferent));
-        assertTrue(uDataValue.hashCode() == uDifferent.hashCode());
+        super.testEquals(uDataValue, uValue, uCopy, uDifferent);
     }
 }
