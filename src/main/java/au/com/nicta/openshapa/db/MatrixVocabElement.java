@@ -262,7 +262,7 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName + "colID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(colID);
+        dbe = this.getDB().idx.getElement(colID);
 
         if ( dbe == null )
         {
@@ -865,17 +865,17 @@ public class MatrixVocabElement extends VocabElement
         {
             wellFormed = false;
         }
-        else if ( this.db == null )
+        else if ( this.getDB() == null )
         {
             wellFormed = false;
         }
-        else if ( ( newVE ) && ( this.db.vl.inVocabList(this.getName()) ) )
+        else if ( ( newVE ) && ( this.getDB().vl.inVocabList(this.getName()) ) )
         {
             wellFormed = false;
         }
         else if ( ( ! newVE ) &&
                   ( ( this.getID() == DBIndex.INVALID_ID) ||
-                    ( ! this.db.vl.inVocabList(this.getID()) ) ) )
+                    ( ! this.getDB().vl.inVocabList(this.getID()) ) ) )
         {
             wellFormed = false;
         }
@@ -892,7 +892,7 @@ public class MatrixVocabElement extends VocabElement
         {
             if ( ! newVE )
             {
-                ve = this.db.vl.getVocabElement(this.getID());
+                ve = this.getDB().vl.getVocabElement(this.getID());
 
                 if ( ( ve == null ) ||
                      ( ! ( ve instanceof MatrixVocabElement ) ) )
@@ -1071,7 +1071,7 @@ public class MatrixVocabElement extends VocabElement
             while ( i <= (numCPFArgs - 1) )
             {
                 fArg = getCPFormalArg(i);
-                fArg.setItsVocabElementID(this.id);
+                fArg.setItsVocabElementID(this.getID());
                 i++;
             }
         }
@@ -1314,7 +1314,7 @@ public class MatrixVocabElement extends VocabElement
                 "MatrixVocabElement::constructInitCPfArgList(): ";
         FormalArgument fa = null;
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "this.db null on entry.");
         }
@@ -1331,17 +1331,17 @@ public class MatrixVocabElement extends VocabElement
                     "this.colPredFormalArgList.size() != 0?!?");
         }
 
-        fa = new IntFormalArg(this.db, "<ord>");
+        fa = new IntFormalArg(this.getDB(), "<ord>");
         fa.setItsVocabElement(this);
         fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
         this.cpfArgList.add(fa);
 
-        fa = new TimeStampFormalArg(this.db, "<onset>");
+        fa = new TimeStampFormalArg(this.getDB(), "<onset>");
         fa.setItsVocabElement(this);
         fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
         this.cpfArgList.add(fa);
 
-        fa = new TimeStampFormalArg(this.db, "<offset>");
+        fa = new TimeStampFormalArg(this.getDB(), "<offset>");
         fa.setItsVocabElement(this);
         fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
         this.cpfArgList.add(fa);
@@ -5076,7 +5076,7 @@ public class MatrixVocabElement extends VocabElement
                 /* set other fields to non-default values just to make
                  * sure they get copied.
                  */
-                base_ve.lastModUID = 2;
+                base_ve.setLastModUID(2);
                 base_ve.varLen = true;
                 base_ve.system = true;
 
@@ -5303,7 +5303,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve.appendFormalArg(foxtrot);
 
-                base_ve.lastModUID = 4;
+                base_ve.setLastModUID(4);
                 base_ve.varLen = false;
                 base_ve.system = true;
 
@@ -5509,7 +5509,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve = new MatrixVocabElement(db, "matrix3");
 
-                base_ve.lastModUID = 6;
+                base_ve.setLastModUID(6);
                 base_ve.varLen = false;
                 base_ve.system = false;
 
@@ -5695,7 +5695,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve.appendFormalArg(golf);
 
-                base_ve.lastModUID = 8;
+                base_ve.setLastModUID(8);
                 base_ve.varLen = false;
                 base_ve.system = true;
 
@@ -5908,7 +5908,7 @@ public class MatrixVocabElement extends VocabElement
 
                 base_ve.appendFormalArg(bravo);
 
-                base_ve.lastModUID = 10;
+                base_ve.setLastModUID(10);
                 base_ve.varLen = false;
                 base_ve.system = false;
 

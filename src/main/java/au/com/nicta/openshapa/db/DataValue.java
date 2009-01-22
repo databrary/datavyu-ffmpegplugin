@@ -317,7 +317,7 @@ public abstract class DataValue extends DBElement
              * 3) Scan the argument list of the mve and verify that it
              *    contains a formal argument with ID matching this.itsFargID.
              */
-            dbe = this.db.idx.getElement(ID);
+            dbe = this.getDB().idx.getElement(ID);
 
             if ( dbe == null )
             {
@@ -340,7 +340,7 @@ public abstract class DataValue extends DBElement
                 throw new SystemErrorException(mName + "mveID == INVALID_ID");    
             }
 
-            dbe = this.db.idx.getElement(mveID);
+            dbe = this.getDB().idx.getElement(mveID);
 
             if ( dbe == null )
             {
@@ -381,7 +381,7 @@ public abstract class DataValue extends DBElement
              * indicated by this.itsPredID.  Verify that the supplied ID 
              * matches the cell ID of the containining predicate.
              */
-            dbe = this.db.idx.getElement(this.itsPredID);
+            dbe = this.getDB().idx.getElement(this.itsPredID);
 
             if ( dbe == null )
             {
@@ -439,7 +439,7 @@ public abstract class DataValue extends DBElement
             throw new SystemErrorException(mName + "ID == INVALID_ID");    
         }
         
-        dbe = this.db.idx.getElement(ID);
+        dbe = this.getDB().idx.getElement(ID);
         
         if ( dbe == null )
         {
@@ -534,7 +534,7 @@ public abstract class DataValue extends DBElement
             throw new SystemErrorException(mName + "ID == INVALID_ID");    
         }
         
-        dbe = this.db.idx.getElement(ID);
+        dbe = this.getDB().idx.getElement(ID);
         
         if ( dbe == null )
         {
@@ -557,7 +557,7 @@ public abstract class DataValue extends DBElement
             throw new SystemErrorException(mName + "pveID == INVALID_ID");    
         }
         
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
         
         if ( dbe == null )
         {
@@ -634,7 +634,7 @@ public abstract class DataValue extends DBElement
         // for now at least, DataValue is a subclass of DBElement.  Thus we
         // must insert the DataValue in the index.
         
-        this.db.idx.addElement(this);
+        this.getDB().idx.addElement(this);
         
         return;
         
@@ -675,7 +675,7 @@ public abstract class DataValue extends DBElement
         
         // Remove the DataValue from the index.
         
-        this.db.idx.removeElement(this.id);
+        this.getDB().idx.removeElement(this.getID());
         
         return;
         
@@ -710,7 +710,7 @@ public abstract class DataValue extends DBElement
     {
         final String mName = "DataValue::replaceInIndex(): ";
         
-        if ( ( this.id != old_dv.id ) ||
+        if ( ( this.getID() != old_dv.getID() ) ||
              ( this.itsCellID != old_dv.itsCellID ) ||
              ( this.itsFargID != old_dv.itsFargID ) ||
              ( this.itsFargType != old_dv.itsFargType ) )
@@ -723,7 +723,7 @@ public abstract class DataValue extends DBElement
             throw new SystemErrorException(mName + "DCID mis-match!?!");
         }
         
-        this.db.idx.replaceElement(this);
+        this.getDB().idx.replaceElement(this);
         
         return;
         
@@ -1223,7 +1223,7 @@ public abstract class DataValue extends DBElement
             outStream.printf("Verify1ArgInitialization: dv null on entry.\n");
         }
 
-        if ( dv.db != db )
+        if ( dv.getDB() != db )
         {
             failures++;
 
@@ -1233,14 +1233,14 @@ public abstract class DataValue extends DBElement
             }
         }
         
-        if ( dv.id != DBIndex.INVALID_ID )
+        if ( dv.getID() != DBIndex.INVALID_ID )
         {
             failures++;
 
             if ( verbose )
             {
                 outStream.printf("dv.id not initialized corectly: %d.\n",
-                                 dv.id);
+                                 dv.getID());
             }
         }
         
@@ -1279,7 +1279,7 @@ public abstract class DataValue extends DBElement
             }
         }
         
-        if ( dv.lastModUID != DBIndex.INVALID_ID )
+        if ( dv.getLastModUID() != DBIndex.INVALID_ID )
         {
             failures++;
 
@@ -1287,7 +1287,7 @@ public abstract class DataValue extends DBElement
             {
                 outStream.printf(
                         "dv.lastModUID not initialized correctly: %d.\n",
-                        dv.lastModUID);
+                        dv.getLastModUID());
             }
         }
                 
@@ -1349,7 +1349,7 @@ public abstract class DataValue extends DBElement
                              "returns invalid ID.\n");
         }
 
-        if ( dv.db != db )
+        if ( dv.getDB() != db )
         {
             failures++;
 
@@ -1359,14 +1359,14 @@ public abstract class DataValue extends DBElement
             }
         }
         
-        if ( dv.id != DBIndex.INVALID_ID )
+        if ( dv.getID() != DBIndex.INVALID_ID )
         {
             failures++;
 
             if ( verbose )
             {
                 outStream.printf("%s.id not initialized corectly: %d.\n",
-                                 dvDesc, dv.id);
+                                 dvDesc, dv.getID());
             }
         }
         
@@ -1405,7 +1405,7 @@ public abstract class DataValue extends DBElement
             }
         }
         
-        if ( dv.lastModUID != DBIndex.INVALID_ID )
+        if ( dv.getLastModUID() != DBIndex.INVALID_ID )
         {
             failures++;
 
@@ -1413,7 +1413,7 @@ public abstract class DataValue extends DBElement
             {
                 outStream.printf(
                         "%s.lastModUID not initialized correctly: %d.\n",
-                        dvDesc, dv.lastModUID);
+                        dvDesc, dv.getLastModUID());
             }
         }
                 
@@ -1466,7 +1466,7 @@ public abstract class DataValue extends DBElement
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
             

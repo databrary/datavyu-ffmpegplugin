@@ -256,7 +256,7 @@ public final class QuoteStringDataValue extends DataValue {
     {
         if ( this.itsValue == null )
         {
-            return ("(QuoteStringDataValue (id " + this.id +
+            return ("(QuoteStringDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -265,7 +265,7 @@ public final class QuoteStringDataValue extends DataValue {
         }
         else
         {
-            return ("(QuoteStringDataValue (id " + this.id +
+            return ("(QuoteStringDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -2309,7 +2309,7 @@ public final class QuoteStringDataValue extends DataValue {
             db.vl.addElement(qs_mve);
 
             qsdv0 = new QuoteStringDataValue(db, qsfa.getID(), "bravo");
-            qsdv0.id = 100;        // invalid value for print test
+            qsdv0.setID(100);      // invalid value for print test
             qsdv0.itsCellID = 500; // invalid value for print test
 
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -2319,7 +2319,7 @@ public final class QuoteStringDataValue extends DataValue {
             db.vl.addElement(matrix_mve);
 
             qsdv1 = new QuoteStringDataValue(db, ufa.getID(), "nero");
-            qsdv1.id = 101;        // invalid value for print test
+            qsdv1.setID(101);      // invalid value for print test
             qsdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
@@ -2523,7 +2523,7 @@ public final class QuoteStringDataValue extends DataValue {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

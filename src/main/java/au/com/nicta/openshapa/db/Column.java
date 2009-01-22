@@ -358,17 +358,17 @@ public abstract class Column
                                            "name not a valid svar name");
         }
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "db not initialized?!?");
         }
 
-        if ( this.db.vl.inVocabList(name) )
+        if ( this.getDB().vl.inVocabList(name) )
         {
             throw new SystemErrorException(mName + "name already in vl");
         }
 
-        if ( this.db.cl.inColumnList(name) )
+        if ( this.getDB().cl.inColumnList(name) )
         {
             throw new SystemErrorException(mName + "name already in cl");
         }
@@ -437,7 +437,7 @@ public abstract class Column
             throw new SystemErrorException(mName + "c null on entry");
         }
 
-        if ( c.getItsColID() != this.id )
+        if ( c.getItsColID() != this.getID() )
         {
             throw new SystemErrorException(mName + "col ID mismatch");
         }
@@ -496,7 +496,7 @@ public abstract class Column
     {
         final String mName = "Column::beginCascade(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -592,7 +592,7 @@ public abstract class Column
     {
         final String mName = "Column::endCascade(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -1109,7 +1109,7 @@ public abstract class Column
             }
         }
 
-        if ( base.db != copy.db )
+        if ( base.getDB() != copy.getDB() )
         {
             failures++;
 
@@ -1119,15 +1119,15 @@ public abstract class Column
             }
         }
 
-        if ( base.id != copy.id )
+        if ( base.getID() != copy.getID() )
         {
             failures++;
 
             if ( verbose )
             {
                 outStream.printf("%s.id == %d != %s.id == %d.\n",
-                                 baseDesc, base.id,
-                                 copyDesc, copy.id);
+                                 baseDesc, base.getID(),
+                                 copyDesc, copy.getID());
             }
         }
 

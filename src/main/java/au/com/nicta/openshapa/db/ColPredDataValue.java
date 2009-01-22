@@ -238,14 +238,14 @@ public final class ColPredDataValue extends DataValue
         ColPredFormalArg cpfa;
 
         if ( ( value != null ) &&
-             ( value.getDB() != this.db ) )
+             ( value.getDB() != this.getDB() ) )
         {
             throw new SystemErrorException(mName + "value.getDB() != this.db");
         }
 
         if ( ( value != null ) &&
              ( value.getMveID() != DBIndex.INVALID_ID ) &&
-             ( ! db.vl.matrixInVocabList(value.getMveID()) ) )
+             ( ! getDB().vl.matrixInVocabList(value.getMveID()) ) )
         {
             throw new SystemErrorException(mName +
                     "! db.vl.matrixInVocabList(value.getMatrixID())");
@@ -254,7 +254,7 @@ public final class ColPredDataValue extends DataValue
         if ( ( value == null ) ||
              ( value.getMveID() == DBIndex.INVALID_ID ) )
         {
-            this.itsValue = new ColPred(this.db);
+            this.itsValue = new ColPred(this.getDB());
         }
         else
         {
@@ -478,7 +478,7 @@ public final class ColPredDataValue extends DataValue
         if ( ( this.itsValue == null ) ||
              ( this.itsValue.getMveID() == DBIndex.INVALID_ID ) )
         {
-            return ("(ColPredDataValue (id " + this.id +
+            return ("(ColPredDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -487,7 +487,7 @@ public final class ColPredDataValue extends DataValue
         }
         else
         {
-            return ("(ColPredDataValue (id " + this.id +
+            return ("(ColPredDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -544,7 +544,7 @@ public final class ColPredDataValue extends DataValue
         final String mName = "ColPredDataValue::updateForMVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -554,7 +554,7 @@ public final class ColPredDataValue extends DataValue
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -618,7 +618,7 @@ public final class ColPredDataValue extends DataValue
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -675,7 +675,7 @@ public final class ColPredDataValue extends DataValue
         final String mName = "ColPredDataValue::updateForPVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -685,7 +685,7 @@ public final class ColPredDataValue extends DataValue
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -740,7 +740,7 @@ public final class ColPredDataValue extends DataValue
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -897,7 +897,7 @@ public final class ColPredDataValue extends DataValue
 
         if ( value == null )
         {
-            retVal = new ColPred(this.db);
+            retVal = new ColPred(this.getDB());
         }
         else if ( value.getMveID() == DBIndex.INVALID_ID )
         {
@@ -5000,17 +5000,17 @@ public final class ColPredDataValue extends DataValue
                 assert( col_pred_farg_ID != DBIndex.INVALID_ID );
 
                 cpdv = new ColPredDataValue(db, untyped_farg_ID, null);
-                cpdv.id = 1000;               // fake value for testing
+                cpdv.setID(1000);             // fake value for testing
                 cpdv.itsCellID = 1001;        // fake value for testing
                 cpdv.itsPredID = 1002;        // fake value for testing
 
                 float_cpdv0 = new ColPredDataValue(db, col_pred_farg_ID, float_cp0);
-                float_cpdv0.id = 2000;        // fake value for testing
+                float_cpdv0.setID(2000);      // fake value for testing
                 float_cpdv0.itsCellID = 2001; // fake value for testing
                 float_cpdv0.itsPredID = 2002; // fake value for testing
 
                 matrix_cpdv0 = new ColPredDataValue(db, untyped_farg_ID, matrix_cp0);
-                matrix_cpdv0.id = 3000;        // fake value for testing
+                matrix_cpdv0.setID(3000);      // fake value for testing
                 matrix_cpdv0.itsCellID = 3001; // fake value for testing
                 matrix_cpdv0.itsPredID = 3002; // fake value for testing
 
@@ -5214,7 +5214,7 @@ public final class ColPredDataValue extends DataValue
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

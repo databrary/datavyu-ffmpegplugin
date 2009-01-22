@@ -143,7 +143,7 @@ public final class TimeStampDataValue extends DataValue
         this.itsValue  = new TimeStamp(dv.itsValue);
 
         // make sure that the tps is correct
-        this.itsValue.setTPS(db.getTicks());
+        this.itsValue.setTPS(getDB().getTicks());
 
         if ( this.subRange )
         {
@@ -319,7 +319,7 @@ public final class TimeStampDataValue extends DataValue
     {
         if ( this.subRange )
         {
-            return ("(TimeStampDataValue (id " + this.id +
+            return ("(TimeStampDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -330,7 +330,7 @@ public final class TimeStampDataValue extends DataValue
         }
         else
         {
-            return ("(TimeStampDataValue (id " + this.id +
+            return ("(TimeStampDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -2919,7 +2919,7 @@ public final class TimeStampDataValue extends DataValue
 
             tsdv0 = new TimeStampDataValue(db, tsfa.getID(),
                     new TimeStamp(db.getTicks(), 12 * db.getTicks()));
-            tsdv0.id = 100;        // invalid value for print test
+            tsdv0.setID(100);      // invalid value for print test
             tsdv0.itsCellID = 500; // invalid value for print test
 
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -2933,7 +2933,7 @@ public final class TimeStampDataValue extends DataValue
                                                     + 10 * 60 * db.getTicks()
                                                           + 5 * db.getTicks()
                                                               + 12));
-            tsdv1.id = 101;        // invalid value for print test
+            tsdv1.setID(101);      // invalid value for print test
             tsdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
@@ -3133,7 +3133,7 @@ public final class TimeStampDataValue extends DataValue
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

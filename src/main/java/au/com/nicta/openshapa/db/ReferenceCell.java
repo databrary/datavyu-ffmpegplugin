@@ -216,7 +216,7 @@ public class ReferenceCell extends Cell
             throw new SystemErrorException(mName + "targetID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(this.targetID);
+        dbe = this.getDB().idx.getElement(this.targetID);
 
         if ( dbe == null )
         {

@@ -600,7 +600,7 @@ public abstract class Cell extends DBElement
             }
         }
 
-        if ( base.db != copy.db )
+        if ( base.getDB() != copy.getDB() )
         {
             failures++;
 
@@ -610,15 +610,15 @@ public abstract class Cell extends DBElement
             }
         }
 
-        if ( base.id != copy.id )
+        if ( base.getID() != copy.getID() )
         {
             failures++;
 
             if ( verbose )
             {
                 outStream.printf("%s.id == %d != %s.id == %d.\n",
-                                 baseDesc, base.id,
-                                 copyDesc, copy.id);
+                                 baseDesc, base.getID(),
+                                 copyDesc, copy.getID());
             }
         }
 
@@ -740,7 +740,7 @@ public abstract class Cell extends DBElement
             outStream.printf("Cell::VerifyInitialization: desc null on entry.\n");
         }
 
-        if ( c.db != db )
+        if ( c.getDB() != db )
         {
             failures++;
 
@@ -751,14 +751,14 @@ public abstract class Cell extends DBElement
             }
         }
 
-        if ( c.id != DBIndex.INVALID_ID )
+        if ( c.getID() != DBIndex.INVALID_ID )
         {
             failures++;
 
             if ( verbose )
             {
                 outStream.printf("%s: c.id not initialized corectly: %d.\n",
-                                 desc, c.id);
+                                 desc, c.getID());
             }
         }
 

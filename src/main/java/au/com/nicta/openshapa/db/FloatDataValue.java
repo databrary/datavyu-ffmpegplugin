@@ -247,7 +247,7 @@ public final class FloatDataValue extends DataValue {
 
     public String toDBString()
     {
-        return ("(FloatDataValue (id " + this.id +
+        return ("(FloatDataValue (id " + this.getID() +
                 ") (itsFargID " + this.itsFargID +
                 ") (itsFargType " + this.itsFargType +
                 ") (itsCellID " + this.itsCellID +
@@ -2538,7 +2538,7 @@ public final class FloatDataValue extends DataValue {
             db.vl.addElement(float_mve);
 
             fdv0 = new FloatDataValue(db, ffa.getID(), 200.0);
-            fdv0.id = 100;        // invalid value for print test
+            fdv0.setID(100);      // invalid value for print test
             fdv0.itsCellID = 500; // invalid value for print test
 
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -2548,7 +2548,7 @@ public final class FloatDataValue extends DataValue {
             db.vl.addElement(matrix_mve);
 
             fdv1 = new FloatDataValue(db, ufa.getID(), 2000.0);
-            fdv1.id = 101;        // invalid value for print test
+            fdv1.setID(101);        // invalid value for print test
             fdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
@@ -2750,7 +2750,7 @@ public final class FloatDataValue extends DataValue {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

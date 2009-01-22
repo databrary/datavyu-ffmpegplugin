@@ -209,7 +209,7 @@ public class PredFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "approvedSet is null?!?!");
         }
-        else if ( ! this.db.vl.predInVocabList(predID) )
+        else if ( ! this.getDB().vl.predInVocabList(predID) )
         {
             throw new SystemErrorException(mName + "predID not in vocab list.");
         }
@@ -253,7 +253,7 @@ public class PredFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "approvedSet is null?!?!");
         }
-        else if ( ! this.db.vl.predInVocabList(predID) )
+        else if ( ! this.getDB().vl.predInVocabList(predID) )
         {
             throw new SystemErrorException(mName +
                                            "id not associated with a pred.");
@@ -345,7 +345,7 @@ public class PredFormalArg extends FormalArgument
         {
             throw new SystemErrorException(mName + "approvedSet is null?!?!");
         }
-        else if ( ! this.db.vl.predInVocabList(predID) )
+        else if ( ! this.getDB().vl.predInVocabList(predID) )
         {
             throw new SystemErrorException(mName +
                     "predID not associated with a predicate.");
@@ -428,16 +428,16 @@ public class PredFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new PredDataValue(this.db, this.id);
+            retVal = new PredDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof PredDataValue )
         {
-            retVal = new PredDataValue(this.db, this.id,
+            retVal = new PredDataValue(this.getDB(), this.getID(),
                     ((PredDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new PredDataValue(this.db, this.id);
+            retVal = new PredDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -460,7 +460,7 @@ public class PredFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new PredDataValue(this.db, this.id);
+         return new PredDataValue(this.getDB(), this.getID());
 
      } /* PredFormalArg::constructEmptyArg() */
 
@@ -513,7 +513,7 @@ public class PredFormalArg extends FormalArgument
         {
             pred = (Predicate)obj;
 
-            if ( pred.getDB() != this.db )
+            if ( pred.getDB() != this.getDB() )
             {
                 return false;
             }

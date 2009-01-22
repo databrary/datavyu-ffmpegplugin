@@ -516,7 +516,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         this.offset = new TimeStamp(newOffset);
 
         /* just in case, coerce tps to current value for db */
-        this.offset.setTPS(db.getTicks());
+        this.offset.setTPS(getDB().getTicks());
 
         return;
 
@@ -556,7 +556,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         this.onset = new TimeStamp(newOnset);
 
         /* just in case, coerce tps to current value for db */
-        this.onset.setTPS(db.getTicks());
+        this.onset.setTPS(getDB().getTicks());
 
         return;
 
@@ -629,7 +629,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
         if ( val == null )
         {
-            this.val = new Matrix(db, this.itsMveID);
+            this.val = new Matrix(getDB(), this.itsMveID);
         }
         else if ( val.getMveID() != this.itsMveID )
         {
@@ -1214,8 +1214,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         // don't use createPending() -- instead create an empty cell and
         // copy over arguments as appropriate.
 
-        dc = new DataCell(this.db, this.itsColID, this.itsMveID);
-        dc.setID(this.id);
+        dc = new DataCell(this.getDB(), this.itsColID, this.itsMveID);
+        dc.setID(this.getID());
         dc.setOrd(this.ord);
         dc.setOnset(this.onset);
         dc.setOffset(this.offset);
@@ -1322,7 +1322,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         final String mName = "DataCell::cascadeUpdateForPVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -1332,7 +1332,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
@@ -1357,8 +1357,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                 // don't use createPending() -- instead create an empty cell and
                 // copy over arguments as appropriate.
 
-                dc = new DataCell(this.db, this.itsColID, this.itsMveID);
-                dc.setID(this.id);
+                dc = new DataCell(this.getDB(), this.itsColID, this.itsMveID);
+                dc.setID(this.getID());
                 dc.setOrd(this.ord);
                 dc.setOnset(this.onset);
                 dc.setOffset(this.offset);
@@ -1493,7 +1493,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::cascadeUpdateForMVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -1583,7 +1583,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         final String mName = "DataCell::cascadeUpdateForPVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -1593,7 +1593,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -1675,7 +1675,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::cascadeUpdateForPVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2315,7 +2315,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::insertValInIndex(): ";
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "ID not assigned?!?");
         }
@@ -2325,7 +2325,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "val is null?!?");
         }
 
-        this.val.insertInIndex(this.id);
+        this.val.insertInIndex(this.getID());
 
         return;
 
@@ -2357,7 +2357,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "colID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(colID);
+        dbe = this.getDB().idx.getElement(colID);
 
         if ( dbe == null )
         {
@@ -2403,7 +2403,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( dbe == null )
         {
@@ -2482,7 +2482,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::removeValFromIndex(): ";
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "ID not assigned?!?");
         }
@@ -2492,7 +2492,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "val is null?!?");
         }
 
-        this.val.removeFromIndex(this.id);
+        this.val.removeFromIndex(this.getID());
 
         return;
 
@@ -2651,7 +2651,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         final String mName = "DataCell::updateForMVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2661,7 +2661,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
@@ -2735,7 +2735,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::updateForMVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2791,7 +2791,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         final String mName = "DataCell::updateForPVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2801,7 +2801,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -2864,7 +2864,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
     {
         final String mName = "DataCell::updateForPVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2942,7 +2942,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         }
 
         this.val.updateIndexForReplacementVal(oldCell.val,
-                                              this.id,
+                                              this.getID(),
                                               oldCell.cascadeMveMod,
                                               oldCell.cascadeMveDel,
                                               oldCell.cascadeMveID,
@@ -5714,8 +5714,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                                   desc + ".getOnset()",
                                                   "initOnset");
 
-        newOnset1 = new TimeStamp(testCell.db.getTicks(),
-                                  60 * testCell.db.getTicks());
+        newOnset1 = new TimeStamp(testCell.getDB().getTicks(),
+                                  60 * testCell.getDB().getTicks());
 
         completed = false;
         threwSystemErrorException = false;
@@ -5766,7 +5766,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
          * tps setting.  We should do the conversion automatically.
          */
         newOnset2 = new TimeStamp(testCell.getDB().getTicks() * 2,
-                                  120 * testCell.db.getTicks() * 2);
+                                  120 * testCell.getDB().getTicks() * 2);
 
         completed = false;
         threwSystemErrorException = false;
@@ -5870,8 +5870,8 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                                   desc + ".getOffset()",
                                                   "initOffset");
 
-        newOffset1 = new TimeStamp(testCell.db.getTicks(),
-                                   60 * 60 * testCell.db.getTicks());
+        newOffset1 = new TimeStamp(testCell.getDB().getTicks(),
+                                   60 * 60 * testCell.getDB().getTicks());
 
         completed = false;
         threwSystemErrorException = false;
@@ -5922,7 +5922,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
          * tps setting.  We should do the conversion automatically.
          */
         newOffset2 = new TimeStamp(testCell.getDB().getTicks() / 2,
-                                   240 * testCell.db.getTicks() / 2);
+                                   240 * testCell.getDB().getTicks() / 2);
 
         completed = false;
         threwSystemErrorException = false;
@@ -10522,7 +10522,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                     "DataCell::VerifyInitialization: c null on entry.\n");
         }
 
-        if ( c.db != db )
+        if ( c.getDB() != db )
         {
             failures++;
 

@@ -255,21 +255,21 @@ public class FloatFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new FloatDataValue(this.db, this.id);
+            retVal = new FloatDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof FloatDataValue )
         {
-            retVal = new FloatDataValue(this.db, this.id,
+            retVal = new FloatDataValue(this.getDB(), this.getID(),
                     ((FloatDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof IntDataValue )
         {
-            retVal = new FloatDataValue(this.db, this.id,
+            retVal = new FloatDataValue(this.getDB(), this.getID(),
                     (double)(((IntDataValue)salvage).getItsValue()));
         }
         else
         {
-            retVal = new FloatDataValue(this.db, this.id);
+            retVal = new FloatDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -292,7 +292,7 @@ public class FloatFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new FloatDataValue(this.db, this.id);
+         return new FloatDataValue(this.getDB(), this.getID());
 
      } /* FloatFormalArg::constructEmptyArg() */
 

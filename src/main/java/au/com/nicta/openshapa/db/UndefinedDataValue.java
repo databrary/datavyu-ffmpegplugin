@@ -148,7 +148,7 @@ public final class UndefinedDataValue extends DataValue
     {
         final String mName = "UndefinedDataValue::setItsValue(): ";
         
-        if ( ! ( db.IsValidFargName(value) ) )
+        if ( ! ( getDB().IsValidFargName(value) ) )
         {
             throw new SystemErrorException(mName +
                     "value isn't a valid formal argument name");
@@ -165,7 +165,7 @@ public final class UndefinedDataValue extends DataValue
                                                "itsFargType == UNDEFINED");
             }
             
-            dbe = this.db.idx.getElement(this.itsFargID);
+            dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
@@ -237,7 +237,7 @@ public final class UndefinedDataValue extends DataValue
   
     public String toDBString()
     {
-        return ("(UndefinedDataValue (id " + this.id +
+        return ("(UndefinedDataValue (id " + this.getID() +
                 ") (itsFargID " + this.itsFargID +
                 ") (itsFargType " + this.itsFargType +
                 ") (itsCellID " + this.itsCellID +
@@ -397,13 +397,13 @@ public final class UndefinedDataValue extends DataValue
     public String coerceToRange(String value) throws SystemErrorException {
         final String mName = "UndefinedDataValue::coerceToRange(): ";
 
-        if (!db.IsValidFargName(value)) {
+        if (!getDB().IsValidFargName(value)) {
             throw new SystemErrorException(mName + 
                     "value not a valid formal argument name");
         }
         
         if (this.itsFargID != DBIndex.INVALID_ID) {
-            DBElement dbe = this.db.idx.getElement(this.itsFargID);
+            DBElement dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if (dbe == null) {
                 throw new SystemErrorException(mName + 
@@ -535,7 +535,7 @@ public final class UndefinedDataValue extends DataValue
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

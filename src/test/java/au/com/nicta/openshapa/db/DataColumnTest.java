@@ -211,7 +211,7 @@ public final class DataColumnTest {
 
         assertTrue(db0 != null);
         assertTrue(f_col != null);
-        assertTrue(f_col.db == db0);
+        assertTrue(f_col.getDB() == db0);
         assertTrue(f_col.hidden == false);
         assertTrue(f_col.readOnly == false);
         assertTrue(f_col.numCells == 0);
@@ -221,7 +221,7 @@ public final class DataColumnTest {
                                                               .FLOAT);
 
         assertTrue(i_col != null);
-        assertTrue(i_col.db == db0);
+        assertTrue(i_col.getDB() == db0);
         assertTrue(i_col.hidden == false);
         assertTrue(i_col.readOnly == false);
         assertTrue(i_col.numCells == 0);
@@ -231,7 +231,7 @@ public final class DataColumnTest {
                                                               .INTEGER);
 
         assertTrue(m_col != null);
-        assertTrue(m_col.db == db0);
+        assertTrue(m_col.getDB() == db0);
         assertTrue(m_col.hidden == false);
         assertTrue(m_col.readOnly == false);
         assertTrue(m_col.numCells == 0);
@@ -241,7 +241,7 @@ public final class DataColumnTest {
                                                               .MATRIX);
 
         assertTrue(n_col != null);
-        assertTrue(n_col.db == db0);
+        assertTrue(n_col.getDB() == db0);
         assertTrue(n_col.hidden == false);
         assertTrue(n_col.readOnly == false);
         assertTrue(n_col.numCells == 0);
@@ -251,7 +251,7 @@ public final class DataColumnTest {
                                                               .NOMINAL);
 
         assertTrue(p_col != null);
-        assertTrue(p_col.db == db0);
+        assertTrue(p_col.getDB() == db0);
         assertTrue(p_col.hidden == false);
         assertTrue(p_col.readOnly == false);
         assertTrue(p_col.numCells == 0);
@@ -261,7 +261,7 @@ public final class DataColumnTest {
                                                               .PREDICATE);
 
         assertTrue(t_col != null);
-        assertTrue(t_col.db == db0);
+        assertTrue(t_col.getDB() == db0);
         assertTrue(t_col.hidden == false);
         assertTrue(t_col.readOnly == false);
         assertTrue(t_col.numCells == 0);
@@ -317,7 +317,7 @@ public final class DataColumnTest {
         assertTrue(f_col0.readOnly == true);
         assertTrue(f_col0.numCells == 0);
         assertTrue(f_col0.name.equals("f_col0"));
-        assertTrue(f_col0.db == db);
+        assertTrue(f_col0.getDB() == db);
         assertTrue(f_col0.getItsCells() == null);
         assertTrue(f_col0.getItsMveID() == f_mve0ID);
         assertTrue(f_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -331,7 +331,7 @@ public final class DataColumnTest {
         assertTrue(f_col1.readOnly == false);
         assertTrue(f_col1.numCells == 0);
         assertTrue(f_col1.name.equals("f_col1"));
-        assertTrue(f_col1.db == db);
+        assertTrue(f_col1.getDB() == db);
         assertTrue(f_col1.getItsCells() == null);
         assertTrue(f_col1.getItsMveID() == f_mve1ID);
         assertTrue(f_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -348,7 +348,7 @@ public final class DataColumnTest {
         assertTrue(i_col0.readOnly == true);
         assertTrue(i_col0.numCells == 0);
         assertTrue(i_col0.name.equals("i_col0"));
-        assertTrue(i_col0.db == db);
+        assertTrue(i_col0.getDB() == db);
         assertTrue(i_col0.getItsCells() == null);
         assertTrue(i_col0.getItsMveID() == i_mve0ID);
         assertTrue(i_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -362,7 +362,7 @@ public final class DataColumnTest {
         assertTrue(i_col1.readOnly == false);
         assertTrue(i_col1.numCells == 0);
         assertTrue(i_col1.name.equals("i_col1"));
-        assertTrue(i_col1.db == db);
+        assertTrue(i_col1.getDB() == db);
         assertTrue(i_col1.getItsCells() == null);
         assertTrue(i_col1.getItsMveID() == i_mve1ID);
         assertTrue(i_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -376,7 +376,7 @@ public final class DataColumnTest {
         assertTrue(m_col0.readOnly == true);
         assertTrue(m_col0.numCells == 0);
         assertTrue(m_col0.name.equals("m_col0"));
-        assertTrue(m_col0.db == db);
+        assertTrue(m_col0.getDB() == db);
         assertTrue(m_col0.getItsCells() == null);
         assertTrue(m_col0.getItsMveID() == m_mve0ID);
         assertTrue(m_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -390,7 +390,7 @@ public final class DataColumnTest {
         assertTrue(m_col1.readOnly == false);
         assertTrue(m_col1.numCells == 0);
         assertTrue(m_col1.name.equals("m_col1"));
-        assertTrue(m_col1.db == db);
+        assertTrue(m_col1.getDB() == db);
         assertTrue(m_col1.getItsCells() == null);
         assertTrue(m_col1.getItsMveID() == m_mve1ID);
         assertTrue(m_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -404,7 +404,7 @@ public final class DataColumnTest {
         assertTrue(n_col0.readOnly == true);
         assertTrue(n_col0.numCells == 0);
         assertTrue(n_col0.name.equals("n_col0"));
-        assertTrue(n_col0.db == db);
+        assertTrue(n_col0.getDB() == db);
         assertTrue(n_col0.getItsCells() == null);
         assertTrue(n_col0.getItsMveID() == n_mve0ID);
         assertTrue(n_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -418,7 +418,7 @@ public final class DataColumnTest {
         assertTrue(n_col1.readOnly == false);
         assertTrue(n_col1.numCells == 0);
         assertTrue(n_col1.name.equals("n_col1"));
-        assertTrue(n_col1.db == db);
+        assertTrue(n_col1.getDB() == db);
         assertTrue(n_col1.getItsCells() == null);
         assertTrue(n_col1.getItsMveID() == n_mve1ID);
         assertTrue(n_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -432,7 +432,7 @@ public final class DataColumnTest {
         assertTrue(p_col0.readOnly == true);
         assertTrue(p_col0.numCells == 0);
         assertTrue(p_col0.name.equals("p_col0"));
-        assertTrue(p_col0.db == db);
+        assertTrue(p_col0.getDB() == db);
         assertTrue(p_col0.getItsCells() == null);
         assertTrue(p_col0.getItsMveID() == p_mve0ID);
         assertTrue(p_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -446,7 +446,7 @@ public final class DataColumnTest {
         assertTrue(p_col1.readOnly == false);
         assertTrue(p_col1.numCells == 0);
         assertTrue(p_col1.name.equals("p_col1"));
-        assertTrue(p_col1.db == db);
+        assertTrue(p_col1.getDB() == db);
         assertTrue(p_col1.getItsCells() == null);
         assertTrue(p_col1.getItsMveID() == p_mve1ID);
         assertTrue(p_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -460,7 +460,7 @@ public final class DataColumnTest {
         assertTrue(t_col0.readOnly == true);
         assertTrue(t_col0.numCells == 0);
         assertTrue(t_col0.name.equals("t_col0"));
-        assertTrue(t_col0.db == db);
+        assertTrue(t_col0.getDB() == db);
         assertTrue(t_col0.getItsCells() == null);
         assertTrue(t_col0.getItsMveID() == t_mve0ID);
         assertTrue(t_col0.getItsMveType() == MatrixVocabElement.MatrixType
@@ -474,7 +474,7 @@ public final class DataColumnTest {
         assertTrue(t_col1.readOnly == false);
         assertTrue(t_col1.numCells == 0);
         assertTrue(t_col1.name.equals("t_col1"));
-        assertTrue(t_col1.db == db);
+        assertTrue(t_col1.getDB() == db);
         assertTrue(t_col1.getItsCells() == null);
         assertTrue(t_col1.getItsMveID() == t_mve1ID);
         assertTrue(t_col1.getItsMveType() == MatrixVocabElement.MatrixType
@@ -537,7 +537,7 @@ public final class DataColumnTest {
         f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
 
         DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
-                                        f_mve0.id,
+                                        f_mve0.getID(),
                                         f_onset0, f_offset0, f_matrix0);
 
         // Build the second data cell.
@@ -548,7 +548,7 @@ public final class DataColumnTest {
         f_arg_list1.add(arg);
         Matrix f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
         DataCell f_cell1 = new DataCell(db, "f_cell1", f_col0ID,
-                                        f_mve0.id,
+                                        f_mve0.getID(),
                                         f_onset1, f_offset1, f_matrix1);
 
         // Build the third data cell
@@ -559,7 +559,7 @@ public final class DataColumnTest {
         f_arg_list2.add(arg);
         Matrix f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
         DataCell f_cell2 = new DataCell(db, "f_cell2", f_col0ID,
-                                        f_mve0.id,
+                                        f_mve0.getID(),
                                         f_onset2, f_offset2, f_matrix2);
 
         f_col0.appendCell(f_cell2);
@@ -642,7 +642,7 @@ public final class DataColumnTest {
             f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
 
             DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
-                                            f_mve0.id,
+                                            f_mve0.getID(),
                                             f_onset0, f_offset0, f_matrix0);
             newCol.setItsMveID(f_cell0.getID());
 

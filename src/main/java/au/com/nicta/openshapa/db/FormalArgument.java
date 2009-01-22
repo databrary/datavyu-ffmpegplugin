@@ -322,8 +322,8 @@ public abstract class FormalArgument
         final String mName = "FormalArgument::setItsVocabElementID(): ";
 
         if ( ( vocabElementID != DBIndex.INVALID_ID ) &&
-             ( ( this.db == null ) ||
-               ( ! this.db.vl.inVocabList(vocabElementID) ) ) )
+             ( ( this.getDB() == null ) ||
+               ( ! this.getDB().vl.inVocabList(vocabElementID) ) ) )
         {
             throw new SystemErrorException(mName + "bad vocabElementID.");
         }

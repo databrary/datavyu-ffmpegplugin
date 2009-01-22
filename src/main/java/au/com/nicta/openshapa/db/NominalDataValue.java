@@ -214,7 +214,7 @@ public final class NominalDataValue extends DataValue {
         }
         else if ( ! this.subRange ) // Just verify that value is a valid nominal
         {
-            if ( db.IsValidNominal(value) )
+            if ( getDB().IsValidNominal(value) )
             {
                 this.itsValue = (new String(value));
             }
@@ -237,7 +237,7 @@ public final class NominalDataValue extends DataValue {
                                                "itsFargType != NOMINAL");
             }
 
-            dbe = this.db.idx.getElement(this.itsFargID);
+            dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
@@ -331,7 +331,7 @@ public final class NominalDataValue extends DataValue {
     {
         if ( this.itsValue == null )
         {
-            return ("(NominalDataValue (id " + this.id +
+            return ("(NominalDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -340,7 +340,7 @@ public final class NominalDataValue extends DataValue {
         }
         else
         {
-            return ("(NominalDataValue (id " + this.id +
+            return ("(NominalDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -510,7 +510,7 @@ public final class NominalDataValue extends DataValue {
             return value;
         }
 
-        if ( ! this.db.IsValidNominal(value) )
+        if ( ! this.getDB().IsValidNominal(value) )
         {
             throw new SystemErrorException(mName + "value isn't valid nominal");
         }
@@ -528,7 +528,7 @@ public final class NominalDataValue extends DataValue {
                                                "itsFargType != NOMINAL");
             }
 
-            dbe = this.db.idx.getElement(this.itsFargID);
+            dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
@@ -2763,7 +2763,7 @@ public final class NominalDataValue extends DataValue {
             db.vl.addElement(nom_mve);
 
             ndv0 = new NominalDataValue(db, nfa.getID(), "bravo");
-            ndv0.id = 100;        // invalid value for print test
+            ndv0.setID(100);        // invalid value for print test
             ndv0.itsCellID = 500; // invalid value for print test
 
             matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -2773,7 +2773,7 @@ public final class NominalDataValue extends DataValue {
             db.vl.addElement(matrix_mve);
 
             ndv1 = new NominalDataValue(db, ufa.getID(), "nero");
-            ndv1.id = 101;        // invalid value for print test
+            ndv1.setID(101);        // invalid value for print test
             ndv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
@@ -2975,7 +2975,7 @@ public final class NominalDataValue extends DataValue {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

@@ -433,7 +433,7 @@ public class DataColumn extends Column
                                            "this.itsMveID is invalid");
         }
 
-        dbe = this.db.idx.getElement(this.itsMveID);
+        dbe = this.getDB().idx.getElement(this.itsMveID);
 
         if ( dbe == null )
         {
@@ -449,7 +449,7 @@ public class DataColumn extends Column
 
         mve = (MatrixVocabElement)dbe;
 
-        mve.deregisterInternalListener(this.id);
+        mve.deregisterInternalListener(this.getID());
 
         return;
 
@@ -486,7 +486,7 @@ public class DataColumn extends Column
                                            "this.itsMveID is invalid");
         }
 
-        dbe = this.db.idx.getElement(this.itsMveID);
+        dbe = this.getDB().idx.getElement(this.itsMveID);
 
         if ( dbe == null )
         {
@@ -502,7 +502,7 @@ public class DataColumn extends Column
 
         mve = (MatrixVocabElement)dbe;
 
-        mve.registerInternalListener(this.id);
+        mve.registerInternalListener(this.getID());
 
         return;
 
@@ -611,7 +611,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "c null on entry");
         }
 
-        if ( c.getItsColID() != this.id )
+        if ( c.getItsColID() != this.getID() )
         {
             throw new SystemErrorException(mName + "col ID mismatch");
         }
@@ -628,7 +628,7 @@ public class DataColumn extends Column
                     "call to addPending() when cascade not in progress.");
         }
 
-        if ( this.db != c.getDB() )
+        if ( this.getDB() != c.getDB() )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -639,7 +639,7 @@ public class DataColumn extends Column
                     "c not the cannonical instance(1).");
         }
 
-        if ( this.db.idx.getElement(c.getID()) != c )
+        if ( this.getDB().idx.getElement(c.getID()) != c )
         {
             throw new SystemErrorException(mName +
                     "c not the cannonical instance(2).");
@@ -700,8 +700,8 @@ public class DataColumn extends Column
                                            "oldCell or newCell null on entry");
         }
 
-        if ( ( oldCell.getDB() != this.db ) ||
-             ( newCell.getDB() != this.db ) )
+        if ( ( oldCell.getDB() != this.getDB() ) ||
+             ( newCell.getDB() != this.getDB() ) )
         {
             throw new SystemErrorException(mName + "db mismatch");
         }
@@ -711,7 +711,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "cell id mismatch");
         }
 
-        if ( this.db.idx.getElement(oldCell.getID()) != oldCell )
+        if ( this.getDB().idx.getElement(oldCell.getID()) != oldCell )
         {
             throw new SystemErrorException(mName + "oldCell not cannonical(1)");
         }
@@ -760,7 +760,7 @@ public class DataColumn extends Column
 
         // update the index for the new cell value
         newCell.updateIndexForReplacementVal(oldCell);
-        db.idx.replaceElement(newCell);
+        getDB().idx.replaceElement(newCell);
 
         /* Note changes between the old and new incarnations of the
          * data cell, and notify the listeners.
@@ -809,7 +809,7 @@ public class DataColumn extends Column
     {
         final String mName = "DataColumn::endCascade(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -828,7 +828,7 @@ public class DataColumn extends Column
         /* If temporal ordering, sort cells by onset, and assign new ords
          * as necessary.
          */
-        if ( this.db.temporalOrdering )
+        if ( this.getDB().temporalOrdering )
         {
             this.sortItsCells();
         }
@@ -840,7 +840,7 @@ public class DataColumn extends Column
 
         if ( this.pending != null )
         {
-            this.db.cl.replaceDataColumn(this.pending, true);
+            this.getDB().cl.replaceDataColumn(this.pending, true);
 
             this.pending = null;
         }
@@ -1213,15 +1213,15 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "dc.itsMveType == UNDEFINED");
         }
 
-        if ( ( ! ( this.db.IsValidSVarName(this.getName()) ) ) ||
-             ( this.db.vl.inVocabList(this.getName()) ) ||
-             ( this.db.cl.inColumnList(this.getName()) ) )
+        if ( ( ! ( this.getDB().IsValidSVarName(this.getName()) ) ) ||
+             ( this.getDB().vl.inVocabList(this.getName()) ) ||
+             ( this.getDB().cl.inColumnList(this.getName()) ) )
         {
             throw new SystemErrorException(mName +
                     "Column name invalid or in use");
         }
 
-        mve = new MatrixVocabElement(this.db, this.getName());
+        mve = new MatrixVocabElement(this.getDB(), this.getName());
 
         mve.setType(this.getItsMveType());
 
@@ -1231,27 +1231,27 @@ public class DataColumn extends Column
 
         if ( this.itsMveType == MatrixVocabElement.MatrixType.FLOAT )
         {
-            fa = new FloatFormalArg(this.db);
+            fa = new FloatFormalArg(this.getDB());
         }
         else if ( this.itsMveType == MatrixVocabElement.MatrixType.INTEGER )
         {
-            fa = new IntFormalArg(this.db);
+            fa = new IntFormalArg(this.getDB());
         }
         else if ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX )
         {
-            fa = new UnTypedFormalArg(this.db);
+            fa = new UnTypedFormalArg(this.getDB());
         }
         else if ( this.itsMveType == MatrixVocabElement.MatrixType.NOMINAL )
         {
-            fa = new NominalFormalArg(this.db);
+            fa = new NominalFormalArg(this.getDB());
         }
         else if ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE )
         {
-            fa = new PredFormalArg(this.db);
+            fa = new PredFormalArg(this.getDB());
         }
         else if ( this.itsMveType == MatrixVocabElement.MatrixType.TEXT )
         {
-            fa = new TextStringFormalArg(this.db);
+            fa = new TextStringFormalArg(this.getDB());
         }
         else
         {
@@ -1298,7 +1298,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( dbe == null )
         {
@@ -1464,9 +1464,9 @@ public class DataColumn extends Column
 
         newCell.validateNewCell();
 
-        this.db.cascadeStart();
+        this.getDB().cascadeStart();
 
-        this.db.idx.addElement(newCell);
+        this.getDB().idx.addElement(newCell);
         newCell.insertValInIndex();
 
         this.itsCells.add(newCell);
@@ -1478,7 +1478,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
 
-        nl = new DataCellListeners(db, newCell);
+        nl = new DataCellListeners(getDB(), newCell);
         newCell.setListeners(nl);
 
         /* If temporal order is enabled, we will sort the cells, and assign
@@ -1493,7 +1493,7 @@ public class DataColumn extends Column
             newCell.registerPreds();
         }
 
-        this.db.cascadeEnd();
+        this.getDB().cascadeEnd();
 
         return;
 
@@ -1610,12 +1610,12 @@ public class DataColumn extends Column
 
         newCell.validateNewCell();
 
-        this.db.cascadeStart();
+        this.getDB().cascadeStart();
 
         // set the new cell's ord
         newCell.setOrd(ord);
 
-        this.db.idx.addElement(newCell);
+        this.getDB().idx.addElement(newCell);
         newCell.insertValInIndex();
 
         // insert the cell & update numCells
@@ -1628,7 +1628,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
 
-        nl = new DataCellListeners(db, newCell);
+        nl = new DataCellListeners(getDB(), newCell);
         newCell.setListeners(nl);
 
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
@@ -1662,7 +1662,7 @@ public class DataColumn extends Column
          * new ords as neccessary when we receive an end cascade message.
          */
 
-        this.db.cascadeEnd();
+        this.getDB().cascadeEnd();
 
         return;
 
@@ -1723,7 +1723,7 @@ public class DataColumn extends Column
             throw new SystemErrorException(mName + "target ID mismatch");
         }
 
-        this.db.cascadeStart();
+        this.getDB().cascadeStart();
 
         dc.notifyListenersOfDeletion();
         dc.setListeners(null);
@@ -1759,7 +1759,7 @@ public class DataColumn extends Column
             dc.cascadeSetOrd(i + 1);
         }
 
-        this.db.cascadeEnd();
+        this.getDB().cascadeEnd();
 
         return retVal;
 
@@ -1822,12 +1822,12 @@ public class DataColumn extends Column
         {
             throw new SystemErrorException(mName + "can't get old cell.");
         }
-        else if ( this.db.idx.getElement(oldCell.getID()) != oldCell )
+        else if ( this.getDB().idx.getElement(oldCell.getID()) != oldCell )
         {
             throw new SystemErrorException(mName + "oldCell not in index?!?");
         }
 
-        this.db.cascadeStart();
+        this.getDB().cascadeStart();
 
         newCell.setOrd(targetOrd);
 
@@ -1837,7 +1837,7 @@ public class DataColumn extends Column
          * new ords as neccessary when we receive the end cascade message.
          */
 
-        this.db.cascadeEnd();
+        this.getDB().cascadeEnd();
 
         retVal = oldCell;
 
@@ -2124,7 +2124,7 @@ public class DataColumn extends Column
     {
         final String mName = "DataColumn::MVEChanged(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2158,13 +2158,13 @@ public class DataColumn extends Column
                                                    "oldName != this.name");
                 }
 
-                if ( ! ( this.db.IsValidSVarName(newName) ) )
+                if ( ! ( this.getDB().IsValidSVarName(newName) ) )
                 {
                     throw new SystemErrorException(mName +
                             "newName not a valid svar name");
                 }
 
-                if ( ! this.db.vl.inVocabList(newName) )
+                if ( ! this.getDB().vl.inVocabList(newName) )
                 {
                     throw new SystemErrorException(mName +
                             "newName not in v?!?");

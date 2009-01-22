@@ -197,11 +197,11 @@ public class NominalFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new NominalDataValue(this.db, this.id);
+            retVal = new NominalDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof NominalDataValue )
         {
-            retVal = new NominalDataValue(this.db, this.id,
+            retVal = new NominalDataValue(this.getDB(), this.getID(),
                     ((NominalDataValue)salvage).getItsValue());
         }
         else if ( ( salvage instanceof QuoteStringDataValue ) &&
@@ -209,7 +209,7 @@ public class NominalFormalArg extends FormalArgument
                   ( Database.IsValidNominal
                         (((QuoteStringDataValue)salvage).getItsValue()) ))
         {
-            retVal = new NominalDataValue(this.db, this.id,
+            retVal = new NominalDataValue(this.getDB(), this.getID(),
                     ((QuoteStringDataValue)salvage).getItsValue());
         }
         else if ( ( salvage instanceof TextStringDataValue ) &&
@@ -217,12 +217,12 @@ public class NominalFormalArg extends FormalArgument
                   ( Database.IsValidNominal
                         (((TextStringDataValue)salvage).getItsValue())))
         {
-            retVal = new NominalDataValue(this.db, this.id,
+            retVal = new NominalDataValue(this.getDB(), this.getID(),
                     ((TextStringDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new NominalDataValue(this.db, this.id);
+            retVal = new NominalDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -475,7 +475,7 @@ public class NominalFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new NominalDataValue(this.db, this.id);
+         return new NominalDataValue(this.getDB(), this.getID());
 
      } /* NominalFormalArg::constructEmptyArg() */
 

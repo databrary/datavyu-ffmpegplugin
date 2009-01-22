@@ -145,17 +145,17 @@ public final class PredicateVocabElement extends VocabElement
         {
             wellFormed = false;
         }
-        else if ( this.db == null )
+        else if ( this.getDB() == null )
         {
             wellFormed = false;
         }
-        else if ( ( newVE ) && ( this.db.vl.inVocabList(this.getName()) ) )
+        else if ( ( newVE ) && ( this.getDB().vl.inVocabList(this.getName()) ) )
         {
             wellFormed = false;
         }
         else if ( ( ! newVE ) &&
                   ( ( this.getID() == DBIndex.INVALID_ID) ||
-                    ( ! this.db.vl.inVocabList(this.getID()) ) ) )
+                    ( ! this.getDB().vl.inVocabList(this.getID()) ) ) )
         {
             wellFormed = false;
         }
@@ -1133,7 +1133,7 @@ public final class PredicateVocabElement extends VocabElement
                 /* set other fields to non-default values just to make
                  * sure they get copied.
                  */
-                base_ve.lastModUID = 2;
+                base_ve.setLastModUID(2);
                 base_ve.varLen = true;
                 base_ve.system = true;
 
@@ -1367,7 +1367,7 @@ public final class PredicateVocabElement extends VocabElement
 
                 base_ve.appendFormalArg(foxtrot);
 
-                base_ve.lastModUID = 4;
+                base_ve.setLastModUID(4);
                 base_ve.varLen = false;
                 base_ve.system = true;
 
@@ -1573,7 +1573,7 @@ public final class PredicateVocabElement extends VocabElement
 
                 base_ve = new PredicateVocabElement(db, "valid3");
 
-                base_ve.lastModUID = 6;
+                base_ve.setLastModUID(6);
                 base_ve.varLen = false;
                 base_ve.system = false;
 

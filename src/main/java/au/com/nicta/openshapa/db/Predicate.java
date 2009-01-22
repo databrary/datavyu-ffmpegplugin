@@ -149,7 +149,7 @@ public class Predicate extends DBElement
 
         if ( predID != DBIndex.INVALID_ID )
         {
-            dbe = this.db.idx.getElement(predID);
+            dbe = this.getDB().idx.getElement(predID);
 
             if ( dbe == null )
             {
@@ -193,7 +193,7 @@ public class Predicate extends DBElement
         }
         else
         {
-            dbe = this.db.idx.getElement(predID);
+            dbe = this.getDB().idx.getElement(predID);
 
             if ( dbe == null )
             {
@@ -285,26 +285,6 @@ public class Predicate extends DBElement
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-
-    /**
-     * getDB()
-     *
-     * Return the current value of the db field.
-     *
-     *                          JRM -- 8/23/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public Database getDB()
-    {
-
-        return this.db;
-
-    } /* Predicate::getdb() */
-
 
     /**
      * getCellID()
@@ -545,7 +525,7 @@ public class Predicate extends DBElement
         DBElement dbe = null;
         DataCell dc = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -560,7 +540,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
 
-        dbe = this.db.idx.getElement(this.cellID);
+        dbe = this.getDB().idx.getElement(this.cellID);
 
         if ( ! ( dbe instanceof DataCell ) )
         {
@@ -616,7 +596,7 @@ public class Predicate extends DBElement
         DBElement dbe = null;
         DataCell dc = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -631,7 +611,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
 
-        dbe = this.db.idx.getElement(this.cellID);
+        dbe = this.getDB().idx.getElement(this.cellID);
 
         if ( ! ( dbe instanceof DataCell ) )
         {
@@ -795,7 +775,7 @@ public class Predicate extends DBElement
     {
         final String mName = "Predicate::insertInIndex(): ";
 
-        this.db.idx.addElement(this);
+        this.getDB().idx.addElement(this);
 
         // this should have been checked well before we were called,
         // so no sanity checks.
@@ -812,7 +792,7 @@ public class Predicate extends DBElement
 
             for ( DataValue dv : this.argList )
             {
-                dv.setItsPredID(this.id);
+                dv.setItsPredID(this.getID());
                 dv.insertInIndex(DCID);
             }
         }
@@ -848,7 +828,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "predID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(predID);
+        dbe = this.getDB().idx.getElement(predID);
 
         if ( dbe == null )
         {
@@ -899,7 +879,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "cell id mismatch");
         }
 
-        this.db.idx.removeElement(this.id);
+        this.getDB().idx.removeElement(this.getID());
 
         // if the predicate is not associated with some pve, it doesn't need
         // an ID.
@@ -947,7 +927,7 @@ public class Predicate extends DBElement
 
         try
         {
-            s = "(predicate (id " + this.id +
+            s = "(predicate (id " + this.getID() +
                 ") (predID " + this.pveID +
                 ") (predName " + this.predName +
                 ") (varLen " + this.varLen + ") " +
@@ -1542,12 +1522,12 @@ public class Predicate extends DBElement
         DBElement dbe = null;
         PredicateVocabElement pve = null;
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
 
-        if ( this.db.idx.getElement(this.id) != this )
+        if ( this.getDB().idx.getElement(this.getID()) != this )
         {
             throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the predicate");
@@ -1559,7 +1539,7 @@ public class Predicate extends DBElement
                  ( cascadePveID != this.pveID ) ) // must de-register
             {
 
-                dbe = this.db.idx.getElement(this.pveID);
+                dbe = this.getDB().idx.getElement(this.pveID);
 
                 if ( ! ( dbe instanceof PredicateVocabElement ) )
                 {
@@ -1569,7 +1549,7 @@ public class Predicate extends DBElement
 
                 pve = (PredicateVocabElement)dbe;
 
-                pve.deregisterInternalListener(this.id);
+                pve.deregisterInternalListener(this.getID());
             }
 
             // pass the deregister message to the argument list regardless
@@ -1732,24 +1712,24 @@ public class Predicate extends DBElement
         DBElement dbe = null;
         PredicateVocabElement pve = null;
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "id not set?!?");
         }
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
 
-        if ( this.db.idx.getElement(this.id) != this )
+        if ( this.getDB().idx.getElement(this.getID()) != this )
         {
             System.out.println(this.toString());
             System.out.println(this.toDBString());
             System.out.println((
-                    (Predicate)(this.db.idx.getElement(this.id))).toString());
+                    (Predicate)(this.getDB().idx.getElement(this.getID()))).toString());
             System.out.println((
-                    (Predicate)(this.db.idx.getElement(this.id))).toDBString());
+                    (Predicate)(this.getDB().idx.getElement(this.getID()))).toDBString());
             int j = 1/0;
             throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the predicate");
@@ -1758,7 +1738,7 @@ public class Predicate extends DBElement
         if ( this.pveID != DBIndex.INVALID_ID ) // we have work to do
         {
 
-            dbe = this.db.idx.getElement(this.pveID);
+            dbe = this.getDB().idx.getElement(this.pveID);
 
             if ( ! ( dbe instanceof PredicateVocabElement ) )
             {
@@ -1768,7 +1748,7 @@ public class Predicate extends DBElement
 
             pve = (PredicateVocabElement)dbe;
 
-            pve.registerInternalListener(this.id);
+            pve.registerInternalListener(this.getID());
 
 
             for ( DataValue dv : this.argList )
@@ -1937,7 +1917,7 @@ public class Predicate extends DBElement
         final String mName = "Predicate::updateForMVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -1947,7 +1927,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
@@ -2051,7 +2031,7 @@ public class Predicate extends DBElement
         DataValue dv = null;
         PredDataValue pdv = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2139,7 +2119,7 @@ public class Predicate extends DBElement
         DBElement dbe = null;
         PredicateVocabElement pve = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2149,7 +2129,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -2282,7 +2262,7 @@ public class Predicate extends DBElement
         DataValue dv = null;
         PredDataValue pdv = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2341,7 +2321,7 @@ public class Predicate extends DBElement
 
                             dv = fa.constructEmptyArg();
 
-                            dv.setItsPredID(this.id);
+                            dv.setItsPredID(this.getID());
 
                             this.replaceArg(i, dv);
                         }
@@ -2526,7 +2506,7 @@ public class Predicate extends DBElement
                     "oldPred.argList == null?!?!");
         }
 
-        if ( oldPred.id == DBIndex.INVALID_ID )
+        if ( oldPred.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "oldPred.id is invalid.");
         }
@@ -2560,8 +2540,8 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "this.argList == null?!?");
         }
 
-        if ( ( this.id != DBIndex.INVALID_ID ) &&
-             ( this.id != oldPred.id ) )
+        if ( ( this.getID() != DBIndex.INVALID_ID ) &&
+             ( this.getID() != oldPred.getID() ) )
         {
             throw new SystemErrorException(mName +
                     "this.id not invalid and not equal to oldPred.id");
@@ -2572,12 +2552,12 @@ public class Predicate extends DBElement
         {
             if ( oldPred.pveID == DBIndex.INVALID_ID )
             {
-                this.db.idx.replaceElement(this);
+                this.getDB().idx.replaceElement(this);
             }
             else
             {
                 // we are replacing a predicate with an undefined predicate.
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
@@ -2592,7 +2572,7 @@ public class Predicate extends DBElement
                     }
 
                     // replace the old Predicate with the new in the index.
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
                 }
             }
         }
@@ -2601,14 +2581,14 @@ public class Predicate extends DBElement
             if ( oldPred.pveID == DBIndex.INVALID_ID )
             {
                 // we are replacing an undefined predicate with a new predicate
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
                 }
                 else // this.id == oldPred.id
                 {
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
 
                     // Insert the argument list of the new predicate in the
                     // index.
@@ -2620,14 +2600,14 @@ public class Predicate extends DBElement
             }
             else // oldPred is defined, and referrs to some other pve
             {
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
                 }
                 else // this.id == oldPred.id
                 {
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
 
                     for ( DataValue dv : oldPred.argList )
                     {
@@ -2641,7 +2621,7 @@ public class Predicate extends DBElement
                 }
             }
         }
-        else if ( this.id == DBIndex.INVALID_ID )
+        else if ( this.getID() == DBIndex.INVALID_ID )
         {
             // we have a new predicate that refers to the same pve as the
             // old.  Just remove the old predicate and all its parameters
@@ -2669,11 +2649,11 @@ public class Predicate extends DBElement
             // ( this.pveID == oldPred.pveID ) &&
             // ( this.pveID != DBIndex.INVALID_ID )
        {
-            assert( this.id == oldPred.id );
+            assert( this.getID() == oldPred.getID() );
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
 
-            this.db.idx.replaceElement(this);
+            this.getDB().idx.replaceElement(this);
 
             pve = this.lookupPredicateVE(this.pveID);
 
@@ -2786,7 +2766,7 @@ public class Predicate extends DBElement
        {
             assert( cascadePveMod );
             assert( cascadePveID == this.pveID );
-            assert( this.id == oldPred.id );
+            assert( this.getID() == oldPred.getID() );
             assert( this.pveID == oldPred.pveID );
             assert( this.pveID != DBIndex.INVALID_ID );
 
@@ -2817,7 +2797,7 @@ public class Predicate extends DBElement
             // the entry in the old list with the same ID.  If no such old
             // argument exists, scream and die.
 
-            this.db.idx.replaceElement(this);
+            this.getDB().idx.replaceElement(this);
 
             pve = this.lookupPredicateVE(this.pveID);
 
@@ -2976,9 +2956,9 @@ public class Predicate extends DBElement
                 else
                 {
                     assert( newArg.getID() == DBIndex.INVALID_ID );
-                    assert( this.id != DBIndex.INVALID_ID );
+                    assert( this.getID() != DBIndex.INVALID_ID );
 
-                    newArg.setItsPredID(this.id);
+                    newArg.setItsPredID(this.getID());
                     newArg.insertInIndex(DCID);
                 }
 
@@ -3432,14 +3412,14 @@ public class Predicate extends DBElement
 
         if ( idMustBeInvalid )
         {
-            if ( this.id != DBIndex.INVALID_ID )
+            if ( this.getID() != DBIndex.INVALID_ID )
             {
                 int j = 1/0;
                 throw new SystemErrorException(mName +
                         "id set when invalid ID required.");
             }
         }
-        else if ( this.id == DBIndex.INVALID_ID )
+        else if ( this.getID() == DBIndex.INVALID_ID )
         {
             idMustBeInvalid = true;
         }
@@ -4563,7 +4543,7 @@ public class Predicate extends DBElement
             idMustBeInvalid = true;
         }
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             idMustBeInvalid = true;
         }
@@ -12493,7 +12473,7 @@ public class Predicate extends DBElement
                 }
                 new_dv_val = ((UndefinedDataValue)new_dv).getItsValue();
                 target_pve_ID = target.getPveID();
-                target_pve = target.db.vl.getPredicateVocabElement(target_pve_ID);
+                target_pve = target.getDB().vl.getPredicateVocabElement(target_pve_ID);
                 farg_name = target_pve.getFormalArg(idx).getFargName();
             }
 
@@ -12793,7 +12773,7 @@ public class Predicate extends DBElement
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

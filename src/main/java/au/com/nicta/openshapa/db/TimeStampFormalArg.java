@@ -304,24 +304,24 @@ public class TimeStampFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new TimeStampDataValue(this.db, this.id);
+            retVal = new TimeStampDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof IntDataValue )
         {
-            retVal = new TimeStampDataValue(this.db, this.id,
-                                       new TimeStamp(db.getTicks(),
+            retVal = new TimeStampDataValue(this.getDB(), this.getID(),
+                                       new TimeStamp(getDB().getTicks(),
                                        ((IntDataValue)salvage).getItsValue()));
         }
         else if ( ( salvage instanceof TimeStampDataValue ) &&
-                  ( this.db.IsValidTimeStamp(
+                  ( this.getDB().IsValidTimeStamp(
                             ((TimeStampDataValue)salvage).getItsValue()) ) )
         {
-            retVal = new TimeStampDataValue(this.db, this.id,
+            retVal = new TimeStampDataValue(this.getDB(), this.getID(),
                             ((TimeStampDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new TimeStampDataValue(this.db, this.id);
+            retVal = new TimeStampDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -344,7 +344,7 @@ public class TimeStampFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new TimeStampDataValue(this.db, this.id);
+         return new TimeStampDataValue(this.getDB(), this.getID());
 
      } /* TimeStampFormalArg::constructEmptyArg() */
 

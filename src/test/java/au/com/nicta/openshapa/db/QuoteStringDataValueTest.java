@@ -141,13 +141,13 @@ public class QuoteStringDataValueTest extends DataValueTest {
         assertNotNull(qv);
         assertNotNull(qsfa);
         assertTrue(qsfa.getID() != DBIndex.INVALID_ID);
-        assertEquals(qv.db, db);
         assertEquals(qv.getDB(), db);
-        assertEquals(qv.id, DBIndex.INVALID_ID);
+        assertEquals(qv.getDB(), db);
+        assertEquals(qv.getID(), DBIndex.INVALID_ID);
         assertEquals(qv.itsCellID, DBIndex.INVALID_ID);
         assertEquals(qv.itsFargID, qsfa.getID());
         assertEquals(qv.itsFargType, qsfa.getFargType());
-        assertEquals(qv.lastModUID, DBIndex.INVALID_ID);
+        assertEquals(qv.getLastModUID(), DBIndex.INVALID_ID);
         assertEquals(qv.subRange, qsfa.getSubRange());
 
         // QuoteString specific
@@ -212,13 +212,13 @@ public class QuoteStringDataValueTest extends DataValueTest {
         assertNotNull(qv);
         assertNotNull(qsfa);
         assertTrue(qsfa.getID() != DBIndex.INVALID_ID);
-        assertEquals(qv.db, db);
         assertEquals(qv.getDB(), db);
-        assertEquals(qv.id, DBIndex.INVALID_ID);
+        assertEquals(qv.getDB(), db);
+        assertEquals(qv.getID(), DBIndex.INVALID_ID);
         assertEquals(qv.itsCellID, DBIndex.INVALID_ID);
         assertEquals(qv.itsFargID, qsfa.getID());
         assertEquals(qv.itsFargType, qsfa.getFargType());
-        assertEquals(qv.lastModUID, DBIndex.INVALID_ID);
+        assertEquals(qv.getLastModUID(), DBIndex.INVALID_ID);
         assertEquals(qv.subRange, qsfa.getSubRange());
 
         // QuoteString specific

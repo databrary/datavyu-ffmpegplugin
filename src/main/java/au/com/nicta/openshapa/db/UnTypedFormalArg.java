@@ -116,64 +116,64 @@ public class UnTypedFormalArg
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal =  new UndefinedDataValue(this.db, this.id,
+            retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
                                              this.getFargName());
         }
         else if ( salvage instanceof ColPredDataValue )
         {
-            retVal = new ColPredDataValue(this.db, this.id,
+            retVal = new ColPredDataValue(this.getDB(), this.getID(),
                     ((ColPredDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof FloatDataValue )
         {
-            retVal = new FloatDataValue(this.db, this.id,
+            retVal = new FloatDataValue(this.getDB(), this.getID(),
                     ((FloatDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof IntDataValue )
         {
-            retVal = new IntDataValue(this.db, this.id,
+            retVal = new IntDataValue(this.getDB(), this.getID(),
                     ((IntDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof NominalDataValue )
         {
-            retVal = new NominalDataValue(this.db, this.id,
+            retVal = new NominalDataValue(this.getDB(), this.getID(),
                     ((NominalDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof PredDataValue )
         {
-            retVal = new PredDataValue(this.db, this.id,
+            retVal = new PredDataValue(this.getDB(), this.getID(),
                     ((PredDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof TextStringDataValue )
         {
             TextStringDataValue textDV = (TextStringDataValue)salvage;
 
-            if ( this.db.IsValidQuoteString(textDV.getItsValue()) )
+            if ( this.getDB().IsValidQuoteString(textDV.getItsValue()) )
             {
-                retVal = new QuoteStringDataValue(this.db, this.id,
+                retVal = new QuoteStringDataValue(this.getDB(), this.getID(),
                                                   textDV.getItsValue());
             }
             else
             {
                 // todo: Think of coercing the text string into a quote string
                 //       instead of just discarding it.
-                retVal =  new UndefinedDataValue(this.db, this.id,
+                retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
                                              this.getFargName());
             }
         }
         else if ( salvage instanceof TimeStampDataValue )
         {
-            retVal = new TimeStampDataValue(this.db, this.id,
+            retVal = new TimeStampDataValue(this.getDB(), this.getID(),
                     ((TimeStampDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof QuoteStringDataValue )
         {
-            retVal = new QuoteStringDataValue(this.db, this.id,
+            retVal = new QuoteStringDataValue(this.getDB(), this.getID(),
                     ((QuoteStringDataValue)salvage).getItsValue());
         }
         else if ( salvage instanceof UndefinedDataValue )
         {
-            retVal =  new UndefinedDataValue(this.db, this.id,
+            retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
                                              this.getFargName());
         }
         else
@@ -201,7 +201,7 @@ public class UnTypedFormalArg
         throws SystemErrorException
      {
 
-         return new UndefinedDataValue(this.db, this.id, this.getFargName());
+         return new UndefinedDataValue(this.getDB(), this.getID(), this.getFargName());
 
      } /* UnTypedFormalArg::constructEmptyArg() */
 
@@ -263,7 +263,7 @@ public class UnTypedFormalArg
 
             ts = (TimeStamp)obj;
 
-            if ( ts.getTPS() == this.db.getTicks() )
+            if ( ts.getTPS() == this.getDB().getTicks() )
             {
                 return true;
             }
@@ -277,7 +277,7 @@ public class UnTypedFormalArg
 
             pred = (Predicate)obj;
 
-            if ( pred.getDB() != this.db )
+            if ( pred.getDB() != this.getDB() )
             {
                 return false;
             }
@@ -289,7 +289,7 @@ public class UnTypedFormalArg
                 // lookup the target pve.  Throw a system error if
                 // the target pve doesn't exist.
 
-                dbe = this.db.idx.getElement(pveID);
+                dbe = this.getDB().idx.getElement(pveID);
 
                 if ( dbe == null )
                 {

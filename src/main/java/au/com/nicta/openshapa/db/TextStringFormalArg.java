@@ -132,7 +132,7 @@ public class TextStringFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new TextStringDataValue(this.db, this.id);
+            retVal = new TextStringDataValue(this.getDB(), this.getID());
         }
         else if ( ( salvage instanceof QuoteStringDataValue ) &&
                   ( ((QuoteStringDataValue)salvage).getItsValue() != null ) &&
@@ -140,7 +140,7 @@ public class TextStringFormalArg extends FormalArgument
                         (((QuoteStringDataValue)salvage).getItsValue()) ) )
 
         {
-            retVal = new TextStringDataValue(this.db, this.id,
+            retVal = new TextStringDataValue(this.getDB(), this.getID(),
                     ((QuoteStringDataValue)salvage).getItsValue());
         }
         else if ( ( salvage instanceof NominalDataValue ) &&
@@ -148,12 +148,12 @@ public class TextStringFormalArg extends FormalArgument
                   ( Database.IsValidTextString
                         (((NominalDataValue)salvage).getItsValue())))
         {
-            retVal = new TextStringDataValue(this.db, this.id,
+            retVal = new TextStringDataValue(this.getDB(), this.getID(),
                     ((NominalDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new TextStringDataValue(this.db, this.id);
+            retVal = new TextStringDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -176,7 +176,7 @@ public class TextStringFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new TextStringDataValue(this.db, this.id);
+         return new TextStringDataValue(this.getDB(), this.getID());
 
      } /* TextStringFormalArg::constructEmptyArg() */
 

@@ -769,7 +769,7 @@ public class ReferenceColumn extends Column
             throw new SystemErrorException(mName + "cells target ID invalid");
         }
 
-        dbe = this.db.idx.getElement(targetID);
+        dbe = this.getDB().idx.getElement(targetID);
 
         if ( dbe == null )
         {

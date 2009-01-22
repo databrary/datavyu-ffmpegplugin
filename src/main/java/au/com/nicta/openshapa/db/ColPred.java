@@ -164,7 +164,7 @@ public class ColPred extends DBElement
 
         if ( mveID != DBIndex.INVALID_ID )
         {
-            dbe = this.db.idx.getElement(mveID);
+            dbe = this.getDB().idx.getElement(mveID);
 
             if ( dbe == null )
             {
@@ -207,7 +207,7 @@ public class ColPred extends DBElement
         }
         else
         {
-            dbe = this.db.idx.getElement(mveID);
+            dbe = this.getDB().idx.getElement(mveID);
 
             if ( dbe == null )
             {
@@ -318,26 +318,6 @@ public class ColPred extends DBElement
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-
-    /**
-     * getDB()
-     *
-     * Return the current value of the db field.
-     *
-     *                          JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-
-    public Database getDB()
-    {
-
-        return this.db;
-
-    } /* ColPred::getdb() */
-
 
     /**
      * getCellID()
@@ -588,7 +568,7 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         DataCell dc = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -603,7 +583,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
 
-        dbe = this.db.idx.getElement(this.cellID);
+        dbe = this.getDB().idx.getElement(this.cellID);
 
         if ( ! ( dbe instanceof DataCell ) )
         {
@@ -670,7 +650,7 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         DataCell dc = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -685,7 +665,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "this.cellID invalid?!?!");
         }
 
-        dbe = this.db.idx.getElement(this.cellID);
+        dbe = this.getDB().idx.getElement(this.cellID);
 
         if ( ! ( dbe instanceof DataCell ) )
         {
@@ -849,7 +829,7 @@ public class ColPred extends DBElement
     {
         final String mName = "ColPred::insertInIndex(): ";
 
-        this.db.idx.addElement(this);
+        this.getDB().idx.addElement(this);
 
         // this should have been checked well before we were called,
         // so no sanity checks.
@@ -866,7 +846,7 @@ public class ColPred extends DBElement
 
             for ( DataValue dv : this.argList )
             {
-                dv.setItsPredID(this.id);
+                dv.setItsPredID(this.getID());
                 dv.insertInIndex(DCID);
             }
         }
@@ -902,7 +882,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( dbe == null )
         {
@@ -953,7 +933,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "cell id mismatch");
         }
 
-        this.db.idx.removeElement(this.id);
+        this.getDB().idx.removeElement(this.getID());
 
         // if the ColPred is not associated with some mve, it doesn't need
         // an ID.
@@ -1001,7 +981,7 @@ public class ColPred extends DBElement
 
         try
         {
-            s = "(colPred (id " + this.id +
+            s = "(colPred (id " + this.getID() +
                 ") (mveID " + this.mveID +
                 ") (mveName " + this.mveName +
                 ") (varLen " + this.varLen + ") " +
@@ -1629,12 +1609,12 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         MatrixVocabElement mve = null;
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
 
-        if ( this.db.idx.getElement(this.id) != this )
+        if ( this.getDB().idx.getElement(this.getID()) != this )
         {
             throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the ColPred");
@@ -1646,7 +1626,7 @@ public class ColPred extends DBElement
                  ( cascadeMveID != this.mveID ) ) // must de-register
             {
 
-                dbe = this.db.idx.getElement(this.mveID);
+                dbe = this.getDB().idx.getElement(this.mveID);
 
                 if ( ! ( dbe instanceof PredicateVocabElement ) )
                 {
@@ -1656,7 +1636,7 @@ public class ColPred extends DBElement
 
                 mve = (MatrixVocabElement)dbe;
 
-                mve.deregisterInternalListener(this.id);
+                mve.deregisterInternalListener(this.getID());
             }
 
             // pass the deregister message to the argument list regardless
@@ -1844,22 +1824,22 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         MatrixVocabElement mve = null;
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "id not set?!?");
         }
 
-        if ( this.db == null )
+        if ( this.getDB() == null )
         {
             throw new SystemErrorException(mName + "this.db is null?!?");
         }
 
-        if ( this.db.idx.getElement(this.id) != this )
+        if ( this.getDB().idx.getElement(this.getID()) != this )
         {
             System.out.println(this.toString());
             System.out.println(this.toDBString());
-            System.out.println(((ColPred)(this.db.idx.getElement(this.id))).toString());
-            System.out.println(((ColPred)(this.db.idx.getElement(this.id))).toDBString());
+            System.out.println(((ColPred)(this.getDB().idx.getElement(this.getID()))).toString());
+            System.out.println(((ColPred)(this.getDB().idx.getElement(this.getID()))).toDBString());
             int j = 1/0;
             throw new SystemErrorException(mName +
                     "not the cannonical incarnation of the predicate");
@@ -1868,7 +1848,7 @@ public class ColPred extends DBElement
         if ( this.mveID != DBIndex.INVALID_ID ) // we have work to do
         {
 
-            dbe = this.db.idx.getElement(this.mveID);
+            dbe = this.getDB().idx.getElement(this.mveID);
 
             if ( ! ( dbe instanceof MatrixVocabElement ) )
             {
@@ -1878,7 +1858,7 @@ public class ColPred extends DBElement
 
             mve = (MatrixVocabElement)dbe;
 
-            mve.registerInternalListener(this.id);
+            mve.registerInternalListener(this.getID());
 
 
             for ( DataValue dv : this.argList )
@@ -2047,7 +2027,7 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         MatrixVocabElement mve = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2057,7 +2037,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
@@ -2230,7 +2210,7 @@ public class ColPred extends DBElement
         ColPredDataValue cpdv = null;
         PredDataValue pdv = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2289,7 +2269,7 @@ public class ColPred extends DBElement
 
                             dv = fa.constructEmptyArg();
 
-                            dv.setItsPredID(this.id);
+                            dv.setItsPredID(this.getID());
 
                             this.replaceArg(i, dv);
                         }
@@ -2364,7 +2344,7 @@ public class ColPred extends DBElement
         DBElement dbe = null;
         PredicateVocabElement pve = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2374,7 +2354,7 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -2463,7 +2443,7 @@ public class ColPred extends DBElement
         ColPredDataValue cpdv = null;
         PredDataValue pdv = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -2518,7 +2498,7 @@ public class ColPred extends DBElement
 
                             dv = fa.constructEmptyArg();
 
-                            dv.setItsPredID(this.id);
+                            dv.setItsPredID(this.getID());
 
                             this.replaceArg(i, dv);
                         }
@@ -2711,7 +2691,7 @@ public class ColPred extends DBElement
                     "oldColPred.argList == null?!?!");
         }
 
-        if ( oldColPred.id == DBIndex.INVALID_ID )
+        if ( oldColPred.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "oldColPred.id is invalid.");
         }
@@ -2740,8 +2720,8 @@ public class ColPred extends DBElement
             throw new SystemErrorException(mName + "this.argList == null?!?");
         }
 
-        if ( ( this.id != DBIndex.INVALID_ID ) &&
-             ( this.id != oldColPred.id ) )
+        if ( ( this.getID() != DBIndex.INVALID_ID ) &&
+             ( this.getID() != oldColPred.getID() ) )
         {
             throw new SystemErrorException(mName +
                     "this.id not invalid and not equal to oldColPred.id");
@@ -2752,19 +2732,19 @@ public class ColPred extends DBElement
         {
             if ( oldColPred.mveID == DBIndex.INVALID_ID )
             {
-                this.db.idx.replaceElement(this);
+                this.getDB().idx.replaceElement(this);
             }
             else
             {
                 // we are replacing a column predicate with an undefined predicate.
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldColPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
                 }
                 else
                 {
-                    assert ( this.id == oldColPred.id );
+                    assert ( this.getID() == oldColPred.getID() );
 
                     // Remove the arguments of the old predicate from the
                     // index.
@@ -2774,7 +2754,7 @@ public class ColPred extends DBElement
                     }
 
                     // replace the old Predicate with the new in the index.
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
                 }
             }
         }
@@ -2784,16 +2764,16 @@ public class ColPred extends DBElement
             {
                 // we are replacing an undefined column predicate with a
                 // new column predicate
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldColPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
                 }
                 else
                 {
-                    assert( this.id == oldColPred.id );
+                    assert( this.getID() == oldColPred.getID() );
 
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
 
                     // Insert the argument list of the new predicate in the
                     // index.
@@ -2805,16 +2785,16 @@ public class ColPred extends DBElement
             }
             else // oldColPred is defined, and referrs to some other mve
             {
-                if ( this.id == DBIndex.INVALID_ID )
+                if ( this.getID() == DBIndex.INVALID_ID )
                 {
                     oldColPred.removeFromIndex(DCID);
                     this.insertInIndex(DCID);
                 }
                 else
                 {
-                    assert( this.id == oldColPred.id );
+                    assert( this.getID() == oldColPred.getID() );
 
-                    this.db.idx.replaceElement(this);
+                    this.getDB().idx.replaceElement(this);
 
                     for ( DataValue dv : oldColPred.argList )
                     {
@@ -2828,7 +2808,7 @@ public class ColPred extends DBElement
                 }
             }
         }
-        else if ( this.id == DBIndex.INVALID_ID )
+        else if ( this.getID() == DBIndex.INVALID_ID )
         {
             // we have a new column predicate that refers to the same mve as
             // the old.  Just remove the old column predicate and all its
@@ -2856,11 +2836,11 @@ public class ColPred extends DBElement
             // ( this.mveID == oldColPred.mveID ) &&
             // ( this.mveID != DBIndex.INVALID_ID )
        {
-            assert( this.id == oldColPred.id );
+            assert( this.getID() == oldColPred.getID() );
             assert( this.mveID == oldColPred.mveID );
             assert( this.mveID != DBIndex.INVALID_ID );
 
-            this.db.idx.replaceElement(this);
+            this.getDB().idx.replaceElement(this);
 
             mve = this.lookupMatrixVE(this.mveID);
 
@@ -2955,7 +2935,7 @@ public class ColPred extends DBElement
        {
             assert( cascadeMveMod );
             assert( cascadeMveID == this.mveID );
-            assert( this.id == oldColPred.id );
+            assert( this.getID() == oldColPred.getID() );
             assert( this.mveID == oldColPred.mveID );
             assert( this.mveID != DBIndex.INVALID_ID );
 
@@ -2986,7 +2966,7 @@ public class ColPred extends DBElement
             // the entry in the old list with the same ID.  If no such old
             // argument exists, scream and die.
 
-            this.db.idx.replaceElement(this);
+            this.getDB().idx.replaceElement(this);
 
             mve = this.lookupMatrixVE(this.mveID);
 
@@ -3128,9 +3108,9 @@ public class ColPred extends DBElement
                 else
                 {
                     assert( newArg.getID() == DBIndex.INVALID_ID );
-                    assert( this.id != DBIndex.INVALID_ID );
+                    assert( this.getID() != DBIndex.INVALID_ID );
 
-                    newArg.setItsPredID(this.id);
+                    newArg.setItsPredID(this.getID());
                     newArg.insertInIndex(DCID);
                 }
 
@@ -3592,14 +3572,14 @@ public class ColPred extends DBElement
 
         if ( idMustBeInvalid )
         {
-            if ( this.id != DBIndex.INVALID_ID )
+            if ( this.getID() != DBIndex.INVALID_ID )
             {
                 int j = 1/0;
                 throw new SystemErrorException(mName +
                         "id set when invalid ID required.");
             }
         }
-        else if ( this.id == DBIndex.INVALID_ID )
+        else if ( this.getID() == DBIndex.INVALID_ID )
         {
             idMustBeInvalid = true;
         }
@@ -4742,11 +4722,11 @@ public class ColPred extends DBElement
             idMustBeInvalid = true;
         }
 
-        if ( this.id == DBIndex.INVALID_ID )
+        if ( this.getID() == DBIndex.INVALID_ID )
         {
             idMustBeInvalid = true;
         }
-        else if ( this.id != oldColPred.id )
+        else if ( this.getID() != oldColPred.getID() )
         {
             throw new SystemErrorException(mName +
                     "this.id set and this.id != oldColPred.id");
@@ -5213,8 +5193,8 @@ public class ColPred extends DBElement
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.db == null ? 0 : this.db.hashCode() * SEED1;
-        hash += (id ^ (id >>> 32)) * SEED2;
+        hash += this.getDB() == null ? 0 : this.getDB().hashCode() * SEED1;
+        hash += (getID() ^ (getID() >>> 32)) * SEED2;
         hash += (mveID ^ (mveID >>> 32)) * SEED3;
         hash += new Boolean(this.varLen).hashCode() * SEED4;
         hash += this.mveName == null ? 0 : this.mveName.hashCode() * SEED5;
@@ -5246,8 +5226,8 @@ public class ColPred extends DBElement
         ColPred c = (ColPred) obj;
 
         return super.equals(obj)
-            && (c.db == this.db)
-            && (c.id == this.id)
+            && (c.getDB() == this.getDB())
+            && (c.getID() == this.getID())
             && (c.mveID == this.mveID)
             && (c.varLen == this.varLen)
             && (this.mveName == null ? c.mveName == null
@@ -18003,7 +17983,7 @@ public class ColPred extends DBElement
                 }
                 new_dv_val = ((UndefinedDataValue)new_dv).getItsValue();
                 target_mve_ID = target.getMveID();
-                target_mve = target.db.getMatrixVE(target_mve_ID);
+                target_mve = target.getDB().getMatrixVE(target_mve_ID);
                 farg_name = target_mve.getFormalArg(idx).getFargName();
             }
 
@@ -18303,7 +18283,7 @@ public class ColPred extends DBElement
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

@@ -144,16 +144,16 @@ public class ColPredDataValueTest {
         assertNotNull(cp);
 
         assertNotNull(cpdv0.itsValue);
-        assertEquals(cpdv0.db, cp.db);
-        assertEquals(cpdv0.db, db);
+        assertEquals(cpdv0.getDB(), cp.getDB());
+        assertEquals(cpdv0.getDB(), db);
         assertEquals(cpdv0.getID(), DBIndex.INVALID_ID);
         assertEquals(cpdv0.itsCellID, DBIndex.INVALID_ID);
         assertEquals(cpdv0.itsFargID, untypedFarg.getID());
         assertEquals(cpdv0.getLastModUID(), DBIndex.INVALID_ID);
 
         assertNotNull(cpdv1.itsValue);
-        assertEquals(cpdv1.db, cp.db);
-        assertEquals(cpdv1.db, db);
+        assertEquals(cpdv1.getDB(), cp.getDB());
+        assertEquals(cpdv1.getDB(), db);
         assertEquals(cpdv1.getID(), DBIndex.INVALID_ID);
         assertEquals(cpdv1.itsCellID, DBIndex.INVALID_ID);
         assertEquals(cpdv1.itsFargID, colPredFarg.getID());

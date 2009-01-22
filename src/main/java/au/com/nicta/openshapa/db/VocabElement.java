@@ -893,7 +893,7 @@ public abstract class VocabElement extends DBElement
             while ( i <= (numFArgs - 1) )
             {
                 fArg = getFormalArg(i);
-                fArg.setItsVocabElementID(this.id);
+                fArg.setItsVocabElementID(this.getID());
                 i++;
             }
         }

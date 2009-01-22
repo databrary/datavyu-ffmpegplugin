@@ -258,14 +258,14 @@ public final class PredDataValue extends DataValue
         PredFormalArg pfa;
 
         if ( ( value != null ) &&
-             ( value.getDB() != this.db ) )
+             ( value.getDB() != this.getDB() ) )
         {
             throw new SystemErrorException(mName + "value.getDB() != this.db");
         }
 
         if ( ( value != null ) &&
              ( value.getPveID() != DBIndex.INVALID_ID ) &&
-             ( ! db.vl.predInVocabList(value.getPveID()) ) )
+             ( ! getDB().vl.predInVocabList(value.getPveID()) ) )
         {
             throw new SystemErrorException(mName +
                     "! db.vl.predInVocabList(value.getPredID())");
@@ -274,7 +274,7 @@ public final class PredDataValue extends DataValue
         if ( ( value == null ) ||
              ( value.getPveID() == DBIndex.INVALID_ID ) )
         {
-            this.itsValue = new Predicate(this.db);
+            this.itsValue = new Predicate(this.getDB());
         }
         else if ( this.subRange )
         {
@@ -289,7 +289,7 @@ public final class PredDataValue extends DataValue
                                                "itsFargType != PREDICATE");
             }
 
-            dbe = this.db.idx.getElement(this.itsFargID);
+            dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
@@ -311,7 +311,7 @@ public final class PredDataValue extends DataValue
             }
             else // coerce to the undefined state
             {
-                this.itsValue = new Predicate(this.db);
+                this.itsValue = new Predicate(this.getDB());
             }
         }
         else
@@ -540,7 +540,7 @@ public final class PredDataValue extends DataValue
         if ( ( this.itsValue == null ) ||
              ( this.itsValue.getPveID() == DBIndex.INVALID_ID ) )
         {
-            return ("(PredDataValue (id " + this.id +
+            return ("(PredDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -549,7 +549,7 @@ public final class PredDataValue extends DataValue
         }
         else
         {
-            return ("(PredDataValue (id " + this.id +
+            return ("(PredDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -606,7 +606,7 @@ public final class PredDataValue extends DataValue
         final String mName = "PredDataValue::updateForMVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -616,7 +616,7 @@ public final class PredDataValue extends DataValue
             throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(mveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
         if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
@@ -680,7 +680,7 @@ public final class PredDataValue extends DataValue
     {
         final String mName = "Matrix::updateForMVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -737,7 +737,7 @@ public final class PredDataValue extends DataValue
         final String mName = "PredDataValue::updateForPVEDefChange(): ";
         DBElement dbe = null;
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -747,7 +747,7 @@ public final class PredDataValue extends DataValue
             throw new SystemErrorException(mName + "pveID invalid.");
         }
 
-        dbe = this.db.idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(pveID);
 
         if ( ! ( dbe instanceof PredicateVocabElement ) )
         {
@@ -802,7 +802,7 @@ public final class PredDataValue extends DataValue
     {
         final String mName = "Matrix::updateForPVEDeletion(): ";
 
-        if ( this.db != db )
+        if ( this.getDB() != db )
         {
             throw new SystemErrorException(mName + "db mismatch.");
         }
@@ -926,7 +926,7 @@ public final class PredDataValue extends DataValue
                 {
                     if ( ! ( pfa.isValidValue(this.itsValue) ) )
                     {
-                        this.itsValue = new Predicate(this.db);
+                        this.itsValue = new Predicate(this.getDB());
                     }
                 }
             }
@@ -972,7 +972,7 @@ public final class PredDataValue extends DataValue
 
         if ( value == null )
         {
-            retVal = new Predicate(this.db);
+            retVal = new Predicate(this.getDB());
         }
         else if ( value.getPveID() == DBIndex.INVALID_ID )
         {
@@ -991,7 +991,7 @@ public final class PredDataValue extends DataValue
                                                "itsFargType != PREDICATE");
             }
 
-            dbe = this.db.idx.getElement(this.itsFargID);
+            dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
@@ -1013,7 +1013,7 @@ public final class PredDataValue extends DataValue
             }
             else // coerce to the undefined state
             {
-                retVal = new Predicate(this.db);
+                retVal = new Predicate(this.getDB());
             }
         }
         else
@@ -5079,7 +5079,7 @@ public final class PredDataValue extends DataValue
                 db.vl.addElement(pred_mve);
 
                 pdv0 = new PredDataValue(db, pfa.getID(), p0);
-                pdv0.id = 100;        // invalid value for print test
+                pdv0.setID(100);        // invalid value for print test
                 pdv0.itsCellID = 500; // invalid value for print test
 
                 matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -5089,7 +5089,7 @@ public final class PredDataValue extends DataValue
                 db.vl.addElement(matrix_mve);
 
                 pdv1 = new PredDataValue(db, ufa.getID(), p3);
-                pdv1.id = 101;        // invalid value for print test
+                pdv1.setID(101);      // invalid value for print test
                 pdv1.itsCellID = 501; // invalid value for print test
 
                 completed = true;
@@ -5290,7 +5290,7 @@ public final class PredDataValue extends DataValue
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 

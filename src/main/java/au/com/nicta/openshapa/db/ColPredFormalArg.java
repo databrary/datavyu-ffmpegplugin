@@ -121,16 +121,16 @@ public class ColPredFormalArg extends FormalArgument
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal = new ColPredDataValue(this.db, this.id);
+            retVal = new ColPredDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof ColPredDataValue )
         {
-            retVal = new ColPredDataValue(this.db, this.id,
+            retVal = new ColPredDataValue(this.getDB(), this.getID(),
                     ((ColPredDataValue)salvage).getItsValue());
         }
         else
         {
-            retVal = new ColPredDataValue(this.db, this.id);
+            retVal = new ColPredDataValue(this.getDB(), this.getID());
         }
 
         return retVal;
@@ -155,7 +155,7 @@ public class ColPredFormalArg extends FormalArgument
         throws SystemErrorException
      {
 
-         return new ColPredDataValue(this.db, this.id);
+         return new ColPredDataValue(this.getDB(), this.getID());
 
      } /* PredFormalArg::constructEmptyArg() */
 
@@ -207,7 +207,7 @@ public class ColPredFormalArg extends FormalArgument
         {
             cPred = (ColPred)obj;
 
-            if ( cPred.getDB() != this.db )
+            if ( cPred.getDB() != this.getDB() )
             {
                 return false;
             }

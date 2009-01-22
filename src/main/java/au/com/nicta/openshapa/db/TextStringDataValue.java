@@ -193,7 +193,7 @@ public final class TextStringDataValue extends DataValue
         {
             this.itsValue = null;
         }
-        else if ( ! ( db.IsValidTextString(value) ) )
+        else if ( ! ( getDB().IsValidTextString(value) ) )
         {
             throw new SystemErrorException(mName +
                                            "value not valid quote string");
@@ -260,7 +260,7 @@ public final class TextStringDataValue extends DataValue
     {
         if ( this.itsValue == null )
         {
-            return ("(TextStringDataValue (id " + this.id +
+            return ("(TextStringDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -269,7 +269,7 @@ public final class TextStringDataValue extends DataValue
         }
         else
         {
-            return ("(TextStringDataValue (id " + this.id +
+            return ("(TextStringDataValue (id " + this.getID() +
                     ") (itsFargID " + this.itsFargID +
                     ") (itsFargType " + this.itsFargType +
                     ") (itsCellID " + this.itsCellID +
@@ -429,7 +429,7 @@ public final class TextStringDataValue extends DataValue
             return value;
         }
 
-        if ( ! this.db.IsValidTextString(value) )
+        if ( ! this.getDB().IsValidTextString(value) )
         {
             throw new SystemErrorException(mName +
                                            "value isn't valid quote string");
@@ -2312,7 +2312,7 @@ public final class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve0);
 
             tdv0 = new TextStringDataValue(db, tfa0.getID(), "bravo");
-            tdv0.id = 100;        // invalid value for print test
+            tdv0.setID(100);      // invalid value for print test
             tdv0.itsCellID = 500; // invalid value for print test
 
             txt_mve1 = new MatrixVocabElement(db, "txt_mve1");
@@ -2322,7 +2322,7 @@ public final class TextStringDataValue extends DataValue
             db.vl.addElement(txt_mve1);
 
             tdv1 = new TextStringDataValue(db, tfa1.getID(), "nero");
-            tdv1.id = 101;        // invalid value for print test
+            tdv1.setID(101);      // invalid value for print test
             tdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
@@ -2524,7 +2524,7 @@ public final class TextStringDataValue extends DataValue
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
-        else if ( base.db != copy.db )
+        else if ( base.getDB() != copy.getDB() )
         {
             failures++;
 
