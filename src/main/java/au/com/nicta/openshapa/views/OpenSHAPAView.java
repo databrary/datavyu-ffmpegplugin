@@ -266,7 +266,7 @@ implements KeyEventDispatcher {
      * @param evt The event that fired this action.
      */
     private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
-        OpenSHAPA.getApplication().createNewCell(0);
+        OpenSHAPA.getApplication().createNewCell();
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
