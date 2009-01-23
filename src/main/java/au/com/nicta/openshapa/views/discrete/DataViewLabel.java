@@ -117,7 +117,7 @@ public class DataViewLabel extends JMultilineLabel implements MouseListener {
 
   public void redispatchMouseEvent(MouseEvent me)
   {
-    Container container = this.getParent();
+    Container container = this.getParent().getParent();
 
     Point containerPoint =
         SwingUtilities.convertPoint(this,
@@ -158,37 +158,33 @@ public class DataViewLabel extends JMultilineLabel implements MouseListener {
     }
   }
 
-    public void mouseClicked(MouseEvent me) {
-        if (this.isEditable() && this.value != null) {
-            //this.value.edit(me);
-        } else {
-            this.redispatchMouseEvent(me);
-        }
-    /*
-    if (this.isEditable() && (this.value != null)) {
-      Editor e = this.stringEditor;
-
-      if (this.value instanceof FloatDataValue) {
-        e = this.floatEditor;
-      } else if (this.value instanceof IntDataValue) {
-        e = this.integerEditor;
-      } else if (this.value instanceof NominalDataValue) {
-        e = this.nominalEditor;
-      } else if (this.value instanceof TextStringDataValue) {
-        e = this.stringEditor;
-      } else if (this.value instanceof TimeStampDataValue) {
-        e = this.timeStampEditor;
-      } else if (this.value instanceof PredDataValue) {
-        e = this.predicateEditor;
-      } else {
-        return;
-      }
-
-      e.editValue(this);
-    } else {
+  public void mouseClicked(MouseEvent me)
+  {
+    
+//    if (this.isEditable() && (this.value != null)) {
+//      Editor e = this.stringEditor;
+//
+//      if (this.value instanceof FloatDataValue) {
+//        e = this.floatEditor;
+//      } else if (this.value instanceof IntDataValue) {
+//        e = this.integerEditor;
+//      } else if (this.value instanceof NominalDataValue) {
+//        e = this.nominalEditor;
+//      } else if (this.value instanceof TextStringDataValue) {
+//        e = this.stringEditor;
+//      } else if (this.value instanceof TimeStampDataValue) {
+//        e = this.timeStampEditor;
+//      } else if (this.value instanceof PredDataValue) {
+//        e = this.predicateEditor;
+//      } else {
+//        return;
+//      }
+//
+//      e.editValue(this);
+//    } else {
       this.redispathMouseEvent(me);
-    }
-     */
+//    }
+     
   }
 
   /*

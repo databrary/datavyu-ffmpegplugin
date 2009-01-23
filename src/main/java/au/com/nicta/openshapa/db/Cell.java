@@ -124,6 +124,8 @@ public abstract class Cell extends DBElement
 
         this.ord = c.ord;
 
+        this.selected = c.selected;
+
         if ( c.comment != null )
         {
             this.comment = new String(c.comment);

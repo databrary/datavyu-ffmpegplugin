@@ -6,10 +6,7 @@ import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -22,7 +19,7 @@ import org.apache.log4j.Logger;
  * @author swhitcher
  */
 public class Spreadsheet extends OpenSHAPADialog
-        implements ExternalColumnListListener, MouseListener {
+        implements ExternalColumnListListener {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -34,6 +31,12 @@ public class Spreadsheet extends OpenSHAPADialog
 
     /** Mapping between database column id to the Spreadsheetcolumn. */
     private HashMap<Long, SpreadsheetColumn> columns;
+
+    /** Selector object for handling Column header selection. */
+    private Selector colSelector;
+
+    /** Selector object for handling SpreadsheetCell selection. */
+    private Selector cellSelector;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
@@ -65,6 +68,9 @@ public class Spreadsheet extends OpenSHAPADialog
         this.add(jScrollPane3, BorderLayout.CENTER);
         jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
+
+        colSelector = new Selector();
+        cellSelector = new Selector();
     }
 
     /**
@@ -98,7 +104,7 @@ public class Spreadsheet extends OpenSHAPADialog
                 addColumn(getDatabase(), dbColumn.getID());
             }
         } catch (SystemErrorException e) {
-           logger.error("Failed to populate Spreadsheet.", e);
+            logger.error("Failed to populate Spreadsheet.", e);
         }
     }
 
@@ -118,13 +124,13 @@ public class Spreadsheet extends OpenSHAPADialog
      */
     private void addColumn(final Database db, final long colID) {
         // make the SpreadsheetColumn
-        SpreadsheetColumn col = new SpreadsheetColumn(db, colID);
+        SpreadsheetColumn col = new SpreadsheetColumn(this, db, colID);
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col.getHeaderPanel());
 
-        col.getHeaderPanel().addMouseListener(this);
+        col.getHeaderPanel().addMouseListener(colSelector);
 
         // and add it to our maintained ref collection
         columns.put(colID, col);
@@ -175,6 +181,8 @@ public class Spreadsheet extends OpenSHAPADialog
 
         // show database name in title bar
         setTitle(db.getName());
+
+        deselectAll();
     }
 
     /**
@@ -182,6 +190,21 @@ public class Spreadsheet extends OpenSHAPADialog
      */
     public final Database getDatabase() {
         return (this.database);
+    }
+
+    /**
+     * @return Selector handling the SpreadsheetCells.
+     */
+    public final Selector getCellSelector() {
+        return cellSelector;
+    }
+
+    /**
+     * @return Deselect all selected items in the Spreadsheet.
+     */
+    public final void deselectAll() {
+        cellSelector.deselectAll();
+        colSelector.deselectAll();
     }
 
     /**
@@ -195,6 +218,7 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID The id of the freshly removed column.
      */
     public final void colDeletion(final Database db, final long colID) {
+        deselectAll();
         removeColumn(colID);
         validate();
     }
@@ -206,64 +230,11 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID The id of the newly added column.
      */
     public final void colInsertion(final Database db, final long colID) {
+        deselectAll();
         addColumn(db, colID);
         validate();
     }
 
-    /**
-     * Invoked when the mouse enters a component. No function.
-     * @param me event detail
-     */
-    public void mouseEntered(final MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse exits a component. No function.
-     * @param me event detail
-     */
-    public void mouseExited(final MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is pressed in a component. No function.
-     * @param me event detail
-     */
-    public void mousePressed(final MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is released in a component. No function.
-     * @param me event detail
-     */
-    public void mouseReleased(final MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is clicked in a cell.
-     * Toggles the selection state of the cell and notifies the database cell
-     * referred to.
-     * @param me event detail
-     */
-    public void mouseClicked(final MouseEvent me) {
-        // A column header has been clicked
-        ColumnHeaderPanel clickedcol = (ColumnHeaderPanel) me.getComponent();
-
-        Iterator<SpreadsheetColumn> it = columns.values().iterator();
-        // deselect the others and toggle the clicked one
-        while (it.hasNext()) {
-            ColumnHeaderPanel col =
-                                (ColumnHeaderPanel) it.next().getHeaderPanel();
-            if (col == clickedcol) {
-                col.toggleSelected();
-                col.repaint();
-            } else {
-                if (col.isSelected()) {
-                    col.toggleSelected();
-                    col.repaint();
-                }
-            }
-        }
-    }
 
     /** This method is called from within the constructor to
      * initialize the form.
