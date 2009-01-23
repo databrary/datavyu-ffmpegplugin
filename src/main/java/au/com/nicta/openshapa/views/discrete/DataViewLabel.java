@@ -115,7 +115,7 @@ public class DataViewLabel extends JMultilineLabel implements MouseListener {
     }
   }
 
-  public void redispathMouseEvent(MouseEvent me)
+  public void redispatchMouseEvent(MouseEvent me)
   {
     Container container = this.getParent();
 
@@ -136,30 +136,34 @@ public class DataViewLabel extends JMultilineLabel implements MouseListener {
 
   public void mouseEntered(MouseEvent me)
   {
-    this.redispathMouseEvent(me);
+    this.redispatchMouseEvent(me);
   }
 
   public void mouseExited(MouseEvent me)
   {
-    this.redispathMouseEvent(me);
+    this.redispatchMouseEvent(me);
   }
 
   public void mousePressed(MouseEvent me)
   {
     if (!this.isEditable()) {
-      this.redispathMouseEvent(me);
+      this.redispatchMouseEvent(me);
     }
   }
 
   public void mouseReleased(MouseEvent me)
   {
     if (!this.isEditable()) {
-      this.redispathMouseEvent(me);
+      this.redispatchMouseEvent(me);
     }
   }
 
-  public void mouseClicked(MouseEvent me)
-  {
+    public void mouseClicked(MouseEvent me) {
+        if (this.isEditable() && this.value != null) {
+            //this.value.edit(me);
+        } else {
+            this.redispatchMouseEvent(me);
+        }
     /*
     if (this.isEditable() && (this.value != null)) {
       Editor e = this.stringEditor;
