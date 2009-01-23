@@ -50,7 +50,7 @@ public class SpreadsheetColumn
 
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
-            headerpanel = new ColumnHeaderPanel(dbColumn.getName()
+            headerpanel = new ColumnHeaderPanel(this, dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")");
 
             datapanel = new ColumnDataPanel(sheet, dbColumn);
@@ -100,6 +100,23 @@ public class SpreadsheetColumn
         }
         dirty = false;
     }
+
+    /**
+     * Set the selected state for the DataColumn this displays.
+     * @param selected Selected state.
+     */
+    public final void setSelected(final boolean selected) {
+        try {
+            DataColumn dc = database.getDataColumn(dbColID);
+
+            dc.setSelected(selected);
+            database.replaceColumn(dc);
+
+        } catch (SystemErrorException e) {
+           logger.error("Failed setting column select state.", e);
+        }
+    }
+
 
     /** ExternalCascadeListener overrides */
 

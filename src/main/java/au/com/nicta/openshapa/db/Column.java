@@ -170,6 +170,7 @@ public abstract class Column
         this.hidden  = c.hidden;
         this.readOnly = c.readOnly;
         this.numCells = c.numCells;
+        this.selected = c.selected;
 
     } /* Column::Column(c) */
 

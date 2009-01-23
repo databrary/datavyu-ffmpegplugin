@@ -16,12 +16,18 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
     /** Selected state. */
     private boolean selected = false;
 
+    /** SpreadsheetColumn this header is part of. */
+    private SpreadsheetColumn parentCol;
+
     /**
      * Creates new ColumnHeaderPanel.
+     * @param col SpreadsheetColumn this header is part of.
      * @param text String to display
      */
-    public ColumnHeaderPanel(final String text) {
+    public ColumnHeaderPanel(final SpreadsheetColumn col, final String text) {
         super(text);
+
+        parentCol = col;
 
         setOpaque(true);
         setHorizontalAlignment(JLabel.CENTER);
@@ -31,11 +37,16 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
         setMaximumSize(new Dimension(202,16));
     }
 
+    /**
+     * Selectable Implementation.
+     */
+
     /** set the selected state.
      * @param sel selected state.
      */
     public void setSelected(final boolean sel) {
         selected = sel;
+        parentCol.setSelected(selected);
         repaint();
     }
 
@@ -44,11 +55,6 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
      */
     public boolean isSelected() {
         return selected;
-    }
-
-    /** Toggle the selected state. */
-    public void toggleSelected() {
-        selected = !selected;
     }
 
     /**

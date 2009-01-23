@@ -4,6 +4,8 @@ package au.com.nicta.openshapa.views.discrete;
  * Selectable interface class.
  * For use with the Selector object.
  * Defines methods so an object can be in a selection of objects.
+ * Implementor must be a JPanel or other swing object that receives
+ * mouseclick events.
  *
  * @author swhitcher
  */
