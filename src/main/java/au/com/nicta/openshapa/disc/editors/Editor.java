@@ -10,7 +10,7 @@
 package au.com.nicta.openshapa.disc.editors;
 
 import au.com.nicta.openshapa.db.DataValue;
-import au.com.nicta.openshapa.views.discrete.DataViewLabel;
+import au.com.nicta.openshapa.views.discrete.DataValueView;
 import javax.swing.JComponent;
 
 
@@ -23,7 +23,7 @@ public abstract class Editor
 {
   DataValue dv = null;
 
-  public void editValue(DataViewLabel dvl)
+  public void editValue(DataValueView dvl)
   {
     System.out.println("Editing Value: " + dvl.getValue().toString());
 //    Rectangle r = dvl.getBounds();

@@ -36,11 +36,11 @@ public class SpreadsheetCell
     implements  ExternalDataCellListener, Selectable {
 
     /** The Ordinal display component. */
-    private DataViewLabel ord;
+    private DataValueView ord;
     /** The Onset display component. */
-    private DataViewLabel onset;
+    private DataValueView onset;
     /** The Offset display component. */
-    private DataViewLabel offset;
+    private DataValueView offset;
     /** The Value display component. */
     private MatrixViewLabel value;
 
@@ -113,9 +113,9 @@ public class SpreadsheetCell
         this.db = db;
         this.cellID = cell.getID();
 
-        this.ord    = new DataViewLabel(ordDV,  false);
-        this.onset  = new DataViewLabel(onsetDV, true);
-        this.offset = new DataViewLabel(offsetDV, true);
+        this.ord    = new DataValueView(ordDV,  false);
+        this.onset  = new DataValueView(onsetDV, true);
+        this.offset = new DataValueView(offsetDV, true);
         this.value  = new MatrixViewLabel(null);
 
         initComponents();
@@ -235,7 +235,7 @@ public class SpreadsheetCell
      * @return time value for the cell
      * @throws SystemErrorException if db cals fail
      */
-    public final static double getTime(int type, DataViewLabel timeLabel)
+    public final static double getTime(int type, DataValueView timeLabel)
        throws SystemErrorException
     {
         long t = ((TimeStampDataValue)timeLabel
