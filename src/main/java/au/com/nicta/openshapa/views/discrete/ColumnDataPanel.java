@@ -17,6 +17,8 @@ import org.apache.log4j.Logger;
  */
 public class ColumnDataPanel extends javax.swing.JPanel {
 
+    private Spreadsheet spreadsheet;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(ColumnDataPanel.class);
 
@@ -24,7 +26,7 @@ public class ColumnDataPanel extends javax.swing.JPanel {
     private Component filler;
 
     /** Creates new ColumnDataPanel panel. */
-    public ColumnDataPanel() {
+    public ColumnDataPanel(Spreadsheet sheet) {
         initComponents();
 
         // keep a ref to a Box Layout Manager
@@ -34,14 +36,16 @@ public class ColumnDataPanel extends javax.swing.JPanel {
 
         // hold onto a filler box for when there are no datacells
         filler = Box.createRigidArea(new Dimension(200, 0));
+
+        spreadsheet = sheet;
     }
 
     /**
      * Creates new ColumnDataPanel panel.
      * @param dbColumn Database column to display.
      */
-    public ColumnDataPanel(final DataColumn dbColumn) {
-        this();
+    public ColumnDataPanel(final Spreadsheet sheet, final DataColumn dbColumn) {
+        this(sheet);
 
         updateComponents(dbColumn);
     }
@@ -69,7 +73,8 @@ public class ColumnDataPanel extends javax.swing.JPanel {
                                     .getCell(dbColumn.getID(), j);
 
                 SpreadsheetCell sc =
-                                new SpreadsheetCell(dbColumn.getDB(), dc);
+                                new SpreadsheetCell(dbColumn.getDB(), dc,
+                                                spreadsheet.getCellSelector());
                 sc.setSize(200, 50);
                 add(sc);
             }

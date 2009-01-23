@@ -5,6 +5,7 @@ import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.DatabaseDemo;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
+import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
@@ -197,8 +198,9 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Creates a new cell in the first column and sets the start time to the
-     * nominated number of milliseconds.
+     * UNDER CONSTRUCTION
+     * Assumes a cell is selected before adding a new cell.  Needs more code.
+     * TODO finish this.
      *
      * @param milliseconds The number of milliseconds since the origin of the
      * spreadsheet to create a new cell from.
@@ -206,13 +208,33 @@ implements KeyEventDispatcher {
     public void createNewCell(final long milliseconds) {
         try {
             Vector <DataColumn> columns = db.getDataColumns();
-            DataColumn dc = columns.elementAt(0);
-            MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+            int numCols = columns.size();
+            for (int i = 0; i < numCols; i++) {
 
-            DataCell cell = new DataCell(db, dc.getID(), mve.getID());
-            cell.setOnset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
-            System.out.println(cell.toString());
-            lastCreatedCellID = db.appendCell(cell);
+                DataColumn col = columns.elementAt(i);
+                MatrixVocabElement mve = db.getMatrixVE(col.getItsMveID());
+                int numCells = col.getNumCells();
+                Matrix mat = new Matrix(col.getDB(), mve.getID());
+                // traverse and add new cells
+                for (int j = 1; j <= numCells; j++) {
+                    DataCell dc = (DataCell) col.getDB()
+                                        .getCell(col.getID(), j);
+                    if (dc.getSelected()) {
+                        DataCell cell = new DataCell(col.getDB(),
+                                                    "",
+                                                    col.getID(),
+                                                    mve.getID(),
+                                                    dc.getOnset(),
+                                                    dc.getOffset(),
+                                                    mat);
+                        System.out.println(cell.toString());
+    //                    lastCreatedCellID = db.appendCell(cell);
+                        lastCreatedCellID = 
+                                        db.insertdCell(cell, dc.getOrd() + 1);
+                    }
+                }
+            }
+            spreadsheetView.deselectAll();
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
         }

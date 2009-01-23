@@ -11,7 +11,7 @@ import javax.swing.JLabel;
  * ColumnHeaderPanel displays the column variable name.
  * @author swhitcher
  */
-class ColumnHeaderPanel extends JLabel {
+class ColumnHeaderPanel extends JLabel implements Selectable {
 
     /** Selected state. */
     private boolean selected = false;
@@ -36,6 +36,7 @@ class ColumnHeaderPanel extends JLabel {
      */
     public void setSelected(final boolean sel) {
         selected = sel;
+        repaint();
     }
 
     /**

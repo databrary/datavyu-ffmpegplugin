@@ -208,7 +208,7 @@ public class CascadeListeners extends Listeners
 
                 el = (ExternalCascadeListener)o;
 
-                el.beginCascade(this.db);
+                el.endCascade(this.db);
             }
         }
 

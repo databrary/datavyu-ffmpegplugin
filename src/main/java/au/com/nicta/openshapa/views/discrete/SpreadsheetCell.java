@@ -8,7 +8,6 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Cell;
 import au.com.nicta.openshapa.db.DataCell;
-import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalDataCellListener;
 import au.com.nicta.openshapa.db.IntDataValue;
@@ -23,10 +22,9 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,8 +32,8 @@ import org.apache.log4j.Logger;
  * @author  felix
  */
 public class SpreadsheetCell
-    extends     javax.swing.JPanel
-    implements  MouseListener, ExternalDataCellListener {
+    extends     JPanel
+    implements  ExternalDataCellListener, Selectable {
 
     /** The Ordinal display component. */
     private DataViewLabel ord;
@@ -102,9 +100,11 @@ public class SpreadsheetCell
      * Creates new form SpreadsheetCell.
      * @param db Database the cell is in
      * @param cell Cell to display
+     * @param selector Selector to register the cell with.
      * @throws SystemErrorException if trouble with db calls
      */
-    public SpreadsheetCell(final Database db, final Cell cell)
+    public SpreadsheetCell(final Database db, final Cell cell,
+                           final Selector selector)
                                                 throws SystemErrorException {
         IntDataValue ordDV = new IntDataValue(db);
         TimeStampDataValue onsetDV = new TimeStampDataValue(db);
@@ -126,9 +126,7 @@ public class SpreadsheetCell
         this.dataPanel.add(value, BorderLayout.CENTER);
         //    this.column = column;
 
-        this.addMouseListener(this);
-        this.topPanel.addMouseListener(this);
-        this.dataPanel.addMouseListener(this);
+        this.addMouseListener(selector);
 
         this.updateDimensions();
 
@@ -143,6 +141,11 @@ public class SpreadsheetCell
         this.setOnset(dc.getOnset());
         this.setOffset(dc.getOffset());
         this.setValue(dc.getVal());
+    }
+
+
+    public long getCellID() {
+        return cellID;
     }
 
     /** Set the ordinal value. */
@@ -443,43 +446,10 @@ public class SpreadsheetCell
         super.paintComponent(g);
     }
 
-    /**
-     * Invoked when the mouse enters a component. No function.
-     * @param me event detail
-     */
-    public void mouseEntered(MouseEvent me) {
-    }
 
-    /**
-     * Invoked when the mouse exits a component. No function.
-     * @param me event detail
-     */
-    public void mouseExited(MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is pressed in a component. No function.
-     * @param me event detail
-     */
-    public void mousePressed(MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is released in a component. No function.
-     * @param me event detail
-     */
-    public void mouseReleased(MouseEvent me) {
-    }
-
-    /**
-     * Invoked when the mouse is clicked in a cell.
-     * Toggles the selection state of the cell and notifies the database cell
-     * referred to.
-     * @param me event detail
-     */
-    public void mouseClicked(MouseEvent me) {
+    public void setSelected(boolean sel) {
+        selected = sel;
         try {
-            selected = !selected;
             Cell cell = db.getCell(this.cellID);
             DataCell dc = null;
             if (cell instanceof DataCell) {
@@ -492,7 +462,11 @@ public class SpreadsheetCell
         } catch (SystemErrorException e) {
            logger.error("Failed clicking on SpreadsheetCell.", e);
         }
-        this.repaint();
+        repaint();
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 
     /**

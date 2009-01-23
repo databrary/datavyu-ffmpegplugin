@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.ExternalCascadeListener;
 import au.com.nicta.openshapa.db.ExternalDataColumnListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import javax.swing.JComponent;
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
  * @author swhitcher
  */
 public class SpreadsheetColumn
-        implements ExternalDataColumnListener {
+        implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** Database reference. */
     private Database database;
@@ -26,31 +27,38 @@ public class SpreadsheetColumn
     /** ColumnHeaderPanel this column manages. */
     private ColumnHeaderPanel headerpanel;
 
+    /** flag to set if redraw required. */
+    private boolean dirty;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
 
     /**
      * Creates new SpreadsheetColumn.
+     * @param sheet Spreadsheet parent.
      * @param db Database reference.
      * @param colID the database colID this column displays.
      */
-    public SpreadsheetColumn(final Database db, final long colID) {
+    public SpreadsheetColumn(final Spreadsheet sheet,
+                             final Database db, final long colID) {
         this.database = db;
         this.dbColID = colID;
 
         try {
             database.registerDataColumnListener(dbColID, this);
+            database.registerCascadeListener(this);
 
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
             headerpanel = new ColumnHeaderPanel(dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")");
 
-            datapanel = new ColumnDataPanel(dbColumn);
+            datapanel = new ColumnDataPanel(sheet, dbColumn);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
         }
+        dirty = false;
     }
 
     /**
@@ -90,6 +98,27 @@ public class SpreadsheetColumn
         } catch (SystemErrorException e) {
             logger.error("Failed to reget DataColumn from colID = " + colID, e);
         }
+        dirty = false;
+    }
+
+    /** ExternalCascadeListener overrides */
+
+    /**
+     * Called at the beginning of a cascade of changes through the database.
+     * @param db The database.
+     */
+    public final void beginCascade(final Database db) {
+
+    }
+
+    /**
+     * Called at the end of a cascade of changes through the database.
+     * @param db The database.
+     */
+    public final void endCascade(final Database db) {
+        if (dirty) {
+            rebuildAll(database, dbColID);
+        }
     }
 
     /** ExternalDataColumnListener overrides */
@@ -103,7 +132,7 @@ public class SpreadsheetColumn
     public final void DColCellDeletion(final Database db,
                                        final long colID,
                                        final long cellID) {
-        rebuildAll(db, colID);
+        dirty = true;
     }
 
 
@@ -116,7 +145,7 @@ public class SpreadsheetColumn
     public final void DColCellInsertion(final Database db,
                                         final long colID,
                                         final long cellID) {
-        rebuildAll(db, colID);
+        dirty = true;
     }
 
 
@@ -158,7 +187,7 @@ public class SpreadsheetColumn
                                       final boolean selectedChanged,
                                       final boolean oldSelected,
                                       final boolean newSelected) {
-        rebuildAll(db, colID);
+        dirty = true;
     }
 
     /**
