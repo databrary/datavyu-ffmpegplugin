@@ -113,9 +113,9 @@ public class SpreadsheetCell
         this.db = db;
         this.cellID = cell.getID();
 
-        this.ord    = new DataViewLabel(ordDV,  false, false, false);
-        this.onset  = new DataViewLabel(onsetDV, true, false, false);
-        this.offset = new DataViewLabel(offsetDV, true, false, false);
+        this.ord    = new DataViewLabel(ordDV,  false);
+        this.onset  = new DataViewLabel(onsetDV, true);
+        this.offset = new DataViewLabel(offsetDV, true);
         this.value  = new MatrixViewLabel(null);
 
         initComponents();
@@ -547,7 +547,7 @@ public class SpreadsheetCell
         setLayout(new java.awt.BorderLayout());
 
         topPanel.setBackground(java.awt.SystemColor.window);
-        topPanel.setLayout(new java.awt.GridLayout(1, 3));
+        topPanel.setLayout(new java.awt.GridLayout(1, 3, 5, 0));
         add(topPanel, java.awt.BorderLayout.NORTH);
 
         dataPanel.setBackground(java.awt.SystemColor.window);

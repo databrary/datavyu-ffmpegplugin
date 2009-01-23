@@ -41,7 +41,7 @@ public class MatrixViewLabel extends JMultilineLabel {
      * @param width Wrapwidth.
      */
     public final void setWrapWidth(final int width) {
-        setMaxWidth(width);
+        //setMaxWidth(width);
     }
 
     /**
