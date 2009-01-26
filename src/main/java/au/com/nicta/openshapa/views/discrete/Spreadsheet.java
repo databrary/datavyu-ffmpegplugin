@@ -1,12 +1,17 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalColumnListListener;
+import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import java.awt.BorderLayout;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -38,8 +43,17 @@ public class Spreadsheet extends OpenSHAPADialog
     /** Selector object for handling SpreadsheetCell selection. */
     private Selector cellSelector;
 
+    /** The id of the last datacell that was created. */
+    private long lastCreatedCellID;
+
+    /** The id of the last datacell that was created. */
+    private long lastCreatedColID = 0;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
+
+    /** The default number of ticks per second to use. */
+    private final static int TICKS_PER_SECOND = 1000;
 
     /**
      * Creates new, empty Spreadsheet. No database referred to as yet
@@ -71,6 +85,8 @@ public class Spreadsheet extends OpenSHAPADialog
 
         colSelector = new Selector();
         cellSelector = new Selector();
+        colSelector.addOther(cellSelector);
+        cellSelector.addOther(colSelector);
     }
 
     /**
@@ -235,6 +251,158 @@ public class Spreadsheet extends OpenSHAPADialog
         validate();
     }
 
+    /**
+     * @return Vector of the selected columns.
+     */
+    private Vector <DataColumn> getSelectedCols() {
+        Vector <DataColumn> selcols = new Vector <DataColumn>();
+
+        try {
+            Vector <DataColumn> cols = database.getDataColumns();
+            int numCols = columns.size();
+            for (int i = 0; i < numCols; i++) {
+                DataColumn col = cols.elementAt(i);
+                if (col.getSelected()) {
+                    selcols.add(col);
+                }
+            }
+        } catch (SystemErrorException e) {
+           logger.error("Unable to set new cell stop time.", e);
+        }
+        return selcols;
+    }
+
+    /**
+     * @return Vector of the selected columns.
+     */
+    private Vector <DataCell> getSelectedCells() {
+        Vector <DataCell> selcells = new Vector <DataCell>();
+
+        try {
+            Vector <DataColumn> cols = database.getDataColumns();
+            int numCols = cols.size();
+            for (int i = 0; i < numCols; i++) {
+                DataColumn col = cols.elementAt(i);
+                int numCells = col.getNumCells();
+                for (int j = 1; j <= numCells; j++) {
+                    DataCell dc = (DataCell) col.getDB()
+                                            .getCell(col.getID(), j);
+                    if (dc.getSelected()) {
+                        selcells.add(dc);
+                    }
+                }
+            }
+        } catch (SystemErrorException e) {
+           logger.error("Unable to set new cell stop time.", e);        }
+        return selcells;
+    }
+
+    /**
+     * Create a new cell with given onset. Currently just appends to the
+     * selected column or the column that last had a cell added to it.
+     *
+     * @param milliseconds The number of milliseconds since the origin of the
+     * spreadsheet to create a new cell from.
+     */
+    public final void createNewCell(final long milliseconds) {
+        try {
+            long onset = milliseconds;
+            // if not coming from video controller (milliseconds < 0) allow
+            // multiple adds
+            boolean multiadd = (milliseconds < 0);
+            if (milliseconds < 0) {
+                onset = 0;
+            }
+
+            boolean newcelladded = false;
+            // try for selected columns
+            Iterator <DataColumn> itCols = getSelectedCols().iterator();
+            while (itCols.hasNext()) {
+                DataColumn col = itCols.next();
+                MatrixVocabElement mve =
+                                        database.getMatrixVE(col.getItsMveID());
+                DataCell cell = new DataCell(col.getDB(),
+                                                col.getID(),
+                                                mve.getID());
+                cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                System.out.println(cell.toString());
+                if (onset > 0) {
+                    lastCreatedCellID = database.appendCell(cell);
+                } else {
+                    lastCreatedCellID = database.insertdCell(cell, 1);
+                }
+                lastCreatedColID = col.getID();
+                newcelladded = true;
+                if (!multiadd) {
+                    break;
+                }
+            }
+
+            if (!newcelladded) {
+                // next try for selected cells
+                Iterator <DataCell> itCells = getSelectedCells().iterator();
+                while (itCells.hasNext()) {
+                    DataCell dc = itCells.next();
+                    DataCell cell = new DataCell(database,
+                                                 dc.getItsColID(),
+                                                 dc.getItsMveID());
+                    if (multiadd) {
+                        cell.setOnset(dc.getOnset());
+                        cell.setOffset(dc.getOffset());
+                        lastCreatedCellID = database
+                                            .insertdCell(cell, dc.getOrd() + 1);
+                    } else {
+                        cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                        lastCreatedCellID = database.appendCell(cell);
+                    }
+                    System.out.println(cell.toString());
+                    if (onset > 0) {
+                        lastCreatedCellID = database.appendCell(cell);
+                    } else {
+                        lastCreatedCellID = database.insertdCell(cell, 1);
+                    }
+                    lastCreatedColID = cell.getItsColID();
+                    newcelladded = true;
+                    if (!multiadd) {
+                        break;
+                    }
+                }
+            }
+            // last try lastColCreated
+            if (!newcelladded) {
+                if (lastCreatedColID == 0) {
+                    lastCreatedColID = database.getDataColumns().get(0).getID();
+                }
+                // would throw by now if no columns exist
+                DataColumn col = database.getDataColumn(lastCreatedColID);
+                DataCell cell = new DataCell(col.getDB(),
+                                                col.getID(),
+                                                col.getItsMveID());
+                cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                System.out.println(cell.toString());
+                lastCreatedCellID = database.appendCell(cell);
+            }
+            deselectAll();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to create a new cell.", e);
+        }
+    }
+
+    /**
+     * Sets the stop time of the last cell that was created.
+     *
+     * @param milliseconds The number of milliseconds since the origin of the
+     * spreadsheet to set the stop time for.
+     */
+    public void setNewCellStopTime(final long milliseconds) {
+        try {
+            DataCell cell = (DataCell) database.getCell(lastCreatedCellID);
+            cell.setOffset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
+            database.replaceCell(cell);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to set new cell stop time.", e);
+        }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.

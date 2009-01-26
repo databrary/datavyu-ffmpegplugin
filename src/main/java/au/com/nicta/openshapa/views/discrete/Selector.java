@@ -14,9 +14,29 @@ public class Selector implements MouseListener {
     /** Holder for the selected items. */
     private Vector<Selectable> selection;
 
+    /** Holder for other selectors. */
+    private Vector<Selector> otherSelectors;
+
     /** Selector constructor. */
     public Selector() {
         selection = new Vector<Selectable>();
+        otherSelectors = new Vector<Selector>();
+    }
+
+    /**
+     * Add other Selectors.
+     * @param sel Selector to add.
+     */
+    public final void addOther(final Selector sel) {
+        otherSelectors.add(sel);
+    }
+
+    /** Deselect other selectors. */
+    private void deselectOthers() {
+        for (int i = 0; i < otherSelectors.size(); i++) {
+            Selector other = (Selector) otherSelectors.get(i);
+            other.deselectAll();
+        }
     }
 
     /** Deselect all selected items. */
@@ -43,6 +63,7 @@ public class Selector implements MouseListener {
      * @param item Item to add.
      */
     public final void addSelection(final Selectable item) {
+        deselectOthers();
         item.setSelected(true);
 
         selection.add(item);

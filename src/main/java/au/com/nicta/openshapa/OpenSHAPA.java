@@ -1,14 +1,10 @@
 package au.com.nicta.openshapa;
 
-import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.DatabaseDemo;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
-import au.com.nicta.openshapa.db.Matrix;
-import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.NewDatabase;
 import au.com.nicta.openshapa.views.NewVariable;
@@ -27,7 +23,6 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.util.Vector;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -204,95 +199,18 @@ implements KeyEventDispatcher {
      * If a column is found selected, it adds a blank cell at ordinal 1.
      */
     public void createNewCell() {
-        try {
-            boolean newcelladded = false;
-            Vector <DataColumn> columns = db.getDataColumns();
-            int numCols = columns.size();
-            for (int i = 0; i < numCols; i++) {
-                DataColumn col = columns.elementAt(i);
-                if (col.getSelected()) {
-                    MatrixVocabElement mve = db.getMatrixVE(col.getItsMveID());
-                    DataCell cell = new DataCell(col.getDB(),
-                                                    col.getID(),
-                                                    mve.getID());
-                    System.out.println(cell.toString());
-                    lastCreatedCellID = db.insertdCell(cell, 1);
-                    lastCreatedColID = col.getID();
-                    newcelladded = true;
-                }
-            }
-            if (!newcelladded) {
-                for (int i = 0; i < numCols; i++) {
-                    DataColumn col = columns.elementAt(i);
-                    MatrixVocabElement mve = db.getMatrixVE(col.getItsMveID());
-                    int numCells = col.getNumCells();
-                    Matrix mat = new Matrix(col.getDB(), mve.getID());
-                    // traverse and add new cells
-                    for (int j = 1; j <= numCells; j++) {
-                        DataCell dc = (DataCell) col.getDB()
-                                            .getCell(col.getID(), j);
-                        if (dc.getSelected()) {
-                            DataCell cell = new DataCell(col.getDB(),
-                                                        "",
-                                                        col.getID(),
-                                                        mve.getID(),
-                                                        dc.getOnset(),
-                                                        dc.getOffset(),
-                                                        mat);
-                            System.out.println(cell.toString());
-                            lastCreatedCellID =
-                                         db.insertdCell(cell, dc.getOrd() + 1);
-                            lastCreatedColID = col.getID();
-                        }
-                    }
-                }
-            }
-            spreadsheetView.deselectAll();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to create a new cell.", e);
-        }
+        spreadsheetView.createNewCell(-1);
     }
 
     /**
      * Create a new cell with given onset. Currently just appends to the
      * selected column or the column that last had a cell added to it.
      *
-     * @param onset The number of milliseconds since the origin of the
+     * @param milliseconds The number of milliseconds since the origin of the
      * spreadsheet to create a new cell from.
      */
-    public void createNewCell(final long onset) {
-        try {
-            boolean newcelladded = false;
-            Vector <DataColumn> columns = db.getDataColumns();
-            int numCols = columns.size();
-            for (int i = 0; i < numCols; i++) {
-                DataColumn col = columns.elementAt(i);
-                if (col.getSelected()) {
-                    MatrixVocabElement mve = db.getMatrixVE(col.getItsMveID());
-                    DataCell cell = new DataCell(col.getDB(),
-                                                    col.getID(),
-                                                    mve.getID());
-                    cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
-                    System.out.println(cell.toString());
-                    lastCreatedCellID = db.appendCell(cell);
-                    lastCreatedColID = col.getID();
-                    newcelladded = true;
-                }
-            }
-            if (!newcelladded) {
-                DataColumn col = db.getDataColumn(lastCreatedColID);
-                MatrixVocabElement mve = db.getMatrixVE(col.getItsMveID());
-                DataCell cell = new DataCell(col.getDB(),
-                                                col.getID(),
-                                                mve.getID());
-                cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
-                System.out.println(cell.toString());
-                lastCreatedCellID = db.appendCell(cell);
-            }
-            spreadsheetView.deselectAll();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to create a new cell.", e);
-        }
+    public void createNewCell(final long milliseconds) {
+        spreadsheetView.createNewCell(milliseconds);
     }
 
     /**
@@ -302,13 +220,7 @@ implements KeyEventDispatcher {
      * spreadsheet to set the stop time for.
      */
     public void setNewCellStopTime(final long milliseconds) {
-        try {
-            DataCell cell = (DataCell) db.getCell(lastCreatedCellID);
-            cell.setOffset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
-            db.replaceCell(cell);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to set new cell stop time.", e);
-        }
+        spreadsheetView.setNewCellStopTime(milliseconds);
     }
 
     /**
@@ -420,12 +332,6 @@ implements KeyEventDispatcher {
 
     /** input stream for displaying messages from the scripting engine. */
     private PrintWriter scriptWriter;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedColID;
 
     /** The current spreadsheet view. */
     private Spreadsheet spreadsheetView;
