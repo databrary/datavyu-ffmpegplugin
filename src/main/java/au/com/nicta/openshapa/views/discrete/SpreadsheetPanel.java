@@ -67,9 +67,9 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
      */
     @Override
     public void processMouseEvent(MouseEvent me) {
-       MouseListener[] list = this.getMouseListeners();
+        MouseListener[] list = this.getMouseListeners();
 
-        for (int i = 0; i < list.length; i++) {
+        for (int i = 0; i < list.length && !me.isConsumed(); i++) {
             switch (me.getID()) {
                 case MouseEvent.MOUSE_CLICKED:
                     list[i].mouseClicked(me);
@@ -88,7 +88,9 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
             }
         }
 
-        me.translatePoint(this.getX(), this.getY());
-        this.getParent().dispatchEvent(me);
+        if (!me.isConsumed()) {
+            me.translatePoint(this.getX(), this.getY());
+            this.getParent().dispatchEvent(me);
+        }
     }
 }

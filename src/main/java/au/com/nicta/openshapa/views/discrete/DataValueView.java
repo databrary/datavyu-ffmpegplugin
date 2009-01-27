@@ -1,14 +1,11 @@
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataValue;
-import java.awt.Container;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -33,7 +30,7 @@ implements MouseListener, KeyListener {
         //this.addKeyListener(this);
 
         // No border
-        //this.setBorder(null);
+        this.setBorder(null);
         this.setOpaque(false);
     }
 
@@ -143,7 +140,7 @@ implements MouseListener, KeyListener {
         }
 
         me.translatePoint(this.getX(), this.getY());
-        
+
         this.getParent().dispatchEvent(me);
     }
 }

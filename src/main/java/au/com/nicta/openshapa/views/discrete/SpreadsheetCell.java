@@ -532,7 +532,7 @@ implements ExternalDataCellListener, Selectable {
     @Override
     public void mouseClicked(MouseEvent me) {
         selection.addToSelection(me, this);
-        //selector.addToSelection(me, this);
+        me.consume();
     }
 
     /**
