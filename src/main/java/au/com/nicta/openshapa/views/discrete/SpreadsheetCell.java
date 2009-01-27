@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JPanel;
@@ -113,9 +115,9 @@ public class SpreadsheetCell
         this.db = db;
         this.cellID = cell.getID();
 
-        this.ord    = new DataValueView(ordDV,  false);
-        this.onset  = new DataValueView(onsetDV, true);
-        this.offset = new DataValueView(offsetDV, true);
+        this.ord    = new IntDataValueView(ordDV,  false);
+        this.onset  = new TimeStampDataValueView(onsetDV, true);
+        this.offset = new TimeStampDataValueView(offsetDV, true);
         this.value  = new MatrixViewLabel(null);
 
         initComponents();
@@ -127,6 +129,12 @@ public class SpreadsheetCell
         //    this.column = column;
 
         this.addMouseListener(selector);
+//        this.addMouseListener(ord);
+//        this.addMouseListener(onset);
+//        this.addMouseListener(offset);
+//        this.addMouseListener(this);
+        //this.
+
 
         this.updateDimensions();
 
@@ -226,6 +234,12 @@ public class SpreadsheetCell
     public double getDivisionType()
     {
         return (this.divType);
+    }
+
+    @Override
+    public void processMouseEvent(MouseEvent e) {
+        // Do something with the event.
+        int moo = 5;
     }
 
     /**
@@ -529,7 +543,6 @@ public class SpreadsheetCell
                            long      cellID) {
         // TODO: Fogure out how to work with cells that are deleted.
     }
-
 
   /** This method is called from within the constructor to
    * initialize the form.

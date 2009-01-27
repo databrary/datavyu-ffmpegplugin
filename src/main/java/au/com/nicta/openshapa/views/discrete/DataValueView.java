@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
  *
  * @author cfreeman
  */
-public class DataValueView extends JTextField
+public abstract class DataValueView extends JTextField
 implements MouseListener, KeyListener {
 
     /** The DataValue that this view represents. **/
@@ -27,7 +27,7 @@ implements MouseListener, KeyListener {
      * @param datavalue the DataValue that this class represents.
      * @param editable Is this DataValueView editable?
      */
-    public DataValueView(final DataValue datavalue, final boolean editable) {
+    protected DataValueView(final DataValue datavalue, final boolean editable) {
         value = datavalue;
         this.setEditable(editable);
         this.addMouseListener(this);
@@ -93,18 +93,6 @@ implements MouseListener, KeyListener {
                                                containerPoint.y,
                                                me.getClickCount(),
                                                me.isPopupTrigger()));
-    }
-
-    public void keyPressed(KeyEvent e) {
-        e.consume();
-    }
-
-    public void keyReleased(KeyEvent e) {
-        e.consume();
-    }
-
-    public void keyTyped(KeyEvent e) {
-        e.consume();
     }
 
     public void mouseEntered(MouseEvent me) {
