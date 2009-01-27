@@ -4,7 +4,6 @@ import au.com.nicta.openshapa.db.DataValue;
 import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,10 +30,10 @@ implements MouseListener, KeyListener {
         value = datavalue;
         this.setEditable(editable);
         this.addMouseListener(this);
-        this.addKeyListener(this);
+        //this.addKeyListener(this);
 
         // No border
-        this.setBorder(null);
+        //this.setBorder(null);
         this.setOpaque(false);
     }
 
@@ -74,50 +73,77 @@ implements MouseListener, KeyListener {
     }
 
     /**
+     * The action to invoke when the mouse enters this component.
      *
-     * @param me
+     * @param me The mouse event that triggered this action.
      */
-    public void redispatchMouseEvent(MouseEvent me) {
-        Container container = this.getParent().getParent();
-
-        Point containerPoint =
-            SwingUtilities.convertPoint(this,
-                                        me.getPoint(),
-                                        container);
-
-        container.dispatchEvent(new MouseEvent(container,
-                                               me.getID(),
-                                               me.getWhen(),
-                                               me.getModifiers(),
-                                               containerPoint.x,
-                                               containerPoint.y,
-                                               me.getClickCount(),
-                                               me.isPopupTrigger()));
-    }
-
     public void mouseEntered(MouseEvent me) {
-        this.redispatchMouseEvent(me);
     }
 
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
     public void mouseExited(MouseEvent me) {
-        this.redispatchMouseEvent(me);
     }
 
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
     public void mousePressed(MouseEvent me) {
-        if (!this.isEditable()) {
-            this.redispatchMouseEvent(me);
-        }
     }
 
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
     public void mouseReleased(MouseEvent me) {
-        if (!this.isEditable()) {
-            this.redispatchMouseEvent(me);
-        }
     }
 
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
     public void mouseClicked(MouseEvent me) {
-        if (!this.isEditable()) {
-            this.redispatchMouseEvent(me);
+    }
+
+    /**
+     * Processes Mouse Events that have been dispatched this component.
+     *
+     * @param me The mouse event that was dispatched to this component.
+     */
+    @Override
+    public void processMouseEvent(MouseEvent me) {
+        MouseListener[] list = this.getMouseListeners();
+
+        if (this.isEditable()) {
+            for (int i = 0; i < list.length; i++) {
+                switch (me.getID()) {
+                    case MouseEvent.MOUSE_CLICKED:
+                        list[i].mouseClicked(me);
+                        break;
+                    case MouseEvent.MOUSE_ENTERED:
+                        list[i].mouseEntered(me);
+                        break;
+                    case MouseEvent.MOUSE_EXITED:
+                        list[i].mouseExited(me);
+                        break;
+                    case MouseEvent.MOUSE_PRESSED:
+                        list[i].mousePressed(me);
+                        break;
+                    default:
+                        list[i].mouseReleased(me);
+                }
+            }
         }
+
+        me.translatePoint(this.getX(), this.getY());
+        
+        this.getParent().dispatchEvent(me);
     }
 }
