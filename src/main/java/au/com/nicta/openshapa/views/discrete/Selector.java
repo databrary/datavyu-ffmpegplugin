@@ -13,9 +13,29 @@ public class Selector {
     /** Holder for the selected items. */
     private Vector<Selectable> selection;
 
+    /** Holder for other selectors. */
+    private Vector<Selector> otherSelectors;
+
     /** Selector constructor. */
     public Selector() {
         selection = new Vector<Selectable>();
+        otherSelectors = new Vector<Selector>();
+    }
+
+    /**
+     * Add other Selectors.
+     * @param sel Selector to add.
+     */
+    public final void addOther(final Selector sel) {
+        otherSelectors.add(sel);
+    }
+
+    /** Deselect other selectors. */
+    private void deselectOthers() {
+        for (int i = 0; i < otherSelectors.size(); i++) {
+            Selector other = (Selector) otherSelectors.get(i);
+            other.deselectAll();
+        }
     }
 
     /** Deselect all selected items. */
@@ -31,7 +51,7 @@ public class Selector {
      * Remove an item from the selection.
      * @param item Item to remove.
      */
-    private final void removeSelection(final Selectable item) {
+    public final void removeSelection(final Selectable item) {
         item.setSelected(false);
 
         selection.remove(item);
@@ -41,7 +61,8 @@ public class Selector {
      * Add an item from the selection.
      * @param item Item to add.
      */
-    private final void addSelection(final Selectable item) {
+    public final void addSelection(final Selectable item) {
+        deselectOthers();
         item.setSelected(true);
 
         selection.add(item);
@@ -51,7 +72,7 @@ public class Selector {
      * Toggle the selected state of an item.
      * @param item Item to change select state.
      */
-    private final void toggleSelection(final Selectable item) {
+    public final void toggleSelection(final Selectable item) {
         if (item.isSelected()) {
             removeSelection(item);
         } else {
