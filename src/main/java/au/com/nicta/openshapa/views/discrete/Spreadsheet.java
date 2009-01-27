@@ -130,7 +130,7 @@ public class Spreadsheet extends OpenSHAPADialog
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col.getHeaderPanel());
 
-        col.getHeaderPanel().addMouseListener(colSelector);
+        //col.getHeaderPanel().addMouseListener(colSelector);
 
         // and add it to our maintained ref collection
         columns.put(colID, col);

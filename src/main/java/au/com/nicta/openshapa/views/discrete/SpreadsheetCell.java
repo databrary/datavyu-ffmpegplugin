@@ -16,6 +16,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.log4j.Logger;
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  * @author  felix
  */
 public class SpreadsheetCell extends SpreadsheetPanel
-implements  ExternalDataCellListener, Selectable {
+implements ExternalDataCellListener, Selectable {
 
     /** The Ordinal display component. */
     private DataValueView ord;
@@ -85,6 +86,8 @@ implements  ExternalDataCellListener, Selectable {
     /** Show/Hide the Data value of the cell. */
     private boolean showData = true;
 
+    private Selector selection;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetCell.class);
 
@@ -118,7 +121,8 @@ implements  ExternalDataCellListener, Selectable {
 
         this.dataPanel.add(value, BorderLayout.CENTER);
 
-        this.addMouseListener(selector);
+        //this.addMouseListener(selector);
+        selection = selector;
         this.addMouseListener(ord);
         this.addMouseListener(onset);
         this.addMouseListener(offset);
@@ -525,26 +529,11 @@ implements  ExternalDataCellListener, Selectable {
         // TODO: Figure out how to work with cells that are deleted.
     }
 
-    /*
-    public void mouseEntered(MouseEvent me) {
-
-    }
-
-    public void mouseExited(MouseEvent me) {
-
-    }
-
-    public void mousePressed(MouseEvent me) {
-
-    }
-
-    public void mouseReleased(MouseEvent me) {
-
-    }
-
+    @Override
     public void mouseClicked(MouseEvent me) {
+        selection.addToSelection(me, this);
+        //selector.addToSelection(me, this);
     }
-     */
 
     /**
      * Initalises the components of the spreadsheet cell.
