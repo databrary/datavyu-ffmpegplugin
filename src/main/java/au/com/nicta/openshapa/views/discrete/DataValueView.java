@@ -119,7 +119,7 @@ implements MouseListener, KeyListener {
         MouseListener[] list = this.getMouseListeners();
 
         if (this.isEditable()) {
-            for (int i = 0; i < list.length; i++) {
+            for (int i = 0; i < list.length && !me.isConsumed(); i++) {
                 switch (me.getID()) {
                     case MouseEvent.MOUSE_CLICKED:
                         list[i].mouseClicked(me);
@@ -139,8 +139,9 @@ implements MouseListener, KeyListener {
             }
         }
 
-        me.translatePoint(this.getX(), this.getY());
-
-        this.getParent().dispatchEvent(me);
+        if (!me.isConsumed()) {
+            me.translatePoint(this.getX(), this.getY());
+            this.getParent().dispatchEvent(me);
+        }
     }
 }

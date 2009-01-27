@@ -83,8 +83,9 @@ public class Selector {
     /**
      * Invoked when the mouse is clicked in a cell.
      * @param me event detail
+     * @param s The item to be added to the selection.
      */
-    public final void addToSelection(final MouseEvent me, Selectable s) {
+    public final void addToSelection(final MouseEvent me, final Selectable s) {
         int mod = me.getModifiers();
         if ((mod & ActionEvent.SHIFT_MASK) != 0
                 || (mod & ActionEvent.CTRL_MASK) != 0) {
