@@ -1,6 +1,6 @@
 package au.com.nicta.openshapa.views.discrete;
 
-import au.com.nicta.openshapa.db.TimeStampDataValue;
+import au.com.nicta.openshapa.db.FloatDataValue;
 import java.awt.event.KeyEvent;
 
 /**
@@ -14,7 +14,7 @@ public final class FloatDataValueView extends DataValueView {
      * @param timestamp
      * @param editable
      */
-    FloatDataValueView(final TimeStampDataValue timestamp,
+    FloatDataValueView(final FloatDataValue timestamp,
                            final boolean editable) {
         super(timestamp, editable);
     }

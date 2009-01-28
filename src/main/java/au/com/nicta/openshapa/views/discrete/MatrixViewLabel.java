@@ -1,9 +1,12 @@
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.JMultilineLabel;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
+import java.util.Vector;
+import org.apache.log4j.Logger;
 
 /**
  * Label view of the Matrix (database cell) data
@@ -13,17 +16,22 @@ import java.awt.Graphics;
 public class MatrixViewLabel extends JMultilineLabel {
 
     /** Matrix that is to be displayed. */
-    private Matrix mat     = null;
+    private Matrix mat = null;
 
     /** Configuration font information etc. */
     private static UIConfiguration uiconfig = new UIConfiguration();
+
+    private Vector<DataValueView> argViews;
+
+    /** The logger for MatrixViewLabel. */
+    private static Logger logger = Logger.getLogger(MatrixViewLabel.class);
 
     /**
      * Creates a new instance of MatrixViewLabel.
      *
      * @param m The Matrix to display.
     */
-    public MatrixViewLabel(final Matrix  m) {
+    public MatrixViewLabel(final Matrix m) {
         setMatrix(m);
     }
 
@@ -32,6 +40,14 @@ public class MatrixViewLabel extends JMultilineLabel {
      */
     public final void setMatrix(final Matrix m) {
         mat = m;
+
+        try {
+            for (int i = 0; i < m.getNumArgs(); i++) {
+                argViews.add(DataValueViewFactory.buildDVView(m.getArgCopy(i)));
+            }
+        } catch (SystemErrorException e) {
+            // TODO: Report to log file.
+        }
 
         this.updateStrings();
         this.repaint();
