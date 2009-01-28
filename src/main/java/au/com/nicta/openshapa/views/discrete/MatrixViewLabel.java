@@ -2,9 +2,9 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.util.JMultilineLabel;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends JMultilineLabel {
+public class MatrixViewLabel extends DataValueView {
 
     /** Matrix that is to be displayed. */
     private Matrix mat = null;
@@ -32,6 +32,7 @@ public class MatrixViewLabel extends JMultilineLabel {
      * @param m The Matrix to display.
     */
     public MatrixViewLabel(final Matrix m) {
+        super(true);
         setMatrix(m);
     }
 
@@ -40,13 +41,16 @@ public class MatrixViewLabel extends JMultilineLabel {
      */
     public final void setMatrix(final Matrix m) {
         mat = m;
+        argViews = new Vector<DataValueView>();
 
         try {
-            for (int i = 0; i < m.getNumArgs(); i++) {
-                argViews.add(DataValueViewFactory.buildDVView(m.getArgCopy(i)));
+            if (m != null) {
+                for (int i = 0; i < m.getNumArgs(); i++) {
+                    argViews.add(DataValueViewFactory.buildDVView(m.getArgCopy(i)));
+                }
             }
         } catch (SystemErrorException e) {
-            // TODO: Report to log file.
+            logger.error("Unable to set Matrix for MatrixViewLabel.", e);
         }
 
         this.updateStrings();
@@ -83,12 +87,37 @@ public class MatrixViewLabel extends JMultilineLabel {
     /**
      * Calculate and set what to display.
      */
-    private void updateStrings() {
+    @Override
+    public void updateStrings() {
         if (mat != null) {
             String t = mat.toCellValueString();
             this.setText(t);
             this.setToolTipText(t); // TODO: should tooltip be any different?
         }
+    }
+
+    /**
+     *
+     * @param e
+     */
+    public void keyPressed(KeyEvent e) {
+        //this.handleKeyEvent(e);
+    }
+
+    /**
+     *
+     * @param e
+     */
+    public void keyTyped(KeyEvent e) {
+        //this.handleKeyEvent(e);
+    }
+
+    /**
+     *
+     * @param e
+     */
+    public void keyReleased(KeyEvent e) {
+        //this.handleKeyEvent(e);
     }
 
 }
