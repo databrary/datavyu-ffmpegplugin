@@ -121,7 +121,6 @@ implements ExternalDataCellListener, Selectable {
 
         this.dataPanel.add(value, BorderLayout.CENTER);
 
-        //this.addMouseListener(selector);
         selection = selector;
         this.addMouseListener(ord);
         this.addMouseListener(onset);

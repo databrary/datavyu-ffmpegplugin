@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataValue;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,7 +28,7 @@ implements MouseListener, KeyListener {
         value = datavalue;
         this.setEditable(editable);
         this.addMouseListener(this);
-        //this.addKeyListener(this);
+        this.addKeyListener(this);
 
         // No border
         this.setBorder(null);
@@ -142,6 +143,25 @@ implements MouseListener, KeyListener {
         if (!me.isConsumed()) {
             me.translatePoint(this.getX(), this.getY());
             this.getParent().dispatchEvent(me);
+        }
+    }
+
+    public boolean isKeyStrokeNumeric(KeyEvent e) {
+        switch (e.getKeyChar()) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return true;
+
+            default:
+                return false;
         }
     }
 }
