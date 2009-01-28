@@ -38,9 +38,12 @@ public class SpreadsheetColumn
      * @param sheet Spreadsheet parent.
      * @param db Database reference.
      * @param colID the database colID this column displays.
+     * @param selector The selection for all columns.
      */
     public SpreadsheetColumn(final Spreadsheet sheet,
-                             final Database db, final long colID) {
+                             final Database db,
+                             final long colID,
+                             final Selector selector) {
         this.database = db;
         this.dbColID = colID;
 
@@ -51,7 +54,7 @@ public class SpreadsheetColumn
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
             headerpanel = new ColumnHeaderPanel(this, dbColumn.getName()
-                            + "  (" + dbColumn.getItsMveType() + ")");
+                            + "  (" + dbColumn.getItsMveType() + ")", selector);
 
             datapanel = new ColumnDataPanel(sheet, dbColumn);
 

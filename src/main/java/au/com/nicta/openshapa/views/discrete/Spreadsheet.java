@@ -140,13 +140,12 @@ public class Spreadsheet extends OpenSHAPADialog
      */
     private void addColumn(final Database db, final long colID) {
         // make the SpreadsheetColumn
-        SpreadsheetColumn col = new SpreadsheetColumn(this, db, colID);
+        SpreadsheetColumn col = new SpreadsheetColumn(this, db,
+                                                      colID, colSelector);
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col.getHeaderPanel());
-
-        //col.getHeaderPanel().addMouseListener(colSelector);
 
         // and add it to our maintained ref collection
         columns.put(colID, col);

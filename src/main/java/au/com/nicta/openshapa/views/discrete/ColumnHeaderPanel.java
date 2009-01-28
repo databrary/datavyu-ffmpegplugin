@@ -4,6 +4,8 @@ import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
@@ -11,7 +13,7 @@ import javax.swing.JLabel;
  * ColumnHeaderPanel displays the column variable name.
  * @author swhitcher
  */
-class ColumnHeaderPanel extends JLabel implements Selectable {
+class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
 
     /** Selected state. */
     private boolean selected = false;
@@ -19,12 +21,18 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
     /** SpreadsheetColumn this header is part of. */
     private SpreadsheetColumn parentCol;
 
+    /** The current column selection. */
+    private Selector selection;
+
     /**
      * Creates new ColumnHeaderPanel.
      * @param col SpreadsheetColumn this header is part of.
      * @param text String to display
+     * @param selector The selection for all columns.
      */
-    public ColumnHeaderPanel(final SpreadsheetColumn col, final String text) {
+    public ColumnHeaderPanel(final SpreadsheetColumn col,
+                             final String text,
+                             final Selector selector) {
         super(text);
 
         parentCol = col;
@@ -35,6 +43,8 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
         setMinimumSize(new Dimension(202,16));
         setPreferredSize(new Dimension(202,16));
         setMaximumSize(new Dimension(202,16));
+        this.addMouseListener(this);
+        selection = selector;
     }
 
     /**
@@ -69,5 +79,46 @@ class ColumnHeaderPanel extends JLabel implements Selectable {
             setBackground(UIConfiguration.spreadsheetBackgroundColor);
         }
         super.paintComponent(g);
+    }
+
+        /**
+     * The action to invoke when the mouse enters this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseEntered(MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseExited(MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mousePressed(MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseReleased(MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseClicked(MouseEvent me) {
+        selection.addToSelection(me, this);
     }
 }
