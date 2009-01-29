@@ -46,7 +46,7 @@ public class DatabaseDemo {
             fdv.setItsValue(1.2345 * onset);
             AddDataValue(db, colid, onset, onset + 1000, fdv);
         }
-        
+
         // Int column
         dc = new DataColumn(db, "int",
                 MatrixVocabElement.MatrixType.INTEGER);
@@ -58,7 +58,6 @@ public class DatabaseDemo {
             idv.setItsValue(onset * 2);
         }
 
-        /*
         // Text column
         dc = new DataColumn(db, "text",
                 MatrixVocabElement.MatrixType.TEXT);
@@ -70,6 +69,7 @@ public class DatabaseDemo {
             tdv.setItsValue("Testing string -- " + onset);
         }
 
+        /*
         // Nominal column
         dc = new DataColumn(db, "nominal",
                 MatrixVocabElement.MatrixType.NOMINAL);

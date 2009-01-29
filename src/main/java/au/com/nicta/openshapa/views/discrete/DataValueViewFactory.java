@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.FloatDataValue;
 import au.com.nicta.openshapa.db.IntDataValue;
+import au.com.nicta.openshapa.db.TextStringDataValue;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 
 /**
@@ -22,6 +23,8 @@ public class DataValueViewFactory {
             return new IntDataValueView((IntDataValue) dv, true);
         } else if (dv.getClass() == TimeStampDataValue.class) {
             return new TimeStampDataValueView((TimeStampDataValue) dv, true);
+        } else if (dv.getClass() == TextStringDataValue.class) {
+            return new TextStringDataValueView((TextStringDataValue) dv, true);
         }
 
         return null;
