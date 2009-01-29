@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,6 +18,9 @@ implements MouseListener, KeyListener {
 
     /** The DataValue that this view represents. **/
     private DataValue value = null;
+
+    /** Configuration font information etc. */
+    private static UIConfiguration uiconfig = new UIConfiguration();
 
     protected DataValueView(final boolean editable) {
         initDataValueView(editable);
@@ -56,6 +60,8 @@ implements MouseListener, KeyListener {
      */
     @Override
     public void paintComponent(Graphics g) {
+        this.setFont(UIConfiguration.spreadsheetDataFont);
+        this.setForeground(UIConfiguration.spreadsheetForegroundColor);
 
       //TODO: Editable fonts, sizes and general spreadsheet apperance.
       //if (this.isdata) {
@@ -66,6 +72,7 @@ implements MouseListener, KeyListener {
       //this.setForeground(uiconfig.spreadsheetForegroundColor);
       //
 
+        this.updateStrings();
         super.paintComponent(g);
     }
 

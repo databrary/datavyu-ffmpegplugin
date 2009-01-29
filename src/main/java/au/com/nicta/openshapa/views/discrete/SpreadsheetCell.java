@@ -553,7 +553,7 @@ implements ExternalDataCellListener, Selectable {
 
         dataPanel.setBackground(java.awt.SystemColor.window);
         dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
-        add(dataPanel, java.awt.BorderLayout.CENTER);
+        add(dataPanel, java.awt.BorderLayout.WEST);
     }
 
     /** A panel for holding the header to the cell. */

@@ -10,13 +10,12 @@ import au.com.nicta.openshapa.db.TimeStampDataValue;
  * @author cfreeman
  */
 public class DataValueViewFactory {
-
     /**
      *
      * @param dv
      * @return
      */
-    public static DataValueView buildDVView(DataValue dv) {
+    public static DataValueView build(DataValue dv) {
         if (dv.getClass() == FloatDataValue.class) {
             return new FloatDataValueView((FloatDataValue) dv, true);
         } else if (dv.getClass() == IntDataValue.class) {

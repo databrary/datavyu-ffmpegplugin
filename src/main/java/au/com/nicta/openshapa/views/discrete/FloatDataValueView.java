@@ -14,9 +14,9 @@ public final class FloatDataValueView extends DataValueView {
      * @param timestamp
      * @param editable
      */
-    FloatDataValueView(final FloatDataValue timestamp,
+    FloatDataValueView(final FloatDataValue floatDataValue,
                            final boolean editable) {
-        super(timestamp, editable);
+        super(floatDataValue, editable);
     }
 
     public void handleKeyEvent(KeyEvent e) {

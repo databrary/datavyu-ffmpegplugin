@@ -2,25 +2,24 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import org.apache.log4j.Logger;
 
 /**
- * Label view of the Matrix (database cell) data
+ * Label view of the Matrix (database cell) data.
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends DataValueView {
+public class MatrixViewLabel extends SpreadsheetPanel {
 
     /** Matrix that is to be displayed. */
     private Matrix mat = null;
 
-    /** Configuration font information etc. */
-    private static UIConfiguration uiconfig = new UIConfiguration();
-
+    /** The data views used for each of the arguments. */
     private Vector<DataValueView> argViews;
 
     /** The logger for MatrixViewLabel. */
@@ -32,11 +31,13 @@ public class MatrixViewLabel extends DataValueView {
      * @param m The Matrix to display.
     */
     public MatrixViewLabel(final Matrix m) {
-        super(true);
+        //super(true);
         setMatrix(m);
     }
 
     /**
+     * Sets the matrix that this MatrixView will represent.
+     *
      * @param m The Matrix to display.
      */
     public final void setMatrix(final Matrix m) {
@@ -45,15 +46,45 @@ public class MatrixViewLabel extends DataValueView {
 
         try {
             if (m != null) {
+                // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
-                    argViews.add(DataValueViewFactory.buildDVView(m.getArgCopy(i)));
+                    argViews.add(DataValueViewFactory.build(m.getArgCopy(i)));
                 }
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to set Matrix for MatrixViewLabel.", e);
         }
 
-        this.updateStrings();
+        // If we have more than one argument in the matrix - then we need to
+        // stack in some additional labels.
+        if (argViews.size() > 1) {
+            this.add(new JLabel("("));
+            //this.add(new JLabel(""))
+        }
+
+        // Build the visual representation of this matrix.
+        for (int i = 0; i < argViews.size(); i++) {
+            DataValueView dv = argViews.get(i);
+
+            if (dv != null) {
+                this.add(dv);
+                dv.updateStrings();
+            }
+
+            if (argViews.size() > 1 && i < argViews.size()) {
+                this.add(new JLabel(","));
+            }
+        }
+
+        // If we have more than one argument in the matrix - then we need to
+        // stack in some additional labels.
+        if (argViews.size() > 1) {
+            this.add(new JLabel(")"));
+        }
+
+        this.setBorder(BorderFactory.createEtchedBorder());
+
+        //this.updateStrings();
         this.repaint();
     }
 
@@ -78,8 +109,9 @@ public class MatrixViewLabel extends DataValueView {
      */
     @Override
     public final void paintComponent(final Graphics g) {
-        this.setFont(UIConfiguration.spreadsheetDataFont);
-        this.setForeground(UIConfiguration.spreadsheetForegroundColor);
+        this.setFont(this.getParent().getFont());
+        this.setForeground(this.getParent().getForeground());
+        this.setBackground(this.getParent().getBackground());
 
         super.paintComponent(g);
     }
@@ -87,7 +119,8 @@ public class MatrixViewLabel extends DataValueView {
     /**
      * Calculate and set what to display.
      */
-    @Override
+    //@Override
+    /*
     public void updateStrings() {
         if (mat != null) {
             String t = mat.toCellValueString();
@@ -95,6 +128,7 @@ public class MatrixViewLabel extends DataValueView {
             this.setToolTipText(t); // TODO: should tooltip be any different?
         }
     }
+    */
 
     /**
      *
