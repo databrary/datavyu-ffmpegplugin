@@ -5,8 +5,10 @@ import au.com.nicta.openshapa.db.FloatDataValue;
 import au.com.nicta.openshapa.db.IntDataValue;
 import au.com.nicta.openshapa.db.NominalDataValue;
 import au.com.nicta.openshapa.db.PredDataValue;
+import au.com.nicta.openshapa.db.QuoteStringDataValue;
 import au.com.nicta.openshapa.db.TextStringDataValue;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
+import au.com.nicta.openshapa.db.UndefinedDataValue;
 
 /**
  *
@@ -32,6 +34,10 @@ public class DataValueViewFactory {
             return new NominalDataValueView((NominalDataValue) dv, true);
         } else if (dv.getClass() == PredDataValue.class) {
             return new PredicateDataValueView((PredDataValue) dv, true);
+        } else if (dv.getClass() == QuoteStringDataValue.class) {
+            return new QuoteStringDataValueView((QuoteStringDataValue) dv, true);
+        } else if (dv.getClass() == UndefinedDataValue.class) {
+            return new UndefinedDataValueView((UndefinedDataValue) dv, true);
         }
 
         return null;

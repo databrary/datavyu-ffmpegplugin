@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -65,6 +66,7 @@ public class MatrixViewLabel extends SpreadsheetPanel {
         // Build the visual representation of this matrix.
         for (int i = 0; i < argViews.size(); i++) {
             DataValueView dv = argViews.get(i);
+            dv.setMargin(new Insets(0, 0, 0, 0));
 
             if (dv != null) {
                 this.add(dv);
