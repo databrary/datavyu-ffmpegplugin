@@ -229,7 +229,9 @@ implements KeyEventDispatcher {
      * @throws SystemErrorException If unable to run John's older test suit.
      */
     public void runRegressionTests() throws SystemErrorException {
-        Database.TestDatabase(System.out);
+        // TODO: is there a way to call the test package if it exists
+        // or inform the user if it is not?
+//        DatabaseTest.TestDatabase(System.out);
     }
 
     /**

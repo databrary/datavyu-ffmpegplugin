@@ -4906,7 +4906,7 @@ public class MatrixTest {
         }
         else
         {
-            failures += DataValue.VerifyDVCopy(m.getArg(argNum),
+            failures += DataValueTest.VerifyDVCopy(m.getArg(argNum),
                                                copy,
                                                outStream,
                                                verbose,
@@ -10878,7 +10878,7 @@ public class MatrixTest {
             try {
                 while ( ( i < base.getNumArgs() ) && ( failures == 0 ) )
                 {
-                    failures += DataValue.VerifyDVCopy(base.getArg(i),
+                    failures += DataValueTest.VerifyDVCopy(base.getArg(i),
                                               copy.getArg(i),
                                               outStream,
                                               verbose,
