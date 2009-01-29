@@ -69,7 +69,6 @@ public class DatabaseDemo {
             tdv.setItsValue("Testing string -- " + onset);
         }
 
-        /*
         // Nominal column
         dc = new DataColumn(db, "nominal",
                 MatrixVocabElement.MatrixType.NOMINAL);
@@ -81,6 +80,7 @@ public class DatabaseDemo {
             ndv.setItsValue("Nom -- " + onset);
         }
 
+        /*
         // Predicate column
         dc = new DataColumn(db, "predicate",
                 MatrixVocabElement.MatrixType.PREDICATE);
