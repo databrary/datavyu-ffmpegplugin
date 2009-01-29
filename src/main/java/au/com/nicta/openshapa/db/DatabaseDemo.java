@@ -80,7 +80,6 @@ public class DatabaseDemo {
             ndv.setItsValue("Nom -- " + onset);
         }
 
-        /*
         // Predicate column
         dc = new DataColumn(db, "predicate",
                 MatrixVocabElement.MatrixType.PREDICATE);
@@ -93,7 +92,6 @@ public class DatabaseDemo {
             AddDataValue(db, colid, onset, onset + 1000, pdv);
             pdv.setItsValue(p);
         }
-         */
 
         // Matrix column
         String name = "matrix";
