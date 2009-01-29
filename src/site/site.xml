@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="OpenSHAPA">
+  <body>
+    <menu name="OpenSHAPA">
+      <item name="Introduction" href="index.html"/>
+      <item name="Download" href="download"/>
+      <item name="Documentation" href="http://openshapa.qrl.nicta.com.au/fogbugz/default.php?W3" />
+      <item name="Issue Database" href="http://openshapa.qrl.nicta.com.au/fogbugz/" />
+<!--      <item name="Source Code" href="http://openshapa.qrl.nicta.com.au/viewgit/?a=summary&p=openshapa" /> -->
+      <item name="Code Coverage" href="http://openshapa.qrl.nicta.com.au/clover" />
+      <item name="Daily Build" href="http://openshapa.qrl.nicta.com.au/dashboard/tab/build/detail/openshapa" />
+    </menu>
+
+    <menu ref="reports"/>
+  </body>
+
+  <poweredBy>
+       <logo name="NICTA" href="http://www.nicta.com.au/"
+            img="/images/nicta.jpg"/>
+       <logo name="Maven" href="http://maven.apache.org/"
+            img="images/logos/maven-feather.png"/>
+  </poweredBy>
+</project>

@@ -18,6 +18,10 @@ implements MouseListener, KeyListener {
     /** The DataValue that this view represents. **/
     private DataValue value = null;
 
+    protected DataValueView(final boolean editable) {
+        initDataValueView(editable);
+    }
+
     /**
      * Constructor.
      *
@@ -26,10 +30,13 @@ implements MouseListener, KeyListener {
      */
     protected DataValueView(final DataValue datavalue, final boolean editable) {
         value = datavalue;
+        initDataValueView(editable);
+    }
+
+    private void initDataValueView(final boolean editable) {
         this.setEditable(editable);
         this.addMouseListener(this);
         this.addKeyListener(this);
-
         // No border
         this.setBorder(null);
         this.setOpaque(false);
