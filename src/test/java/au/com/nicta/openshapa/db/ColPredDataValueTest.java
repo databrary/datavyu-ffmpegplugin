@@ -207,7 +207,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Test
-    public void test3ArgConstructorJUnitStyle() throws SystemErrorException {
+    public void test3ArgConstructor() throws SystemErrorException {
         long fargID = matrix_mve.getCPFormalArg(10).getID();
         new ColPredDataValue(db, fargID, new ColPred(db, float_mve.getID()));
 
