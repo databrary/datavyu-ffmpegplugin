@@ -689,37 +689,6 @@ public class Matrix implements Cloneable {
 
     } /* Matrix::toString() */
 
-
-    /**
-     * Returns a String representation for display on a Spreadsheet.
-     * Does not include surrounding brackets if MVE is not MATRIX type.
-     * @return String representation for display on a Spreadsheet.
-     */
-    public String toCellValueString() {
-        String s = "";
-
-        try
-        {
-            boolean isMatrix = (getNumArgs() > 1)
-                    || (lookupMatrixVE(getMveID()).getType()
-                                    == MatrixVocabElement.MatrixType.MATRIX);
-            if (isMatrix) {
-                s += "(";
-            }
-
-            s += argListToString();
-
-            if (isMatrix) {
-                s += ")";
-            }
-        } catch (SystemErrorException e) {
-             s = "Error \"" + e.toString() + "\")";
-        }
-
-        return s;
-    }
-
-
     /*************************************************************************/
     /********************* Argument List Management: *************************/
     /*************************************************************************/

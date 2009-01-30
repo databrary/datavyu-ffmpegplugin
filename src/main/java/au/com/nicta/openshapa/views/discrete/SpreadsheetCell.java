@@ -11,7 +11,6 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.util.UIConfiguration;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -19,6 +18,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
 
 /**
@@ -35,7 +35,7 @@ implements ExternalDataCellListener, Selectable {
     /** The Offset display component. */
     private DataValueView offset;
     /** The Value display component. */
-    private MatrixViewLabel value;
+    //private MatrixViewLabel value;
 
     /** The Database the cell belongs to. */
     private Database db;
@@ -108,10 +108,10 @@ implements ExternalDataCellListener, Selectable {
         this.db = db;
         this.cellID = cell.getID();
 
-        this.ord    = new IntDataValueView(ordDV,  false);
-        this.onset  = new TimeStampDataValueView(onsetDV, true);
+        this.ord = new IntDataValueView(ordDV,  false);
+        this.onset = new TimeStampDataValueView(onsetDV, true);
         this.offset = new TimeStampDataValueView(offsetDV, true);
-        this.value  = new MatrixViewLabel(null);
+        this.dataPanel = new MatrixViewLabel(null);
 
         initComponents();
 
@@ -119,7 +119,7 @@ implements ExternalDataCellListener, Selectable {
         this.topPanel.add(onset);
         this.topPanel.add(offset);
 
-        this.dataPanel.add(value, BorderLayout.CENTER);
+        //this.dataPanel.add(value, BorderLayout.CENTER);
 
         selection = selector;
         this.addMouseListener(ord);
@@ -278,7 +278,7 @@ implements ExternalDataCellListener, Selectable {
      * @param m The Matrix value to set in the cell
      */
     private void setValue(Matrix m) throws SystemErrorException {
-        value.setMatrix(m);
+        dataPanel.setMatrix(m);
     }
 
     /**
@@ -308,7 +308,7 @@ implements ExternalDataCellListener, Selectable {
      * @return The Matrix value of a datacell.
      */
     public Matrix getValue() {
-        return (this.value.getMatrix());
+        return (this.dataPanel.getMatrix());
     }
 
     /**
@@ -419,12 +419,12 @@ implements ExternalDataCellListener, Selectable {
             totalHeight = this.userDimensions.height;
         }
 
-        this.value.setWrapWidth(totalWidth - 4);
-        Dimension d = this.value.getMaximumSize();
+        //this.dataPanel.setWrapWidth(totalWidth - 4);
+        Dimension d = this.dataPanel.getMaximumSize();
         if (showData) {
             totalHeight += d.getHeight();
         }
-        this.value.setVisible(showData);
+        this.dataPanel.setVisible(showData);
     }
 
     /**
@@ -434,19 +434,14 @@ implements ExternalDataCellListener, Selectable {
     @Override
     public void paintComponent(Graphics g) {
         this.updateDimensions();
-        if (selected) {
-            topPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
-            dataPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
-        } else {
-            topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-            dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-        }
+
         super.paintComponent(g);
     }
 
-
     public void setSelected(boolean sel) {
         selected = sel;
+
+        // Set the selection within the database.
         try {
             Cell cell = db.getCell(this.cellID);
             DataCell dc = null;
@@ -460,6 +455,16 @@ implements ExternalDataCellListener, Selectable {
         } catch (SystemErrorException e) {
            logger.error("Failed clicking on SpreadsheetCell.", e);
         }
+
+        // Update the visual representation of the SpreadsheetCell.
+        if (selected) {
+            topPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
+            dataPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
+        } else {
+            topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+            dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+        }
+
         repaint();
     }
 
@@ -506,7 +511,7 @@ implements ExternalDataCellListener, Selectable {
             }
 
             if (valChanged) {
-                this.value.setMatrix(newVal);
+                this.dataPanel.setMatrix(newVal);
             }
 
             if (selectedChanged) {
@@ -540,7 +545,7 @@ implements ExternalDataCellListener, Selectable {
      */
     private void initComponents() {
         topPanel = new SpreadsheetPanel();
-        dataPanel = new SpreadsheetPanel();
+        //dataPanel = new SpreadsheetPanel();
 
         setBackground(java.awt.SystemColor.window);
         setBorder(javax.swing.BorderFactory
@@ -552,7 +557,9 @@ implements ExternalDataCellListener, Selectable {
         add(topPanel, java.awt.BorderLayout.NORTH);
 
         dataPanel.setBackground(java.awt.SystemColor.window);
-        dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
+        //dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
+        // Set the layout for this label (simple box layout).
+        dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
         add(dataPanel, java.awt.BorderLayout.WEST);
     }
 
@@ -560,5 +567,5 @@ implements ExternalDataCellListener, Selectable {
     private SpreadsheetPanel topPanel;
 
     /** A panel for holding the value of the cell. */
-    private SpreadsheetPanel dataPanel;
+    private MatrixViewLabel dataPanel;
 }
