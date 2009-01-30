@@ -141,4 +141,135 @@ public class UndefinedDataValueTest extends DataValueTest {
 
         super.testEquals(uDataValue, uValue, uCopy, uDifferent);
     }
+
+    /*************************************************************************/
+    /**************************** Test Code: *********************************/
+    /*************************************************************************/
+
+    // TODO: Write test suite for undefined data values.
+
+    /**
+     * VerifyUndefinedDVCopy()
+     *
+     * Verify that the supplied instances of UndefinedDataValue are distinct,
+     * that they contain no common references (other than db), and that they
+     * have the same value.
+     *                                              JRM -- 11/8/07
+     *
+     * Changes:
+     *
+     *    - None
+     */
+    
+    public static int VerifyUndefinedDVCopy(UndefinedDataValue base,
+                                            UndefinedDataValue copy,
+                                            java.io.PrintStream outStream,
+                                            boolean verbose,
+                                            String baseDesc,
+                                            String copyDesc)
+    {
+        int failures = 0;
+
+        if ( base == null )
+        {
+            failures++;
+            outStream.printf("VerifyUndefinedDVCopy: %s null on entry.\n",
+                             baseDesc);
+        }
+        else if ( copy == null )
+        {
+            failures++;
+            outStream.printf("VerifyUndefinedDVCopy: %s null on entry.\n",
+                             copyDesc);
+        }
+        else if ( base == copy )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf("%s == %s.\n", baseDesc, copyDesc);
+            }
+        }
+        else if ( base.getDB() != copy.getDB() )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf("%s.db != %s.db.\n", baseDesc, copyDesc);
+            }
+        }
+        else if ( ( base.itsValue == copy.itsValue ) &&
+                  ( base.itsValue != null ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf("%s and %s share a string.\n",
+                                  baseDesc, copyDesc);
+            }
+        }
+        else if ( ( base.itsValue == copy.itsValue ) &&
+                  ( base.itsValue != null ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf(
+                        "%s.itsValue is null, and %s.itsValue isn't.\n",
+                        baseDesc, copyDesc);
+            }
+        }
+        else if ( ( base.itsValue != copy.itsValue ) &&
+                  ( copy.itsValue == null ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf(
+                        "%s.itsValue is null, and %s.itsValue isn't.\n",
+                        copyDesc, baseDesc);
+            }
+        }
+        else if ( ( base.itsValue != copy.itsValue ) &&
+                  ( base.itsValue.compareTo(copy.itsValue) != 0 ) )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf("%s and %s contain different values.\n",
+                                  baseDesc, copyDesc);
+            }
+        }
+        else if ( base.toString().compareTo(copy.toString()) != 0 )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf("%s.toString() doesn't match %s.toString().\n",
+                                 baseDesc, copyDesc);
+            }
+        }
+        else if ( base.toDBString().compareTo(copy.toDBString()) != 0 )
+        {
+            failures++;
+
+            if ( verbose )
+            {
+                outStream.printf(
+                        "%s.toDBString() doesn't match %s.toDBString().\n",
+                        baseDesc, copyDesc);
+            }
+        }
+
+        return failures;
+
+    } /* UndefinedDataValue::VerifyUndefinedDVCopy() */
+
 }

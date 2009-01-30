@@ -282,27 +282,4 @@ public abstract class DBElement implements Cloneable {
             && (db == null ? e.db == null : db.equals(e.db));
     }
 
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * Resets the id field to its initial value DBIndex.INVALID_ID.
-     *
-     * @param  dbe reference to the instance of DBElement whose id field is
-     * to be reset.
-     *
-     * @return The current id used by this DBElement.
-     *
-     * @warning This is a test function that should not be called outside of
-     * test code, and eventually this should be refactored to belong within
-     * the DBElementTest class.
-     */
-    protected static long ResetID(DBElement dbe) {
-        long old_id = dbe.id;
-        dbe.id = DBIndex.INVALID_ID;
-        return old_id;
-    }
-
 } /* class DBElement */
