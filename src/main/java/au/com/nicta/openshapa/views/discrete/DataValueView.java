@@ -19,10 +19,8 @@ implements MouseListener, KeyListener {
     /** The DataValue that this view represents. **/
     private DataValue value = null;
 
-    /** Configuration font information etc. */
-    private static UIConfiguration uiconfig = new UIConfiguration();
-
-    protected DataValueView(final boolean editable) {
+    public DataValueView(final boolean editable) {
+        super();
         initDataValueView(editable);
     }
 
@@ -32,25 +30,32 @@ implements MouseListener, KeyListener {
      * @param datavalue the DataValue that this class represents.
      * @param editable Is this DataValueView editable?
      */
-    protected DataValueView(final DataValue datavalue, final boolean editable) {
+    public DataValueView(final DataValue datavalue, final boolean editable) {
+        super();
         value = datavalue;
         initDataValueView(editable);
     }
 
     private void initDataValueView(final boolean editable) {
-        this.setEditable(editable);
-        this.addMouseListener(this);
-        this.addKeyListener(this);
-        // No border
-        this.setBorder(null);
-        this.setOpaque(false);
+        setEditable(editable);
+
+        // Add listeners.
+        //addMouseListener(this);
+        //addKeyListener(this);
+
+        // Set visual appearance.
+        //setBorder(null);
+        setOpaque(false);
+
+        // Set the content.
+        updateStrings();
     }
 
     /**
      * @return The DataValue that this view represents.
      */
     public DataValue getValue() {
-        return this.value;
+        return value;
     }
 
     /**
@@ -60,27 +65,27 @@ implements MouseListener, KeyListener {
      */
     @Override
     public void paintComponent(Graphics g) {
-        this.setFont(UIConfiguration.spreadsheetDataFont);
-        this.setForeground(UIConfiguration.spreadsheetForegroundColor);
+        setFont(UIConfiguration.spreadsheetDataFont);
+        setForeground(UIConfiguration.spreadsheetForegroundColor);
 
-      //TODO: Editable fonts, sizes and general spreadsheet apperance.
-      //if (this.isdata) {
-      //    this.setFont(uiconfig.spreadsheetDataFont);
-      //} else {
-      //    this.setFont(uiconfig.spreadsheetTimeStampFont);
-      //}
-      //this.setForeground(uiconfig.spreadsheetForegroundColor);
-      //
+        //TODO: Editable fonts, sizes and general spreadsheet apperance.
+        //if (this.isdata) {
+        //    this.setFont(uiconfig.spreadsheetDataFont);
+        //} else {
+        //    this.setFont(uiconfig.spreadsheetTimeStampFont);
+        //}
+        //this.setForeground(uiconfig.spreadsheetForegroundColor);
+        //
 
-        this.updateStrings();
+        //updateStrings();
         super.paintComponent(g);
     }
 
     public void updateStrings() {
         if (this.value != null) {
-            String t = this.value.toString();
-            this.setText(t);
-            this.setToolTipText(this.value.toString());
+            String t = value.toString();
+            setText(t);
+            setToolTipText(value.toString());
         }
     }
 
@@ -106,6 +111,7 @@ implements MouseListener, KeyListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(MouseEvent me) {
+        int gringle = 5;
     }
 
     /**

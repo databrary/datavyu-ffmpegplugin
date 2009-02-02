@@ -17,7 +17,7 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
      */
     public SpreadsheetPanel() {
         super();
-        this.addMouseListener(this);
+        //this.addMouseListener(this);
     }
 
     /**
@@ -69,7 +69,7 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
     public void processMouseEvent(MouseEvent me) {
         MouseListener[] list = this.getMouseListeners();
 
-        for (int i = 0; i < list.length && !me.isConsumed(); i++) {
+        for (int i = 0; i < list.length; i++) {
             switch (me.getID()) {
                 case MouseEvent.MOUSE_CLICKED:
                     list[i].mouseClicked(me);

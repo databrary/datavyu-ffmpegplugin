@@ -11,23 +11,23 @@ public final class IntDataValueView extends DataValueView {
 
     /**
      *
-     * @param timestamp
+     * @param intValue
      * @param editable
      */
-    IntDataValueView(final IntDataValue timestamp,
+    IntDataValueView(final IntDataValue intValue,
                            final boolean editable) {
-        super(timestamp, editable);
+        super(intValue, editable);
     }
 
     public void keyPressed(KeyEvent e) {
-        e.consume();
+        //e.consume();
     }
 
     public void keyReleased(KeyEvent e) {
-        e.consume();
+        //e.consume();
     }
 
     public void keyTyped(KeyEvent e) {
-        e.consume();
+        //e.consume();
     }
 }

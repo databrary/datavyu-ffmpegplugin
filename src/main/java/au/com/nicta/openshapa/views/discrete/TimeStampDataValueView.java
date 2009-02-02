@@ -49,7 +49,7 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param e
      */
     public void keyPressed(KeyEvent e) {
-        this.handleKeyEvent(e);
+        //this.handleKeyEvent(e);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param e
      */
     public void keyTyped(KeyEvent e) {
-        this.handleKeyEvent(e);
+        //this.handleKeyEvent(e);
     }
 
     /**
@@ -65,6 +65,6 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param e
      */
     public void keyReleased(KeyEvent e) {
-        this.handleKeyEvent(e);
+        //this.handleKeyEvent(e);
     }
 }

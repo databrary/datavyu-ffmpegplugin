@@ -5,6 +5,7 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 /**
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends SpreadsheetPanel {
+public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
 
     /** Matrix that is to be displayed. */
     private Matrix mat = null;
@@ -29,6 +30,7 @@ public class MatrixViewLabel extends SpreadsheetPanel {
      * @param m The Matrix to display.
     */
     public MatrixViewLabel(final Matrix m) {
+        super();
         setMatrix(m);
     }
 
@@ -65,7 +67,6 @@ public class MatrixViewLabel extends SpreadsheetPanel {
 
             if (dv != null) {
                 this.add(dv);
-                dv.updateStrings();
             }
 
             if (argViews.size() > 1 && i < (argViews.size() - 1)) {
@@ -94,24 +95,29 @@ public class MatrixViewLabel extends SpreadsheetPanel {
      *
      * @param e
      */
+    /*
     public void keyPressed(KeyEvent e) {
+        int moo = 5;
         //this.handleKeyEvent(e);
-    }
+    }*/
 
     /**
      *
      * @param e
      */
+    /*
     public void keyTyped(KeyEvent e) {
         //this.handleKeyEvent(e);
     }
+     */
 
     /**
      *
      * @param e
      */
+    /*
     public void keyReleased(KeyEvent e) {
         //this.handleKeyEvent(e);
-    }
+    }*/
 
 }

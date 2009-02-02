@@ -16,7 +16,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
@@ -28,12 +27,22 @@ import org.apache.log4j.Logger;
 public class SpreadsheetCell extends SpreadsheetPanel
 implements ExternalDataCellListener, Selectable {
 
-    /** The Ordinal display component. */
+    /** A panel for holding the header to the cell. */
+    private SpreadsheetPanel topPanel;
+
+    /** A panel for holding the value of the cell. */
+    private MatrixViewLabel dataPanel;
+    //private SpreadsheetPanel dataPanel;
+
+        /** The Ordinal display component. */
     private DataValueView ord;
+
     /** The Onset display component. */
     private DataValueView onset;
+
     /** The Offset display component. */
     private DataValueView offset;
+
     /** The Value display component. */
     //private MatrixViewLabel value;
 
@@ -51,26 +60,25 @@ implements ExternalDataCellListener, Selectable {
 
     /** Used in GetTime calls - Milliseconds format. */
     public static final int MILLISECONDS  = 1;
+
     /** Used in GetTime calls - Seconds format. */
-    public static final int SECONDS       = 2;
+    public static final int SECONDS = 2;
+
     /** Used in GetTime calls - Minutes format. */
-    public static final int MINUTES       = 3;
+    public static final int MINUTES = 3;
+
     /** Used in GetTime calls - Hours format. */
-    public static final int HOURS         = 4;
+    public static final int HOURS = 4;
+
     /** Used in GetTime calls - Days format. */
-    public static final int DAYS          = 5;
+    public static final int DAYS = 5;
 
     /** Default height multiplier of spreadsheet cell. */
-    public static final int HEIGHT_MULT   = 50;
-
-    /** Date format. Not used. */
-    public static final String DATEFORMAT = "MM/dd/yyyy HH:mm:ss:SSS";
-    /** Date Formatter. Not used */
-    public static final SimpleDateFormat DATEFORMATER =
-                                               new SimpleDateFormat(DATEFORMAT);
+    public static final int HEIGHT_MULT = 50;
 
     /** Holds the division format to use when displaying times. */
     private int divType = SECONDS;
+
     /** Holds the division value - used in conjunction with divType. */
     private double divValue = 1;
 
@@ -79,13 +87,17 @@ implements ExternalDataCellListener, Selectable {
 
     /** Show/Hide the Ordinal value of the cell. */
     private boolean showOrd = true;
+
     /** Show/Hide the Onset value of the cell. */
     private boolean showOnset = true;
+
     /** Show/Hide the Offset value of the cell. */
     private boolean showOffset = true;
+
     /** Show/Hide the Data value of the cell. */
     private boolean showData = true;
 
+    /** The parent selection that could include this cell. */
     private Selector selection;
 
     /** Logger for this class. */
@@ -98,71 +110,106 @@ implements ExternalDataCellListener, Selectable {
      * @param selector Selector to register the cell with.
      * @throws SystemErrorException if trouble with db calls
      */
-    public SpreadsheetCell(final Database db, final Cell cell,
+    public SpreadsheetCell(final Database cellDB,
+                           final Cell cell,
                            final Selector selector)
-                                                throws SystemErrorException {
-        IntDataValue ordDV = new IntDataValue(db);
-        TimeStampDataValue onsetDV = new TimeStampDataValue(db);
-        TimeStampDataValue offsetDV = new TimeStampDataValue(db);
+    throws SystemErrorException {
+        db = cellDB;
+        cellID = cell.getID();
 
-        this.db = db;
-        this.cellID = cell.getID();
-
-        this.ord = new IntDataValueView(ordDV,  false);
-        this.onset = new TimeStampDataValueView(onsetDV, true);
-        this.offset = new TimeStampDataValueView(offsetDV, true);
-        this.dataPanel = new MatrixViewLabel(null);
-
-        initComponents();
-
-        this.topPanel.add(ord);
-        this.topPanel.add(onset);
-        this.topPanel.add(offset);
-
-        //this.dataPanel.add(value, BorderLayout.CENTER);
-
-        selection = selector;
-        this.addMouseListener(ord);
-        this.addMouseListener(onset);
-        this.addMouseListener(offset);
-        this.addMouseListener(this);
-
-        this.updateDimensions();
-
-        DataCell dc = null;
+        // Register this view with the database so that we can get updates when
+        // the cell within the database changes.
+        DataCell dc;
         if (cell instanceof DataCell) {
             dc = (DataCell)cell;
         } else {
             dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
         }
         db.registerDataCellListener(dc.getID(), this);
-        this.setOrdinal(dc.getOrd());
-        this.setOnset(dc.getOnset());
-        this.setOffset(dc.getOffset());
-        this.setValue(dc.getVal());
-    }
 
+        // Build components used for the spreadsheet cell.
+        topPanel = new SpreadsheetPanel();
+        ord = new IntDataValueView(new IntDataValue(cellDB),  false);
+        setOrdinal(dc.getOrd());
+        onset = new TimeStampDataValueView(new TimeStampDataValue(cellDB), true);
+        setOnset(dc.getOnset());
+        offset = new TimeStampDataValueView(new TimeStampDataValue(cellDB), true);
+        setOffset(dc.getOffset());
+
+        //dataPanel = new SpreadsheetPanel();
+        dataPanel = new MatrixViewLabel(null);
+        setValue(dc.getVal());
+        
+        // Set the appearance of the spreadsheet cell.
+        setBackground(java.awt.SystemColor.window);
+        setBorder(javax.swing.BorderFactory
+                       .createLineBorder(new java.awt.Color(0, 0, 0)));
+        setLayout(new java.awt.BorderLayout());
+
+        // Set the apperance of the top panel and add child elements (ord, onset
+        // and offset).
+        topPanel.setBackground(java.awt.SystemColor.window);
+        topPanel.setLayout(new java.awt.GridLayout(1, 3, 5, 0));
+        add(topPanel, java.awt.BorderLayout.NORTH);
+        topPanel.add(ord);
+        topPanel.add(onset);
+        topPanel.add(offset);
+
+        // Set the apperance of the data panel - add elements for displaying the
+        // actual data of the panel.
+        dataPanel.setBackground(java.awt.SystemColor.window);
+        dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
+        add(dataPanel, java.awt.BorderLayout.WEST);
+        //dataPanel.add(value, BorderLayout.CENTER);
+
+        selection = selector;
+        //this.addMouseListener(ord);
+        //this.addMouseListener(onset);
+        //this.addMouseListener(offset);
+        //this.addMouseListener(this);
+        this.updateDimensions();
+    }
 
     public long getCellID() {
         return cellID;
     }
 
-    /** Set the ordinal value. */
-    private void setOrdinal(int ord)
-    {
+    /**
+     * Set the ordinal value.
+     *
+     * @param ord The new ordinal value to use with this cell.
+     * @deprecated The underlying IntDataValue should be altered, not the view.
+     */
+    private void setOrdinal(int ord) {
         ((IntDataValue)this.ord.getValue()).setItsValue(ord);
         this.ord.updateStrings();
         this.repaint();
     }
 
-    /** Set the Onset value. */
+    /**
+     * Set the Onset value.
+     * 
+     * @param newonset The new onset timestamp to use with this cell.
+     * @throws SystemErrorException When we are unable to set the
+     * TimeStampDataValue.
+     * @deprecated The underlying TimeStampDataValue should be altered directly,
+     * not the view.
+     */
     private void setOnset(TimeStamp newonset) throws SystemErrorException {
         ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
         this.onset.updateStrings();
         this.repaint();
     }
 
-    /** Set the offset value */
+    /**
+     * Set the offset value
+     *
+     * @param newoffset The new offset timestamp to use with this cell.
+     * @throws SystemErrorException When we are unable to set the
+     * TimeStampDataValue.
+     * @deprecated The underlying TimeStampeDataValue should be altered directly
+     * not the view.
+     */
     private void setOffset(TimeStamp newoffset) throws SystemErrorException {
         ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
         this.offset.updateStrings();
@@ -195,36 +242,6 @@ implements ExternalDataCellListener, Selectable {
         }
 
         return (-1);
-    }
-
-    /** Change in the div type causes change to height of cell. Not Used. */
-    public void setDivision(int type, double value)
-                                                   throws SystemErrorException {
-        this.divType = type;
-        this.divValue = value;
-
-        // Calculate the height given the division
-        double diff = getTime(type, this.onset) - getTime(type, this.offset);
-        this.setHeight((int)Math.round((diff * SpreadsheetCell.HEIGHT_MULT)
-                                        / value));
-    }
-
-    /**
-     * Get division value
-     * @return division value for the cell
-     */
-    public double getDivisionValue()
-    {
-        return (this.divValue);
-    }
-
-    /**
-     * Get division type
-     * @return division type for the cell
-     */
-    public double getDivisionType()
-    {
-        return (this.divType);
     }
 
     /**
@@ -308,7 +325,7 @@ implements ExternalDataCellListener, Selectable {
      * @return The Matrix value of a datacell.
      */
     public Matrix getValue() {
-        return (this.dataPanel.getMatrix());
+        return dataPanel.getMatrix();
     }
 
     /**
@@ -319,7 +336,8 @@ implements ExternalDataCellListener, Selectable {
     @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
-        this.userDimensions = new Dimension(width, height);
+        dataPanel.setSize(width, dataPanel.getHeight());
+        userDimensions = new Dimension(width, height);
     }
 
     /**
@@ -429,15 +447,22 @@ implements ExternalDataCellListener, Selectable {
 
     /**
      * Paint the SpreadsheetCell.
+     *
      * @param g the <code>Graphics</code> object to protect
      */
     @Override
     public void paintComponent(Graphics g) {
         this.updateDimensions();
-
         super.paintComponent(g);
     }
 
+    /**
+     * Set this cell as selected, a selected cell has a different appearance to
+     * an unselcted one (typically colour).
+     *
+     * @param sel The selection state of the cell, when true the cell is
+     * selected false otherwise.
+     */
     public void setSelected(boolean sel) {
         selected = sel;
 
@@ -460,14 +485,19 @@ implements ExternalDataCellListener, Selectable {
         if (selected) {
             topPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
             dataPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
+            setBackground(UIConfiguration.spreadsheetSelectedColor);
         } else {
             topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
             dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+            setBackground(UIConfiguration.spreadsheetBackgroundColor);
         }
 
         repaint();
     }
 
+    /**
+     * @return True if the cell is selected, false otherwise.
+     */
     public boolean isSelected() {
         return selected;
     }
@@ -476,27 +506,27 @@ implements ExternalDataCellListener, Selectable {
      * Called if the DataCell of interest is changed.
      * see ExternalDataCellListener.
      */
-    public void DCellChanged(Database   db,
-                           long       colID,
-                           long       cellID,
-                           boolean    ordChanged,
-                           int        oldOrd,
-                           int        newOrd,
-                           boolean    onsetChanged,
-                           TimeStamp  oldOnset,
-                           TimeStamp  newOnset,
-                           boolean    offsetChanged,
-                           TimeStamp  oldOffset,
-                           TimeStamp  newOffset,
-                           boolean    valChanged,
-                           Matrix     oldVal,
-                           Matrix     newVal,
-                           boolean    selectedChanged,
-                           boolean    oldSelected,
-                           boolean    newSelected,
-                           boolean    commentChanged,
-                           String     oldComment,
-                           String     newComment) {
+    public void DCellChanged(Database db,
+                             long colID,
+                             long cellID,
+                             boolean ordChanged,
+                             int oldOrd,
+                             int newOrd,
+                             boolean onsetChanged,
+                             TimeStamp oldOnset,
+                             TimeStamp newOnset,
+                             boolean offsetChanged,
+                             TimeStamp oldOffset,
+                             TimeStamp newOffset,
+                             boolean valChanged,
+                             Matrix oldVal,
+                             Matrix newVal,
+                             boolean selectedChanged,
+                             boolean oldSelected,
+                             boolean newSelected,
+                             boolean commentChanged,
+                             String oldComment,
+                             String newComment) {
         try {
             if (ordChanged) {
                 this.setOrdinal(newOrd);
@@ -511,7 +541,7 @@ implements ExternalDataCellListener, Selectable {
             }
 
             if (valChanged) {
-                this.dataPanel.setMatrix(newVal);
+                dataPanel.setMatrix(newVal);
             }
 
             if (selectedChanged) {
@@ -527,9 +557,9 @@ implements ExternalDataCellListener, Selectable {
     /**
      * Called if the DataCell of interest is deleted.
      */
-    public void DCellDeleted(Database  db,
-                           long      colID,
-                           long      cellID) {
+    public void DCellDeleted(Database db,
+                             long colID,
+                             long cellID) {
         // TODO: Figure out how to work with cells that are deleted.
     }
 
@@ -538,34 +568,4 @@ implements ExternalDataCellListener, Selectable {
         selection.addToSelection(me, this);
         me.consume();
     }
-
-    /**
-     * Initalises the components of the spreadsheet cell.
-     *
-     */
-    private void initComponents() {
-        topPanel = new SpreadsheetPanel();
-        //dataPanel = new SpreadsheetPanel();
-
-        setBackground(java.awt.SystemColor.window);
-        setBorder(javax.swing.BorderFactory
-                       .createLineBorder(new java.awt.Color(0, 0, 0)));
-        setLayout(new java.awt.BorderLayout());
-
-        topPanel.setBackground(java.awt.SystemColor.window);
-        topPanel.setLayout(new java.awt.GridLayout(1, 3, 5, 0));
-        add(topPanel, java.awt.BorderLayout.NORTH);
-
-        dataPanel.setBackground(java.awt.SystemColor.window);
-        //dataPanel.setLayout(new java.awt.BorderLayout(1, 1));
-        // Set the layout for this label (simple box layout).
-        dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
-        add(dataPanel, java.awt.BorderLayout.WEST);
-    }
-
-    /** A panel for holding the header to the cell. */
-    private SpreadsheetPanel topPanel;
-
-    /** A panel for holding the value of the cell. */
-    private MatrixViewLabel dataPanel;
 }
