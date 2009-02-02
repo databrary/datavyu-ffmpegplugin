@@ -40,11 +40,11 @@ implements MouseListener, KeyListener {
         setEditable(editable);
 
         // Add listeners.
-        //addMouseListener(this);
-        //addKeyListener(this);
+        addMouseListener(this);
+        addKeyListener(this);
 
         // Set visual appearance.
-        //setBorder(null);
+        setBorder(null);
         setOpaque(false);
 
         // Set the content.
@@ -111,7 +111,6 @@ implements MouseListener, KeyListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(MouseEvent me) {
-        int gringle = 5;
     }
 
     /**

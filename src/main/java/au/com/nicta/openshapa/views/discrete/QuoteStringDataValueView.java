@@ -15,14 +15,11 @@ public final class QuoteStringDataValueView extends DataValueView {
     }
 
     public void keyPressed(KeyEvent e) {
-        e.consume();
     }
 
     public void keyReleased(KeyEvent e) {
-        e.consume();
     }
 
     public void keyTyped(KeyEvent e) {
-        e.consume();
     }
 }

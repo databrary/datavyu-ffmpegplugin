@@ -17,7 +17,7 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
      */
     public SpreadsheetPanel() {
         super();
-        //this.addMouseListener(this);
+        this.addMouseListener(this);
     }
 
     /**
