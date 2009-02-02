@@ -94,7 +94,6 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         // the size goes to 0 by 0 and never regrows after that
         setSize(200, 1000);
         updateComponents(dbColumn);
-        validate();
     }
 
     /** This method is called from within the constructor to
