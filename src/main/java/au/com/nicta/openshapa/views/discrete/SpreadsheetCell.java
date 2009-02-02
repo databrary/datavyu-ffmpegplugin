@@ -160,13 +160,8 @@ implements ExternalDataCellListener, Selectable {
         dataPanel.setBackground(java.awt.SystemColor.window);
         dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
         add(dataPanel, java.awt.BorderLayout.WEST);
-        //dataPanel.add(value, BorderLayout.CENTER);
 
         selection = selector;
-        //this.addMouseListener(ord);
-        //this.addMouseListener(onset);
-        //this.addMouseListener(offset);
-        //this.addMouseListener(this);
         this.updateDimensions();
     }
 

@@ -159,7 +159,7 @@ implements MouseListener, KeyListener {
             }
         }
 
-        if (!me.isConsumed()) {
+        if (!this.isEditable() && !me.isConsumed()) {
             me.translatePoint(this.getX(), this.getY());
             this.getParent().dispatchEvent(me);
         }
