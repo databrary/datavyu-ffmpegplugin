@@ -4,7 +4,6 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalColumnListListener;
-import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
@@ -324,7 +323,6 @@ public class Spreadsheet extends OpenSHAPADialog
                                                 col.getID(),
                                                 mve.getID());
                 cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
-                System.out.println(cell.toString());
                 if (onset > 0) {
                     lastCreatedCellID = database.appendCell(cell);
                 } else {
@@ -341,7 +339,12 @@ public class Spreadsheet extends OpenSHAPADialog
                 // next try for selected cells
                 Iterator <DataCell> itCells = getSelectedCells().iterator();
                 while (itCells.hasNext()) {
-                    DataCell dc = itCells.next();
+                    // reget the selected cell from the database using its id
+                    // in case a previous insert has changed its ordinal.
+                    // recasting to DataCell without checking as the iterator
+                    // only returns DataCells (no ref cells allowed so far)
+                    DataCell dc = (DataCell) database
+                                               .getCell(itCells.next().getID());
                     DataCell cell = new DataCell(database,
                                                  dc.getItsColID(),
                                                  dc.getItsMveID());
@@ -353,12 +356,6 @@ public class Spreadsheet extends OpenSHAPADialog
                     } else {
                         cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
                         lastCreatedCellID = database.appendCell(cell);
-                    }
-                    System.out.println(cell.toString());
-                    if (onset > 0) {
-                        lastCreatedCellID = database.appendCell(cell);
-                    } else {
-                        lastCreatedCellID = database.insertdCell(cell, 1);
                     }
                     lastCreatedColID = cell.getItsColID();
                     newcelladded = true;
@@ -378,7 +375,6 @@ public class Spreadsheet extends OpenSHAPADialog
                                                 col.getID(),
                                                 col.getItsMveID());
                 cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
-                System.out.println(cell.toString());
                 lastCreatedCellID = database.appendCell(cell);
             }
             deselectAll();

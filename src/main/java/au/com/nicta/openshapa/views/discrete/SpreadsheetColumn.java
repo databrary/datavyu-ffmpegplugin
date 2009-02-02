@@ -27,6 +27,9 @@ public class SpreadsheetColumn
     /** ColumnHeaderPanel this column manages. */
     private ColumnHeaderPanel headerpanel;
 
+    /** Spreadsheet this column belongs to. */
+    private Spreadsheet spreadsheet;
+
     /** flag to set if redraw required. */
     private boolean dirty;
 
@@ -46,6 +49,7 @@ public class SpreadsheetColumn
                              final Selector selector) {
         this.database = db;
         this.dbColID = colID;
+        this.spreadsheet = sheet;
 
         try {
             database.registerDataColumnListener(dbColID, this);
@@ -98,6 +102,7 @@ public class SpreadsheetColumn
             headerpanel.setText(dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")");
 
+            spreadsheet.validate();
         } catch (SystemErrorException e) {
             logger.error("Failed to reget DataColumn from colID = " + colID, e);
         }
