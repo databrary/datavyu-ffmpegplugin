@@ -1,6 +1,14 @@
 About
 
-  Speil about OpenSHAPA needs to go here.
+  The goal of the OpenSHAPA project is to develop a free, multi-platform,
+  open-source software tool for exploratory sequential data analysis that will
+  support investigators' needs for the next 10-20 years.
+
+  OpenSHAPA is most immediately motivated by the need to support researchers
+  within NICTA's COSE (Cognitive and Organisational Systems Engineering)
+  project, but is being developed in collaboration with other researchers
+  worldwide who use different forms of exploratory sequential data analysis in
+  their research.
 
 
 
