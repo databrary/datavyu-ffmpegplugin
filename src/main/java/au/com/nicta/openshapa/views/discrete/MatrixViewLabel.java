@@ -95,29 +95,23 @@ public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
      *
      * @param e
      */
-    /*
     public void keyPressed(KeyEvent e) {
-        int moo = 5;
         //this.handleKeyEvent(e);
-    }*/
+    }
 
     /**
      *
      * @param e
      */
-    /*
     public void keyTyped(KeyEvent e) {
         //this.handleKeyEvent(e);
     }
-     */
 
     /**
      *
      * @param e
      */
-    /*
     public void keyReleased(KeyEvent e) {
         //this.handleKeyEvent(e);
-    }*/
-
+    }
 }

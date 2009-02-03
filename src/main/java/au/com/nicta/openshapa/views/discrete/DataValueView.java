@@ -3,6 +3,8 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -14,7 +16,7 @@ import javax.swing.JTextField;
  * @author cfreeman
  */
 public abstract class DataValueView extends JTextField
-implements MouseListener, KeyListener {
+implements MouseListener, KeyListener, FocusListener {
 
     /** The DataValue that this view represents. **/
     private DataValue value = null;
@@ -42,6 +44,7 @@ implements MouseListener, KeyListener {
         // Add listeners.
         addMouseListener(this);
         addKeyListener(this);
+        addFocusListener(this);
 
         // Set visual appearance.
         setBorder(null);
@@ -87,6 +90,13 @@ implements MouseListener, KeyListener {
             setText(t);
             setToolTipText(value.toString());
         }
+    }
+
+    public void focusGained(FocusEvent fe) {
+        this.selectAll();
+    }
+
+    public void focusLost(FocusEvent fe) {
     }
 
     /**

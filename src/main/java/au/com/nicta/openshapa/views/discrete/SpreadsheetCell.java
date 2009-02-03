@@ -130,6 +130,7 @@ implements ExternalDataCellListener, Selectable {
         // Build components used for the spreadsheet cell.
         topPanel = new SpreadsheetPanel();
         ord = new IntDataValueView(new IntDataValue(cellDB),  false);
+        ord.setFocusable(false);
         setOrdinal(dc.getOrd());
         onset = new TimeStampDataValueView(new TimeStampDataValue(cellDB), true);
         setOnset(dc.getOnset());
