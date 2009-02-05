@@ -16,9 +16,7 @@ import org.apache.log4j.Logger;
 */
 public class MatrixViewLabel extends JPanel {
 
-    /** Matrix that is to be displayed. */
-    private Matrix mat = null;
-
+    /** The parent cell for this JPanel. */
     private DataCell parentCell = null;
 
     /** The data views used for each of the arguments. */
@@ -35,6 +33,7 @@ public class MatrixViewLabel extends JPanel {
     public MatrixViewLabel(final DataCell c, final Matrix m) {
         super();
         parentCell = c;
+        argViews = new Vector<DataValueView>();
         setMatrix(m);
     }
 
@@ -44,11 +43,10 @@ public class MatrixViewLabel extends JPanel {
      * @param m The Matrix to display.
      */
     public final void setMatrix(final Matrix m) {
-        mat = m;
-        argViews = new Vector<DataValueView>();
-
         try {
-            if (m != null) {
+            // If this matrixView does not contain any components build up
+            // view representations for each of the arguments.
+            if (m != null && getComponentCount() == 0) {               
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
                     argViews.add(DataValueViewFactory.build(parentCell, m, i));
@@ -58,41 +56,45 @@ public class MatrixViewLabel extends JPanel {
             logger.error("Unable to set Matrix for MatrixViewLabel.", e);
         }
 
-        // If we have more than one argument in the matrix - then we need to
-        // stack in some additional labels.
-        if (argViews.size() > 1) {
-            JLabel label = new JLabel("(");
-            this.add(label);
-        }
-
-        // Build the visual representation of this matrix.
-        for (int i = 0; i < argViews.size(); i++) {
-            DataValueView dv = argViews.get(i);
-
-            if (dv != null) {
-                this.add(dv);
+        // If this matrixView does not contain any components. Insert the
+        // components for each of the view repsentations.
+        if (getComponentCount() == 0) {
+            // If we have more than one argument in the matrix - then we need to
+            // stack in some additional labels.
+            if (argViews.size() > 1) {
+                JLabel label = new JLabel("(");
+                this.add(label);
             }
 
-            if (argViews.size() > 1 && i < (argViews.size() - 1)) {
-                this.add(new JLabel(","));
-            }
-        }
+            // Build the visual representation of this matrix.
+            for (int i = 0; i < argViews.size(); i++) {
+                DataValueView dv = argViews.get(i);
 
-        // If we have more than one argument in the matrix - then we need to
-        // stack in some additional labels.
-        if (argViews.size() > 1) {
-            this.add(new JLabel(")"));
+                if (dv != null) {
+                    this.add(dv);
+                }
+
+                if (argViews.size() > 1 && i < (argViews.size() - 1)) {
+                    this.add(new JLabel(","));
+                }
+            }
+
+            // If we have more than one argument in the matrix - then we need to
+            // stack in some additional labels.
+            if (argViews.size() > 1) {
+                this.add(new JLabel(")"));
+            }
+
+        // The matrixView does not contain components, alter the contents of
+        // what already exists.
+        } else {
+            for (int i = 0; i < argViews.size(); i++) {
+                argViews.get(i).setValue(parentCell, m, i);
+            }
         }
 
         //this.setBorder(BorderFactory.createEtchedBorder());
         this.repaint();
-    }
-
-    /**
-     * @return The Matrix being displayed.
-     */
-    public final Matrix getMatrix() {
-        return mat;
     }
 
     /**

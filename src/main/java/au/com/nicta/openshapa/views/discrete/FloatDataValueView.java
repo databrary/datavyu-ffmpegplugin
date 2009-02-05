@@ -67,6 +67,7 @@ public final class FloatDataValueView extends DataValueView {
                 case KeyEvent.VK_DELETE:
                     // Delete numbers, but not the decimal point (underlying
                     // text field handles this.
+                    fdv.setItsValue(new Double(getText()));
                     break;
 
                 default:
@@ -74,9 +75,11 @@ public final class FloatDataValueView extends DataValueView {
                     e.consume();
                     break;
             }
-        }
 
         // Key stoke is number - insert number into the current caret position.
+        } else {             
+            fdv.setItsValue(new Double(getText()));
+        }
 
         // Push the value back into the database.
         updateDatabase();

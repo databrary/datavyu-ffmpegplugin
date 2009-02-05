@@ -180,7 +180,8 @@ implements ExternalDataCellListener, Selectable {
     private void setOrdinal(int ord) {
         ((IntDataValue)this.ord.getValue()).setItsValue(ord);
         this.ord.updateStrings();
-        this.repaint();
+        //this.repaint();
+        this.validate();
     }
 
     /**
@@ -195,7 +196,8 @@ implements ExternalDataCellListener, Selectable {
     private void setOnset(TimeStamp newonset) throws SystemErrorException {
         ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
         this.onset.updateStrings();
-        this.repaint();
+        //this.repaint();
+        this.validate();
     }
 
     /**
@@ -210,7 +212,8 @@ implements ExternalDataCellListener, Selectable {
     private void setOffset(TimeStamp newoffset) throws SystemErrorException {
         ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
         this.offset.updateStrings();
-        this.repaint();
+        //this.repaint();
+        this.validate();
     }
 
     /**
@@ -316,13 +319,6 @@ implements ExternalDataCellListener, Selectable {
      */
     public TimeStampDataValue getOffset() throws SystemErrorException {
         return ((TimeStampDataValue)this.offset.getValue());
-    }
-
-    /**
-     * @return The Matrix value of a datacell.
-     */
-    public Matrix getValue() {
-        return dataPanel.getMatrix();
     }
 
     /**
@@ -548,7 +544,8 @@ implements ExternalDataCellListener, Selectable {
            logger.error("Failed changing SpreadsheetCell.", e);
         }
 
-        this.repaint();
+        //this.repaint();
+        this.revalidate();
     }
 
     /**

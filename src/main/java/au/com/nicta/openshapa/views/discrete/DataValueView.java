@@ -33,6 +33,8 @@ implements MouseListener, KeyListener, FocusListener {
     /** The index of the datavalue within its parent matrix. */
     private int index;
 
+    private int oldCaretPosition;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueView.class);
 
@@ -46,6 +48,7 @@ implements MouseListener, KeyListener, FocusListener {
             cell = dataCell;
             index = matrixIndex;
             value = matrix.getArgCopy(index);
+            oldCaretPosition = 0;
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
         }
@@ -58,8 +61,19 @@ implements MouseListener, KeyListener, FocusListener {
         parentMatrix = null;
         index = -1;
         value = dataValue;
-
+        oldCaretPosition = 0;
         initDataValueView(editable);
+    }
+
+    public void setValue(final DataCell dataCell,
+                         final Matrix matrix,
+                         final int matrixIndex) {
+        cell = dataCell;
+        parentMatrix = matrix;
+        index = matrixIndex;
+
+        updateStrings();
+        setCaretPosition(oldCaretPosition);
     }
 
     private void initDataValueView(final boolean editable) {        
@@ -80,6 +94,7 @@ implements MouseListener, KeyListener, FocusListener {
 
     protected void updateDatabase() {
         try {
+            oldCaretPosition = getCaretPosition();
             parentMatrix.replaceArg(index, value);
             cell.setVal(parentMatrix);
             cell.getDB().replaceCell(cell);
