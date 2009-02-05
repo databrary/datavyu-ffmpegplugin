@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import java.text.DecimalFormat;
+
 /**
  * An instance of FloatDataValue is used to store a floating point value
  * assigned to a formal argument.
@@ -225,7 +227,8 @@ public final class FloatDataValue extends DataValue {
 
     public String toString()
     {
-        return ("" + this.itsValue);
+        DecimalFormat formatter = new DecimalFormat("0.000000");
+        return ("" + formatter.format(itsValue));
     }
 
 

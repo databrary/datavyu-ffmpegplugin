@@ -46,9 +46,8 @@ public final class FloatDataValueView extends DataValueView {
         } else if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD ||
                     e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD)
                     && e.getKeyChar() == '.') {
-
             // Shift the decimal point to the current caret position.
-            double factor = getCaretPosition() - getText().indexOf('.');
+            int factor = getCaretPosition() - getText().indexOf('.');
             fdv.setItsValue(fdv.getItsValue() * Math.pow(10, factor));
             e.consume();
 
@@ -114,6 +113,6 @@ public final class FloatDataValueView extends DataValueView {
      * @param e The KeyEvent that triggered this action.
      */
     public void keyReleased(KeyEvent e) {
-        handleKeyStroke(e);
+        // Ignore key release.
     }
 }
