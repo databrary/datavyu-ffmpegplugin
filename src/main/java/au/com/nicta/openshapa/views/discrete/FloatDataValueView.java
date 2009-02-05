@@ -12,8 +12,10 @@ import java.awt.event.KeyEvent;
 public final class FloatDataValueView extends DataValueView {
 
     /**
-     *
-     * @param timestamp
+     * 
+     * @param cell
+     * @param matrix
+     * @param matrixIndex
      * @param editable
      */
     FloatDataValueView(final DataCell cell,
@@ -44,9 +46,12 @@ public final class FloatDataValueView extends DataValueView {
         } else if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD ||
                     e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD)
                     && e.getKeyChar() == '.') {
-            // Shift the decimal point to the current caret position.
 
-            int goo = 6;
+            // Shift the decimal point to the current caret position.
+            double factor = getCaretPosition() - getText().indexOf('.');
+            fdv.setItsValue(fdv.getItsValue() * Math.pow(10, factor));
+            e.consume();
+
         // If the key stroke is not numeric we need to perform additional
         // checks.
         } else if (!isKeyStrokeNumeric(e)) {
