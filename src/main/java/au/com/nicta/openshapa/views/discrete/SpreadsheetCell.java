@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Cell;
 import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalDataCellListener;
 import au.com.nicta.openshapa.db.IntDataValue;
@@ -138,7 +139,7 @@ implements ExternalDataCellListener, Selectable {
         setOffset(dc.getOffset());
 
         //dataPanel = new SpreadsheetPanel();
-        dataPanel = new MatrixViewLabel(null);
+        dataPanel = new MatrixViewLabel(dc, null);
         setValue(dc.getVal());
         
         // Set the appearance of the spreadsheet cell.

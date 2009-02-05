@@ -1,6 +1,9 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
 import java.awt.event.FocusEvent;
@@ -10,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JTextField;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -18,27 +22,47 @@ import javax.swing.JTextField;
 public abstract class DataValueView extends JTextField
 implements MouseListener, KeyListener, FocusListener {
 
+    /** The parent matrix for the DataValue that this view represents.*/
+    private Matrix parentMatrix;
+
     /** The DataValue that this view represents. **/
     private DataValue value = null;
 
-    public DataValueView(final boolean editable) {
+    private DataCell cell;
+
+    /** The index of the datavalue within its parent matrix. */
+    private int index;
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(DataValueView.class);
+
+    public DataValueView(final DataCell dataCell,
+                         final Matrix matrix,
+                         final int matrixIndex,
+                         final boolean editable) {
         super();
+        try {
+            parentMatrix = matrix;
+            cell = dataCell;
+            index = matrixIndex;
+            value = matrix.getArgCopy(index);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to create DataValue View: ", ex);
+        }
+
         initDataValueView(editable);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param datavalue the DataValue that this class represents.
-     * @param editable Is this DataValueView editable?
-     */
-    public DataValueView(final DataValue datavalue, final boolean editable) {
-        super();
-        value = datavalue;
+    public DataValueView(final DataValue dataValue,
+                         final boolean editable) {
+        parentMatrix = null;
+        index = -1;
+        value = dataValue;
+
         initDataValueView(editable);
     }
 
-    private void initDataValueView(final boolean editable) {
+    private void initDataValueView(final boolean editable) {        
         setEditable(editable);
 
         // Add listeners.
@@ -52,6 +76,16 @@ implements MouseListener, KeyListener, FocusListener {
 
         // Set the content.
         updateStrings();
+    }
+
+    protected void updateDatabase() {
+        try {
+            parentMatrix.replaceArg(index, value);
+            cell.setVal(parentMatrix);
+            cell.getDB().replaceCell(cell);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to update Database: ", ex);
+        }
     }
 
     /**

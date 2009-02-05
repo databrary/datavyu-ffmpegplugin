@@ -1,5 +1,7 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import java.awt.event.KeyEvent;
 
@@ -14,9 +16,16 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param timestamp
      * @param editable
      */
-    TimeStampDataValueView(final TimeStampDataValue timestamp,
+    TimeStampDataValueView(final DataCell cell,
+                           final Matrix matrix,
+                           final int matrixIndex,
                            final boolean editable) {
-        super(timestamp, editable);
+        super(cell, matrix, matrixIndex, editable);
+    }
+
+    TimeStampDataValueView(final TimeStampDataValue timeStampDataValue,
+                           final boolean editable) {
+        super(timeStampDataValue, editable);
     }
 
     public void handleKeyEvent(KeyEvent e) {

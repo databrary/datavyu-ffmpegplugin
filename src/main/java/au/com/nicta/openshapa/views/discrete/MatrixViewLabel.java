@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import java.awt.event.KeyEvent;
@@ -13,10 +14,12 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
+public class MatrixViewLabel extends JPanel {
 
     /** Matrix that is to be displayed. */
     private Matrix mat = null;
+
+    private DataCell parentCell = null;
 
     /** The data views used for each of the arguments. */
     private Vector<DataValueView> argViews;
@@ -29,8 +32,9 @@ public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
      *
      * @param m The Matrix to display.
     */
-    public MatrixViewLabel(final Matrix m) {
+    public MatrixViewLabel(final DataCell c, final Matrix m) {
         super();
+        parentCell = c;
         setMatrix(m);
     }
 
@@ -41,13 +45,13 @@ public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
      */
     public final void setMatrix(final Matrix m) {
         mat = m;
-        argViews = new Vector<DataValueView>();        
+        argViews = new Vector<DataValueView>();
 
         try {
             if (m != null) {
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
-                    argViews.add(DataValueViewFactory.build(m.getArgCopy(i)));
+                    argViews.add(DataValueViewFactory.build(parentCell, m, i));
                 }
             }
         } catch (SystemErrorException e) {
@@ -88,7 +92,7 @@ public class MatrixViewLabel extends JPanel /*SpreadsheetPanel*/ {
      * @return The Matrix being displayed.
      */
     public final Matrix getMatrix() {
-        return (mat);
+        return mat;
     }
 
     /**

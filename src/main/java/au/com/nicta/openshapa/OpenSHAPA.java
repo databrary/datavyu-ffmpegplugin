@@ -66,9 +66,10 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD9:
                 qtVideoController.forwardAction();
                 break;
-            case KeyEvent.VK_MINUS:
+/*            case KeyEvent.VK_MINUS:
                 qtVideoController.goBackAction();
                 break;
+ */
             case KeyEvent.VK_NUMPAD4:
                 qtVideoController.shuttleBackAction();
                 break;

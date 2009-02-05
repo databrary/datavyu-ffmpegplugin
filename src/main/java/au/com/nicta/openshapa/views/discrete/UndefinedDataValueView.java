@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views.discrete;
 
-import au.com.nicta.openshapa.db.UndefinedDataValue;
+import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 
 /**
@@ -9,9 +10,11 @@ import java.awt.event.KeyEvent;
  */
 public final class UndefinedDataValueView extends DataValueView {
 
-    UndefinedDataValueView(final UndefinedDataValue undefinedDV,
+    UndefinedDataValueView(final DataCell cell,
+                           final Matrix matrix,
+                           final int matrixIndex,
                            final boolean editable) {
-        super(undefinedDV, editable);
+        super(cell, matrix, matrixIndex, editable);
     }
 
     public void keyPressed(KeyEvent e) {
