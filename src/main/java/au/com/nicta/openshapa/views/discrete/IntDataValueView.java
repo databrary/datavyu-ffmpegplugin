@@ -96,7 +96,8 @@ public final class IntDataValueView extends DataValueView {
         } else if (isKeyStrokeNumeric(e)) {            
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-            setCaretPosition(getCaretPosition() + 1);
+            setCaretPosition(Math.min(getCaretPosition() + 1,
+                             getText().length()));
             idv.setItsValue(new Integer(currentValue.toString()));
             e.consume();
 
