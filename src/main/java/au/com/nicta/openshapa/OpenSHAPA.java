@@ -2,7 +2,6 @@ package au.com.nicta.openshapa;
 
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
-import au.com.nicta.openshapa.db.DatabaseDemo;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.ListVariables;
@@ -233,13 +232,6 @@ implements KeyEventDispatcher {
         // TODO: is there a way to call the test package if it exists
         // or inform the user if it is not?
 //        DatabaseTest.TestDatabase(System.out);
-    }
-
-    /**
-     * Populate db with some demo data.
-     */
-    public void populateDemoData() throws SystemErrorException {
-        DatabaseDemo.populateDemoData(db);
     }
 
     /**
