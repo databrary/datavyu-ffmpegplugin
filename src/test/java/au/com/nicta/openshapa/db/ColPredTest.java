@@ -888,12 +888,12 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String float_cp_string =
-                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.0)";
+                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000)";
             String int_cp_string =
                 "int_mve(0, 00:00:00:000, 00:00:00:000, 0)";
             String matrix_cp0_string =
                 "matrix_mve0(0, 00:00:00:000, 00:00:00:000, " +
-                    "0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
+                    "0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String matrix_cp1_string =
                 "matrix_mve1(0, 00:00:00:000, 00:00:00:000, " +
                     "<arg1>, <arg2>, <arg3>)";
@@ -2055,11 +2055,11 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String float_cp_string =
-                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
+                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.000000)";
             String int_cp_string =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
             String matrix_cp0_string =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, " +
                                 "a_nominal, pve0(<arg1>, <arg2>), " +
                                 "\"q-string\", 00:00:01:000, <untyped>)";
             String matrix_cp1_string =
@@ -4427,11 +4427,11 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String float_cp_string =
-                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
+                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.000000)";
             String int_cp_string =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
             String matrix_cp0_string =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, " +
                                 "a_nominal, pve0(<arg1>, <arg2>), " +
                                 "\"q-string\", 00:00:01:000, <untyped>)";
             String matrix_cp1_string =
@@ -6324,14 +6324,14 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String float_cp_string =
-                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
+                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.000000)";
             String int_cp_string =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
             String matrix_cp0_string =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, " +
                                 "a_nominal, pve0(<arg>), \"q-string\", " +
                                 "00:00:01:000, <untyped>, " +
-                                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
+                                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000))";
 //                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
 //                                "a_nominal, pve0(<arg>), \"q-string\", " +
 //                                "00:00:01:000, <untyped>, " +
@@ -7262,57 +7262,57 @@ public class ColPredTest {
         {
             // float, int, nominal, pred, q-string, timestamp, untyped
             String testString0 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, " +
                                 "a_nominal, pve0(<arg>), \"q-string\", " +
                                 "00:00:01:000, <untyped>, " +
-                                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
+                                "float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000))";
 //                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
 //                                "a_nominal, pve0(<arg>), \"q-string\", " +
 //                                "00:00:01:000, <untyped>, " +
 //                                "float_mve(<ord>, <onset>, <offset>, 0.0))";
             // untyped, float, int, nominal, pred, q-string, timestamp
             String testString1 =
-                    "matrix_mve1(33, 00:00:00:033, 00:00:33:000, 1, , (), \"\", 00:00:00:000, 00:00:01:000, (), 0.0)";
+                    "matrix_mve1(33, 00:00:00:033, 00:00:33:000, 1, , (), \"\", 00:00:00:000, 00:00:01:000, (), 0.000000)";
 //                    "pve5(1.0, 2.0, 0, , (), \"\", 00:00:00:000)";
             // timestamp, untyped, float, int, nominal, pred, q-string
             String testString2 =
-                    "matrix_mve2(33, 00:00:00:033, 00:00:33:000, , (), \"a_nominal\", 00:00:00:000, \"q-string\", (), 0.0, 0)";
+                    "matrix_mve2(33, 00:00:00:033, 00:00:33:000, , (), \"a_nominal\", 00:00:00:000, \"q-string\", (), 0.000000, 0)";
 //                    "pve6(00:00:00:000, 2, 0.0, 0, q-string, (), \"\")";
             // q-string, timestamp, untyped, float, int, nominal, pred
             String testString3 =
-                    "matrix_mve3(33, 00:00:00:033, 00:00:33:000, (), \"\", 00:00:00:000, pve0(<arg>), (), 0.0, 0, )";
+                    "matrix_mve3(33, 00:00:00:033, 00:00:33:000, (), \"\", 00:00:00:000, pve0(<arg>), (), 0.000000, 0, )";
 //                    "pve7(\"\", 00:00:00:002, a_nominal, 0.0, 0, , ())";
             // pred, q-string, timestamp, untyped, float, int, nominal
             String testString4 =
-                    "matrix_mve4(33, 00:00:00:033, 00:00:33:000, \"\", 00:00:00:002, a_nominal, (), 0.0, 0, , ())";
+                    "matrix_mve4(33, 00:00:00:033, 00:00:33:000, \"\", 00:00:00:002, a_nominal, (), 0.000000, 0, , ())";
 //                    "pve8((), \"\", 00:00:00:000, pve0(<arg1>, <arg2>), 0.0, 0, )";
             // nominal, pred, q-string, timestamp, untyped, float, int
             String testString5 =
-                    "matrix_mve5(33, 00:00:00:033, 00:00:33:000, 00:00:00:000, 2, (), 0.0, 0, , (), \"\")";
+                    "matrix_mve5(33, 00:00:00:033, 00:00:33:000, 00:00:00:000, 2, (), 0.000000, 0, , (), \"\")";
 //                    "pve9(, (), \"a_nominal\", 00:00:00:000, \"q-string\", 0.0, 0)";
             // int, nominal, pred, q-string, timestamp, untyped, float
             String testString6 =
-                    "matrix_mve6(33, 00:00:00:033, 00:00:33:000, 1.0, (), 0.0, 0, q-string, (), \"\", 00:00:00:000)";
+                    "matrix_mve6(33, 00:00:00:033, 00:00:33:000, 1.000000, (), 0.000000, 0, q-string, (), \"\", 00:00:00:000)";
 //                    "pve10(1, , (), \"\", 00:00:00:000, 00:00:00:000, 0.0)";
             // float, int, nominal, pred, q-string, timestamp, untyped
             String testString7 =
-                    "matrix_mve7(33, 00:00:00:033, 00:00:33:000, (), 2.0, 0, , (), \"\", 00:00:00:000, float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
+                    "matrix_mve7(33, 00:00:00:033, 00:00:33:000, (), 2.000000, 0, , (), \"\", 00:00:00:000, float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000))";
 //                    "matrix_mve7(33, 00:00:00:033, 00:00:33:000, (), 2.0, 0, , (), \"\", 00:00:00:000, float_mve(<ord>, <onset>, <offset>, 0.0))";
 //                    "pve11(1.0, 2, a_nominal, pve0(<arg1>, <arg2>), " +
 //                          "\"q-string\", 00:00:00:000, <untyped>)";
             String testString8 =
-                    "matrix_mve8(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(0, 00:00:00:000, 00:00:00:000, 0.0))";
+                    "matrix_mve8(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000))";
 //                    "matrix_mve8(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, pve0(<arg>), \"q-string\", 00:00:01:000, <untyped>, float_mve(<ord>, <onset>, <offset>, 0.0))";
 //                    "pve3(1.0)";
-            String testString9 = "matrix_mve9(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal)";
-            String testString10 = "matrix_mve10(33, 00:00:00:033, 00:00:33:000, 1.0)";
-            String testString11 = "float_mve(33, 00:00:00:033, 00:00:33:000, 1.0)";
+            String testString9 = "matrix_mve9(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, a_nominal)";
+            String testString10 = "matrix_mve10(33, 00:00:00:033, 00:00:33:000, 1.000000)";
+            String testString11 = "float_mve(33, 00:00:00:033, 00:00:33:000, 1.000000)";
             String testString12 = "int_mve(33, 00:00:00:033, 00:00:33:000, 1)";
             String testString13 = "nominal_mve(33, 00:00:00:033, 00:00:33:000, )";
             String testString14 = "pred_mve(33, 00:00:00:033, 00:00:33:000, ())";
             String testString15 = "text_mve(33, 00:00:00:033, 00:00:33:000, )";
             String testString16 =
-                    "matrix_mve9(11, 00:00:00:011, 00:00:11:000, 11.0, <arg2>, <arg3>)";
+                    "matrix_mve9(11, 00:00:00:011, 00:00:11:000, 11.000000, <arg2>, <arg3>)";
             String testString17 =
                     "matrix_mve9(22, 00:00:00:022, 00:00:22:000, 22, <arg2>, <arg3>)";
             String testString18 =
@@ -7580,7 +7580,7 @@ public class ColPredTest {
             String testString2 =
                     "matrix_mve10(0, 00:00:00:000, 00:00:00:000, <arg1>)";
             String testString3 =
-                    "float_mve(0, 00:00:00:000, 00:00:00:000, 0.0)";
+                    "float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000)";
             String testString4 =
                     "int_mve(0, 00:00:00:000, 00:00:00:000, 0)";
             String testString5 =
@@ -7590,23 +7590,23 @@ public class ColPredTest {
             String testString7 =
                     "text_mve(0, 00:00:00:000, 00:00:00:000, )";
             String testString8 =
-                    "matrix_mve8(0, 00:00:00:000, 00:00:00:000, 0.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve8(0, 00:00:00:000, 00:00:00:000, 0.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString9 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, a_nominal, (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, a_nominal, (), \"\", 00:00:00:000, <untyped>, ())";
             String testString10 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString11 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString12 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString13 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString14 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString15 =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.0, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 0.000000, 0, , (), \"\", 00:00:00:000, <untyped>, ())";
             String testString16 =
-                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
+                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.000000)";
             String testString17 =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
             String testString18 =
@@ -10510,11 +10510,11 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String float_cp_string =
-                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.0)";
+                    "float_mve(11, 00:00:00:011, 00:00:11:000, 11.000000)";
             String int_cp_string =
                     "int_mve(22, 00:00:00:022, 00:00:22:000, 22)";
             String matrix_cp0_string =
-                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.0, 2, " +
+                    "matrix_mve0(33, 00:00:00:033, 00:00:33:000, 1.000000, 2, " +
                                 "a_nominal, pve0(<arg1>, <arg2>), " +
                                 "\"q-string\", 00:00:01:000, <untyped>)";
             String matrix_cp1_string =
@@ -10716,12 +10716,12 @@ public class ColPredTest {
 //                                    "(itsValue a text string) " +
 //                                    "(subRange false))))))";
             String empty_float_cp_string =
-                    "float_mve(0, 00:00:00:000, 00:00:00:000, 0.0)";
+                    "float_mve(0, 00:00:00:000, 00:00:00:000, 0.000000)";
             String empty_int_cp_string =
                     "int_mve(0, 00:00:00:000, 00:00:00:000, 0)";
             String empty_matrix_cp0_string =
                     "matrix_mve0(0, 00:00:00:000, 00:00:00:000, " +
-                            "0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
+                            "0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String empty_matrix_cp1_string =
                     "matrix_mve1(0, 00:00:00:000, 00:00:00:000, " +
                             "<arg1>, <arg2>, <arg3>)";
@@ -12319,7 +12319,7 @@ public class ColPredTest {
         if ( failures == 0 )
         {
             String testString0 =
-                    "mve0(1, 00:00:00:001, 00:00:01:000, 1.0, 2, a_nominal, " +
+                    "mve0(1, 00:00:00:001, 00:00:01:000, 1.000000, 2, a_nominal, " +
                             "pve(<arg>), \"q-string\", 00:00:00:000, <untyped>)";
             String testDBString0 =
                     "(colPred (id 0) (mveID 3) (mveName mve0) (varLen true) (argList ((IntDataValue (id 100) (itsFargID 11) (itsFargType INTEGER) (itsCellID 500) (itsValue 1) (subRange false) (minVal 0) (maxVal 0)), (TimeStampDataValue (id 101) (itsFargID 12) (itsFargType TIME_STAMP) (itsCellID 500) (itsValue (60,00:00:00:001)) (subRange false)), (TimeStampDataValue (id 102) (itsFargID 13) (itsFargType TIME_STAMP) (itsCellID 500) (itsValue (60,00:00:01:000)) (subRange false)), (FloatDataValue (id 103) (itsFargID 14) (itsFargType FLOAT) (itsCellID 500) (itsValue 1.0) (subRange false) (minVal 0.0) (maxVal 0.0)), (IntDataValue (id 104) (itsFargID 15) (itsFargType INTEGER) (itsCellID 500) (itsValue 2) (subRange false) (minVal 0) (maxVal 0)), (NominalDataValue (id 105) (itsFargID 16) (itsFargType NOMINAL) (itsCellID 500) (itsValue a_nominal) (subRange false)), (PredDataValue (id 106) (itsFargID 17) (itsFargType PREDICATE) (itsCellID 500) (itsValue (predicate (id 0) (predID 1) (predName pve) (varLen false) (argList ((UndefinedDataValue (id 0) (itsFargID 2) (itsFargType UNTYPED) (itsCellID 0) (itsValue <arg>) (subRange false))))))) (subRange false)), (QuoteStringDataValue (id 107) (itsFargID 18) (itsFargType QUOTE_STRING) (itsCellID 500) (itsValue q-string) (subRange false)), (TimeStampDataValue (id 108) (itsFargID 19) (itsFargType TIME_STAMP) (itsCellID 500) (itsValue (60,00:00:00:000)) (subRange false)), (UndefinedDataValue (id 109) (itsFargID 20) (itsFargType UNTYPED) (itsCellID 500) (itsValue <untyped>) (subRange false))))))";

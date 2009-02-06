@@ -6376,9 +6376,9 @@ public class DataCellTest {
              * values that can be represented.  This should be OK, as we
              * test this extensively in the DataValue classes.
              */
-            String f_cell0_string = "(-1, 00:00:00:000, 00:00:00:000, (0.0))";
-            String f_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (0.0))";
-            String f_cell2_string = "(-1, 00:00:01:000, 00:00:02:000, (11.0))";
+            String f_cell0_string = "(-1, 00:00:00:000, 00:00:00:000, (0.000000))";
+            String f_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (0.000000))";
+            String f_cell2_string = "(-1, 00:00:01:000, 00:00:02:000, (11.000000))";
 
             String i_cell0_string = "(-1, 00:00:00:000, 00:00:00:000, (0))";
             String i_cell1_string = "(-1, 00:00:00:000, 00:00:00:000, (0))";

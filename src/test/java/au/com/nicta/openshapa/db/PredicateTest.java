@@ -728,7 +728,7 @@ public class PredicateTest {
         if ( failures == 0 )
         {
             if ( pred0.argListToString().compareTo(
-                    "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
+                    "(0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
             {
                 failures++;
 
@@ -1049,8 +1049,8 @@ public class PredicateTest {
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String SystemErrorExceptionString = null;
-        String testArgString0 = "(1.0, 2, a_nominal, " +
-                    "test0(0.0, 0, , (), \"\", 00:00:00:000, <untyped>), " +
+        String testArgString0 = "(1.000000, 2, a_nominal, " +
+                    "test0(0.000000, 0, , (), \"\", 00:00:00:000, <untyped>), " +
                     "\"q-string\", 00:00:00:000, <untyped>)";
         String testArgDBString0 =
                     "(argList ((FloatDataValue (id 0) " +
@@ -3822,7 +3822,7 @@ public class PredicateTest {
 
         if ( failures == 0 )
         {
-            String testString0 = "pve4(1.0, 2, a_nominal, " +
+            String testString0 = "pve4(1.000000, 2, a_nominal, " +
                                       "pve0(<arg1>, <arg2>), " +
                                       "\"q-string\", 00:00:00:000, <untyped>)";
             String testDBString0 =
@@ -4188,30 +4188,30 @@ public class PredicateTest {
         {
             // untyped, float, int, nominal, pred, q-string, timestamp
             String testString1 =
-                    "pve5(1.0, 2.0, 0, , (), \"\", 00:00:00:000)";
+                    "pve5(1.000000, 2.000000, 0, , (), \"\", 00:00:00:000)";
             // timestamp, untyped, float, int, nominal, pred, q-string
             String testString2 =
-                    "pve6(00:00:00:000, 2, 0.0, 0, q-string, (), \"\")";
+                    "pve6(00:00:00:000, 2, 0.000000, 0, q-string, (), \"\")";
             // q-string, timestamp, untyped, float, int, nominal, pred
             String testString3 =
-                    "pve7(\"\", 00:00:00:002, a_nominal, 0.0, 0, , ())";
+                    "pve7(\"\", 00:00:00:002, a_nominal, 0.000000, 0, , ())";
             // pred, q-string, timestamp, untyped, float, int, nominal
             String testString4 =
-                    "pve8((), \"\", 00:00:00:000, pve0(<arg1>, <arg2>), 0.0, 0, )";
+                    "pve8((), \"\", 00:00:00:000, pve0(<arg1>, <arg2>), 0.000000, 0, )";
             // nominal, pred, q-string, timestamp, untyped, float, int
             String testString5 =
-                    "pve9(, (), \"a_nominal\", 00:00:00:000, \"q-string\", 0.0, 0)";
+                    "pve9(, (), \"a_nominal\", 00:00:00:000, \"q-string\", 0.000000, 0)";
             // int, nominal, pred, q-string, timestamp, untyped, float
             String testString6 =
-                    "pve10(1, , (), \"\", 00:00:00:000, 00:00:00:000, 0.0)";
+                    "pve10(1, , (), \"\", 00:00:00:000, 00:00:00:000, 0.000000)";
             // float, int, nominal, pred, q-string, timestamp, untyped
             String testString7 =
-                    "pve11(1.0, 2, a_nominal, pve0(<arg1>, <arg2>), " +
+                    "pve11(1.000000, 2, a_nominal, pve0(<arg1>, <arg2>), " +
                           "\"q-string\", 00:00:00:000, <untyped>)";
-            String testString8 = "pve3(1.0)";
+            String testString8 = "pve3(1.000000)";
             String testString9 = "pve1(1, 2)";
             String testString10 =
-                    "pve4(99.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
+                    "pve4(99.000000, 0, , (), \"\", 00:00:00:000, <untyped>)";
 
             try
             {
@@ -5847,7 +5847,7 @@ public class PredicateTest {
                     }
                 }
             }
-            else if ( pred0.toString().compareTo("pve4(10.0, 20, " +
+            else if ( pred0.toString().compareTo("pve4(10.000000, 20, " +
                               "another_nominal, pve1(1, 2), \"another_qs\", " +
                               "00:01:00:000, 30)") != 0 )
             {
@@ -5860,7 +5860,7 @@ public class PredicateTest {
                                 pred0.toString());
                 }
             }
-            else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
+            else if ( pred11.toString().compareTo("pve12(33.000000, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
                               "<arg10>)") != 0 )
@@ -5918,7 +5918,7 @@ public class PredicateTest {
                     }
                 }
             }
-            else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
+            else if ( pred11.toString().compareTo("pve12(33.000000, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
                               "<arg10>)") != 0 )
@@ -5975,7 +5975,7 @@ public class PredicateTest {
                     }
                 }
             }
-            else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
+            else if ( pred11.toString().compareTo("pve12(33.000000, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
                               "<arg10>)") != 0 )
@@ -6031,7 +6031,7 @@ public class PredicateTest {
                     }
                 }
             }
-            else if ( pred11.toString().compareTo("pve12(33.0, 44, what_ever, " +
+            else if ( pred11.toString().compareTo("pve12(33.000000, 44, what_ever, " +
                               "pve0(<arg1>, <arg2>), \"q-string-3\", " +
                               "00:00:00:000, <arg7>, <arg8>, <arg9>, " +
                               "<arg10>)") != 0 )
@@ -6531,7 +6531,7 @@ public class PredicateTest {
         if ( failures == 0 )
         {
             if ( pred1.toString().compareTo(
-                    "test1(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
+                    "test1(0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)") != 0 )
             {
                 failures++;
 
@@ -6611,7 +6611,7 @@ public class PredicateTest {
         if ( failures == 0 )
         {
             if ( pred1a.toString().compareTo(
-                    "test1(1.0, 2, a_nominal, test1(0.0, 0, , (), \"\", " +
+                    "test1(1.000000, 2, a_nominal, test1(0.000000, 0, , (), \"\", " +
                     "00:00:00:000, <untyped>), \"q-string\", 00:00:00:000, " +
                     "<untyped>)") != 0 )
             {
@@ -7082,7 +7082,7 @@ public class PredicateTest {
 
         if ( failures == 0 )
         {
-            String testString0 = "pve0(1.0, 2, a_nominal, pve1(<arg1>), " +
+            String testString0 = "pve0(1.000000, 2, a_nominal, pve1(<arg1>), " +
                                  "\"q-string\", 00:00:00:000, <untyped>)";
             String testDBString0 =
                 "(predicate (id 0) " +

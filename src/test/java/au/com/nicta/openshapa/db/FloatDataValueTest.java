@@ -301,7 +301,7 @@ public class FloatDataValueTest extends DataValueTest {
     @Test
     public void testToString() throws SystemErrorException {
         FloatDataValue f_value = new FloatDataValue(db, ffa2.getID(), 50.0);
-        assertEquals(f_value.toString(), "50.0");
+        assertEquals(f_value.toString(), "50.000000");
     }
 
     /**
@@ -2409,7 +2409,7 @@ public class FloatDataValueTest extends DataValueTest {
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
-        String testString0 = "200.0";
+        String testString0 = "200.000000";
         String testDBString0 = "(FloatDataValue (id 100) " +
                                     "(itsFargID 2) " +
                                     "(itsFargType FLOAT) " +
@@ -2418,7 +2418,7 @@ public class FloatDataValueTest extends DataValueTest {
                                     "(subRange true) " +
                                     "(minVal -1000.0) " +
                                     "(maxVal 1000.0))";
-        String testString1 = "2000.0";
+        String testString1 = "2000.000000";
         String testDBString1 = "(FloatDataValue (id 101) " +
                                     "(itsFargID 8) " +
                                     "(itsFargType UNTYPED) " +

@@ -658,10 +658,10 @@ public class MatrixTest {
         // initialized correctly.
         if ( failures == 0 )
         {
-            String float_matrix_string = "(0.0)";
+            String float_matrix_string = "(0.000000)";
             String int_matrix_string = "(0)";
             String matrix_matrix0_string =
-                    "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
+                    "(0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String matrix_matrix2_string = "(<arg1>)";
             String nominal_matrix_string = "()";
@@ -1599,9 +1599,9 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "(11.0)";
+            String float_matrix_string = "(11.000000)";
             String int_matrix_string = "(22)";
-            String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
+            String matrix_matrix0_string = "(1.000000, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
@@ -3767,9 +3767,9 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "(11.0)";
+            String float_matrix_string = "(11.000000)";
             String int_matrix_string = "(22)";
-            String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
+            String matrix_matrix0_string = "(1.000000, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
@@ -5358,9 +5358,9 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "(11.0)";
+            String float_matrix_string = "(11.000000)";
             String int_matrix_string = "(22)";
-            String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
+            String matrix_matrix0_string = "(1.000000, 2, a_nominal, " +
                                            "pve0(<arg>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
@@ -8519,9 +8519,9 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String float_matrix_string = "(11.0)";
+            String float_matrix_string = "(11.000000)";
             String int_matrix_string = "(22)";
-            String matrix_matrix0_string = "(1.0, 2, a_nominal, " +
+            String matrix_matrix0_string = "(1.000000, 2, a_nominal, " +
                                            "pve0(<arg1>, <arg2>), " +
                                            "\"q-string\", 00:00:01:000, " +
                                            "<untyped>)";
@@ -8701,10 +8701,10 @@ public class MatrixTest {
                                     "(itsCellID 0) " +
                                     "(itsValue a text string) " +
                                     "(subRange false))))))";
-            String empty_float_matrix_string = "(0.0)";
+            String empty_float_matrix_string = "(0.000000)";
             String empty_int_matrix_string = "(0)";
             String empty_matrix_matrix0_string =
-                    "(0.0, 0, , (), \"\", 00:00:00:000, <untyped>)";
+                    "(0.000000, 0, , (), \"\", 00:00:00:000, <untyped>)";
             String empty_matrix_matrix1_string = "(<arg1>, <arg2>, <arg3>)";
             String empty_matrix_matrix2_string = "(<arg1>)";
             String empty_nominal_matrix_string = "()";
@@ -10037,7 +10037,7 @@ public class MatrixTest {
 
         if ( failures == 0 )
         {
-            String testString0 = "(1.0, 2, a_nominal, pve(<arg>), " +
+            String testString0 = "(1.000000, 2, a_nominal, pve(<arg>), " +
                                  "\"q-string\", 00:00:00:000, <untyped>)";
             String testDBString0 =
                 "(Matrix (mveID 3) " +
