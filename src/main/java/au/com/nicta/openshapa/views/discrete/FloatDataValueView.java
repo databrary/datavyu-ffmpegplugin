@@ -81,19 +81,33 @@ public final class FloatDataValueView extends DataValueView {
 
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u0008') {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
-            setCaretPosition(getCaretPosition() - 1);
-            fdv.setItsValue(new Double(currentValue.toString()));
+                   && e.getKeyChar() == '\u0008') {            
+
+            // If the character behind the caret is a decimal, just skip over it
+            if (getText().charAt(getCaretPosition() - 1) == '.') {
+                setCaretPosition(getCaretPosition() - 1);
+
+            // Character behind caret is a digit - delete it from the value.
+            } else {
+                StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.delete(getCaretPosition() - 1, getCaretPosition());
+                setCaretPosition(getCaretPosition() - 1);
+                fdv.setItsValue(new Double(currentValue.toString()));
+            }            
             e.consume();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
-            fdv.setItsValue(new Double(currentValue.toString()));
+
+            // If the character in front of the caret is a decimal, skip it.
+            if (getText().charAt(getCaretPosition()) == '.') {
+                setCaretPosition(getCaretPosition() + 1);
+            } else {
+                StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+                fdv.setItsValue(new Double(currentValue.toString()));
+            }
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
