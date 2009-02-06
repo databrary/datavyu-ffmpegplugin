@@ -73,6 +73,8 @@ implements MouseListener, KeyListener, FocusListener {
         index = matrixIndex;
 
         updateStrings();
+
+        oldCaretPosition = Math.min(oldCaretPosition, getText().length());
         setCaretPosition(oldCaretPosition);
     }
 

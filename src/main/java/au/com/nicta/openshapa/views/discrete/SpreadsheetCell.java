@@ -546,6 +546,8 @@ implements ExternalDataCellListener, Selectable {
 
         //this.repaint();
         this.revalidate();
+        //this.invalidate();
+        this.validate();
     }
 
     /**
