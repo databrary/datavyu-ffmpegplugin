@@ -3,17 +3,13 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import java.awt.AWTKeyStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.LayoutFocusTraversalPolicy;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,20 +34,6 @@ public class ColumnDataPanel extends SpreadsheetPanel {
     public ColumnDataPanel(Spreadsheet sheet) {
         super();
         initComponents();
-
-        /*
-        LayoutFocusTraversalPolicy policy = new LayoutFocusTraversalPolicy();
-        policy.setImplicitDownCycleTraversal(false);
-        this.setFocusTraversalPolicy(policy);
-
-        //HashSet upKeys = new HashSet(1);
-        //upKeys.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, 0));
-        //this.setFocusTraversalKeys(KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS, upKeys);
-
-        HashSet downKeys = new HashSet(1);
-        downKeys.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, 0));
-        this.setFocusTraversalKeys(KeyboardFocusManager.DOWN_CYCLE_TRAVERSAL_KEYS, downKeys);
-         */
 
         // keep a ref to a Box Layout Manager
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -127,7 +109,6 @@ public class ColumnDataPanel extends SpreadsheetPanel {
      */
     @Override
     public void keyPressed(KeyEvent ke) {
-        int foo = 5;
     }
 
     /**
@@ -136,8 +117,19 @@ public class ColumnDataPanel extends SpreadsheetPanel {
      * @param ke The key event that triggered this action.
      */
     @Override
-    public void keyReleased(KeyEvent ke) {
-        int goo = 6;
+    public void keyReleased(KeyEvent ke) {        
+        Component components[] = this.getComponents();
+        for (int i = 0; i < this.getComponentCount(); i++) {
+            if (components[i].isFocusOwner()) {
+                if (ke.getKeyCode() == KeyEvent.VK_UP && i > 0) {
+                    components[i - 1].requestFocus();
+                }
+
+                if (ke.getKeyCode() == KeyEvent.VK_DOWN && (i + 1) < this.getComponentCount()) {
+                    components[i + 1].requestFocus();
+                }
+            }
+        }
     }
 
     /**
@@ -147,7 +139,6 @@ public class ColumnDataPanel extends SpreadsheetPanel {
      */
     @Override
     public void keyTyped(KeyEvent ke) {
-        int moo = 7;
     }
 
     /** This method is called from within the constructor to

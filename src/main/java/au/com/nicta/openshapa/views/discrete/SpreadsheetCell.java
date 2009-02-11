@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import javax.swing.BoxLayout;
@@ -560,5 +559,24 @@ implements ExternalDataCellListener, Selectable {
     public void mouseClicked(MouseEvent me) {
         selection.addToSelection(me, this);
         me.consume();
+    }
+
+    /**
+     * @return True if this matrix view is the current focus owner, false
+     * otherwise.
+     */
+    @Override
+    public boolean isFocusOwner() {
+        return (this.onset.isFocusOwner() || this.offset.isFocusOwner()
+                || this.dataPanel.isFocusOwner());
+    }
+
+    /**
+     * Request to focus this matrix view label, focus will be set to the first
+     * element in the formal argument list.
+     */
+    @Override
+    public void requestFocus() {
+        this.dataPanel.requestFocus();
     }
 }

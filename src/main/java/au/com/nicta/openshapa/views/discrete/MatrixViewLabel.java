@@ -27,12 +27,38 @@ public class MatrixViewLabel extends SpreadsheetPanel {
      * Creates a new instance of MatrixViewLabel.
      *
      * @param m The Matrix to display.
-    */
+     */
     public MatrixViewLabel(final DataCell c, final Matrix m) {
         super();
         parentCell = c;
         argViews = new Vector<DataValueView>();
         setMatrix(m);
+    }
+
+    /**
+     * @return True if this matrix view is the current focus owner, false
+     * otherwise.
+     */
+    @Override
+    public boolean isFocusOwner() {
+        for (int i = 0; i < argViews.size(); i++) {
+            if (this.argViews.get(i).isFocusOwner()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Request to focus this matrix view label, focus will be set to the first
+     * element in the formal argument list.
+     */
+    @Override
+    public void requestFocus() {
+        if (this.argViews.firstElement() != null) {
+            this.argViews.firstElement().requestFocus();
+        }
     }
 
     /**
