@@ -2,7 +2,6 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.Cell;
 import au.com.nicta.openshapa.db.DataCell;
-import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalDataCellListener;
 import au.com.nicta.openshapa.db.IntDataValue;
@@ -16,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import javax.swing.BoxLayout;

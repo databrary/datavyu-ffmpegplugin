@@ -3,20 +3,27 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import java.awt.AWTKeyStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
+import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.LayoutFocusTraversalPolicy;
 import org.apache.log4j.Logger;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
+ *
  * @author swhitcher
  */
-public class ColumnDataPanel extends javax.swing.JPanel {
+public class ColumnDataPanel extends SpreadsheetPanel {
 
+    /** The parent spreadsheet for this ColumnDataPanel. */
     private Spreadsheet spreadsheet;
 
     /** Logger for this class. */
@@ -25,9 +32,26 @@ public class ColumnDataPanel extends javax.swing.JPanel {
     /** filler box for use when there are no datacells. */
     private Component filler;
 
-    /** Creates new ColumnDataPanel panel. */
+    /**
+     * Constructor - Creates new ColumnDataPanel panel.
+     */
     public ColumnDataPanel(Spreadsheet sheet) {
+        super();
         initComponents();
+
+        /*
+        LayoutFocusTraversalPolicy policy = new LayoutFocusTraversalPolicy();
+        policy.setImplicitDownCycleTraversal(false);
+        this.setFocusTraversalPolicy(policy);
+
+        //HashSet upKeys = new HashSet(1);
+        //upKeys.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, 0));
+        //this.setFocusTraversalKeys(KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS, upKeys);
+
+        HashSet downKeys = new HashSet(1);
+        downKeys.add(AWTKeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, 0));
+        this.setFocusTraversalKeys(KeyboardFocusManager.DOWN_CYCLE_TRAVERSAL_KEYS, downKeys);
+         */
 
         // keep a ref to a Box Layout Manager
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -94,6 +118,36 @@ public class ColumnDataPanel extends javax.swing.JPanel {
         // the size goes to 0 by 0 and never regrows after that
         setSize(200, 1000);
         updateComponents(dbColumn);
+    }
+
+    /**
+     * The action to invoke when a key is pressed on the keyboard
+     *
+     * @param ke The key event that triggered this action.
+     */
+    @Override
+    public void keyPressed(KeyEvent ke) {
+        int foo = 5;
+    }
+
+    /**
+     * The action to invoke when a key is released on the keyboard.
+     *
+     * @param ke The key event that triggered this action.
+     */
+    @Override
+    public void keyReleased(KeyEvent ke) {
+        int goo = 6;
+    }
+
+    /**
+     * The action to invoke when a key is typed on the keyboard.
+     *
+     * @param ke The key event that triggered this action.
+     */
+    @Override
+    public void keyTyped(KeyEvent ke) {
+        int moo = 7;
     }
 
     /** This method is called from within the constructor to

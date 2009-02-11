@@ -3,10 +3,8 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 /**
@@ -14,7 +12,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends JPanel {
+public class MatrixViewLabel extends SpreadsheetPanel {
 
     /** The parent cell for this JPanel. */
     private DataCell parentCell = null;
@@ -95,29 +93,5 @@ public class MatrixViewLabel extends JPanel {
 
         //this.setBorder(BorderFactory.createEtchedBorder());
         this.repaint();
-    }
-
-    /**
-     *
-     * @param e
-     */
-    public void keyPressed(KeyEvent e) {
-        //this.handleKeyEvent(e);
-    }
-
-    /**
-     *
-     * @param e
-     */
-    public void keyTyped(KeyEvent e) {
-        //this.handleKeyEvent(e);
-    }
-
-    /**
-     *
-     * @param e
-     */
-    public void keyReleased(KeyEvent e) {
-        //this.handleKeyEvent(e);
     }
 }

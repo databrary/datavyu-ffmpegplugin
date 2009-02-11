@@ -201,7 +201,8 @@ implements MouseListener, KeyListener, FocusListener {
     public void processKeyEvent(KeyEvent ke) {
         super.processKeyEvent(ke);
 
-        if (!ke.isConsumed()) {
+        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
+            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
             this.getParent().dispatchEvent(ke);
         }
     }
