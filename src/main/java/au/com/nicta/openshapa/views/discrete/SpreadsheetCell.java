@@ -35,7 +35,7 @@ implements ExternalDataCellListener, Selectable {
     private MatrixViewLabel dataPanel;
     //private SpreadsheetPanel dataPanel;
 
-        /** The Ordinal display component. */
+    /** The Ordinal display component. */
     private DataValueView ord;
 
     /** The Onset display component. */
@@ -544,10 +544,7 @@ implements ExternalDataCellListener, Selectable {
            logger.error("Failed changing SpreadsheetCell.", e);
         }
 
-        //this.repaint();
         this.revalidate();
-        //this.invalidate();
-        this.validate();
     }
 
     /**

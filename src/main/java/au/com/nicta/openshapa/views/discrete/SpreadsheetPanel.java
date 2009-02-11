@@ -1,5 +1,7 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
@@ -10,7 +12,8 @@ import javax.swing.JPanel;
  *
  * @author cfreeman
  */
-public class SpreadsheetPanel extends JPanel implements MouseListener {
+public class SpreadsheetPanel extends JPanel
+implements MouseListener, KeyListener {
 
     /**
      * Constructor.
@@ -18,6 +21,7 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
     public SpreadsheetPanel() {
         super();
         this.addMouseListener(this);
+        this.addKeyListener(this);
     }
 
     /**
@@ -61,32 +65,55 @@ public class SpreadsheetPanel extends JPanel implements MouseListener {
     }
 
     /**
-     * Processes Mouse Events that have been dispatched this component.
+     * The action to invoke when a key is pressed on the keyboard
+     *
+     * @param ke The key event that triggered this action.
+     */
+    public void keyPressed(KeyEvent ke) {
+    }
+
+    /**
+     * The action to invoke when a key is released on the keyboard.
+     *
+     * @param ke The key event that triggered this action.
+     */
+    public void keyReleased(KeyEvent ke) {
+    }
+
+    /**
+     * The action to invoke when a key is typed on the keyboard.
+     *
+     * @param ke The key event that triggered this action.
+     */
+    public void keyTyped(KeyEvent ke) {
+    }
+
+    /**
+     * Process key events that have been dispatched to this component, pass them
+     * through to all listeners, and then if they are not consumed pass it onto
+     * the parent of this component.
+     *
+     * @param ke They keyboard event that was dispatched to this component.
+     */
+    @Override
+    public void processKeyEvent(KeyEvent ke) {
+        super.processKeyEvent(ke);
+
+        if (!ke.isConsumed()) {
+            this.getParent().dispatchEvent(ke);
+        }
+    }
+
+    /**
+     * Processes Mouse Events that have been dispatched to this component, pass
+     * them through to all listeners, and if they are not consumed pass it onto
+     * the parent of this component.
      *
      * @param me The mouse event that was dispatched to this component.
      */
     @Override
     public void processMouseEvent(MouseEvent me) {
-        MouseListener[] list = this.getMouseListeners();
-
-        for (int i = 0; i < list.length; i++) {
-            switch (me.getID()) {
-                case MouseEvent.MOUSE_CLICKED:
-                    list[i].mouseClicked(me);
-                    break;
-                case MouseEvent.MOUSE_ENTERED:
-                    list[i].mouseEntered(me);
-                    break;
-                case MouseEvent.MOUSE_EXITED:
-                    list[i].mouseExited(me);
-                    break;
-                case MouseEvent.MOUSE_PRESSED:
-                    list[i].mousePressed(me);
-                    break;
-                default:
-                    list[i].mouseReleased(me);
-            }
-        }
+        super.processMouseEvent(me);
 
         if (!me.isConsumed()) {
             me.translatePoint(this.getX(), this.getY());
