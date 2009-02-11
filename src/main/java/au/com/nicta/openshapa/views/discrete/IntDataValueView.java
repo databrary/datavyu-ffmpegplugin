@@ -6,11 +6,25 @@ import au.com.nicta.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 
 /**
+ * This class is the view representation of a IntDataValue as stored within the
+ * database.
  *
  * @author cfreeman
  */
 public final class IntDataValueView extends DataValueView {
 
+    /**
+     * Constructor.
+     *
+     * @param cell The parent datacell for the int data value that this view
+     * represents.
+     * @param matrix The parent matrix for the int data value that this view
+     * represents.
+     * @param matrixIndex The index of the IntDataValue within the above parent
+     * matrix that this view represents.
+     * @param editable Is the dataValueView editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
     IntDataValueView(final DataCell cell,
                      final Matrix matrix,
                      final int matrixIndex,
@@ -18,6 +32,13 @@ public final class IntDataValueView extends DataValueView {
         super(cell, matrix, matrixIndex, editable);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param dataValue The intDataValue that this view represents.
+     * @param editable Is this DataValueView editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
     IntDataValueView(final IntDataValue intDataValue, boolean editable) {
         super (intDataValue, editable);
     }

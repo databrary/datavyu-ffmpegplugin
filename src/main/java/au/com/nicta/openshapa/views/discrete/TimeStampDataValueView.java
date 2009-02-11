@@ -42,8 +42,6 @@ public final class TimeStampDataValueView extends DataValueView {
 
                 case KeyEvent.VK_UP:
                 case KeyEvent.VK_DOWN:
-                    // Key needs to be passed up to column to navigate cells.
-                    e.consume();
                     break;
 
                 default:

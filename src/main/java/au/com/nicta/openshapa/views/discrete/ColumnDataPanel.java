@@ -103,15 +103,6 @@ public class ColumnDataPanel extends SpreadsheetPanel {
     }
 
     /**
-     * The action to invoke when a key is pressed on the keyboard
-     *
-     * @param ke The key event that triggered this action.
-     */
-    @Override
-    public void keyPressed(KeyEvent ke) {
-    }
-
-    /**
      * The action to invoke when a key is released on the keyboard.
      *
      * @param ke The key event that triggered this action.
@@ -130,15 +121,6 @@ public class ColumnDataPanel extends SpreadsheetPanel {
                 }
             }
         }
-    }
-
-    /**
-     * The action to invoke when a key is typed on the keyboard.
-     *
-     * @param ke The key event that triggered this action.
-     */
-    @Override
-    public void keyTyped(KeyEvent ke) {
     }
 
     /** This method is called from within the constructor to

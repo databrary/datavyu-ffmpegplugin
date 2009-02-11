@@ -16,6 +16,8 @@ import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
 /**
+ * This abstract view is a representation of database DataValues, concrete views
+ * for each of the concrete DataValues exist.
  *
  * @author cfreeman
  */
@@ -28,16 +30,28 @@ implements MouseListener, KeyListener, FocusListener {
     /** The DataValue that this view represents. **/
     private DataValue value = null;
 
-    private DataCell cell;
+    /** The parent datacell for the DataValue that this view represents. */
+    private DataCell parentCell;
 
     /** The index of the datavalue within its parent matrix. */
     private int index;
 
+    /** The last caret position. */
     private int oldCaretPosition;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueView.class);
 
+    /**
+     * Constructor.
+     *
+     * @param dataCell The parent dataCell for this dataValueView.
+     * @param matrix The parent matrix for this dataValueView.
+     * @param matrixIndex The index of the DataValue within the parent matrix
+     * that we want this view to represent.
+     * @param editable Is the dataValueView editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
     public DataValueView(final DataCell dataCell,
                          final Matrix matrix,
                          final int matrixIndex,
@@ -45,7 +59,7 @@ implements MouseListener, KeyListener, FocusListener {
         super();
         try {
             parentMatrix = matrix;
-            cell = dataCell;
+            parentCell = dataCell;
             index = matrixIndex;
             value = matrix.getArgCopy(index);
             oldCaretPosition = 0;
@@ -56,6 +70,13 @@ implements MouseListener, KeyListener, FocusListener {
         initDataValueView(editable);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param dataValue The dataValue that this view represents.
+     * @param editable Is the dataValueView editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
     public DataValueView(final DataValue dataValue,
                          final boolean editable) {
         parentMatrix = null;
@@ -65,10 +86,21 @@ implements MouseListener, KeyListener, FocusListener {
         initDataValueView(editable);
     }
 
+    /**
+     * Sets the value of this view, i.e. the DataValue that this view will
+     * represent.
+     *
+     * @param dataCell The parent dataCell for the DataValue that this view
+     * represents.
+     * @param matrix The parent matrix for the DataValue that this view
+     * represents.
+     * @param matrixIndex The index of the dataValue we wish to have this view
+     * represent within the parent matrix.
+     */
     public void setValue(final DataCell dataCell,
                          final Matrix matrix,
                          final int matrixIndex) {
-        cell = dataCell;
+        parentCell = dataCell;
         parentMatrix = matrix;
         index = matrixIndex;
 
@@ -78,6 +110,10 @@ implements MouseListener, KeyListener, FocusListener {
         setCaretPosition(oldCaretPosition);
     }
 
+    /**
+     *
+     * @param editable
+     */
     private void initDataValueView(final boolean editable) {        
         setEditable(editable);
 
@@ -94,12 +130,16 @@ implements MouseListener, KeyListener, FocusListener {
         updateStrings();
     }
 
+    /**
+     * Updates the database with the latest value from this DataValueView (i.e.
+     * after the user has altered it).
+     */
     protected void updateDatabase() {
         try {
             oldCaretPosition = getCaretPosition();
             parentMatrix.replaceArg(index, value);
-            cell.setVal(parentMatrix);
-            cell.getDB().replaceCell(cell);
+            parentCell.setVal(parentMatrix);
+            parentCell.getDB().replaceCell(parentCell);
         } catch (SystemErrorException ex) {
             logger.error("Unable to update Database: ", ex);
         }
@@ -135,6 +175,9 @@ implements MouseListener, KeyListener, FocusListener {
         super.paintComponent(g);
     }
 
+    /**
+     * Updates the content of this DataValueView as displayed to the user.
+     */
     public void updateStrings() {
         if (this.value != null) {
             String t = value.toString();
@@ -143,10 +186,20 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    /**
+     * The action to invoke if the focus is gained by this DataValueView.
+     *
+     * @param fe The Focus Event that triggered this action.
+     */
     public void focusGained(FocusEvent fe) {
         this.selectAll();
     }
 
+    /**
+     * The action to invoke if the focus is lost from this DataValueView.
+     *
+     * @param fe The FocusEvent that triggered this action.
+     */
     public void focusLost(FocusEvent fe) {
     }
 
@@ -222,6 +275,13 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    /**
+     * Utility method for checking if a keystroke is a number.
+     *
+     * @param e The key event to check if it is a numeric keystroke.
+     *
+     * @return true if the keystroke is numeric, false otherwise.
+     */
     public boolean isKeyStrokeNumeric(KeyEvent e) {
         switch (e.getKeyChar()) {
             case '0':
