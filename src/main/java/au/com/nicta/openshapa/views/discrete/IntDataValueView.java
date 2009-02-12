@@ -16,6 +16,7 @@ public final class IntDataValueView extends DataValueView {
     /**
      * Constructor.
      *
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent datacell for the int data value that this view
      * represents.
      * @param matrix The parent matrix for the int data value that this view
@@ -25,22 +26,27 @@ public final class IntDataValueView extends DataValueView {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    IntDataValueView(final DataCell cell,
+    IntDataValueView(final Selector cellSelection,
+                     final DataCell cell,
                      final Matrix matrix,
                      final int matrixIndex,
                      final boolean editable) {
-        super(cell, matrix, matrixIndex, editable);
+        super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
     /**
      * Constructor.
      *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param dataValue The intDataValue that this view represents.
      * @param editable Is this DataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    IntDataValueView(final IntDataValue intDataValue, boolean editable) {
-        super (intDataValue, editable);
+    IntDataValueView(final Selector cellSelection,
+                     final IntDataValue intDataValue,
+                     final boolean editable) {
+        super (cellSelection, intDataValue, editable);
     }
 
     /**

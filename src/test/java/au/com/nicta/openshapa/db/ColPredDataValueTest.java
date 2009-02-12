@@ -137,14 +137,14 @@ public class ColPredDataValueTest extends DataValueTest {
     public void test2ArgConstructor() throws SystemErrorException {
 
         assertEquals(untypedFarg.getFargType(),
-                     FormalArgument.fArgType.UNTYPED);
+                     FormalArgument.FArgType.UNTYPED);
 
 
         ColPredDataValue cpdv0 = new ColPredDataValue(db, untypedFarg.getID());
 
         colPredFarg = matrix_mve.getFormalArg(7);
         assertEquals(colPredFarg.getFargType(),
-                     FormalArgument.fArgType.COL_PREDICATE);
+                     FormalArgument.FArgType.COL_PREDICATE);
 
         ColPredDataValue cpdv1 = new ColPredDataValue(db, colPredFarg.getID());
         ColPred cp = new ColPred(db);
@@ -277,7 +277,7 @@ public class ColPredDataValueTest extends DataValueTest {
     @Test
     @Override
     public void testGetItsFargType() {
-        assertEquals(cpdv.itsFargType, FormalArgument.fArgType.COL_PREDICATE);
+        assertEquals(cpdv.itsFargType, FormalArgument.FArgType.COL_PREDICATE);
     }
 
     @Test
@@ -1233,13 +1233,13 @@ public class ColPredDataValueTest extends DataValueTest {
                 untyped_farg = matrix_mve0.getFormalArg(6);
                 // TODO:not sure how but this next line was passing before as an
                 // assert() but farg(6) is of type TEXT now.  SJW
-                assertFalse( farg.getFargType() == FormalArgument.fArgType.UNTYPED );
+                assertFalse( farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
                 col_pred_farg = matrix_mve0.getFormalArg(7);
                 assertTrue( col_pred_farg.getFargType() ==
-                        FormalArgument.fArgType.COL_PREDICATE );
+                        FormalArgument.FArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assertTrue( col_pred_farg_ID != DBIndex.INVALID_ID );
 
@@ -2291,13 +2291,13 @@ public class ColPredDataValueTest extends DataValueTest {
             try
             {
                 untyped_farg = matrix_mve1.getFormalArg(0);
-                assertTrue( untyped_farg.getFargType() == FormalArgument.fArgType.UNTYPED );
+                assertTrue( untyped_farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
                 col_pred_farg = matrix_mve2.getFormalArg(0);
                 assertTrue( col_pred_farg.getFargType() ==
-                        FormalArgument.fArgType.COL_PREDICATE );
+                        FormalArgument.FArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assertTrue( col_pred_farg_ID != DBIndex.INVALID_ID );
 
@@ -3486,13 +3486,13 @@ public class ColPredDataValueTest extends DataValueTest {
                 untyped_farg = matrix_mve0.getFormalArg(6);
                 // TODO:not sure how but this next line was passing before as an
                 // assert() but farg(6) is of type TEXT now.  SJW
-                assertFalse( farg.getFargType() == FormalArgument.fArgType.UNTYPED );
+                assertFalse( farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
                 col_pred_farg = matrix_mve0.getFormalArg(7);
                 assertTrue( col_pred_farg.getFargType() ==
-                        FormalArgument.fArgType.COL_PREDICATE );
+                        FormalArgument.FArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assertTrue( col_pred_farg_ID != DBIndex.INVALID_ID );
 
@@ -4253,13 +4253,13 @@ public class ColPredDataValueTest extends DataValueTest {
             try
             {
                 untyped_farg = matrix_mve1.getFormalArg(0);
-                assertTrue( untyped_farg.getFargType() == FormalArgument.fArgType.UNTYPED );
+                assertTrue( untyped_farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
                 col_pred_farg = matrix_mve2.getFormalArg(0);
                 assertTrue( col_pred_farg.getFargType() ==
-                        FormalArgument.fArgType.COL_PREDICATE );
+                        FormalArgument.FArgType.COL_PREDICATE );
                 col_pred_farg_ID = col_pred_farg.getID();
                 assertTrue( col_pred_farg_ID != DBIndex.INVALID_ID );
 

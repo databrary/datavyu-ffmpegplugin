@@ -1,3 +1,4 @@
 target
 test.txtDB
 *.log
+.DS_Store

@@ -116,6 +116,7 @@ implements ExternalDataCellListener, Selectable {
     throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
+        selection = selector;
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
@@ -129,16 +130,20 @@ implements ExternalDataCellListener, Selectable {
 
         // Build components used for the spreadsheet cell.
         topPanel = new SpreadsheetPanel();
-        ord = new IntDataValueView(new IntDataValue(cellDB),  false);
+        ord = new IntDataValueView(selection, new IntDataValue(cellDB),  false);
         ord.setFocusable(false);
         setOrdinal(dc.getOrd());
-        onset = new TimeStampDataValueView(new TimeStampDataValue(cellDB), true);
+        onset = new TimeStampDataValueView(selection,
+                                           new TimeStampDataValue(cellDB),
+                                           true);
         setOnset(dc.getOnset());
-        offset = new TimeStampDataValueView(new TimeStampDataValue(cellDB), true);
+        offset = new TimeStampDataValueView(selection,
+                                            new TimeStampDataValue(cellDB),
+                                            true);
         setOffset(dc.getOffset());
 
         //dataPanel = new SpreadsheetPanel();
-        dataPanel = new MatrixViewLabel(dc, null);
+        dataPanel = new MatrixViewLabel(selection, dc, null);
         setValue(dc.getVal());
         
         // Set the appearance of the spreadsheet cell.
@@ -161,8 +166,7 @@ implements ExternalDataCellListener, Selectable {
         dataPanel.setBackground(java.awt.SystemColor.window);
         dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
         add(dataPanel, java.awt.BorderLayout.WEST);
-
-        selection = selector;
+        
         this.updateDimensions();
     }
 

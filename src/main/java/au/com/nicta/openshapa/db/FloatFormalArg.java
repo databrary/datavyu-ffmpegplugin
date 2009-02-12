@@ -81,7 +81,7 @@ public class FloatFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.FLOAT;
+        this.fargType = FArgType.FLOAT;
 
     } /* FloatFormalArg() -- no parameters */
 
@@ -92,7 +92,7 @@ public class FloatFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.FLOAT;
+        this.fargType = FArgType.FLOAT;
 
     } /* FloatFormalArg() -- one parameter */
 
@@ -106,7 +106,7 @@ public class FloatFormalArg extends FormalArgument
 
         final String mName = "FloatFormalArg::FloatFormalArg(): ";
 
-        this.fargType = fArgType.FLOAT;
+        this.fargType = FArgType.FLOAT;
 
         if ( minVal >= maxVal )
 
@@ -138,7 +138,7 @@ public class FloatFormalArg extends FormalArgument
     {
         super(fArg);
 
-        this.fargType = fArgType.FLOAT;
+        this.fargType = FArgType.FLOAT;
 
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());

@@ -1,6 +1,6 @@
 package au.com.nicta.openshapa.db;
 
-import au.com.nicta.openshapa.db.FormalArgument.fArgType;
+import au.com.nicta.openshapa.db.FormalArgument.FArgType;
 import java.io.PrintStream;
 import org.junit.After;
 import org.junit.AfterClass;

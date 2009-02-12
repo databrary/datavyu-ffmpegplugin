@@ -76,7 +76,7 @@ public class TimeStampFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.TIME_STAMP;
+        this.fargType = FArgType.TIME_STAMP;
 
     } /* TimeStampFormalArg() -- one parameter */
 
@@ -86,7 +86,7 @@ public class TimeStampFormalArg extends FormalArgument
     {
         super(db, name);
 
-        this.fargType = fArgType.TIME_STAMP;
+        this.fargType = FArgType.TIME_STAMP;
 
     } /* TimeStampFormalArg() -- two parameter s*/
 
@@ -100,7 +100,7 @@ public class TimeStampFormalArg extends FormalArgument
 
         final String mName = "TimeStampFormalArg::TimeStampFormalArg(): ";
 
-        this.fargType = fArgType.TIME_STAMP;
+        this.fargType = FArgType.TIME_STAMP;
 
         if ( ( minVal == null ) && ( maxVal == null ) )
         {
@@ -152,7 +152,7 @@ public class TimeStampFormalArg extends FormalArgument
     {
         super(fArg);
 
-        this.fargType = fArgType.TIME_STAMP;
+        this.fargType = FArgType.TIME_STAMP;
 
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());

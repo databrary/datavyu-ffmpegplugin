@@ -76,7 +76,7 @@ public class NominalFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.NOMINAL;
+        this.fargType = FArgType.NOMINAL;
 
     } /* NominalFormalArg() -- no parameters */
 
@@ -87,7 +87,7 @@ public class NominalFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.NOMINAL;
+        this.fargType = FArgType.NOMINAL;
 
     } /* NominalFormalArg() -- one parameter */
 
@@ -98,7 +98,7 @@ public class NominalFormalArg extends FormalArgument
 
         final String mName = "NominalFormalArg::NominalFormalArg(): ";
 
-        this.fargType = fArgType.NOMINAL;
+        this.fargType = FArgType.NOMINAL;
 
         // copy over fields.
 

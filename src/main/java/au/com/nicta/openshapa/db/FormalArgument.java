@@ -35,7 +35,7 @@ public abstract class FormalArgument
      *                                          JRM -- 7/21/07
      */
 
-    public enum fArgType {UNDEFINED,
+    public enum FArgType {UNDEFINED,
                           COL_PREDICATE,
                           INTEGER,
                           FLOAT,
@@ -75,7 +75,7 @@ public abstract class FormalArgument
     protected String fargName = "<val>";
 
     /** type code associated with the formal argument */
-    protected fArgType fargType = fArgType.UNDEFINED;
+    protected FArgType fargType = FArgType.UNDEFINED;
 
     /** The associated vocab element, if any */
     protected VocabElement itsVocabElement = null;
@@ -219,12 +219,12 @@ public abstract class FormalArgument
      *    - None.
      */
 
-    public fArgType getFargType()
+    public FArgType getFargType()
         throws SystemErrorException
     {
         final String mName = "AbstractFormalArgument::getFargType(): ";
 
-        if ( this.fargType == fArgType.UNDEFINED )
+        if ( this.fargType == FArgType.UNDEFINED )
         {
             throw new SystemErrorException(mName + "fargName not initialized?");
         }

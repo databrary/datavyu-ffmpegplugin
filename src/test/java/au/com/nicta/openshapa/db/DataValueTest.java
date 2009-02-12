@@ -1,6 +1,6 @@
 package au.com.nicta.openshapa.db;
 
-import au.com.nicta.openshapa.db.FormalArgument.fArgType;
+import au.com.nicta.openshapa.db.FormalArgument.FArgType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -42,7 +42,7 @@ public abstract class DataValueTest extends DBElementTest {
     @Test
     public void testGetItsFargType() {
         DataValue instance = getInstance();
-        assertEquals(instance.getItsFargType(), fArgType.UNDEFINED);
+        assertEquals(instance.getItsFargType(), FArgType.UNDEFINED);
     }
 
     /**
@@ -127,7 +127,7 @@ public abstract class DataValueTest extends DBElementTest {
         assertEquals(dv.getID(), DBIndex.INVALID_ID);
         assertEquals(dv.itsCellID, DBIndex.INVALID_ID);
         assertEquals(dv.itsFargID, DBIndex.INVALID_ID);
-        assertEquals(dv.itsFargType, FormalArgument.fArgType.UNDEFINED);
+        assertEquals(dv.itsFargType, FormalArgument.FArgType.UNDEFINED);
         assertEquals(dv.getLastModUID(), DBIndex.INVALID_ID);
         assertFalse(dv.subRange);
     }
@@ -467,7 +467,7 @@ public abstract class DataValueTest extends DBElementTest {
             }
         }
 
-        if ( dv.itsFargType != FormalArgument.fArgType.UNDEFINED )
+        if ( dv.itsFargType != FormalArgument.FArgType.UNDEFINED )
         {
             failures++;
 

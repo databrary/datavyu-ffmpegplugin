@@ -363,7 +363,7 @@ public final class FloatDataValue extends DataValue {
         {
             FloatFormalArg ffa = (FloatFormalArg)fa;
 
-            if ( this.itsFargType != FormalArgument.fArgType.FLOAT )
+            if ( this.itsFargType != FormalArgument.FArgType.FLOAT )
             {
                 throw new SystemErrorException(mName +
                         "Unexpected this.itsFargType(1).");
@@ -393,7 +393,7 @@ public final class FloatDataValue extends DataValue {
         }
         else if ( fa instanceof UnTypedFormalArg )
         {
-            if ( this.itsFargType != FormalArgument.fArgType.UNTYPED )
+            if ( this.itsFargType != FormalArgument.FArgType.UNTYPED )
             {
                 throw new SystemErrorException(mName +
                         "Unexpected this.itsFargType(2).");

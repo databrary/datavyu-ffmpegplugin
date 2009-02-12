@@ -11,6 +11,7 @@ import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
+import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -242,9 +243,20 @@ implements KeyEventDispatcher {
         try {
             db = new MacshapaDatabase();
 
-            // Build the ruby scripting engine.
-            ScriptEngineManager m = new ScriptEngineManager();
-            rubyEngine = m.getEngineByName("jruby");
+            // Build the ruby scripting engine - we need to avoid using the
+            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
+
+            // Whoops - JRubyScriptEngineManager may have failed, if that does
+            // not construct engines for jruby correctly, switch to
+            // javax.script.ScriptEngineManager
+            if (m.getEngineFactories().size() == 0) {
+                ScriptEngineManager m2 = new ScriptEngineManager();
+                rubyEngine = m2.getEngineByName("jruby");
+            } else {
+                rubyEngine = m.getEngineByName("jruby");
+            }
 
             // Build output streams for the scripting engine.
             scriptOutputStream = new PipedInputStream();

@@ -100,7 +100,7 @@ public class ColPredTest {
      * expectedResult:  Private enumerated type used to specify the expected
      *      result of a test.
      */
-    private enum expectedResult { succeed, system_error, return_null };
+    private enum ExpectedResult { succeed, system_error, return_null };
 
     /*************************************************************************/
     /**************************** Test Code: *********************************/
@@ -7851,153 +7851,153 @@ public class ColPredTest {
          */
 
         failures += TestGetArgCopy(float_cp0, -1, 1,
-                expectedResult.system_error, "float_cp0", outStream, verbose);
+                ExpectedResult.system_error, "float_cp0", outStream, verbose);
         failures += TestGetArgCopy(float_cp0,  0, 2,
-                expectedResult.succeed, "float_cp0", outStream, verbose);
+                ExpectedResult.succeed, "float_cp0", outStream, verbose);
         failures += TestGetArgCopy(float_cp0,  1, 3,
-                expectedResult.succeed, "float_cp0", outStream, verbose);
+                ExpectedResult.succeed, "float_cp0", outStream, verbose);
         failures += TestGetArgCopy(float_cp0,  2, 4,
-                expectedResult.succeed, "float_cp0", outStream, verbose);
+                ExpectedResult.succeed, "float_cp0", outStream, verbose);
         failures += TestGetArgCopy(float_cp0,  3, 5,
-                expectedResult.succeed, "float_cp0", outStream, verbose);
+                ExpectedResult.succeed, "float_cp0", outStream, verbose);
         failures += TestGetArgCopy(float_cp0,  4, 6,
-                expectedResult.return_null, "float_cp0", outStream, verbose);
+                ExpectedResult.return_null, "float_cp0", outStream, verbose);
 
         failures += TestGetArgCopy(int_cp0, -1, 100,
-                expectedResult.system_error, "int_cp0", outStream, verbose);
+                ExpectedResult.system_error, "int_cp0", outStream, verbose);
         failures += TestGetArgCopy(int_cp0,  0, 101,
-                expectedResult.succeed, "int_cp0", outStream, verbose);
+                ExpectedResult.succeed, "int_cp0", outStream, verbose);
         failures += TestGetArgCopy(int_cp0,  1, 102,
-                expectedResult.succeed, "int_cp0", outStream, verbose);
+                ExpectedResult.succeed, "int_cp0", outStream, verbose);
         failures += TestGetArgCopy(int_cp0,  2, 103,
-                expectedResult.succeed, "int_cp0", outStream, verbose);
+                ExpectedResult.succeed, "int_cp0", outStream, verbose);
         failures += TestGetArgCopy(int_cp0,  3, 104,
-                expectedResult.succeed, "int_cp0", outStream, verbose);
+                ExpectedResult.succeed, "int_cp0", outStream, verbose);
         failures += TestGetArgCopy(int_cp0,  4, 105,
-                expectedResult.return_null, "int_cp0", outStream, verbose);
+                ExpectedResult.return_null, "int_cp0", outStream, verbose);
 
         failures += TestGetArgCopy(matrix_cp0, -1, 200,
-                expectedResult.system_error, "matrix_cp0", outStream, verbose);
+                ExpectedResult.system_error, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  0, 201,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  1, 202,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  2, 203,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  3, 204,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  4, 205,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  5, 206,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  6, 207,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  7, 208,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  8, 209,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  9, 210,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  10, 211,
-                expectedResult.succeed, "matrix_cp0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp0", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp0,  11, 212,
-                expectedResult.return_null, "matrix_cp0", outStream, verbose);
+                ExpectedResult.return_null, "matrix_cp0", outStream, verbose);
 
         failures += TestGetArgCopy(matrix_cp8, -1, 300,
-                expectedResult.system_error, "matrix_cp8", outStream, verbose);
+                ExpectedResult.system_error, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  0, 301,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  1, 302,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  2, 303,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  3, 304,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  4, 305,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  5, 306,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  6, 307,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  7, 308,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  8, 309,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  9, 310,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  10, 311,
-                expectedResult.succeed, "matrix_cp8", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp8", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp8,  11, 312,
-                expectedResult.return_null, "matrix_cp8", outStream, verbose);
+                ExpectedResult.return_null, "matrix_cp8", outStream, verbose);
 
         failures += TestGetArgCopy(matrix_cp16, -1, 400,
-                expectedResult.system_error, "matrix_cp16", outStream, verbose);
+                ExpectedResult.system_error, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  0, 401,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  1, 402,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  2, 403,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  3, 404,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  4, 405,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  5, 406,
-                expectedResult.succeed, "matrix_cp16", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp16", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp16,  6, 407,
-                expectedResult.return_null, "matrix_cp16", outStream, verbose);
+                ExpectedResult.return_null, "matrix_cp16", outStream, verbose);
 
         failures += TestGetArgCopy(matrix_cp17, -1, 500,
-                expectedResult.system_error, "matrix_cp17", outStream, verbose);
+                ExpectedResult.system_error, "matrix_cp17", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp17,  0, 501,
-                expectedResult.succeed, "matrix_cp17", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp17", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp17,  1, 502,
-                expectedResult.succeed, "matrix_cp17", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp17", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp17,  2, 503,
-                expectedResult.succeed, "matrix_cp17", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp17", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp17,  3, 504,
-                expectedResult.succeed, "matrix_cp17", outStream, verbose);
+                ExpectedResult.succeed, "matrix_cp17", outStream, verbose);
         failures += TestGetArgCopy(matrix_cp17,  4, 505,
-                expectedResult.return_null, "matrix_cp17", outStream, verbose);
+                ExpectedResult.return_null, "matrix_cp17", outStream, verbose);
 
         failures += TestGetArgCopy(nominal_cp0, -1, 600,
-                expectedResult.system_error, "nominal_cp0", outStream, verbose);
+                ExpectedResult.system_error, "nominal_cp0", outStream, verbose);
         failures += TestGetArgCopy(nominal_cp0,  0, 601,
-                expectedResult.succeed, "nominal_cp0", outStream, verbose);
+                ExpectedResult.succeed, "nominal_cp0", outStream, verbose);
         failures += TestGetArgCopy(nominal_cp0,  1, 602,
-                expectedResult.succeed, "nominal_cp0", outStream, verbose);
+                ExpectedResult.succeed, "nominal_cp0", outStream, verbose);
         failures += TestGetArgCopy(nominal_cp0,  2, 603,
-                expectedResult.succeed, "nominal_cp0", outStream, verbose);
+                ExpectedResult.succeed, "nominal_cp0", outStream, verbose);
         failures += TestGetArgCopy(nominal_cp0,  3, 604,
-                expectedResult.succeed, "nominal_cp0", outStream, verbose);
+                ExpectedResult.succeed, "nominal_cp0", outStream, verbose);
         failures += TestGetArgCopy(nominal_cp0,  4, 605,
-                expectedResult.return_null, "nominal_cp0", outStream, verbose);
+                ExpectedResult.return_null, "nominal_cp0", outStream, verbose);
 
         failures += TestGetArgCopy(pred_cp0, -1, 700,
-                expectedResult.system_error, "pred_cp0", outStream, verbose);
+                ExpectedResult.system_error, "pred_cp0", outStream, verbose);
         failures += TestGetArgCopy(pred_cp0,  0, 701,
-                expectedResult.succeed, "pred_cp0", outStream, verbose);
+                ExpectedResult.succeed, "pred_cp0", outStream, verbose);
         failures += TestGetArgCopy(pred_cp0,  1, 702,
-                expectedResult.succeed, "pred_cp0", outStream, verbose);
+                ExpectedResult.succeed, "pred_cp0", outStream, verbose);
         failures += TestGetArgCopy(pred_cp0,  2, 703,
-                expectedResult.succeed, "pred_cp0", outStream, verbose);
+                ExpectedResult.succeed, "pred_cp0", outStream, verbose);
         failures += TestGetArgCopy(pred_cp0,  3, 704,
-                expectedResult.succeed, "pred_cp0", outStream, verbose);
+                ExpectedResult.succeed, "pred_cp0", outStream, verbose);
         failures += TestGetArgCopy(pred_cp0,  4, 705,
-                expectedResult.return_null, "pred_cp0", outStream, verbose);
+                ExpectedResult.return_null, "pred_cp0", outStream, verbose);
 
         failures += TestGetArgCopy(text_cp0, -1, 800,
-                expectedResult.system_error, "text_cp0", outStream, verbose);
+                ExpectedResult.system_error, "text_cp0", outStream, verbose);
         failures += TestGetArgCopy(text_cp0,  0, 801,
-                expectedResult.succeed, "text_cp0", outStream, verbose);
+                ExpectedResult.succeed, "text_cp0", outStream, verbose);
         failures += TestGetArgCopy(text_cp0,  1, 802,
-                expectedResult.succeed, "text_cp0", outStream, verbose);
+                ExpectedResult.succeed, "text_cp0", outStream, verbose);
         failures += TestGetArgCopy(text_cp0,  2, 803,
-                expectedResult.succeed, "text_cp0", outStream, verbose);
+                ExpectedResult.succeed, "text_cp0", outStream, verbose);
         failures += TestGetArgCopy(text_cp0,  3, 804,
-                expectedResult.succeed, "text_cp0", outStream, verbose);
+                ExpectedResult.succeed, "text_cp0", outStream, verbose);
         failures += TestGetArgCopy(text_cp0,  4, 805,
-                expectedResult.return_null, "text_cp0", outStream, verbose);
+                ExpectedResult.return_null, "text_cp0", outStream, verbose);
 
 
         /* Now test argument replacement.
@@ -11997,7 +11997,7 @@ public class ColPredTest {
     private static int TestGetArgCopy(ColPred cp,
                                      int argNum,
                                      int testNum,
-                                     expectedResult er,
+                                     ExpectedResult er,
                                      String cpName,
                                      java.io.PrintStream outStream,
                                      boolean verbose)
@@ -12045,7 +12045,7 @@ public class ColPredTest {
                     }
                 }
             }
-            else if ( er != expectedResult.system_error )
+            else if ( er != ExpectedResult.system_error )
             {
                 failures++;
 
@@ -12054,7 +12054,7 @@ public class ColPredTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.system_error.toString());
+                            ExpectedResult.system_error.toString());
                 }
             }
         }
@@ -12091,7 +12091,7 @@ public class ColPredTest {
                     }
                 }
             }
-            else if ( er != expectedResult.return_null )
+            else if ( er != ExpectedResult.return_null )
             {
                 failures++;
 
@@ -12100,7 +12100,7 @@ public class ColPredTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.return_null.toString());
+                            ExpectedResult.return_null.toString());
                 }
             }
         }
@@ -12113,7 +12113,7 @@ public class ColPredTest {
                                                cpName + "(" + argNum + ")",
                                                cpName + "(" + argNum + ") copy");
 
-            if ( er != expectedResult.succeed )
+            if ( er != ExpectedResult.succeed )
             {
                 failures++;
 
@@ -12122,7 +12122,7 @@ public class ColPredTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.succeed.toString());
+                            ExpectedResult.succeed.toString());
                 }
             }
         }

@@ -14,6 +14,9 @@ import org.apache.log4j.Logger;
 */
 public class MatrixViewLabel extends SpreadsheetPanel {
 
+    /** The selection (used for cells) for the parent spreadsheet. */
+    private Selector sheetSelection;
+
     /** The parent cell for this JPanel. */
     private DataCell parentCell = null;
 
@@ -26,13 +29,19 @@ public class MatrixViewLabel extends SpreadsheetPanel {
     /**
      * Creates a new instance of MatrixViewLabel.
      *
-     * @param m The Matrix to display.
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent datacell for this spreadsheet cell.
+     * @param matrix The Matrix holding datavalues that this view label will
+     * represent.
      */
-    public MatrixViewLabel(final DataCell c, final Matrix m) {
+    public MatrixViewLabel(final Selector cellSelection,
+                           final DataCell cell,
+                           final Matrix matrix) {
         super();
-        parentCell = c;
+        sheetSelection = cellSelection;
+        parentCell = cell;
         argViews = new Vector<DataValueView>();
-        setMatrix(m);
+        setMatrix(matrix);
     }
 
     /**
@@ -73,7 +82,8 @@ public class MatrixViewLabel extends SpreadsheetPanel {
             if (m != null && getComponentCount() == 0) {               
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
-                    argViews.add(DataValueViewFactory.build(parentCell, m, i));
+                    argViews.add(DataValueViewFactory.build(sheetSelection,
+                                                            parentCell, m, i));
                 }
             }
         } catch (SystemErrorException e) {

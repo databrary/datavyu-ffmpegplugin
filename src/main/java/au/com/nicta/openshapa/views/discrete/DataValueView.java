@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 public abstract class DataValueView extends JTextField
 implements MouseListener, KeyListener, FocusListener {
 
+    /** The selection (used for cells) for the parent spreadsheet. */
+    private Selector spreadsheetSelection;
+
     /** The parent matrix for the DataValue that this view represents.*/
     private Matrix parentMatrix;
 
@@ -47,6 +50,7 @@ implements MouseListener, KeyListener, FocusListener {
     /**
      * Constructor.
      *
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param dataCell The parent dataCell for this dataValueView.
      * @param matrix The parent matrix for this dataValueView.
      * @param matrixIndex The index of the DataValue within the parent matrix
@@ -54,12 +58,14 @@ implements MouseListener, KeyListener, FocusListener {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    public DataValueView(final DataCell dataCell,
+    public DataValueView(final Selector cellSelection,
+                         final DataCell dataCell,
                          final Matrix matrix,
                          final int matrixIndex,
                          final boolean editable) {
         super();
         try {
+            spreadsheetSelection = cellSelection;
             parentMatrix = matrix;
             parentCell = dataCell;
             index = matrixIndex;
@@ -75,12 +81,15 @@ implements MouseListener, KeyListener, FocusListener {
     /**
      * Constructor.
      *
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param dataValue The dataValue that this view represents.
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    public DataValueView(final DataValue dataValue,
+    public DataValueView(final Selector cellSelection,
+                         final DataValue dataValue,
                          final boolean editable) {
+        spreadsheetSelection = cellSelection;
         parentMatrix = null;
         index = -1;
         value = dataValue;
@@ -210,6 +219,9 @@ implements MouseListener, KeyListener, FocusListener {
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(FocusEvent fe) {
+        // Deselect all cells before selecting the contents of a cell.
+        // BugzID:230
+        spreadsheetSelection.deselectAll();
         this.selectAll();
     }
 

@@ -65,7 +65,7 @@ public class TextStringFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.TEXT;
+        this.fargType = FArgType.TEXT;
 
     } /* TextStringFormalArg() -- no parameters */
 
@@ -76,7 +76,7 @@ public class TextStringFormalArg extends FormalArgument
 
         final String mName = "TextStringFormalArg::TextStringFormalArg(): ";
 
-        this.fargType = fArgType.TEXT;
+        this.fargType = FArgType.TEXT;
 
         // copy over fields.
 

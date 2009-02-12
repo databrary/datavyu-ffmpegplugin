@@ -108,7 +108,7 @@ public class MatrixTest {
      * expectedResult:  Private enumerated type used to specify the expected
      *      result of a test.
      */
-    private enum expectedResult { succeed, system_error, return_null };
+    private enum ExpectedResult { succeed, system_error, return_null };
 
 
     /*************************************************************************/
@@ -4797,7 +4797,7 @@ public class MatrixTest {
     private static int TestGetArgCopy(Matrix m,
                                      int argNum,
                                      int testNum,
-                                     expectedResult er,
+                                     ExpectedResult er,
                                      String mName,
                                      java.io.PrintStream outStream,
                                      boolean verbose)
@@ -4845,7 +4845,7 @@ public class MatrixTest {
                     }
                 }
             }
-            else if ( er != expectedResult.system_error )
+            else if ( er != ExpectedResult.system_error )
             {
                 failures++;
 
@@ -4854,7 +4854,7 @@ public class MatrixTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.system_error.toString());
+                            ExpectedResult.system_error.toString());
                 }
             }
         }
@@ -4891,7 +4891,7 @@ public class MatrixTest {
                     }
                 }
             }
-            else if ( er != expectedResult.return_null )
+            else if ( er != ExpectedResult.return_null )
             {
                 failures++;
 
@@ -4900,7 +4900,7 @@ public class MatrixTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.return_null.toString());
+                            ExpectedResult.return_null.toString());
                 }
             }
         }
@@ -4913,7 +4913,7 @@ public class MatrixTest {
                                                mName + "(" + argNum + ")",
                                                mName + "(" + argNum + ") copy");
 
-            if ( er != expectedResult.succeed )
+            if ( er != ExpectedResult.succeed )
             {
                 failures++;
 
@@ -4922,7 +4922,7 @@ public class MatrixTest {
                     outStream.printf(
                             "%d: expected/actual result mismatch (%s/%s).\n",
                             testNum, er.toString(),
-                            expectedResult.succeed.toString());
+                            ExpectedResult.succeed.toString());
                 }
             }
         }
@@ -5941,76 +5941,76 @@ public class MatrixTest {
          */
 
         failures += MatrixTest.TestGetArgCopy(float_matrix, -1, 1,
-                expectedResult.system_error, "float_matrix", outStream, verbose);
+                ExpectedResult.system_error, "float_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(float_matrix,  0, 1,
-                expectedResult.succeed, "float_matrix", outStream, verbose);
+                ExpectedResult.succeed, "float_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(float_matrix,  1, 3,
-                expectedResult.return_null, "float_matrix", outStream, verbose);
+                ExpectedResult.return_null, "float_matrix", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(int_matrix, -1, 10,
-                expectedResult.system_error, "int_matrix", outStream, verbose);
+                ExpectedResult.system_error, "int_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(int_matrix,  0, 11,
-                expectedResult.succeed, "int_matrix", outStream, verbose);
+                ExpectedResult.succeed, "int_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(int_matrix,  1, 12,
-                expectedResult.return_null, "int_matrix", outStream, verbose);
+                ExpectedResult.return_null, "int_matrix", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0, -1, 20,
-                expectedResult.system_error, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.system_error, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  0, 21,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  1, 22,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  2, 23,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  3, 24,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  4, 25,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  5, 26,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  6, 27,
-                expectedResult.succeed, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix0", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix0,  7, 28,
-                expectedResult.return_null, "matrix_matrix0", outStream, verbose);
+                ExpectedResult.return_null, "matrix_matrix0", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(matrix_matrix1, -1, 30,
-                expectedResult.system_error, "matrix_matrix1", outStream, verbose);
+                ExpectedResult.system_error, "matrix_matrix1", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix1,  0, 31,
-                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix1", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix1,  1, 32,
-                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix1", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix1,  2, 32,
-                expectedResult.succeed, "matrix_matrix1", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix1", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix1,  3, 32,
-                expectedResult.return_null, "matrix_matrix1", outStream, verbose);
+                ExpectedResult.return_null, "matrix_matrix1", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(matrix_matrix2, -1, 40,
-                expectedResult.system_error, "matrix_matrix2", outStream, verbose);
+                ExpectedResult.system_error, "matrix_matrix2", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix2,  0, 41,
-                expectedResult.succeed, "matrix_matrix2", outStream, verbose);
+                ExpectedResult.succeed, "matrix_matrix2", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(matrix_matrix2,  1, 42,
-                expectedResult.return_null, "matrix_matrix2", outStream, verbose);
+                ExpectedResult.return_null, "matrix_matrix2", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(nominal_matrix, -1, 50,
-                expectedResult.system_error, "nominal_matrix", outStream, verbose);
+                ExpectedResult.system_error, "nominal_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(nominal_matrix,  0, 51,
-                expectedResult.succeed, "nominal_matrix", outStream, verbose);
+                ExpectedResult.succeed, "nominal_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(nominal_matrix,  1, 52,
-                expectedResult.return_null, "nominal_matrix", outStream, verbose);
+                ExpectedResult.return_null, "nominal_matrix", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(pred_matrix, -1, 50,
-                expectedResult.system_error, "pred_matrix", outStream, verbose);
+                ExpectedResult.system_error, "pred_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(pred_matrix,  0, 51,
-                expectedResult.succeed, "pred_matrix", outStream, verbose);
+                ExpectedResult.succeed, "pred_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(pred_matrix,  1, 52,
-                expectedResult.return_null, "pred_matrix", outStream, verbose);
+                ExpectedResult.return_null, "pred_matrix", outStream, verbose);
 
         failures += MatrixTest.TestGetArgCopy(text_matrix, -1, 50,
-                expectedResult.system_error, "text_matrix", outStream, verbose);
+                ExpectedResult.system_error, "text_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(text_matrix,  0, 51,
-                expectedResult.succeed, "text_matrix", outStream, verbose);
+                ExpectedResult.succeed, "text_matrix", outStream, verbose);
         failures += MatrixTest.TestGetArgCopy(text_matrix,  1, 52,
-                expectedResult.return_null, "text_matrix", outStream, verbose);
+                ExpectedResult.return_null, "text_matrix", outStream, verbose);
 
 
         /* begin with tests of a float matrix

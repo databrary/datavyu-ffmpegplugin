@@ -159,7 +159,7 @@ public final class UndefinedDataValue extends DataValue
             DBElement dbe;
             FormalArgument fa;
             
-            if ( itsFargType == FormalArgument.fArgType.UNDEFINED )
+            if ( itsFargType == FormalArgument.FArgType.UNDEFINED )
             {
                 throw new SystemErrorException(mName + 
                                                "itsFargType == UNDEFINED");
