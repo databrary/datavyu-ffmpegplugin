@@ -37,9 +37,14 @@ public class TimeStampDataValueTest extends DataValueTest {
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
+        MatrixVocabElement matrix_mve0 = new MatrixVocabElement(db, "mve0");
+        matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
         tfa = new TimeStampFormalArg(db, "<tfa>");
         tfa2 = new TimeStampFormalArg(db, "<tfa2>");
-
+        matrix_mve0.appendFormalArg(tfa);
+        matrix_mve0.appendFormalArg(tfa2);
+        db.vl.addElement(matrix_mve0);
+        
         tsdv = new TimeStampDataValue(db);
     }
 
@@ -65,9 +70,6 @@ public class TimeStampDataValueTest extends DataValueTest {
     @Test
     @Override
     public void testUpdateSubRange() throws Exception {
-    // TODO:    TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID(),
-    //                                     new TimeStamp(1000));
-    // TODO:    assertEquals(t_value.getSubRange(), false);
     }
 
     /**
@@ -75,7 +77,7 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void test1ArgConstructor() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db);
 
@@ -101,7 +103,7 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void test2ArgConstructor() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID());
 
@@ -109,7 +111,7 @@ public class TimeStampDataValueTest extends DataValueTest {
         assertNotNull(tfa);
         assertNotNull(t_value);
 
-        assertNull(t_value.ItsDefault);
+        assertNotNull(t_value.ItsDefault);
         assertEquals(t_value.subRange, tfa.getSubRange());
         assertEquals(t_value.itsValue, t_value.ItsDefault);
     }
@@ -141,10 +143,10 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void test3ArgConstructor() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID(),
-                                          new TimeStamp(1000));
+                                          new TimeStamp(60, 60));
 
         assertNotNull(db);
         assertNotNull(tfa);
@@ -152,7 +154,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
         assertEquals(t_value.subRange, tfa.getSubRange());
         assertNotNull(t_value.itsValue);
-        assertEquals(t_value.itsValue, new TimeStamp(1000));
+        assertEquals(t_value.itsValue, new TimeStamp(60, 60));
     }
 
     /**
@@ -184,10 +186,10 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void testCopyConstructor() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID(),
-                                                        new TimeStamp(1000));
+                                                        new TimeStamp(60, 60));
         TimeStampDataValue t_copy = new TimeStampDataValue(t_value);
 
         assertNotSame(t_value, t_copy);
@@ -216,12 +218,12 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void testGetItsValue() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                         new TimeStamp(60, 60));
 
-        assertEquals(t_value.getItsValue(), new TimeStamp(1000));
+        assertEquals(t_value.getItsValue(), new TimeStamp(60, 60));
     }
 
     /**
@@ -229,13 +231,13 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void testSetItsValue() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                         new TimeStamp(60, 60));
 
-        t_value.setItsValue(new TimeStamp(2000));
-        assertEquals(t_value.getItsValue(), new TimeStamp(2000));
+        t_value.setItsValue(new TimeStamp(60, 2000));
+        assertEquals(t_value.getItsValue(), new TimeStamp(60, 2000));
     }
 
     /**
@@ -243,16 +245,18 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void testToString() throws SystemErrorException {
         TimeStampDataValue t_value0 = new TimeStampDataValue(db, tfa.getID(),
-                                                          new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
 
         TimeStampDataValue t_value1 = new TimeStampDataValue(db, tfa.getID(),
-                                                          new TimeStamp(2000));
+                                                       new TimeStamp(60, 2000));
 
-        assertEquals(t_value0.toString(), "bravo");
-        assertEquals(t_value1.toString(), "nero");
+        String t0 = t_value0.toString();
+        String t1 = t_value1.toString();
+        assertEquals(t0, "00:00:16:040");
+        assertEquals(t1, "00:00:33:020");
     }
 
     /**
@@ -260,42 +264,42 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
-//    @Test
+    @Test
     public void testConstruct() throws SystemErrorException {
         TimeStampDataValue test = TimeStampDataValue.Construct(db, 1000);
-        assertEquals(test.getItsValue(), 1000);
+        assertEquals(test.getItsValue(), new TimeStamp(60, 1000));
     }
 
-//    @Test
+    @Test
     public void testHashCode() throws SystemErrorException {
         TimeStampDataValue value0 =
                             new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
         TimeStampDataValue value1 =
                             new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
         TimeStampDataValue value2 =
                           new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(2000));
+                                                       new TimeStamp(60, 2000));
 
         super.testHashCode(value0, value1, value2);
     }
 
-//    @Test
+    @Test
     public void testEquals()
     throws SystemErrorException, CloneNotSupportedException {
         TimeStampDataValue value0 =
                             new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
         TimeStampDataValue value1 =
                             new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
         TimeStampDataValue value2 =
                             new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(1000));
+                                                       new TimeStamp(60, 1000));
         TimeStampDataValue value3 =
                           new TimeStampDataValue(db, tfa.getID(),
-                                                           new TimeStamp(2000));
+                                                       new TimeStamp(60, 2000));
 
         super.testEquals(value0, value1, value2, value3);
     }
