@@ -189,7 +189,12 @@ public abstract class DataValue extends DBElement
     protected abstract void updateSubRange(FormalArgument fa)
         throws SystemErrorException;
     
-        
+
+    /**
+     * @return true if the value equals the default value
+     */
+    public abstract boolean isDefault();
+
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/

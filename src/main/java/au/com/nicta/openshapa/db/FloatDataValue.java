@@ -22,7 +22,7 @@ public final class FloatDataValue extends DataValue {
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all
+     * ItsDefault:  Constant containing the value to be assigned to all
      *      float data values unless otherwise specified.
      *
      * itsValue:   Double containing the value assigned to the formal argument.
@@ -47,10 +47,10 @@ public final class FloatDataValue extends DataValue {
      */
 
     /** default value for floats. */
-    private final double itsDefault = 0.0;
+    private final double ItsDefault = 0.0;
 
     /** the value assigned to the associated formal argument in this case. */
-    private double itsValue = itsDefault;
+    private double itsValue = ItsDefault;
 
     /** the minimum value -- if subrange is true. */
     private double minVal = 0.0;
@@ -191,6 +191,14 @@ public final class FloatDataValue extends DataValue {
 
     } /* FloatDataValue::setItsValue() */
 
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return closeEnough(itsValue, ItsDefault);
+    }
+
     /** @return the max value. */
     public double getMaxVal() {
         return this.maxVal;
@@ -203,7 +211,7 @@ public final class FloatDataValue extends DataValue {
 
     /** @return the default value. */
     public double getDefault() {
-        return this.itsDefault;
+        return this.ItsDefault;
     }
 
 

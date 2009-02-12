@@ -22,7 +22,7 @@ public final class TextStringDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all
+     * ItsDefault:  Constant containing the value to be assigned to all
      *      float data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
@@ -206,6 +206,15 @@ public final class TextStringDataValue extends DataValue
         return;
 
     } /* TextStringDataValue::setItsValue() */
+
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return itsValue == null ?
+                           itsValue == ItsDefault : itsValue.equals(ItsDefault);
+    }
 
 
     /*************************************************************************/

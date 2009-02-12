@@ -617,11 +617,11 @@ public class FloatDataValueTest extends DataValueTest {
 
             try {
                 Double fdvitsValue = (Double) PrivateAccessor.getField(fdv, "itsValue");            
-                Double fdvitsDefault = (Double) PrivateAccessor.getField(fdv, "itsDefault");            
+                Double fdvItsDefault = (Double) PrivateAccessor.getField(fdv, "ItsDefault");
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");            
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");            
 
-                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvitsDefault))
+                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvItsDefault))
                 {
                     failures++;
 
@@ -629,7 +629,7 @@ public class FloatDataValueTest extends DataValueTest {
                     {
                         outStream.printf(
                                 "fdv.itsValue = %f != fdv.ItsDefault = %f.\n",
-                                fdvitsValue, fdvitsDefault);
+                                fdvitsValue, fdvItsDefault);
                     }
                 }
 
@@ -911,11 +911,11 @@ public class FloatDataValueTest extends DataValueTest {
 
             try {
                 Double fdvitsValue = (Double) PrivateAccessor.getField(fdv, "itsValue");
-                Double fdvitsDefault = (Double) PrivateAccessor.getField(fdv, "itsDefault");
+                Double fdvItsDefault = (Double) PrivateAccessor.getField(fdv, "ItsDefault");
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvitsDefault) )
+                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvItsDefault) )
                 {
                     failures++;
 
@@ -923,7 +923,7 @@ public class FloatDataValueTest extends DataValueTest {
                     {
                         outStream.printf(
                                 "fdv.itsValue = %f != fdv.ItsDefault = %f.\n",
-                                fdvitsValue, fdvitsDefault);
+                                fdvitsValue, fdvItsDefault);
                     }
                 }
 
@@ -977,11 +977,11 @@ public class FloatDataValueTest extends DataValueTest {
 
             try {
                 Double fdv_sritsValue = (Double) PrivateAccessor.getField(fdv_sr, "itsValue");
-                Double fdv_sritsDefault = (Double) PrivateAccessor.getField(fdv_sr, "itsDefault");
+                Double fdv_srItsDefault = (Double) PrivateAccessor.getField(fdv_sr, "ItsDefault");
                 Double fdv_srmaxVal = (Double) PrivateAccessor.getField(fdv_sr, "maxVal");
                 Double fdv_srminVal = (Double) PrivateAccessor.getField(fdv_sr, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdv_sritsValue, fdv_sritsDefault) )
+                if ( !FloatDataValue.closeEnough(fdv_sritsValue, fdv_srItsDefault) )
                 {
                     failures++;
 
@@ -989,7 +989,7 @@ public class FloatDataValueTest extends DataValueTest {
                     {
                         outStream.printf(
                                 "fdv_sr.itsValue = %f != fdv_sr.ItsDefault = %f.\n",
-                                fdv_sritsValue, fdv_sritsDefault);
+                                fdv_sritsValue, fdv_srItsDefault);
                     }
                 }
 
@@ -1384,7 +1384,7 @@ public class FloatDataValueTest extends DataValueTest {
 
             try {
                 Double fdvitsValue = (Double) PrivateAccessor.getField(fdv, "itsValue");
-                Double fdvitsDefault = (Double) PrivateAccessor.getField(fdv, "itsDefault");
+                Double fdvItsDefault = (Double) PrivateAccessor.getField(fdv, "ItsDefault");
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");
 
@@ -1449,7 +1449,7 @@ public class FloatDataValueTest extends DataValueTest {
 
             try {
                 Double fdv_sr0itsValue = (Double) PrivateAccessor.getField(fdv_sr0, "itsValue");
-                Double fdv_sr0itsDefault = (Double) PrivateAccessor.getField(fdv_sr0, "itsDefault");
+                Double fdv_sr0ItsDefault = (Double) PrivateAccessor.getField(fdv_sr0, "ItsDefault");
                 Double fdv_sr0maxVal = (Double) PrivateAccessor.getField(fdv_sr0, "maxVal");
                 Double fdv_sr0minVal = (Double) PrivateAccessor.getField(fdv_sr0, "minVal");
 
