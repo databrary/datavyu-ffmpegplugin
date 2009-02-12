@@ -10,11 +10,12 @@ import java.awt.event.KeyEvent;
  */
 public final class QuoteStringDataValueView extends DataValueView {
 
-    QuoteStringDataValueView(final DataCell cell,
+    QuoteStringDataValueView(final Selector cellSelection,
+                             final DataCell cell,
                              final Matrix matrix,
                              final int matrixIndex,
                              final boolean editable) {
-        super(cell, matrix, matrixIndex, editable);
+        super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
     public void keyPressed(KeyEvent e) {

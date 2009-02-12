@@ -16,16 +16,18 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param timestamp
      * @param editable
      */
-    TimeStampDataValueView(final DataCell cell,
+    TimeStampDataValueView(final Selector cellSelection,
+                           final DataCell cell,
                            final Matrix matrix,
                            final int matrixIndex,
                            final boolean editable) {
-        super(cell, matrix, matrixIndex, editable);
+        super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
-    TimeStampDataValueView(final TimeStampDataValue timeStampDataValue,
+    TimeStampDataValueView(final Selector cellSelection,
+                           final TimeStampDataValue timeStampDataValue,
                            final boolean editable) {
-        super(timeStampDataValue, editable);
+        super(cellSelection, timeStampDataValue, editable);
     }
 
     public void handleKeyEvent(KeyEvent e) {

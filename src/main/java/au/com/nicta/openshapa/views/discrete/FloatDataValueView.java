@@ -16,6 +16,7 @@ public final class FloatDataValueView extends DataValueView {
     /**
      * Constructor.
      *
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent datacell for the int data value that this view
      * represents.
      * @param matrix The parent matrix for the int data value that this view
@@ -25,11 +26,12 @@ public final class FloatDataValueView extends DataValueView {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    FloatDataValueView(final DataCell cell,
+    FloatDataValueView(final Selector cellSelection,
+                       final DataCell cell,
                        final Matrix matrix,
                        final int matrixIndex,
                        final boolean editable) {
-        super(cell, matrix, matrixIndex, editable);
+        super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
     /**

@@ -10,11 +10,12 @@ import java.awt.event.KeyEvent;
  */
 public final class PredicateDataValueView extends DataValueView {
 
-    PredicateDataValueView(final DataCell cell,
+    PredicateDataValueView(final Selector cellSelection,
+                           final DataCell cell,
                            final Matrix matrix,
                            final int matrixIndex,
                            final boolean editable) {
-        super(cell, matrix, matrixIndex, editable);
+        super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
     public void keyPressed(KeyEvent e) {

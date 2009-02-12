@@ -24,27 +24,27 @@ public class DataValueViewFactory {
      * @param dv
      * @return
      */
-    public static DataValueView build(DataCell c, Matrix m, int i)
+    public static DataValueView build(Selector s, DataCell c, Matrix m, int i)
     throws SystemErrorException {
 
         DataValue dv = m.getArgCopy(i);
         if (dv.getClass() == FloatDataValue.class) {
 
-            return new FloatDataValueView(c, m, i, true);
+            return new FloatDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == IntDataValue.class) {
-            return new IntDataValueView(c, m, i, true);
+            return new IntDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == TimeStampDataValue.class) {
-            return new TimeStampDataValueView(c, m, i, true);
+            return new TimeStampDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
-            return new TextStringDataValueView(c, m, i, true);
+            return new TextStringDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == NominalDataValue.class) {
-            return new NominalDataValueView(c, m, i, true);
+            return new NominalDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == PredDataValue.class) {
-            return new PredicateDataValueView(c, m, i, true);
+            return new PredicateDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == QuoteStringDataValue.class) {
-            return new QuoteStringDataValueView(c, m, i, true);
+            return new QuoteStringDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == UndefinedDataValue.class) {
-            return new UndefinedDataValueView(c, m, i, true);
+            return new UndefinedDataValueView(s, c, m, i, true);
         }
 
         return null;
