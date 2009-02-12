@@ -81,7 +81,7 @@ public class IntFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.INTEGER;
+        this.fargType = FArgType.INTEGER;
 
     } /* IntFormalArg() -- one parameters */
 
@@ -92,7 +92,7 @@ public class IntFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.INTEGER;
+        this.fargType = FArgType.INTEGER;
 
     } /* IntFormalArg() -- two parameters */
 
@@ -106,7 +106,7 @@ public class IntFormalArg extends FormalArgument
 
         final String mName = "IntFormalArg::IntFormalArg(): ";
 
-        this.fargType = fArgType.INTEGER;
+        this.fargType = FArgType.INTEGER;
 
         if ( minVal >= maxVal )
 
@@ -131,7 +131,7 @@ public class IntFormalArg extends FormalArgument
     {
         super(fArg);
 
-        this.fargType = fArgType.INTEGER;
+        this.fargType = FArgType.INTEGER;
 
         // copy over fields.
         this.setRange(fArg.getMinVal(), fArg.getMaxVal());

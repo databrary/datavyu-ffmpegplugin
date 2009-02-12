@@ -90,7 +90,7 @@ public class PredDataValueTest extends DataValueTest {
     @Test
     @Override
     public void testGetItsFargType() {
-        assertEquals(pdv.itsFargType, FormalArgument.fArgType.PREDICATE);
+        assertEquals(pdv.itsFargType, FormalArgument.FArgType.PREDICATE);
     }
 
     @Test

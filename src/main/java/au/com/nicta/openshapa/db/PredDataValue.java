@@ -283,7 +283,7 @@ public final class PredDataValue extends DataValue
                 throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
-            else if ( itsFargType != FormalArgument.fArgType.PREDICATE )
+            else if ( itsFargType != FormalArgument.FArgType.PREDICATE )
             {
                 throw new SystemErrorException(mName +
                                                "itsFargType != PREDICATE");
@@ -985,7 +985,7 @@ public final class PredDataValue extends DataValue
                 throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
-            else if ( itsFargType != FormalArgument.fArgType.PREDICATE )
+            else if ( itsFargType != FormalArgument.FArgType.PREDICATE )
             {
                 throw new SystemErrorException(mName +
                                                "itsFargType != PREDICATE");

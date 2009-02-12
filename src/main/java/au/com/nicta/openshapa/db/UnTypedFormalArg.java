@@ -55,7 +55,7 @@ public class UnTypedFormalArg
     {
         super(db);
 
-        this.fargType = fArgType.UNTYPED;
+        this.fargType = FArgType.UNTYPED;
 
     } /* UnTypedFormalArg() -- one argument */
 
@@ -66,7 +66,7 @@ public class UnTypedFormalArg
 
         super(db, name);
 
-        this.fargType = fArgType.UNTYPED;
+        this.fargType = FArgType.UNTYPED;
 
     } /* UnTypedFormalArg() -- two arguments */
 
@@ -77,7 +77,7 @@ public class UnTypedFormalArg
 
         final String mName = "UnTypedFormalArg::UnTypedFormalArg(): ";
 
-        this.fargType = fArgType.UNTYPED;
+        this.fargType = FArgType.UNTYPED;
 
         // copy over fields -- none in this case.
 

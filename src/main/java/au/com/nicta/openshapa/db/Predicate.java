@@ -2304,7 +2304,7 @@ public class Predicate extends DBElement
                     if ( pdv.getItsValuePveID() == deletedPveID )
                     {
                         if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.UNTYPED )
+                                FormalArgument.FArgType.UNTYPED )
                         {
                             if ( pve == null )
                             {
@@ -2326,7 +2326,7 @@ public class Predicate extends DBElement
                             this.replaceArg(i, dv);
                         }
                         else if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.PREDICATE )
+                                FormalArgument.FArgType.PREDICATE )
                         {
                             ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
                         }

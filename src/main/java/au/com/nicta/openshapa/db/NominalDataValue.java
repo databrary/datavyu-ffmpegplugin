@@ -231,7 +231,7 @@ public final class NominalDataValue extends DataValue {
                 throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
-            else if ( itsFargType != FormalArgument.fArgType.NOMINAL )
+            else if ( itsFargType != FormalArgument.FArgType.NOMINAL )
             {
                 throw new SystemErrorException(mName +
                                                "itsFargType != NOMINAL");
@@ -522,7 +522,7 @@ public final class NominalDataValue extends DataValue {
                 throw new SystemErrorException(mName +
                                       "subRange && (itsFargID == INVALID_ID)");
             }
-            else if ( itsFargType != FormalArgument.fArgType.NOMINAL )
+            else if ( itsFargType != FormalArgument.FArgType.NOMINAL )
             {
                 throw new SystemErrorException(mName +
                                                "itsFargType != NOMINAL");

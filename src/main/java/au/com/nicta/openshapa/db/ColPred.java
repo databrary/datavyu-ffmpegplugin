@@ -2239,7 +2239,7 @@ public class ColPred extends DBElement
                     if ( cpdv.getItsValueMveID() == deletedMveID )
                     {
                         if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.UNTYPED )
+                                FormalArgument.FArgType.UNTYPED )
                         {
                             if ( mve == null )
                             {
@@ -2261,7 +2261,7 @@ public class ColPred extends DBElement
                             this.replaceArg(i, dv);
                         }
                         else if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.COL_PREDICATE )
+                                FormalArgument.FArgType.COL_PREDICATE )
                         {
                             ((ColPredDataValue)dv).updateForMVEDeletion(db, mveID);
                         }
@@ -2468,7 +2468,7 @@ public class ColPred extends DBElement
                     if ( pdv.getItsValuePveID() == deletedPveID )
                     {
                         if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.UNTYPED )
+                                FormalArgument.FArgType.UNTYPED )
                         {
                             if ( mve == null )
                             {
@@ -2490,7 +2490,7 @@ public class ColPred extends DBElement
                             this.replaceArg(i, dv);
                         }
                         else if ( dv.getItsFargType() ==
-                                FormalArgument.fArgType.PREDICATE )
+                                FormalArgument.FArgType.PREDICATE )
                         {
                             ((PredDataValue)dv).
                                     updateForPVEDeletion(db, deletedPveID);

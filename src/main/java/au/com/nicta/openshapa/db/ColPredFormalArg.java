@@ -61,7 +61,7 @@ public class ColPredFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.COL_PREDICATE;
+        this.fargType = FArgType.COL_PREDICATE;
 
     } /* NominalFormalArg() -- no parameters */
 
@@ -72,7 +72,7 @@ public class ColPredFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.COL_PREDICATE;
+        this.fargType = FArgType.COL_PREDICATE;
 
     } /* NominalFormalArg() -- one parameter */
 
@@ -83,7 +83,7 @@ public class ColPredFormalArg extends FormalArgument
 
         final String mName = "ColPredFormalArg::ColPredFormalArg(): ";
 
-        this.fargType = fArgType.COL_PREDICATE;
+        this.fargType = FArgType.COL_PREDICATE;
 
     } /* PredFormalArg() -- make copy */
 

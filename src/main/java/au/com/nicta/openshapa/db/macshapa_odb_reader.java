@@ -7136,7 +7136,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.FLOAT )
+        if ( farg.fargType != FormalArgument.FArgType.FLOAT )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a float.");
@@ -7320,8 +7320,8 @@ public class macshapa_odb_reader
         
         value = this.l0_tok.val;
 	
-        if ( ( farg.fargType != FormalArgument.fArgType.FLOAT ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.FLOAT ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
             // create the data value.  
@@ -7490,7 +7490,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.INTEGER )
+        if ( farg.fargType != FormalArgument.FArgType.INTEGER )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an integer.");
@@ -7681,8 +7681,8 @@ public class macshapa_odb_reader
         
         value = (long)(this.l0_tok.val);
 	
-        if ( ( farg.fargType != FormalArgument.fArgType.INTEGER ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
             // create the data value.  
@@ -7774,7 +7774,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.UNTYPED )
+        if ( farg.fargType != FormalArgument.FArgType.UNTYPED )
         {
             throw new SystemErrorException(mName + 
                     "matrix cell value farg is not UNTYPED?!?.");
@@ -7946,7 +7946,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.NOMINAL )
+        if ( farg.fargType != FormalArgument.FArgType.NOMINAL )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an nominal.");
@@ -8178,8 +8178,8 @@ public class macshapa_odb_reader
         value = this.l0_tok.str.toString();
         
         if ( ( replace_with_farg ) ||
-             ( ( farg.fargType != FormalArgument.fArgType.INTEGER ) &&
-               ( farg.fargType != FormalArgument.fArgType.UNTYPED ) ) )
+             ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) &&
+               ( farg.fargType != FormalArgument.FArgType.UNTYPED ) ) )
         {
             dv = new UndefinedDataValue(this.db, 
                                         farg.getID(), 
@@ -14444,7 +14444,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.TEXT )
+        if ( farg.fargType != FormalArgument.FArgType.TEXT )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a text string.");
@@ -15412,7 +15412,7 @@ public class macshapa_odb_reader
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-        else if ( farg.getFargType() != FormalArgument.fArgType.PREDICATE )
+        else if ( farg.getFargType() != FormalArgument.FArgType.PREDICATE )
         {
             throw new SystemErrorException(mName + 
                     "farg not of type predicate?!?");
@@ -23754,8 +23754,8 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( ( farg.fargType != FormalArgument.fArgType.COL_PREDICATE ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.COL_PREDICATE ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a column predicate.");
@@ -23895,12 +23895,12 @@ public class macshapa_odb_reader
                             next_arg = parse_time_stamp(next_farg);
                         }
                         else if ( next_farg.getFargType() ==
-                                  FormalArgument.fArgType.COL_PREDICATE )
+                                  FormalArgument.FArgType.COL_PREDICATE )
                         {
                             next_arg = parse_col_pred_value(next_farg);
                         }
                         else if ( next_farg.getFargType() ==
-                                  FormalArgument.fArgType.PREDICATE )
+                                  FormalArgument.FArgType.PREDICATE )
                         {
                             next_arg = parse_pred_value(next_farg);
                         }
@@ -24204,7 +24204,7 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( farg.fargType != FormalArgument.fArgType.PREDICATE )
+        if ( farg.fargType != FormalArgument.FArgType.PREDICATE )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an predicate.");
@@ -24376,8 +24376,8 @@ public class macshapa_odb_reader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( ( farg.fargType != FormalArgument.fArgType.PREDICATE ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.PREDICATE ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an predicate.");
@@ -24516,12 +24516,12 @@ public class macshapa_odb_reader
                             next_arg = parse_time_stamp(next_farg);
                         }
                         else if ( next_farg.getFargType() ==
-                                  FormalArgument.fArgType.COL_PREDICATE )
+                                  FormalArgument.FArgType.COL_PREDICATE )
                         {
                             next_arg = parse_col_pred_value(next_farg);
                         }
                         else if ( next_farg.getFargType() ==
-                                  FormalArgument.fArgType.PREDICATE )
+                                  FormalArgument.FArgType.PREDICATE )
                         {
                             next_arg = parse_pred_value(next_farg);
                         }
@@ -24845,8 +24845,8 @@ public class macshapa_odb_reader
         
         value = this.l0_tok.str.toString();
 	
-        if ( ( farg.fargType != FormalArgument.fArgType.QUOTE_STRING ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.QUOTE_STRING ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             if ( ((this.l0_tok).aux & QSTRING_FLAG) == 0 )
             {
@@ -25117,8 +25117,8 @@ public class macshapa_odb_reader
             }
         }
 
-        if ( ( farg.fargType != FormalArgument.fArgType.TIME_STAMP ) ||
-             ( farg.fargType != FormalArgument.fArgType.UNTYPED ) )
+        if ( ( farg.fargType != FormalArgument.FArgType.TIME_STAMP ) ||
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             ts = new TimeStamp(MACSHAPA_TICKS_PER_SECOND, ticks);
             dv = new TimeStampDataValue(this.db, farg.getID(), ts);

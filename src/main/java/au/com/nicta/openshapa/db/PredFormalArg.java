@@ -80,7 +80,7 @@ public class PredFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.PREDICATE;
+        this.fargType = FArgType.PREDICATE;
 
     } /* NominalFormalArg() -- no parameters */
 
@@ -91,7 +91,7 @@ public class PredFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.PREDICATE;
+        this.fargType = FArgType.PREDICATE;
 
     } /* NominalFormalArg() -- one parameter */
 
@@ -102,7 +102,7 @@ public class PredFormalArg extends FormalArgument
 
         final String mName = "PredFormalArg::PredFormalArg(): ";
 
-        this.fargType = fArgType.PREDICATE;
+        this.fargType = FArgType.PREDICATE;
 
         // copy over fields.
 

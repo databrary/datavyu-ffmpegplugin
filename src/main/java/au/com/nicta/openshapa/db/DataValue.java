@@ -62,7 +62,7 @@ public abstract class DataValue extends DBElement
     long itsFargID = DBIndex.INVALID_ID;
     
     /** type of associated formal argument */
-    FormalArgument.fArgType itsFargType = FormalArgument.fArgType.UNDEFINED;
+    FormalArgument.FArgType itsFargType = FormalArgument.FArgType.UNDEFINED;
     
     /** whether the associated formal argument is subtyped */
     boolean subRange = false;
@@ -227,7 +227,7 @@ public abstract class DataValue extends DBElement
      *    - None.
      */
     
-    public FormalArgument.fArgType getItsFargType()
+    public FormalArgument.FArgType getItsFargType()
     {
         return this.itsFargType;
     }
@@ -432,7 +432,7 @@ public abstract class DataValue extends DBElement
         final String mName = "DataValue::SetItsFargID(): ";
         DBElement dbe = null;
         FormalArgument fa = null;
-        FormalArgument.fArgType fargType;
+        FormalArgument.FArgType fargType;
         
         if ( ID == DBIndex.INVALID_ID )
         {

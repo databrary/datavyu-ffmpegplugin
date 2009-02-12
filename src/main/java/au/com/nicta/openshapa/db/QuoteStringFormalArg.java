@@ -68,7 +68,7 @@ public class QuoteStringFormalArg extends FormalArgument
 
         super(db);
 
-        this.fargType = fArgType.QUOTE_STRING;
+        this.fargType = FArgType.QUOTE_STRING;
 
     } /* QuoteStringFormalArg() -- no parameters */
 
@@ -79,7 +79,7 @@ public class QuoteStringFormalArg extends FormalArgument
 
         super(db, name);
 
-        this.fargType = fArgType.QUOTE_STRING;
+        this.fargType = FArgType.QUOTE_STRING;
 
     } /* QuoteStringFormalArg() -- one parameter */
 
@@ -88,7 +88,7 @@ public class QuoteStringFormalArg extends FormalArgument
     {
         super(fArg);
 
-        this.fargType = fArgType.QUOTE_STRING;
+        this.fargType = FArgType.QUOTE_STRING;
 
         // copy over fields.
 

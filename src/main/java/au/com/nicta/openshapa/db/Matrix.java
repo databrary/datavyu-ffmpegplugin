@@ -1666,7 +1666,7 @@ public class Matrix implements Cloneable {
                 if ( cpdv.getItsValueMveID() == mveID )
                 {
                     if ( cpdv.getItsFargType()
-                            == FormalArgument.fArgType.UNTYPED ) {
+                            == FormalArgument.FArgType.UNTYPED ) {
                         if ( mve == null )
                         {
                             dbe = this.db.idx.getElement(this.mveID);
@@ -1699,7 +1699,7 @@ public class Matrix implements Cloneable {
                         this.replaceArg(i, dv);
                     }
                     else if ( dv.getItsFargType() ==
-                              FormalArgument.fArgType.COL_PREDICATE )
+                              FormalArgument.FArgType.COL_PREDICATE )
                     {
                         ((ColPredDataValue)dv).updateForMVEDeletion(db, mveID);
                     }
@@ -1873,7 +1873,7 @@ public class Matrix implements Cloneable {
 
                 if ( pdv.getItsValuePveID() == pveID )
                 {
-                    if (dv.getItsFargType() == FormalArgument.fArgType.UNTYPED)
+                    if (dv.getItsFargType() == FormalArgument.FArgType.UNTYPED)
                     {
                         if ( mve == null )
                         {
@@ -1907,7 +1907,7 @@ public class Matrix implements Cloneable {
                         this.replaceArg(i, dv);
                     }
                     else if ( dv.getItsFargType()
-                                        == FormalArgument.fArgType.PREDICATE )
+                                        == FormalArgument.FArgType.PREDICATE )
                     {
                         ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
                     }
