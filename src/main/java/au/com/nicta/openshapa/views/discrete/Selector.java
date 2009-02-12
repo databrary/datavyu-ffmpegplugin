@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -10,27 +11,39 @@ import java.util.Vector;
  */
 public class Selector {
 
+    /** The parent component for the selection that this class represents. */
+    private Component selectionParent;
+
     /** Holder for the selected items. */
     private Vector<Selectable> selection;
 
     /** Holder for other selectors. */
     private Vector<Selector> otherSelectors;
 
-    /** Selector constructor. */
-    public Selector() {
+    /**
+     * Constructor.
+     *
+     * @param parentOfSelection The parent component of the things we are
+     * selecting.
+     */
+    public Selector(Component parentOfSelection) {
+        selectionParent = parentOfSelection;
         selection = new Vector<Selectable>();
         otherSelectors = new Vector<Selector>();
     }
 
     /**
      * Add other Selectors.
+     *
      * @param sel Selector to add.
      */
     public final void addOther(final Selector sel) {
         otherSelectors.add(sel);
     }
 
-    /** Deselect other selectors. */
+    /**
+     * Deselect other selectors.
+     */
     private void deselectOthers() {
         for (int i = 0; i < otherSelectors.size(); i++) {
             Selector other = (Selector) otherSelectors.get(i);
@@ -38,7 +51,9 @@ public class Selector {
         }
     }
 
-    /** Deselect all selected items. */
+    /**
+     * Deselect all selected items.
+     */
     public final void deselectAll() {
         for (int i = 0; i < selection.size(); i++) {
             Selectable item = (Selectable) selection.get(i);
@@ -49,6 +64,7 @@ public class Selector {
 
     /**
      * Remove an item from the selection.
+     *
      * @param item Item to remove.
      */
     public final void removeSelection(final Selectable item) {
@@ -70,6 +86,7 @@ public class Selector {
 
     /**
      * Toggle the selected state of an item.
+     *
      * @param item Item to change select state.
      */
     public final void toggleSelection(final Selectable item) {
@@ -82,10 +99,13 @@ public class Selector {
 
     /**
      * Invoked when the mouse is clicked in a cell.
+     *
      * @param me event detail
      * @param s The item to be added to the selection.
      */
     public final void addToSelection(final MouseEvent me, final Selectable s) {
+        selectionParent.requestFocus();
+
         int mod = me.getModifiers();
         if ((mod & ActionEvent.SHIFT_MASK) != 0
                 || (mod & ActionEvent.CTRL_MASK) != 0) {

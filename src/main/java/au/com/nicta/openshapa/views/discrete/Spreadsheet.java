@@ -82,8 +82,8 @@ public class Spreadsheet extends OpenSHAPADialog
         jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
 
-        colSelector = new Selector();
-        cellSelector = new Selector();
+        colSelector = new Selector(this);
+        cellSelector = new Selector(this);
         colSelector.addOther(cellSelector);
         cellSelector.addOther(colSelector);
     }
