@@ -24,6 +24,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -246,7 +247,16 @@ implements KeyEventDispatcher {
             // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
             // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
             JRubyScriptEngineManager m = new JRubyScriptEngineManager();
-            rubyEngine = m.getEngineByName("jruby");
+
+            // Whoops - JRubyScriptEngineManager may have failed, if that does
+            // not construct engines for jruby correctly, switch to
+            // javax.script.ScriptEngineManager
+            if (m.getEngineFactories().size() == 0) {
+                ScriptEngineManager m2 = new ScriptEngineManager();
+                rubyEngine = m2.getEngineByName("jruby");
+            } else {
+                rubyEngine = m.getEngineByName("jruby");
+            }
 
             // Build output streams for the scripting engine.
             scriptOutputStream = new PipedInputStream();
