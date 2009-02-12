@@ -194,7 +194,15 @@ public final class UndefinedDataValue extends DataValue
         
     } /* UndefinedDataValue::setItsValue() */
   
-        
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
+
+
     /*************************************************************************/
     /*************************** Overrides: **********************************/
     /*************************************************************************/

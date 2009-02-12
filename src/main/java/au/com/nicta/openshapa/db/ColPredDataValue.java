@@ -265,6 +265,12 @@ public final class ColPredDataValue extends DataValue
 
     } /* ColPredDataValue::setItsValue() */
 
+    /**
+     * @return true if the value equals the default value
+     */
+    public boolean isDefault() {
+        return itsValue == null;
+    }
 
     /*************************************************************************/
     /*************************** Overrides: **********************************/

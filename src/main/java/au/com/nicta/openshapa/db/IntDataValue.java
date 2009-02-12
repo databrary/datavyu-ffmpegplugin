@@ -22,7 +22,7 @@ public final class IntDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all
+     * ItsDefault:  Constant containing the value to be assigned to all
      *      integer data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
@@ -193,6 +193,14 @@ public final class IntDataValue extends DataValue
         return;
 
     } /* IntDataValue::setItsValue() */
+
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return itsValue == ItsDefault;
+    }
 
 
     /*************************************************************************/

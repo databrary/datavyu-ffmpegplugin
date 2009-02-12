@@ -128,7 +128,12 @@ begin
         fargid = pve0.get_formal_arg(5).get_id()
         fdv5 = UndefinedDataValue.new($db, fargid, pve0.get_formal_arg(5).get_farg_name())
 
-        pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3, fdv4, fdv5))
+        if dd == 0
+          # construct a predicate with null args in first cell of column
+          pred = Predicate.new($db, predID0)
+        else
+          pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3, fdv4, fdv5))
+        end
 
         dv = PredDataValue.new($db)
         dv.set_its_value(pred)
@@ -137,17 +142,22 @@ begin
         mve0 = $db.get_matrix_ve(matID0)
 
         fargid = mve0.get_formal_arg(0).get_id()
-        fdv0 = FloatDataValue.new($db, fargid, 1.234)
+        fdv0 = FloatDataValue.new($db, fargid, 1.2)
         fargid = mve0.get_formal_arg(1).get_id()
-        fdv1 = IntDataValue.new($db, fargid, 1234)
+        fdv1 = IntDataValue.new($db, fargid, 4)
         fargid = mve0.get_formal_arg(2).get_id()
-        fdv2 = NominalDataValue.new($db, fargid, "a_nominal")
+        fdv2 = NominalDataValue.new($db, fargid, "nm")
         fargid = mve0.get_formal_arg(3).get_id()
-        fdv3 = QuoteStringDataValue.new($db, fargid, "quote_string")
+        fdv3 = QuoteStringDataValue.new($db, fargid, "qs")
         fargid = mve0.get_formal_arg(4).get_id()
         fdv4 = UndefinedDataValue.new($db, fargid, mve0.get_formal_arg(4).get_farg_name())
 
-        mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3, fdv4))
+        if dd == 0
+          # construct a matrix with null args in first cell of column
+          mat = Matrix.new($db, matID0)
+        else
+          mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3, fdv4))
+        end
       end
 
       # the ones that are only datavalues need to be put in a 1 arg matrix

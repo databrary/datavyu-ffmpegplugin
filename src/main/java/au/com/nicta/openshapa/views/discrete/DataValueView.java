@@ -2,7 +2,9 @@ package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.db.FormalArgument;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Graphics;
@@ -188,11 +190,27 @@ implements MouseListener, KeyListener, FocusListener {
      * Updates the content of this DataValueView as displayed to the user.
      */
     public void updateStrings() {
-        if (this.value != null) {
-            String t = value.toString();
-            setText(t);
-            setToolTipText(value.toString());
+        String t = "";
+        if (this.value != null && !this.value.isDefault()) {
+            t = value.toString();
+        } else if (parentMatrix != null) {
+            t = getNullArg();
         }
+        setText(t);
+        // setToolTipText(value.toString());
+    }
+
+    private String getNullArg() {
+        String t = "";
+        try {
+            long mveid = parentMatrix.getMveID();
+            MatrixVocabElement mve = parentMatrix.getDB().getMatrixVE(mveid);
+            FormalArgument fa = mve.getFormalArg(index);
+            t = fa.toString();
+        } catch (SystemErrorException e) {
+
+        }
+        return t;
     }
 
     /**

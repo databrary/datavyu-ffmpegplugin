@@ -21,7 +21,7 @@ public final class TimeStampDataValue extends DataValue
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all
+     * ItsDefault:  Constant containing the value to be assigned to all
      *      time stamp data values unless otherwise specified.  Note that we
      *      only take the ticks from this value -- ticks per second is drawn
      *      from the current value in the host database.
@@ -271,6 +271,14 @@ public final class TimeStampDataValue extends DataValue
         return;
 
     } /* TimeStampDataValue::setItsValue() */
+
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return itsValue.equals(ItsDefault);
+    }
 
 
     /*************************************************************************/

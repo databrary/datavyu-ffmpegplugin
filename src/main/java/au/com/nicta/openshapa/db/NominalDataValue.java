@@ -22,7 +22,7 @@ public final class NominalDataValue extends DataValue {
     /***************************** Fields: ***********************************/
     /*************************************************************************/
     /*
-     * itsDefault:  Constant containing the value to be assigned to all
+     * ItsDefault:  Constant containing the value to be assigned to all
      *      float data values unless otherwise specified.
      *
      * itsValue:   Long containing the value assigned to the formal argument.
@@ -278,6 +278,14 @@ public final class NominalDataValue extends DataValue {
 
     } /* QuoteStringDataValue::setItsValue() */
 
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return itsValue == null ?
+                           itsValue == ItsDefault : itsValue.equals(ItsDefault);
+    }
 
     /*************************************************************************/
     /*************************** Overrides: **********************************/

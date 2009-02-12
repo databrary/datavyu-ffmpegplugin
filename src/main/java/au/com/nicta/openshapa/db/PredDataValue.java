@@ -323,6 +323,14 @@ public final class PredDataValue extends DataValue
 
     } /* PredDataValue::setItsValue() */
 
+    /**
+     * @return true if the value equals the default value
+     */
+    @Override
+    public boolean isDefault() {
+        return itsValue == null;
+    }
+
 
     /*************************************************************************/
     /*************************** Overrides: **********************************/
