@@ -306,6 +306,15 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    /**
+     * Removes characters from ahead of the caret if they are not in the
+     * preservedChars parameter. If the character is to be preserved, this
+     * method will simple shift the caret forward one spot.
+     *
+     * @param preservedChars A list of characters that are to be preserved,
+     * these characters will NOT be removed from ahead of the caret regardless
+     * of if they have been selected or not.
+     */
     protected void removeAheadOfCaret(Vector<Character> preservedChars) {
         // Underlying text field has selection no caret, remove everything that
         // is selected.
@@ -337,6 +346,15 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    /**
+     * Removes characters from behind the caret if they are not in the
+     * preservedChars parameter. If the character is to be preserved, this
+     * method will simply shift the caret back one spot.
+     *
+     * @param preservedChars A list of characters that are to be preserved,
+     * these characters will NOT be removed from the behind the caret regardless
+     * of if they have been selected or not.
+     */
     protected void removeBehindCaret(Vector<Character> preservedChars) {
         // Underlying text field has selection and no carret, simply remove
         // everything that is selected.
@@ -373,6 +391,16 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    /**
+     * This method will remove any characters that have been selected in the
+     * underlying text field and that don't exist in the preservedChars
+     * parameter. If no characters have been selected, the underlying text field
+     * is unchanged.
+     *
+     * @param preservedChars A list of characters that are to be preserved,
+     * these characters will NOT be removed from the underlying text field
+     * regardless of if they have been selected or not.
+     */
     protected void removeSelectedText(Vector<Character> preservedChars) {
         Vector<Character> foundChars = new Vector<Character>();
 
