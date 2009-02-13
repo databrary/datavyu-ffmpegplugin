@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Cell;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Database;
@@ -19,6 +20,8 @@ import java.awt.event.MouseEvent;
 import java.util.Date;
 import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 /**
  *
@@ -117,6 +120,11 @@ implements ExternalDataCellListener, Selectable {
         db = cellDB;
         cellID = cell.getID();
         selection = selector;
+        setName(this.getClass().getSimpleName());
+
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(SpreadsheetCell.class);
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
@@ -132,15 +140,21 @@ implements ExternalDataCellListener, Selectable {
         topPanel = new SpreadsheetPanel();
         ord = new IntDataValueView(selection, new IntDataValue(cellDB),  false);
         ord.setFocusable(false);
+        ord.setToolTipText(rMap.getString("ord.tooltip"));
         setOrdinal(dc.getOrd());
+
         onset = new TimeStampDataValueView(selection,
                                            new TimeStampDataValue(cellDB),
                                            true);
+        onset.setToolTipText(rMap.getString("onset.tooltip"));
         setOnset(dc.getOnset());
+        
+
         offset = new TimeStampDataValueView(selection,
                                             new TimeStampDataValue(cellDB),
                                             true);
-        setOffset(dc.getOffset());
+        offset.setToolTipText(rMap.getString("offset.tooltip"));
+        setOffset(dc.getOffset());        
 
         //dataPanel = new SpreadsheetPanel();
         dataPanel = new MatrixViewLabel(selection, dc, null);

@@ -198,7 +198,6 @@ implements MouseListener, KeyListener, FocusListener {
             t = getNullArg();
         }
         setText(t);
-        // setToolTipText(value.toString());
     }
 
     private String getNullArg() {
