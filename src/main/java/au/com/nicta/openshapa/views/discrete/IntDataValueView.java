@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.IntDataValue;
 import au.com.nicta.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
 /**
  * This class is the view representation of a IntDataValue as stored within the
@@ -12,6 +13,9 @@ import java.awt.event.KeyEvent;
  * @author cfreeman
  */
 public final class IntDataValueView extends DataValueView {
+
+    /** A list of characters that can not be removed from this view. */
+    static final Vector<Character> preservedChars = new Vector<Character>();
 
     /**
      * Constructor.
@@ -105,20 +109,20 @@ public final class IntDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            this.removeBehindCaret();
+            this.removeBehindCaret(preservedChars);
             idv.setItsValue(new Integer(this.getText()));
             e.consume();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            this.removeAheadOfCaret();
+            this.removeAheadOfCaret(preservedChars);
             idv.setItsValue(new Integer(this.getText()));
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
         } else if (isKeyStrokeNumeric(e)) {
-            this.removeSelectedText();
+            this.removeSelectedText(preservedChars);
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
             setCaretPosition(Math.min(getCaretPosition() + 1,

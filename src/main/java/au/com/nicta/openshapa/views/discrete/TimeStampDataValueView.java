@@ -4,12 +4,15 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
 /**
  *
  * @author cfreeman
  */
 public final class TimeStampDataValueView extends DataValueView {
+
+    static final Vector<Character> preservedChars = new Vector<Character>();
 
     /**
      *
@@ -66,7 +69,7 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param e
      */
     public void keyTyped(KeyEvent e) {
-        this.removeSelectedText();
+        this.removeSelectedText(preservedChars);
         //this.handleKeyEvent(e);
     }
 

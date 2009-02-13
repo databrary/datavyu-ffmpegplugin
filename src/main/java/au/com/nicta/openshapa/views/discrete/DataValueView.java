@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
@@ -305,43 +306,97 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
-    protected void removeAheadOfCaret() {
+    protected void removeAheadOfCaret(Vector<Character> preservedChars) {
+        // Underlying text field has selection no caret, remove everything that
+        // is selected.
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText();
+            removeSelectedText(preservedChars);
+
+        // Underlying Text field has no selection, just a caret. Go ahead and
+        // manipulate it as such.
         } else {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
-            this.setText(currentValue.toString());
+            boolean deleteChar = true;
+
+            for (int i = 0; i < preservedChars.size(); i++) {
+                if (getText().charAt(getCaretPosition())
+                    == preservedChars.get(i)) {
+                    setCaretPosition(getCaretPosition() + 1);
+                    deleteChar = false;
+                    break;
+                }
+            }
+
+            // Character ahead of caret is not preserved. Delete it.
+            if (deleteChar) {
+                StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+                int cPosition = getCaretPosition();
+                this.setText(currentValue.toString());
+                setCaretPosition(cPosition);
+            }
         }
     }
 
-    protected void removeBehindCaret() {
+    protected void removeBehindCaret(Vector<Character> preservedChars) {
+        // Underlying text field has selection and no carret, simply remove
+        // everything that is selected.
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText();
+            removeSelectedText(preservedChars);
+
+        // Underlying text field has no selection, just a caret. Go ahead and
+        // manipulate it as such.
         } else {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
-            setCaretPosition(getCaretPosition() - 1);
-            this.setText(currentValue.toString());
+            boolean deleteChar = true;
+
+            // Check behind the caret to see if it is a preserved character. If
+            // the character is preserved - simply move the caret back one spot
+            // and leave the preserved character untouched.
+            for (int i = 0; i < preservedChars.size(); i++) {
+                if (getText().charAt(getCaretPosition() - 1)
+                    == preservedChars.get(i)) {
+                    setCaretPosition(getCaretPosition() - 1);
+                    deleteChar = false;
+                    break;
+                }
+            }
+
+            // Character behind caret is not preserved. Delete it.
+            if (deleteChar) {
+                StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.delete(getCaretPosition() - 1, getCaretPosition());
+                int cPosition = getCaretPosition() - 1;
+                this.setText(currentValue.toString());
+                setCaretPosition(cPosition);
+            }
+
+            
         }
     }
 
-    /**
-     *
-     *
-     */
-    protected void removeSelectedText() {
+    protected void removeSelectedText(Vector<Character> preservedChars) {
+        Vector<Character> foundChars = new Vector<Character>();
+
+        // Get the current value of the visual representation of this DataValue.
+        String cValue = this.getText();
+
         // Obtain the start and finish of the selected text.
         int start = this.getSelectionStart();
         int end = this.getSelectionEnd();
 
-        // Get all the text used for the visual representation of this
-        // DataValue.
-        String cValue = this.getText();
+        for (int i = 0; i < preservedChars.size(); i++) {
+            int pIndex = cValue.lastIndexOf(preservedChars.get(i));
+            if (pIndex < end && pIndex > start) {
+                // A preserved character exists - ensure that it remains.
+                foundChars.add(preservedChars.get(i));
+            }
+        }
 
         // Create a new value by removing the selected text from current value
         // of the DataValue.
         String nValue = cValue.substring(0, start);
+        for (int i = 0; i < foundChars.size(); i++) {
+            nValue = nValue.concat(foundChars.get(i).toString());
+        }
         nValue = nValue.concat(cValue.substring(end, cValue.length()));
 
         // Set the text for this data value to the new string.
