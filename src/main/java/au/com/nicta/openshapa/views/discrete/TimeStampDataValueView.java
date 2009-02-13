@@ -66,6 +66,7 @@ public final class TimeStampDataValueView extends DataValueView {
      * @param e
      */
     public void keyTyped(KeyEvent e) {
+        this.removeSelectedText();
         //this.handleKeyEvent(e);
     }
 

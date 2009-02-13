@@ -83,7 +83,7 @@ public final class IntDataValueView extends DataValueView {
      *
      * @param e The KeyEvent that triggered this action.
      */
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(KeyEvent e) {        
         IntDataValue idv = (IntDataValue) getValue();
 
         // '-' key toggles the state of a negative / positive number.
@@ -105,22 +105,20 @@ public final class IntDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
-            setCaretPosition(getCaretPosition() - 1);
-            idv.setItsValue(new Integer(currentValue.toString()));
+            this.removeBehindCaret();
+            idv.setItsValue(new Integer(this.getText()));
             e.consume();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
-            idv.setItsValue(new Integer(currentValue.toString()));
+            this.removeAheadOfCaret();
+            idv.setItsValue(new Integer(this.getText()));
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
-        } else if (isKeyStrokeNumeric(e)) {            
+        } else if (isKeyStrokeNumeric(e)) {
+            this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
             setCaretPosition(Math.min(getCaretPosition() + 1,

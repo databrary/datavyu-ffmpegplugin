@@ -25,5 +25,6 @@ public final class PredicateDataValueView extends DataValueView {
     }
 
     public void keyTyped(KeyEvent e) {
+        this.removeSelectedText();
     }
 }

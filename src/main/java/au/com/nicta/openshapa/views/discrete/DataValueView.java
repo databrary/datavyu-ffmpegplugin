@@ -305,6 +305,50 @@ implements MouseListener, KeyListener, FocusListener {
         }
     }
 
+    protected void removeAheadOfCaret() {
+        if ((getSelectionEnd() - getSelectionStart()) > 0) {
+            removeSelectedText();
+        } else {
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+            this.setText(currentValue.toString());
+        }
+    }
+
+    protected void removeBehindCaret() {
+        if ((getSelectionEnd() - getSelectionStart()) > 0) {
+            removeSelectedText();
+        } else {
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
+            setCaretPosition(getCaretPosition() - 1);
+            this.setText(currentValue.toString());
+        }
+    }
+
+    /**
+     *
+     *
+     */
+    protected void removeSelectedText() {
+        // Obtain the start and finish of the selected text.
+        int start = this.getSelectionStart();
+        int end = this.getSelectionEnd();
+
+        // Get all the text used for the visual representation of this
+        // DataValue.
+        String cValue = this.getText();
+
+        // Create a new value by removing the selected text from current value
+        // of the DataValue.
+        String nValue = cValue.substring(0, start);
+        nValue = nValue.concat(cValue.substring(end, cValue.length()));
+
+        // Set the text for this data value to the new string.
+        this.setText(nValue);
+        this.setCaretPosition(start);
+    }
+
     /**
      * Utility method for checking if a keystroke is a number.
      *

@@ -128,6 +128,7 @@ public final class FloatDataValueView extends DataValueView {
 
         // Key stoke is number - insert number into the current caret position.
         } else if (isKeyStrokeNumeric(e)) {
+            this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
             setCaretPosition(getCaretPosition() + 1);
