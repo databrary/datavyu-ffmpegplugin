@@ -274,6 +274,7 @@ public abstract class Cell extends DBElement
     /**
      * @return A hash code value for the object.
      */
+    /*
     @Override
     public int hashCode() {
         int hash = super.hashCode();
@@ -283,7 +284,7 @@ public abstract class Cell extends DBElement
         hash += new Boolean(selected).hashCode() * SEED4;
 
         return hash;
-    }
+    }*/
 
     /**
      * Compares this Cell against another object.
@@ -292,6 +293,7 @@ public abstract class Cell extends DBElement
      *
      * @return true if the Object obj is logically equal to this.
      */
+    /*
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -309,7 +311,7 @@ public abstract class Cell extends DBElement
                                   : c.comment.equals(this.comment))
             && (c.ord == this.ord)
             && (c.selected == this.selected);
-    }
+    }*/
 
 
 
