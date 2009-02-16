@@ -7,10 +7,6 @@
 
 package au.com.nicta.openshapa.db;
 
-import java.util.Collections;
-import java.util.Vector;
-import au.com.nicta.openshapa.db.MatrixVocabElement;
-
 /**
  * Class DataCell
  *
