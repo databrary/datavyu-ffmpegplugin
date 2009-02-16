@@ -246,6 +246,7 @@ implements MouseListener, KeyListener, FocusListener {
         // Deselect all cells before selecting the contents of a cell.
         // BugzID:230
         spreadsheetSelection.deselectAll();
+        spreadsheetSelection.deselectOthers();
         this.selectAll();
     }
 

@@ -44,7 +44,7 @@ public class Selector {
     /**
      * Deselect other selectors.
      */
-    private void deselectOthers() {
+    public void deselectOthers() {
         for (int i = 0; i < otherSelectors.size(); i++) {
             Selector other = (Selector) otherSelectors.get(i);
             other.deselectAll();
