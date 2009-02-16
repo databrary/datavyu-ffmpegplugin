@@ -7,8 +7,6 @@
 
 package au.com.nicta.openshapa.db;
 
-import java.util.Vector;
-
 /**
  * Class Cell
  *
@@ -260,6 +258,58 @@ public abstract class Cell extends DBElement
         return;
 
     } /* Cell::setSelected() */
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += this.itsColID * SEED1;
+        hash += comment.hashCode() * SEED2;
+        hash += ord * SEED3;
+        hash += new Boolean(selected).hashCode() * SEED4;
+
+        return hash;
+    }
+
+    /**
+     * Compares this Cell against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        Cell c = (Cell) obj;
+        return super.equals(c)
+            && (c.itsColID == this.itsColID)
+            && (c.comment == null ? this.comment == null
+                                  : c.comment.equals(this.comment))
+            && (c.ord == this.ord)
+            && (c.selected == this.selected);
+    }
 
 
 
