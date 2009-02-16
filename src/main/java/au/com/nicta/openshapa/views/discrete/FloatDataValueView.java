@@ -105,7 +105,7 @@ public final class FloatDataValueView extends DataValueView {
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {            
             this.removeBehindCaret(preservedChars);
-            fdv.setItsValue(new Double(this.getText()));
+            fdv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // The delete key removes digits ahead of the caret.
@@ -113,7 +113,7 @@ public final class FloatDataValueView extends DataValueView {
                    && e.getKeyChar() == '\u007F') {
 
             this.removeAheadOfCaret(preservedChars);
-            fdv.setItsValue(new Double(this.getText()));
+            fdv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
@@ -121,8 +121,8 @@ public final class FloatDataValueView extends DataValueView {
             this.removeSelectedText(preservedChars);
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-            setCaretPosition(getCaretPosition() + 1);
-            fdv.setItsValue(new Double(currentValue.toString()));
+            advanceCaret();  // Advance caret over the top of the new char.
+            fdv.setItsValue(buildValue(currentValue.toString()));
             e.consume();
 
         // Every other key stroke is ignored by the float editor.
@@ -132,6 +132,21 @@ public final class FloatDataValueView extends DataValueView {
 
         // Push the value back into the database.
         updateDatabase();
+    }
+
+    /**
+     * Builds a new Double value from a string.
+     *
+     * @param textField The String that you want to create a Double from.
+     *
+     * @return A Double value that can be used setting the database.
+     */
+    public Double buildValue(final String textField) {
+        if (textField == null || textField.equals("")) {
+            return new Double(0);
+        } else {
+            return new Double(textField);
+        }
     }
 
     /**

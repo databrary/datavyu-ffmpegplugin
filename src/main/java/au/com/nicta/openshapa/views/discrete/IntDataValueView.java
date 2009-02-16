@@ -110,14 +110,14 @@ public final class IntDataValueView extends DataValueView {
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
             this.removeBehindCaret(preservedChars);
-            idv.setItsValue(new Integer(this.getText()));
+            idv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
             this.removeAheadOfCaret(preservedChars);
-            idv.setItsValue(new Integer(this.getText()));
+            idv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
@@ -125,9 +125,8 @@ public final class IntDataValueView extends DataValueView {
             this.removeSelectedText(preservedChars);
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-            setCaretPosition(Math.min(getCaretPosition() + 1,
-                             getText().length()));
-            idv.setItsValue(new Integer(currentValue.toString()));
+            advanceCaret(); // Advance caret over the top of the new char.
+            idv.setItsValue(buildValue(currentValue.toString()));
             e.consume();
 
         // Every other key stroke is ignored by the float editor.
@@ -137,6 +136,21 @@ public final class IntDataValueView extends DataValueView {
 
         // Push the value back into the database.
         updateDatabase();
+    }
+
+    /**
+     * Builds a new Integer value from a string.
+     *
+     * @param textField The String that you want to create an Integer from.
+     *
+     * @return An Integer value that can be used setting the database.
+     */
+    public Integer buildValue(final String textField) {
+        if (textField == null || textField.equals("")) {
+            return new Integer(0);
+        } else {
+            return new Integer(textField);
+        }
     }
 
     /**

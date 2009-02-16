@@ -45,6 +45,9 @@ implements MouseListener, KeyListener, FocusListener {
     /** The last caret position. */
     private int oldCaretPosition;
 
+    /** Should the oldCaretPosition be advanced by a single position? */
+    private boolean advanceCaret;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueView.class);
 
@@ -72,6 +75,7 @@ implements MouseListener, KeyListener, FocusListener {
             index = matrixIndex;
             value = matrix.getArgCopy(index);
             oldCaretPosition = 0;
+            advanceCaret = false;
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
         }
@@ -95,6 +99,7 @@ implements MouseListener, KeyListener, FocusListener {
         index = -1;
         value = dataValue;
         oldCaretPosition = 0;
+        advanceCaret = false;
         initDataValueView(editable);
     }
 
@@ -117,9 +122,12 @@ implements MouseListener, KeyListener, FocusListener {
         index = matrixIndex;
 
         updateStrings();
-
+        
         oldCaretPosition = Math.min(oldCaretPosition, getText().length());
         setCaretPosition(oldCaretPosition);
+        advanceCaret = false;   // reset the advance caret flag - only applies
+                                // once per database update. Database update
+                                // triggers this method via a listener.
     }
 
     /**
@@ -143,12 +151,27 @@ implements MouseListener, KeyListener, FocusListener {
     }
 
     /**
+     * Set a flag to advanceCaret, when updateDatabase is called the
+     * oldCaretPosition will be advanced by one position. When set value is
+     * called back by the listeners it will reset this flag.
+     */
+    protected void advanceCaret() {
+        advanceCaret = true;
+    }
+
+    /**
      * Updates the database with the latest value from this DataValueView (i.e.
      * after the user has altered it).
      */
     protected void updateDatabase() {
         try {
+            // Character inserted - advance the caret position.
             oldCaretPosition = getCaretPosition();
+            if (advanceCaret) {
+                oldCaretPosition++;
+            }
+
+            // Update the OpenSHAPA database with the latest values.
             parentMatrix.replaceArg(index, value);
             parentCell.setVal(parentMatrix);
             parentCell.getDB().replaceCell(parentCell);
@@ -208,6 +231,7 @@ implements MouseListener, KeyListener, FocusListener {
             FormalArgument fa = mve.getFormalArg(index);
             t = fa.toString();
         } catch (SystemErrorException e) {
+            logger.error("Unable to get NULL arg", e);
 
         }
         return t;
