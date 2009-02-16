@@ -138,6 +138,26 @@ public final class ColPredDataValue extends DataValue
 
     } /* ColPredDataValue::ColPredDataValue(dv, blindCopy) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        ColPredDataValue clone; // = (ColPredDataValue) super.clone();
+        try {
+            clone = new ColPredDataValue(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
+
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/

@@ -5502,7 +5502,7 @@ public class ColPredTest {
         String testBanner =
             "Testing class ColPred argument list management                   ";
         String passBanner = "PASSED\n";
-        String failBanner = "FAILED\n";
+        String failBanner  = "FAILED\n";
         String systemErrorExceptionString = null;
         boolean completed = false;
         boolean threwSystemErrorException = false;

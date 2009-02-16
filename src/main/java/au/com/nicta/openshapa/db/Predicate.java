@@ -1037,7 +1037,11 @@ public class Predicate extends DBElement
                         "th source argument?!?!");
             }
 
-            cdv = DataValue.Copy(dv, true);
+            try {
+                cdv = (DataValue) dv.blindClone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone DataValue.");
+            }
 
             newArgList.add(cdv);
         }
@@ -2178,7 +2182,11 @@ public class Predicate extends DBElement
                 {
                     if ( ! fargDeleted[i] )
                     {
-                        dv = DataValue.Copy(this.getArg(i), true);
+                        try {
+                            dv = (DataValue) this.getArg(i).blindClone();
+                        } catch (CloneNotSupportedException e) {
+                            throw new SystemErrorException("Unable to clone DataValue.");
+                        }
 
                         j = (int)o2n[i];
 

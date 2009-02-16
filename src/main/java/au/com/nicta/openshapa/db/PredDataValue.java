@@ -144,9 +144,30 @@ public final class PredDataValue extends DataValue
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        PredDataValue clone = (PredDataValue) super.clone();
+        PredDataValue clone;
         try {
             clone = new PredDataValue(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
+
+    /**
+     * Creates a new copy of the DataValue without performing any additional
+     * sainity checking.
+     *
+     * @return A copy of the DataValue object
+     *
+     * @throws java.lang.CloneNotSupportedException If blindCopy is not
+     * supported by this class.
+     */
+    @Override
+    public Object blindClone() throws CloneNotSupportedException {
+        PredDataValue clone;
+        try {
+            clone = new PredDataValue(this, true);
         } catch (SystemErrorException e) {
             clone = null;
         }

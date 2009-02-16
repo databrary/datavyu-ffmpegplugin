@@ -800,84 +800,21 @@ public abstract class DataValue extends DBElement
 //        return;
 //        
 //    }  /* DataValue::notifyListeners() */
-  
-    
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
 
     /**
-     * Copy()
+     * Creates a new copy of the DataValue without performing any additional
+     * sainity checking.
      *
-     * Given a DataValue, return a copy.  Only minimal sanity checking.
-     * Even less if blindCopy is true. 
+     * @return A copy of the DataValue object
      *
-     *                                              JRM -- 3/20/08
-     *
-     * Changes:
-     *
-     * @Deprecated Should use clone in place of this.
-     *
-     *    - None.
+     * @throws java.lang.CloneNotSupportedException If blindCopy is not
+     * supported by this class.
      */
-    @Deprecated
-    public static DataValue Copy(DataValue dv,
-                                 boolean blindCopy)
-        throws SystemErrorException
-    {
-        final String mName = "DataValue::CopyDataValue(): ";
-        DataValue copy = null;
-        
-        if ( dv == null )
-        {
-            throw new SystemErrorException(mName + "dv null on entry.");
-        }
-        
-        if ( dv instanceof ColPredDataValue )
-        {
-            copy = new ColPredDataValue((ColPredDataValue)dv);
-        }
-        else if ( dv instanceof FloatDataValue )
-        {
-            copy = new FloatDataValue((FloatDataValue)dv);
-        }
-        else if ( dv instanceof IntDataValue )
-        {
-            copy = new IntDataValue((IntDataValue)dv);
-        }
-        else if ( dv instanceof NominalDataValue )
-        {
-            copy = new NominalDataValue((NominalDataValue)dv);
-        }
-        else if ( dv instanceof PredDataValue )
-        {
-            copy = new PredDataValue((PredDataValue)dv, blindCopy);
-        }
-        else if ( dv instanceof QuoteStringDataValue )
-        {
-            copy = new QuoteStringDataValue((QuoteStringDataValue)dv);
-        }
-        else if ( dv instanceof TextStringDataValue )
-        {
-            copy = new TextStringDataValue((TextStringDataValue)dv);
-        }
-        else if ( dv instanceof TimeStampDataValue )
-        {
-            copy = new TimeStampDataValue((TimeStampDataValue)dv);
-        }
-        else if ( dv instanceof UndefinedDataValue )
-        {
-            copy = new UndefinedDataValue((UndefinedDataValue)dv);
-        }
-        else
-        {
-            throw new SystemErrorException(mName + 
-                                           "Unknown data value sub-type");
-        }
-        
-        return copy;
-        
-    } /* "DataValue::Copy() */
+    public Object blindClone() throws CloneNotSupportedException {
+        return this.clone();    // Blind clone behaves the same as clone by
+                                // default. Currently only PredDataValue is the
+                                // only blindclone which skips sanity checks.
+    }
 
     /** Seed value for generating hash codes. */
     private final static int SEED1 = 3;

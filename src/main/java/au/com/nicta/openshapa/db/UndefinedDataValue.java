@@ -97,8 +97,7 @@ public final class UndefinedDataValue extends DataValue
         }
 
         return clone;
-    }
-    
+    }    
         
     /*************************************************************************/
     /***************************** Accessors: ********************************/

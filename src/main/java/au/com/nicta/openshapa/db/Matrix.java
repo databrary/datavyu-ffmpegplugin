@@ -747,7 +747,11 @@ public class Matrix implements Cloneable {
                         "th source argument?!?!");
             }
 
-            cdv = DataValue.Copy(dv, true);
+            try {
+                cdv = (DataValue) dv.blindClone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone DataValue.");
+            }
 
             newArgList.add(cdv);
         }
@@ -1180,7 +1184,11 @@ public class Matrix implements Cloneable {
 
         if ( arg != null )
         {
-            argCopy = DataValue.Copy(arg, false);
+            try {
+                argCopy = (DataValue) arg.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone DataValue");
+            }
         }
 
         return argCopy;

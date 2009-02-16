@@ -1227,7 +1227,11 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         {
             if ( ! fargDeleted[i] )
             {
-                dv = DataValue.Copy(this.val.getArg(i), false);
+                try {
+                    dv = (DataValue) this.val.getArg(i).clone();
+                } catch (CloneNotSupportedException e) {
+                    throw new SystemErrorException("Unable to clone DataValue.");
+                }
 
                 j = (int)o2n[i];
 
@@ -1370,7 +1374,11 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                 {
                     if ( ! fargDeleted[i] )
                     {
-                        dv = DataValue.Copy(this.val.getArg(i), false);
+                        try {
+                            dv = (DataValue) this.val.getArg(i).clone();
+                        } catch (CloneNotSupportedException e) {
+                            throw new SystemErrorException("Unable to clone DataValue.");
+                        }
 
                         j = (int)o2n[i];
 

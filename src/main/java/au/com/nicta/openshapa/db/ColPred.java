@@ -291,7 +291,7 @@ public class ColPred extends DBElement
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        ColPred clone = (ColPred) super.clone();
+        ColPred clone;
         try {
             clone = new ColPred(this);
         } catch (SystemErrorException e) {
@@ -1077,7 +1077,11 @@ public class ColPred extends DBElement
                         "th source argument?!?!");
             }
 
-            cdv = DataValue.Copy(dv, true);
+            try {
+                cdv = (DataValue) dv.blindClone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone datavalue.");
+            }
 
             newArgList.add(cdv);
         }
@@ -1737,7 +1741,11 @@ public class ColPred extends DBElement
 
         if ( arg != null )
         {
-            argCopy = DataValue.Copy(arg, false);
+            try {
+                argCopy = (DataValue) arg.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone datavalue");
+            }
         }
 
         return argCopy;
@@ -2073,7 +2081,11 @@ public class ColPred extends DBElement
                 {
                     if ( ! cpFargDeleted[i] )
                     {
-                        dv = DataValue.Copy(this.getArg(i), true);
+                        try {
+                            dv = (DataValue) this.getArg(i).blindClone();
+                        } catch (CloneNotSupportedException e) {
+                            throw new SystemErrorException("Unable to clone data value.");
+                        }
 
                         j = (int)cpo2n[i];
 
