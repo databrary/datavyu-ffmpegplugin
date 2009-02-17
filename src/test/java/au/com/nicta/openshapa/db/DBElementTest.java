@@ -83,10 +83,6 @@ public abstract class DBElementTest {
         assertFalse(a.equals(d));
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /**
      * Resets the id field to its initial value DBIndex.INVALID_ID.
      *
@@ -94,21 +90,18 @@ public abstract class DBElementTest {
      * to be reset.
      *
      * @return The current id used by this DBElement.
-     *
-     * @warning This is a test function that should not be called outside of
-     * test code, and eventually this should be refactored to belong within
-     * the DBElementTest class.
      */
     protected static long ResetID(DBElement dbe) {
         long old_id = DBIndex.INVALID_ID;
         try {
-            java.lang.Long oldid = (java.lang.Long) PrivateAccessor.getField(dbe, "id");
+            Long oldid = (Long) PrivateAccessor.getField(dbe, "id");
             old_id = oldid;
-            java.lang.Long invID = new java.lang.Long(DBIndex.INVALID_ID);
+            Long invID = new Long(DBIndex.INVALID_ID);
             PrivateAccessor.setField(dbe, "id", invID);
         } catch (Throwable th) {
             fail("Problem in ResetID PrivateAccessor calls.");
         }
+
         return old_id;
     }
 

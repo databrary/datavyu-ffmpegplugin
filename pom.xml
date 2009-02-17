@@ -74,6 +74,7 @@
         <configuration>
           <licenseLocation>/var/clover/clover.license</licenseLocation>
           <cloverDatabase>/var/clover/openshapa.db</cloverDatabase>
+          <historyDir>/var/clover/openshapa</historyDir>
           <generateHistorical>true</generateHistorical>
         </configuration>
       </plugin>
