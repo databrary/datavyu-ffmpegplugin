@@ -3083,4 +3083,116 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
     } /* DataCell::Construct(db, colID, mveID, on, off, val) */
 
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED1 = 3;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED2 = 7;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED3 = 11;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED4 = 13;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED5 = 17;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED6 = 19;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED7 = 23;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED8 = 29;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED9 = 31;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED10 = 37;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED11 = 41;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED12 = 43;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED13 = 47;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED14 = 53;
+
+    /** Seed value for generating hash codes. */
+    private final static int SEED15 = 59;
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += new Boolean(this.cascadePveDel).hashCode() * SEED1;
+        hash += this.cascadePveID * SEED2;
+        hash += new Boolean(this.cascadePveMod).hashCode() * SEED3;
+        hash += new Boolean(this.cascadeMveDel).hashCode() * SEED4;
+        hash += (int) (this.cascadeMveID ^ (this.cascadeMveID >>> 32)) * SEED5;
+        hash += new Boolean(this.cascadeMveMod).hashCode() * SEED6;
+        hash += this.pending == null ? 0 : this.pending.hashCode() * SEED7;
+        hash += this.oldOrd * SEED8;
+        hash += new Boolean(this.inCascade).hashCode() * SEED9;
+        hash += this.listeners == null ? 0 : this.listeners.hashCode() * SEED10;
+        hash += this.val == null ? 0 : this.val.hashCode() * SEED11;
+        hash += this.offset == null ? 0 : this.offset.hashCode() * SEED12;
+        hash += this.onset == null ? 0 : this.onset.hashCode() * SEED13;
+        hash += this.itsMveType.ordinal() * SEED14;
+        hash += this.itsMveID * SEED15;
+
+        return hash;
+    }
+
+    /**
+     * Compares this DataCell against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        DataCell d = (DataCell) obj;
+        return super.equals(d)
+            && (this.cascadePveDel == d.cascadePveDel)
+            && (this.cascadePveID == d.cascadePveID)
+            && (this.cascadePveMod == d.cascadePveMod)
+            && (this.cascadeMveDel == d.cascadeMveDel)
+            && (this.cascadeMveID == d.cascadeMveID)
+            && (this.cascadeMveMod == d.cascadeMveMod)
+            && (this.pending == null ? d.pending == null
+                                     : this.pending.equals(d.pending))
+            && (this.oldOrd == d.oldOrd)
+            && (this.inCascade == d.inCascade)
+            && (this.listeners == null ? d.listeners == null
+                                       : this.listeners.equals(d.listeners))
+            && (this.val == null ? d.val == null
+                                 : this.val.equals(d.val))
+            && (this.offset == null ? d.offset == null
+                                    : this.offset.equals(d.offset))
+            && (this.onset == null ? d.onset == null
+                                   : this.onset.equals(d.onset))
+            && (this.itsMveType == d.itsMveType)
+            && (this.itsMveID == d.itsMveID);
+    }
+
 } // End of DataCell class definition
