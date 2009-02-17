@@ -12,18 +12,10 @@ import static org.junit.Assert.*;
  *
  * @author swhitcher
  */
-public class CellTest {
+public abstract class CellTest extends DBElementTest {
 
     /** Constructor. */
     public CellTest() {
-    }
-
-    /** Kickoff Test - just a dummy for now. */
-    @Test
-    public void TestClassCell() {
-        // so far a dummy test no-one calls it
-        // CellTest is only a holder for some static utility functions
-        assertTrue(true);
     }
 
     /*************************************************************************/

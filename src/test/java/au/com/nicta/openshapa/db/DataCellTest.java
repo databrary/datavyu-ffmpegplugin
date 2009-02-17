@@ -14,17 +14,51 @@ import static org.junit.Assert.*;
  *
  * @author swhitcher
  */
-public class DataCellTest {
+public class DataCellTest extends CellTest {
+
+    Database db;
+    DataCell cell;
+    long colID;
+    DataColumn col;
 
     public DataCellTest() {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws SystemErrorException {
+        db = new ODBCDatabase();
+
+        col = new DataColumn(db, "integer", MatrixVocabElement.MatrixType.INTEGER);
+        colID = db.addColumn(col);
+        col = db.getDataColumn(colID);
+
+        Matrix val = Matrix.Construct(db,
+                                      col.getItsMveID(),
+                                      IntDataValue.Construct(db, 3));
+        cell = DataCell.Construct(db, colID, col.getItsMveID(), 0, 0, val);
     }
 
     @After
     public void tearDown() {
+    }
+
+    @Override
+    public DBElement getInstance() {
+        return cell;
+    }
+
+    @Test
+    public void testEquals() throws SystemErrorException {
+        DataCell cell1 = (DataCell) cell.clone();
+        DataCell cell2 = (DataCell) cell.clone();
+
+        Matrix val = Matrix.Construct(db,
+                                      col.getItsMveID(),
+                                      IntDataValue.Construct(db, 4));
+        DataCell cell3 = DataCell.Construct(db, colID, col.getItsMveID(),
+                                            0, 0, val);
+
+        super.testEquals(cell, cell1, cell2, cell3);
     }
 
     /*************************************************************************/

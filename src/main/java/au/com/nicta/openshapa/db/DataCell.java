@@ -3195,4 +3195,16 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             && (this.itsMveID == d.itsMveID);
     }
 
+    @Override
+    public Object clone() {
+        DataCell clone;
+        try {
+            clone = new DataCell(this);
+        } catch (SystemErrorException e) {
+            clone = null;
+        }
+
+        return clone;
+    }
+
 } // End of DataCell class definition
