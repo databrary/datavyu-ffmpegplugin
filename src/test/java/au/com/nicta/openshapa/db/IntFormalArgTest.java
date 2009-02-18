@@ -12,97 +12,21 @@ import static org.junit.Assert.*;
  */
 public class IntFormalArgTest {
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     public IntFormalArgTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * TestClassIntFormalArg()
-     *
-     * Main routine for tests of class IntFormalArg.
-     *
-     *                                      JRM -- 3/10/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassIntFormalArg() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class IntFormalArg:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test4ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestVEAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIsValidValue(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class IntFormalArg.\n\n",
-                              failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class IntFormalArg.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* Database::TestClassIntFormalArg() */
 
     /**
      * TestAccessors()
@@ -113,10 +37,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-    {
+    @Test
+    public void TestAccessors() {
         String testBanner =
             "Testing class IntFormalArg accessors                             ";
         String passBanner = "PASSED\n";
@@ -420,7 +342,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* IntFormalArg::TestAccessors() */
 
@@ -435,10 +357,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestVEAccessors(java.io.PrintStream outStream,
-                                          boolean verbose)
-    {
+    @Test
+    public void TestVEAccessors() {
         String testBanner =
             "Testing class IntFormalArg itsVocabElement accessors             ";
         String passBanner = "PASSED\n";
@@ -550,8 +470,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::TestVEAccessors() */
 
     /**
@@ -564,10 +483,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class IntFormalArg            ";
         String passBanner = "PASSED\n";
@@ -783,8 +700,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::Test1ArgConstructor() */
 
     /**
@@ -797,10 +713,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test2ArgConstructor() {
         String testBanner =
             "Testing 2 argument constructor for class IntFormalArg            ";
         String passBanner = "PASSED\n";
@@ -1035,8 +949,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::Test2ArgConstructor() */
 
 
@@ -1050,10 +963,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test4ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test4ArgConstructor() {
         String testBanner =
             "Testing 4 argument constructor for class IntFormalArg            ";
         String passBanner = "PASSED\n";
@@ -1291,8 +1202,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::Test4ArgConstructor() */
 
 
@@ -1306,10 +1216,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestCopyConstructor() {
         String testBanner =
             "Testing copy constructor for class IntFormalArg                  ";
         String passBanner = "PASSED\n";
@@ -1700,8 +1608,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::TestCopyConstructor() */
 
 
@@ -1720,11 +1627,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestIsValidValue(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIsValidValue() throws SystemErrorException {
         String testBanner =
             "Testing isValidValue()                                           ";
         String passBanner = "PASSED\n";
@@ -1966,8 +1870,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::TestIsValidValue() */
 
 
@@ -1982,11 +1885,8 @@ public class IntFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2104,8 +2004,7 @@ public class IntFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntFormalArg::TestToStringMethods() */
 
 }
