@@ -13,88 +13,21 @@ import static org.junit.Assert.*;
  */
 public class MatrixVocabElementTest {
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     public MatrixVocabElementTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * TestClassMatrixVocabElement()
-     *
-     * Main routine for tests of class MatrixVocabElement.
-     *
-     *                                      JRM -- 3/10/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassMatrixVocabElement() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class MatrixVocabElement:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestArgListManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class MatrixVocabElement.\n\n",
-                              failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class MatrixVocabElement.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* MatrixVocabElement::TestClassMatrixVocabElement() */
-
 
     /**
      * TestAccessors()
@@ -105,11 +38,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class MatrixVocabElement accessors                       ";
         String passBanner = "PASSED\n";
@@ -510,8 +440,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::TestAccessors() */
 
     /**
@@ -525,11 +454,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestArgListManagement(java.io.PrintStream outStream,
-                                                boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestArgListManagement() throws SystemErrorException {
         String testBanner =
             "Testing class MatrixVocabElement formal arg list management      ";
         String passBanner = "PASSED\n";
@@ -708,8 +634,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::TestArgListManagement() */
 
 
@@ -2543,10 +2468,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class MatrixVocabElement      ";
         String passBanner = "PASSED\n";
@@ -2744,8 +2667,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::Test1ArgConstructor() */
 
 
@@ -2759,10 +2681,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test2ArgConstructor() {
         String testBanner =
             "Testing 2 argument constructor for class MatrixVocabElement      ";
         String passBanner = "PASSED\n";
@@ -2968,8 +2888,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::Test2ArgConstructor() */
 
 
@@ -2983,11 +2902,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         final String mName = "MatrixVocabElement::TestCopyConstructor(): ";
         String testBanner =
             "Testing copy constructor for class MatrixVocabElement            ";
@@ -4154,8 +4070,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::TestCopyConstructor() */
 
 
@@ -4170,11 +4085,8 @@ public class MatrixVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         final String expectedString = "test(<a>, <b>, <c>, <d>, <e>, <f>)";
         final String expectedDBString =
             "((MatrixVocabElement: 0 test) " +
@@ -4311,8 +4223,7 @@ public class MatrixVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* MatrixVocabElement::TestToStringMethods() */
 
 
