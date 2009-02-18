@@ -21,6 +21,9 @@ public class DataCellTest extends CellTest {
     long colID;
     DataColumn col;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     public DataCellTest() {
     }
 
@@ -36,6 +39,9 @@ public class DataCellTest extends CellTest {
                                       col.getItsMveID(),
                                       IntDataValue.Construct(db, 3));
         cell = DataCell.Construct(db, colID, col.getItsMveID(), 0, 0, val);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
@@ -60,10 +66,6 @@ public class DataCellTest extends CellTest {
 
         super.testEquals(cell, cell1, cell2, cell3);
     }
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
 
     /*************************************************************************
      *
@@ -151,8 +153,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test3ArgConstructor() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing 3 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -949,8 +949,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test4ArgConstructor() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing 4 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -1767,8 +1765,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test7ArgConstructor() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing 7 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -3281,8 +3277,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestAccessors() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing class DataCell accessors                                 ";
         String passBanner = "PASSED\n";
@@ -4283,8 +4277,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestCopyConstructor() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing copy constructor for class DataCell                      ";
         String passBanner = "PASSED\n";
@@ -5446,8 +5438,6 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestToStringMethods() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
