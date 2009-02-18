@@ -20,6 +20,9 @@ public class PredDataValueTest extends DataValueTest {
     private MatrixVocabElement predMVE2;
     private PredFormalArg pfa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     @Override
     public DataValue getInstance() {
         return pdv;
@@ -61,6 +64,8 @@ public class PredDataValueTest extends DataValueTest {
 
         pdv = new PredDataValue(db, pfa.getID());
 
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -142,10 +147,6 @@ public class PredDataValueTest extends DataValueTest {
 
     } /* PredDataValue::Test1ArgConstructor() */
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -222,74 +223,6 @@ public class PredDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassPredDataValue()
-     *
-     * Main routine for tests of class PredDataValue.
-     *
-     *                                      JRM -- 11/23/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassPredDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class PredDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class PredDataValue.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class PredDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* PredDataValue::TestClassPredDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -301,10 +234,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class PredDataValue           ";
         String passBanner = "PASSED\n";
@@ -483,8 +414,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::Test1ArgConstructor() */
 
 
@@ -500,11 +430,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class PredDataValue           ";
         String passBanner = "PASSED\n";
@@ -1156,8 +1083,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::Test2ArgConstructor() */
 
 
@@ -1173,11 +1099,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class PredDataValue           ";
         String passBanner = "PASSED\n";
@@ -1947,8 +1870,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::Test3ArgConstructor() */
 
 
@@ -1963,11 +1885,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class PredDataValue accessors                            ";
         String passBanner = "PASSED\n";
@@ -3010,8 +2929,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::TestAccessors() */
 
 
@@ -3027,11 +2945,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class PredDataValue                 ";
         String passBanner = "PASSED\n";
@@ -3766,8 +3681,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::TestCopyConstructor() */
 
 
@@ -3783,11 +3697,8 @@ public class PredDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -4224,8 +4135,7 @@ public class PredDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredDataValue::TestToStringMethods() */
 
 
