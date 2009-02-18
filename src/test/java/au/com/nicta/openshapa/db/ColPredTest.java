@@ -17,6 +17,8 @@ public class ColPredTest {
     Database db;
     long floatMveId;
     long intMveId;
+    PrintStream outStream;
+    boolean verbose;
 
     public ColPredTest() {
     }
@@ -38,6 +40,9 @@ public class ColPredTest {
         intMVE.appendFormalArg(iarg);
         db.vl.addElement(intMVE);
         intMveId = intMVE.getID();
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -102,9 +107,6 @@ public class ColPredTest {
      */
     private enum ExpectedResult { succeed, system_error, return_null };
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
     // TODO: Must add tests to verify corrct management of undefined data values
     //       and query variables.  A lot of this will be tested in MacSHAPA file
     //       save reload, and query language -- so perhaps I can get away with
@@ -222,83 +224,6 @@ public class ColPredTest {
      *
      *************************************************************************/
 
-
-    /**
-     * TestClassColPred()
-     *
-     * Main routine for tests of class ColPred.
-     *
-     *                                      JRM -- 9/10/08
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassColPred() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class ColPred:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestArgListManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        // TODO:  Add test for validateColPred
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class Predicate.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class Predicate.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* ColPred::TestClassColPred() */
-
-
     /**
      * Test1ArgConstructor()
      *
@@ -311,10 +236,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class ColPred                 ";
         String passBanner = "PASSED\n";
@@ -527,7 +450,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* ColPred::Test1ArgConstructor() */
 
@@ -544,11 +467,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class ColPred                 ";
         String passBanner = "PASSED\n";
@@ -1648,7 +1568,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* ColPred::Test2ArgConstructor() */
 
@@ -1665,11 +1585,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class ColPred                 ";
         String passBanner = "PASSED\n";
@@ -4027,7 +3944,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* ColPred::Test3ArgConstructor() */
 
@@ -4043,11 +3960,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class ColPred accessors                                  ";
         String passBanner = "PASSED\n";
@@ -5477,8 +5391,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* ColPred::TestAccessors() */
 
 
@@ -5494,11 +5407,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    private static boolean TestArgListManagement(java.io.PrintStream outStream,
-                                                 boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestArgListManagement() throws SystemErrorException {
         String testBanner =
             "Testing class ColPred argument list management                   ";
         String passBanner = "PASSED\n";
@@ -10090,8 +10000,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* ColPred::TestArgListManagement() */
 
 
@@ -10107,11 +10016,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class ColPred                       ";
         String passBanner = "PASSED\n";
@@ -11972,8 +11878,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* ColPred::TestCopyConstructor() */
 
 
@@ -12144,10 +12049,8 @@ public class ColPredTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestToStringMethods() {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -12667,7 +12570,7 @@ public class ColPredTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* ColPred::TestToStringMethods() */
 
