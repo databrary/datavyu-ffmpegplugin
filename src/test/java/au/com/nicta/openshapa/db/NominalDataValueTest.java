@@ -23,6 +23,9 @@ public class NominalDataValueTest extends DataValueTest {
     private MatrixVocabElement matrix_mve;
     private UnTypedFormalArg ufa;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     /**
      * Default test constructor.
      */
@@ -65,6 +68,9 @@ public class NominalDataValueTest extends DataValueTest {
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);
         ndv = new NominalDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -425,11 +431,6 @@ public class NominalDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -506,74 +507,6 @@ public class NominalDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassNominalDataValue()
-     *
-     * Main routine for tests of class NominalDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassNominalDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class NominalDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class NominalDataValue.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class NominalDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* NominalDataValue::TestClassNominalDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -585,10 +518,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class NominalDataValue        ";
         String passBanner = "PASSED\n";
@@ -782,8 +713,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::Test1ArgConstructor() */
 
 
@@ -799,11 +729,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class NominalDataValue        ";
         String passBanner = "PASSED\n";
@@ -1222,8 +1149,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::Test2ArgConstructor() */
 
 
@@ -1239,11 +1165,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class NominalDataValue        ";
         String passBanner = "PASSED\n";
@@ -1659,8 +1582,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::Test3ArgConstructor() */
 
 
@@ -1677,11 +1599,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *                                              JRM -- 10/20/08
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class NominalDataValue accessors                         ";
         String passBanner = "PASSED\n";
@@ -2125,8 +2044,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::TestAccessors() */
 
 
@@ -2142,11 +2060,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class NominalDataValue              ";
         String passBanner = "PASSED\n";
@@ -2450,8 +2365,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::TestCopyConstructor() */
 
 
@@ -2467,11 +2381,8 @@ public class NominalDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2697,8 +2608,7 @@ public class NominalDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* NominalDataValue::TestToStringMethods() */
 
 
