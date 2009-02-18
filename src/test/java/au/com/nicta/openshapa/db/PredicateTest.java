@@ -21,6 +21,10 @@ public class PredicateTest {
     /** id for Predicate vocab element. */
     private long pveID;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
+
     public PredicateTest() {
     }
 
@@ -37,6 +41,9 @@ public class PredicateTest {
         pve0.appendFormalArg(new TimeStampFormalArg(db, "<timestamp>"));
         pve0.appendFormalArg(new UnTypedFormalArg(db, "<untyped>"));
         pveID = db.addPredVE(pve0);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
@@ -87,9 +94,6 @@ public class PredicateTest {
         assertFalse(p0.equals(p2));
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
     // TODO: Must add tests to verify corrct management of undefined data values
     //       and query variables.  A lot of this will be tested in MacSHAPA file
     //       save reload, and query language -- so perhaps I can get away with
@@ -205,83 +209,6 @@ public class PredicateTest {
      *
      *************************************************************************/
 
-
-    /**
-     * TestClassPredicate()
-     *
-     * Main routine for tests of class Predicate.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassPredicate() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class Predicate:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestArgListManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        // TODO:  Add test for validatePredicate
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class Predicate.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class Predicate.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* Predicate::TestClassPredicate() */
-
-
     /**
      * Test1ArgConstructor()
      *
@@ -294,10 +221,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class Predicate               ";
         String passBanner = "PASSED\n";
@@ -510,8 +435,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::Test1ArgConstructor() */
 
 
@@ -527,11 +451,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class Predicate               ";
         String passBanner = "PASSED\n";
@@ -1023,8 +944,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::Test2ArgConstructor() */
 
     /**
@@ -1040,10 +960,7 @@ public class PredicateTest {
      *    - None.
      */
 
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class Predicate               ";
         String passBanner = "PASSED\n";
@@ -2297,8 +2214,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::Test3ArgConstructor() */
 
 
@@ -2311,11 +2227,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class Predicate accessors                                ";
         String passBanner = "PASSED\n";
@@ -3247,8 +3160,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::TestAccessors() */
 
     /**
@@ -3260,11 +3172,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean TestArgListManagement(java.io.PrintStream outStream,
-                                                boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestArgListManagement() throws SystemErrorException {
         String testBanner =
             "Testing class Predicate argument list management                 ";
         String passBanner = "PASSED\n";
@@ -6076,8 +5985,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::TestArgListManagement() */
 
 
@@ -6091,11 +5999,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         final String mName = "Predicate::TestCopyConstructor(): ";
         String testBanner =
             "Testing copy constructor for class Predicate                     ";
@@ -6907,8 +6812,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::TestCopyConstructor() */
 
 
@@ -6924,10 +6828,8 @@ public class PredicateTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestToStringMethods() {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -7386,8 +7288,7 @@ public class PredicateTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Predicate::TestToStringMethods() */
 
 
