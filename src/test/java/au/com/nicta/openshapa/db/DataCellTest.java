@@ -138,73 +138,6 @@ public class DataCellTest extends CellTest {
 // to locate the cause of the fail.
 
     /**
-     * TestClassDataCell()
-     *
-     * Main routine for tests of class DataCell.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassDataCell() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class DataCell:\n");
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test4ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test7ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class DataCell.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class DataCell.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* DataCell::TestClassDataCell() */
-
-
-    /**
      * Test3ArgConstructor()
      *
      * Run a battery of tests on the three argument constructor for this
@@ -216,11 +149,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing 3 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -998,7 +930,7 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DataCell::Test3ArgConstructor() */
 
@@ -1015,11 +947,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean Test4ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test4ArgConstructor() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing 4 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -1818,8 +1749,7 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DataCell::Test4ArgConstructor() */
 
 
@@ -1835,11 +1765,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean Test7ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test7ArgConstructor() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing 7 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -2574,7 +2503,8 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        //return pass;
+        assertTrue(pass);
 
     } /* DataCell::Test7ArgConstructor() */
 
@@ -2591,7 +2521,6 @@ public class DataCellTest extends CellTest {
      *
      *    - None
      */
-
     public static int TestAccessorMethods(DataCell testCell,
                                   Database initDB,
                                   String initComment,
@@ -3350,11 +3279,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing class DataCell accessors                                 ";
         String passBanner = "PASSED\n";
@@ -4337,8 +4265,7 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DataCell::TestAccessors() */
 
 
@@ -4354,11 +4281,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing copy constructor for class DataCell                      ";
         String passBanner = "PASSED\n";
@@ -5502,7 +5428,7 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DataCell::TestCopyConstructor() */
 
@@ -5518,11 +5444,10 @@ public class DataCellTest extends CellTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
+        PrintStream outStream = System.out;
+        boolean verbose = true;
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -7267,8 +7192,7 @@ public class DataCellTest extends CellTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DataCell::TestToStringMethods() */
 
 
