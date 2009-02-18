@@ -20,6 +20,9 @@ public class IntDataValueTest extends DataValueTest {
     private MatrixVocabElement int_mve2;
     private IntFormalArg ifa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     /**
      * Default test constructor.
      */
@@ -54,6 +57,9 @@ public class IntDataValueTest extends DataValueTest {
         int_mve2.appendFormalArg(ifa2);
         db.vl.addElement(int_mve2);
         idv = new IntDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -358,10 +364,6 @@ public class IntDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -438,73 +440,6 @@ public class IntDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassIntDataValue()
-     *
-     * Main routine for tests of class IntDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassIntDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class IntDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class IntDataValue.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class IntDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* IntDataValue::TestClassIntDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -516,10 +451,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class IntDataValue            ";
         String passBanner = "PASSED\n";
@@ -712,8 +645,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::Test1ArgConstructor() */
 
 
@@ -729,11 +661,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class IntDataValue            ";
         String passBanner = "PASSED\n";
@@ -1151,8 +1080,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::Test2ArgConstructor() */
 
 
@@ -1168,11 +1096,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class IntDataValue            ";
         String passBanner = "PASSED\n";
@@ -1654,8 +1579,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::Test3ArgConstructor() */
 
 
@@ -1670,11 +1594,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class IntDataValue accessors                             ";
         String passBanner = "PASSED\n";
@@ -1972,8 +1893,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::TestAccessors() */
 
 
@@ -1989,11 +1909,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class IntDataValue                  ";
         String passBanner = "PASSED\n";
@@ -2293,8 +2210,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::TestCopyConstructor() */
 
 
@@ -2310,11 +2226,8 @@ public class IntDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2541,8 +2454,7 @@ public class IntDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* IntDataValue::TestToStringMethods() */
 
 
