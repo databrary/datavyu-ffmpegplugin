@@ -24,6 +24,9 @@ public class MatrixTest {
     /** Test fixture UntypedFormalArg. */
     private UnTypedFormalArg testufa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     /** Constructor. */
     public MatrixTest() {
     }
@@ -47,6 +50,9 @@ public class MatrixTest {
         testufa2 = new UnTypedFormalArg(testdb, "<untyped>");
         testMatrixMve2.appendFormalArg(testufa2);
         testdb.vl.addElement(testMatrixMve2);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -110,10 +116,6 @@ public class MatrixTest {
      */
     private enum ExpectedResult { succeed, system_error, return_null };
 
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
 
     /*************************************************************************
      *
@@ -235,75 +237,6 @@ public class MatrixTest {
 // to locate the cause of the fail.
 
     /**
-     * TestClassMatrix()
-     *
-     * Main routine for tests of class Matrix.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassMatrix() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class Matrix:\n");
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestArgListManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        // TODO:  Add test for validateMatrix
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class Matrix.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class Matrix.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* Matrix::TestClassMatrix() */
-
-
-    /**
      * Test2ArgConstructor()
      *
      * Run a battery of tests on the two argument constructor for this
@@ -315,11 +248,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class Matrix                  ";
         String passBanner = "PASSED\n";
@@ -1194,8 +1124,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::Test2ArgConstructor() */
 
 
@@ -1211,10 +1140,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class Matrix                  ";
         String passBanner = "PASSED\n";
@@ -3371,8 +3298,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::Test3ArgConstructor() */
 
 
@@ -3385,10 +3311,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class Matrix accessors                                   ";
         String passBanner = "PASSED\n";
@@ -4698,8 +4622,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::TestAccessors() */
 
 
@@ -4947,11 +4870,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-
-    public static boolean TestArgListManagement(java.io.PrintStream outStream,
-                                                boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestArgListManagement() throws SystemErrorException {
         String testBanner =
             "Testing class Matrix argument list management                    ";
         String passBanner = "PASSED\n";
@@ -8100,8 +8020,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::TestArgListManagement() */
 
 
@@ -8117,11 +8036,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class Matrix                        ";
         String passBanner = "PASSED\n";
@@ -9846,8 +9762,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::TestCopyConstructor() */
 
 
@@ -9863,10 +9778,8 @@ public class MatrixTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestToStringMethods() {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -10341,8 +10254,7 @@ public class MatrixTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* Matrix::TestToStringMethods() */
 
 
