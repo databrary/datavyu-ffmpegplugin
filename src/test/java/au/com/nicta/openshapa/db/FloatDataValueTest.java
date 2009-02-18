@@ -30,6 +30,9 @@ public class FloatDataValueTest extends DataValueTest {
     /** FloatFormalArg 2 for tests. */
     private FloatFormalArg ffa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     @Override
     public DataValue getInstance() {
         return fdv;
@@ -66,6 +69,9 @@ public class FloatDataValueTest extends DataValueTest {
         floatMve2.appendFormalArg(ffa2);
         db.vl.addElement(floatMve2);
         fdv = new FloatDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -373,10 +379,6 @@ public class FloatDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -453,73 +455,6 @@ public class FloatDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassFloatDataValue()
-     *
-     * Main routine for tests of class FloatDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassFloatDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class FloatDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class FloatDataValue.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class FloatDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* FloatDataValue::TestClassFloatDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -531,10 +466,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class FloatDataValue          ";
         String passBanner = "PASSED\n";
@@ -740,7 +673,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* FloatDataValue::Test1ArgConstructor() */
 
@@ -757,11 +690,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class FloatDataValue          ";
         String passBanner = "PASSED\n";
@@ -1204,7 +1134,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* FloatDataValue::Test2ArgConstructor() */
 
@@ -1221,11 +1151,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class FloatDataValue          ";
         String passBanner = "PASSED\n";
@@ -1742,7 +1669,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* FloatDataValue::Test3ArgConstructor() */
 
@@ -1758,11 +1685,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class FloatDataValue accessors                           ";
         String passBanner = "PASSED\n";
@@ -2062,7 +1986,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* FloatDataValue::TestAccessors() */
 
@@ -2079,11 +2003,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class FloatDataValue                ";
         String passBanner = "PASSED\n";
@@ -2383,8 +2304,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* FloatDataValue::TestCopyConstructor() */
 
 
@@ -2400,11 +2320,8 @@ public class FloatDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2631,7 +2548,7 @@ public class FloatDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* FloatDataValue::TestToStringMethods() */
 

@@ -13,8 +13,8 @@ import static org.junit.Assert.*;
  */
 public class DBIndexTest {
 
-    PrintStream outStream;
-    boolean verbose;
+    private PrintStream outStream;
+    private boolean verbose;
 
     public DBIndexTest() {
     }
