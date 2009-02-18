@@ -1,9 +1,11 @@
 package au.com.nicta.openshapa.db;
 
+import java.io.PrintStream;
 import junitx.util.PrivateAccessor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -11,11 +13,16 @@ import org.junit.Test;
  */
 public class DBIndexTest {
 
+    PrintStream outStream;
+    boolean verbose;
+
     public DBIndexTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
@@ -26,9 +33,6 @@ public class DBIndexTest {
     public void DummyTest() {
         
     }
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
 
     /**
      * GetIndexSize()
@@ -58,10 +62,8 @@ public class DBIndexTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class DBIndex                 ";
         String passBanner = "PASSED\n";
@@ -265,62 +267,9 @@ public class DBIndexTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DBIndex::Test1ArgConstructor() */
-
-
-    /**
-     * TestClassDBIndex()
-     *
-     * Main routine for tests of class DBIndex.
-     *
-     *                                  JRM -- 4/24/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-
-    public static boolean TestClassDBIndex(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class DBIndex:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIndexManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class DBIndex.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class DBIndex.\n\n");
-        }
-
-        return pass;
-
-    } /* Database::TestClassDBIndex() */
-
 
     /**
      * TestIndexManagement()
@@ -333,11 +282,8 @@ public class DBIndexTest {
      *
      *    - Non.
      */
-
-    public static boolean TestIndexManagement(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIndexManagement() throws SystemErrorException {
         String testBanner =
             "Testing Index management for class DBIndex                       ";
         String passBanner = "PASSED\n";
@@ -1621,8 +1567,7 @@ public class DBIndexTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DBIndex::TestIndexManagement() */
 
 
@@ -1637,11 +1582,8 @@ public class DBIndexTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         final String expectedString0 = "((DBIndex) (index_contents: ()))";
         final String expectedString1 = "((DBIndex) (index_contents: (<val>, " +
                 "<echo>, <delta>, <charlie>, <bravo>, <alpha>)))";
@@ -1877,8 +1819,7 @@ public class DBIndexTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DBIndex::TestToStringMethods() */
 
 
