@@ -13,94 +13,23 @@ import static org.junit.Assert.*;
  */
 public class PredFormalArgTest {
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     public PredFormalArgTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
 
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*** TODO: Review test code. ***/
-
-    /**
-     * TestClassPredFormalArg()
-     *
-     * Main routine for tests of class PredFormalArg.
-     *
-     *                                      JRM -- 6/16/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassPredFormalArg() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class PredFormalArg:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestVEAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIsValidValue(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class PredFormalArg.\n\n",
-                              failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class PredFormalArg.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* PredFormalArg::TestClassPredFormalArg() */
 
     /**
      * TestAccessors()
@@ -112,9 +41,7 @@ public class PredFormalArgTest {
      *    - None.
      */
 
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-    {
+    public void TestAccessors() {
         String testBanner =
             "Testing class PredFormalArg accessors                            ";
         String passBanner = "PASSED\n";
@@ -1300,8 +1227,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::TestAccessors() */
 
 
@@ -1315,10 +1241,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestVEAccessors(java.io.PrintStream outStream,
-                                          boolean verbose)
-    {
+    @Test
+    public void TestVEAccessors() {
         String testBanner =
             "Testing class PredFormalArg itsVocabElement accessors            ";
         String passBanner = "PASSED\n";
@@ -1430,8 +1354,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::TestVEAccessors() */
 
 
@@ -1445,10 +1368,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class PredFormalArg           ";
         String passBanner = "PASSED\n";
@@ -1621,8 +1542,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::Test1ArgConstructor() */
 
     /**
@@ -1635,10 +1555,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test2ArgConstructor(){
         String testBanner =
             "Testing 2 argument constructor for class PredFormalArg           ";
         String passBanner = "PASSED\n";
@@ -1830,8 +1748,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::Test2ArgConstructor() */
 
 
@@ -1845,10 +1762,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestCopyConstructor(){
         String testBanner =
             "Testing copy constructor for class PredFormalArg                 ";
         String passBanner = "PASSED\n";
@@ -2358,8 +2273,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::TestCopyConstructor() */
 
 
@@ -2378,11 +2292,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestIsValidValue(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIsValidValue() throws SystemErrorException {
         String testBanner =
             "Testing isValidValue()                                           ";
         String passBanner = "PASSED\n";
@@ -2977,8 +2888,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::TestIsValidValue() */
 
 
@@ -2993,11 +2903,8 @@ public class PredFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -3342,8 +3249,7 @@ public class PredFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredFormalArg::TestToStringMethods() */
 
 }
