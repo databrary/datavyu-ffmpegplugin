@@ -54,6 +54,8 @@ public final class DataColumnTest {
     private DataColumn t_col0 = null;
     private DataColumn t_col1 = null;
     private DataColumn dc = null;
+    private PrintStream outStream;
+    private boolean verbose;
 
     /**
      * Create the test case.
@@ -176,6 +178,9 @@ public final class DataColumnTest {
         db.vl.addElement(t_mve1);
         t_mve1ID = t_mve1.getID();
         t_col1 = new DataColumn(db, "t_col1", true, false, t_mve1ID);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -768,10 +773,6 @@ public final class DataColumnTest {
         //System.out.printf(f_col0.toDBString());
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -839,57 +840,6 @@ public final class DataColumnTest {
      *************************************************************************/
 
     /**
-     * TestClassDataColumn()
-     *
-     * Main routine for tests of class DataColumn.
-     *
-     *                                      JRM -- 12/25/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassDataColumn() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class DataColumn:\n");
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCellManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class DataCell.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class DataCell.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* DataCell::TestClassDataColumn() */
-
-    /**
      * TestCellManagement()
      *
      * Run a battery of tests on the cell management methods of the class.
@@ -904,11 +854,8 @@ public final class DataColumnTest {
      *
      *    - None.
      */
-
-    public static boolean TestCellManagement(java.io.PrintStream outStream,
-                                             boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCellManagement() throws SystemErrorException {
         String testBanner =
             "Testing cell management methods for class DataColumn             ";
         String passBanner = "PASSED\n";
@@ -3241,7 +3188,7 @@ public final class DataColumnTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DataCell::TestCellManagement() */
 
@@ -3258,11 +3205,8 @@ public final class DataColumnTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy argument constructor for class DataColumn           ";
         String passBanner = "PASSED\n";
@@ -3996,7 +3940,7 @@ public final class DataColumnTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DataCell::TestCopyConstructor() */
 
@@ -4012,11 +3956,8 @@ public final class DataColumnTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -5283,7 +5224,7 @@ public final class DataColumnTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DataCell::TestToStringMethods() */
 
