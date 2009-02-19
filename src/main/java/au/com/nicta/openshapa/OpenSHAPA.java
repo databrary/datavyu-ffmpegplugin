@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.List;
+import java.util.Stack;
+import java.util.Vector;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -32,6 +37,9 @@ import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 /**
  * The main class of the application.
@@ -114,12 +122,12 @@ implements KeyEventDispatcher {
     public void runScript(final File rubyFile) {
         try {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            if (scriptOutputView == null) {
-                scriptOutputView = new ScriptOutput(mainFrame,
+            if (console == null) {
+                console = new ScriptOutput(mainFrame,
                                                     false,
-                                                    scriptOutputStream);
+                                                    consoleOutputStream);
             }
-            OpenSHAPA.getApplication().show(scriptOutputView);
+            OpenSHAPA.getApplication().show(console);
 
             // Place a reference to the database within the scripting engine.
             rubyEngine.put("db", db);
@@ -127,11 +135,11 @@ implements KeyEventDispatcher {
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
         } catch (ScriptException e) {
-            scriptWriter.println("***** SCRIPT ERRROR *****");
-            scriptWriter.println("@Line " + e.getLineNumber() + ":'"
+            consoleWriter.println("***** SCRIPT ERRROR *****");
+            consoleWriter.println("@Line " + e.getLineNumber() + ":'"
                                  + e.getMessage() + "'");
-            scriptWriter.println("*************************");
-            scriptWriter.flush();
+            consoleWriter.println("*************************");
+            consoleWriter.flush();
 
             logger.error("Unable to execute script: ", e);
         } catch (FileNotFoundException e) {
@@ -225,14 +233,117 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Run John's older test suit.
-     *
-     * @throws SystemErrorException If unable to run John's older test suit.
+     * All regression tests (Junits) and present results to the user.
      */
     public void runRegressionTests() throws SystemErrorException {
-        // TODO: is there a way to call the test package if it exists
-        // or inform the user if it is not?
-//        DatabaseTest.TestDatabase(System.out);
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        if (console == null) {
+            console = new ScriptOutput(mainFrame,
+                                                false,
+                                                consoleOutputStream);
+        }
+        OpenSHAPA.getApplication().show(console);
+
+        // Build a list of unit tests to invoke.
+        consoleWriter.println("Running OpenSHAPA unit tests:");
+        consoleWriter.flush();
+        Vector<Class> unitTests = new Vector<Class>();
+        try {
+            Stack<File> workStack = new Stack<File>();
+            Stack<String> packages = new Stack<String>();
+
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            URL resource = loader.getResource("au/com/nicta/openshapa");
+            if (resource == null) {
+                throw new ClassNotFoundException("Can't get class loader.");
+            }
+
+            // Recursively inspect contents of each of the resources. If it is
+            // a directory at it to our workStack, otherwise check to see if it
+            // is a unit test.
+            workStack.push(new File(resource.getFile()));
+            packages.push("au.com.nicta.openshapa");
+            while (!workStack.empty()) {
+                File dir = workStack.pop();
+                String pkgName = packages.pop();
+
+                // For each of the children of the directory - look for tests
+                // or more directories to recurse inside.
+                String[] files = dir.list();
+                for (int i = 0; i < files.length; i++) {
+                    File file = new File(dir.getAbsolutePath() + "/"
+                                         + files[i]);
+                    if (file == null) {
+                        throw new ClassNotFoundException("Can't build file.");
+                    }
+
+                    // If the file is a directory - add it to our work list.
+                    if (file.isDirectory()) {
+                        workStack.push(file);
+                        packages.push(pkgName + "." + file.getName());
+
+                    // If the file ends with Test.class - it is a unit test, add
+                    // it to our list of tests.
+                    } else if (files[i].endsWith("Test.class")) {
+                        // Build the class for the found test.
+                        Class test = Class.forName(pkgName + "."
+                               + files[i].substring(0, files[i].length() - 6));
+
+                        // If the class is not abstract - add it to the list of
+                        // tests to perform.
+                        if (!Modifier.isAbstract(test.getModifiers())) {
+                            unitTests.add(Class.forName(pkgName + "."
+                               + files[i].substring(0, files[i].length() - 6)));
+                        }
+                    }                    
+                }
+            }
+
+        // Whoops - something went bad. Chuck a spaz.
+        } catch (ClassNotFoundException e) {
+            logger.error("Unable to build unit test", e);            
+        }
+
+        float totalTime = 0.0f;
+        int totalTests = 0;
+        int totalFailures = 0;
+
+
+        // Build the testing framework and invoke all the regression tests.
+        JUnitCore core = new JUnitCore();
+        for (int i = 0; i < unitTests.size(); i++) {
+            Result results = core.run(unitTests.get(i));
+
+            // Display results to user.            
+            consoleWriter.println("\n******************************");
+            consoleWriter.println("Running Test: " + unitTests.get(i).getName());
+            float seconds = results.getRunCount() / 1000.0f;
+            consoleWriter.println("Test Run time: " + seconds + "s");
+            totalTime += seconds;
+            
+            consoleWriter.println("Tests Performed: " + results.getRunCount());
+            totalTests += results.getRunCount();
+
+            if (!results.wasSuccessful()) {
+                consoleWriter.println("Tests failed: " + results.getFailureCount());
+                totalFailures += results.getFailureCount();
+
+                List<Failure> fails = results.getFailures();
+                for (int j = 0; j < fails.size(); j++) {
+                    consoleWriter.println("Failure: " + fails.get(j).getTestHeader());
+                    consoleWriter.println(fails.get(j).getTrace());
+                }
+            }
+            consoleWriter.flush();
+        }
+
+        consoleWriter.println("\n\n\n******************************");
+        consoleWriter.println("         Test Summary");
+        consoleWriter.println("******************************");
+        consoleWriter.println("Total Time: " + totalTime + "s");
+        consoleWriter.println("Total Tests: " + totalTests);
+        consoleWriter.println("Test Failures: " + totalFailures);
+        consoleWriter.flush();
     }
 
     /**
@@ -259,10 +370,10 @@ implements KeyEventDispatcher {
             }
 
             // Build output streams for the scripting engine.
-            scriptOutputStream = new PipedInputStream();
-            PipedOutputStream sIn = new PipedOutputStream(scriptOutputStream);
-            scriptWriter = new PrintWriter(sIn);
-            rubyEngine.getContext().setWriter(scriptWriter);
+            consoleOutputStream = new PipedInputStream();
+            PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
+            consoleWriter = new PrintWriter(sIn);
+            rubyEngine.getContext().setWriter(consoleWriter);
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
@@ -335,10 +446,10 @@ implements KeyEventDispatcher {
     private ScriptEngine rubyEngine;
 
     /** output stream for messages coming from the scripting engine. */
-    private PipedInputStream scriptOutputStream;
+    private PipedInputStream consoleOutputStream;
 
     /** input stream for displaying messages from the scripting engine. */
-    private PrintWriter scriptWriter;
+    private PrintWriter consoleWriter;
 
     /** The current spreadsheet view. */
     private Spreadsheet spreadsheetView;
@@ -356,7 +467,7 @@ implements KeyEventDispatcher {
     private QTVideoController qtVideoController;
 
     /** The view to use when displaying the output of a user invoked script. */
-    private ScriptOutput scriptOutputView;
+    private ScriptOutput console;
 
     /** The default number of ticks per second to use. */
     private final static int TICKS_PER_SECOND = 1000;

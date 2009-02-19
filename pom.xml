@@ -130,6 +130,28 @@
         </configuration>
       </plugin>
 
+      <!-- Add the unit tests to the source code so that we can package the
+           tests with the application so that end users can perform them. -->
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.1</version>
+          <executions>
+              <execution>
+                  <id>add-source</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                      <goal>add-source</goal>
+                  </goals>
+                  <configuration>
+                      <sources>
+                          <source>src/test/java</source>
+                      </sources>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -147,6 +169,18 @@
       <artifactId>junit-addons</artifactId>
       <version>1.4</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.3</version>
+    </dependency>
+
+    <dependency>
+        <groupId>junit-addons</groupId>
+        <artifactId>junit-addons</artifactId>
+        <version>1.4</version>
     </dependency>
 
     <dependency>
