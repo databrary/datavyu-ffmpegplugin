@@ -24,6 +24,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -295,8 +297,10 @@ implements KeyEventDispatcher {
             // concrete unit tests and add them to our list of tests to perform.
             if (resource.getFile().contains(".jar!")) {
                 String file = resource.getFile();
-                file = file.substring(file.indexOf(":") + 1, file.indexOf("!"));
-                JarFile jar = new JarFile(file);
+                file = file.substring(0, file.indexOf("!"));
+                URI uri = new URI(file);
+                File f = new File(uri);
+                JarFile jar = new JarFile(f);
 
                 Enumeration<JarEntry> entries = jar.entries();
                 while (entries.hasMoreElements()) {
@@ -349,6 +353,8 @@ implements KeyEventDispatcher {
             logger.error("Unable to build unit test", e);            
         } catch (IOException ie) {
             logger.error("Unable to load jar file", ie);
+        } catch (URISyntaxException se) {
+            logger.error("Unable to build path to jar file", se);
         }
 
 
