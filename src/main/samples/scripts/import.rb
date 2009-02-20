@@ -15,7 +15,7 @@ begin
   # Create a data column, for our new
   puts "Begining import.."
   col = DataColumn.new($db, "gait", MatrixVocabElement::MatrixType::FLOAT)
-  $db.add_column(col)
+  col_id = $db.add_column(col)
 
   last_time = nil
   data = Hash.new
@@ -39,7 +39,7 @@ begin
   end
 
   # Get the matrix vocab element.
-  col = $db.data_columns[0]
+  col = $db.get_data_column(col_id)
   mve = $db.get_matrix_ve(col.its_mve_id)
 
   origin = nil
