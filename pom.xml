@@ -65,6 +65,27 @@
     </repository>
   </repositories>
 
+  <!-- use an optimized build for releases. -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.0.2</version>
+            <configuration>
+              <debug>false</debug>
+              <optimize>true</optimize>
+              <source>1.5</source>
+              <target>1.5</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <!-- Build properties. -->
   <build>
     <plugins>
