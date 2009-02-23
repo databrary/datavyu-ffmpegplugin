@@ -34,7 +34,7 @@ public class DataValueViewFactory {
         } else if (dv.getClass() == IntDataValue.class) {
             return new IntDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == TimeStampDataValue.class) {
-            return new TimeStampDataValueView(s, c, m, i, true);
+            //return new TimeStampDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
             return new TextStringDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == NominalDataValue.class) {

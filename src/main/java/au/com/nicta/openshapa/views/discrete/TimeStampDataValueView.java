@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  * @author cfreeman
  */
-public final class TimeStampDataValueView extends DataValueView {
+public abstract class TimeStampDataValueView extends DataValueView {
 
     private Vector<Character> preservedChars;
 
@@ -36,11 +36,6 @@ public final class TimeStampDataValueView extends DataValueView {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(TimeStampDataValueView.class);
 
-    /**
-     *
-     * @param timestamp
-     * @param editable
-     */
     TimeStampDataValueView(final Selector cellSelection,
                            final DataCell cell,
                            final Matrix matrix,
@@ -53,9 +48,10 @@ public final class TimeStampDataValueView extends DataValueView {
     }
 
     TimeStampDataValueView(final Selector cellSelection,
+                           final DataCell cell,
                            final TimeStampDataValue timeStampDataValue,
                            final boolean editable) {
-        super(cellSelection, timeStampDataValue, editable);
+        super(cellSelection, cell, timeStampDataValue, editable);
 
         preservedChars = new Vector<Character>();
         preservedChars.add(new Character(':'));
@@ -121,13 +117,8 @@ public final class TimeStampDataValueView extends DataValueView {
                 this.removeAheadOfCaret(preservedChars);
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
+                advanceCaret();
                 tdv.setItsValue(buildValue(currentValue.toString()));
-
-                //this.removeSelectedText(preservedChars);
-                //StringBuffer currentValue = new StringBuffer(getText());
-                //currentValue.insert(getCaretPosition(), e.getKeyChar());
-                //advanceCaret();  // Advance caret over the top of the new char.
-                //fdv.setItsValue(buildValue(currentValue.toString()));
                 e.consume();
 
             // Every other key stroke is ignored by the float editor.
@@ -143,6 +134,18 @@ public final class TimeStampDataValueView extends DataValueView {
 
         //this.removeSelectedText(preservedChars);
         //this.handleKeyEvent(e);
+    }
+
+    public void setValue(final TimeStamp ts) {
+        try {
+            TimeStampDataValue tsdv = (TimeStampDataValue) this.getValue();
+            tsdv.setItsValue(ts);
+            updateStrings();
+            restoreCaretPosition();
+        } catch (SystemErrorException se) {
+            logger.error("Sets the value for the TimeStampDataValue", se);
+        }
+
     }
 
     /**

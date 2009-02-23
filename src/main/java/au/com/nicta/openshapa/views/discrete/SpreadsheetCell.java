@@ -17,7 +17,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.Date;
 import javax.swing.BoxLayout;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
@@ -35,22 +34,21 @@ implements ExternalDataCellListener, Selectable {
 
     /** A panel for holding the value of the cell. */
     private MatrixViewLabel dataPanel;
-    //private SpreadsheetPanel dataPanel;
 
     /** The Ordinal display component. */
     private DataValueView ord;
 
     /** The Onset display component. */
-    private DataValueView onset;
+    private OnsetView onset;
 
     /** The Offset display component. */
-    private DataValueView offset;
-
-    /** The Value display component. */
-    //private MatrixViewLabel value;
+    private OffsetView offset;
 
     /** The Database the cell belongs to. */
     private Database db;
+
+    /** The data cell that this view represents. */
+    private DataCell dc;
 
     /** The cellID for retrieving the cell from the database. */
     private long cellID;
@@ -107,7 +105,6 @@ implements ExternalDataCellListener, Selectable {
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc;
         if (cell instanceof DataCell) {
             dc = (DataCell)cell;
         } else {
@@ -117,27 +114,30 @@ implements ExternalDataCellListener, Selectable {
 
         // Build components used for the spreadsheet cell.
         topPanel = new SpreadsheetPanel();
-        ord = new IntDataValueView(selection, new IntDataValue(cellDB),  false);
+        ord = new IntDataValueView(selection,
+                                   dc,
+                                   new IntDataValue(cellDB),
+                                   false);
         ord.setFocusable(false);
         ord.setToolTipText(rMap.getString("ord.tooltip"));
         setOrdinal(dc.getOrd());
 
-        onset = new TimeStampDataValueView(selection,
-                                           new TimeStampDataValue(cellDB),
-                                           true);
+        onset = new OnsetView(selection,
+                           dc,
+                           new TimeStampDataValue(cellDB),
+                           true);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
-        setOnset(dc.getOnset());
-        
+        onset.setValue(dc.getOnset());        
 
-        offset = new TimeStampDataValueView(selection,
-                                            new TimeStampDataValue(cellDB),
-                                            true);
+        offset = new OffsetView(selection,
+                                dc,
+                                new TimeStampDataValue(cellDB),
+                                true);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
-        setOffset(dc.getOffset());        
+        offset.setValue(dc.getOffset());  
 
-        //dataPanel = new SpreadsheetPanel();
         dataPanel = new MatrixViewLabel(selection, dc, null);
-        setValue(dc.getVal());
+        dataPanel.setMatrix(dc.getVal());
         
         // Set the appearance of the spreadsheet cell.
         setBackground(java.awt.SystemColor.window);
@@ -180,64 +180,10 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
-     * Set the Onset value.
-     * 
-     * @param newonset The new onset timestamp to use with this cell.
-     * @throws SystemErrorException When we are unable to set the
-     * TimeStampDataValue.
-     * @deprecated The underlying TimeStampDataValue should be altered directly,
-     * not the view.
-     */
-    private void setOnset(TimeStamp newonset) throws SystemErrorException {
-        ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
-        this.onset.updateStrings();
-        this.validate();
-    }
-
-    /**
-     * Set the offset value
-     *
-     * @param newoffset The new offset timestamp to use with this cell.
-     * @throws SystemErrorException When we are unable to set the
-     * TimeStampDataValue.
-     * @deprecated The underlying TimeStampeDataValue should be altered directly
-     * not the view.
-     */
-    private void setOffset(TimeStamp newoffset) throws SystemErrorException {
-        ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
-        this.offset.updateStrings();
-        this.validate();
-    }
-
-    /**
-     * Set the cell Matrix value.
-     * @param m The Matrix value to set in the cell
-     */
-    private void setValue(Matrix m) throws SystemErrorException {
-        dataPanel.setMatrix(m);
-    }
-
-    /**
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public IntDataValue getOrdinal() {
         return ((IntDataValue)this.ord.getValue());
-    }
-
-    /**
-     * @return The Onset value of the datacell.
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
-     */
-    public TimeStampDataValue getOnset() throws SystemErrorException {
-        return ((TimeStampDataValue)this.onset.getValue());
-    }
-
-    /**
-     * @return The Offset value of a datacell.
-     * @throws au.com.nicta.openshapa.db.SystemErrorException
-     */
-    public TimeStampDataValue getOffset() throws SystemErrorException {
-        return ((TimeStampDataValue)this.offset.getValue());
     }
 
     /**
@@ -283,8 +229,7 @@ implements ExternalDataCellListener, Selectable {
      * @return The Preferred size of the SpreadsheetCell.
      */
     @Override
-    public Dimension getPreferredSize()
-    {
+    public Dimension getPreferredSize() {
         if ((this.userDimensions.width > 0)
                 && (this.userDimensions.height > 0)) {
             return (this.userDimensions);
@@ -439,28 +384,25 @@ implements ExternalDataCellListener, Selectable {
                              boolean commentChanged,
                              String oldComment,
                              String newComment) {
-        try {
-            if (ordChanged) {
-                this.setOrdinal(newOrd);
-            }
 
-            if (onsetChanged) {
-                this.setOnset(newOnset);
-            }
+        if (ordChanged) {
+            this.setOrdinal(newOrd);
+        }
 
-            if (offsetChanged) {
-                this.setOffset(newOffset);
-            }
+        if (onsetChanged) {
+            onset.setValue(newOnset);
+        }
 
-            if (valChanged) {
-                dataPanel.setMatrix(newVal);
-            }
+        if (offsetChanged) {
+            onset.setValue(newOffset);
+        }
 
-            if (selectedChanged) {
-                this.selected = newSelected;
-            }
-        } catch (SystemErrorException e) {
-           logger.error("Failed changing SpreadsheetCell.", e);
+        if (valChanged) {
+            dataPanel.setMatrix(newVal);
+        }
+
+        if (selectedChanged) {
+            this.selected = newSelected;
         }
 
         this.revalidate();

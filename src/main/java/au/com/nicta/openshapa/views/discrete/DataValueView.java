@@ -87,15 +87,18 @@ implements MouseListener, KeyListener, FocusListener {
      * Constructor.
      *
      * @param cellSelection The parent selection for spreadsheet cells.
+     * @param dataCell The parent dataCell for this dataValueView.
      * @param dataValue The dataValue that this view represents.
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
     public DataValueView(final Selector cellSelection,
+                         final DataCell dataCell,
                          final DataValue dataValue,
                          final boolean editable) {
         spreadsheetSelection = cellSelection;
         parentMatrix = null;
+        parentCell = dataCell;
         index = -1;
         value = dataValue;
         oldCaretPosition = 0;
@@ -122,7 +125,10 @@ implements MouseListener, KeyListener, FocusListener {
         index = matrixIndex;
 
         updateStrings();
-        
+        restoreCaretPosition();
+    }
+
+    protected void restoreCaretPosition() {
         oldCaretPosition = Math.min(oldCaretPosition, getText().length());
         setCaretPosition(oldCaretPosition);
         advanceCaret = false;   // reset the advance caret flag - only applies
@@ -159,17 +165,21 @@ implements MouseListener, KeyListener, FocusListener {
         advanceCaret = true;
     }
 
+    protected void storeCaretPosition() {
+        // Character inserted - advance the caret position.
+        oldCaretPosition = getCaretPosition();
+        if (advanceCaret) {
+            oldCaretPosition++;
+        }
+    }
+
     /**
      * Updates the database with the latest value from this DataValueView (i.e.
      * after the user has altered it).
      */
     protected void updateDatabase() {
         try {
-            // Character inserted - advance the caret position.
-            oldCaretPosition = getCaretPosition();
-            if (advanceCaret) {
-                oldCaretPosition++;
-            }
+            storeCaretPosition();
 
             // Update the OpenSHAPA database with the latest values.
             parentMatrix.replaceArg(index, value);
@@ -178,6 +188,10 @@ implements MouseListener, KeyListener, FocusListener {
         } catch (SystemErrorException ex) {
             logger.error("Unable to update Database: ", ex);
         }
+    }
+
+    public DataCell getParentCell() {
+        return parentCell;
     }
 
     /**

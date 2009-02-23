@@ -48,9 +48,10 @@ public final class IntDataValueView extends DataValueView {
      * value is permitted to be altered by the user. False otherwise.
      */
     IntDataValueView(final Selector cellSelection,
+                     final DataCell cell,
                      final IntDataValue intDataValue,
                      final boolean editable) {
-        super (cellSelection, intDataValue, editable);
+        super (cellSelection, cell, intDataValue, editable);
     }
 
     /**
