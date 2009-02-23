@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
 import au.com.nicta.openshapa.db.DataCell;
@@ -11,21 +6,35 @@ import au.com.nicta.openshapa.db.TimeStampDataValue;
 import org.apache.log4j.Logger;
 
 /**
+ * A view representation for an onset timestamp.
  *
  * @author cfreeman
  */
-public class OnsetView extends TimeStampDataValueView {
+public final class OnsetView extends TimeStampDataValueView {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OnsetView.class);
 
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection.
+     * @param cell The parent cell for this onset timestamp.
+     * @param timeStampDataValue A datavalue for the onset to wrap around.
+     * @param editable Is the datavalue editable or not - true if it is editable
+     * false otherwise.
+     */
     OnsetView(final Selector cellSelection,
-               final DataCell cell,
-               final TimeStampDataValue timeStampDataValue,
-               final boolean editable) {
+              final DataCell cell,
+              final TimeStampDataValue timeStampDataValue,
+              final boolean editable) {
         super(cellSelection, cell, timeStampDataValue, editable);
     }
 
+    /**
+     * Hook for updating the database with the latest onset value from the onset
+     * editor.
+     */
     @Override
     public void updateDatabase() {
         try {

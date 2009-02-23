@@ -36,6 +36,19 @@ public abstract class TimeStampDataValueView extends DataValueView {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(TimeStampDataValueView.class);
 
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection that may contain this
+     * view.
+     * @param cell The parent cell that this view partially represents.
+     * @param matrix The parent matrix containing the formal argument that this
+     * view represents.
+     * @param matrixIndex The index of the formal argument that this view
+     * represents.
+     * @param editable Is this view editable or not, true if the view is
+     * editable. False otherwise.
+     */
     TimeStampDataValueView(final Selector cellSelection,
                            final DataCell cell,
                            final Matrix matrix,
@@ -47,6 +60,16 @@ public abstract class TimeStampDataValueView extends DataValueView {
         preservedChars.add(new Character(':'));
     }
 
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection that may contain this view
+     * @param cell The parent cell that this view partially represents.
+     * @param timeStampDataValue The wrapper timeStampDataValue that this view
+     * will represent.
+     * @param editable Is this view editable or not, true if the view is
+     * editable. False otherwise.
+     */
     TimeStampDataValueView(final Selector cellSelection,
                            final DataCell cell,
                            final TimeStampDataValue timeStampDataValue,
@@ -58,8 +81,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
     }
 
     /**
+     * The action to invoke when a key is pressed.
      *
-     * @param e
+     * @param e The key event that triggered this action.
      */
     public void keyPressed(KeyEvent e) {
         // Ignore key release.
@@ -86,8 +110,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
     }
 
     /**
+     * The action to invoke when a key is typed.
      *
-     * @param e
+     * @param e The KeyEvent that triggered this action.
      */
     public void keyTyped(KeyEvent e) {
         try {
@@ -137,6 +162,12 @@ public abstract class TimeStampDataValueView extends DataValueView {
         }
     }
 
+    /**
+     * Sets the value of that this TimeStampDataValueView represents.
+     *
+     * @param ts The new value of that this TimeStampDataValueView will
+     * represent.
+     */
     public void setValue(final TimeStamp ts) {
         try {
             TimeStampDataValue tsdv = (TimeStampDataValue) this.getValue();
@@ -175,8 +206,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
     }
 
     /**
+     * The action to invoke when a key is released.
      *
-     * @param e
+     * @param e The event that triggered this action.
      */
     public void keyReleased(KeyEvent e) {
         // Ignore key release.
