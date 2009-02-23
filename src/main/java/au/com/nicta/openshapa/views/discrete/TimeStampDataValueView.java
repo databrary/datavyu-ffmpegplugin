@@ -131,9 +131,6 @@ public abstract class TimeStampDataValueView extends DataValueView {
         } catch (SystemErrorException se) {
             logger.error("Unable to update TimeStampDataValue", se);
         }
-
-        //this.removeSelectedText(preservedChars);
-        //this.handleKeyEvent(e);
     }
 
     public void setValue(final TimeStamp ts) {
