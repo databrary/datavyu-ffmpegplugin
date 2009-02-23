@@ -109,6 +109,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 this.removeAheadOfCaret(preservedChars);
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), "0");
+                advanceCaret();
                 tdv.setItsValue(buildValue(currentValue.toString()));
                 e.consume();
 
@@ -128,6 +129,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
 
             // Push the value back into the database.
             updateDatabase();
+            // Update the strings just in case we don't change the value.
+            updateStrings();
+            restoreCaretPosition();
         } catch (SystemErrorException se) {
             logger.error("Unable to update TimeStampDataValue", se);
         }
