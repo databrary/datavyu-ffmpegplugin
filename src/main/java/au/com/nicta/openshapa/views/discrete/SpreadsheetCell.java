@@ -61,29 +61,8 @@ implements ExternalDataCellListener, Selectable {
     /** Stores the current user dimensions. */
     private Dimension userDimensions = new Dimension(0, 0);
 
-    /** Used in GetTime calls - Milliseconds format. */
-    public static final int MILLISECONDS  = 1;
-
-    /** Used in GetTime calls - Seconds format. */
-    public static final int SECONDS = 2;
-
-    /** Used in GetTime calls - Minutes format. */
-    public static final int MINUTES = 3;
-
-    /** Used in GetTime calls - Hours format. */
-    public static final int HOURS = 4;
-
-    /** Used in GetTime calls - Days format. */
-    public static final int DAYS = 5;
-
     /** Default height multiplier of spreadsheet cell. */
     public static final int HEIGHT_MULT = 50;
-
-    /** Holds the division format to use when displaying times. */
-    private int divType = SECONDS;
-
-    /** Holds the division value - used in conjunction with divType. */
-    private double divValue = 1;
 
     /** Boolean to flag if size is changed. Not Used. */
     private boolean temporalSizeChanged = false;
@@ -197,7 +176,6 @@ implements ExternalDataCellListener, Selectable {
     private void setOrdinal(int ord) {
         ((IntDataValue)this.ord.getValue()).setItsValue(ord);
         this.ord.updateStrings();
-        //this.repaint();
         this.validate();
     }
 
@@ -213,7 +191,6 @@ implements ExternalDataCellListener, Selectable {
     private void setOnset(TimeStamp newonset) throws SystemErrorException {
         ((TimeStampDataValue)this.onset.getValue()).setItsValue(newonset);
         this.onset.updateStrings();
-        //this.repaint();
         this.validate();
     }
 
@@ -229,82 +206,7 @@ implements ExternalDataCellListener, Selectable {
     private void setOffset(TimeStamp newoffset) throws SystemErrorException {
         ((TimeStampDataValue)this.offset.getValue()).setItsValue(newoffset);
         this.offset.updateStrings();
-        //this.repaint();
         this.validate();
-    }
-
-    /**
-     * Get the Time value in the type requested.
-     * @param type Time type to return
-     * @param time Time value to convert
-     * @return double The time value in the type requested.
-     */
-    public final static double getTime(int type, long time) {
-        switch (type) {
-            case MILLISECONDS: {
-                return (time);
-            }
-            case SECONDS: {
-                return (time/1000.0);
-            }
-            case MINUTES: {
-                return (time/(1000*60));
-            }
-            case HOURS: {
-                return (time/(1000*60*60));
-            }
-            case DAYS: {
-                return (time/(1000*60*60*24));
-            }
-        }
-
-        return (-1);
-    }
-
-    /**
-     * Get the time of the cell
-     * @param type type of the time value
-     * @param timeLabel label containing the time value
-     * @return time value for the cell
-     * @throws SystemErrorException if db cals fail
-     */
-    public final static double getTime(int type, DataValueView timeLabel)
-       throws SystemErrorException
-    {
-        long t = ((TimeStampDataValue)timeLabel
-                                        .getValue()).getItsValue().getTime();
-        return (getTime(type, t));
-    }
-
-    /**
-     * Convert a time value.
-     * @param type type of the time value
-     * @param time time to convert
-     * @return double time value
-     */
-    public final static double getTime(int type, Date time)
-    {
-        return (getTime(type, time.getTime()));
-    }
-
-    /**
-     * Get the onset time
-     * @return Onset time as a double in the type recorded for this cell.
-     * @throws SystemErrorException
-     */
-    public double getOnsetTime() throws SystemErrorException {
-        return (getTime(this.divType,
-          ((TimeStampDataValue)this.onset.getValue()).getItsValue().getTime()));
-    }
-
-    /**
-     * Get the offset time
-     * @return Offset time as a double in the type recorded for this cell.
-     * @throws SystemErrorException
-     */
-    public double getOffsetTime() throws SystemErrorException {
-        return (getTime(this.divType,
-         ((TimeStampDataValue)this.offset.getValue()).getItsValue().getTime()));
     }
 
     /**
