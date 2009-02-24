@@ -475,30 +475,4 @@ implements MouseListener, KeyListener, FocusListener {
         this.setText(nValue);
         this.setCaretPosition(start);
     }
-
-    /**
-     * Utility method for checking if a keystroke is a number.
-     *
-     * @param e The key event to check if it is a numeric keystroke.
-     *
-     * @return true if the keystroke is numeric, false otherwise.
-     */
-    public boolean isKeyStrokeNumeric(KeyEvent e) {
-        switch (e.getKeyChar()) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return true;
-
-            default:
-                return false;
-        }
-    }
 }

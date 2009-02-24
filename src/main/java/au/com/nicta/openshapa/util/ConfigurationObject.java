@@ -25,6 +25,7 @@ import javax.xml.parsers.*;
  * configuration file.  The objects are heirarchical and maintain the
  * xml structure.  ConfigurationOjects contain links to all children
  * as well as their attributes.
+ * @deprecated Should use session storage in swing application framework.
  * @author FGA
  */
 public class ConfigurationObject

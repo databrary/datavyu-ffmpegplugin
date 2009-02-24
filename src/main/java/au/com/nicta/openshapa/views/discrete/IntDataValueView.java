@@ -122,7 +122,7 @@ public final class IntDataValueView extends DataValueView {
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
-        } else if (isKeyStrokeNumeric(e)) {
+        } else if (Character.isDigit(e.getKeyChar())) {
             this.removeSelectedText(preservedChars);
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());

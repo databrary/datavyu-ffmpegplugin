@@ -5,6 +5,11 @@ import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
+import au.com.nicta.openshapa.OpenSHAPA;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import org.apache.log4j.Logger;
@@ -82,6 +87,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
      * @param e The key event that triggered this action.
      */
     public void keyPressed(KeyEvent e) {
+        //if (e.i)
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -119,6 +125,26 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 }
                 break;
 
+            case KeyEvent.VK_V:
+
+                // Depending on platform, check appropriate modifier keys and
+                // paste into timestamp.
+                switch (OpenSHAPA.getPlatform()) {
+                    case MAC:
+                        if (e.isMetaDown()) {
+                            pasteTimeStamp();
+                            e.consume();
+                        }
+                        break;
+                    default:
+                        if (e.isControlDown()) {
+                            pasteTimeStamp();
+                            e.consume();
+                        }
+                        break;
+                }
+                break;
+
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_UP:
                 // Key stroke gets passed up a parent element to navigate
@@ -126,6 +152,104 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * Attempt to paste teh contents of the clipboard into this timestamp.
+     */
+    public void pasteTimeStamp() {
+        // Get the contents of the clipboard.
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clipboard.getContents(null);
+        boolean hasText = (contents != null)
+                     && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+
+        // No valid text in clipboard. Bail.
+        if (!hasText) {
+            return;
+        }
+
+        // Valid text in clipboard - attempt to copy it into timestamp.
+        try {
+            String text = (String) contents
+                                   .getTransferData(DataFlavor.stringFlavor);
+
+            // Validate clipboard contents - if it is invalid, don't attempt
+            // to paste it into the timestamp.
+            boolean reject = true;
+            for (int i = 0; i < text.length(); i++) {
+                if (Character.isDigit(text.charAt(i))) {
+                    reject = false;
+                }
+
+                for (int j = 0; reject && j < preservedChars.size(); j++) {
+                    if (preservedChars.get(i) == text.charAt(i)) {
+                        reject = false;
+                    }
+                }
+            }
+
+            // Contents of clipboard contain valid value - attempt to paste
+            // it into this timestamp.
+            if (!reject) {
+                // Truncate any delimiters out of the timestamp datavalue.
+                // and treat it as a continous stream of digits.
+                for (int i = 0; i < preservedChars.size(); i++) {
+                    char[] temp = new char[1];
+                    temp[0] = preservedChars.get(i);
+                    String chars = new String(temp);
+                    text = text.replace(chars, "");
+                }
+
+                TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
+                TimeStamp ts = tsdv.getItsValue();
+
+                // For each digit in the clipboard - add it to the timestamp
+                // rebuilding the timestamp as we go (to get smart edits).
+                for (int i = 0; i < text.length(); i++) {
+                    // Build a string buffer for the timestamp we are
+                    // copying digits into.
+                    StringBuffer v = new StringBuffer(ts.toString());
+
+                    // If the character in the current caret position of the
+                    // destination time stamp is a preservedCharacter, skip
+                    // over it.
+                    for (int j = 0; j < preservedChars.size(); j++) {
+                        if (v.charAt(getCaretPosition()) == preservedChars.get(j)) {
+                            setCaretPosition(getCaretPosition() + 1);
+                        }
+                    }
+
+                    // Replace the character in the current caret position
+                    // with one from our clipboard and rebuild the timestamp
+                    // to benefit from 'smart' edits.
+                    v.deleteCharAt(getCaretPosition());
+                    v.insert(getCaretPosition(), text.charAt(i));
+                    ts = buildValue(v.toString());
+
+                    // If we have got no more room in the timestamp - stop
+                    // copying values.
+                    if (getCaretPosition() + 1 == ts.toString().length()) {
+                        setCaretPosition(getCaretPosition() + 1);
+                        break;
+                    }
+
+                    // Advance the caret position to the next available slot
+                    // in the destination timestamp.
+                    setCaretPosition(getCaretPosition() + 1);
+                }
+
+                // Push the value back into the database.
+                tsdv.setItsValue(ts);
+                updateDatabase();
+
+                // Update the strings if we don't change the value.
+                updateStrings();
+                restoreCaretPosition();
+            }
+        } catch (Exception ex) {
+            logger.error("Unable to get clipboard contents", ex);
         }
     }
 
@@ -159,7 +283,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 e.consume();
 
             // Key stoke is number - insert number into the current caret position.
-            } else if (isKeyStrokeNumeric(e)) {
+            } else if (Character.isDigit(e.getKeyChar())) {
                 this.removeAheadOfCaret(preservedChars);
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());

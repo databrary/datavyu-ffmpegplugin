@@ -15,6 +15,7 @@ import java.awt.*;
  * only one copy accessible throughout the application.  These parameters are
  * set in from a Configuration class.
  *
+ * @deprecated Should use session storage in swing application framework.
  * @author FGA
  */
 public class UIConfiguration

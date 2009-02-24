@@ -484,6 +484,25 @@ implements KeyEventDispatcher {
         return OpenSHAPA.getApplication().db;
     }
 
+    /** All the supported platforms that OpenSHAPA runs on. */
+    public enum Platform {MAC, WINDOWS, UNKNOWN};
+
+    /**
+     * @return The platform that OpenSHAPA is running on.
+     */
+    public static Platform getPlatform() {
+        String os = System.getProperty("os.name");
+        if (os.contains("Mac")) {
+            return Platform.MAC;
+        }
+
+        if (os.contains("Win")) {
+            return Platform.WINDOWS;
+        }
+
+        return Platform.UNKNOWN;
+    }
+
     /**
      * Main method launching the application.
      *
