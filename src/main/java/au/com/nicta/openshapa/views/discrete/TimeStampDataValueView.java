@@ -16,26 +16,21 @@ import org.apache.log4j.Logger;
  */
 public abstract class TimeStampDataValueView extends DataValueView {
 
+    // A list of preservedCharacters for this editor.
     private Vector<Character> preservedChars;
 
-    private static int HH_UPPER_RANGE = 99;
-
+    // Conversion factor for converting hours to ticks.
     private static long HH_TO_TICKS =  3600000;
 
-    private static int MM_UPPER_RANGE = 59;
-
+    // Conversion factor for converting minutes to ticks.
     private static long MM_TO_TICKS = 60000;
 
-    private static int SS_UPPER_RANGE = 59;
-
-    private static long SS_TO_TICKS = 1000;
-
-    private static int TTT_UPPER_RANGE = 999;
-
-    private static int TICKS_PER_SECOND = 1000;
+    // Conversion factor for converting seconds to ticks.
+    private static int SS_TO_TICKS = 1000;
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(TimeStampDataValueView.class);
+    private static Logger logger = Logger
+                                   .getLogger(TimeStampDataValueView.class);
 
     /**
      * Constructor.
@@ -87,7 +82,6 @@ public abstract class TimeStampDataValueView extends DataValueView {
      * @param e The key event that triggered this action.
      */
     public void keyPressed(KeyEvent e) {
-        // Ignore key release.
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -180,6 +174,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
 
             // Push the value back into the database.
             updateDatabase();
+
             // Update the strings just in case we don't change the value.
             updateStrings();
             restoreCaretPosition();
@@ -224,7 +219,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
             ticks += (new Long(timeChunks[2]) * SS_TO_TICKS);
             ticks += (new Long(timeChunks[3]));
 
-            return new TimeStamp(1000, ticks);
+            return new TimeStamp(SS_TO_TICKS, ticks);
         } catch (SystemErrorException e) {
             logger.error("Unable to build TimeStamp value", e);
             return null;
