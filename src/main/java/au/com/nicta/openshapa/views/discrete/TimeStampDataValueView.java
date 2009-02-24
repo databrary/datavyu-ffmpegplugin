@@ -216,7 +216,8 @@ public abstract class TimeStampDataValueView extends DataValueView {
                     // destination time stamp is a preservedCharacter, skip
                     // over it.
                     for (int j = 0; j < preservedChars.size(); j++) {
-                        if (v.charAt(getCaretPosition()) == preservedChars.get(j)) {
+                        if (v.charAt(getCaretPosition())
+                            == preservedChars.get(j)) {
                             setCaretPosition(getCaretPosition() + 1);
                         }
                     }
