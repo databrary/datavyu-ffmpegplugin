@@ -283,7 +283,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 tdv.setItsValue(buildValue(currentValue.toString()));
                 e.consume();
 
-            // Key stoke is number - insert number into the current caret position.
+            // Key stoke is number - insert number at current caret position.
             } else if (Character.isDigit(e.getKeyChar())) {
                 this.removeAheadOfCaret(preservedChars);
                 StringBuffer currentValue = new StringBuffer(getText());
