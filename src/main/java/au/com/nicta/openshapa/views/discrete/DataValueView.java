@@ -377,25 +377,23 @@ implements MouseListener, KeyListener, FocusListener {
         // Underlying Text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
         } else {
-            boolean deleteChar = true;
-
+            // Check ahead of caret to see if it is a preserved character. If
+            // the character is preserved - simply move the caret ahead one spot
+            // and leave the preserved character untouched.
             for (int i = 0; i < preservedChars.size(); i++) {
                 if (getText().charAt(getCaretPosition())
                     == preservedChars.get(i)) {
                     setCaretPosition(getCaretPosition() + 1);
-                    deleteChar = false;
                     break;
                 }
             }
 
-            // Character ahead of caret is not preserved. Delete it.
-            if (deleteChar) {
-                StringBuffer currentValue = new StringBuffer(getText());
-                currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
-                int cPosition = getCaretPosition();
-                this.setText(currentValue.toString());
-                setCaretPosition(cPosition);
-            }
+            // Delete next character.
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+            int cPosition = getCaretPosition();
+            this.setText(currentValue.toString());
+            setCaretPosition(cPosition);
         }
     }
 
@@ -417,8 +415,6 @@ implements MouseListener, KeyListener, FocusListener {
         // Underlying text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
         } else {
-            boolean deleteChar = true;
-
             // Check behind the caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret back one spot
             // and leave the preserved character untouched.
@@ -426,21 +422,16 @@ implements MouseListener, KeyListener, FocusListener {
                 if (getText().charAt(getCaretPosition() - 1)
                     == preservedChars.get(i)) {
                     setCaretPosition(getCaretPosition() - 1);
-                    deleteChar = false;
                     break;
                 }
             }
 
-            // Character behind caret is not preserved. Delete it.
-            if (deleteChar) {
-                StringBuffer currentValue = new StringBuffer(getText());
-                currentValue.delete(getCaretPosition() - 1, getCaretPosition());
-                int cPosition = getCaretPosition() - 1;
-                this.setText(currentValue.toString());
-                setCaretPosition(cPosition);
-            }
-
-            
+            // Delete previous character.
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
+            int cPosition = getCaretPosition() - 1;
+            this.setText(currentValue.toString());
+            setCaretPosition(cPosition);
         }
     }
 

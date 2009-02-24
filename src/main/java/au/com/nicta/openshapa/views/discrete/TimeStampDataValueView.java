@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 /**
+ * An abstract view for TimeStampDataValues.
  *
  * @author cfreeman
  */
@@ -87,16 +88,41 @@ public abstract class TimeStampDataValueView extends DataValueView {
      */
     public void keyPressed(KeyEvent e) {
         // Ignore key release.
-        switch (e.getKeyChar()) {
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
                 // Ignore - handled when the key is typed.
                 e.consume();
                 break;
+
             case KeyEvent.VK_LEFT:
+                // If the character two steps to the left is a preserved
+                // character we need to skip one before passing the key event
+                // down to skip again (effectively skipping the preserved
+                // character).
+                for (int i = 0; i < preservedChars.size(); i++) {
+                    int c = Math.max(0, getCaretPosition() - 2);
+
+                    if (getText().charAt(c) == preservedChars.get(i)) {
+                        setCaretPosition(Math.max(0, getCaretPosition() - 1));
+                        break;
+                    }
+                }
+                break;
+
             case KeyEvent.VK_RIGHT:
-                // Move caret left and right (underlying text field handles
-                // this).
+                // If the character to the right is a preserved character, we
+                // need to skip one before passing the key event down to skip
+                // again (effectively skipping the preserved character).
+                for (int i = 0; i < preservedChars.size(); i++) {
+                    int c = Math.min(getText().length() - 1,
+                                     getCaretPosition() + 1);
+                    if (getText().charAt(c) == preservedChars.get(i)) {
+                        setCaretPosition(Math.min(getText().length() - 1,
+                                                  getCaretPosition() + 1));
+                        break;
+                    }
+                }
                 break;
 
             case KeyEvent.VK_DOWN:
