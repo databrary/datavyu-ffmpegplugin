@@ -394,7 +394,7 @@ implements ExternalDataCellListener, Selectable {
         }
 
         if (offsetChanged) {
-            onset.setValue(newOffset);
+            offset.setValue(newOffset);
         }
 
         if (valChanged) {
