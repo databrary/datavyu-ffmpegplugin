@@ -201,7 +201,9 @@ implements KeyEventDispatcher {
      */
     public void showSpreadsheet() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        spreadsheetView = new Spreadsheet(mainFrame, false, db);
+        if (spreadsheetView == null) {
+            spreadsheetView = new Spreadsheet(mainFrame, false, db);
+        }
 
         OpenSHAPA.getApplication().show(spreadsheetView);
     }
@@ -434,6 +436,9 @@ implements KeyEventDispatcher {
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
             consoleWriter = new PrintWriter(sIn);
             rubyEngine.getContext().setWriter(consoleWriter);
+
+            console = null;
+            spreadsheetView = null;
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
