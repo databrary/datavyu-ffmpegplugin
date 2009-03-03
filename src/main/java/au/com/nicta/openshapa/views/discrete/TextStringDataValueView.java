@@ -94,7 +94,7 @@ public final class TextStringDataValueView extends DataValueView {
             e.consume();
 
         // Just a regular vanilla keystroke - insert it into text field.
-        } else {
+        } else if (!e.isMetaDown() && !e.isControlDown()) {
             this.removeSelectedText(preservedChars);
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
