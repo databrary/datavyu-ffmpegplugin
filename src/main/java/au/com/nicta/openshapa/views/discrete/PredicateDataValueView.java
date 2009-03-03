@@ -18,9 +18,6 @@ public final class PredicateDataValueView extends DataValueView {
         super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
-    public void keyPressed(KeyEvent e) {
-    }
-
     public void keyTyped(KeyEvent e) {
         this.removeSelectedText();
     }
