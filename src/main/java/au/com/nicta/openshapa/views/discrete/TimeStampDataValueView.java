@@ -350,13 +350,4 @@ public abstract class TimeStampDataValueView extends DataValueView {
             return null;
         }
     }
-
-    /**
-     * The action to invoke when a key is released.
-     *
-     * @param e The event that triggered this action.
-     */
-    public void keyReleased(KeyEvent e) {
-        // Ignore key release.
-    }
 }

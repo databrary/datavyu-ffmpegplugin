@@ -60,7 +60,6 @@ public final class IntDataValueView extends DataValueView {
      * @param e The KeyEvent that triggered this action.
      */
     public void keyPressed(KeyEvent e) {
-        // Ignore key release.
         switch (e.getKeyChar()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -152,14 +151,5 @@ public final class IntDataValueView extends DataValueView {
         } else {
             return new Integer(textField);
         }
-    }
-
-    /**
-     * The action to invoke when a key is released.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
-    public void keyReleased(KeyEvent e) {
-        // Ignore key release.
     }
 }

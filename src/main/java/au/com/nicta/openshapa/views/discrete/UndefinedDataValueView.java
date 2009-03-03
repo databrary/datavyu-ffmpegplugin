@@ -24,9 +24,6 @@ public final class UndefinedDataValueView extends DataValueView {
     public void keyPressed(KeyEvent e) {
     }
 
-    public void keyReleased(KeyEvent e) {
-    }
-
     public void keyTyped(KeyEvent e) {
         this.removeSelectedText(preservedChars);
     }

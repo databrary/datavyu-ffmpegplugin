@@ -328,6 +328,15 @@ implements MouseListener, KeyListener, FocusListener {
     }
 
     /**
+     * The action to invoke when a key is released.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyReleased(KeyEvent e) {
+        // Ignore key release.
+    }
+
+    /**
      * Process key events that have been dispatched to this component, pass them
      * through to all listeners, and then if they are not consumed pass it onto
      * the parent of this component.
