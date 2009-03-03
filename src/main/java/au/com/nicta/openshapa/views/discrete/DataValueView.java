@@ -48,6 +48,9 @@ implements MouseListener, KeyListener, FocusListener {
     /** Should the oldCaretPosition be advanced by a single position? */
     private boolean advanceCaret;
 
+    /** A list of characters that can not be removed from this view. */
+    private Vector<Character> preservedChars;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueView.class);
 
@@ -76,6 +79,7 @@ implements MouseListener, KeyListener, FocusListener {
             value = matrix.getArgCopy(index);
             oldCaretPosition = 0;
             advanceCaret = false;
+            preservedChars = new Vector<Character>();
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
         }
@@ -103,6 +107,7 @@ implements MouseListener, KeyListener, FocusListener {
         value = dataValue;
         oldCaretPosition = 0;
         advanceCaret = false;
+        preservedChars = new Vector<Character>();
         initDataValueView(editable);
     }
 
@@ -126,6 +131,23 @@ implements MouseListener, KeyListener, FocusListener {
 
         updateStrings();
         restoreCaretPosition();
+    }
+
+    /**
+     * @return The list of preserved characters.
+     */
+    protected Vector<Character> getPreservedChars() {
+        return preservedChars;
+    }
+
+    /**
+     * Adds a character to the list that must be preserved by the editor
+     * (characters that can not be deleted).
+     *
+     * @param c The character to be preserved.
+     */
+    protected void addPreservedChar(final Character c) {
+        preservedChars.add(c);
     }
 
     /**
@@ -328,15 +350,6 @@ implements MouseListener, KeyListener, FocusListener {
     }
 
     /**
-     * The action to invoke when a key is released.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
-    public void keyReleased(KeyEvent e) {
-        // Ignore key release.
-    }
-
-    /**
      * Process key events that have been dispatched to this component, pass them
      * through to all listeners, and then if they are not consumed pass it onto
      * the parent of this component.
@@ -350,6 +363,43 @@ implements MouseListener, KeyListener, FocusListener {
         if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
             || ke.getKeyCode() == KeyEvent.VK_DOWN) {
             this.getParent().dispatchEvent(ke);
+        }
+    }
+
+    /**
+     * The action to invoke when a key is released.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyReleased(KeyEvent e) {
+        // Ignore key release.
+    }
+
+    /**
+     * The action to invoke when a key is pressed.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyChar()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_RIGHT:
+                // Move caret left and right (underlying text field handles
+                // this).
+                break;
+
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_UP:
+                // Key stroke gets passed up a parent element to navigate
+                // cells up and down.
+                break;
+            default:
+                break;
         }
     }
 
@@ -372,16 +422,12 @@ implements MouseListener, KeyListener, FocusListener {
      * Removes characters from ahead of the caret if they are not in the
      * preservedChars parameter. If the character is to be preserved, this
      * method will simple shift the caret forward one spot.
-     *
-     * @param preservedChars A list of characters that are to be preserved,
-     * these characters will NOT be removed from ahead of the caret regardless
-     * of if they have been selected or not.
      */
-    protected void removeAheadOfCaret(Vector<Character> preservedChars) {
+    protected void removeAheadOfCaret() {
         // Underlying text field has selection no caret, remove everything that
         // is selected.
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText(preservedChars);
+            removeSelectedText();
 
         // Underlying Text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
@@ -410,16 +456,12 @@ implements MouseListener, KeyListener, FocusListener {
      * Removes characters from behind the caret if they are not in the
      * preservedChars parameter. If the character is to be preserved, this
      * method will simply shift the caret back one spot.
-     *
-     * @param preservedChars A list of characters that are to be preserved,
-     * these characters will NOT be removed from the behind the caret regardless
-     * of if they have been selected or not.
      */
-    protected void removeBehindCaret(Vector<Character> preservedChars) {
+    protected void removeBehindCaret() {
         // Underlying text field has selection and no carret, simply remove
         // everything that is selected.
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText(preservedChars);
+            removeSelectedText();
 
         // Underlying text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
@@ -449,12 +491,8 @@ implements MouseListener, KeyListener, FocusListener {
      * underlying text field and that don't exist in the preservedChars
      * parameter. If no characters have been selected, the underlying text field
      * is unchanged.
-     *
-     * @param preservedChars A list of characters that are to be preserved,
-     * these characters will NOT be removed from the underlying text field
-     * regardless of if they have been selected or not.
      */
-    protected void removeSelectedText(Vector<Character> preservedChars) {
+    protected void removeSelectedText() {
         Vector<Character> foundChars = new Vector<Character>();
 
         // Get the current value of the visual representation of this DataValue.

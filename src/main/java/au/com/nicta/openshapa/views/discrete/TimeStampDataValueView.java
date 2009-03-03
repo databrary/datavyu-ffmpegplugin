@@ -11,7 +11,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
-import java.util.Vector;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,9 +19,6 @@ import org.apache.log4j.Logger;
  * @author cfreeman
  */
 public abstract class TimeStampDataValueView extends DataValueView {
-
-    // A list of preservedCharacters for this editor.
-    private Vector<Character> preservedChars;
 
     // Conversion factor for converting hours to ticks.
     private static long HH_TO_TICKS =  3600000;
@@ -56,9 +52,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                            final int matrixIndex,
                            final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
-
-        preservedChars = new Vector<Character>();
-        preservedChars.add(new Character(':'));
+        this.addPreservedChar(new Character(':'));
     }
 
     /**
@@ -76,9 +70,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                            final TimeStampDataValue timeStampDataValue,
                            final boolean editable) {
         super(cellSelection, cell, timeStampDataValue, editable);
-
-        preservedChars = new Vector<Character>();
-        preservedChars.add(new Character(':'));
+        this.addPreservedChar(new Character(':'));
     }
 
     /**
@@ -86,8 +78,8 @@ public abstract class TimeStampDataValueView extends DataValueView {
      *
      * @param e The key event that triggered this action.
      */
+    @Override
     public void keyPressed(KeyEvent e) {
-        //if (e.i)
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -100,10 +92,10 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 // character we need to skip one before passing the key event
                 // down to skip again (effectively skipping the preserved
                 // character).
-                for (int i = 0; i < preservedChars.size(); i++) {
+                for (int i = 0; i < getPreservedChars().size(); i++) {
                     int c = Math.max(0, getCaretPosition() - 2);
 
-                    if (getText().charAt(c) == preservedChars.get(i)) {
+                    if (getText().charAt(c) == getPreservedChars().get(i)) {
                         setCaretPosition(Math.max(0, getCaretPosition() - 1));
                         break;
                     }
@@ -114,10 +106,10 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 // If the character to the right is a preserved character, we
                 // need to skip one before passing the key event down to skip
                 // again (effectively skipping the preserved character).
-                for (int i = 0; i < preservedChars.size(); i++) {
+                for (int i = 0; i < getPreservedChars().size(); i++) {
                     int c = Math.min(getText().length() - 1,
                                      getCaretPosition() + 1);
-                    if (getText().charAt(c) == preservedChars.get(i)) {
+                    if (getText().charAt(c) == getPreservedChars().get(i)) {
                         setCaretPosition(Math.min(getText().length() - 1,
                                                   getCaretPosition() + 1));
                         break;
@@ -183,8 +175,8 @@ public abstract class TimeStampDataValueView extends DataValueView {
                     reject = false;
                 }
 
-                for (int j = 0; reject && j < preservedChars.size(); j++) {
-                    if (preservedChars.get(i) == text.charAt(i)) {
+                for (int j = 0; reject && j < getPreservedChars().size(); j++) {
+                    if (getPreservedChars().get(i) == text.charAt(i)) {
                         reject = false;
                     }
                 }
@@ -195,9 +187,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
             if (!reject) {
                 // Truncate any delimiters out of the timestamp datavalue.
                 // and treat it as a continous stream of digits.
-                for (int i = 0; i < preservedChars.size(); i++) {
+                for (int i = 0; i < getPreservedChars().size(); i++) {
                     char[] temp = new char[1];
-                    temp[0] = preservedChars.get(i);
+                    temp[0] = getPreservedChars().get(i);
                     String chars = new String(temp);
                     text = text.replace(chars, "");
                 }
@@ -215,9 +207,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
                     // If the character in the current caret position of the
                     // destination time stamp is a preservedCharacter, skip
                     // over it.
-                    for (int j = 0; j < preservedChars.size(); j++) {
+                    for (int j = 0; j < getPreservedChars().size(); j++) {
                         if (v.charAt(getCaretPosition())
-                            == preservedChars.get(j)) {
+                            == getPreservedChars().get(j)) {
                             setCaretPosition(getCaretPosition() + 1);
                         }
                     }
@@ -266,7 +258,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
             // The backspace key removes digits from behind the caret.
             if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                        && e.getKeyChar() == '\u0008') {
-                this.removeBehindCaret(preservedChars);
+                this.removeBehindCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), "0");
                 tdv.setItsValue(buildValue(currentValue.toString()));
@@ -276,7 +268,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
             } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                        && e.getKeyChar() == '\u007F') {
 
-                this.removeAheadOfCaret(preservedChars);
+                this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), "0");
                 advanceCaret();
@@ -285,7 +277,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
 
             // Key stoke is number - insert number at current caret position.
             } else if (Character.isDigit(e.getKeyChar())) {
-                this.removeAheadOfCaret(preservedChars);
+                this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 advanceCaret();

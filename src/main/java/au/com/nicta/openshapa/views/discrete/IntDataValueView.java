@@ -4,7 +4,6 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.IntDataValue;
 import au.com.nicta.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
-import java.util.Vector;
 
 /**
  * This class is the view representation of a IntDataValue as stored within the
@@ -13,9 +12,6 @@ import java.util.Vector;
  * @author cfreeman
  */
 public final class IntDataValueView extends DataValueView {
-
-    /** A list of characters that can not be removed from this view. */
-    static final Vector<Character> preservedChars = new Vector<Character>();
 
     /**
      * Constructor.
@@ -55,34 +51,6 @@ public final class IntDataValueView extends DataValueView {
     }
 
     /**
-     * The action to invoke when a key is pressed.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
-    public void keyPressed(KeyEvent e) {
-        switch (e.getKeyChar()) {
-            case KeyEvent.VK_BACK_SPACE:
-            case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
-                e.consume();
-                break;
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_RIGHT:
-                // Move caret left and right (underlying text field handles
-                // this).
-                break;
-
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_UP:
-                // Key stroke gets passed up a parent element to navigate
-                // cells up and down.
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
      * The action to invoke when a key is typed.
      *
      * @param e The KeyEvent that triggered this action.
@@ -109,20 +77,20 @@ public final class IntDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            this.removeBehindCaret(preservedChars);
+            this.removeBehindCaret();
             idv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            this.removeAheadOfCaret(preservedChars);
+            this.removeAheadOfCaret();
             idv.setItsValue(buildValue(this.getText()));
             e.consume();
 
         // Key stoke is number - insert number into the current caret position.
         } else if (Character.isDigit(e.getKeyChar())) {
-            this.removeSelectedText(preservedChars);
+            this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
             advanceCaret(); // Advance caret over the top of the new char.

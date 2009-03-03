@@ -3,15 +3,12 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
-import java.util.Vector;
 
 /**
  *
  * @author cfreeman
  */
 public final class UndefinedDataValueView extends DataValueView {
-
-    static final Vector<Character> preservedChars = new Vector<Character>();
 
     UndefinedDataValueView(final Selector cellSelection,
                            final DataCell cell,
@@ -21,10 +18,7 @@ public final class UndefinedDataValueView extends DataValueView {
         super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
-    public void keyPressed(KeyEvent e) {
-    }
-
     public void keyTyped(KeyEvent e) {
-        this.removeSelectedText(preservedChars);
+        this.removeSelectedText();
     }
 }
