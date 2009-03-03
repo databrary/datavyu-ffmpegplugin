@@ -9,6 +9,8 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 /**
+ * This class is a view representation of a TextStringDataValue as stored within
+ * the database.
  *
  * @author cfreeman
  */
@@ -18,7 +20,8 @@ public final class TextStringDataValueView extends DataValueView {
     static final Vector<Character> preservedChars = new Vector<Character>();
 
     /** The logger for TextStringDataValueView. */
-    private static Logger logger = Logger.getLogger(TextStringDataValueView.class);
+    private static Logger logger = Logger
+                                      .getLogger(TextStringDataValueView.class);
 
     /**
      * Constructor.
