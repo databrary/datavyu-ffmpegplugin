@@ -70,6 +70,8 @@ public final class TextStringDataValueView extends DataValueView {
             this.setText(currentValue.toString());
             restoreCaretPosition();
             e.consume();
+        } else {
+            e.consume();
         }
 
         // Push the character changes into the database.
