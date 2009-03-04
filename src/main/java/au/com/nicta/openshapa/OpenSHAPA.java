@@ -200,10 +200,12 @@ implements KeyEventDispatcher {
      * Action for showing the spreadsheet.
      */
     public void showSpreadsheet() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        if (spreadsheetView == null) {
-            spreadsheetView = new Spreadsheet(mainFrame, false, db);
+        // If the spreadsheetview already exists - trash it and create a new one
+        if (spreadsheetView != null) {
+            spreadsheetView.dispose();
         }
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        spreadsheetView = new Spreadsheet(mainFrame, false, db);
 
         OpenSHAPA.getApplication().show(spreadsheetView);
     }
