@@ -1176,9 +1176,7 @@ public class ColPredDataValueTest extends DataValueTest {
             try
             {
                 untyped_farg = matrix_mve0.getFormalArg(6);
-                // TODO:not sure how but this next line was passing before as an
-                // assert() but farg(6) is of type TEXT now.  SJW
-                assertFalse( farg.getFargType() == FormalArgument.FArgType.UNTYPED );
+                assertTrue( untyped_farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
@@ -3422,9 +3420,7 @@ public class ColPredDataValueTest extends DataValueTest {
             try
             {
                 untyped_farg = matrix_mve0.getFormalArg(6);
-                // TODO:not sure how but this next line was passing before as an
-                // assert() but farg(6) is of type TEXT now.  SJW
-                assertFalse( farg.getFargType() == FormalArgument.FArgType.UNTYPED );
+                assertTrue( untyped_farg.getFargType() == FormalArgument.FArgType.UNTYPED );
                 untyped_farg_ID = untyped_farg.getID();
                 assertTrue( untyped_farg_ID != DBIndex.INVALID_ID );
 
