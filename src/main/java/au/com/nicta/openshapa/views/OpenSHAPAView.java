@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
 import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -86,6 +87,8 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showSpreadsheet() {
+        weakTemporalOrderMenuItem.setSelected(false);
+        strongTemporalOrderMenuItem.setSelected(false);
         OpenSHAPA.getApplication().showSpreadsheet();
     }
 
@@ -117,6 +120,19 @@ implements KeyEventDispatcher {
         }
     }
 
+    /**
+     * Set the SheetLayoutType for the spreadsheet.
+     */
+    private void setSheetLayout() {
+        SheetLayoutType type = SheetLayoutType.Ordinal;
+        if (weakTemporalOrderMenuItem.isSelected()) {
+            type = SheetLayoutType.WeakTemporal;
+        } else if (strongTemporalOrderMenuItem.isSelected()) {
+            type = SheetLayoutType.StrongTemporal;
+        }
+        OpenSHAPA.getApplication().setSheetLayout(type);
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -138,6 +154,9 @@ implements KeyEventDispatcher {
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         newCellMenuItem = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
+        weakTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
+        strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
@@ -145,6 +164,7 @@ implements KeyEventDispatcher {
         helpMenu1 = new javax.swing.JMenu();
         contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -209,6 +229,27 @@ implements KeyEventDispatcher {
         });
         jMenu3.add(newCellMenuItem);
 
+        jSeparator3.setName("jSeparator3"); // NOI18N
+        jMenu3.add(jSeparator3);
+
+        weakTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+        weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
+        weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                weakTemporalMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(weakTemporalOrderMenuItem);
+
+        strongTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
+        strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                strongTemporalMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(strongTemporalOrderMenuItem);
+
         menuBar.add(jMenu3);
 
         jMenu2.setName("jMenu2"); // NOI18N
@@ -236,6 +277,10 @@ implements KeyEventDispatcher {
         aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
         helpMenu1.add(aboutMenuItem1);
 
+        jMenuItem5.setAction(actionMap.get("populateDemoData")); // NOI18N
+        jMenuItem5.setName("jMenuItem5"); // NOI18N
+        helpMenu1.add(jMenuItem5);
+
         menuBar.add(helpMenu1);
         resourceMap.injectComponents(menuBar);
 
@@ -252,6 +297,16 @@ implements KeyEventDispatcher {
         OpenSHAPA.getApplication().createNewCell();
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
+    private void strongTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_strongTemporalMenuItemActionPerformed
+        weakTemporalOrderMenuItem.setSelected(false);
+        setSheetLayout();
+}//GEN-LAST:event_strongTemporalMenuItemActionPerformed
+
+    private void weakTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weakTemporalMenuItemActionPerformed
+        strongTemporalOrderMenuItem.setSelected(false);
+        setSheetLayout();
+}//GEN-LAST:event_weakTemporalMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
@@ -263,12 +318,16 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
+    private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
+    private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
     // End of variables declaration//GEN-END:variables
 
     /** Logger for this class. */

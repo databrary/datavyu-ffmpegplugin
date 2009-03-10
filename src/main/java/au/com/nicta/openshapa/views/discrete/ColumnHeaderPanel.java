@@ -3,7 +3,6 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
@@ -24,6 +23,9 @@ class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
     /** The current column selection. */
     private Selector selection;
 
+    /** Background color of the header when unselected. */
+    private Color backColor;
+
     /**
      * Creates new ColumnHeaderPanel.
      * @param col SpreadsheetColumn this header is part of.
@@ -40,9 +42,11 @@ class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
         setOpaque(true);
         setHorizontalAlignment(JLabel.CENTER);
         setBorder(BorderFactory.createLineBorder(Color.black));
-        setMinimumSize(new Dimension(202,16));
-        setPreferredSize(new Dimension(202,16));
-        setMaximumSize(new Dimension(202,16));
+        backColor = getBackground();
+        Dimension dim = col.getHeaderSize();
+        setMinimumSize(dim);
+        setPreferredSize(dim);
+        setMaximumSize(dim);
         this.addMouseListener(this);
         selection = selector;
     }
@@ -57,6 +61,11 @@ class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
     public void setSelected(final boolean sel) {
         selected = sel;
         parentCol.setSelected(selected);
+        if (selected) {
+            setBackground(UIConfiguration.spreadsheetSelectedColor);
+        } else {
+            setBackground(backColor);
+        }
         repaint();
     }
 
@@ -68,20 +77,6 @@ class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
     }
 
     /**
-     * Paint the SpreadsheetCell.
-     * @param g the <code>Graphics</code> object to protect
-     */
-    @Override
-    public void paintComponent(final Graphics g) {
-        if (selected) {
-            setBackground(UIConfiguration.spreadsheetSelectedColor);
-        } else {
-            setBackground(UIConfiguration.spreadsheetBackgroundColor);
-        }
-        super.paintComponent(g);
-    }
-
-        /**
      * The action to invoke when the mouse enters this component.
      *
      * @param me The mouse event that triggered this action.

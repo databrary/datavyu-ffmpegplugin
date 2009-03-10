@@ -10,6 +10,7 @@ import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
+import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
@@ -239,6 +240,14 @@ implements KeyEventDispatcher {
      */
     public void setNewCellStopTime(final long milliseconds) {
         spreadsheetView.setNewCellStopTime(milliseconds);
+    }
+
+    /**
+     * Set the layout type for the spreadsheet.
+     * @param type SheetLayoutType to set.
+     */
+    public void setSheetLayout(final SheetLayoutType type) {
+        spreadsheetView.setLayoutType(type);
     }
 
     /**

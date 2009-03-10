@@ -8,10 +8,13 @@ import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.views.OpenSHAPADialog;
+import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
 import java.awt.BorderLayout;
-import java.util.HashMap;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.Vector;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,8 +36,8 @@ public class Spreadsheet extends OpenSHAPADialog
     /** The Database being viewed. */
     private Database database;
 
-    /** Mapping between database column id to the Spreadsheetcolumn. */
-    private HashMap<Long, SpreadsheetColumn> columns;
+    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
+    private Vector<SpreadsheetColumn> columns;
 
     /** Selector object for handling Column header selection. */
     private Selector colSelector;
@@ -48,11 +51,17 @@ public class Spreadsheet extends OpenSHAPADialog
     /** The id of the last datacell that was created. */
     private long lastCreatedColID = 0;
 
+    /** filler box for use when there are no datacells. */
+    private Component filler;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(Spreadsheet.class);
 
     /** The default number of ticks per second to use. */
-    private final static int TICKS_PER_SECOND = 1000;
+    private static final int TICKS_PER_SECOND = 1000;
+
+    /** Reference to the spreadsheet layout handler. */
+    private SheetLayout sheetLayout;
 
     /**
      * Creates new, empty Spreadsheet. No database referred to as yet
@@ -75,12 +84,14 @@ public class Spreadsheet extends OpenSHAPADialog
         headerView = new JPanel();
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
 
-        columns = new HashMap<Long, SpreadsheetColumn>();
+        columns = new Vector<SpreadsheetColumn>();
 
         JScrollPane jScrollPane3 = new JScrollPane();
         this.add(jScrollPane3, BorderLayout.CENTER);
         jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
+
+        setLocation(parent.getX(), parent.getY() + parent.getHeight());
 
         colSelector = new Selector(this);
         cellSelector = new Selector(this);
@@ -102,34 +113,35 @@ public class Spreadsheet extends OpenSHAPADialog
 
         this.setDatabase(db);
 
-        this.updateComponents();
+        this.buildColumns();
+
+        setLayoutType(SheetLayoutType.Ordinal);
     }
 
     /**
      * Populate from the database.
      */
-    private void updateComponents() {
-        clearAll();
+    private void buildColumns() {
         try {
             Vector <DataColumn> dbColumns = getDatabase().getDataColumns();
+
+            // setup a filler box if the sheet has no columns yet
+            // size is relative to its parent for now
+            int width = getParent().getWidth();
+            filler = Box.createRigidArea(new Dimension(width, width));
+            if (dbColumns.size() == 0) {
+                mainView.add(filler);
+            }
 
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
 
                 addColumn(getDatabase(), dbColumn.getID());
             }
+
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);
         }
-    }
-
-    /**
-     * Clear all previous panels and references.
-     */
-    private void clearAll() {
-        columns.clear();
-        mainView.removeAll();
-        headerView.removeAll();
     }
 
     /**
@@ -138,6 +150,7 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID ID of the column to add.
      */
     private void addColumn(final Database db, final long colID) {
+        mainView.remove(filler);
         // make the SpreadsheetColumn
         SpreadsheetColumn col = new SpreadsheetColumn(this, db,
                                                       colID, colSelector);
@@ -147,7 +160,7 @@ public class Spreadsheet extends OpenSHAPADialog
         headerView.add(col.getHeaderPanel());
 
         // and add it to our maintained ref collection
-        columns.put(colID, col);
+        columns.add(col);
     }
 
     /**
@@ -155,15 +168,25 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param colID ID of column to remove
      */
     private void removeColumn(final long colID) {
-
-        SpreadsheetColumn foundcol = columns.get(colID);
-        if (foundcol != null) {
-            mainView.remove(foundcol.getDataPanel());
-            headerView.remove(foundcol.getHeaderPanel());
-            columns.remove(colID);
-        } else {
-            logger.warn("Did not find column to delete by id = " + colID);
+        for (SpreadsheetColumn col : columns) {
+            if (col.getColID() == colID) {
+                mainView.remove(col.getDataPanel());
+                headerView.remove(col.getHeaderPanel());
+                columns.remove(col);
+                break;
+            }
         }
+        if (columns.size() == 0) {
+            mainView.add(filler);
+        }
+    }
+
+    /**
+     * Deselect all selected items in the Spreadsheet.
+     */
+    public final void deselectAll() {
+        cellSelector.deselectAll();
+        colSelector.deselectAll();
     }
 
     /**
@@ -182,6 +205,13 @@ public class Spreadsheet extends OpenSHAPADialog
 
         // set the database
         this.database = db;
+
+        // set Temporal Ordering on
+        try {
+            db.setTemporalOrdering(true);
+        } catch (SystemErrorException e) {
+            logger.error("setTemporalOrdering failed", e);
+        }
 
         // register as a columnListListener
         try {
@@ -214,18 +244,6 @@ public class Spreadsheet extends OpenSHAPADialog
     }
 
     /**
-     * @return Deselect all selected items in the Spreadsheet.
-     */
-    public final void deselectAll() {
-        cellSelector.deselectAll();
-        colSelector.deselectAll();
-    }
-
-    /**
-     * ExternalColumnListListener overrides
-     */
-
-    /**
      * Action to invoke when a column is removed from a database.
      *
      * @param db The database that the column has been removed from.
@@ -234,7 +252,7 @@ public class Spreadsheet extends OpenSHAPADialog
     public final void colDeletion(final Database db, final long colID) {
         deselectAll();
         removeColumn(colID);
-        validate();
+        relayoutCells();
     }
 
     /**
@@ -246,7 +264,15 @@ public class Spreadsheet extends OpenSHAPADialog
     public final void colInsertion(final Database db, final long colID) {
         deselectAll();
         addColumn(db, colID);
-        validate();
+        relayoutCells();
+    }
+
+    /**
+     * Relayout the SpreadsheetCells in the spreadsheet.
+     */
+    public final void relayoutCells() {
+        sheetLayout.relayoutCells();
+        mainView.revalidate();
     }
 
     /**
@@ -257,7 +283,7 @@ public class Spreadsheet extends OpenSHAPADialog
 
         try {
             Vector <DataColumn> cols = database.getDataColumns();
-            int numCols = columns.size();
+            int numCols = cols.size();
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
                 if (col.getSelected()) {
@@ -291,7 +317,8 @@ public class Spreadsheet extends OpenSHAPADialog
                 }
             }
         } catch (SystemErrorException e) {
-           logger.error("Unable to set new cell stop time.", e);        }
+           logger.error("Unable to set new cell stop time.", e);
+        }
         return selcells;
     }
 
@@ -314,9 +341,7 @@ public class Spreadsheet extends OpenSHAPADialog
 
             boolean newcelladded = false;
             // try for selected columns
-            Iterator <DataColumn> itCols = getSelectedCols().iterator();
-            while (itCols.hasNext()) {
-                DataColumn col = itCols.next();
+            for (DataColumn col : getSelectedCols()) {
                 MatrixVocabElement mve =
                                         database.getMatrixVE(col.getItsMveID());
                 DataCell cell = new DataCell(col.getDB(),
@@ -389,7 +414,7 @@ public class Spreadsheet extends OpenSHAPADialog
      * @param milliseconds The number of milliseconds since the origin of the
      * spreadsheet to set the stop time for.
      */
-    public void setNewCellStopTime(final long milliseconds) {
+    public final void setNewCellStopTime(final long milliseconds) {
         try {
             DataCell cell = (DataCell) database.getCell(lastCreatedCellID);
             cell.setOffset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
@@ -397,6 +422,15 @@ public class Spreadsheet extends OpenSHAPADialog
         } catch (SystemErrorException e) {
             logger.error("Unable to set new cell stop time.", e);
         }
+    }
+
+    /**
+     * Set the layout type for the spreadsheet.
+     * @param type SheetLayoutType to set.
+     */
+    public final void setLayoutType(final SheetLayoutType type) {
+        sheetLayout = SheetLayoutFactory.getLayout(type, columns);
+        relayoutCells();
     }
 
     /** This method is called from within the constructor to

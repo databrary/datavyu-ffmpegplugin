@@ -91,28 +91,43 @@ begin
 
   # Create some data
   coldata = [0.1234, 1234, "textdata1", "nom1"]
+  col1 = [0, 2, 3, 10, 10, 15, 20, 22, 30, 34, 33, 35, 35, 50, 52, 53, 54, 55, 56, 57]
+  col2 = [0, 20, 30, 31, 32, 38, 46, 51, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]
+  col3 = [0, 4, 5, 10, 11, 15, 17, 22, 24, 34, 34, 35, 35, 50, 52, 53, 54, 55, 56, 57]
+  col4 = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
   for cc in 0...colnames.length
     col = $db.get_column(colnames[cc])
     mve = $db.get_matrix_ve(col.its_mve_id)
 
     for dd in 0...numrows
       cell = DataCell.new($db, col.get_id, mve.get_id)
-      cell.onset = TimeStamp.new(1000, dd * 2000)
+#      onset = cc * 1000 + (cc + dd) * 2000
+#      offset = onset + (dd * 200)
 
       # Set different data values
       if coltypes[cc] == MatrixVocabElement::MatrixType::FLOAT
         dv = FloatDataValue.new($db)
         dv.set_its_value(coldata[cc] * dd)
+        cell.onset = TimeStamp.new(1000, col1[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col1[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::INTEGER
         dv = IntDataValue.new($db)
         dv.set_its_value(coldata[cc] * dd)
+        cell.onset = TimeStamp.new(1000, col2[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col2[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::TEXT
         dv = TextStringDataValue.new($db)
         dv.set_its_value(coldata[cc])
+        cell.onset = TimeStamp.new(1000, col3[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col3[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::NOMINAL
         dv = NominalDataValue.new($db)
         dv.set_its_value(coldata[cc])
+        cell.onset = TimeStamp.new(1000, col4[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col4[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::PREDICATE
+        cell.onset = TimeStamp.new(1000, col1[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col1[dd * 2 + 1] * 1000)
         pve0 = $db.get_pred_ve(predID0)
 
         fargid = pve0.get_formal_arg(0).get_id()
@@ -139,6 +154,8 @@ begin
         dv.set_its_value(pred)
 
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::MATRIX
+        cell.onset = TimeStamp.new(1000, col2[dd * 2] * 1000)
+        cell.offset = TimeStamp.new(1000, col2[dd * 2 + 1] * 1000)
         mve0 = $db.get_matrix_ve(matID0)
 
         fargid = mve0.get_formal_arg(0).get_id()
@@ -170,8 +187,11 @@ begin
 
       # Add the cell to the database.
       $db.append_cell(cell)
+
     end
   end
+
+  $db.set_temporal_ordering(true)
 
   puts "Finished"
 

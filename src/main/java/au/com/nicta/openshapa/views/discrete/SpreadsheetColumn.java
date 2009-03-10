@@ -1,15 +1,21 @@
 package au.com.nicta.openshapa.views.discrete;
 
+import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalCascadeListener;
 import au.com.nicta.openshapa.db.ExternalDataColumnListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.Vector;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 
 /**
- * Column panel that contains the SpreadsheetCell panels.
+ * This class maintains the visual representation of the column in the
+ * Spreadsheet window.
  * @author swhitcher
  */
 public class SpreadsheetColumn
@@ -30,11 +36,60 @@ public class SpreadsheetColumn
     /** Spreadsheet this column belongs to. */
     private Spreadsheet spreadsheet;
 
-    /** flag to set if redraw required. */
-    private boolean dirty;
+    /** Collection of the SpreadsheetCells in the column. */
+    private Vector<SpreadsheetCell> cells;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
+
+    /** Records changes to column during a cascade. */
+    private ColumnChanges colChanges;
+
+    /** Default column width. */
+    private static final int DEFAULT_COLUMN_WIDTH = 202;
+
+    /** Default column height. */
+    private static final int DEFAULT_HEADER_HEIGHT = 16;
+
+    /** filler box for use when there are no datacells. */
+    private Component filler;
+
+    /**
+     * Private class for recording the changes reported by the listener
+     * callbacks on this column.
+     */
+    private final class ColumnChanges {
+        /** nameChanged. */
+        private boolean nameChanged;
+        /** varLenChanged. */
+        private boolean varLenChanged;
+        /** List of cell IDs of newly inserted cells. */
+        private Vector<Long> cellInserted;
+        /** List of cell IDs of deleted cells. */
+        private Vector<Long> cellDeleted;
+        /** colDeleted. */
+        private boolean colDeleted;
+
+        /**
+         * ColumnChanges constructor.
+         */
+        private ColumnChanges() {
+            cellInserted = new Vector<Long>();
+            cellDeleted = new Vector<Long>();
+            reset();
+        }
+
+        /**
+         * Reset the ColumnChanges flags and lists.
+         */
+        private void reset() {
+            nameChanged = false;
+            varLenChanged = false;
+            cellInserted.clear();
+            cellDeleted.clear();
+            colDeleted = false;
+        }
+    }
 
     /**
      * Creates new SpreadsheetColumn.
@@ -51,6 +106,8 @@ public class SpreadsheetColumn
         this.dbColID = colID;
         this.spreadsheet = sheet;
 
+        this.cells = new Vector<SpreadsheetCell>();
+
         try {
             database.registerDataColumnListener(dbColID, this);
             database.registerCascadeListener(this);
@@ -60,12 +117,61 @@ public class SpreadsheetColumn
             headerpanel = new ColumnHeaderPanel(this, dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")", selector);
 
-            datapanel = new ColumnDataPanel(sheet, dbColumn);
+            datapanel = new ColumnDataPanel();
+            datapanel.setPreferredSize(new Dimension(getWidth(),
+                                                            Integer.MAX_VALUE));
+
+            buildDataPanelCells(dbColumn);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
         }
-        dirty = false;
+        colChanges = new ColumnChanges();
+    }
+
+    /**
+     * Build the SpreadsheetCells and add to the DataPanel.
+     * @param dbColumn DataColumn to display.
+     */
+    private void buildDataPanelCells(final DataColumn dbColumn) {
+        try {
+            int numCells = dbColumn.getNumCells();
+
+            // hold onto a filler box for when there are no datacells
+            filler = Box.createRigidArea(new Dimension(getWidth(), 0));
+            if (numCells == 0) {
+               datapanel.add(filler);
+            }
+            // traverse and build the cells
+            for (int j = 1; j <= numCells; j++) {
+                DataCell dc = (DataCell) dbColumn.getDB()
+                                    .getCell(dbColumn.getID(), j);
+
+                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
+                                                spreadsheet.getCellSelector());
+                // add cell to the JPanel
+                datapanel.add(sc);
+                // and add it to our reference list
+                cells.add(sc);
+            }
+        } catch (SystemErrorException e) {
+           logger.error("Failed to populate Spreadsheet.", e);
+        }
+
+    }
+
+    /**
+     * @return Column Header size as a dimension.
+     */
+    public final Dimension getHeaderSize() {
+        return new Dimension(getWidth(), DEFAULT_HEADER_HEIGHT);
+    }
+
+    /**
+     * @return Column Width in pixels.
+     */
+    public final int getWidth() {
+        return DEFAULT_COLUMN_WIDTH;
     }
 
     /**
@@ -90,26 +196,6 @@ public class SpreadsheetColumn
     }
 
     /**
-     * Brute force rebuild of all cells in the Spreadsheet column.
-     * @param db The database the column belongs to.
-     * @param colID The ID assigned to the DataColumn.
-     */
-    private void rebuildAll(final Database db, final long colID) {
-        try {
-            DataColumn dbColumn = db.getDataColumn(colID);
-
-            datapanel.rebuildAll(dbColumn);
-            headerpanel.setText(dbColumn.getName()
-                            + "  (" + dbColumn.getItsMveType() + ")");
-
-            spreadsheet.validate();
-        } catch (SystemErrorException e) {
-            logger.error("Failed to reget DataColumn from colID = " + colID, e);
-        }
-        dirty = false;
-    }
-
-    /**
      * Set the selected state for the DataColumn this displays.
      * @param selected Selected state.
      */
@@ -125,15 +211,12 @@ public class SpreadsheetColumn
         }
     }
 
-
-    /** ExternalCascadeListener overrides */
-
     /**
      * Called at the beginning of a cascade of changes through the database.
      * @param db The database.
      */
     public final void beginCascade(final Database db) {
-
+        colChanges.reset();
     }
 
     /**
@@ -141,12 +224,84 @@ public class SpreadsheetColumn
      * @param db The database.
      */
     public final void endCascade(final Database db) {
+        boolean dirty = false;
+        if (colChanges.colDeleted) {
+            // Not tested yet should be handled by ColumnListener in spreadsheet
+            return;
+        }
+        if (colChanges.cellDeleted.size() > 0) {
+            for (Long cellID : colChanges.cellDeleted) {
+                deleteCellByID(cellID);
+            }
+            dirty = true;
+        }
+        if (colChanges.cellInserted.size() > 0) {
+            for (Long cellID : colChanges.cellInserted) {
+                insertCellByID(cellID);
+            }
+            dirty = true;
+        }
+        if (colChanges.varLenChanged) {
+            // all cells need to be redrawn but none are being added or deleted
+            dirty = true;
+        }
+
+        if (colChanges.nameChanged) {
+            try {
+                DataColumn dbColumn = db.getDataColumn(dbColID);
+                headerpanel.setText(dbColumn.getName()
+                            + "  (" + dbColumn.getItsMveType() + ")");
+            } catch (SystemErrorException e) {
+                logger.warn("Problem getting data column", e);
+            }
+        }
+
         if (dirty) {
-            rebuildAll(database, dbColID);
+            spreadsheet.relayoutCells();
+        }
+        colChanges.reset();
+    }
+
+    /**
+     * Find and delete SpreadsheetCell by its ID.
+     * @param cellID ID of cell to find and delete.
+     */
+    private void deleteCellByID(final long cellID) {
+        for (SpreadsheetCell cell : cells) {
+            if (cell.getCellID() == cellID) {
+                cells.remove(cell);
+                datapanel.remove(cell);
+                if (cells.size() == 0) {
+                    // add in filler to keep column width
+                    datapanel.add(filler);
+                }
+                break;
+            }
         }
     }
 
-    /** ExternalDataColumnListener overrides */
+    /**
+     * Insert a new SpreadsheetCell given the cells ID.
+     * @param cellID ID of cell to create and insert.
+     */
+    private void insertCellByID(final long cellID) {
+        try {
+            DataCell dc = (DataCell) database.getCell(cellID);
+            SpreadsheetCell newCell = new SpreadsheetCell(database, dc,
+                                                 spreadsheet.getCellSelector());
+            Long newOrd = new Long(dc.getOrd());
+            if (cells.size() > newOrd.intValue()) {
+                cells.insertElementAt(newCell, newOrd.intValue() - 1);
+            } else {
+                cells.add(newCell);
+            }
+            newCell.setWidth(getWidth() - 1);
+            datapanel.add(newCell);
+            datapanel.remove(filler);
+        } catch (SystemErrorException e) {
+            logger.error("Problem inserting a new SpreadsheetCell", e);
+        }
+    }
 
     /**
      * Called when a DataCell is deleted from the DataColumn.
@@ -157,7 +312,7 @@ public class SpreadsheetColumn
     public final void DColCellDeletion(final Database db,
                                        final long colID,
                                        final long cellID) {
-        dirty = true;
+        colChanges.cellDeleted.add(cellID);
     }
 
 
@@ -170,9 +325,8 @@ public class SpreadsheetColumn
     public final void DColCellInsertion(final Database db,
                                         final long colID,
                                         final long cellID) {
-        dirty = true;
+        colChanges.cellInserted.add(cellID);
     }
-
 
     /**
      * Called when one fields of the target DataColumn are changed.
@@ -212,7 +366,8 @@ public class SpreadsheetColumn
                                       final boolean selectedChanged,
                                       final boolean oldSelected,
                                       final boolean newSelected) {
-        dirty = true;
+        colChanges.nameChanged = nameChanged;
+        colChanges.varLenChanged = varLenChanged;
     }
 
     /**
@@ -222,7 +377,22 @@ public class SpreadsheetColumn
      */
     public final void DColDeleted(final Database db,
                                   final long colID) {
-        logger.warn("Not sure what to do in DColDeleted");
+        colChanges.colDeleted = true;
     }
 
+    /**
+     * Set the preferred size of the column.
+     * @param bottom Number of pixels to set.
+     */
+    public final void setBottomBound(final int bottom) {
+        datapanel.setPreferredSize(
+                    new Dimension(datapanel.getPreferredSize().width, bottom));
+    }
+
+    /**
+     * @return The SpreadsheetCells in this column.
+     */
+    public final Vector<SpreadsheetCell> getCells() {
+        return cells;
+    }
 }

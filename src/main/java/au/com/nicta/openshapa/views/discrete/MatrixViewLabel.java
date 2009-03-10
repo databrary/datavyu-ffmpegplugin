@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views.discrete;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.util.UIConfiguration;
 import java.util.Vector;
 import javax.swing.JLabel;
 import org.apache.log4j.Logger;
@@ -79,7 +80,7 @@ public class MatrixViewLabel extends SpreadsheetPanel {
         try {
             // If this matrixView does not contain any components build up
             // view representations for each of the arguments.
-            if (m != null && getComponentCount() == 0) {               
+            if (m != null && getComponentCount() == 0) {
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
                     argViews.add(DataValueViewFactory.build(sheetSelection,
@@ -97,6 +98,7 @@ public class MatrixViewLabel extends SpreadsheetPanel {
             // stack in some additional labels.
             if (argViews.size() > 1) {
                 JLabel label = new JLabel("(");
+                label.setFont(UIConfiguration.spreadsheetDataFont);
                 this.add(label);
             }
 
@@ -109,14 +111,18 @@ public class MatrixViewLabel extends SpreadsheetPanel {
                 }
 
                 if (argViews.size() > 1 && i < (argViews.size() - 1)) {
-                    this.add(new JLabel(","));
+                    JLabel label = new JLabel(",");
+                    label.setFont(UIConfiguration.spreadsheetDataFont);
+                    this.add(label);
                 }
             }
 
             // If we have more than one argument in the matrix - then we need to
             // stack in some additional labels.
             if (argViews.size() > 1) {
-                this.add(new JLabel(")"));
+                JLabel label = new JLabel(")");
+                label.setFont(UIConfiguration.spreadsheetDataFont);
+                this.add(label);
             }
 
         // The matrixView does not contain components, alter the contents of

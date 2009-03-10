@@ -12,12 +12,11 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.util.UIConfiguration;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -56,36 +55,32 @@ implements ExternalDataCellListener, Selectable {
     /** selected state of cell. */
     private boolean selected = false;
 
-    /** Stores the current user dimensions. */
-    private Dimension userDimensions = new Dimension(0, 0);
-
-    /** Default height multiplier of spreadsheet cell. */
-    public static final int HEIGHT_MULT = 50;
-
-    /** Boolean to flag if size is changed. Not Used. */
-    private boolean temporalSizeChanged = false;
-
-    /** Show/Hide the Ordinal value of the cell. */
-    private boolean showOrd = true;
-
-    /** Show/Hide the Onset value of the cell. */
-    private boolean showOnset = true;
-
-    /** Show/Hide the Offset value of the cell. */
-    private boolean showOffset = true;
-
-    /** Show/Hide the Data value of the cell. */
-    private boolean showData = true;
-
     /** The parent selection that could include this cell. */
     private Selector selection;
+
+    /** Onset has been processed and layout position calculated. */
+    private boolean onsetProcessed = false;
+
+    /** Border to use for normal cell. No extra information to show. */
+    public static final Border NORMAL_BORDER =
+        BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK),
+                BorderFactory.createEmptyBorder(0, 3, 1, 2));
+
+    /** Border to use if cell overlaps with another. */
+    public static final Border OVERLAP_BORDER =
+        BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK),
+                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLUE)),
+                BorderFactory.createEmptyBorder(0, 3, 0, 2));
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.
-     * @param db Database the cell is in
+     * @param cellDB Database the cell is in
      * @param cell Cell to display
      * @param selector Selector to register the cell with.
      * @throws SystemErrorException if trouble with db calls
@@ -127,22 +122,23 @@ implements ExternalDataCellListener, Selectable {
                            new TimeStampDataValue(cellDB),
                            true);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
-        onset.setValue(dc.getOnset());        
+        onset.setValue(dc.getOnset());
 
         offset = new OffsetView(selection,
                                 dc,
                                 new TimeStampDataValue(cellDB),
                                 true);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
-        offset.setValue(dc.getOffset());  
+        offset.setValue(dc.getOffset());
 
         dataPanel = new MatrixViewLabel(selection, dc, null);
+        dataPanel.setFont(UIConfiguration.spreadsheetDataFont);
+
         dataPanel.setMatrix(dc.getVal());
-        
+
         // Set the appearance of the spreadsheet cell.
         setBackground(java.awt.SystemColor.window);
-        setBorder(javax.swing.BorderFactory
-                       .createLineBorder(new java.awt.Color(0, 0, 0)));
+        this.setBorder(NORMAL_BORDER);
         setLayout(new java.awt.BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
@@ -157,12 +153,13 @@ implements ExternalDataCellListener, Selectable {
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
         dataPanel.setBackground(java.awt.SystemColor.window);
-        dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.X_AXIS));
+        dataPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 5));
         add(dataPanel, java.awt.BorderLayout.WEST);
-        
-        this.updateDimensions();
     }
 
+    /**
+     * @return CellID of the SpreadsheetCell.
+     */
     public long getCellID() {
         return cellID;
     }
@@ -180,6 +177,24 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
+     * Get the onset ticks
+     * @return Onset time as a long.
+     * @throws SystemErrorException
+     */
+    public long getOnsetTicks() throws SystemErrorException {
+        return dc.getOnset().getTime();
+    }
+
+    /**
+     * Get the offset ticks
+     * @return Offset ticks as a long.
+     * @throws SystemErrorException
+     */
+    public long getOffsetTicks() throws SystemErrorException {
+        return dc.getOffset().getTime();
+    }
+
+    /**
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public IntDataValue getOrdinal() {
@@ -187,7 +202,7 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
-     * Set the size of the SpreadsheetCell. Keeps a record in UserDimensions.
+     * Set the size of the SpreadsheetCell.
      * @param width New width of the SpreadsheetCell.
      * @param height New height of the SpreadsheetCell.
      */
@@ -195,7 +210,6 @@ implements ExternalDataCellListener, Selectable {
     public void setSize(int width, int height) {
         super.setSize(width, height);
         dataPanel.setSize(width, dataPanel.getHeight());
-        userDimensions = new Dimension(width, height);
     }
 
     /**
@@ -215,105 +229,6 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
-     * @return The Minimum height of the SpreadsheetCell.
-     */
-    public int getMinimumHeight() {
-        FontMetrics fm =
-                this.getFontMetrics(UIConfiguration.spreadsheetTimeStampFont);
-        FontMetrics fm1 =
-                this.getFontMetrics(UIConfiguration.spreadsheetDataFont);
-        return(fm.getHeight() + fm1.getHeight());
-    }
-
-    /**
-     * @return The Preferred size of the SpreadsheetCell.
-     */
-    @Override
-    public Dimension getPreferredSize() {
-        if ((this.userDimensions.width > 0)
-                && (this.userDimensions.height > 0)) {
-            return (this.userDimensions);
-        }
-
-        return (super.getPreferredSize());
-    }
-
-    /**
-     * @return Minimum size of the SpreadsheetCell.
-     */
-    @Override
-    public Dimension getMinimumSize() {
-        if ((this.userDimensions.width > 0)
-                && (this.userDimensions.height > 0)) {
-        return (this.userDimensions);
-        }
-
-        return (super.getMinimumSize());
-    }
-
-    /**
-     * @return Maximum Size of the SpreadsheetCell.
-     */
-    @Override
-    public Dimension getMaximumSize()
-    {
-        if ((this.userDimensions.width > 0)
-                && (this.userDimensions.height > 0)) {
-            return (this.userDimensions);
-        }
-
-        return (super.getMaximumSize());
-    }
-
-    /**
-     * Calculate the dimensions of the SpreadsheetCell. Based on the size and
-     * font face, calculate the size required for the cell.
-     */
-    public void updateDimensions() {
-        Rectangle r = this.getBounds();
-        FontMetrics fm =
-                this.getFontMetrics(UIConfiguration.spreadsheetTimeStampFont);
-
-        int totalWidth = 4;
-        int totalHeight = 4;
-
-        totalWidth += this.ord.getMinimumSize().width;
-        totalWidth += this.onset.getMinimumSize().width;
-        totalWidth += this.offset.getMinimumSize().width;
-
-        if (showOrd || showOnset || showOffset) {
-            totalHeight += fm.getHeight();
-        }
-        this.ord.setVisible(showOrd);
-        this.onset.setVisible(showOnset);
-        this.offset.setVisible(showOffset);
-
-        if ((this.userDimensions.width > 0)
-                && (this.userDimensions.height > 0)) {
-            totalWidth = this.userDimensions.width;
-            totalHeight = this.userDimensions.height;
-        }
-
-        //this.dataPanel.setWrapWidth(totalWidth - 4);
-        Dimension d = this.dataPanel.getMaximumSize();
-        if (showData) {
-            totalHeight += d.getHeight();
-        }
-        this.dataPanel.setVisible(showData);
-    }
-
-    /**
-     * Paint the SpreadsheetCell.
-     *
-     * @param g the <code>Graphics</code> object to protect
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        this.updateDimensions();
-        super.paintComponent(g);
-    }
-
-    /**
      * Set this cell as selected, a selected cell has a different appearance to
      * an unselcted one (typically colour).
      *
@@ -326,14 +241,15 @@ implements ExternalDataCellListener, Selectable {
         // Set the selection within the database.
         try {
             Cell cell = db.getCell(this.cellID);
-            DataCell dc = null;
+            DataCell dcell = null;
             if (cell instanceof DataCell) {
-                dc = (DataCell)db.getCell(cell.getID());
+                dcell = (DataCell)db.getCell(cell.getID());
             } else {
-                dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
+                dcell = (DataCell)db.getCell(((ReferenceCell)cell)
+                                                                .getTargetID());
             }
-            dc.setSelected(selected);
-            cell.getDB().replaceCell(dc);
+            dcell.setSelected(selected);
+            cell.getDB().replaceCell(dcell);
         } catch (SystemErrorException e) {
            logger.error("Failed clicking on SpreadsheetCell.", e);
         }
@@ -414,7 +330,7 @@ implements ExternalDataCellListener, Selectable {
     public void DCellDeleted(Database db,
                              long colID,
                              long cellID) {
-        // TODO: Figure out how to work with cells that are deleted.
+        // TODO- Figure out how to work with cells that are deleted.
     }
 
     @Override
@@ -441,4 +357,32 @@ implements ExternalDataCellListener, Selectable {
     public void requestFocus() {
         this.dataPanel.requestFocus();
     }
+
+    /**
+     * @return True if onset been processed and the layout position calculated.
+     * False otherwise.
+     */
+    public boolean isOnsetProcessed() {
+        return onsetProcessed;
+    }
+
+    /**
+     * Set if onset has been processed. Used in the temporal layout algorithm.
+     * @param onsetProcessed True to mark that the onset has been processed.
+     * False otherwise.
+     */
+    public void setOnsetProcessed(boolean onsetProcessed) {
+        this.onsetProcessed = onsetProcessed;
+    }
+
+    /**
+     * Set the vertical location for the SpreadsheetCell. Sets the
+     * onsetProcessed flag also. Used in the temporal layout algorithm.
+     * @param vPos The vertical location in pixels for this cell.
+     */
+    public void setOnsetvPos(int vPos) {
+        setLocation(getX(), vPos);
+        setOnsetProcessed(true);
+    }
+
 }
