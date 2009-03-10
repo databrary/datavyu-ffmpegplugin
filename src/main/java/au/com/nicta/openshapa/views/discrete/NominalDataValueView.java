@@ -164,6 +164,7 @@ public final class NominalDataValueView extends DataValueView {
             }
 
             // Update the text field and set the new caret position.
+            removeSelectedText();
             StringBuffer fieldContents = new StringBuffer(this.getText());
             fieldContents.insert(getCaretPosition(), text);
             storeCaretPosition();
