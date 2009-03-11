@@ -7,6 +7,7 @@ import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -109,6 +110,19 @@ implements MouseListener, KeyListener, FocusListener {
         advanceCaret = false;
         preservedChars = new Vector<Character>();
         initDataValueView(editable);
+    }
+
+    /**
+     * Override to address bug(?) in JTextField see java bug id 4446522
+     * for discussion. Probably not the final answer but resolves the
+     * clipping of first character displayed.
+     * @return the dimension of this textfield
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        size.width += 1;
+        return size;
     }
 
     /**

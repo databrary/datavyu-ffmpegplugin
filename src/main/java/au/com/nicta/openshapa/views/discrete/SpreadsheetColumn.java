@@ -46,7 +46,7 @@ public class SpreadsheetColumn
     private ColumnChanges colChanges;
 
     /** Default column width. */
-    private static final int DEFAULT_COLUMN_WIDTH = 202;
+    private static final int DEFAULT_COLUMN_WIDTH = 210;
 
     /** Default column height. */
     private static final int DEFAULT_HEADER_HEIGHT = 16;
