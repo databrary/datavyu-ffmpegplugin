@@ -1,31 +1,54 @@
 About
 
-  The goal of the OpenSHAPA project is to develop a free, multi-platform,
-  open-source software tool for exploratory sequential data analysis that will
-  support investigators' needs for the next 10-20 years.
+  OpenSHAPA is an open-source tool for exploratory sequential data analysis
+  that's under active development.
 
-  OpenSHAPA is most immediately motivated by the need to support researchers
-  within NICTA's COSE (Cognitive and Organisational Systems Engineering)
-  project, but is being developed in collaboration with other researchers
-  worldwide who use different forms of exploratory sequential data analysis in
-  their research.
-
+  We're developing a cross platform, extensible research tool to assist people
+  around the world make observations of their digital data. There are serveral
+  {{{features.html} features}} we are proud of, however some are still
+  experimental or not yet implemented and we'd love your help you improve and
+  implement them!
 
 
-Download:
+Download
 
-  You can download the latest OpenSHAPA
-  Link to {{{http://openshapa.qrl.nicta.com.au/download/} here}}.
+  <<Latest Releases:>>
 
+    * 2009-03-12: <<Alpha-0.4>> ({{{http://openshapa.nicta.org.au/download/openshapa-0.4-bin-20090311115831.zip}Download}}, {{{http://openshapa.nicta.org.au/releases/Alpha-0.4_Release_Notes.pdf}Release Notes}})
 
-
-Documentation:
-
-  Link to {{{http://openshapa.qrl.nicta.com.au/fogbugz/default.php?W3} OpenSHAPA wiki}}.
+    * 2009-02-12: <<Alpha-0.3>> ({{{http://openshapa.nicta.org.au/download/openshapa-0.3-bin-20090212163712.zip}Download}}, {{{http://openshapa.nicta.org.au/releases/Alpha-0.3_Release_Notes.pdf}Release Notes}})
 
 
+  <<Development Snapshots:>>
 
-How to Contribute:
+  {{{http://openshapa.nicta.org.au/download/}These development snapshots}}
+  contain the very latest development work, and are a little unstable. However
+  we need your help to try and test the latest features.
 
-  A list of things people can do to contribute to the OpenSHAPA can go here
-  documentation, graphic design, coding, testing, etc.
+
+Documentation
+
+  For information on how to install and use OpenSHAPA and best practices to help
+  you get the most out of your research data, see the
+  {{{http://openshapa.nicta.org.au/fogbugz/default.php?W19}OpenSHAPA user
+  guide}}.
+
+
+How to Contribute
+
+  There are lots of ways you can join the community and contribute to the
+  development of OpenSHAPA:
+
+    * Did you enjoy using OpenSHAPA to explore your data? Spread the word, by
+      telling your friends and colleagues (well not just yet - when we remove
+      the lid).
+
+    * Live dangerously by grabbing the latest
+      {{{http://openshapa.nicta.org.au/download/}development snapshot}} and
+      {{{http://openshapa.nicta.org.au/fogbugz/default.php?W48}reporting
+      any issues}} you find.
+
+    * Did it take you a while to figure something out, or was existing
+      documentation out of date or wrong? Help others stand on your shoulders
+      by {{{http://openshapa.nicta.org.au/fogbugz/default.php?W49}improving
+      documentation}}.
