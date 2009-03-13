@@ -28,7 +28,7 @@ public class DataCellTest extends CellTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         col = new DataColumn(db, "integer", MatrixVocabElement.MatrixType.INTEGER);
@@ -152,7 +152,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void Test3ArgConstructor() throws SystemErrorException {
+    public void Test3ArgConstructor()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing 3 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -948,7 +949,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void Test4ArgConstructor() throws SystemErrorException {
+    public void Test4ArgConstructor()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing 4 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -1764,7 +1766,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void Test7ArgConstructor() throws SystemErrorException {
+    public void Test7ArgConstructor()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing 7 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -3276,7 +3279,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void TestAccessors() throws SystemErrorException {
+    public void TestAccessors()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing class DataCell accessors                                 ";
         String passBanner = "PASSED\n";
@@ -4276,7 +4280,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void TestCopyConstructor() throws SystemErrorException {
+    public void TestCopyConstructor()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing copy constructor for class DataCell                      ";
         String passBanner = "PASSED\n";
@@ -5437,7 +5442,8 @@ public class DataCellTest extends CellTest {
      *    - None.
      */
     @Test
-    public void TestToStringMethods() throws SystemErrorException {
+    public void TestToStringMethods()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";

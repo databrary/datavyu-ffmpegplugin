@@ -113,7 +113,7 @@ public class DataColumn extends Column
     public DataColumn(Database db,
                       String name,
                       MatrixVocabElement.MatrixType type)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         super(db);
 

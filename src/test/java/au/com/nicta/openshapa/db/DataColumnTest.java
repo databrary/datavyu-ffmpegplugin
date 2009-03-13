@@ -197,7 +197,8 @@ public final class DataColumnTest {
      * @throws SystemErrorException If unable to create DataColumns.
      */
     @Test
-    public void test3ArgConstructor() throws SystemErrorException {
+    public void test3ArgConstructor()
+    throws SystemErrorException, LogicErrorException {
         Database db0 = new ODBCDatabase();
 
         DataColumn f_col = new DataColumn(db0, "f_col",
@@ -279,24 +280,28 @@ public final class DataColumnTest {
     }
 
     @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure0() throws SystemErrorException {
+    public void test3ArgConstructorFailure0()
+    throws SystemErrorException, LogicErrorException {
         dc = new DataColumn(null, "f_col",
                             MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure1() throws SystemErrorException {
+    @Test (expected = LogicErrorException.class)
+    public void test3ArgConstructorFailure1()
+    throws SystemErrorException, LogicErrorException {
         dc = new DataColumn(db, "", MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure2() throws SystemErrorException {
+    @Test (expected = LogicErrorException.class)
+    public void test3ArgConstructorFailure2()
+    throws SystemErrorException, LogicErrorException {
         dc = new DataColumn(db, " invalid ",
                             MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure3() throws SystemErrorException {
+    @Test (expected = LogicErrorException.class)
+    public void test3ArgConstructorFailure3()
+    throws SystemErrorException, LogicErrorException {
         DataColumn fc = new DataColumn(db, "f_col",
                                        MatrixVocabElement.MatrixType.FLOAT);
         long fc_ID = db.addColumn(fc);
@@ -308,7 +313,8 @@ public final class DataColumnTest {
     }
 
     @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure4() throws SystemErrorException {
+    public void test3ArgConstructorFailure4()
+    throws SystemErrorException, LogicErrorException {
         dc = new DataColumn(db, "valid",
                             MatrixVocabElement.MatrixType.UNDEFINED);
     }
@@ -524,7 +530,8 @@ public final class DataColumnTest {
         dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
     }
 
-    public void testAccessors() throws SystemErrorException {
+    public void testAccessors()
+    throws SystemErrorException, LogicErrorException {
         // Build the first data cell.
         DataColumn f_col = new DataColumn(db, "f_col",
                                           MatrixVocabElement.MatrixType.FLOAT);
@@ -602,7 +609,7 @@ public final class DataColumnTest {
                                                                  .FLOAT);
             newCol.setItsMveID(DBIndex.INVALID_ID);
             fail("Accessor should have thrown SystemErrorException.");
-        } catch (SystemErrorException e) {
+        } catch (Exception e) {
             // Do nothing - pass the test.
         }
     }
@@ -622,7 +629,7 @@ public final class DataColumnTest {
             newCol.setItsMveID(i_mve1.getID());
 
             fail("Accessor should have thrown SystemErrorException.");
-        } catch (SystemErrorException e) {
+        } catch (Exception e) {
             // Do nothing - pass the test.
         }
     }
@@ -654,12 +661,13 @@ public final class DataColumnTest {
             newCol.setItsMveID(f_cell0.getID());
 
             fail("Accessor should have thrown SystemErrorException.");
-        } catch (SystemErrorException e) {
+        } catch (Exception e) {
             // Do nothing - pass the test.
         }
     }
 
-    public void testToStringMethods() throws SystemErrorException {
+    public void testToStringMethods()
+    throws SystemErrorException, LogicErrorException {
         f_col0 = new DataColumn(db, "f_col",
                                 MatrixVocabElement.MatrixType.FLOAT);
         long f_col0ID = db.addColumn(f_col0);
@@ -855,7 +863,8 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestCellManagement() throws SystemErrorException {
+    public void TestCellManagement()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing cell management methods for class DataColumn             ";
         String passBanner = "PASSED\n";
@@ -3206,7 +3215,8 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestCopyConstructor() throws SystemErrorException {
+    public void TestCopyConstructor()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing copy argument constructor for class DataColumn           ";
         String passBanner = "PASSED\n";
@@ -3957,7 +3967,8 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestToStringMethods() throws SystemErrorException {
+    public void TestToStringMethods()
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";

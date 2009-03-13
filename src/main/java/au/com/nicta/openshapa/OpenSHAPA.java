@@ -2,6 +2,7 @@ package au.com.nicta.openshapa;
 
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.ListVariables;
@@ -214,19 +215,37 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Show a warning dialog to the user.
      *
-     * @param e
+     * @param e The LogicErrorException to present to the user.
      */
-    public void showWarningDialog(SystemErrorException e) {
+    public void showWarningDialog(LogicErrorException e) {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(OpenSHAPA.class);
+
         JOptionPane.showMessageDialog(mainFrame,
                                       e.getMessage(),
                                       rMap.getString("WarningDialog.title"),
-                                      JOptionPane.WARNING_MESSAGE);
-        
+                                      JOptionPane.WARNING_MESSAGE);        
+    }
+
+    /**
+     * Show a fatal error dialog to the user.
+     *
+     * @param e The SystemErrorException that caused this problem.
+     */
+    public void showErrorDialog() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+
+        JOptionPane.showMessageDialog(mainFrame,
+                                      rMap.getString("ErrorDialog.message"),
+                                      rMap.getString("ErrorDialog.title"),
+                                      JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -626,11 +645,16 @@ implements KeyEventDispatcher {
                 DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
                                                newVarView.getVariableType());
                 db.addColumn(dc);
-            } catch (SystemErrorException e) {
-                // Whoops something has gone very wrong - notify the user.
-                OpenSHAPA.getApplication().showWarningDialog(e);
 
+            // Whoops, user has done something strange - show warning dialog.
+            } catch (LogicErrorException fe) {
+                OpenSHAPA.getApplication().showWarningDialog(fe);
+
+            // Whoops, programmer has done something strange - show error
+            // message.
+            } catch (SystemErrorException e) {                
                 logger.error("Unable to add variable to database", e);
+                OpenSHAPA.getApplication().showErrorDialog();
             }
         }
     }

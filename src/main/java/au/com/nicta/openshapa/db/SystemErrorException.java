@@ -14,9 +14,6 @@
  *                                                      JRM -- 1/24/07
  *
  * Created on January 24, 2007, 2:14 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package au.com.nicta.openshapa.db;

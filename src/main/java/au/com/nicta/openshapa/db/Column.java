@@ -143,7 +143,7 @@ public abstract class Column
                   String name,
                   boolean hidden,
                   boolean readOnly)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
 
         super(db);
@@ -351,20 +351,19 @@ public abstract class Column
      * @param name The new name of the column to use
      * @throws au.com.nicta.openshapa.db.SystemErrorException when unable to set
      * the name of the column, either the database or the name is invalid.
+     * @throws au.com.nicta.openshapa.db.LogicErrorException When the user has
+     * induced an error that we can recover from (i.e. set the name of the
+     * column to be identical to an existing column.
      */
-    public void setName(final String name) throws SystemErrorException {
+    public void setName(final String name)
+    throws SystemErrorException, LogicErrorException {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(Column.class);
 
-        if (name == null) {
-            throw new SystemErrorException(rMap.getString("Error.invalid",
-                                                          name));
-        }
-
         if (!Database.IsValidSVarName(name)) {
-            throw new SystemErrorException(rMap.getString("Error.invalid",
-                                                          name));
+            throw new LogicErrorException(rMap.getString("Error.invalid",
+                                                         name));
         }
 
         if (this.getDB() == null) {
@@ -372,13 +371,11 @@ public abstract class Column
         }
 
         if (this.getDB().vl.inVocabList(name)) {
-            throw new SystemErrorException(rMap.getString("Error.exists",
-                                                          name));
+            throw new LogicErrorException(rMap.getString("Error.exists", name));
         }
 
         if (this.getDB().cl.inColumnList(name)) {
-            throw new SystemErrorException(rMap.getString("Error.exists",
-                                                          name));
+            throw new LogicErrorException(rMap.getString("Error.exists", name));
         }
 
         this.name = new String(name);

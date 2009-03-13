@@ -485,7 +485,7 @@ public abstract class DatabaseTest {
      */
     @Test
     public void populateDemoData()
-            throws SystemErrorException {
+            throws SystemErrorException, LogicErrorException {
 
         Database db = new MacshapaDatabase();
         DataColumn dc;
@@ -912,7 +912,8 @@ public abstract class DatabaseTest {
      *    - None.
      */
     @Test
-    public void TestDatabase() throws SystemErrorException {
+    public void TestDatabase()
+    throws SystemErrorException, LogicErrorException {
         PrintStream outStream = System.out;
         boolean verbose = true;
 
@@ -8547,7 +8548,7 @@ public abstract class DatabaseTest {
 
     public static boolean AdHocTest(java.io.PrintStream outStream,
                                     boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
       // Create a database instance
 
@@ -8693,7 +8694,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestInternalListeners(java.io.PrintStream outStream,
                                                 boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         boolean pass = true;
         int failures = 0;
@@ -8976,7 +8977,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestMVEModListeners(java.io.PrintStream outStream,
                                               boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         String testBanner =
             "Testing matrix vocab element modification listeners              ";
@@ -9060,7 +9061,7 @@ public abstract class DatabaseTest {
     private static int TestMVEModListeners__test_01(
             java.io.PrintStream outStream,
             boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         final String header = "test 01: ";
         String systemErrorExceptionString = "";
@@ -10857,7 +10858,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestPVEDeletionListeners(java.io.PrintStream outStream,
                                                      boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         String testBanner =
             "Testing predicate vocab element deletion listeners               ";
@@ -10936,7 +10937,7 @@ public abstract class DatabaseTest {
     private static int TestPVEDeletionListeners__test_01(
             java.io.PrintStream outStream,
             boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         final String header = "test 01: ";
         String systemErrorExceptionString = null;
@@ -11958,7 +11959,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestPVEModListeners(java.io.PrintStream outStream,
                                               boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         String testBanner =
             "Testing predicate vocab element modification listeners           ";
@@ -12036,7 +12037,7 @@ public abstract class DatabaseTest {
     private static int TestPVEModListeners__test_01(
             java.io.PrintStream outStream,
             boolean verbose)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         final String header = "test 01: ";
         String systemErrorExceptionString = "";

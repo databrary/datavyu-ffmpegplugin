@@ -66,7 +66,7 @@ public class ReferenceColumn extends Column
 
     public ReferenceColumn(Database db,
                            String name)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         super(db);
 
@@ -80,7 +80,7 @@ public class ReferenceColumn extends Column
                       String name,
                       boolean hidden,
                       boolean readOnly)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         super(db, name, hidden, readOnly);
 
