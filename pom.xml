@@ -32,17 +32,17 @@
 
   <ciManagement>
     <system>continuum</system>
-    <url>http://openshapa.qrl.nicta.com.au/dashboard/</url>
+    <url>http://openshapa.nicta.org.au/dashboard/</url>
   </ciManagement>
 
   <issueManagement>
     <system>Fogbugz</system>
-    <url>http://openshapa.qrl.nicta.com.au/fogbugz</url>
+    <url>http://openshapa.nicta.org.au/fogbugz</url>
   </issueManagement>
 
   <scm>
     <tag>master</tag>
-    <url>http://openshapa.qrl.nicta.com.au/viewgit/?a=summary&amp;p=openshapa</url>
+    <url>http://openshapa.nicta.org.au/viewgit/?a=summary&amp;p=openshapa</url>
   </scm>
 
   <distributionManagement>
@@ -61,7 +61,7 @@
 
     <repository>
       <id>openshapa</id>
-      <url>http://openshapa.qrl.nicta.com.au/maven2</url>
+      <url>http://openshapa.nicta.org.au/maven2</url>
     </repository>
   </repositories>
 
