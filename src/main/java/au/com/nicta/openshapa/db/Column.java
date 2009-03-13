@@ -7,7 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
-import java.util.Vector;
+import au.com.nicta.openshapa.OpenSHAPA;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * class Column
@@ -343,39 +345,43 @@ public abstract class Column
     } /* Column::getName() */
 
 
-    public void setName(String name)
-        throws SystemErrorException
-    {
-        final String mName = "Column::setName(name): ";
+    /**
+     * Sets the name of the column
+     *
+     * @param name The new name of the column to use
+     * @throws au.com.nicta.openshapa.db.SystemErrorException when unable to set
+     * the name of the column, either the database or the name is invalid.
+     */
+    public void setName(final String name) throws SystemErrorException {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(Column.class);
 
-        if ( name == null )
-        {
-            throw new SystemErrorException(mName + "name null on entry");
+        if (name == null) {
+            throw new SystemErrorException(rMap.getString("Error.invalid",
+                                                          name));
         }
 
-        if ( ! ( Database.IsValidSVarName(name) ) )
-        {
-            throw new SystemErrorException(mName +
-                                           "name not a valid svar name");
+        if (!Database.IsValidSVarName(name)) {
+            throw new SystemErrorException(rMap.getString("Error.invalid",
+                                                          name));
         }
 
-        if ( this.getDB() == null )
-        {
-            throw new SystemErrorException(mName + "db not initialized?!?");
+        if (this.getDB() == null) {
+            throw new SystemErrorException(rMap.getString("Error.baddb", name));
         }
 
-        if ( this.getDB().vl.inVocabList(name) )
-        {
-            throw new SystemErrorException(mName + "name already in vl");
+        if (this.getDB().vl.inVocabList(name)) {
+            throw new SystemErrorException(rMap.getString("Error.exists",
+                                                          name));
         }
 
-        if ( this.getDB().cl.inColumnList(name) )
-        {
-            throw new SystemErrorException(mName + "name already in cl");
+        if (this.getDB().cl.inColumnList(name)) {
+            throw new SystemErrorException(rMap.getString("Error.exists",
+                                                          name));
         }
 
         this.name = new String(name);
-
         return;
 
     } /* Column::setName() */

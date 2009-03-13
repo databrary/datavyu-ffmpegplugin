@@ -38,9 +38,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
 import org.junit.runner.JUnitCore;
@@ -209,6 +211,22 @@ implements KeyEventDispatcher {
         spreadsheetView = new Spreadsheet(mainFrame, false, db);
 
         OpenSHAPA.getApplication().show(spreadsheetView);
+    }
+
+    /**
+     *
+     * @param e
+     */
+    public void showWarningDialog(SystemErrorException e) {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+        JOptionPane.showMessageDialog(mainFrame,
+                                      e.getMessage(),
+                                      rMap.getString("WarningDialog.title"),
+                                      JOptionPane.WARNING_MESSAGE);
+        
     }
 
     /**
@@ -609,6 +627,9 @@ implements KeyEventDispatcher {
                                                newVarView.getVariableType());
                 db.addColumn(dc);
             } catch (SystemErrorException e) {
+                // Whoops something has gone very wrong - notify the user.
+                OpenSHAPA.getApplication().showWarningDialog(e);
+
                 logger.error("Unable to add variable to database", e);
             }
         }
