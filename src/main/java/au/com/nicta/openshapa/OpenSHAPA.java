@@ -652,6 +652,7 @@ implements KeyEventDispatcher {
                 db.setTicks(TICKS_PER_SECOND);
             } catch (SystemErrorException e) {
                 logger.error("Unable to create new database", e);
+                OpenSHAPA.getApplication().showErrorDialog();
             }
         }
     }
