@@ -35,7 +35,7 @@ public final class SheetLayoutFactory {
      * @return SheetLayout to use.
      */
     public static SheetLayout getLayout(final SheetLayoutType type,
-                                         final Vector<SpreadsheetColumn> cols) {
+                                        final Vector<SpreadsheetColumn> cols) {
 
         switch (type) {
             case Ordinal:

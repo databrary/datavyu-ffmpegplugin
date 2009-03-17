@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
@@ -34,7 +35,9 @@ implements KeyEventDispatcher {
 
         // generated GUI builder code
         initComponents();
-        
+
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
     }
 
     /**
@@ -90,7 +93,7 @@ implements KeyEventDispatcher {
     public void showSpreadsheet() {
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
-        OpenSHAPA.getApplication().showSpreadsheet();
+        //OpenSHAPA.getApplication().showSpreadsheet();
     }
 
     /**
@@ -143,6 +146,7 @@ implements KeyEventDispatcher {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem openMenuItem = new javax.swing.JMenuItem();
@@ -163,21 +167,28 @@ implements KeyEventDispatcher {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         helpMenu1 = new javax.swing.JMenu();
-        contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        contentsMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
+
+        jLabel1.setName("jLabel1"); // NOI18N
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 500, Short.MAX_VALUE)
+            .add(mainPanelLayout.createSequentialGroup()
+                .add(119, 119, 119)
+                .add(jLabel1)
+                .addContainerGap(149, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 0, Short.MAX_VALUE)
+            .add(mainPanelLayout.createSequentialGroup()
+                .add(55, 55, 55)
+                .add(jLabel1)
+                .addContainerGap(184, Short.MAX_VALUE))
         );
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(OpenSHAPAView.class);
         resourceMap.injectComponents(mainPanel);
@@ -271,16 +282,12 @@ implements KeyEventDispatcher {
 
         helpMenu1.setName("helpMenu1"); // NOI18N
 
-        contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
-        contentsMenuItem.setName("contentsMenuItem"); // NOI18N
-        helpMenu1.add(contentsMenuItem);
-
         aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
         helpMenu1.add(aboutMenuItem1);
 
-        jMenuItem5.setAction(actionMap.get("populateDemoData")); // NOI18N
-        jMenuItem5.setName("jMenuItem5"); // NOI18N
-        helpMenu1.add(jMenuItem5);
+        contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
+        contentsMenuItem.setName("contentsMenuItem"); // NOI18N
+        helpMenu1.add(contentsMenuItem);
 
         menuBar.add(helpMenu1);
         resourceMap.injectComponents(menuBar);
@@ -311,6 +318,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenu helpMenu1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -318,7 +326,6 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;

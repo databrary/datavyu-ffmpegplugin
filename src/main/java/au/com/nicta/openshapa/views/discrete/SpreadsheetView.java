@@ -1,13 +1,8 @@
-/*
- * SpreadsheetView.java
- *
- * Created on 01/12/2008, 3:15:07 PM
- */
-
 package au.com.nicta.openshapa.views.discrete;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
@@ -16,8 +11,7 @@ import javax.swing.SwingConstants;
  * is the view to use in the viewport of the JScrollPane in Spreadsheet.
  * @author swhitcher
  */
-public class SpreadsheetView extends javax.swing.JPanel
-                                implements Scrollable {
+public class SpreadsheetView extends JPanel implements Scrollable {
 
     /** Maximum unit scroll amount. */
     private int maxUnitIncrement = 50;

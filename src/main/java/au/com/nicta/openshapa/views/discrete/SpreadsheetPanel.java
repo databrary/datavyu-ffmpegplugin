@@ -7,7 +7,6 @@ import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
-import au.com.nicta.openshapa.views.OpenSHAPADialog;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayout;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -23,59 +22,20 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 /**
- * The main spreadsheet window. Displays the database it refers
- * to, showing the database columns and cells within.
- * @author swhitcher
+ *
+ *
  */
-public class Spreadsheet extends OpenSHAPADialog
-        implements ExternalColumnListListener {
-
-    /** Scrollable view inserted into the JScrollPane. */
-    private SpreadsheetView mainView;
-    /** View showing the Column titles. */
-    private JPanel headerView;
-
-    /** The Database being viewed. */
-    private Database database;
-
-    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
-    private Vector<SpreadsheetColumn> columns;
-
-    /** Selector object for handling Column header selection. */
-    private Selector colSelector;
-
-    /** Selector object for handling SpreadsheetCell selection. */
-    private Selector cellSelector;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedColID = 0;
-
-    /** filler box for use when there are no datacells. */
-    private Component filler;
-
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(Spreadsheet.class);
-
-    /** The default number of ticks per second to use. */
-    private static final int TICKS_PER_SECOND = 1000;
-
-    /** Reference to the spreadsheet layout handler. */
-    private SheetLayout sheetLayout;
+public class SpreadsheetPanel extends JPanel
+    implements ExternalColumnListListener {
 
     /**
-     * Creates new, empty Spreadsheet. No database referred to as yet
+     * Constructor.
      *
-     * @param parent The parent frame for this dialog.
-     * @param modal Is this dialog to be modal (true), or not.
+     * @param db The model (i.e. database) that we are creating the view
+     * (i.e. Spreadsheet panel) for.
      */
-    public Spreadsheet(final java.awt.Frame parent,
-                       final boolean modal) {
-        super(parent, modal);
-        initComponents();
-
+    public SpreadsheetPanel(final Database db) {
+        
         setName(this.getClass().getSimpleName());
 
         this.setLayout(new BorderLayout());
@@ -93,30 +53,13 @@ public class Spreadsheet extends OpenSHAPADialog
         jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
 
-        setLocation(parent.getX(), parent.getY() + parent.getHeight());
-
         colSelector = new Selector(this);
         cellSelector = new Selector(this);
         colSelector.addOther(cellSelector);
         cellSelector.addOther(colSelector);
-    }
-
-    /**
-     * Creates new Spreadsheet.
-     *
-     * @param parent The parent frame for this dialog.
-     * @param modal Is this dialog to be modal (true), or not.
-     * @param db The database to display.
-     */
-    public Spreadsheet(final java.awt.Frame parent,
-                       final boolean modal,
-                       final Database db) {
-        this(parent, modal);
 
         this.setDatabase(db);
-
         this.buildColumns();
-
         setLayoutType(SheetLayoutType.Ordinal);
     }
 
@@ -129,18 +72,16 @@ public class Spreadsheet extends OpenSHAPADialog
 
             // setup a filler box if the sheet has no columns yet
             // size is relative to its parent for now
-            int width = getParent().getWidth();
-            filler = Box.createRigidArea(new Dimension(width, width));
+            filler = Box.createRigidArea(new Dimension(FILLER_WIDTH,
+                                                       FILLER_WIDTH));
             if (dbColumns.size() == 0) {
                 mainView.add(filler);
             }
 
             for (int i = 0; i < dbColumns.size(); i++) {
                 DataColumn dbColumn = dbColumns.elementAt(i);
-
                 addColumn(getDatabase(), dbColumn.getID());
             }
-
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);
         }
@@ -224,9 +165,6 @@ public class Spreadsheet extends OpenSHAPADialog
 
         // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
-
-        // show database name in title bar
-        setTitle(db.getName());
 
         deselectAll();
     }
@@ -435,33 +373,42 @@ public class Spreadsheet extends OpenSHAPADialog
         relayoutCells();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    /** Scrollable view inserted into the JScrollPane. */
+    private SpreadsheetView mainView;
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setName("Form"); // NOI18N
+    /** View showing the Column titles. */
+    private JPanel headerView;
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 587, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 402, Short.MAX_VALUE)
-        );
+    /** The Database being viewed. */
+    private Database database;
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
+    private Vector<SpreadsheetColumn> columns;
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
+    /** Selector object for handling Column header selection. */
+    private Selector colSelector;
 
+    /** Selector object for handling SpreadsheetCell selection. */
+    private Selector cellSelector;
+
+    /** The id of the last datacell that was created. */
+    private long lastCreatedCellID;
+
+    /** The id of the last datacell that was created. */
+    private long lastCreatedColID = 0;
+
+    /** filler box for use when there are no datacells. */
+    private Component filler;
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(SpreadsheetPanel.class);
+
+    /** The default number of ticks per second to use. */
+    private static final int TICKS_PER_SECOND = 1000;
+
+    /** The width in pixels of filler blocks for empty columns. */
+    private static final int FILLER_WIDTH = 50;
+
+    /** Reference to the spreadsheet layout handler. */
+    private SheetLayout sheetLayout;
 }

@@ -11,7 +11,6 @@ import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
-import au.com.nicta.openshapa.views.discrete.Spreadsheet;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
@@ -40,6 +39,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
@@ -203,6 +204,7 @@ implements KeyEventDispatcher {
     /**
      * Action for showing the spreadsheet.
      */
+    /*
     public void showSpreadsheet() {
         // If the spreadsheetview already exists - trash it and create a new one
         if (spreadsheetView != null) {
@@ -212,7 +214,7 @@ implements KeyEventDispatcher {
         spreadsheetView = new Spreadsheet(mainFrame, false, db);
 
         OpenSHAPA.getApplication().show(spreadsheetView);
-    }
+    }*/
 
     /**
      * Show a warning dialog to the user.
@@ -255,7 +257,8 @@ implements KeyEventDispatcher {
      * If a column is found selected, it adds a blank cell at ordinal 1.
      */
     public void createNewCell() {
-        spreadsheetView.createNewCell(-1);
+        //spreadsheetView.createNewCell(-1);
+        //Should manipulate database.
     }
 
     /**
@@ -266,7 +269,8 @@ implements KeyEventDispatcher {
      * spreadsheet to create a new cell from.
      */
     public void createNewCell(final long milliseconds) {
-        spreadsheetView.createNewCell(milliseconds);
+        //spreadsheetView.createNewCell(milliseconds);
+        //Should manipulate database.
     }
 
     /**
@@ -276,7 +280,8 @@ implements KeyEventDispatcher {
      * spreadsheet to set the stop time for.
      */
     public void setNewCellStopTime(final long milliseconds) {
-        spreadsheetView.setNewCellStopTime(milliseconds);
+        //spreadsheetView.setNewCellStopTime(milliseconds);
+        //Should manipulate database.
     }
 
     /**
@@ -284,7 +289,7 @@ implements KeyEventDispatcher {
      * @param type SheetLayoutType to set.
      */
     public void setSheetLayout(final SheetLayoutType type) {
-        spreadsheetView.setLayoutType(type);
+        //spreadsheetView.setLayoutType(type);
     }
 
     /**
@@ -486,7 +491,7 @@ implements KeyEventDispatcher {
             rubyEngine.getContext().setWriter(consoleWriter);
 
             console = null;
-            spreadsheetView = null;
+            //spreadsheetView = null;
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
@@ -574,7 +579,6 @@ implements KeyEventDispatcher {
         logger.info("Starting OpenSHAPA.");
 
         // If we are running on a MAC set some additional properties:
-        /*
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
             try {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -589,7 +593,7 @@ implements KeyEventDispatcher {
             } catch (UnsupportedLookAndFeelException ulafe) {
                 logger.error("Unable to start OpenSHAPA", ulafe);
             }
-        }*/
+        }
 
         launch(OpenSHAPA.class, args);
     }
@@ -610,7 +614,7 @@ implements KeyEventDispatcher {
     private PrintWriter consoleWriter;
 
     /** The current spreadsheet view. */
-    private Spreadsheet spreadsheetView;
+    //private Spreadsheet spreadsheetView;
 
     /** The view to use when creating new databases. */
     private NewDatabase newDBView;
@@ -645,7 +649,7 @@ implements KeyEventDispatcher {
                 db.setName(newDBView.getDatabaseName());
                 db.setDescription(newDBView.getDatabaseDescription());
 
-                showSpreadsheet();
+                //showSpreadsheet();
 
                 // TODO- BugzID:79 This needs to move above showSpreadsheet,
                 // when setTicks is fully implemented.
