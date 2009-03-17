@@ -1,4 +1,4 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -46,11 +47,11 @@ public abstract class TimeStampDataValueView extends DataValueView {
      * @param editable Is this view editable or not, true if the view is
      * editable. False otherwise.
      */
-    TimeStampDataValueView(final Selector cellSelection,
-                           final DataCell cell,
-                           final Matrix matrix,
-                           final int matrixIndex,
-                           final boolean editable) {
+    public TimeStampDataValueView(final Selector cellSelection,
+                                  final DataCell cell,
+                                  final Matrix matrix,
+                                  final int matrixIndex,
+                                  final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
         this.addPreservedChar(new Character(':'));
     }
@@ -65,10 +66,10 @@ public abstract class TimeStampDataValueView extends DataValueView {
      * @param editable Is this view editable or not, true if the view is
      * editable. False otherwise.
      */
-    TimeStampDataValueView(final Selector cellSelection,
-                           final DataCell cell,
-                           final TimeStampDataValue timeStampDataValue,
-                           final boolean editable) {
+    public TimeStampDataValueView(final Selector cellSelection,
+                                  final DataCell cell,
+                                  final TimeStampDataValue timeStampDataValue,
+                                  final boolean editable) {
         super(cellSelection, cell, timeStampDataValue, editable);
         this.addPreservedChar(new Character(':'));
     }

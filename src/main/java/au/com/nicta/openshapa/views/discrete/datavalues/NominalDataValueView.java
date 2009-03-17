@@ -1,10 +1,11 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.NominalDataValue;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -45,11 +46,11 @@ public final class NominalDataValueView extends DataValueView {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    NominalDataValueView(final Selector cellSelection,
-                         final DataCell cell,
-                         final Matrix matrix,
-                         final int matrixIndex,
-                         final boolean editable) {
+    public NominalDataValueView(final Selector cellSelection,
+                                final DataCell cell,
+                                final Matrix matrix,
+                                final int matrixIndex,
+                                final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
         reservedChars = new HashMap<Character, Character>();
         reservedChars.put(')', ')');

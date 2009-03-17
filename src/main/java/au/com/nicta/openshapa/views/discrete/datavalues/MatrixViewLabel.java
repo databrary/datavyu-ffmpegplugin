@@ -1,9 +1,11 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
+import au.com.nicta.openshapa.views.discrete.Selector;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import javax.swing.JLabel;
 import org.apache.log4j.Logger;

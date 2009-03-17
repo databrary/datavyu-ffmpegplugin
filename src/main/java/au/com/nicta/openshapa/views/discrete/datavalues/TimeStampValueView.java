@@ -1,7 +1,8 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.views.discrete.Selector;
 
 /**
  * A view representation for timestamp values as arguments / parameters of
@@ -22,11 +23,11 @@ public final class TimeStampValueView extends TimeStampDataValueView {
      * @param editable Is the datavalue editable or not - true if it is editable
      * false otherwise.
      */
-    TimeStampValueView(final Selector cellSelection,
-                       final DataCell cell,
-                       final Matrix matrix,
-                       final int matrixIndex,
-                       final boolean editable) {
+    public TimeStampValueView(final Selector cellSelection,
+                              final DataCell cell,
+                              final Matrix matrix,
+                              final int matrixIndex,
+                              final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 }

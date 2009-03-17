@@ -1,4 +1,4 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataValue;
@@ -12,6 +12,7 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TextStringDataValue;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.db.UndefinedDataValue;
+import au.com.nicta.openshapa.views.discrete.Selector;
 
 /**
  *
