@@ -1,6 +1,8 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.controllers.NewDatabaseC;
+import au.com.nicta.openshapa.controllers.NewVariableC;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -59,7 +61,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewDatabaseForm() {
-        OpenSHAPA.getApplication().showNewDatabaseForm();
+        new NewDatabaseC();        
     }
 
     /**
@@ -67,7 +69,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewVariableForm() {
-        OpenSHAPA.getApplication().showNewVariableForm();
+        new NewVariableC();
     }
 
     /**
@@ -93,7 +95,12 @@ implements KeyEventDispatcher {
     public void showSpreadsheet() {
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
-        //OpenSHAPA.getApplication().showSpreadsheet();
+
+        // Create a fresh spreadsheet component and redraw the component.
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
+        this.getComponent().revalidate();
+
     }
 
     /**

@@ -1,21 +1,17 @@
 package au.com.nicta.openshapa;
 
-import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.views.ListVariables;
-import au.com.nicta.openshapa.views.NewDatabase;
-import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -167,27 +163,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Action for creating a new database.
-     */
-    public void showNewDatabaseForm() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newDBView = new NewDatabase(mainFrame, false,
-                                    new NewDatabaseAction());
-        OpenSHAPA.getApplication().show(newDBView);
-    }
-
-    /**
-     * Action for creating a new variable.
-     */
-    public void showNewVariableForm() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        newVarView = new NewVariable(mainFrame, false,
-                                         new NewVariableAction());
-        OpenSHAPA.getApplication().show(newVarView);
-
-    }
-
-    /**
      * Action for showing the variable list.
      */
     public void showVariableList() {
@@ -204,17 +179,9 @@ implements KeyEventDispatcher {
     /**
      * Action for showing the spreadsheet.
      */
-    /*
     public void showSpreadsheet() {
-        // If the spreadsheetview already exists - trash it and create a new one
-        if (spreadsheetView != null) {
-            spreadsheetView.dispose();
-        }
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        spreadsheetView = new Spreadsheet(mainFrame, false, db);
-
-        OpenSHAPA.getApplication().show(spreadsheetView);
-    }*/
+        openshapaView.showSpreadsheet();         
+    }
 
     /**
      * Show a warning dialog to the user.
@@ -495,7 +462,7 @@ implements KeyEventDispatcher {
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
-            db.setTicks(TICKS_PER_SECOND);
+            db.setTicks(Constants.TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         } catch (IOException e) {
@@ -506,9 +473,8 @@ implements KeyEventDispatcher {
         // bar is wedged up into top of the OS. The spreadsheet is not displayed
         // untill the user requests it.
         //if (OpenSHAPA.getPlatform() != Platform.MAC) {
-            show(new OpenSHAPAView(this));
-            //show(new OpenSHAPAMenu());
-            
+            openshapaView = new OpenSHAPAView(this);
+            show(openshapaView);            
         //}
     }
 
@@ -547,6 +513,10 @@ implements KeyEventDispatcher {
      */
     public static Database getDatabase() {
         return OpenSHAPA.getApplication().db;
+    }
+
+    public static void setDatabase(Database newDB) {
+        OpenSHAPA.getApplication().db = newDB;
     }
 
     /** All the supported platforms that OpenSHAPA runs on. */
@@ -615,12 +585,7 @@ implements KeyEventDispatcher {
 
     /** The current spreadsheet view. */
     //private Spreadsheet spreadsheetView;
-
-    /** The view to use when creating new databases. */
-    private NewDatabase newDBView;
-
-    /** The view to use when creating a new variable. */
-    private NewVariable newVarView;
+    private OpenSHAPAView openshapaView;
 
     /** The view to use when listing all variables in the database. */
     private ListVariables listVarView;
@@ -631,62 +596,4 @@ implements KeyEventDispatcher {
     /** The view to use when displaying the output of a user invoked script. */
     private ScriptOutput console;
 
-    /** The default number of ticks per second to use. */
-    private final static int TICKS_PER_SECOND = 1000;
-
-    /**
-     * The action (controller) to invoke when a user creates a new database.
-     */
-    public class NewDatabaseAction implements ActionListener {
-        /**
-         * Action to invoke when a new database is created.
-         *
-         * @param evt The event that triggered this action.
-         */
-        public void actionPerformed(final ActionEvent evt) {
-            try {
-                db = new MacshapaDatabase();
-                db.setName(newDBView.getDatabaseName());
-                db.setDescription(newDBView.getDatabaseDescription());
-
-                //showSpreadsheet();
-
-                // TODO- BugzID:79 This needs to move above showSpreadsheet,
-                // when setTicks is fully implemented.
-                db.setTicks(TICKS_PER_SECOND);
-            } catch (SystemErrorException e) {
-                logger.error("Unable to create new database", e);
-                OpenSHAPA.getApplication().showErrorDialog();
-            }
-        }
-    }
-
-    /**
-     * The action (controller) to invoke when a user adds a new variable to a
-     * database.
-     */
-    class NewVariableAction implements ActionListener {
-        /**
-         * Action to invoke when a new variable is added to the database.
-         *
-         * @param evt The event that triggered this action.
-         */
-        public void actionPerformed(final ActionEvent evt) {
-            try {
-                DataColumn dc = new DataColumn(db, newVarView.getVariableName(),
-                                               newVarView.getVariableType());
-                db.addColumn(dc);
-
-            // Whoops, user has done something strange - show warning dialog.
-            } catch (LogicErrorException fe) {
-                OpenSHAPA.getApplication().showWarningDialog(fe);
-
-            // Whoops, programmer has done something strange - show error
-            // message.
-            } catch (SystemErrorException e) {                
-                logger.error("Unable to add variable to database", e);
-                OpenSHAPA.getApplication().showErrorDialog();
-            }
-        }
-    }
 }

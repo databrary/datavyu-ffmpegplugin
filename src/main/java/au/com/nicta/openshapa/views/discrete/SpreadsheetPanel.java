@@ -7,6 +7,7 @@ import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
+import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayout;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -287,7 +288,7 @@ public class SpreadsheetPanel extends JPanel
                 DataCell cell = new DataCell(col.getDB(),
                                                 col.getID(),
                                                 mve.getID());
-                cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
                 if (onset > 0) {
                     lastCreatedCellID = database.appendCell(cell);
                 } else {
@@ -319,7 +320,8 @@ public class SpreadsheetPanel extends JPanel
                         lastCreatedCellID = database
                                             .insertdCell(cell, dc.getOrd() + 1);
                     } else {
-                        cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                        cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
+                                                    onset));
                         lastCreatedCellID = database.appendCell(cell);
                     }
                     lastCreatedColID = cell.getItsColID();
@@ -339,7 +341,7 @@ public class SpreadsheetPanel extends JPanel
                 DataCell cell = new DataCell(col.getDB(),
                                                 col.getID(),
                                                 col.getItsMveID());
-                cell.setOnset(new TimeStamp(TICKS_PER_SECOND, onset));
+                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
                 lastCreatedCellID = database.appendCell(cell);
             }
             deselectAll();
@@ -357,7 +359,8 @@ public class SpreadsheetPanel extends JPanel
     public final void setNewCellStopTime(final long milliseconds) {
         try {
             DataCell cell = (DataCell) database.getCell(lastCreatedCellID);
-            cell.setOffset(new TimeStamp(TICKS_PER_SECOND, milliseconds));
+            cell.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
+                                         milliseconds));
             database.replaceCell(cell);
         } catch (SystemErrorException e) {
             logger.error("Unable to set new cell stop time.", e);
@@ -402,9 +405,6 @@ public class SpreadsheetPanel extends JPanel
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetPanel.class);
-
-    /** The default number of ticks per second to use. */
-    private static final int TICKS_PER_SECOND = 1000;
 
     /** The width in pixels of filler blocks for empty columns. */
     private static final int FILLER_WIDTH = 50;
