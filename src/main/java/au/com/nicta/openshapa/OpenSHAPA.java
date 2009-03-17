@@ -11,8 +11,8 @@ import au.com.nicta.openshapa.views.NewVariable;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
-import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
 import au.com.nicta.openshapa.views.discrete.Spreadsheet;
+import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
@@ -497,7 +497,14 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        show(new OpenSHAPAView(this));
+        // Only show the menu view if we are not on the mac. On the mac the menu
+        // bar is wedged up into top of the OS. The spreadsheet is not displayed
+        // untill the user requests it.
+        //if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            show(new OpenSHAPAView(this));
+            //show(new OpenSHAPAMenu());
+            
+        //}
     }
 
     /**
@@ -562,9 +569,28 @@ implements KeyEventDispatcher {
      * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(String[] args) {
+        // Configure logger - and start logging things.
         PropertyConfigurator.configure("log4j.properties");
-
         logger.info("Starting OpenSHAPA.");
+
+        // If we are running on a MAC set some additional properties:
+        /*
+        if (OpenSHAPA.getPlatform() == Platform.MAC) {
+            try {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException cnfe) {
+                logger.error("Unable to start OpenSHAPA", cnfe);
+            } catch (InstantiationException ie) {
+                logger.error("Unable to start OpenSHAPA", ie);
+            } catch (IllegalAccessException iae) {
+                logger.error("Unable to start OpenSHAPA", iae);
+            } catch (UnsupportedLookAndFeelException ulafe) {
+                logger.error("Unable to start OpenSHAPA", ulafe);
+            }
+        }*/
+
         launch(OpenSHAPA.class, args);
     }
 

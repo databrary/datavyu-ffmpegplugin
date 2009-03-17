@@ -1,5 +1,6 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.layouts;
 
+import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 
 /**

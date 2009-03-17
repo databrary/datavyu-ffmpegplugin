@@ -2,7 +2,7 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
+import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -34,6 +34,7 @@ implements KeyEventDispatcher {
 
         // generated GUI builder code
         initComponents();
+        
     }
 
     /**
@@ -284,7 +285,6 @@ implements KeyEventDispatcher {
         menuBar.add(helpMenu1);
         resourceMap.injectComponents(menuBar);
 
-        setComponent(mainPanel);
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
 

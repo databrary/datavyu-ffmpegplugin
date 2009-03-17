@@ -1,6 +1,8 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.layouts;
 
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 
