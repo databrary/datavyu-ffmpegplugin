@@ -11,7 +11,7 @@ import javax.swing.BorderFactory;
  *
  * @author swhitcher
  */
-public class ColumnDataPanel extends SpreadsheetPanel {
+public class ColumnDataPanel extends SpreadsheetElementPanel {
 
     /**
      * Creates a new ColumnDataPanel.

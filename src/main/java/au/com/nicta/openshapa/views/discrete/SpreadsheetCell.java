@@ -30,11 +30,11 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author  felix
  */
-public class SpreadsheetCell extends SpreadsheetPanel
+public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {
 
     /** A panel for holding the header to the cell. */
-    private SpreadsheetPanel topPanel;
+    private SpreadsheetElementPanel topPanel;
 
     /** A panel for holding the value of the cell. */
     private MatrixViewLabel dataPanel;
@@ -113,7 +113,7 @@ implements ExternalDataCellListener, Selectable {
         db.registerDataCellListener(dc.getID(), this);
 
         // Build components used for the spreadsheet cell.
-        topPanel = new SpreadsheetPanel();
+        topPanel = new SpreadsheetElementPanel();
         ord = new IntDataValueView(selection,
                                    dc,
                                    new IntDataValue(cellDB),

@@ -5,7 +5,7 @@ import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import au.com.nicta.openshapa.views.discrete.Selector;
-import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetElementPanel;
 import java.util.Vector;
 import javax.swing.JLabel;
 import org.apache.log4j.Logger;
@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends SpreadsheetPanel {
+public class MatrixViewLabel extends SpreadsheetElementPanel {
 
     /** The selection (used for cells) for the parent spreadsheet. */
     private Selector sheetSelection;

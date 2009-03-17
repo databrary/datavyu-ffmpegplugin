@@ -12,13 +12,13 @@ import javax.swing.JPanel;
  *
  * @author cfreeman
  */
-public class SpreadsheetPanel extends JPanel
+public class SpreadsheetElementPanel extends JPanel
 implements MouseListener, KeyListener {
 
     /**
      * Constructor.
      */
-    public SpreadsheetPanel() {
+    public SpreadsheetElementPanel() {
         super();
         this.addMouseListener(this);
         this.addKeyListener(this);
