@@ -219,7 +219,7 @@ public class SpreadsheetPanel extends JPanel
     /**
      * @return Vector of the selected columns.
      */
-    private Vector <DataColumn> getSelectedCols() {
+    public Vector <DataColumn> getSelectedCols() {
         Vector <DataColumn> selcols = new Vector <DataColumn>();
 
         try {
@@ -240,7 +240,7 @@ public class SpreadsheetPanel extends JPanel
     /**
      * @return Vector of the selected columns.
      */
-    private Vector <DataCell> getSelectedCells() {
+    public Vector <DataCell> getSelectedCells() {
         Vector <DataCell> selcells = new Vector <DataCell>();
 
         try {
@@ -261,93 +261,6 @@ public class SpreadsheetPanel extends JPanel
            logger.error("Unable to set new cell stop time.", e);
         }
         return selcells;
-    }
-
-    /**
-     * Create a new cell with given onset. Currently just appends to the
-     * selected column or the column that last had a cell added to it.
-     *
-     * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to create a new cell from.
-     */
-    public final void createNewCell(final long milliseconds) {
-        try {
-            long onset = milliseconds;
-            // if not coming from video controller (milliseconds < 0) allow
-            // multiple adds
-            boolean multiadd = (milliseconds < 0);
-            if (milliseconds < 0) {
-                onset = 0;
-            }
-
-            boolean newcelladded = false;
-            // try for selected columns
-            for (DataColumn col : getSelectedCols()) {
-                MatrixVocabElement mve =
-                                        database.getMatrixVE(col.getItsMveID());
-                DataCell cell = new DataCell(col.getDB(),
-                                                col.getID(),
-                                                mve.getID());
-                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-                if (onset > 0) {
-                    lastCreatedCellID = database.appendCell(cell);
-                } else {
-                    lastCreatedCellID = database.insertdCell(cell, 1);
-                }
-                lastCreatedColID = col.getID();
-                newcelladded = true;
-                if (!multiadd) {
-                    break;
-                }
-            }
-
-            if (!newcelladded) {
-                // next try for selected cells
-                Iterator <DataCell> itCells = getSelectedCells().iterator();
-                while (itCells.hasNext()) {
-                    // reget the selected cell from the database using its id
-                    // in case a previous insert has changed its ordinal.
-                    // recasting to DataCell without checking as the iterator
-                    // only returns DataCells (no ref cells allowed so far)
-                    DataCell dc = (DataCell) database
-                                               .getCell(itCells.next().getID());
-                    DataCell cell = new DataCell(database,
-                                                 dc.getItsColID(),
-                                                 dc.getItsMveID());
-                    if (multiadd) {
-                        cell.setOnset(dc.getOnset());
-                        cell.setOffset(dc.getOffset());
-                        lastCreatedCellID = database
-                                            .insertdCell(cell, dc.getOrd() + 1);
-                    } else {
-                        cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
-                                                    onset));
-                        lastCreatedCellID = database.appendCell(cell);
-                    }
-                    lastCreatedColID = cell.getItsColID();
-                    newcelladded = true;
-                    if (!multiadd) {
-                        break;
-                    }
-                }
-            }
-            // last try lastColCreated
-            if (!newcelladded) {
-                if (lastCreatedColID == 0) {
-                    lastCreatedColID = database.getDataColumns().get(0).getID();
-                }
-                // would throw by now if no columns exist
-                DataColumn col = database.getDataColumn(lastCreatedColID);
-                DataCell cell = new DataCell(col.getDB(),
-                                                col.getID(),
-                                                col.getItsMveID());
-                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-                lastCreatedCellID = database.appendCell(cell);
-            }
-            deselectAll();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to create a new cell.", e);
-        }
     }
 
     /**
@@ -398,7 +311,7 @@ public class SpreadsheetPanel extends JPanel
     private long lastCreatedCellID;
 
     /** The id of the last datacell that was created. */
-    private long lastCreatedColID = 0;
+    //private long lastCreatedColID = 0;
 
     /** filler box for use when there are no datacells. */
     private Component filler;

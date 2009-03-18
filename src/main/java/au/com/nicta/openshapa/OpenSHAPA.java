@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa;
 
+import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
@@ -109,7 +110,8 @@ implements KeyEventDispatcher {
                 qtVideoController.createNewCellAction();
                 break;
             case KeyEvent.VK_ENTER:
-                this.createNewCell();
+                //this.createNewCell();
+                new CreateNewCellC();
                 break;
             default:
                 // Do nothing with the key.
@@ -215,29 +217,6 @@ implements KeyEventDispatcher {
                                       rMap.getString("ErrorDialog.message"),
                                       rMap.getString("ErrorDialog.title"),
                                       JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * Creates new cell(s) based on the current "selections" in the database.
-     * For each cell found selected, it creates a new cell with same onset
-     * and offset. It's ordinal is set so that it comes immediately after.
-     * If a column is found selected, it adds a blank cell at ordinal 1.
-     */
-    public void createNewCell() {
-        //spreadsheetView.createNewCell(-1);
-        //Should manipulate database.
-    }
-
-    /**
-     * Create a new cell with given onset. Currently just appends to the
-     * selected column or the column that last had a cell added to it.
-     *
-     * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to create a new cell from.
-     */
-    public void createNewCell(final long milliseconds) {
-        //spreadsheetView.createNewCell(milliseconds);
-        //Should manipulate database.
     }
 
     /**
@@ -434,7 +413,12 @@ implements KeyEventDispatcher {
     @Override
     protected void startup() {
         try {
+            // Initalise DB
             db = new MacshapaDatabase();
+
+            // Initalise last created values
+            lastCreatedCellID = 0;
+            lastCreatedColID = 0;
 
             // Build the ruby scripting engine - we need to avoid using the
             // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
@@ -510,8 +494,46 @@ implements KeyEventDispatcher {
         return OpenSHAPA.getApplication().db;
     }
 
+    /**
+     * Sets the single instance of the database assocaited with the currently
+     * running OpenSHAPA to the defined parameter.
+     *
+     * @param newDB The new database to use for this instance of OpenSHAPA.
+     */
     public static void setDatabase(Database newDB) {
         OpenSHAPA.getApplication().db = newDB;
+    }
+
+    /**
+     * @return The id of the last created cell.
+     */
+    public static long getLastCreatedCellId() {
+        return OpenSHAPA.getApplication().lastCreatedCellID;
+    }
+
+    /**
+     * Sets the id of the last created cell to the specified parameter.
+     *
+     * @param newId The Id of the newly created cell.
+     */
+    public static void setLastCreatedCellId(final long newId) {
+        OpenSHAPA.getApplication().lastCreatedCellID = newId;
+    }
+
+    /**
+     * @return The id of the last created column.
+     */
+    public static long getLastCreatedColId() {
+        return OpenSHAPA.getApplication().lastCreatedColID;
+    }
+
+    /**
+     * Sets the id of the last created column to the specified parameter.
+     *
+     * @param newId The Id of the newly created column.
+     */
+    public static void setLastCreatedColId(final long newId) {
+        OpenSHAPA.getApplication().lastCreatedColID = newId;
     }
 
     /** All the supported platforms that OpenSHAPA runs on. */
@@ -581,6 +603,12 @@ implements KeyEventDispatcher {
     /** The current spreadsheet view. */
     //private Spreadsheet spreadsheetView;
     private OpenSHAPAView openshapaView;
+
+    /** The id of the last datacell that was created. */
+    private long lastCreatedCellID;
+
+    /** The id of the last datacell that was created. */
+    private long lastCreatedColID;
 
     /** The view to use when listing all variables in the database. */
     private ListVariables listVarView;

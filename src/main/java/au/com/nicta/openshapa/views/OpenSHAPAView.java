@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
 import au.com.nicta.openshapa.db.SystemErrorException;
@@ -308,7 +309,8 @@ implements KeyEventDispatcher {
      * @param evt The event that fired this action.
      */
     private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
-        OpenSHAPA.getApplication().createNewCell();
+        //OpenSHAPA.getApplication().createNewCell();
+        new CreateNewCellC();
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
     private void strongTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_strongTemporalMenuItemActionPerformed

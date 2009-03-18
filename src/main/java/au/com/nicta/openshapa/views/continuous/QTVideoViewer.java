@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.continuous;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.cont.ContinuousDataController;
+import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -134,7 +135,8 @@ implements ContinuousDataViewer, MovieDrawingComplete {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
             curTime = curTime * SECONDS_TO_MILLI;
-            OpenSHAPA.getApplication().createNewCell((long) curTime);
+            new CreateNewCellC((long) curTime);
+            //OpenSHAPA.getApplication().createNewCell((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
         }
