@@ -5,8 +5,8 @@
       <item name="Introduction" href="index.html"/>
       <item name="Features" href="features.html"/>
       <item name="Download" href="download"/>
-      <item name="User Documentation" href="http://openshapa.nicta.org.au/fogbugz/default.php?W19" />
-      <item name="Contributor Documentation" href="http://openshapa.nicta.org.au/fogbugz/default.php?W20" />
+      <item name="User Guide" href="http://openshapa.nicta.org.au/fogbugz/default.php?W19" />
+      <item name="Contributor Guide" href="http://openshapa.nicta.org.au/fogbugz/default.php?W20" />
       <item name="Forum" href="http://openshapa.nicta.org.au/fogbugz/default.php?OpenSHAPA" />
       <item name="Issue Database" href="http://openshapa.nicta.org.au/fogbugz/" />
       <item name="Code Coverage" href="http://openshapa.nicta.org.au/clover" />
