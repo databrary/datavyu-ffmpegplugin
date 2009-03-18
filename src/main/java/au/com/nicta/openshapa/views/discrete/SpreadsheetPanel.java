@@ -262,23 +262,6 @@ public class SpreadsheetPanel extends JPanel
     }
 
     /**
-     * Sets the stop time of the last cell that was created.
-     *
-     * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to set the stop time for.
-     */
-    public final void setNewCellStopTime(final long milliseconds) {
-        try {
-            DataCell cell = (DataCell) database.getCell(lastCreatedCellID);
-            cell.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
-                                         milliseconds));
-            database.replaceCell(cell);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to set new cell stop time.", e);
-        }
-    }
-
-    /**
      * Set the layout type for the spreadsheet.
      * @param type SheetLayoutType to set.
      */
@@ -304,9 +287,6 @@ public class SpreadsheetPanel extends JPanel
 
     /** Selector object for handling SpreadsheetCell selection. */
     private Selector cellSelector;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
 
     /** filler box for use when there are no datacells. */
     private Component filler;

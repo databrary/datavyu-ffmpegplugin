@@ -220,17 +220,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Sets the stop time of the last cell that was created.
-     *
-     * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to set the stop time for.
-     */
-    public void setNewCellStopTime(final long milliseconds) {
-        //spreadsheetView.setNewCellStopTime(milliseconds);
-        //Should manipulate database.
-    }
-
-    /**
      * Set the layout type for the spreadsheet.
      * @param type SheetLayoutType to set.
      */
