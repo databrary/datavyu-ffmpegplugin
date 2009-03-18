@@ -4,7 +4,6 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalColumnListListener;
-import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.util.Constants;
@@ -14,7 +13,6 @@ import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLay
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -309,9 +307,6 @@ public class SpreadsheetPanel extends JPanel
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
-
-    /** The id of the last datacell that was created. */
-    //private long lastCreatedColID = 0;
 
     /** filler box for use when there are no datacells. */
     private Component filler;
