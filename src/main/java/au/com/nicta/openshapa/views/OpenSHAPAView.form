@@ -209,6 +209,10 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="aboutMenuItem1" noResource="true"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="}"/>
+                <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="if (OpenSHAPA.getPlatform() != Platform.MAC) {"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="contentsMenuItem">
               <Properties>

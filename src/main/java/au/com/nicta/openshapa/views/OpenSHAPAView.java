@@ -282,7 +282,9 @@ implements KeyEventDispatcher {
         helpMenu1.setName("helpMenu1"); // NOI18N
 
         aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
-        helpMenu1.add(aboutMenuItem1);
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            helpMenu1.add(aboutMenuItem1);
+        }
 
         contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
         contentsMenuItem.setName("contentsMenuItem"); // NOI18N
