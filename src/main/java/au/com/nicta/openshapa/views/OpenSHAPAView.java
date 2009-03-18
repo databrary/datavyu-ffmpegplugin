@@ -5,8 +5,8 @@ import au.com.nicta.openshapa.OpenSHAPA.Platform;
 import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
+import au.com.nicta.openshapa.controllers.RunTestsC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
-import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.FileDialog;
@@ -110,11 +110,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void runTests() {
-        try {
-            OpenSHAPA.getApplication().runRegressionTests();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to run regression tests", e);
-        }
+        new RunTestsC();
     }
 
     /**
