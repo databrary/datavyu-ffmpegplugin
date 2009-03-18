@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.OpenSHAPA.Platform;
 import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
@@ -217,7 +218,9 @@ implements KeyEventDispatcher {
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
-        fileMenu.add(exitMenuItem);
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            fileMenu.add(exitMenuItem);
+        }
 
         menuBar.add(fileMenu);
 
