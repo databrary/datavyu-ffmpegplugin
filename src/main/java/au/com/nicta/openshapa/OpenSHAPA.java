@@ -469,13 +469,8 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        // Only show the menu view if we are not on the mac. On the mac the menu
-        // bar is wedged up into top of the OS. The spreadsheet is not displayed
-        // untill the user requests it.
-        //if (OpenSHAPA.getPlatform() != Platform.MAC) {
-            openshapaView = new OpenSHAPAView(this);
-            show(openshapaView);            
-        //}
+        openshapaView = new OpenSHAPAView(this);
+        show(openshapaView);
     }
 
     /**
@@ -595,5 +590,4 @@ implements KeyEventDispatcher {
 
     /** The view to use when displaying the output of a user invoked script. */
     private ScriptOutput console;
-
 }

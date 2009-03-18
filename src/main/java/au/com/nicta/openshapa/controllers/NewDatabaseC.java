@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * Controller for creating new databases.
@@ -53,6 +54,16 @@ public class NewDatabaseC implements ActionListener {
 
             OpenSHAPA.setDatabase(model);
             OpenSHAPA.getApplication().showSpreadsheet();
+
+            // Update the name of the window to include the name of the new
+            // database.
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            ResourceMap rMap = OpenSHAPA.getApplication()
+                                        .getContext()
+                                        .getResourceMap(OpenSHAPA.class);
+
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - " + view.getDatabaseName());
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
