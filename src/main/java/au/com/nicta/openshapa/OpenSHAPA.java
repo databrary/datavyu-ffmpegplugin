@@ -109,39 +109,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Action for running a script.
-     *
-     * @param rubyFile The file of the ruby script to run.
-     */
-    public void runScript(final File rubyFile) {
-        try {
-            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            if (console == null) {
-                console = new ScriptOutput(mainFrame,
-                                                    false,
-                                                    consoleOutputStream);
-            }
-            OpenSHAPA.getApplication().show(console);
-
-            // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", db);
-
-            FileReader reader = new FileReader(rubyFile);
-            rubyEngine.eval(reader);
-        } catch (ScriptException e) {
-            consoleWriter.println("***** SCRIPT ERRROR *****");
-            consoleWriter.println("@Line " + e.getLineNumber() + ":'"
-                                 + e.getMessage() + "'");
-            consoleWriter.println("*************************");
-            consoleWriter.flush();
-
-            logger.error("Unable to execute script: ", e);
-        } catch (FileNotFoundException e) {
-            logger.error("Unable to execute script: ", e);
-        }
-    }
-
-    /**
      * Action for showing the quicktime video controller.
      */
     public void showQTVideoController() {
@@ -231,8 +198,6 @@ implements KeyEventDispatcher {
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
             consoleWriter = new PrintWriter(sIn);
             rubyEngine.getContext().setWriter(consoleWriter);
-
-            console = null;
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
@@ -332,8 +297,18 @@ implements KeyEventDispatcher {
         return OpenSHAPA.getApplication().consoleWriter;
     }
 
+    /**
+     * @return The consoleoutput stream for OpenSHAPA.
+     */
     public static PipedInputStream getConsoleOutputStream() {
         return OpenSHAPA.getApplication().consoleOutputStream;
+    }
+
+    /**
+     * @return The ruby scripting engine to use with OpenSHAPA.
+     */
+    public static ScriptEngine getRubyEngine() {
+        return OpenSHAPA.getApplication().rubyEngine;
     }
 
     /** All the supported platforms that OpenSHAPA runs on. */
@@ -411,7 +386,4 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
-
-    /** The view to use when displaying the output of a user invoked script. */
-    private ScriptOutput console;
 }

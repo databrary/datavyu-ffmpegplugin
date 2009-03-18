@@ -202,6 +202,6 @@ public class RunTestsC {
         consoleWriter.flush();
     }
 
-    /** The logger for OpenSHAPA. */
+    /** The logger for this class. */
     private static Logger logger = Logger.getLogger(RunTestsC.class);
 }

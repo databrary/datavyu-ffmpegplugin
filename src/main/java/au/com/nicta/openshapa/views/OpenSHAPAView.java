@@ -5,14 +5,13 @@ import au.com.nicta.openshapa.OpenSHAPA.Platform;
 import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
+import au.com.nicta.openshapa.controllers.RunScriptC;
 import au.com.nicta.openshapa.controllers.RunTestsC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
-import java.awt.FileDialog;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.io.File;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -118,15 +117,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void runScript() {
-        FileDialog c = new FileDialog(OpenSHAPA.getApplication().getMainFrame(),
-                                      "Select ruby script file:",
-                                      FileDialog.LOAD);
-        c.setVisible(true);
-
-        if (c.getFile() != null && c.getDirectory() != null) {
-            File rubyFile = new File(c.getDirectory() + c.getFile());
-            OpenSHAPA.getApplication().runScript(rubyFile);
-        }
+        new RunScriptC();
     }
 
     /**
