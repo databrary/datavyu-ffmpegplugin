@@ -415,7 +415,6 @@ implements KeyEventDispatcher {
             rubyEngine.getContext().setWriter(consoleWriter);
 
             console = null;
-            //spreadsheetView = null;
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.

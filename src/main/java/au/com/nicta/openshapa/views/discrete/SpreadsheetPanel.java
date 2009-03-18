@@ -19,8 +19,11 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 /**
+ * Spreadsheetpanel is a custom component for viewing the contents of the
+ * OpenSHAPA database as a spreadsheet.
  *
- *
+ * @author switcher (initial revision)
+ * @author cfreeman (refactor)
  */
 public class SpreadsheetPanel extends JPanel
     implements ExternalColumnListListener {
@@ -86,6 +89,7 @@ public class SpreadsheetPanel extends JPanel
 
     /**
      * Add a column panel to the scroll panel.
+     *
      * @param db database.
      * @param colID ID of the column to add.
      */
@@ -105,6 +109,7 @@ public class SpreadsheetPanel extends JPanel
 
     /**
      * Remove a column panel from the scroll panel viewport.
+     *
      * @param colID ID of column to remove
      */
     private void removeColumn(final long colID) {
@@ -131,6 +136,7 @@ public class SpreadsheetPanel extends JPanel
 
     /**
      * Set Database.
+     *
      * @param db Database to set
      */
     public final void setDatabase(final Database db) {
@@ -261,6 +267,7 @@ public class SpreadsheetPanel extends JPanel
 
     /**
      * Set the layout type for the spreadsheet.
+     *
      * @param type SheetLayoutType to set.
      */
     public final void setLayoutType(final SheetLayoutType type) {

@@ -16,7 +16,8 @@ import org.jdesktop.application.ResourceMap;
 /**
  * Controller for creating new databases.
  *
- * @author cfreeman
+ * @author cfreeman (refactored into seperate controller class.)
+ * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
 public class NewDatabaseC implements ActionListener {
     /** The model that this controller alters. */

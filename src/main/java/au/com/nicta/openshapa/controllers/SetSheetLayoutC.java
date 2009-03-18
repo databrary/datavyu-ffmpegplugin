@@ -7,9 +7,10 @@ import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLay
 /**
  * Controller for setting the spreadsheet layout.
  *
- * @author cfreeman
+ * @author cfreeman (refactored into seperate controller class.)
+ * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
-public class SetSheetLayoutC {
+public final class SetSheetLayoutC {
 
     /**
      * Constructor - creates and invokes the controller.
