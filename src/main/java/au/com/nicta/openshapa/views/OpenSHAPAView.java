@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
+import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -101,7 +102,6 @@ implements KeyEventDispatcher {
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
         this.getComponent().revalidate();
-
     }
 
     /**
@@ -142,7 +142,8 @@ implements KeyEventDispatcher {
         } else if (strongTemporalOrderMenuItem.isSelected()) {
             type = SheetLayoutType.StrongTemporal;
         }
-        OpenSHAPA.getApplication().setSheetLayout(type);
+
+        new SetSheetLayoutC(type);
     }
 
     /** This method is called from within the constructor to

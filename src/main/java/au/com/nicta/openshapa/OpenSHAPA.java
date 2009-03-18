@@ -10,7 +10,6 @@ import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
 import au.com.nicta.openshapa.views.ScriptOutput;
-import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
@@ -179,13 +178,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Action for showing the spreadsheet.
-     */
-    public void showSpreadsheet() {
-        openshapaView.showSpreadsheet();         
-    }
-
-    /**
      * Show a warning dialog to the user.
      *
      * @param e The LogicErrorException to present to the user.
@@ -217,14 +209,6 @@ implements KeyEventDispatcher {
                                       rMap.getString("ErrorDialog.message"),
                                       rMap.getString("ErrorDialog.title"),
                                       JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * Set the layout type for the spreadsheet.
-     * @param type SheetLayoutType to set.
-     */
-    public void setSheetLayout(final SheetLayoutType type) {
-        //spreadsheetView.setLayoutType(type);
     }
 
     /**
@@ -442,8 +426,7 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        openshapaView = new OpenSHAPAView(this);
-        show(openshapaView);
+        show(new OpenSHAPAView(this));
     }
 
     /**
@@ -588,10 +571,6 @@ implements KeyEventDispatcher {
 
     /** input stream for displaying messages from the scripting engine. */
     private PrintWriter consoleWriter;
-
-    /** The current spreadsheet view. */
-    //private Spreadsheet spreadsheetView;
-    private OpenSHAPAView openshapaView;
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;

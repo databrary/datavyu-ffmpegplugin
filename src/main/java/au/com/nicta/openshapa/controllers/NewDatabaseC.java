@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.views.NewDatabaseV;
+import au.com.nicta.openshapa.views.OpenSHAPAView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
@@ -53,7 +54,9 @@ public class NewDatabaseC implements ActionListener {
             model.setDescription(view.getDatabaseDescription());
 
             OpenSHAPA.setDatabase(model);
-            OpenSHAPA.getApplication().showSpreadsheet();
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                       .getMainView();
+            s.showSpreadsheet();
 
             // Update the name of the window to include the name of the new
             // database.

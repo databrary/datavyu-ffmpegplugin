@@ -5,8 +5,6 @@ import au.com.nicta.openshapa.db.DataColumn;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.ExternalColumnListListener;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.db.TimeStamp;
-import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayout;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
