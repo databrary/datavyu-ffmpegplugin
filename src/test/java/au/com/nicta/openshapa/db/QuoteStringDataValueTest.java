@@ -23,6 +23,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     private MatrixVocabElement matrix_mve;
     private UnTypedFormalArg ufa;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     @Override
     public DataValue getInstance() {
         return qsdv;
@@ -66,6 +69,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
         matrix_mve.appendFormalArg(ufa);
         db.vl.addElement(matrix_mve);
         qsdv = new QuoteStringDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -445,10 +451,6 @@ public class QuoteStringDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -522,75 +524,6 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassQuoteStringDataValue()
-     *
-     * Main routine for tests of class QuoteStringDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassQuoteStringDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class QuoteStringDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class QuoteStringDataValue.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class QuoteStringDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* QuoteStringDataValue::TestClassQuoteStringDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -602,10 +535,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class QuoteStringDataValue    ";
         String passBanner = "PASSED\n";
@@ -616,8 +547,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
-        QuoteStringDataValue qsdv = null;
+        Database db_l = null;
+        QuoteStringDataValue qsdv_l = null;
 
         outStream.print(testBanner);
 
@@ -626,16 +557,16 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
-        qsdv = null;
+        db_l = null;
+        qsdv_l = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
 
         try
         {
-            db = new ODBCDatabase();
-            qsdv = new QuoteStringDataValue(db);
+            db_l = new ODBCDatabase();
+            qsdv_l = new QuoteStringDataValue(db_l);
             completed = true;
         }
 
@@ -645,8 +576,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( qsdv == null ) ||
+        if ( ( db_l == null ) ||
+             ( qsdv_l == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
@@ -654,13 +585,13 @@ public class QuoteStringDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( qsdv == null )
+                if ( qsdv_l == null )
                 {
                     outStream.print(
                             "new QuoteStringDataValue(db) returned null.\n");
@@ -683,10 +614,10 @@ public class QuoteStringDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify1ArgInitialization(db, qsdv, outStream,
+            failures += DataValueTest.Verify1ArgInitialization(db_l, qsdv_l, outStream,
                                                            verbose);
 
-            if ( qsdv.ItsDefault != null )
+            if ( qsdv_l.ItsDefault != null )
             {
                 failures++;
 
@@ -696,7 +627,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( qsdv.itsValue != qsdv.ItsDefault )
+            if ( qsdv_l.itsValue != qsdv_l.ItsDefault )
             {
                 failures++;
 
@@ -705,15 +636,15 @@ public class QuoteStringDataValueTest extends DataValueTest {
                     String s1;
                     String s2;
 
-                    if ( qsdv.itsValue == null )
+                    if ( qsdv_l.itsValue == null )
                         s1 = new String("<null>");
                     else
-                        s1 = qsdv.itsValue;
+                        s1 = qsdv_l.itsValue;
 
-                    if ( qsdv.ItsDefault == null )
+                    if ( qsdv_l.ItsDefault == null )
                         s2 = new String("<null>");
                     else
-                        s2 = qsdv.ItsDefault;
+                        s2 = qsdv_l.ItsDefault;
 
                     outStream.printf(
                             "qsdv.itsValue = %s != qsdv.ItsDefault = %s.\n",
@@ -725,14 +656,14 @@ public class QuoteStringDataValueTest extends DataValueTest {
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
-            qsdv = null;
+            qsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                qsdv = new QuoteStringDataValue((Database)null);
+                qsdv_l = new QuoteStringDataValue((Database)null);
                 completed = true;
             }
 
@@ -742,7 +673,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( qsdv != null ) ||
+            if ( ( qsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -755,7 +686,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
                         outStream.print("new QuoteStringDataValue(null) returned.\n");
                     }
 
-                    if ( qsdv != null )
+                    if ( qsdv_l != null )
                     {
                         outStream.print(
                                 "new QuoteStringDataValue(null) returned non-null.\n");
@@ -799,8 +730,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::Test1ArgConstructor() */
 
 
@@ -816,11 +746,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class QuoteStringDataValue    ";
         String passBanner = "PASSED\n";
@@ -1154,8 +1081,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::Test2ArgConstructor() */
 
 
@@ -1171,11 +1097,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class QuoteStringDataValue    ";
         String passBanner = "PASSED\n";
@@ -1544,8 +1467,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::Test3ArgConstructor() */
 
 
@@ -1560,11 +1482,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors2() throws SystemErrorException {
         String testBanner =
             "Testing class QuoteStringDataValue accessors                     ";
         String passBanner = "PASSED\n";
@@ -1864,8 +1783,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::TestAccessors() */
 
 
@@ -1881,11 +1799,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class QuoteStringDataValue          ";
         String passBanner = "PASSED\n";
@@ -2163,8 +2078,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::TestCopyConstructor() */
 
 
@@ -2180,11 +2094,8 @@ public class QuoteStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2210,10 +2121,10 @@ public class QuoteStringDataValueTest extends DataValueTest {
         int failures = 0;
         String s = null;
         Database db = null;
-        MatrixVocabElement qs_mve = null;
-        MatrixVocabElement matrix_mve = null;
-        QuoteStringFormalArg qsfa = null;
-        UnTypedFormalArg ufa = null;
+        MatrixVocabElement qs_mve_l = null;
+        MatrixVocabElement matrix_mve_l = null;
+        QuoteStringFormalArg qsfa_l = null;
+        UnTypedFormalArg ufa_l = null;
         QuoteStringDataValue qsdv0 = null;
         QuoteStringDataValue qsdv1 = null;
 
@@ -2235,23 +2146,23 @@ public class QuoteStringDataValueTest extends DataValueTest {
         {
             db = new ODBCDatabase();
 
-            qs_mve = new MatrixVocabElement(db, "qs_mve");
-            qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
-            qsfa = new QuoteStringFormalArg(db);
-            qs_mve.appendFormalArg(qsfa);
-            db.vl.addElement(qs_mve);
+            qs_mve_l = new MatrixVocabElement(db, "qs_mve");
+            qs_mve_l.setType(MatrixVocabElement.MatrixType.MATRIX);
+            qsfa_l = new QuoteStringFormalArg(db);
+            qs_mve_l.appendFormalArg(qsfa_l);
+            db.vl.addElement(qs_mve_l);
 
-            qsdv0 = new QuoteStringDataValue(db, qsfa.getID(), "bravo");
+            qsdv0 = new QuoteStringDataValue(db, qsfa_l.getID(), "bravo");
             qsdv0.setID(100);      // invalid value for print test
             qsdv0.itsCellID = 500; // invalid value for print test
 
-            matrix_mve = new MatrixVocabElement(db, "matrix_mve");
-            matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
-            ufa = new UnTypedFormalArg(db, "<untyped>");
-            matrix_mve.appendFormalArg(ufa);
-            db.vl.addElement(matrix_mve);
+            matrix_mve_l = new MatrixVocabElement(db, "matrix_mve");
+            matrix_mve_l.setType(MatrixVocabElement.MatrixType.MATRIX);
+            ufa_l = new UnTypedFormalArg(db, "<untyped>");
+            matrix_mve_l.appendFormalArg(ufa_l);
+            db.vl.addElement(matrix_mve_l);
 
-            qsdv1 = new QuoteStringDataValue(db, ufa.getID(), "nero");
+            qsdv1 = new QuoteStringDataValue(db, ufa_l.getID(), "nero");
             qsdv1.setID(101);      // invalid value for print test
             qsdv1.itsCellID = 501; // invalid value for print test
 
@@ -2265,11 +2176,11 @@ public class QuoteStringDataValueTest extends DataValueTest {
         }
 
         if ( ( db == null ) ||
-             ( qs_mve == null ) ||
-             ( qsfa == null ) ||
+             ( qs_mve_l == null ) ||
+             ( qsfa_l == null ) ||
              ( qsdv0 == null ) ||
-             ( matrix_mve == null ) ||
-             ( ufa == null ) ||
+             ( matrix_mve_l == null ) ||
+             ( ufa_l == null ) ||
              ( qsdv1 == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -2284,12 +2195,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( qs_mve == null )
+                if ( qs_mve_l == null )
                 {
                     outStream.print("allocation of qs_mve failed.\n");
                 }
 
-                if ( qsfa == null )
+                if ( qsfa_l == null )
                 {
                     outStream.print("allocation of qsfa failed.\n");
                 }
@@ -2301,12 +2212,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
                             "\"bravo\") returned null.\n");
                 }
 
-                if ( matrix_mve == null )
+                if ( matrix_mve_l == null )
                 {
                     outStream.print("allocation of matrix_mve failed.\n");
                 }
 
-                if ( ufa == null )
+                if ( ufa_l == null )
                 {
                     outStream.print("allocation of ufa failed.\n");
                 }
@@ -2408,8 +2319,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringDataValue::TestToStringMethods() */
 
 
