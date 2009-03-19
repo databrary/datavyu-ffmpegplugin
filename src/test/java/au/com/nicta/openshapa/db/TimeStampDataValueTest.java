@@ -22,6 +22,9 @@ public class TimeStampDataValueTest extends DataValueTest {
 
     TimeStampFormalArg tfa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     @Override
     public DataValue getInstance() {
         return tsdv;
@@ -46,6 +49,9 @@ public class TimeStampDataValueTest extends DataValueTest {
         db.vl.addElement(matrix_mve0);
         
         tsdv = new TimeStampDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -304,11 +310,6 @@ public class TimeStampDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -385,75 +386,6 @@ public class TimeStampDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassTimeStampDataValue()
-     *
-     * Main routine for tests of class TimeStampDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassTimeStampDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class TimeStampDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class TimeStampDataValue.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class TimeStampDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* TimeStampDataValue::TestClassTimeStampDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -465,11 +397,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test1ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 1 argument constructor for class TimeStampDataValue      ";
         String passBanner = "PASSED\n";
@@ -480,8 +409,8 @@ public class TimeStampDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
-        TimeStampDataValue tsdv = null;
+        Database db_l = null;
+        TimeStampDataValue tsdv_l = null;
 
         outStream.print(testBanner);
 
@@ -490,16 +419,16 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
-        tsdv = null;
+        db_l = null;
+        tsdv_l = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
 
         try
         {
-            db = new ODBCDatabase();
-            tsdv = new TimeStampDataValue(db);
+            db_l = new ODBCDatabase();
+            tsdv_l = new TimeStampDataValue(db_l);
             completed = true;
         }
 
@@ -509,8 +438,8 @@ public class TimeStampDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( tsdv == null ) ||
+        if ( ( db_l == null ) ||
+             ( tsdv_l == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
         {
@@ -518,13 +447,13 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( tsdv == null )
+                if ( tsdv_l == null )
                 {
                     outStream.print(
                             "new TimeStampDataValue(db) returned null.\n");
@@ -547,10 +476,10 @@ public class TimeStampDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify1ArgInitialization(db, tsdv, outStream,
+            failures += DataValueTest.Verify1ArgInitialization(db_l, tsdv_l, outStream,
                                                            verbose);
 
-            if ( ! tsdv.itsValue.eq(tsdv.ItsDefault) )
+            if ( ! tsdv_l.itsValue.eq(tsdv_l.ItsDefault) )
             {
                 failures++;
 
@@ -558,32 +487,32 @@ public class TimeStampDataValueTest extends DataValueTest {
                 {
                     outStream.printf("tsdv.itsValue = (%d,%d) != " +
                             "tsdv.ItsDefault = (%d,%d).\n",
-                            tsdv.itsValue.getTPS(),
-                            tsdv.itsValue.getTicks(),
-                            tsdv.ItsDefault.getTPS(),
-                            tsdv.ItsDefault.getTicks());
+                            tsdv_l.itsValue.getTPS(),
+                            tsdv_l.itsValue.getTicks(),
+                            tsdv_l.ItsDefault.getTPS(),
+                            tsdv_l.ItsDefault.getTicks());
                 }
             }
 
-            if ( tsdv.maxVal != null )
+            if ( tsdv_l.maxVal != null )
             {
                 failures++;
 
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.maxVal: %d.\n",
-                                     tsdv.maxVal);
+                                     tsdv_l.maxVal);
                 }
             }
 
-            if ( tsdv.minVal != null )
+            if ( tsdv_l.minVal != null )
             {
                 failures++;
 
                 if ( verbose )
                 {
                     outStream.printf("bad initial value of tsdv.minVal: %d.\n",
-                                     tsdv.minVal);
+                                     tsdv_l.minVal);
                 }
             }
         }
@@ -591,14 +520,14 @@ public class TimeStampDataValueTest extends DataValueTest {
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue((Database)null);
+                tsdv_l = new TimeStampDataValue((Database)null);
                 completed = true;
             }
 
@@ -608,7 +537,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -622,7 +551,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                                 "new TimeStampDataValue(null) returned.\n");
                     }
 
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print("new TimeStampDataValue(null) " +
                                         "returned non-null.\n");
@@ -666,8 +595,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::Test1ArgConstructor() */
 
 
@@ -683,11 +611,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class TimeStampDataValue      ";
         String passBanner = "PASSED\n";
@@ -1119,8 +1044,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::Test2ArgConstructor() */
 
 
@@ -1136,11 +1060,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class TimeStampDataValue      ";
         String passBanner = "PASSED\n";
@@ -1151,12 +1072,12 @@ public class TimeStampDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
+        Database db_l = null;
         MatrixVocabElement ts_mve = null;
         MatrixVocabElement ts_mve_sr = null;
         TimeStampFormalArg tsfa = null;
         TimeStampFormalArg tsfa_sr = null;
-        TimeStampDataValue tsdv = null;
+        TimeStampDataValue tsdv_l = null;
         TimeStampDataValue tsdv_sr0 = null;
         TimeStampDataValue tsdv_sr1 = null;
 
@@ -1167,37 +1088,37 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
-        tsdv = null;
+        db_l = null;
+        tsdv_l = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
 
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            ts_mve = new MatrixVocabElement(db, "ts_mve");
+            ts_mve = new MatrixVocabElement(db_l, "ts_mve");
             ts_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa = new TimeStampFormalArg(db);
+            tsfa = new TimeStampFormalArg(db_l);
             ts_mve.appendFormalArg(tsfa);
-            db.vl.addElement(ts_mve);
+            db_l.vl.addElement(ts_mve);
 
-            tsdv = new TimeStampDataValue(db, tsfa.getID(),
-                                          new TimeStamp(db.getTicks(), 60));
+            tsdv_l = new TimeStampDataValue(db_l, tsfa.getID(),
+                                          new TimeStamp(db_l.getTicks(), 60));
 
-            ts_mve_sr = new MatrixVocabElement(db, "ts_mve_sr");
+            ts_mve_sr = new MatrixVocabElement(db_l, "ts_mve_sr");
             ts_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa_sr = new TimeStampFormalArg(db);
-            tsfa_sr.setRange(new TimeStamp(db.getTicks(), 0),
-                         new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
+            tsfa_sr = new TimeStampFormalArg(db_l);
+            tsfa_sr.setRange(new TimeStamp(db_l.getTicks(), 0),
+                         new TimeStamp(db_l.getTicks(), 60 * 60 * db_l.getTicks()));
             ts_mve_sr.appendFormalArg(tsfa_sr);
-            db.vl.addElement(ts_mve_sr);
+            db_l.vl.addElement(ts_mve_sr);
 
-            tsdv_sr0 = new TimeStampDataValue(db, tsfa_sr.getID(),
-                     new TimeStamp(db.getTicks(), 60 * db.getTicks()));
-            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(),
-                  new TimeStamp(db.getTicks(), (60 * 60 * db.getTicks()) + 1));
+            tsdv_sr0 = new TimeStampDataValue(db_l, tsfa_sr.getID(),
+                     new TimeStamp(db_l.getTicks(), 60 * db_l.getTicks()));
+            tsdv_sr1 = new TimeStampDataValue(db_l, tsfa_sr.getID(),
+                  new TimeStamp(db_l.getTicks(), (60 * 60 * db_l.getTicks()) + 1));
 
             completed = true;
         }
@@ -1208,10 +1129,10 @@ public class TimeStampDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
+        if ( ( db_l == null ) ||
              ( ts_mve == null ) ||
              ( tsfa == null ) ||
-             ( tsdv == null ) ||
+             ( tsdv_l == null ) ||
              ( ts_mve_sr == null ) ||
              ( tsfa_sr == null ) ||
              ( tsdv_sr0 == null ) ||
@@ -1223,7 +1144,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
@@ -1239,7 +1160,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                     outStream.print("allocation of tsfa failed.");
                 }
 
-                if ( tsdv == null )
+                if ( tsdv_l == null )
                 {
                     outStream.print("allocation of tsdv failed.\n");
                 }
@@ -1280,14 +1201,14 @@ public class TimeStampDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify2PlusArgInitialization(db,
+            failures += DataValueTest.Verify2PlusArgInitialization(db_l,
                                                                tsfa,
-                                                               tsdv,
+                                                               tsdv_l,
                                                                outStream,
                                                                verbose,
                                                                "tsdv");
 
-            if ( tsdv.subRange != tsfa.getSubRange() )
+            if ( tsdv_l.subRange != tsfa.getSubRange() )
             {
                 failures++;
 
@@ -1298,20 +1219,20 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( ! tsdv.itsValue.eq(new TimeStamp(db.getTicks(), 60)) )
+            if ( ! tsdv_l.itsValue.eq(new TimeStamp(db_l.getTicks(), 60)) )
             {
                 failures++;
 
                 if ( verbose )
                 {
                     outStream.printf("tsdv.itsValue = (%d,%d) != (%d,60).\n",
-                                     tsdv.itsValue.getTPS(),
-                                     tsdv.itsValue.getTicks(),
-                                     db.getTicks());
+                                     tsdv_l.itsValue.getTPS(),
+                                     tsdv_l.itsValue.getTicks(),
+                                     db_l.getTicks());
                 }
             }
 
-            if ( tsdv.maxVal != null )
+            if ( tsdv_l.maxVal != null )
             {
                 failures++;
 
@@ -1319,11 +1240,11 @@ public class TimeStampDataValueTest extends DataValueTest {
                 {
                     outStream.printf("bad initial value of tsdv.maxVal: " +
                             "(%d,%d) (null expected).\n",
-                            tsdv.maxVal.getTPS(), tsdv.maxVal.getTicks());
+                            tsdv_l.maxVal.getTPS(), tsdv_l.maxVal.getTicks());
                 }
             }
 
-            if ( tsdv.minVal != null )
+            if ( tsdv_l.minVal != null )
             {
                 failures++;
 
@@ -1331,13 +1252,13 @@ public class TimeStampDataValueTest extends DataValueTest {
                 {
                     outStream.printf("bad initial value of tsdv.minVal: " +
                             "(%d,%d) (null expected).\n",
-                            tsdv.minVal.getTPS(), tsdv.minVal.getTicks());
+                            tsdv_l.minVal.getTPS(), tsdv_l.minVal.getTicks());
                 }
             }
 
             /**************************/
 
-            failures += DataValueTest.Verify2PlusArgInitialization(db,
+            failures += DataValueTest.Verify2PlusArgInitialization(db_l,
                                                                tsfa_sr,
                                                                tsdv_sr0,
                                                                outStream,
@@ -1355,8 +1276,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( ! tsdv_sr0.itsValue.eq(new TimeStamp(db.getTicks(),
-                                                      60 * db.getTicks())) )
+            if ( ! tsdv_sr0.itsValue.eq(new TimeStamp(db_l.getTicks(),
+                                                      60 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -1365,8 +1286,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                     outStream.printf("tsdv_sr0.itsValue = (%d,%d) != (%d,%d).\n",
                                      tsdv_sr0.itsValue.getTPS(),
                                      tsdv_sr0.itsValue.getTicks(),
-                                     db.getTicks(),
-                                     60 * db.getTicks());
+                                     db_l.getTicks(),
+                                     60 * db_l.getTicks());
                 }
             }
 
@@ -1402,7 +1323,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             /*************************/
 
-            failures += DataValueTest.Verify2PlusArgInitialization(db,
+            failures += DataValueTest.Verify2PlusArgInitialization(db_l,
                                                                tsfa_sr,
                                                                tsdv_sr1,
                                                                outStream,
@@ -1468,15 +1389,15 @@ public class TimeStampDataValueTest extends DataValueTest {
         /* verify that the constructor fails when given an invalid db */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue((Database)null, tsfa.getID(),
-                                              new TimeStamp(db.getTicks(), 0));
+                tsdv_l = new TimeStampDataValue((Database)null, tsfa.getID(),
+                                              new TimeStamp(db_l.getTicks(), 0));
                 completed = true;
             }
 
@@ -1486,7 +1407,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -1494,7 +1415,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
                 if ( verbose )
                 {
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print("new TimeStampDataValue(null, " +
                                 "tsfa.getID(), new TimeStamp(db.getTicks(), " +
@@ -1523,15 +1444,15 @@ public class TimeStampDataValueTest extends DataValueTest {
          */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue(db, DBIndex.INVALID_ID,
-                                              new TimeStamp(db.getTicks(), 0));
+                tsdv_l = new TimeStampDataValue(db_l, DBIndex.INVALID_ID,
+                                              new TimeStamp(db_l.getTicks(), 0));
                 completed = true;
             }
 
@@ -1541,7 +1462,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -1549,7 +1470,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
                 if ( verbose )
                 {
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print("new TimeStampDataValue(db, " +
                                 "INVALID_ID, new TimeStamp(db.getTicks(), 0))" +
@@ -1578,15 +1499,15 @@ public class TimeStampDataValueTest extends DataValueTest {
          */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue(db, ts_mve.getID(),
-                                              new TimeStamp(db.getTicks(), 0));
+                tsdv_l = new TimeStampDataValue(db_l, ts_mve.getID(),
+                                              new TimeStamp(db_l.getTicks(), 0));
                 completed = true;
             }
 
@@ -1596,7 +1517,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -1611,7 +1532,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "0)) returned.\n");
                     }
 
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print("new TimeStampDataValue(db, " +
                             "ts_mve.getID(), new TimeStamp(db.getTicks(), " +
@@ -1633,15 +1554,15 @@ public class TimeStampDataValueTest extends DataValueTest {
          */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue(db, tsfa.getID(),
-                                           new TimeStamp(db.getTicks() + 1, 0));
+                tsdv_l = new TimeStampDataValue(db_l, tsfa.getID(),
+                                           new TimeStamp(db_l.getTicks() + 1, 0));
                 completed = true;
             }
 
@@ -1651,7 +1572,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -1666,7 +1587,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "0)) returned.\n");
                     }
 
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print("new TimeStampDataValue(db, " +
                             "tsfa.getID(), new TimeStamp(db.getTicks() + 1, " +
@@ -1712,8 +1633,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::Test3ArgConstructor() */
 
 
@@ -1728,11 +1648,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class TimeStampDataValue accessors                       ";
         String passBanner = "PASSED\n";
@@ -1743,7 +1660,7 @@ public class TimeStampDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
+        Database db_l = null;
         MatrixVocabElement matrix_mve0 = null;
         MatrixVocabElement matrix_mve1 = null;
         TimeStampFormalArg tsfa = null;
@@ -1759,36 +1676,36 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
+        db_l = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
 
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            matrix_mve0 = new MatrixVocabElement(db, "matrix_mve0");
+            matrix_mve0 = new MatrixVocabElement(db_l, "matrix_mve0");
             matrix_mve0.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
-                         new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
+            tsfa = new TimeStampFormalArg(db_l);
+            tsfa.setRange(new TimeStamp(db_l.getTicks(), 10 * db_l.getTicks()),
+                         new TimeStamp(db_l.getTicks(), 60 * 60 * db_l.getTicks()));
             matrix_mve0.appendFormalArg(tsfa);
-            db.vl.addElement(matrix_mve0);
+            db_l.vl.addElement(matrix_mve0);
 
-            tsdv0 = new TimeStampDataValue(db, tsfa.getID(),
-                    new TimeStamp(db.getTicks(), 60 * db.getTicks()));
+            tsdv0 = new TimeStampDataValue(db_l, tsfa.getID(),
+                    new TimeStamp(db_l.getTicks(), 60 * db_l.getTicks()));
 
-            matrix_mve1 = new MatrixVocabElement(db, "matrix_mve");
+            matrix_mve1 = new MatrixVocabElement(db_l, "matrix_mve");
             matrix_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
-            ufa = new UnTypedFormalArg(db, "<untyped>");
+            ufa = new UnTypedFormalArg(db_l, "<untyped>");
             matrix_mve1.appendFormalArg(ufa);
-            db.vl.addElement(matrix_mve1);
+            db_l.vl.addElement(matrix_mve1);
 
-            tsdv1 = new TimeStampDataValue(db, ufa.getID(),
-                    new TimeStamp(db.getTicks(), (60 * 60 * db.getTicks()) + 1));
-            tsdv2 = new TimeStampDataValue(db, ufa.getID(),
-                              new TimeStamp(db.getTicks(), 60 * db.getTicks()));
+            tsdv1 = new TimeStampDataValue(db_l, ufa.getID(),
+                    new TimeStamp(db_l.getTicks(), (60 * 60 * db_l.getTicks()) + 1));
+            tsdv2 = new TimeStampDataValue(db_l, ufa.getID(),
+                              new TimeStamp(db_l.getTicks(), 60 * db_l.getTicks()));
 
             completed = true;
         }
@@ -1799,7 +1716,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
+        if ( ( db_l == null ) ||
              ( matrix_mve0 == null ) ||
              ( tsfa == null ) ||
              ( tsdv0 == null ) ||
@@ -1814,7 +1731,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
@@ -1871,7 +1788,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.TestAccessors(db, tsfa, matrix_mve1, ufa,
+            failures += DataValueTest.TestAccessors(db_l, tsfa, matrix_mve1, ufa,
                                                 tsdv0, outStream, verbose);
 
             if ( tsdv0.getSubRange() != false )
@@ -1884,8 +1801,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(),
-                                                        60 * db.getTicks())) )
+            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db_l.getTicks(),
+                                                        60 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -1895,16 +1812,16 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv0.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv0.itsValue.getTPS(),
                             tsdv0.itsValue.getTicks(),
-                            db.getTicks(),
-                            60 * db.getTicks());
+                            db_l.getTicks(),
+                            60 * db_l.getTicks());
                 }
             }
 
-            tsdv0.setItsValue(new TimeStamp(db.getTicks(), 30 * db.getTicks()));
+            tsdv0.setItsValue(new TimeStamp(db_l.getTicks(), 30 * db_l.getTicks()));
 
 
-            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db.getTicks(),
-                                                        30 * db.getTicks())) )
+            if ( ! tsdv0.getItsValue().eq(new TimeStamp(db_l.getTicks(),
+                                                        30 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -1914,8 +1831,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv0.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv0.itsValue.getTPS(),
                             tsdv0.itsValue.getTicks(),
-                            db.getTicks(),
-                            60 * db.getTicks());
+                            db_l.getTicks(),
+                            60 * db_l.getTicks());
                 }
             }
 
@@ -1931,8 +1848,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
-                                               (60 * 60 * db.getTicks()) + 1)) )
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db_l.getTicks(),
+                                               (60 * 60 * db_l.getTicks()) + 1)) )
             {
                 failures++;
 
@@ -1942,12 +1859,12 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(),
-                            (60 * 60 * db.getTicks()) + 1);
+                            db_l.getTicks(),
+                            (60 * 60 * db_l.getTicks()) + 1);
                 }
             }
 
-            failures += DataValueTest.TestAccessors(db, ufa, matrix_mve0, tsfa,
+            failures += DataValueTest.TestAccessors(db_l, ufa, matrix_mve0, tsfa,
                                                 tsdv1, outStream, verbose);
 
             if ( tsdv1.getSubRange() != true )
@@ -1960,8 +1877,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
-                                                     60 * 60 * db.getTicks())) )
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db_l.getTicks(),
+                                                     60 * 60 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -1971,15 +1888,15 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(),
-                            60 * 60 * db.getTicks());
+                            db_l.getTicks(),
+                            60 * 60 * db_l.getTicks());
                 }
             }
 
-            tsdv1.setItsValue(new TimeStamp(db.getTicks(), 9 * db.getTicks()));
+            tsdv1.setItsValue(new TimeStamp(db_l.getTicks(), 9 * db_l.getTicks()));
 
-            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db.getTicks(),
-                                                        10 * db.getTicks())) )
+            if ( ! tsdv1.getItsValue().eq(new TimeStamp(db_l.getTicks(),
+                                                        10 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -1989,32 +1906,32 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv1.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv1.itsValue.getTPS(),
                             tsdv1.itsValue.getTicks(),
-                            db.getTicks(),
-                            10 * db.getTicks());
+                            db_l.getTicks(),
+                            10 * db_l.getTicks());
                 }
             }
 
-            if ( ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(),
-                    (60 * 60 * db.getTicks()) - 1)) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (30 * 60 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
-                    (30 * 60 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()) + 1)).ne(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()) + 1)) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()))).ne(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()))) ) ||
-                 ( tsdv1.coerceToRange(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()) - 1)).ne(new TimeStamp(db.getTicks(),
-                    (10 * db.getTicks()))) ) )
+            if ( ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()) + 1)).ne(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()))) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()))).ne(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()))) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()) - 1)).ne(new TimeStamp(db_l.getTicks(),
+                    (60 * 60 * db_l.getTicks()) - 1)) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (30 * 60 * db_l.getTicks()))).ne(new TimeStamp(db_l.getTicks(),
+                    (30 * 60 * db_l.getTicks()))) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()) + 1)).ne(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()) + 1)) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()))).ne(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()))) ) ||
+                 ( tsdv1.coerceToRange(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()) - 1)).ne(new TimeStamp(db_l.getTicks(),
+                    (10 * db_l.getTicks()))) ) )
             {
                 failures++;
 
@@ -2027,7 +1944,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             /************************************/
 
-            failures += DataValueTest.TestAccessors(db, ufa, matrix_mve0, tsfa,
+            failures += DataValueTest.TestAccessors(db_l, ufa, matrix_mve0, tsfa,
                                                 tsdv2, outStream, verbose);
 
             if ( tsdv2.getSubRange() != true )
@@ -2040,8 +1957,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( tsdv2.getItsValue().ne(new TimeStamp(db.getTicks(),
-                                                      60 * db.getTicks())) )
+            if ( tsdv2.getItsValue().ne(new TimeStamp(db_l.getTicks(),
+                                                      60 * db_l.getTicks())) )
             {
                 failures++;
 
@@ -2051,8 +1968,8 @@ public class TimeStampDataValueTest extends DataValueTest {
                             "tsdv2.itsValue = (%d,%d) -- (%d,%d) expected.\n",
                             tsdv2.itsValue.getTPS(),
                             tsdv2.itsValue.getTicks(),
-                            db.getTicks(),
-                            60 * db.getTicks());
+                            db_l.getTicks(),
+                            60 * db_l.getTicks());
                 }
             }
         }
@@ -2066,8 +1983,8 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             try
             {
-                tsdv2.setItsValue(new TimeStamp(db.getTicks() - 1,
-                                                30 * db.getTicks()));
+                tsdv2.setItsValue(new TimeStamp(db_l.getTicks() - 1,
+                                                30 * db_l.getTicks()));
                 completed = true;
             }
 
@@ -2129,8 +2046,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::TestAccessors() */
 
 
@@ -2146,11 +2062,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class TimeStampDataValue            ";
         String passBanner = "PASSED\n";
@@ -2161,12 +2074,12 @@ public class TimeStampDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
+        Database db_l = null;
         MatrixVocabElement matrix_mve = null;
         MatrixVocabElement matrix_mve_sr = null;
         TimeStampFormalArg tsfa = null;
         TimeStampFormalArg tsfa_sr = null;
-        TimeStampDataValue tsdv = null;
+        TimeStampDataValue tsdv_l = null;
         TimeStampDataValue tsdv0 = null;
         TimeStampDataValue tsdv0_copy = null;
         TimeStampDataValue tsdv1 = null;
@@ -2187,7 +2100,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
+        db_l = null;
         completed = false;
         threwSystemErrorException = false;
         systemErrorExceptionString = null;
@@ -2195,33 +2108,33 @@ public class TimeStampDataValueTest extends DataValueTest {
         /* setup the base entries for the copy test */
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            tsdv0 = new TimeStampDataValue(db);
+            tsdv0 = new TimeStampDataValue(db_l);
 
-            matrix_mve = new MatrixVocabElement(db, "matrix_mve");
+            matrix_mve = new MatrixVocabElement(db_l, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa = new TimeStampFormalArg(db);
+            tsfa = new TimeStampFormalArg(db_l);
             matrix_mve.appendFormalArg(tsfa);
-            db.vl.addElement(matrix_mve);
+            db_l.vl.addElement(matrix_mve);
 
-            tsdv1 = new TimeStampDataValue(db, tsfa.getID());
-            tsdv2 = new TimeStampDataValue(db, tsfa.getID(),
-                    new TimeStamp(db.getTicks(), 24 * 60 * 60 * db.getTicks()));
+            tsdv1 = new TimeStampDataValue(db_l, tsfa.getID());
+            tsdv2 = new TimeStampDataValue(db_l, tsfa.getID(),
+                    new TimeStamp(db_l.getTicks(), 24 * 60 * 60 * db_l.getTicks()));
 
-            matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
+            matrix_mve_sr = new MatrixVocabElement(db_l, "matrix_mve_sr");
             matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa_sr = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
-                         new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
+            tsfa_sr = new TimeStampFormalArg(db_l);
+            tsfa.setRange(new TimeStamp(db_l.getTicks(), 10 * db_l.getTicks()),
+                         new TimeStamp(db_l.getTicks(), 60 * 60 * db_l.getTicks()));
             matrix_mve_sr.appendFormalArg(tsfa_sr);
-            db.vl.addElement(matrix_mve_sr);
+            db_l.vl.addElement(matrix_mve_sr);
 
-            tsdv_sr0 = new TimeStampDataValue(db, tsfa_sr.getID());
-            tsdv_sr1 = new TimeStampDataValue(db, tsfa_sr.getID(),
-                    new TimeStamp(db.getTicks(), 12 * db.getTicks()));
-            tsdv_sr2 = new TimeStampDataValue(db, tsfa_sr.getID(),
-                    new TimeStamp(db.getTicks(), 12 * 60 * 60 * db.getTicks()));
+            tsdv_sr0 = new TimeStampDataValue(db_l, tsfa_sr.getID());
+            tsdv_sr1 = new TimeStampDataValue(db_l, tsfa_sr.getID(),
+                    new TimeStamp(db_l.getTicks(), 12 * db_l.getTicks()));
+            tsdv_sr2 = new TimeStampDataValue(db_l, tsfa_sr.getID(),
+                    new TimeStamp(db_l.getTicks(), 12 * 60 * 60 * db_l.getTicks()));
 
             completed = true;
         }
@@ -2232,7 +2145,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
+        if ( ( db_l == null ) ||
              ( tsdv0 == null ) ||
              ( matrix_mve == null ) ||
              ( tsfa == null ) ||
@@ -2250,7 +2163,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
@@ -2434,14 +2347,14 @@ public class TimeStampDataValueTest extends DataValueTest {
         /* verify that the constructor fails when given an invalid dv */
         if ( failures == 0 )
         {
-            tsdv = null;
+            tsdv_l = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
             try
             {
-                tsdv = new TimeStampDataValue((TimeStampDataValue)null);
+                tsdv_l = new TimeStampDataValue((TimeStampDataValue)null);
                 completed = true;
             }
 
@@ -2451,7 +2364,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( tsdv != null ) ||
+            if ( ( tsdv_l != null ) ||
                  ( completed ) ||
                  ( ! threwSystemErrorException ) )
             {
@@ -2464,7 +2377,7 @@ public class TimeStampDataValueTest extends DataValueTest {
                         outStream.print("new TimeStampDataValue(null) completed.\n");
                     }
 
-                    if ( tsdv != null )
+                    if ( tsdv_l != null )
                     {
                         outStream.print(
                                 "new TimeStampDataValue(null) returned non-null.\n");
@@ -2509,8 +2422,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::TestCopyConstructor() */
 
 
@@ -2526,11 +2438,8 @@ public class TimeStampDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2557,7 +2466,7 @@ public class TimeStampDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
+        Database db_l = null;
         MatrixVocabElement matrix_mve_sr = null;
         MatrixVocabElement matrix_mve = null;
         TimeStampFormalArg tsfa = null;
@@ -2572,7 +2481,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
+        db_l = null;
         tsdv0 = null;
         tsdv1 = null;
         completed = false;
@@ -2581,31 +2490,31 @@ public class TimeStampDataValueTest extends DataValueTest {
 
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            matrix_mve_sr = new MatrixVocabElement(db, "matrix_mve_sr");
+            matrix_mve_sr = new MatrixVocabElement(db_l, "matrix_mve_sr");
             matrix_mve_sr.setType(MatrixVocabElement.MatrixType.MATRIX);
-            tsfa = new TimeStampFormalArg(db);
-            tsfa.setRange(new TimeStamp(db.getTicks(), 10 * db.getTicks()),
-                         new TimeStamp(db.getTicks(), 60 * 60 * db.getTicks()));
+            tsfa = new TimeStampFormalArg(db_l);
+            tsfa.setRange(new TimeStamp(db_l.getTicks(), 10 * db_l.getTicks()),
+                         new TimeStamp(db_l.getTicks(), 60 * 60 * db_l.getTicks()));
             matrix_mve_sr.appendFormalArg(tsfa);
-            db.vl.addElement(matrix_mve_sr);
+            db_l.vl.addElement(matrix_mve_sr);
 
-            tsdv0 = new TimeStampDataValue(db, tsfa.getID(),
-                    new TimeStamp(db.getTicks(), 12 * db.getTicks()));
+            tsdv0 = new TimeStampDataValue(db_l, tsfa.getID(),
+                    new TimeStamp(db_l.getTicks(), 12 * db_l.getTicks()));
             tsdv0.setID(100);      // invalid value for print test
             tsdv0.itsCellID = 500; // invalid value for print test
 
-            matrix_mve = new MatrixVocabElement(db, "matrix_mve");
+            matrix_mve = new MatrixVocabElement(db_l, "matrix_mve");
             matrix_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
-            ufa = new UnTypedFormalArg(db, "<untyped>");
+            ufa = new UnTypedFormalArg(db_l, "<untyped>");
             matrix_mve.appendFormalArg(ufa);
-            db.vl.addElement(matrix_mve);
+            db_l.vl.addElement(matrix_mve);
 
-            tsdv1 = new TimeStampDataValue(db, ufa.getID(),
-                    new TimeStamp(db.getTicks(), 12 * 60 * 60 * db.getTicks()
-                                                    + 10 * 60 * db.getTicks()
-                                                          + 5 * db.getTicks()
+            tsdv1 = new TimeStampDataValue(db_l, ufa.getID(),
+                    new TimeStamp(db_l.getTicks(), 12 * 60 * 60 * db_l.getTicks()
+                                                    + 10 * 60 * db_l.getTicks()
+                                                          + 5 * db_l.getTicks()
                                                               + 12));
             tsdv1.setID(101);      // invalid value for print test
             tsdv1.itsCellID = 501; // invalid value for print test
@@ -2619,7 +2528,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
+        if ( ( db_l == null ) ||
              ( matrix_mve_sr == null ) ||
              ( tsfa == null ) ||
              ( tsdv0 == null ) ||
@@ -2633,7 +2542,7 @@ public class TimeStampDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
@@ -2759,8 +2668,7 @@ public class TimeStampDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampDataValue::TestToStringMethods() */
 
 
