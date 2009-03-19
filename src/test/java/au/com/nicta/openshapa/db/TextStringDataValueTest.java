@@ -21,6 +21,9 @@ public class TextStringDataValueTest extends DataValueTest {
     MatrixVocabElement txt_mve2;
     TextStringFormalArg tfa2;
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     @Override
     public DataValue getInstance() {
         return tsdv;
@@ -54,6 +57,9 @@ public class TextStringDataValueTest extends DataValueTest {
         txt_mve2.appendFormalArg(tfa2);
         db.vl.addElement(txt_mve2);
         tsdv = new TextStringDataValue(db);
+
+        outStream = System.out;
+        verbose = true;
     }
 
     /**
@@ -376,10 +382,6 @@ public class TextStringDataValueTest extends DataValueTest {
         super.testEquals(value0, value1, value2, value3);
     }
 
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
     /*************************************************************************
      *
      *                             Test Spec:
@@ -453,75 +455,6 @@ public class TextStringDataValueTest extends DataValueTest {
      *************************************************************************/
 
     /**
-     * TestClassTextStringDataValue()
-     *
-     * Main routine for tests of class TextStringDataValue.
-     *
-     *                                      JRM -- 10/15/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassTextStringDataValue() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class TextStringDataValue:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test3ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class TextStringDataValue.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class TextStringDataValue.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* TextStringDataValue::TestClassTextStringDataValue() */
-
-
-    /**
      * Test1ArgConstructor()
      *
      * Run a battery of tests on the one argument constructor for this
@@ -533,10 +466,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class TextStringDataValue     ";
         String passBanner = "PASSED\n";
@@ -547,7 +478,7 @@ public class TextStringDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
+        Database db_l = null;
         TextStringDataValue tdv = null;
 
         outStream.print(testBanner);
@@ -557,7 +488,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
+        db_l = null;
         tdv = null;
         completed = false;
         threwSystemErrorException = false;
@@ -565,8 +496,8 @@ public class TextStringDataValueTest extends DataValueTest {
 
         try
         {
-            db = new ODBCDatabase();
-            tdv = new TextStringDataValue(db);
+            db_l = new ODBCDatabase();
+            tdv = new TextStringDataValue(db_l);
             completed = true;
         }
 
@@ -576,7 +507,7 @@ public class TextStringDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
+        if ( ( db_l == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -585,7 +516,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
@@ -614,7 +545,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify1ArgInitialization(db, tdv, outStream,
+            failures += DataValueTest.Verify1ArgInitialization(db_l, tdv, outStream,
                                                            verbose);
 
             if ( tdv.ItsDefault != null )
@@ -730,8 +661,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::Test1ArgConstructor() */
 
 
@@ -747,11 +677,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class TextStringDataValue     ";
         String passBanner = "PASSED\n";
@@ -762,9 +689,9 @@ public class TextStringDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
-        MatrixVocabElement txt_mve = null;
-        TextStringFormalArg tfa = null;
+        Database db_l = null;
+        MatrixVocabElement txt_mve_l = null;
+        TextStringFormalArg tfa_l = null;
         TextStringDataValue tdv = null;
 
         outStream.print(testBanner);
@@ -780,15 +707,15 @@ public class TextStringDataValueTest extends DataValueTest {
 
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            txt_mve = new MatrixVocabElement(db, "txt_mve");
-            txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
-            tfa = new TextStringFormalArg(db);
-            txt_mve.appendFormalArg(tfa);
-            db.vl.addElement(txt_mve);
+            txt_mve_l = new MatrixVocabElement(db_l, "txt_mve");
+            txt_mve_l.setType(MatrixVocabElement.MatrixType.TEXT);
+            tfa_l = new TextStringFormalArg(db_l);
+            txt_mve_l.appendFormalArg(tfa_l);
+            db_l.vl.addElement(txt_mve_l);
 
-            tdv = new TextStringDataValue(db, tfa.getID());
+            tdv = new TextStringDataValue(db_l, tfa_l.getID());
 
             completed = true;
         }
@@ -799,9 +726,9 @@ public class TextStringDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( txt_mve == null ) ||
-             ( tfa == null ) ||
+        if ( ( db_l == null ) ||
+             ( txt_mve_l == null ) ||
+             ( tfa_l == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -810,18 +737,18 @@ public class TextStringDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( txt_mve == null )
+                if ( txt_mve_l == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
 
-                if ( tfa == null )
+                if ( tfa_l == null )
                 {
                     outStream.print("allocation of tfa failed.");
                 }
@@ -848,8 +775,8 @@ public class TextStringDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify2PlusArgInitialization(db,
-                                                               tfa,
+            failures += DataValueTest.Verify2PlusArgInitialization(db_l,
+                                                               tfa_l,
                                                                tdv,
                                                                outStream,
                                                                verbose,
@@ -865,7 +792,7 @@ public class TextStringDataValueTest extends DataValueTest {
                 }
             }
 
-            if ( tdv.subRange != tfa.getSubRange() )
+            if ( tdv.subRange != tfa_l.getSubRange() )
             {
                 failures++;
 
@@ -912,7 +839,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue((Database)null, tfa.getID());
+                tdv = new TextStringDataValue((Database)null, tfa_l.getID());
                 completed = true;
             }
 
@@ -964,7 +891,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue(db, DBIndex.INVALID_ID);
+                tdv = new TextStringDataValue(db_l, DBIndex.INVALID_ID);
                 completed = true;
             }
 
@@ -1016,7 +943,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue(db, txt_mve.getID());
+                tdv = new TextStringDataValue(db_l, txt_mve_l.getID());
                 completed = true;
             }
 
@@ -1085,8 +1012,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::Test2ArgConstructor() */
 
 
@@ -1102,11 +1028,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean Test3ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test3ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class TextStringDataValue     ";
         String passBanner = "PASSED\n";
@@ -1117,9 +1040,9 @@ public class TextStringDataValueTest extends DataValueTest {
         boolean threwSystemErrorException = false;
         int failures = 0;
         String s = null;
-        Database db = null;
-        MatrixVocabElement txt_mve = null;
-        TextStringFormalArg tfa = null;
+        Database db_l = null;
+        MatrixVocabElement txt_mve_l = null;
+        TextStringFormalArg tfa_l = null;
         TextStringDataValue tdv = null;
 
         outStream.print(testBanner);
@@ -1129,7 +1052,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print("\n");
         }
 
-        db = null;
+        db_l = null;
         tdv = null;
         completed = false;
         threwSystemErrorException = false;
@@ -1137,15 +1060,15 @@ public class TextStringDataValueTest extends DataValueTest {
 
         try
         {
-            db = new ODBCDatabase();
+            db_l = new ODBCDatabase();
 
-            txt_mve = new MatrixVocabElement(db, "txt_mve");
-            txt_mve.setType(MatrixVocabElement.MatrixType.TEXT);
-            tfa = new TextStringFormalArg(db);
-            txt_mve.appendFormalArg(tfa);
-            db.vl.addElement(txt_mve);
+            txt_mve_l = new MatrixVocabElement(db_l, "txt_mve");
+            txt_mve_l.setType(MatrixVocabElement.MatrixType.TEXT);
+            tfa_l = new TextStringFormalArg(db_l);
+            txt_mve_l.appendFormalArg(tfa_l);
+            db_l.vl.addElement(txt_mve_l);
 
-            tdv = new TextStringDataValue(db, tfa.getID(), "echo");
+            tdv = new TextStringDataValue(db_l, tfa_l.getID(), "echo");
 
             completed = true;
         }
@@ -1156,9 +1079,9 @@ public class TextStringDataValueTest extends DataValueTest {
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( txt_mve == null ) ||
-             ( tfa == null ) ||
+        if ( ( db_l == null ) ||
+             ( txt_mve_l == null ) ||
+             ( tfa_l == null ) ||
              ( tdv == null ) ||
              ( ! completed ) ||
              ( threwSystemErrorException ) )
@@ -1167,18 +1090,18 @@ public class TextStringDataValueTest extends DataValueTest {
 
             if ( verbose )
             {
-                if ( db == null )
+                if ( db_l == null )
                 {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( txt_mve == null )
+                if ( txt_mve_l == null )
                 {
                     outStream.print("allocation of txt_mve failed.\n");
                 }
 
-                if ( tfa == null )
+                if ( tfa_l == null )
                 {
                     outStream.print("allocation of tfa failed.");
                 }
@@ -1206,14 +1129,14 @@ public class TextStringDataValueTest extends DataValueTest {
 
         if ( failures == 0 )
         {
-            failures += DataValueTest.Verify2PlusArgInitialization(db,
-                                                               tfa,
+            failures += DataValueTest.Verify2PlusArgInitialization(db_l,
+                                                               tfa_l,
                                                                tdv,
                                                                outStream,
                                                                verbose,
                                                                "tdv");
 
-            if ( tdv.subRange != tfa.getSubRange() )
+            if ( tdv.subRange != tfa_l.getSubRange() )
             {
                 failures++;
 
@@ -1246,7 +1169,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue((Database)null, tfa.getID(),
+                tdv = new TextStringDataValue((Database)null, tfa_l.getID(),
                                                 "alpha");
                 completed = true;
             }
@@ -1300,7 +1223,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue(db, DBIndex.INVALID_ID, "alpha");
+                tdv = new TextStringDataValue(db_l, DBIndex.INVALID_ID, "alpha");
                 completed = true;
             }
 
@@ -1353,7 +1276,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue(db, txt_mve.getID(), "alpha");
+                tdv = new TextStringDataValue(db_l, txt_mve_l.getID(), "alpha");
                 completed = true;
             }
 
@@ -1404,7 +1327,7 @@ public class TextStringDataValueTest extends DataValueTest {
 
             try
             {
-                tdv = new TextStringDataValue(db, tfa.getID(),
+                tdv = new TextStringDataValue(db_l, tfa_l.getID(),
                                                 "invalid \b text string");
                 completed = true;
             }
@@ -1476,8 +1399,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::Test3ArgConstructor() */
 
 
@@ -1492,11 +1414,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class TextStringDataValue accessors                      ";
         String passBanner = "PASSED\n";
@@ -1797,8 +1716,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::TestAccessors() */
 
 
@@ -1814,11 +1732,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class TextStringDataValue           ";
         String passBanner = "PASSED\n";
@@ -2096,8 +2011,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::TestCopyConstructor() */
 
 
@@ -2113,11 +2027,8 @@ public class TextStringDataValueTest extends DataValueTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2339,8 +2250,7 @@ public class TextStringDataValueTest extends DataValueTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TextStringDataValue::TestToStringMethods() */
 
 
