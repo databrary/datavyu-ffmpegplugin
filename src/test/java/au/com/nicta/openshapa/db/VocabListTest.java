@@ -12,77 +12,21 @@ import static org.junit.Assert.*;
  */
 public class VocabListTest {
 
+    private PrintStream outStream;
+    private boolean verbose;
+
     public VocabListTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * TestClassVocabList()
-     *
-     * Main routine for tests of class VocabList.
-     *
-     *                                  JRM -- 5/8/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassVocabList() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class VocabList:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestVLManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestGetPredsAndMatricies(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class VocabList.\n\n",
-                             failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class VocabList.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* Database::TestClassVocabList() */
 
     /**
      * ConstructTestMatrix()
@@ -199,10 +143,8 @@ public class VocabListTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class VocabList               ";
         String passBanner = "PASSED\n";
@@ -386,7 +328,7 @@ public class VocabListTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DBIndex::Test1ArgConstructor() */
 
@@ -403,11 +345,8 @@ public class VocabListTest {
      *
      *    - None.
      */
-
-    public static boolean TestGetPredsAndMatricies(java.io.PrintStream outStream,
-                                                   boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestGetPredsAndMatricies() throws SystemErrorException {
         String testBanner =
             "Testing getPreds() and getMatricies()                            ";
         String passBanner = "PASSED\n";
@@ -1308,8 +1247,7 @@ public class VocabListTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* DBIndex::TestGetPredsAndMatricies() */
 
 
@@ -1324,11 +1262,8 @@ public class VocabListTest {
      *
      *    - None.
      */
-
-    public static boolean TestVLManagement(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestVLManagement() throws SystemErrorException {
         String testBanner =
             "Testing vocab list management for class VocabList                ";
         String passBanner = "PASSED\n";
@@ -4979,7 +4914,7 @@ public class VocabListTest {
             outStream.print(failBanner);
         }
 
-        return pass;
+        assertTrue(pass);
 
     } /* DBIndex::TestVLManagement() */
 
@@ -4995,11 +4930,8 @@ public class VocabListTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         final String expectedVLString0 = "((VocabList) (vl_contents: ()))";
         final String expectedVLString1 =
                 "((VocabList) " +
@@ -5507,8 +5439,7 @@ public class VocabListTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* VocabList::TestToStringMethods() */
 
 
