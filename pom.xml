@@ -106,7 +106,7 @@
           <historyDir>/var/clover/openshapa</historyDir>
           <generateHistorical>true</generateHistorical>
           <excludes>
-            <exclude>src/test/java/au/com/nicta/openshapa/db.VocabListTest.java</exclude>
+            <exclude>**/VocabListTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
