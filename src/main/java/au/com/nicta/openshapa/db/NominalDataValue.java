@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 
 /**
  * An instance of NominalDataValue is used to store a nominal value
@@ -624,19 +627,14 @@ public final class NominalDataValue extends DataValue {
 
     } /* NominalDataValue::Construct(db, n) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += (this.queryVar ? 1 : 0) * SEED1;
-        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED2;
+        hash += (this.queryVar ? 1 : 0) * Constants.SEED1;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED2;
 
         return hash;
     }

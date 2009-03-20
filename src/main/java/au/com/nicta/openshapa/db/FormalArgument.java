@@ -11,6 +11,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  *
  * @author mainzer
@@ -154,6 +157,50 @@ public abstract class FormalArgument
         this.itsVocabElementID = fArg.getItsVocabElementID();
 
     } /* FormalArgument() */
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += HashUtils.Obj2H(fargName) * Constants.SEED1;
+        hash += HashUtils.Obj2H(fargType) * Constants.SEED2;
+        hash += HashUtils.Obj2H(itsVocabElement) * Constants.SEED3;
+        hash += HashUtils.Long2H(itsVocabElementID) * Constants.SEED4;
+        hash += (new Boolean(hidden)).hashCode() * Constants.SEED5;
+
+        return hash;
+    }
+
+    /**
+     * Compares this formal argument against another.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        FormalArgument f = (FormalArgument) obj;
+        return super.equals(f)
+            && (fargName.equals(f.fargName))
+            && (fargType == null ? f.fargType == null
+                                 : fargType.equals(f.fargType))
+            && (itsVocabElement == null ? f.itsVocabElement == null
+                                   : itsVocabElement.equals(f.itsVocabElement))
+            && (itsVocabElementID == f.itsVocabElementID)
+            && (hidden == f.hidden);
+    }
 
 
     /*************************************************************************/

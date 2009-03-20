@@ -9,6 +9,7 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
 import java.text.DecimalFormat;
 
 /**
@@ -480,24 +481,15 @@ public final class FloatDataValue extends DataValue {
 
     } /* FloatDataValue::Construct(db, f) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         double hash = super.hashCode();
-        hash += Math.floor(this.itsValue) * SEED1;
-        hash += Math.floor(this.maxVal) * SEED2;
-        hash += Math.floor(this.minVal) * SEED3;
+        hash += Math.floor(this.itsValue) * Constants.SEED1;
+        hash += Math.floor(this.maxVal) * Constants.SEED2;
+        hash += Math.floor(this.minVal) * Constants.SEED3;
         long val = Double.doubleToLongBits(hash);
 
         return (int) (val ^ (val >>> 32));

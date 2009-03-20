@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * An instance of QuoteStringDataValue is used to store a quote string value
  * assigned to a formal argument.
@@ -484,16 +487,13 @@ public final class QuoteStringDataValue extends DataValue {
 
     } /* QuoteStringDataValue::Construct(db, qs) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED1;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED1;
 
         return hash;
     }

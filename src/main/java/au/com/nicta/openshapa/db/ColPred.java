@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 
@@ -5168,38 +5170,20 @@ public class ColPred extends DBElement
 
     } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED5 = 17;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED6 = 19;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.getDB() == null ? 0 : this.getDB().hashCode() * SEED1;
-        hash += (getID() ^ (getID() >>> 32)) * SEED2;
-        hash += (mveID ^ (mveID >>> 32)) * SEED3;
-        hash += new Boolean(this.varLen).hashCode() * SEED4;
-        hash += this.mveName == null ? 0 : this.mveName.hashCode() * SEED5;
-        hash += this.argList == null ? 0 : this.argList.hashCode() * SEED6;
+        hash += HashUtils.Obj2H(getDB()) * Constants.SEED1;
+        hash += HashUtils.Long2H(getID()) * Constants.SEED2;
+        hash += HashUtils.Long2H(mveID) * Constants.SEED3;
+        hash += new Boolean(this.varLen).hashCode() * Constants.SEED4;
+        hash += HashUtils.Obj2H(mveName) * Constants.SEED5;
+        hash += HashUtils.Obj2H(argList) * Constants.SEED6;
 
-        return hash; /*(int) (hash ^ (hash >>> 32));*/
+        return hash;
     }
 
     /**

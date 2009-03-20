@@ -7,6 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * This is the timestamp primitive class.
  *
@@ -363,29 +366,23 @@ public class TimeStamp
    } // End of toString() method
 
 
-  /**
-   * Returns a database String representation of the DBValue for comparison against
-   * the database's expected value.<br>
-   * <i>This function is floatended for debugging purposses.</i>
-   * @return the string value.
-   */
-  public String toDBString()
-  {
-    return ("("+this.tps+","+this.toHMSFString()+")");
-  } //End of toDBString() method
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
+    /**
+     * Returns a database String representation of the DBValue for comparison against
+     * the database's expected value.<br>
+     * <i>This function is floatended for debugging purposses.</i>
+     * @return the string value.
+     */
+    public String toDBString() {
+        return ("("+this.tps+","+this.toHMSFString()+")");
+    } //End of toDBString() method
 
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
-        int hash = (int) (ticks ^ (ticks >>> 32)) * SEED1;
-        hash += tps * SEED2;
+        int hash = HashUtils.Long2H(ticks) * Constants.SEED1;
+        hash += tps * Constants.SEED2;
 
         return hash;
     }

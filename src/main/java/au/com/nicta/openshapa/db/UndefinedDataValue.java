@@ -1,5 +1,8 @@
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * An instance of UndefinedDataValue is used as a place holder for an untyped
  * formal argument until a value is assigned.
@@ -455,9 +458,6 @@ public final class UndefinedDataValue extends DataValue
         
     } /* UndefinedDataValue::Construct(db) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
     /**
      * Compares this UndefinedDataValue against another object.
      *
@@ -487,7 +487,7 @@ public final class UndefinedDataValue extends DataValue
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.itsValue.hashCode() * SEED1;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED1;
 
         return hash;
     }

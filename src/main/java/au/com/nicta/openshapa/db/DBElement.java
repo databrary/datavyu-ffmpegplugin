@@ -1,5 +1,8 @@
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class DBElement
  *
@@ -11,15 +14,6 @@ package au.com.nicta.openshapa.db;
  * @author JRM
  */
 public abstract class DBElement implements Cloneable {
-
-    /** Seed value for generating hash codes. */
-    private static final int SEED1 = 3;
-
-    /** Seed value for generating hash codes. */
-    private static final int SEED2 = 7;
-
-    /** Seed value for generating hash codes. */
-    private static final int SEED3 = 11;
 
     /**
      * Reference to the database with which this instance is associated.  Note
@@ -249,9 +243,9 @@ public abstract class DBElement implements Cloneable {
      */
     @Override
     public int hashCode() {
-        int hash = lastModUID * SEED1;
-        hash += (int)(id ^ (id >>> 32)) * SEED2;
-        hash += db.hashCode() * SEED3;
+        int hash = lastModUID * Constants.SEED1;
+        hash += HashUtils.Long2H(id) * Constants.SEED2;
+        hash += HashUtils.Obj2H(db) * Constants.SEED3;
 
         return hash;
     }

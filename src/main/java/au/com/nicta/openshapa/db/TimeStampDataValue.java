@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * An instance of TimeStampDataValue is used to store a time stamp value
  * assigned to a formal argument.
@@ -585,25 +588,16 @@ public final class TimeStampDataValue extends DataValue
 
     } /* TimeStampDataValue::Construct(db, ticks) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += itsValue == null ? 0 : itsValue.hashCode() * SEED1;
-        hash += maxVal == null ? 0 : maxVal.hashCode() * SEED2;
-        hash += minVal == null ? 0 : minVal.hashCode() * SEED3;
-        hash += ItsDefault == null ? 0 : ItsDefault.hashCode() * SEED4;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED1;
+        hash += HashUtils.Obj2H(maxVal) * Constants.SEED2;
+        hash += HashUtils.Obj2H(minVal) * Constants.SEED3;
+        hash += HashUtils.Obj2H(ItsDefault) * Constants.SEED4;
 
         return hash;
     }
