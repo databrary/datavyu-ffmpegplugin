@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.HashMap;
 import au.com.nicta.openshapa.util.OpenHashtable;
 import java.util.Enumeration;
@@ -65,6 +67,47 @@ public class ColumnList
      */
     protected ColumnListListeners listeners = null;
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += HashUtils.Obj2H(db) * Constants.SEED1;
+        hash += HashUtils.Obj2H(cl) * Constants.SEED2;
+        hash += HashUtils.Obj2H(nameMap) * Constants.SEED3;
+        hash += HashUtils.Obj2H(listeners) * Constants.SEED4;
+
+        return hash;
+    }
+
+    /**
+     * Compares this ColumnList against another.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        ColumnList l = (ColumnList) obj;
+        return super.equals(l)
+            && (db == null ? l.db == null : db.equals(l.db))
+            && (cl == null ? l.cl == null : cl.equals(l.cl))
+            && (nameMap == null ? l.nameMap == null
+                                : nameMap.equals(l.nameMap))
+            && (listeners == null ? l.listeners == null
+                                  : listeners.equals(l.listeners));
+    }
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
