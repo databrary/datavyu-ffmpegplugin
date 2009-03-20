@@ -7,6 +7,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
@@ -75,6 +77,53 @@ public class DataColumn extends Column
      */
     private DataColumn pending = null;
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += HashUtils.Long2H(itsMveID) * Constants.SEED1;
+        hash += itsMveType.hashCode() * Constants.SEED2;
+        hash += HashUtils.Obj2H(itsCells) * Constants.SEED3;
+        hash += (new Boolean(varLen)).hashCode() * Constants.SEED4;
+        hash += HashUtils.Obj2H(listeners) * Constants.SEED5;
+        hash += HashUtils.Obj2H(pending) * Constants.SEED6;
+
+        return hash;
+    }
+    
+    /**
+     * Compares this DataColumn against another.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        DataColumn dc = (DataColumn) obj;
+
+        return super.equals(obj)
+            && itsMveID == dc.itsMveID
+            && itsMveType == dc.itsMveType
+            && itsCells == null ? dc.itsCells == null
+                                : itsCells.equals(dc.itsCells)
+            && varLen == dc.varLen
+            && listeners == null ? dc.listeners == null
+                                 : dc.listeners.equals(listeners)
+            && pending == null ? dc.pending == null
+                               : dc.pending.equals(pending);
+    }
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
