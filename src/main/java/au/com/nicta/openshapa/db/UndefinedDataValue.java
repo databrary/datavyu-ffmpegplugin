@@ -379,12 +379,7 @@ public final class UndefinedDataValue extends DataValue
         return;
         
     } /* UndefinedDataValue::updateSubRange() */
-  
-        
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-    
+     
     /**
      * coerceToRange()
      *
@@ -429,34 +424,6 @@ public final class UndefinedDataValue extends DataValue
 
         return value;        
     } /* UndefinedDataValue::coerceToRange() */
-  
-    
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-    
-    /**
-     * Construct()
-     *
-     * Construct an instance of UndefinedDataValue with the specified 
-     * initialization.
-     *
-     * Returns a reference to the newly constructed UndefinedDataValue if 
-     * successful.  Throws a system error exception on failure.
-     *
-     *                                              JRM -- 3/31/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    
-    public static UndefinedDataValue Construct(Database db)
-        throws SystemErrorException
-    {                
-        return new UndefinedDataValue(db);
-        
-    } /* UndefinedDataValue::Construct(db) */
 
     /**
      * Compares this UndefinedDataValue against another object.

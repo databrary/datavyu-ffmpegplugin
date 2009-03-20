@@ -8,6 +8,8 @@
 package au.com.nicta.openshapa.db;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -101,6 +103,53 @@ public abstract class Column
 //    /** Column Change Listeners */
 //    protected Vector<ColumnListener> changeListeners =
 //            new Vector<ColumnListener>();
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += HashUtils.Obj2H(name) * Constants.SEED1;
+        hash += (new Boolean(hidden)).hashCode() * Constants.SEED2;
+        hash += (new Boolean(readOnly)).hashCode() * Constants.SEED3;
+        hash += numCells * Constants.SEED4;
+        hash += (new Boolean(cascadeInProgress)).hashCode() * Constants.SEED4;
+        hash += HashUtils.Obj2H(pendingSet) * Constants.SEED5;
+        hash += (new Boolean(selected)).hashCode() * Constants.SEED6;
+
+        return hash;
+    }
+
+    /**
+     * Compares this column against another.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        Column c = (Column) obj;
+        return super.equals(c)
+            && name == null ? c.name == null : name.equals(c.name)
+            && hidden == c.hidden
+            && readOnly == c.readOnly
+            && numCells == c.numCells
+            && cascadeInProgress == c.cascadeInProgress
+            && pendingSet == null ? c.pendingSet == null
+                                  : pendingSet.equals(c.pendingSet)
+            && selected == c.selected;
+    }
 
 
     /*************************************************************************/

@@ -23,20 +23,6 @@ package au.com.nicta.openshapa.db;
  */
 public class ColPredFormalArg extends FormalArgument
 {
-
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-
-    /*** None ***/
-
-
-
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
      * ColPredFormalArg()
      *
@@ -87,19 +73,6 @@ public class ColPredFormalArg extends FormalArgument
 
     } /* PredFormalArg() -- make copy */
 
-
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
-    /*** None ***/
-
-
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
     /**
      * constructArgWithSalvage()  Override of abstract method in FormalArgument
      *
@@ -112,7 +85,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-
+    @Override
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
@@ -150,7 +123,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-
+     @Override
      public DataValue constructEmptyArg()
         throws SystemErrorException
      {
@@ -177,6 +150,7 @@ public class ColPredFormalArg extends FormalArgument
      *    - None.
      *
      */
+    @Override
     public String toDBString() {
 
         return ("(ColPredFormalArg " + getID() + " " + getFargName() + ")");
@@ -196,7 +170,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      *    - None.
      */
-
+    @Override
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {

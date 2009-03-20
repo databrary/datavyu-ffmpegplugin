@@ -103,15 +103,6 @@ public class UndefinedDataValueTest extends DataValueTest {
         System.out.println(uDataValue.getItsValue());
     }
 
-    /**
-     * Test of Construct method, of class UndefinedDataValue.
-     */
-    @Test
-    public void testConstruct() throws Exception {
-        UndefinedDataValue uValue = UndefinedDataValue.Construct(db);
-        assertEquals(uValue, uDataValue);
-    }
-
     @Test
     public void testHashCode()
     throws SystemErrorException, CloneNotSupportedException {
