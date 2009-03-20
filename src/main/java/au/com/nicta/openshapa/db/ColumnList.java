@@ -67,6 +67,39 @@ public class ColumnList
      */
     protected ColumnListListeners listeners = null;
 
+    /*************************************************************************/
+    /*************************** Constructors: *******************************/
+    /*************************************************************************/
+
+    /**
+     * ColumnList()
+     *
+     * Constructor for the ColumnList class.
+     *                                             JRM -- 4/30/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+    protected ColumnList(Database db)
+         throws SystemErrorException
+    {
+        super();
+
+        final String mName = "ColumnList::ColumnList(db): ";
+
+        if (db == null) {
+            throw new SystemErrorException(mName + "Bad db param");
+        }
+
+        this.db = db;
+
+        this.listeners = new ColumnListListeners(db, this);
+
+        return;
+
+    } /* ColumnList::ColumnList(db) */
+
     /**
      * @return A hash code value for the object.
      */
@@ -108,44 +141,6 @@ public class ColumnList
             && (listeners == null ? l.listeners == null
                                   : listeners.equals(l.listeners));
     }
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
-    /**
-     * ColumnList()
-     *
-     * Constructor for the ColumnList class.
-     *                                             JRM -- 4/30/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    protected ColumnList(Database db)
-         throws SystemErrorException
-    {
-        super();
-
-        final String mName = "ColumnList::ColumnList(db): ";
-
-        if (db == null) {
-            throw new SystemErrorException(mName + "Bad db param");
-        }
-
-        this.db = db;
-
-        this.listeners = new ColumnListListeners(db, this);
-
-        return;
-
-    } /* ColumnList::ColumnList(db) */
-
-
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
 
     /**
      * toString() -- overrride
