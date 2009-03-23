@@ -7,6 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class DataValue
  *
@@ -72,6 +75,8 @@ public abstract class DataValue extends DBElement
     
     /** id of the Predicate in which which the DataValue resides -- if any. */
     long itsPredID = DBIndex.INVALID_ID;
+
+    private boolean empty;
     
 //    /** Data Value Change Listeners */
 //    java.util.Vector<DataValueChangeListener> changeListeners = 
@@ -103,6 +108,7 @@ public abstract class DataValue extends DBElement
         throws SystemErrorException
     {
         super(db);
+        empty = true;
     }
     
     public DataValue(DataValue dv)
@@ -115,8 +121,22 @@ public abstract class DataValue extends DBElement
         this.subRange = dv.subRange;
         this.itsCellID = dv.itsCellID;
         this.itsPredID = dv.itsPredID;
+        this.empty = dv.empty;
     } /* DataValue::DataValue() */
-    
+
+    /**
+     * @return true if the current DataValue empty, false otherwise.
+     */
+    public boolean isEmpty() {
+        return this.empty;
+    }
+
+    /**
+     * Used to identify that a value has been set for this DataValue.
+     */
+    protected void valueSet() {
+        this.empty = false;
+    }
         
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/
@@ -816,17 +836,6 @@ public abstract class DataValue extends DBElement
                                 // only blindclone which skips sanity checks.
     }
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-    /** Seed value for generating hash codes. */
-    private final static int SEED5 = 17;
-
     /**
      * @return A hash code value for the object.
      */
@@ -835,11 +844,12 @@ public abstract class DataValue extends DBElement
         // Assuming id is unique or nearly so, return an int based off it.
         // >>> is unsigned right shift
         int hash = super.hashCode();
-        hash += (int)(itsCellID ^ (itsCellID >>> 32)) * SEED1;
-        hash += (int)(itsFargID ^ (itsFargID >>> 32)) * SEED2;
-        hash += itsFargType.hashCode() * SEED3;
-        hash += (int)(itsPredID ^ (itsPredID >>> 32)) * SEED4;
-        hash += new Boolean(subRange).hashCode() * SEED5;
+        hash += HashUtils.Long2H(itsCellID) * Constants.SEED1;
+        hash += HashUtils.Long2H(itsFargID) * Constants.SEED2;
+        hash += HashUtils.Obj2H(itsFargType) * Constants.SEED3;
+        hash += HashUtils.Long2H(itsPredID) * Constants.SEED4;
+        hash += new Boolean(subRange).hashCode() * Constants.SEED5;
+        hash += new Boolean(empty).hashCode() * Constants.SEED6;
 
         return hash;
     }
@@ -871,6 +881,7 @@ public abstract class DataValue extends DBElement
             && (itsFargID == dv.itsFargID)
             && (itsPredID == dv.itsPredID)
             && (subRange == dv.subRange)
+            && (empty == dv.empty)
             && (itsFargType == null ? dv.itsFargType == null
                                     : itsFargType.equals(dv.itsFargType));
     }

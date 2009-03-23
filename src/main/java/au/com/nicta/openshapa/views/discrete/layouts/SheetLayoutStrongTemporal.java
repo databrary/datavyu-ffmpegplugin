@@ -1,6 +1,9 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.layouts;
 
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 
@@ -14,9 +17,6 @@ import org.apache.log4j.Logger;
  */
 public class SheetLayoutStrongTemporal extends SheetLayout {
 
-    /** Number of ticks per second. PixPerTick calculation assumes the
-     * Database is using 1000 ticks per second. */
-    private static final int TICKS_PER_SECOND = 1000;
     /** Minimum time range in seconds for scale factor calculation. */
     private static final int MIN_RANGE_SECONDS = 600;
     /** Maximum time range in seconds for scale factor calculation. */
@@ -90,13 +90,14 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      */
     private double calcPixPerTick(final long minOnset, final long maxOffset) {
         double pixPerTick;
-        long seconds = Math.round((maxOffset - minOnset) / TICKS_PER_SECOND);
+        long seconds = Math.round((maxOffset - minOnset) /
+                                  Constants.TICKS_PER_SECOND);
         if (seconds < MIN_RANGE_SECONDS) {
             // small range - scale to fit in a fixed min number of pixels
             pixPerTick = 1.0 * MIN_SCROLL_PIXELS / (maxOffset - minOnset);
         } else if (seconds < MAX_RANGE_SECONDS) {
             // medium sized range - scale to 1 second per 10 pixels
-            pixPerTick = 10.0 / TICKS_PER_SECOND;
+            pixPerTick = 10.0 / Constants.TICKS_PER_SECOND;
         } else {
             // large range - scale to fit in a fixed max number of pixels
             pixPerTick = 1.0 * MAX_SCROLL_PIXELS / (maxOffset - minOnset);

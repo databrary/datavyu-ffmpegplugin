@@ -1,10 +1,11 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.NominalDataValue;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -45,11 +46,11 @@ public final class NominalDataValueView extends DataValueView {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    NominalDataValueView(final Selector cellSelection,
-                         final DataCell cell,
-                         final Matrix matrix,
-                         final int matrixIndex,
-                         final boolean editable) {
+    public NominalDataValueView(final Selector cellSelection,
+                                final DataCell cell,
+                                final Matrix matrix,
+                                final int matrixIndex,
+                                final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
         reservedChars = new HashMap<Character, Character>();
         reservedChars.put(')', ')');
@@ -76,6 +77,11 @@ public final class NominalDataValueView extends DataValueView {
                 break;
 
             case KeyEvent.VK_LEFT:
+                if (this.getValue().isEmpty()) {
+                    e.consume();
+                    break;
+                }
+
                 // If the character two steps to the left is a preserved
                 // character we need to skip one before passing the key event
                 // down to skip again (effectively skipping the preserved
@@ -91,6 +97,12 @@ public final class NominalDataValueView extends DataValueView {
                 break;
 
             case KeyEvent.VK_RIGHT:
+                // Can't use arrow keys on an empty
+                if (this.getValue().isEmpty()) {
+                    e.consume();
+                    break;
+                }
+
                 // If the character to the right is a preserved character, we
                 // need to skip one before passing the key event down to skip
                 // again (effectively skipping the preserved character).
@@ -195,14 +207,22 @@ public final class NominalDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            this.removeBehindCaret();
-            e.consume();
+
+            // Can't delete an empty nominal data value.
+            if (!ndv.isEmpty()) {
+                this.removeBehindCaret();
+                e.consume();
+            }
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            this.removeAheadOfCaret();
-            e.consume();
+            
+            // Can't delete an empty nominal data value.
+            if (!ndv.isEmpty()) {
+                this.removeAheadOfCaret();
+                e.consume();
+            }
 
         // Just a regular vanilla keystroke - insert it into text field.
         } else if (!e.isMetaDown() && !e.isControlDown()

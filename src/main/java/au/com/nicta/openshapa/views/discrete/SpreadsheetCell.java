@@ -12,6 +12,11 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.util.UIConfiguration;
+import au.com.nicta.openshapa.views.discrete.datavalues.DataValueView;
+import au.com.nicta.openshapa.views.discrete.datavalues.IntDataValueView;
+import au.com.nicta.openshapa.views.discrete.datavalues.MatrixViewLabel;
+import au.com.nicta.openshapa.views.discrete.datavalues.OffsetView;
+import au.com.nicta.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
@@ -25,11 +30,11 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author  felix
  */
-public class SpreadsheetCell extends SpreadsheetPanel
+public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {
 
     /** A panel for holding the header to the cell. */
-    private SpreadsheetPanel topPanel;
+    private SpreadsheetElementPanel topPanel;
 
     /** A panel for holding the value of the cell. */
     private MatrixViewLabel dataPanel;
@@ -105,10 +110,18 @@ implements ExternalDataCellListener, Selectable {
         } else {
             dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
         }
+        // Check the selected state of the datacell
+        // If it is already selected in the database, we need to inform
+        // the selector, but not trigger a selection change or deselect others.
+        selected = dc.getSelected();
+        if (selected) {
+            selection.addSelectionSilent(this);
+        }
+
         db.registerDataCellListener(dc.getID(), this);
 
         // Build components used for the spreadsheet cell.
-        topPanel = new SpreadsheetPanel();
+        topPanel = new SpreadsheetElementPanel();
         ord = new IntDataValueView(selection,
                                    dc,
                                    new IntDataValue(cellDB),

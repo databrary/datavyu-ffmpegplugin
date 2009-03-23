@@ -10104,7 +10104,7 @@ public abstract class DatabaseTest {
                         Matrix.Construct(
                             db,
                             mdc2_mveID,
-                            UndefinedDataValue.Construct(db))));
+                            new UndefinedDataValue(db))));
 
 
                 // cells for mdc3 -- none or now

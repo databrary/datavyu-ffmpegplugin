@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views;
 
+import java.awt.Frame;
 import java.awt.event.ActionListener;
 
 /**
@@ -7,7 +8,7 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public class NewDatabase extends OpenSHAPADialog {
+public class NewDatabaseV extends OpenSHAPADialog {
 
     /** The parent action to notify when the user completes this dialog. */
     ActionListener notifier;
@@ -20,8 +21,7 @@ public class NewDatabase extends OpenSHAPADialog {
      * @param listener The parent listener, of the action to invoke when the
      * user clicks on the OK button.
      */
-    public NewDatabase(java.awt.Frame parent, boolean modal,
-                           ActionListener listener) {
+    public NewDatabaseV(Frame parent, boolean modal, ActionListener listener) {
         super(parent, modal);
         initComponents();
 
@@ -49,7 +49,7 @@ public class NewDatabase extends OpenSHAPADialog {
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabase.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabaseV.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 

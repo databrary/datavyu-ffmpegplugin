@@ -55,8 +55,8 @@ implements ExternalColumnListListener {
      * @param db The database containing the variables you wish to list.
      */
     public ListVariables(final java.awt.Frame parent,
-                             final boolean modal,
-                             final Database db) {
+                         final boolean modal,
+                         final Database db) {
         super(parent, modal);
         tableModel = new DefaultTableModel();
         dbToTableMap = new HashMap<Long, Integer>();

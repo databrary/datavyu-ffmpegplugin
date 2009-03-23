@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 
 /**
  * An instance of IntDataValue is used to store an integer value
@@ -190,6 +193,7 @@ public final class IntDataValue extends DataValue
             this.itsValue = value;
         }
 
+        this.valueSet();
         return;
 
     } /* IntDataValue::setItsValue() */
@@ -476,24 +480,17 @@ public final class IntDataValue extends DataValue
 
     } /* IntDataValue::Construct(db, i) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
-        long hash = super.hashCode();
-        hash += this.itsValue * SEED1;
-        hash += this.maxVal * SEED2;
-        hash += this.minVal * SEED3;
+        int hash = super.hashCode();
+        hash += HashUtils.Long2H(itsValue) * Constants.SEED1;
+        hash += HashUtils.Long2H(maxVal) * Constants.SEED2;
+        hash += HashUtils.Long2H(minVal) * Constants.SEED3;
 
-        return (int) (hash ^ (hash >>> 32));
+        return hash;
     }
 
 

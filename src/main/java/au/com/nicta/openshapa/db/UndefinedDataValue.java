@@ -1,5 +1,8 @@
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * An instance of UndefinedDataValue is used as a place holder for an untyped
  * formal argument until a value is assigned.
@@ -186,7 +189,8 @@ public final class UndefinedDataValue extends DataValue
                         "value doesn't match farg name");
             }
         }
-        
+
+        this.valueSet();
         this.itsValue = new String(value);
         
         return;
@@ -376,12 +380,7 @@ public final class UndefinedDataValue extends DataValue
         return;
         
     } /* UndefinedDataValue::updateSubRange() */
-  
-        
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-    
+     
     /**
      * coerceToRange()
      *
@@ -426,37 +425,6 @@ public final class UndefinedDataValue extends DataValue
 
         return value;        
     } /* UndefinedDataValue::coerceToRange() */
-  
-    
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-    
-    /**
-     * Construct()
-     *
-     * Construct an instance of UndefinedDataValue with the specified 
-     * initialization.
-     *
-     * Returns a reference to the newly constructed UndefinedDataValue if 
-     * successful.  Throws a system error exception on failure.
-     *
-     *                                              JRM -- 3/31/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    
-    public static UndefinedDataValue Construct(Database db)
-        throws SystemErrorException
-    {                
-        return new UndefinedDataValue(db);
-        
-    } /* UndefinedDataValue::Construct(db) */
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
 
     /**
      * Compares this UndefinedDataValue against another object.
@@ -487,7 +455,7 @@ public final class UndefinedDataValue extends DataValue
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.itsValue.hashCode() * SEED1;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED1;
 
         return hash;
     }

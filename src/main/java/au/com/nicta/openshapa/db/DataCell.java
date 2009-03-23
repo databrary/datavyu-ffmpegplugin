@@ -7,6 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class DataCell
  *
@@ -3083,73 +3086,27 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
     } /* DataCell::Construct(db, colID, mveID, on, off, val) */
 
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED5 = 17;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED6 = 19;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED7 = 23;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED8 = 29;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED9 = 31;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED10 = 37;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED11 = 41;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED12 = 43;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED13 = 47;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED14 = 53;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED15 = 59;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += new Boolean(this.cascadePveDel).hashCode() * SEED1;
-        hash += this.cascadePveID * SEED2;
-        hash += new Boolean(this.cascadePveMod).hashCode() * SEED3;
-        hash += new Boolean(this.cascadeMveDel).hashCode() * SEED4;
-        hash += (int) (this.cascadeMveID ^ (this.cascadeMveID >>> 32)) * SEED5;
-        hash += new Boolean(this.cascadeMveMod).hashCode() * SEED6;
-        hash += this.pending == null ? 0 : this.pending.hashCode() * SEED7;
-        hash += this.oldOrd * SEED8;
-        hash += new Boolean(this.inCascade).hashCode() * SEED9;
-        hash += this.listeners == null ? 0 : this.listeners.hashCode() * SEED10;
-        hash += this.val == null ? 0 : this.val.hashCode() * SEED11;
-        hash += this.offset == null ? 0 : this.offset.hashCode() * SEED12;
-        hash += this.onset == null ? 0 : this.onset.hashCode() * SEED13;
-        hash += this.itsMveType.ordinal() * SEED14;
-        hash += this.itsMveID * SEED15;
+        hash += new Boolean(this.cascadePveDel).hashCode() * Constants.SEED1;
+        hash += this.cascadePveID * Constants.SEED2;
+        hash += new Boolean(this.cascadePveMod).hashCode() * Constants.SEED3;
+        hash += new Boolean(this.cascadeMveDel).hashCode() * Constants.SEED4;
+        hash += HashUtils.Long2H(this.cascadeMveID) * Constants.SEED5;        
+        hash += new Boolean(this.cascadeMveMod).hashCode() * Constants.SEED6;
+        hash += HashUtils.Obj2H(this.pending) * Constants.SEED7;
+        hash += this.oldOrd * Constants.SEED8;
+        hash += new Boolean(this.inCascade).hashCode() * Constants.SEED9;
+        hash += HashUtils.Obj2H(this.listeners) * Constants.SEED10;
+        hash += HashUtils.Obj2H(this.val) * Constants.SEED11;
+        hash += HashUtils.Obj2H(this.offset) * Constants.SEED12;
+        hash += HashUtils.Obj2H(this.onset) * Constants.SEED13;        
+        hash += this.itsMveType.ordinal() * Constants.SEED14;
+        hash += this.itsMveID * Constants.SEED15;
 
         return hash;
     }

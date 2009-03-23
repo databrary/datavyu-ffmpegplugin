@@ -12,94 +12,21 @@ import static org.junit.Assert.*;
  */
 public class QuoteStringFormalArgTest {
 
+    private PrintStream outStream = System.out;
+    private boolean verbose = true;
+
     public QuoteStringFormalArgTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * TestClassQuoteStringFormalArg()
-     *
-     * Main routine for tests of class QuoteStringFormalArg.
-     *
-     *                                      JRM -- 3/13/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassQuoteStringFormalArg() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class QuoteStringFormalArg:\n");
-
-        if ( ! Test1ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestVEAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIsValidValue(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class QuoteStringFormalArg.\n\n",
-                    failures);
-        }
-        else
-        {
-            outStream.print(
-                    "All tests passed for class QuoteStringFormalArg.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* QuoteStringFormalArg::TestClassQuoteStringFormalArg() */
 
     /**
      * TestAccessors()
@@ -112,10 +39,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-    {
+    @Test
+    public void TestAccessors() {
         String testBanner =
             "Testing class QuoteStringFormalArg accessors                     ";
         String passBanner = "PASSED\n";
@@ -246,8 +171,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::TestAccessors() */
 
 
@@ -261,10 +185,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestVEAccessors(java.io.PrintStream outStream,
-                                          boolean verbose)
-    {
+    @Test
+    public void TestVEAccessors() {
         String testBanner =
             "Testing class QuoteStringFormalArg itsVocabElement accessors     ";
         String passBanner = "PASSED\n";
@@ -376,8 +298,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::TestVEAccessors() */
 
 
@@ -393,10 +314,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test1ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test1ArgConstructor() {
         String testBanner =
             "Testing 1 argument constructor for class QuoteStringFormalArg    ";
         String passBanner = "PASSED\n";
@@ -573,8 +492,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::Test1ArgConstructor() */
 
     /**
@@ -589,10 +507,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test2ArgConstructor() {
         String testBanner =
             "Testing 2 argument constructor for class QuoteStringFormalArg    ";
         String passBanner = "PASSED\n";
@@ -793,8 +709,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::Test2ArgConstructor() */
 
 
@@ -810,10 +725,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void TestCopyConstructor() {
         String testBanner =
             "Testing copy constructor for class QuoteStringFormalArg          ";
         String passBanner = "PASSED\n";
@@ -1118,8 +1031,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::TestCopyConstructor() */
 
 
@@ -1138,11 +1050,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestIsValidValue(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIsValidValue() throws SystemErrorException {
         String testBanner =
             "Testing isValidValue()                                           ";
         String passBanner = "PASSED\n";
@@ -1380,8 +1289,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::TestIsValidValue() */
 
 
@@ -1396,11 +1304,8 @@ public class QuoteStringFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -1510,8 +1415,7 @@ public class QuoteStringFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* QuoteStringFormalArg::TestToStringMethods() */
 
 }

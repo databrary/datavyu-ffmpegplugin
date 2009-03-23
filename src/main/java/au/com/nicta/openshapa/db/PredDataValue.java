@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 
 /**
  * An instance of PredDataValue is used to store a predicate value
@@ -340,6 +343,7 @@ public final class PredDataValue extends DataValue
             this.itsValue = new Predicate(value);
         }
 
+        this.valueSet();
         return;
 
     } /* PredDataValue::setItsValue() */
@@ -1114,16 +1118,13 @@ public final class PredDataValue extends DataValue
 
     } /* PredDataValue::registerPreds() */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += (this.itsValue == null ? 0 : this.itsValue.hashCode()) * SEED1;
+        hash += HashUtils.Obj2H(itsValue) * Constants.SEED1;
 
         return hash;
     }

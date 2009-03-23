@@ -1,19 +1,25 @@
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import java.io.IOException;
 import java.io.PipedInputStream;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 /**
- * The dialog for the scripting console. Renders output from scripts that the
- * user has invoked.
+ * The dialog for the scripting console. Renders output from scripts and other
+ * things which dumps things to the console. Implemented as a singleton. Only
+ * A single console is used in OpenSHAPA.
  *
  * @author cfreeman
  */
-public class ScriptOutput extends OpenSHAPADialog {
+public class ConsoleV extends OpenSHAPADialog {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(ListVariables.class);
+
+    /** The instance of the console. */
+    private static ConsoleV instance;
 
     /**
      * Constructor
@@ -23,14 +29,28 @@ public class ScriptOutput extends OpenSHAPADialog {
      * @param scriptOutput The stream containing scripting data to be outputed
      * to the console.
      */
-    public ScriptOutput(final java.awt.Frame parent,
-                        final boolean modal,
-                        final PipedInputStream scriptOutput) {
+    public ConsoleV(final java.awt.Frame parent,
+                    final boolean modal,
+                    final PipedInputStream scriptOutput) {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
 
         new ReaderThread(scriptOutput).start();
+    }
+
+    /**
+     * @return The single instance of the console viewer.
+     */
+    static public ConsoleV getInstance() {
+        if (instance == null) {
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            PipedInputStream stream = OpenSHAPA.getConsoleOutputStream();
+
+            instance = new ConsoleV(mainFrame, false, stream);
+        }
+
+        return instance;
     }
 
     /** This method is called from within the constructor to

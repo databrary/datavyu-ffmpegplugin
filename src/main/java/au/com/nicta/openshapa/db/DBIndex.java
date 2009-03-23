@@ -9,8 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import au.com.nicta.openshapa.util.OpenHashtable;
-import java.util.Vector;
 
 /**
  * class DBIndex
@@ -57,7 +58,6 @@ public class DBIndex
      protected OpenHashtable<Long, DBElement> index =
              new OpenHashtable<Long, DBElement>();
 
-
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
@@ -92,10 +92,43 @@ public class DBIndex
 
     } /* DBIndex::DBIndex(db) */
 
+    /**
+     * Compares this column against another.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
+        // Must be this class to be here
+        DBIndex i = (DBIndex) obj;
+        return super.equals(i)
+            && nextID == i.nextID
+            && db == null ? i.db == null : db.equals(i.db)
+            && index == null ? i.index == null : index.equals(i.index);
+    }
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash += HashUtils.Long2H(nextID) * Constants.SEED1;
+        hash += HashUtils.Obj2H(db) * Constants.SEED2;
+        hash += HashUtils.Obj2H(index) * Constants.SEED3;
+
+        return hash;
+    }
 
     /**
      * toString() -- overrride

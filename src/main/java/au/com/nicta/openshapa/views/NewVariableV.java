@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
  *
  * @author cfreeman
  */
-public final class NewVariable extends OpenSHAPADialog {
+public final class NewVariableV extends OpenSHAPADialog {
 
     /** The parent action to notify when the user completes this dialog. */
     private ActionListener notifier;
@@ -21,7 +21,7 @@ public final class NewVariable extends OpenSHAPADialog {
      * @param listener The listener to notify when the user has created a new
      * variable.
      */
-    public NewVariable(final java.awt.Frame parent, final boolean modal,
+    public NewVariableV(final java.awt.Frame parent, final boolean modal,
                            final ActionListener listener) {
         super(parent, modal);
         initComponents();
@@ -62,38 +62,37 @@ public final class NewVariable extends OpenSHAPADialog {
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariable.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("au/com/nicta/openshapa/views/resources/NewVariableV"); // NOI18N
+        jLabel1.setText(bundle.getString("jLabel2.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setText(bundle.getString("nameField.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        nameField.setText(resourceMap.getString("nameField.text")); // NOI18N
         nameField.setName("nameField"); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanel1.border.title"))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Type:"));
         jPanel1.setName("jPanel1"); // NOI18N
 
         textTypeButton.setSelected(true);
-        textTypeButton.setText(resourceMap.getString("textTypeButton.text")); // NOI18N
+        textTypeButton.setLabel(bundle.getString("textTypeButton.text")); // NOI18N
         textTypeButton.setName("textTypeButton"); // NOI18N
 
-        nominalTypeButton.setText(resourceMap.getString("nominalTypeButton.text")); // NOI18N
+        nominalTypeButton.setLabel(bundle.getString("nominalTypeButton.text")); // NOI18N
         nominalTypeButton.setName("nominalTypeButton"); // NOI18N
 
-        predicateTypeButton.setText(resourceMap.getString("predicateTypeButton.text")); // NOI18N
+        predicateTypeButton.setLabel(bundle.getString("predicateTypeButton.text")); // NOI18N
         predicateTypeButton.setName("predicateTypeButton"); // NOI18N
 
-        matrixTypeButton.setText(resourceMap.getString("matrixTypeButton.text")); // NOI18N
+        matrixTypeButton.setLabel(bundle.getString("matrixTypeButton.text")); // NOI18N
         matrixTypeButton.setName("matrixTypeButton"); // NOI18N
 
-        integerTypeButton.setText(resourceMap.getString("integerTypeButton.text")); // NOI18N
+        integerTypeButton.setLabel(bundle.getString("integerTypeButton.text")); // NOI18N
         integerTypeButton.setName("integerTypeButton"); // NOI18N
 
-        floatTypeButton.setText(resourceMap.getString("floatTypeButton.text")); // NOI18N
+        floatTypeButton.setLabel(bundle.getString("floatTypeButton.text")); // NOI18N
         floatTypeButton.setName("floatTypeButton"); // NOI18N
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
@@ -115,7 +114,7 @@ public final class NewVariable extends OpenSHAPADialog {
                         .add(matrixTypeButton)
                         .add(18, 18, 18)
                         .add(floatTypeButton)))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -124,7 +123,7 @@ public final class NewVariable extends OpenSHAPADialog {
                     .add(textTypeButton)
                     .add(predicateTypeButton)
                     .add(integerTypeButton))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 2, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(nominalTypeButton)
                     .add(matrixTypeButton)
@@ -132,7 +131,7 @@ public final class NewVariable extends OpenSHAPADialog {
                 .addContainerGap())
         );
 
-        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
+        okButton.setLabel(bundle.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -141,7 +140,7 @@ public final class NewVariable extends OpenSHAPADialog {
             }
         });
 
-        cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
+        cancelButton.setLabel(bundle.getString("cancelButton.text")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,40 +152,41 @@ public final class NewVariable extends OpenSHAPADialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel1)
+            .add(layout.createSequentialGroup()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jLabel2)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                                .add(jLabel2)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                                .add(nameField))
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(layout.createSequentialGroup()
-                                .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cancelButton)))))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(jLabel1)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 278, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(layout.createSequentialGroup()
+                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(cancelButton))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
+                .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel1)
                     .add(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .add(jLabel2)
+                        .addContainerGap(193, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel2)
-                            .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cancelButton)
-                    .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                            .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jLabel1))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(cancelButton)
+                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(37, 37, 37))))
         );
 
         pack();

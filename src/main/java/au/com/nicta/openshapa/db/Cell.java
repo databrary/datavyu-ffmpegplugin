@@ -7,6 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class Cell
  *
@@ -259,28 +262,16 @@ public abstract class Cell extends DBElement
 
     } /* Cell::setSelected() */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += this.itsColID * SEED1;
-        hash += this.comment == null ? 0 : this.comment.hashCode() * SEED2;
-        hash += this.ord * SEED3;
-        hash += new Boolean(this.selected).hashCode() * SEED4;
+        hash += this.itsColID * Constants.SEED1;
+        hash += HashUtils.Obj2H(this.comment) * Constants.SEED2;
+        hash += this.ord * Constants.SEED3;
+        hash += new Boolean(this.selected).hashCode() * Constants.SEED4;
 
         return hash;
     }

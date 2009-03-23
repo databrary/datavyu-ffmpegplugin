@@ -11,101 +11,21 @@ import static org.junit.Assert.*;
  * @author swhitcher
  */
 public class TimeStampFormalArgTest {
+    private PrintStream outStream;
+    private boolean verbose;
 
     public TimeStampFormalArgTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /*** TODO: Review test code ***/
-
-    /**
-     * TestClassTimeStampFormalArg()
-     *
-     * Main routine for tests of class TimeStampFormalArg.
-     *
-     *                                      JRM -- 3/12/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassTimeStampFormalArg() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class TimeStampFormalArg:\n");
-
-        if ( ! Test1argConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! Test4ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestVEAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIsValidValue(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf(
-                    "%d failures in tests for class TimeStampFormalArg.\n\n",
-                     failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class TimeStampFormalArg.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* Database::TestClassTimeStampFormalArg() */
 
     /**
      * TestAccessors()
@@ -116,11 +36,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class TimeStampFormalArg accessors                       ";
         String passBanner = "PASSED\n";
@@ -583,8 +500,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::TestAccessors() */
 
 
@@ -598,10 +514,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestVEAccessors(java.io.PrintStream outStream,
-                                          boolean verbose)
-    {
+    @Test
+    public void TestVEAccessors() {
         String testBanner =
             "Testing class TimeStampFormalArg itsVocabElement accessors       ";
         String passBanner = "PASSED\n";
@@ -713,8 +627,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::TestVEAccessors() */
 
 
@@ -728,11 +641,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test1argConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test1argConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 1 argument constructor for class TimeStampFormalArg      ";
         String passBanner = "PASSED\n";
@@ -949,8 +859,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::Test0ArgConstrucor() */
 
     /**
@@ -963,11 +872,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test2ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 2 argument constructor for class TimeStampFormalArg      ";
         String passBanner = "PASSED\n";
@@ -1204,8 +1110,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::Test2ArgConstructor() */
 
 
@@ -1219,11 +1124,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean Test4ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void Test4ArgConstructor() throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class TimeStampFormalArg      ";
         String passBanner = "PASSED\n";
@@ -1739,8 +1641,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::Test4ArgConstructor() */
 
 
@@ -1754,11 +1655,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class TimeStampFormalArg            ";
         String passBanner = "PASSED\n";
@@ -2207,8 +2105,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::TestCopyConstructor() */
 
 
@@ -2227,11 +2124,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestIsValidValue(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIsValidValue() throws SystemErrorException {
         String testBanner =
             "Testing isValidValue()                                           ";
         String passBanner = "PASSED\n";
@@ -2541,8 +2435,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::TestIsValidValue() */
 
 
@@ -2557,11 +2450,8 @@ public class TimeStampFormalArgTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
@@ -2683,8 +2573,7 @@ public class TimeStampFormalArgTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* TimeStampFormalArg::TestToStringMethods() */
 
 }

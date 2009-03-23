@@ -1,4 +1,4 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataValue;
@@ -7,6 +7,7 @@ import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
+import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.FocusEvent;
@@ -280,7 +281,7 @@ implements MouseListener, KeyListener, FocusListener {
      */
     public void updateStrings() {
         String t = "";
-        if (this.value != null && !this.value.isDefault()) {
+        if (this.value != null && !this.value.isEmpty()) {
             t = value.toString();
         } else if (parentMatrix != null) {
             t = getNullArg();
@@ -312,7 +313,11 @@ implements MouseListener, KeyListener, FocusListener {
         // BugzID:230
         spreadsheetSelection.deselectAll();
         spreadsheetSelection.deselectOthers();
-        this.selectAll();
+
+        // Only select all if the data value view is a placeholder.
+        if (value.isEmpty()) {
+            this.selectAll();
+        }
     }
 
     /**
@@ -395,7 +400,8 @@ implements MouseListener, KeyListener, FocusListener {
      * @param e The KeyEvent that triggered this action.
      */
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyChar()) {
+
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
                 // Ignore - handled when the key is typed.
@@ -403,6 +409,13 @@ implements MouseListener, KeyListener, FocusListener {
                 break;
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_RIGHT:
+                // If the underlying datavalue is null - we disable the left and
+                // right arrow keys. So prevent users from being able to 'edit'
+                // the placeholder title.
+                if (value == null || value.isEmpty()) {
+                    e.consume();
+                }
+
                 // Move caret left and right (underlying text field handles
                 // this).
                 break;

@@ -105,6 +105,9 @@
           <cloverDatabase>/var/clover/openshapa.db</cloverDatabase>
           <historyDir>/var/clover/openshapa</historyDir>
           <generateHistorical>true</generateHistorical>
+          <excludes>
+            <exclude>**/VocabListTest.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
 

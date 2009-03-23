@@ -1,12 +1,17 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
-import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.views.discrete.SheetLayoutFactory.SheetLayoutType;
-import java.awt.FileDialog;
+import au.com.nicta.openshapa.OpenSHAPA.Platform;
+import au.com.nicta.openshapa.controllers.CreateNewCellC;
+import au.com.nicta.openshapa.controllers.NewDatabaseC;
+import au.com.nicta.openshapa.controllers.NewVariableC;
+import au.com.nicta.openshapa.controllers.RunScriptC;
+import au.com.nicta.openshapa.controllers.RunTestsC;
+import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
+import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.io.File;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -34,6 +39,9 @@ implements KeyEventDispatcher {
 
         // generated GUI builder code
         initComponents();
+
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
     }
 
     /**
@@ -55,7 +63,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewDatabaseForm() {
-        OpenSHAPA.getApplication().showNewDatabaseForm();
+        new NewDatabaseC();        
     }
 
     /**
@@ -63,7 +71,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewVariableForm() {
-        OpenSHAPA.getApplication().showNewVariableForm();
+        new NewVariableC();
     }
 
     /**
@@ -89,7 +97,11 @@ implements KeyEventDispatcher {
     public void showSpreadsheet() {
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
-        OpenSHAPA.getApplication().showSpreadsheet();
+
+        // Create a fresh spreadsheet component and redraw the component.
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
+        this.getComponent().revalidate();
     }
 
     /**
@@ -97,11 +109,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void runTests() {
-        try {
-            OpenSHAPA.getApplication().runRegressionTests();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to run regression tests", e);
-        }
+        new RunTestsC();
     }
 
     /**
@@ -109,15 +117,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void runScript() {
-        FileDialog c = new FileDialog(OpenSHAPA.getApplication().getMainFrame(),
-                                      "Select ruby script file:",
-                                      FileDialog.LOAD);
-        c.setVisible(true);
-
-        if (c.getFile() != null && c.getDirectory() != null) {
-            File rubyFile = new File(c.getDirectory() + c.getFile());
-            OpenSHAPA.getApplication().runScript(rubyFile);
-        }
+        new RunScriptC();
     }
 
     /**
@@ -130,7 +130,8 @@ implements KeyEventDispatcher {
         } else if (strongTemporalOrderMenuItem.isSelected()) {
             type = SheetLayoutType.StrongTemporal;
         }
-        OpenSHAPA.getApplication().setSheetLayout(type);
+
+        new SetSheetLayoutC(type);
     }
 
     /** This method is called from within the constructor to
@@ -142,6 +143,7 @@ implements KeyEventDispatcher {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem openMenuItem = new javax.swing.JMenuItem();
@@ -162,21 +164,28 @@ implements KeyEventDispatcher {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         helpMenu1 = new javax.swing.JMenu();
-        contentsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        contentsMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
+
+        jLabel1.setName("jLabel1"); // NOI18N
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 500, Short.MAX_VALUE)
+            .add(mainPanelLayout.createSequentialGroup()
+                .add(119, 119, 119)
+                .add(jLabel1)
+                .addContainerGap(149, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 0, Short.MAX_VALUE)
+            .add(mainPanelLayout.createSequentialGroup()
+                .add(55, 55, 55)
+                .add(jLabel1)
+                .addContainerGap(184, Short.MAX_VALUE))
         );
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getResourceMap(OpenSHAPAView.class);
         resourceMap.injectComponents(mainPanel);
@@ -196,7 +205,9 @@ implements KeyEventDispatcher {
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
-        fileMenu.add(exitMenuItem);
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            fileMenu.add(exitMenuItem);
+        }
 
         menuBar.add(fileMenu);
 
@@ -270,21 +281,18 @@ implements KeyEventDispatcher {
 
         helpMenu1.setName("helpMenu1"); // NOI18N
 
+        aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            helpMenu1.add(aboutMenuItem1);
+        }
+
         contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
         contentsMenuItem.setName("contentsMenuItem"); // NOI18N
         helpMenu1.add(contentsMenuItem);
 
-        aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
-        helpMenu1.add(aboutMenuItem1);
-
-        jMenuItem5.setAction(actionMap.get("populateDemoData")); // NOI18N
-        jMenuItem5.setName("jMenuItem5"); // NOI18N
-        helpMenu1.add(jMenuItem5);
-
         menuBar.add(helpMenu1);
         resourceMap.injectComponents(menuBar);
 
-        setComponent(mainPanel);
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -294,7 +302,8 @@ implements KeyEventDispatcher {
      * @param evt The event that fired this action.
      */
     private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
-        OpenSHAPA.getApplication().createNewCell();
+        //OpenSHAPA.getApplication().createNewCell();
+        new CreateNewCellC();
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
     private void strongTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_strongTemporalMenuItemActionPerformed
@@ -311,6 +320,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenu helpMenu1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -318,7 +328,6 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;

@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 
@@ -5022,31 +5024,18 @@ public class Predicate extends DBElement
 
     } /* Predicate::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5) */
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-    /** Seed value for generating hash codes. */
-    private final static int SEED4 = 13;
-    /** Seed value for generating hash codes. */
-    private final static int SEED5 = 17;
-    /** Seed value for generating hash codes. */
-    private final static int SEED6 = 19;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += (int)(pveID ^ (pveID >>> 32)) * SEED1;
-        hash += (predName == null ? 0 : predName.hashCode()) * SEED2;
-        hash += (argList == null ? 0 : argList.hashCode()) * SEED3;
-        hash += (varLen ? 1 : 0) * SEED4;
-        hash += (int)(cellID ^ (cellID >>> 32)) * SEED5;
-        hash += (queryVarOK ? 1 : 0) * SEED6;
+        hash += HashUtils.Long2H(pveID) * Constants.SEED1;
+        hash += HashUtils.Obj2H(predName) * Constants.SEED2;
+        hash += HashUtils.Obj2H(argList) * Constants.SEED3;
+        hash += (varLen ? 1 : 0) * Constants.SEED4;
+        hash += HashUtils.Long2H(cellID) * Constants.SEED5;
+        hash += (queryVarOK ? 1 : 0) * Constants.SEED6;
 
         return hash;
     }

@@ -11,87 +11,21 @@ import static org.junit.Assert.*;
  * @author swhitcher
  */
 public class PredicateVocabElementTest {
+    private PrintStream outStream = System.out;
+    private boolean verbose = true;
 
     public PredicateVocabElementTest() {
     }
 
     @Before
     public void setUp() {
+        outStream = System.out;
+        verbose = true;
     }
 
     @After
     public void tearDown() {
     }
-
-    /*************************************************************************/
-    /**************************** Test Code: *********************************/
-    /*************************************************************************/
-
-    /**
-     * TestClassPredicateVocabElement()
-     *
-     * Main routine for tests of class PredicateVocabElement.
-     *
-     *                                      JRM -- 3/10/07
-     *
-     * Changes:
-     *
-     *    - Non.
-     */
-    @Test
-    public void TestClassPredicateVocabElement() throws SystemErrorException {
-        PrintStream outStream = System.out;
-        boolean verbose = true;
-
-        boolean pass = true;
-        int failures = 0;
-
-        outStream.print("Testing class PredicateVocabElement:\n");
-
-        if ( ! Test2ArgConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestCopyConstructor(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestAccessors(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestArgListManagement(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestIsWellFormed(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( ! TestToStringMethods(outStream, verbose) )
-        {
-            failures++;
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-            outStream.printf("%d failures in tests for class PredicateVocabElement.\n\n",
-                              failures);
-        }
-        else
-        {
-            outStream.print("All tests passed for class PredicateVocabElement.\n\n");
-        }
-
-        assertTrue(pass);
-
-    } /* PredicateVocabElement::TestClassPredicateVocabElement() */
 
     /**
      * TestAccessors()
@@ -102,11 +36,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestAccessors(java.io.PrintStream outStream,
-                                        boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestAccessors() throws SystemErrorException {
         String testBanner =
             "Testing class PredicateVocabElement accessors                    ";
         String passBanner = "PASSED\n";
@@ -241,8 +172,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::TestAccessors() */
 
     /**
@@ -256,11 +186,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestArgListManagement(java.io.PrintStream outStream,
-                                                boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestArgListManagement() throws SystemErrorException {
         String testBanner =
             "Testing class PredicateVocabElement formal arg list management   ";
         String passBanner = "PASSED\n";
@@ -380,8 +307,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::TestArgListManagement() */
 
 
@@ -396,10 +322,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean Test2ArgConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-    {
+    @Test
+    public void Test2ArgConstructor() {
         String testBanner =
             "Testing 2 argument constructor for class PredicateVocabElement   ";
         String passBanner = "PASSED\n";
@@ -591,8 +515,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::Test2ArgConstructor() */
 
 
@@ -606,11 +529,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestCopyConstructor(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestCopyConstructor() throws SystemErrorException {
         final String mName = "PredicateVocabElement::TestCopyConstructor(): ";
         String testBanner =
             "Testing copy constructor for class PredicateVocabElement         ";
@@ -1371,8 +1291,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::TestCopyConstructor() */
 
     /**
@@ -1386,11 +1305,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestIsWellFormed(java.io.PrintStream outStream,
-                                           boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestIsWellFormed() throws SystemErrorException {
         String testBanner =
             "Testing isWellFormed()                                           ";
         String passBanner = "PASSED\n";
@@ -1635,8 +1551,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::TestIsWellFormed() */
 
     /**
@@ -1650,11 +1565,8 @@ public class PredicateVocabElementTest {
      *
      *    - None.
      */
-
-    public static boolean TestToStringMethods(java.io.PrintStream outStream,
-                                              boolean verbose)
-        throws SystemErrorException
-    {
+    @Test
+    public void TestToStringMethods() throws SystemErrorException {
         final String expectedString = "test(<a>, <b>, <c>, <d>, <e>, <f>)";
         final String expectedDBString =
             "((PredicateVocabElement: 0 test) " +
@@ -1788,8 +1700,7 @@ public class PredicateVocabElementTest {
             outStream.print(failBanner);
         }
 
-        return pass;
-
+        assertTrue(pass);
     } /* PredicateVocabElement::TestToStringMethods() */
 
 }

@@ -16,10 +16,11 @@ import org.apache.log4j.Logger;
 /**
  * This class maintains the visual representation of the column in the
  * Spreadsheet window.
+ *
  * @author swhitcher
  */
 public class SpreadsheetColumn
-        implements ExternalDataColumnListener, ExternalCascadeListener {
+implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** Database reference. */
     private Database database;
@@ -33,8 +34,8 @@ public class SpreadsheetColumn
     /** ColumnHeaderPanel this column manages. */
     private ColumnHeaderPanel headerpanel;
 
-    /** Spreadsheet this column belongs to. */
-    private Spreadsheet spreadsheet;
+    /** Spreadhseet panel this column belongs to. */
+    private SpreadsheetPanel spreadsheetPanel;
 
     /** Collection of the SpreadsheetCells in the column. */
     private Vector<SpreadsheetCell> cells;
@@ -98,13 +99,13 @@ public class SpreadsheetColumn
      * @param colID the database colID this column displays.
      * @param selector The selection for all columns.
      */
-    public SpreadsheetColumn(final Spreadsheet sheet,
+    public SpreadsheetColumn(final SpreadsheetPanel sheet,
                              final Database db,
                              final long colID,
                              final Selector selector) {
         this.database = db;
         this.dbColID = colID;
-        this.spreadsheet = sheet;
+        this.spreadsheetPanel = sheet;
 
         this.cells = new Vector<SpreadsheetCell>();
 
@@ -148,7 +149,7 @@ public class SpreadsheetColumn
                                     .getCell(dbColumn.getID(), j);
 
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
-                                                spreadsheet.getCellSelector());
+                                            spreadsheetPanel.getCellSelector());
                 // add cell to the JPanel
                 datapanel.add(sc);
                 // and add it to our reference list
@@ -257,7 +258,7 @@ public class SpreadsheetColumn
         }
 
         if (dirty) {
-            spreadsheet.relayoutCells();
+            spreadsheetPanel.relayoutCells();
         }
         colChanges.reset();
     }
@@ -288,7 +289,7 @@ public class SpreadsheetColumn
         try {
             DataCell dc = (DataCell) database.getCell(cellID);
             SpreadsheetCell newCell = new SpreadsheetCell(database, dc,
-                                                 spreadsheet.getCellSelector());
+                                            spreadsheetPanel.getCellSelector());
             Long newOrd = new Long(dc.getOrd());
             if (cells.size() > newOrd.intValue()) {
                 cells.insertElementAt(newCell, newOrd.intValue() - 1);

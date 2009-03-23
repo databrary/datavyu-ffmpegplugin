@@ -1,5 +1,6 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.layouts;
 
+import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 
 /**
@@ -34,7 +35,7 @@ public final class SheetLayoutFactory {
      * @return SheetLayout to use.
      */
     public static SheetLayout getLayout(final SheetLayoutType type,
-                                         final Vector<SpreadsheetColumn> cols) {
+                                        final Vector<SpreadsheetColumn> cols) {
 
         switch (type) {
             case Ordinal:

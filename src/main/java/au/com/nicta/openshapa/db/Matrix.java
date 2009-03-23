@@ -1,5 +1,7 @@
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
@@ -4924,21 +4926,14 @@ public class Matrix implements Cloneable {
 
     }
 
-    /** Seed value for generating hash codes. */
-    private final static int SEED1 = 3;
-    /** Seed value for generating hash codes. */
-    private final static int SEED2 = 7;
-    /** Seed value for generating hash codes. */
-    private final static int SEED3 = 11;
-
     /**
      * @return A hash code value for the object.
      */
     @Override
     public int hashCode() {
-        int hash = (int)(mveID ^ (mveID >>> 32)) * SEED1;
-        hash += (argList == null ? 0 : argList.hashCode()) * SEED2;
-        hash += (varLen ? 1 : 0) * SEED3;
+        int hash = HashUtils.Long2H(mveID) * Constants.SEED1;
+        hash += (HashUtils.Obj2H(argList)) * Constants.SEED2;        
+        hash += (varLen ? 1 : 0) * Constants.SEED3;
 
         return hash;
     }

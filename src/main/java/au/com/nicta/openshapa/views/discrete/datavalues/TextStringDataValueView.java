@@ -1,9 +1,10 @@
-package au.com.nicta.openshapa.views.discrete;
+package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TextStringDataValue;
+import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
 import org.apache.log4j.Logger;
 
@@ -32,11 +33,11 @@ public final class TextStringDataValueView extends DataValueView {
      * @param editable Is the dataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
-    TextStringDataValueView(final Selector cellSelection,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex,
-                            final boolean editable) {
+    public TextStringDataValueView(final Selector cellSelection,
+                                   final DataCell cell,
+                                   final Matrix matrix,
+                                   final int matrixIndex,
+                                   final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
     }
 
@@ -51,14 +52,22 @@ public final class TextStringDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            this.removeBehindCaret();
-            e.consume();
+            
+            // Can't delete empty text string data value.
+            if (!tsdv.isEmpty()) {
+                this.removeBehindCaret();
+                e.consume();
+            }
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            this.removeAheadOfCaret();
-            e.consume();
+
+            // Can't delete empty text string data value.
+            if (!tsdv.isEmpty()) {
+                this.removeAheadOfCaret();
+                e.consume();
+            }
 
         // Just a regular vanilla keystroke - insert it into text field.
         } else if (!e.isMetaDown() && !e.isControlDown()) {
