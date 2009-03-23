@@ -77,6 +77,11 @@ public final class NominalDataValueView extends DataValueView {
                 break;
 
             case KeyEvent.VK_LEFT:
+                if (this.getValue().isEmpty()) {
+                    e.consume();
+                    break;
+                }
+
                 // If the character two steps to the left is a preserved
                 // character we need to skip one before passing the key event
                 // down to skip again (effectively skipping the preserved
@@ -92,6 +97,12 @@ public final class NominalDataValueView extends DataValueView {
                 break;
 
             case KeyEvent.VK_RIGHT:
+                // Can't use arrow keys on an empty
+                if (this.getValue().isEmpty()) {
+                    e.consume();
+                    break;
+                }
+
                 // If the character to the right is a preserved character, we
                 // need to skip one before passing the key event down to skip
                 // again (effectively skipping the preserved character).
