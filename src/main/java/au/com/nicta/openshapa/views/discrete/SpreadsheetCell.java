@@ -110,6 +110,14 @@ implements ExternalDataCellListener, Selectable {
         } else {
             dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
         }
+        // Check the selected state of the datacell
+        // If it is already selected in the database, we need to inform
+        // the selector, but not trigger a selection change or deselect others.
+        selected = dc.getSelected();
+        if (selected) {
+            selection.addSelectionSilent(this);
+        }
+
         db.registerDataCellListener(dc.getID(), this);
 
         // Build components used for the spreadsheet cell.
