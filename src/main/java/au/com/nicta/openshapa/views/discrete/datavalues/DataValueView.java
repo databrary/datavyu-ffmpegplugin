@@ -313,7 +313,11 @@ implements MouseListener, KeyListener, FocusListener {
         // BugzID:230
         spreadsheetSelection.deselectAll();
         spreadsheetSelection.deselectOthers();
-        this.selectAll();
+
+        // Only select all if the data value view is a placeholder.
+        if (value.isEmpty()) {
+            this.selectAll();
+        }
     }
 
     /**
