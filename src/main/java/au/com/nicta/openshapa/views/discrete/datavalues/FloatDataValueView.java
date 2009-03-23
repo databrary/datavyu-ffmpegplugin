@@ -70,18 +70,25 @@ public final class FloatDataValueView extends DataValueView {
 
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u0008') {            
-            this.removeBehindCaret();
-            fdv.setItsValue(buildValue(this.getText()));
-            e.consume();
+                   && e.getKeyChar() == '\u0008') {
+
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                this.removeBehindCaret();
+                fdv.setItsValue(buildValue(this.getText()));
+                e.consume();
+            }
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
 
-            this.removeAheadOfCaret();
-            fdv.setItsValue(buildValue(this.getText()));
-            e.consume();
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                this.removeAheadOfCaret();
+                fdv.setItsValue(buildValue(this.getText()));
+                e.consume();
+            }
 
         // Key stoke is number - insert number into the current caret position.
         } else if (Character.isDigit(e.getKeyChar())) {

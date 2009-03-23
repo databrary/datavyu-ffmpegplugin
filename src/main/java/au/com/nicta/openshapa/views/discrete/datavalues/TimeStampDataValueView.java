@@ -259,22 +259,29 @@ public abstract class TimeStampDataValueView extends DataValueView {
             // The backspace key removes digits from behind the caret.
             if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                        && e.getKeyChar() == '\u0008') {
-                this.removeBehindCaret();
-                StringBuffer currentValue = new StringBuffer(getText());
-                currentValue.insert(getCaretPosition(), "0");
-                tdv.setItsValue(buildValue(currentValue.toString()));
-                e.consume();
+
+                // Can't delete empty time stamp data value.
+                if (!tdv.isEmpty()) {
+                    this.removeBehindCaret();
+                    StringBuffer currentValue = new StringBuffer(getText());
+                    currentValue.insert(getCaretPosition(), "0");
+                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    e.consume();
+                }
 
             // The delete key removes digits ahead of the caret.
             } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                        && e.getKeyChar() == '\u007F') {
 
-                this.removeAheadOfCaret();
-                StringBuffer currentValue = new StringBuffer(getText());
-                currentValue.insert(getCaretPosition(), "0");
-                advanceCaret();
-                tdv.setItsValue(buildValue(currentValue.toString()));
-                e.consume();
+                // Can't delete empty time stamp data value.
+                if (!tdv.isEmpty()) {
+                    this.removeAheadOfCaret();
+                    StringBuffer currentValue = new StringBuffer(getText());
+                    currentValue.insert(getCaretPosition(), "0");
+                    advanceCaret();
+                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    e.consume();
+                }
 
             // Key stoke is number - insert number at current caret position.
             } else if (Character.isDigit(e.getKeyChar())) {

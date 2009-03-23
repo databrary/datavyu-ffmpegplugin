@@ -206,6 +206,7 @@ public final class TextStringDataValue extends DataValue
             this.itsValue = new String(value);
         }
 
+        this.valueSet();
         return;
 
     } /* TextStringDataValue::setItsValue() */

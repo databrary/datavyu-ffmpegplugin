@@ -202,6 +202,7 @@ public final class QuoteStringDataValue extends DataValue {
             this.itsValue = new String(value);
         }
 
+        this.valueSet();
         return;
 
     } /* QuoteStringDataValue::setItsValue() */

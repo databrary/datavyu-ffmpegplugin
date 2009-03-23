@@ -277,6 +277,7 @@ public final class NominalDataValue extends DataValue {
             this.queryVar = false;
         }
 
+        this.valueSet();
         return;
 
     } /* QuoteStringDataValue::setItsValue() */

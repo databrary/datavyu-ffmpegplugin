@@ -188,6 +188,7 @@ public final class FloatDataValue extends DataValue {
             this.itsValue = value;
         }
 
+        this.valueSet();
         return;
 
     } /* FloatDataValue::setItsValue() */

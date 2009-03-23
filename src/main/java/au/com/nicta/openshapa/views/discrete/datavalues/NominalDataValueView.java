@@ -196,14 +196,22 @@ public final class NominalDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            this.removeBehindCaret();
-            e.consume();
+
+            // Can't delete an empty nominal data value.
+            if (!ndv.isEmpty()) {
+                this.removeBehindCaret();
+                e.consume();
+            }
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            this.removeAheadOfCaret();
-            e.consume();
+            
+            // Can't delete an empty nominal data value.
+            if (!ndv.isEmpty()) {
+                this.removeAheadOfCaret();
+                e.consume();
+            }
 
         // Just a regular vanilla keystroke - insert it into text field.
         } else if (!e.isMetaDown() && !e.isControlDown()

@@ -193,6 +193,7 @@ public final class IntDataValue extends DataValue
             this.itsValue = value;
         }
 
+        this.valueSet();
         return;
 
     } /* IntDataValue::setItsValue() */

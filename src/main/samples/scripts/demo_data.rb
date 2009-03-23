@@ -28,7 +28,7 @@ import 'au.com.nicta.openshapa.db.SystemErrorException'
 
 begin
 
-  numrows = 10
+  numrows = 1
 
   # Create a data columns
   puts "Set up columns.."

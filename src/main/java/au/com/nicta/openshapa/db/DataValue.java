@@ -75,6 +75,8 @@ public abstract class DataValue extends DBElement
     
     /** id of the Predicate in which which the DataValue resides -- if any. */
     long itsPredID = DBIndex.INVALID_ID;
+
+    private boolean empty;
     
 //    /** Data Value Change Listeners */
 //    java.util.Vector<DataValueChangeListener> changeListeners = 
@@ -106,6 +108,7 @@ public abstract class DataValue extends DBElement
         throws SystemErrorException
     {
         super(db);
+        empty = true;
     }
     
     public DataValue(DataValue dv)
@@ -118,8 +121,22 @@ public abstract class DataValue extends DBElement
         this.subRange = dv.subRange;
         this.itsCellID = dv.itsCellID;
         this.itsPredID = dv.itsPredID;
+        this.empty = dv.empty;
     } /* DataValue::DataValue() */
-    
+
+    /**
+     * @return true if the current DataValue empty, false otherwise.
+     */
+    public boolean isEmpty() {
+        return this.empty;
+    }
+
+    /**
+     * Used to identify that a value has been set for this DataValue.
+     */
+    protected void valueSet() {
+        this.empty = false;
+    }
         
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/
@@ -832,6 +849,7 @@ public abstract class DataValue extends DBElement
         hash += HashUtils.Obj2H(itsFargType) * Constants.SEED3;
         hash += HashUtils.Long2H(itsPredID) * Constants.SEED4;
         hash += new Boolean(subRange).hashCode() * Constants.SEED5;
+        hash += new Boolean(empty).hashCode() * Constants.SEED6;
 
         return hash;
     }
@@ -863,6 +881,7 @@ public abstract class DataValue extends DBElement
             && (itsFargID == dv.itsFargID)
             && (itsPredID == dv.itsPredID)
             && (subRange == dv.subRange)
+            && (empty == dv.empty)
             && (itsFargType == null ? dv.itsFargType == null
                                     : itsFargType.equals(dv.itsFargType));
     }

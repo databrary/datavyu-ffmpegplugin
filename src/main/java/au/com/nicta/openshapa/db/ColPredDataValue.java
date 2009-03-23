@@ -282,6 +282,7 @@ public final class ColPredDataValue extends DataValue
             this.itsValue = new ColPred(value);
         }
 
+        this.valueSet();
         return;
 
     } /* ColPredDataValue::setItsValue() */

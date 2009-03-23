@@ -189,7 +189,8 @@ public final class UndefinedDataValue extends DataValue
                         "value doesn't match farg name");
             }
         }
-        
+
+        this.valueSet();
         this.itsValue = new String(value);
         
         return;

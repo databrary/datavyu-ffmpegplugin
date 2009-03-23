@@ -271,6 +271,7 @@ public final class TimeStampDataValue extends DataValue
             this.itsValue.setTime(value.getTime());
         }
 
+        this.valueSet();
         return;
 
     } /* TimeStampDataValue::setItsValue() */

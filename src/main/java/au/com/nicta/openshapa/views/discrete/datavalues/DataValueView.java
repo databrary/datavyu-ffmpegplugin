@@ -281,7 +281,7 @@ implements MouseListener, KeyListener, FocusListener {
      */
     public void updateStrings() {
         String t = "";
-        if (this.value != null && !this.value.isDefault()) {
+        if (this.value != null && !this.value.isEmpty()) {
             t = value.toString();
         } else if (parentMatrix != null) {
             t = getNullArg();

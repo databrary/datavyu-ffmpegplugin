@@ -343,6 +343,7 @@ public final class PredDataValue extends DataValue
             this.itsValue = new Predicate(value);
         }
 
+        this.valueSet();
         return;
 
     } /* PredDataValue::setItsValue() */
