@@ -247,68 +247,6 @@ public class Configuration extends DefaultHandler
     Thread.currentThread().setContextClassLoader(aUrlCL);
   } //End of loadPath method
 
-
-    /**
-   * Loads the object's classpath into main classpath and creates an instance
-   * of the object's class.  Using the type field checks the objects type
-   * against the superclass interfaces for those types.
-   * @throws IOException from {@link Configuration#loadPath(URL)} calls
-   * @throws ClassNotFoundException from {@link java.lang.Class#forName(String)} call
-   * @throws InstantiationException from {@link java.lang.Class#newInstance()} call
-   * @throws IllegalAccessException from {@link java.lang.Class#newInstance()} call
-   * @throws ClassCastException if class instance does not match object type
-   */
-  public Object getElementInstance(ConfigurationObject co)
-    throws IOException, ClassNotFoundException,
-           InstantiationException, IllegalAccessException,
-           ClassCastException
-  {
-    int type = UNKNOWN;
-
-    if (co.pathString().equalsIgnoreCase(this.DISCRETE_DISPLAY_PATH)) {
-      type = this.DISCRETEDISPLAY;
-    } else if (co.pathString().equalsIgnoreCase(this.DISCRETE_MANAGER_PATH)) {
-      type = this.DISCRETEMANAGER;
-    } else if (co.pathString().equalsIgnoreCase(this.CONTINUOUS_DISPLAY_PATH)) {
-      type = this.CONTINUOUSDISPLAY;
-    } else if (co.pathString().equalsIgnoreCase(this.PLUGIN_PATH)) {
-      type = this.PLUGIN;
-    } else {
-      throw (new ClassCastException("Unknown Data Type: " + co.getName()));
-    }
-
-    String classname = co.getElement("class").getValue();
-    String classpath = co.getElement("path").getValue();
-
-    // Load classpath
-    this.loadPath(classpath);
-
-    // Create the object
-    Class c = Class.forName(classname);
-    Object o = c.newInstance();
-
-    // Check for valid object type
-    switch (type) {
-      case DISCRETEDISPLAY: {
-            au.com.nicta.openshapa.views.discrete.DiscreteDataViewer dv = (au.com.nicta.openshapa.views.discrete.DiscreteDataViewer)o;
-        break;
-      }
-      case PLUGIN: {
-        au.com.nicta.openshapa.plugin.Plugin pl = (au.com.nicta.openshapa.plugin.Plugin)o;
-        break;
-      }
-      default: {
-        throw (new ClassCastException("Unknown Data Type"));
-      }
-    }
-
-    return (o);
-  } //End of getInstance() method
-
-
-
-
-
   /**
    * Returns the ConfigurationObjects found in the Configuration file
    */
