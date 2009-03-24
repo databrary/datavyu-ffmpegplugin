@@ -1,0 +1,29 @@
+From bf0db5a8c00238ef64a85594e169d753a83ef39b Mon Sep 17 00:00:00 2001
+From: unknown <uqul@.itee.uq.edu.au>
+Date: Tue, 17 Mar 2009 16:48:22 +1000
+Subject: [PATCH] partially implemented Spreadsheet component of UISpec4J and partially implemented first test case
+
+---
+ pom.xml |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/pom.xml b/pom.xml
+index aef1dd3..9bd0381 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -259,6 +259,12 @@
+       <artifactId>QTJava</artifactId>
+       <version>7</version>
+     </dependency>
++	
++	<dependency>
++	  <groupId>uispec4j</groupId>
++	  <artifactId>uispec4j</artifactId>
++	  <version>1.5</version>
++	</dependency>
+ 
+   </dependencies>
+ </project>
+-- 
+1.6.2.1217.gd7bc3
+

@@ -127,6 +127,14 @@ public class SpreadsheetPanel extends JPanel
     }
 
     /**
+     * Returns the vector of Spreadsheet columns.
+     * Need for UISpec4J testing
+     */
+    public Vector<SpreadsheetColumn> getColumns() {
+        return columns;
+    }
+
+    /**
      * Deselect all selected items in the Spreadsheet.
      */
     public final void deselectAll() {

@@ -10,9 +10,10 @@ import javax.swing.JLabel;
 
 /**
  * ColumnHeaderPanel displays the column variable name.
+ * Public for use by UISpec4J
  * @author swhitcher
  */
-class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
+public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
 
     /** Selected state. */
     private boolean selected = false;
