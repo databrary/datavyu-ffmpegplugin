@@ -53,6 +53,9 @@ implements MouseListener, KeyListener, FocusListener {
     /** A list of characters that can not be removed from this view. */
     private Vector<Character> preservedChars;
 
+    private boolean isDeletingChar;
+    private char replaceChar;
+
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueView.class);
 
@@ -81,6 +84,7 @@ implements MouseListener, KeyListener, FocusListener {
             value = matrix.getArgCopy(index);
             oldCaretPosition = 0;
             advanceCaret = false;
+            isDeletingChar = true;
             preservedChars = new Vector<Character>();
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
@@ -109,6 +113,7 @@ implements MouseListener, KeyListener, FocusListener {
         value = dataValue;
         oldCaretPosition = 0;
         advanceCaret = false;
+        isDeletingChar = true;
         preservedChars = new Vector<Character>();
         initDataValueView(editable);
     }
@@ -163,6 +168,17 @@ implements MouseListener, KeyListener, FocusListener {
      */
     protected void addPreservedChar(final Character c) {
         preservedChars.add(c);
+    }
+
+    /**
+     * Rather than delete characters
+     *
+     * @param c The character to use when deleting (rather than deleting - the
+     * supplied character is used to replace).
+     */
+    protected void setDeleteChar(final char c) {
+        isDeletingChar = false;
+        replaceChar = c;
     }
 
     /**
@@ -472,7 +488,13 @@ implements MouseListener, KeyListener, FocusListener {
 
             // Delete next character.
             StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+            currentValue.deleteCharAt(getCaretPosition());
+
+            if (!isDeletingChar) {
+                currentValue.insert(getCaretPosition(), replaceChar);
+            }
+            //currentValue.delete(getCaretPosition(), getCaretPosition() + 1);
+
             int cPosition = getCaretPosition();
             this.setText(currentValue.toString());
             setCaretPosition(cPosition);
@@ -506,7 +528,11 @@ implements MouseListener, KeyListener, FocusListener {
 
             // Delete previous character.
             StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.delete(getCaretPosition() - 1, getCaretPosition());
+            currentValue.deleteCharAt(getCaretPosition() - 1);
+            if (!isDeletingChar) {
+                currentValue.insert(getCaretPosition() - 1, replaceChar);
+            }
+
             int cPosition = getCaretPosition() - 1;
             this.setText(currentValue.toString());
             setCaretPosition(cPosition);
@@ -520,33 +546,44 @@ implements MouseListener, KeyListener, FocusListener {
      * is unchanged.
      */
     protected void removeSelectedText() {
-        Vector<Character> foundChars = new Vector<Character>();
-
         // Get the current value of the visual representation of this DataValue.
-        String cValue = this.getText();
+        StringBuffer cValue = new StringBuffer(getText());
 
         // Obtain the start and finish of the selected text.
         int start = this.getSelectionStart();
         int end = this.getSelectionEnd();
+        int pos = start;
 
-        for (int i = 0; i < preservedChars.size(); i++) {
-            int pIndex = cValue.lastIndexOf(preservedChars.get(i));
-            if (pIndex < end && pIndex > start) {
-                // A preserved character exists - ensure that it remains.
-                foundChars.add(preservedChars.get(i));
+        for (int i = start; i < end; i++) {
+            boolean found = false;
+
+            // See if the character at the current position is reserved.
+            for (int j = 0; j < preservedChars.size(); j++) {
+                if (preservedChars.get(j) == cValue.charAt(pos)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            // Current character is not reserved - either delete or replace it.
+            if (!found) {
+                cValue.deleteCharAt(pos);
+
+                // Replace the character rather than remove it, we then need to
+                // skip to the next position to delete a character.
+                if (!isDeletingChar) {
+                    cValue.insert(pos, replaceChar);
+                    pos++;
+                }
+
+            // Current character is reserved, skip over current position.
+            } else {
+                pos++;
             }
         }
 
-        // Create a new value by removing the selected text from current value
-        // of the DataValue.
-        String nValue = cValue.substring(0, start);
-        for (int i = 0; i < foundChars.size(); i++) {
-            nValue = nValue.concat(foundChars.get(i).toString());
-        }
-        nValue = nValue.concat(cValue.substring(end, cValue.length()));
-
         // Set the text for this data value to the new string.
-        this.setText(nValue);
+        this.setText(cValue.toString());
         this.setCaretPosition(start);
     }
 }

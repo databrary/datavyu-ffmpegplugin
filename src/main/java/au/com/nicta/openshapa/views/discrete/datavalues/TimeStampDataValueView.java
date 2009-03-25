@@ -54,6 +54,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                                   final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
         this.addPreservedChar(new Character(':'));
+        this.setDeleteChar('0');
     }
 
     /**
@@ -72,6 +73,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
                                   final boolean editable) {
         super(cellSelection, cell, timeStampDataValue, editable);
         this.addPreservedChar(new Character(':'));
+        this.setDeleteChar('0');
     }
 
     /**
@@ -263,9 +265,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 // Can't delete empty time stamp data value.
                 if (!tdv.isEmpty()) {
                     this.removeBehindCaret();
-                    StringBuffer currentValue = new StringBuffer(getText());
-                    currentValue.insert(getCaretPosition(), "0");
-                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    //StringBuffer currentValue = new StringBuffer(getText());
+                    //currentValue.insert(getCaretPosition(), "0");
+                    tdv.setItsValue(buildValue(getText()));
                     e.consume();
                 }
 
@@ -277,9 +279,9 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 if (!tdv.isEmpty()) {
                     this.removeAheadOfCaret();
                     StringBuffer currentValue = new StringBuffer(getText());
-                    currentValue.insert(getCaretPosition(), "0");
+                    //currentValue.insert(getCaretPosition(), "0");
                     advanceCaret();
-                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    tdv.setItsValue(buildValue(getText()));
                     e.consume();
                 }
 
@@ -287,6 +289,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
             } else if (Character.isDigit(e.getKeyChar())) {
                 this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.deleteCharAt(getCaretPosition());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 advanceCaret();
                 tdv.setItsValue(buildValue(currentValue.toString()));
