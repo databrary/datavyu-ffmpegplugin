@@ -30,6 +30,7 @@
     </plugins>
   </reporting>
 
+  <!-- our nightly builds. -->
   <ciManagement>
     <system>continuum</system>
     <url>http://openshapa.nicta.org.au/dashboard/</url>
