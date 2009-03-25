@@ -48,6 +48,7 @@
     <url>http://openshapa.nicta.org.au/viewgit/?a=summary&amp;p=openshapa</url>
   </scm>
 
+  <!-- The location for generating the website. -->
   <distributionManagement>
     <site>
       <id>website</id>
