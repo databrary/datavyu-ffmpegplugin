@@ -36,6 +36,7 @@
     <url>http://openshapa.nicta.org.au/dashboard/</url>
   </ciManagement>
 
+  <!-- Our bugtracking. -->
   <issueManagement>
     <system>Fogbugz</system>
     <url>http://openshapa.nicta.org.au/fogbugz</url>
