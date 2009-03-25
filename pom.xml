@@ -42,6 +42,7 @@
     <url>http://openshapa.nicta.org.au/fogbugz</url>
   </issueManagement>
 
+  <!-- Our source control. -->
   <scm>
     <tag>master</tag>
     <url>http://openshapa.nicta.org.au/viewgit/?a=summary&amp;p=openshapa</url>
