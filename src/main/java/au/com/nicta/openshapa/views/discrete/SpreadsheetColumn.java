@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
  */
-public class SpreadsheetColumn
+public final class SpreadsheetColumn
 implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** Database reference. */
@@ -164,35 +164,35 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /**
      * @return Column Header size as a dimension.
      */
-    public final Dimension getHeaderSize() {
+    public Dimension getHeaderSize() {
         return new Dimension(getWidth(), DEFAULT_HEADER_HEIGHT);
     }
 
     /**
      * @return Column Width in pixels.
      */
-    public final int getWidth() {
+    public int getWidth() {
         return DEFAULT_COLUMN_WIDTH;
     }
 
     /**
      * @return The headerpanel.
      */
-    public final JComponent getHeaderPanel() {
+    public JComponent getHeaderPanel() {
         return headerpanel;
     }
 
     /**
      * @return The datapanel.
      */
-    public final JComponent getDataPanel() {
+    public JComponent getDataPanel() {
         return datapanel;
     }
 
     /**
      * @return The column ID of the datacolumn being displayed.
      */
-    public final long getColID() {
+    public long getColID() {
         return dbColID;
     }
 
@@ -200,7 +200,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * Set the selected state for the DataColumn this displays.
      * @param selected Selected state.
      */
-    public final void setSelected(final boolean selected) {
+    public void setSelected(final boolean selected) {
         try {
             DataColumn dc = database.getDataColumn(dbColID);
 
@@ -216,7 +216,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * Called at the beginning of a cascade of changes through the database.
      * @param db The database.
      */
-    public final void beginCascade(final Database db) {
+    public void beginCascade(final Database db) {
         colChanges.reset();
     }
 
@@ -224,7 +224,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * Called at the end of a cascade of changes through the database.
      * @param db The database.
      */
-    public final void endCascade(final Database db) {
+    public void endCascade(final Database db) {
         boolean dirty = false;
         if (colChanges.colDeleted) {
             // Not tested yet should be handled by ColumnListener in spreadsheet
@@ -299,6 +299,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             newCell.setWidth(getWidth() - 1);
             datapanel.add(newCell);
             datapanel.remove(filler);
+            newCell.requestFocusInWindow();
         } catch (SystemErrorException e) {
             logger.error("Problem inserting a new SpreadsheetCell", e);
         }
@@ -310,7 +311,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being deleted.
      */
-    public final void DColCellDeletion(final Database db,
+    public void DColCellDeletion(final Database db,
                                        final long colID,
                                        final long cellID) {
         colChanges.cellDeleted.add(cellID);
@@ -323,7 +324,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being inserted.
      */
-    public final void DColCellInsertion(final Database db,
+    public void DColCellInsertion(final Database db,
                                         final long colID,
                                         final long cellID) {
         colChanges.cellInserted.add(cellID);
@@ -350,7 +351,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param oldSelected Old Selected value.
      * @param newSelected New Selected value.
      */
-    public final void DColConfigChanged(final Database db,
+    public void DColConfigChanged(final Database db,
                                       final long colID,
                                       final boolean nameChanged,
                                       final String oldName,
@@ -376,7 +377,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param db The database.
      * @param colID The ID assigned to the DataColumn.
      */
-    public final void DColDeleted(final Database db,
+    public void DColDeleted(final Database db,
                                   final long colID) {
         colChanges.colDeleted = true;
     }
@@ -385,7 +386,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * Set the preferred size of the column.
      * @param bottom Number of pixels to set.
      */
-    public final void setBottomBound(final int bottom) {
+    public void setBottomBound(final int bottom) {
         datapanel.setPreferredSize(
                     new Dimension(datapanel.getPreferredSize().width, bottom));
     }
@@ -393,7 +394,20 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /**
      * @return The SpreadsheetCells in this column.
      */
-    public final Vector<SpreadsheetCell> getCells() {
+    public Vector<SpreadsheetCell> getCells() {
         return cells;
+    }
+
+    /**
+     * Request focus for this column. It will request focus for the first
+     * SpreadsheetCell in the column if one exists. If no cells exist it
+     * will request focus for the datapanel of the column.
+     */
+    public void requestFocus() {
+        if (cells.size() > 0) {
+            cells.firstElement().requestFocusInWindow();
+        } else {
+            datapanel.requestFocusInWindow();
+        }
     }
 }

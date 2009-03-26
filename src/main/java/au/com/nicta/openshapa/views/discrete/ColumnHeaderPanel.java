@@ -115,5 +115,6 @@ class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
      */
     public void mouseClicked(MouseEvent me) {
         selection.addToSelection(me, this);
+        parentCol.requestFocus();
     }
 }
