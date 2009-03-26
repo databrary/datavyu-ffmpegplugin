@@ -12,10 +12,12 @@ import au.com.nicta.openshapa.views.QTVideoController;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.util.LinkedList;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.swing.JFrame;
@@ -193,6 +195,7 @@ implements KeyEventDispatcher {
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
             consoleWriter = new PrintWriter(sIn);
             rubyEngine.getContext().setWriter(consoleWriter);
+            lastScriptsExecuted = new LinkedList<File>();
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
@@ -286,6 +289,22 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * @return The list of last scripts that have been executed.
+     */
+    public static LinkedList<File> getLastScriptsExecuted() {
+        return OpenSHAPA.getApplication().lastScriptsExecuted;
+    }
+
+    /**
+     * Sets the list of scripts that were last executed.
+     *
+     * @param list
+     */
+    public static void setLastScriptsExecuted(final LinkedList<File> list) {
+        OpenSHAPA.getApplication().lastScriptsExecuted = list;
+    }
+
+    /**
      * @return The console writer for OpenSHAPA.
      */
     public static PrintWriter getConsoleWriter() {
@@ -375,6 +394,8 @@ implements KeyEventDispatcher {
 
     /** The id of the last datacell that was created. */
     private long lastCreatedColID;
+
+    private LinkedList<File> lastScriptsExecuted;
 
     /** The view to use when listing all variables in the database. */
     private ListVariables listVarView;

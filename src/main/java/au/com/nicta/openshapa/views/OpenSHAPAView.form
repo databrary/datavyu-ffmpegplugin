@@ -190,14 +190,30 @@
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
+            <MenuItem class="javax.swing.JMenuItem" name="runScriptMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="au.com.nicta.openshapa.views.OpenSHAPAView" id="runScript" methodName="runScript"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="jMenuItem4" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="runScriptMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
+            <Menu class="javax.swing.JMenu" name="runRecentScriptMenu">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="runRecentScriptMenu" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="populateRecentScripts"/>
+              </Events>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="recentScriptsHeader">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="name" type="java.lang.String" value="recentScriptsHeader" noResource="true"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu1">
