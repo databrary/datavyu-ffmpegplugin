@@ -395,6 +395,7 @@ implements KeyEventDispatcher {
     /** The id of the last datacell that was created. */
     private long lastCreatedColID;
 
+    /** The list of scripts that the user has last invoked. */
     private LinkedList<File> lastScriptsExecuted;
 
     /** The view to use when listing all variables in the database. */
