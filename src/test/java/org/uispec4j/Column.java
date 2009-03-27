@@ -1,32 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.uispec4j;
 
 import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import au.com.nicta.openshapa.views.discrete.ColumnHeaderPanel;
 import java.awt.Component;
-import javax.swing.JLabel;
 import junit.framework.Assert;
-import org.uispec4j.finder.ComponentFinder;
 
 
 
 /**
  *
- * @author uqul
+ * @author mmuthukrishna
  */
 public class Column extends AbstractUIComponent {
-    public static final String TYPE_NAME = "spreadsheet column";
-    public static final Class[] SWING_CLASSES = {JLabel.class};
+    /**
+     * UISpec4J convention to declare type.
+     */
+    public static final String TYPE_NAME = "SpreadsheetColumn";
+    /**
+     * UISpec4J convention to declare associated class.
+     */
+    public static final Class[] SWING_CLASSES = {SpreadsheetColumn.class};
 
+    /**
+     * Since this is an Adaptor class, this is the class being adapted.
+     */
     private SpreadsheetColumn ssColumn;
 
-    private ComponentFinder finder;
-
-    public Column(SpreadsheetColumn spreadsheetColumn) {
+    /**
+     * Column constructor.
+     * @param spreadsheetColumn actual spreadsheetColumn class being adapted
+     */
+    public Column(final SpreadsheetColumn spreadsheetColumn) {
         Assert.assertNotNull(spreadsheetColumn);
         this.ssColumn = spreadsheetColumn;
     }
@@ -40,20 +44,24 @@ public class Column extends AbstractUIComponent {
     }
 
     /**
-     * returns column header name
+     * @return String name of column
      */
-    public String getHeaderName() {
-        String headerText = ((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).getText();
-        String headerName = headerText.substring(0, headerText.lastIndexOf("  ("));
+    public final String getHeaderName() {
+        String headerText = ((ColumnHeaderPanel)
+                (ssColumn.getHeaderPanel())).getText();
+        String headerName = headerText.substring(0,
+                headerText.lastIndexOf("  ("));
         return headerName;
     }
 
     /**
-     * returns column header type
+     * @return String type of column
      */
-    public String getHeaderType() {
-        String headerText = ((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).getText();
-        String headerType = headerText.substring(headerText.lastIndexOf("(")+1, headerText.length()-1);
+    public final String getHeaderType() {
+        String headerText = ((ColumnHeaderPanel)
+                (ssColumn.getHeaderPanel())).getText();
+        String headerType = headerText.substring(
+                headerText.lastIndexOf("(") + 1, headerText.length() - 1);
         return headerType;
     }
 
