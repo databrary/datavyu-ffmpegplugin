@@ -1,8 +1,8 @@
 package au.com.nicta.openshapa.views.continuous;
 
-import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.controllers.CreateNewCellC;
 import au.com.nicta.openshapa.controllers.SetNewCellStopTimeC;
+import au.com.nicta.openshapa.views.QTVideoController;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -25,7 +25,7 @@ import quicktime.std.movies.media.SampleTimeInfo;
  * @author cfreeman
  */
 public final class QTVideoViewer extends JFrame
-implements ContinuousDataViewer, MovieDrawingComplete {
+implements MovieDrawingComplete {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTVideoViewer.class);
@@ -40,7 +40,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
     private Media visualMedia;
 
     /** The controller used to perform actions on this viewer. */
-    private ContinuousDataController parentController;
+    private QTVideoController parentController;
 
     /** The "normal" playback speed. */
     private static final float NORMAL_SPEED = 1.0f;
@@ -66,7 +66,7 @@ implements ContinuousDataViewer, MovieDrawingComplete {
      * @param controller The controller invoking actions on this continous
      * data viewer.
      */
-    public QTVideoViewer(final ContinuousDataController controller) {
+    public QTVideoViewer(final QTVideoController controller) {
         try {
             movie = null;
             shuttleSpeed = 0.0f;

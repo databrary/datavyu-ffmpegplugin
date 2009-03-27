@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.LinkedList;
 import javax.script.ScriptException;
 import org.apache.log4j.Logger;
 
@@ -28,9 +29,23 @@ public class RunScriptC {
 
         if (c.getFile() != null && c.getDirectory() != null) {
             File rubyFile = new File(c.getDirectory() + c.getFile());
+
             runScript(rubyFile);
         }
     }
+
+    /**
+     * Constructs and invokes the runscript controller.
+     *
+     * @param file The absolute path to the script file you wish to invoke.
+     */
+    public RunScriptC(final String file) {
+        File rubyFile = new File(file);
+        runScript(rubyFile);
+    }
+
+    /** the maximum size of the recently ran script list. */
+    private static final int MAX_RECENT_SCRIPT_SIZE = 5;
 
     /**
      * Action for running a script.
@@ -38,6 +53,16 @@ public class RunScriptC {
      * @param rubyFile The file of the ruby script to run.
      */
     private void runScript(final File rubyFile) {
+        // Update the list of most recently used scripts.
+        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
+        // If the lastscripts is full - pull the last one off to make room.
+        if (lastScripts.size() >= MAX_RECENT_SCRIPT_SIZE) {
+            lastScripts.removeLast();
+        }
+        // Add the script to the list.
+        lastScripts.addFirst(rubyFile);
+        OpenSHAPA.setLastScriptsExecuted(lastScripts);
+
         try {
             OpenSHAPA.getApplication().show(ConsoleV.getInstance());
 

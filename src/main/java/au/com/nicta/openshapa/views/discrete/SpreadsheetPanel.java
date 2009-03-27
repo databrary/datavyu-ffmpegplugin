@@ -35,7 +35,7 @@ public class SpreadsheetPanel extends JPanel
      * (i.e. Spreadsheet panel) for.
      */
     public SpreadsheetPanel(final Database db) {
-        
+
         setName(this.getClass().getSimpleName());
 
         this.setLayout(new BorderLayout());

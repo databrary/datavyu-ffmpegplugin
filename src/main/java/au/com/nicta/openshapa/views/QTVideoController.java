@@ -1,9 +1,7 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
-import au.com.nicta.openshapa.cont.ContinuousDataController;
 import au.com.nicta.openshapa.db.TimeStamp;
-import au.com.nicta.openshapa.views.continuous.ContinuousDataViewer;
 import au.com.nicta.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
 import java.io.File;
@@ -19,8 +17,7 @@ import org.jdesktop.application.Action;
  *
  * @author cfreeman
  */
-public final class QTVideoController extends OpenSHAPADialog
-implements ContinuousDataController {
+public final class QTVideoController extends OpenSHAPADialog {
 
     /**
      * Constructor. Creates a new QTVideoController.
@@ -57,7 +54,7 @@ implements ContinuousDataController {
      *
      * @param viewer The viewer to shutdown.
      */
-    public void shutdown(final ContinuousDataViewer viewer) {
+    public void shutdown(final QTVideoViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {
                 this.viewers.elementAt(i).dispose();

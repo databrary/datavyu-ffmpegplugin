@@ -30,21 +30,25 @@
     </plugins>
   </reporting>
 
+  <!-- our nightly builds. -->
   <ciManagement>
     <system>continuum</system>
     <url>http://openshapa.nicta.org.au/dashboard/</url>
   </ciManagement>
 
+  <!-- Our bugtracking. -->
   <issueManagement>
     <system>Fogbugz</system>
     <url>http://openshapa.nicta.org.au/fogbugz</url>
   </issueManagement>
 
+  <!-- Our source control. -->
   <scm>
     <tag>master</tag>
     <url>http://openshapa.nicta.org.au/viewgit/?a=summary&amp;p=openshapa</url>
   </scm>
 
+  <!-- The location for generating the website. -->
   <distributionManagement>
     <site>
       <id>website</id>
