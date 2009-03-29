@@ -10,17 +10,16 @@ import au.com.nicta.openshapa.controllers.RunTestsC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.util.LinkedList;
-import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
-import org.jdesktop.application.Application;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -166,10 +165,12 @@ implements KeyEventDispatcher {
         strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         runRecentScriptMenu = new javax.swing.JMenu();
         recentScriptsHeader = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JSeparator();
+        favScripts = new javax.swing.JMenuItem();
         helpMenu1 = new javax.swing.JMenu();
         aboutMenuItem1 = new javax.swing.JMenuItem();
         contentsMenuItem = new javax.swing.JMenuItem();
@@ -278,11 +279,20 @@ implements KeyEventDispatcher {
 
         menuBar.add(jMenu2);
 
-        jMenu1.setName("jMenu1"); // NOI18N
+        scriptMenu.setName("scriptMenu"); // NOI18N
+        scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateFavourites(evt);
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+        });
 
         runScriptMenuItem.setAction(actionMap.get("runScript")); // NOI18N
         runScriptMenuItem.setName("runScriptMenuItem"); // NOI18N
-        jMenu1.add(runScriptMenuItem);
+        scriptMenu.add(runScriptMenuItem);
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
@@ -299,9 +309,16 @@ implements KeyEventDispatcher {
         recentScriptsHeader.setName("recentScriptsHeader"); // NOI18N
         runRecentScriptMenu.add(recentScriptsHeader);
 
-        jMenu1.add(runRecentScriptMenu);
+        scriptMenu.add(runRecentScriptMenu);
 
-        menuBar.add(jMenu1);
+        jSeparator4.setName("jSeparator4"); // NOI18N
+        scriptMenu.add(jSeparator4);
+
+        favScripts.setEnabled(false);
+        favScripts.setName("favScripts"); // NOI18N
+        scriptMenu.add(favScripts);
+
+        menuBar.add(scriptMenu);
 
         helpMenu1.setName("helpMenu1"); // NOI18N
 
@@ -321,7 +338,7 @@ implements KeyEventDispatcher {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * The action to inoke when the user selects new cell from the menu.
+     * The action to invoke when the user selects new cell from the menu.
      *
      * @param evt The event that fired this action.
      */
@@ -329,15 +346,104 @@ implements KeyEventDispatcher {
         new CreateNewCellC();
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
+    /**
+     * The action to invoke when the user selects 'strong temporal ordering.'
+     *
+     * @param evt The event that fired this action.
+     */
     private void strongTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_strongTemporalMenuItemActionPerformed
         weakTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
 }//GEN-LAST:event_strongTemporalMenuItemActionPerformed
 
+    /**
+     * The action to invoke when the user selects 'weak temporal ordering.'
+     *
+     * @param evt The event that fired this action.
+     */
     private void weakTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weakTemporalMenuItemActionPerformed
         strongTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
 }//GEN-LAST:event_weakTemporalMenuItemActionPerformed
+
+    /**
+     * The action to invoke when the user selects 'recent scripts' from the
+     * scripting menu.
+     *
+     * @param evt The event that fired this action.
+     */
+    private void populateRecentScripts(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_populateRecentScripts
+        // Flush the menu - excluding the top menu item.
+        int size = runRecentScriptMenu.getMenuComponentCount();
+        for (int i = 1; i < size; i++) {
+            runRecentScriptMenu.remove(i);
+        }
+
+        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
+        for (File f : lastScripts) {
+            runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
+        }
+}//GEN-LAST:event_populateRecentScripts
+
+    /** The directory holding a users favourite scripts. */
+    static final String FAV_DIR = "favourites";
+
+    /**
+     * The action to invoke when the user selects 'scripts' from the main menu.
+     *
+     * @param evt The event that fired this action.
+     */
+    private void populateFavourites(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_populateFavourites
+        // Favourite script list starts after the 'favScripts' menu item - which
+        // is just a stub for a starting point. Search for the favScripts as the
+        // starting point for deleting existing scripts from the menu.
+        Component list[] = scriptMenu.getMenuComponents();
+        int start = 0;
+        for (Component c : list) {
+            start++;
+            if (c.getName().equals("favScripts")) {
+                break;
+            }
+        }
+
+        // Delete every menu item from 'favScripts' down to the end of the list.
+        // Favscripts are
+        int size = scriptMenu.getMenuComponentCount();
+        for (int i = start; i < size; i++) {
+            scriptMenu.remove(i);
+        }
+
+        // Get list of favourite scripts from the favourites folder.
+        File favouritesDir = new File(FAV_DIR);
+        String[] children = favouritesDir.list();
+        if (children != null) {
+            for (String s : children) {
+                File f = new File(FAV_DIR + File.separatorChar + s);
+                scriptMenu.add(createScriptMenuItemFromFile(f));
+            }
+        }
+    }//GEN-LAST:event_populateFavourites
+
+    /**
+     * Creates a new menu item for running a named script.
+     *
+     * @param text The text to display for the menu item for the supplied
+     * script.
+     * @param f The file to run when menu item is selected.
+     * @return The jmenuitem that can be added to a menu.
+     */
+    public JMenuItem createScriptMenuItemFromFile(final File f) {
+        JMenuItem menuItem = new JMenuItem();
+        menuItem.setText(f.toString());
+        menuItem.setName(f.toString());        
+        menuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runRecentScript(evt);
+            }
+        });
+
+        return menuItem;
+    }
 
     /**
      * The action to invoke when the user selects a recent script to run.
@@ -354,34 +460,12 @@ implements KeyEventDispatcher {
      *
      * @param evt The event that triggered this action.
      */
-    private void populateRecentScripts(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_populateRecentScripts
-        // Flush the menu - excluding the top menu item.
-        int size = runRecentScriptMenu.getMenuComponentCount();
-        for (int i = 1; i < size; i++) {
-            runRecentScriptMenu.remove(i);
-        }
-
-        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
-        for (File f : lastScripts) {
-            JMenuItem menuItem = new JMenuItem();
-            menuItem.setName(f.toString());
-            menuItem.setText(f.toString());
-            menuItem.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    runRecentScript(evt);
-                }
-            });
-
-            runRecentScriptMenu.add(menuItem);
-        }
-    }//GEN-LAST:event_populateRecentScripts
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
+    private javax.swing.JMenuItem favScripts;
     private javax.swing.JMenu helpMenu1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuItem jMenuItem1;
@@ -390,6 +474,7 @@ implements KeyEventDispatcher {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
@@ -397,6 +482,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
+    private javax.swing.JMenu scriptMenu;
     private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
     // End of variables declaration//GEN-END:variables
