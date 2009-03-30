@@ -18,6 +18,10 @@
       <directory>src/main/samples/</directory>
       <outputDirectory>samples</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/favourites/</directory>
+      <outputDirectory>favourites</outputDirectory>
+    </fileSet>
   </fileSets>
 
   <binaries>
