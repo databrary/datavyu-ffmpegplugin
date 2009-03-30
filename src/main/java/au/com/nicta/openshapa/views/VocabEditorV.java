@@ -138,7 +138,12 @@ public class VocabEditorV extends OpenSHAPADialog {
                           .equals(new String("."))) {
                 // If the row is an element that has changed - we need to push
                 // this into the database.
-                
+                /*
+                try {
+                    this
+                } catch (SystemErrorException e) {
+                    logger.error("Unable to apply vocab changes", e);
+                }*/
             }            
         }        
     }

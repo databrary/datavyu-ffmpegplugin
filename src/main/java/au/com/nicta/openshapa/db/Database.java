@@ -2917,6 +2917,24 @@ public abstract class Database
 
     } /* Database::replaceMatrixVE(mve) */
 
+    public long addVocabElement(final VocabElement ve)
+    throws SystemErrorException {
+        try {
+            // Throw an error if the vocab element is null.
+            if (ve == null) {
+                throw new SystemErrorException("Unable to add ve - it is null");
+            }
+
+            // Create a copy of the vocab element and add it to the database
+            //vocab.
+            VocabElement copy = (VocabElement) ve.clone();
+            this.vl.addElement(copy);
+            return copy.getID();
+        } catch (CloneNotSupportedException e) {
+            throw new SystemErrorException(e.toString());
+        }
+    }
+
 
     /*** PredicateVocabElement methods ***/
 

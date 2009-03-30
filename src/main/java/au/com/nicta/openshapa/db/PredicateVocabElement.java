@@ -21,25 +21,6 @@ package au.com.nicta.openshapa.db;
 public final class PredicateVocabElement extends VocabElement
 {
 
-    /*************************************************************************/
-    /************************** Type Definitions: ****************************/
-    /*************************************************************************/
-
-    /* None */
-
-
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-
-    /* None */
-
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
-
     /**
      * PredicateVocabElement()
      *
@@ -75,6 +56,13 @@ public final class PredicateVocabElement extends VocabElement
 
     } /* PredicateVocabElement::PredicateVocabElement(db, name) */
 
+    /**
+     * Copy contructor.
+     *
+     * @param ve The predicate vocab element to copy.
+     *
+     * @throws SystemErrorException if unable to copy predicate vocab element.
+     */
     public PredicateVocabElement(PredicateVocabElement ve)
         throws SystemErrorException
     {
@@ -95,16 +83,22 @@ public final class PredicateVocabElement extends VocabElement
     } /* PredicateVocabElement::PredicateVocabElement(ve) */
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
-    /* None */
-
-
-    /*************************************************************************/
-    /*************************** Overrides: **********************************/
-    /*************************************************************************/
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        try {
+            return new PredicateVocabElement(this);
+        } catch (SystemErrorException e) {
+            throw new CloneNotSupportedException(e.toString());
+        }
+    }
 
     /**
      * isWellFormed() -- override of abstract method in VocabElement
@@ -226,6 +220,7 @@ public final class PredicateVocabElement extends VocabElement
      *    - None.
      *
      */
+    @Override
     public String toDBString()
         throws SystemErrorException
     {
@@ -268,6 +263,7 @@ public final class PredicateVocabElement extends VocabElement
      *    - None.
      *
      */
+    @Override
     public String toString()
     {
         String s;
@@ -301,7 +297,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public void setName(String name)
         throws SystemErrorException
     {
@@ -333,6 +329,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
+    @Override
     public void appendFormalArg(FormalArgument newArg)
         throws SystemErrorException
     {
@@ -356,7 +353,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public void deleteFormalArg(int n)
         throws SystemErrorException
     {
@@ -380,6 +377,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *   - None.
      */
+    @Override
     public FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
@@ -400,7 +398,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public int getNumFormalArgs()
         throws SystemErrorException
     {
@@ -421,7 +419,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public void insertFormalArg(FormalArgument newArg,
                                 int n)
         throws SystemErrorException
@@ -445,7 +443,7 @@ public final class PredicateVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public void replaceFormalArg(FormalArgument newArg,
                                  int n)
         throws SystemErrorException
@@ -455,6 +453,7 @@ public final class PredicateVocabElement extends VocabElement
         return;
 
     } /* PredicateVocabElement::replaceFormalArg() */
+
 
 
 

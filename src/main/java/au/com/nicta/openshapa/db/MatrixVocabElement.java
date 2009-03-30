@@ -171,6 +171,22 @@ public class MatrixVocabElement extends VocabElement
 
     } /* MatrixVocabElement::MatrixVocabElement(ve) */
 
+    /**
+     * Creates a new copy of the object.
+     *
+     * @return A duplicate of this object.
+     *
+     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * not been implemented.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        try {
+            return new MatrixVocabElement(this);
+        } catch (SystemErrorException e) {
+            throw new CloneNotSupportedException(e.toString());
+        }
+    }
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/
