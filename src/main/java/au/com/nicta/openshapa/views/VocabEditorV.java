@@ -18,8 +18,10 @@ import org.jdesktop.application.ResourceMap;
  */
 public class VocabEditorV extends OpenSHAPADialog {
 
+    /** The table model of the current vocab listing. */
     private DefaultTableModel tableModel;
 
+    /** The database that this vocab editor is manipulating. */
     private Database db;
 
     /** The logger for OpenSHAPA. */
@@ -56,9 +58,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         initComponents();
     }
 
-    /**
-     * 
-     */
     @Action
     public void addPredicate() {
         Object row[] = new Object[NUM_COLUMNS];
@@ -73,12 +72,9 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         tableModel.addRow(row);
         containsChange = true;
-        this.updateCloseButton();
+        this.updateDialogState();
     }
 
-    /**
-     *
-     */
     @Action
     public void addMatrix() {
         Object row[] = new Object[NUM_COLUMNS];
@@ -93,10 +89,10 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         tableModel.addRow(row);
         containsChange = true;
-        this.updateCloseButton();
+        this.updateDialogState();
     }
 
-    private void updateCloseButton() {
+    private void updateDialogState() {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(VocabEditorV.class);
@@ -104,15 +100,49 @@ public class VocabEditorV extends OpenSHAPADialog {
         if (containsChange) {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
+
+            revertButton.setEnabled(true);
+            applyButton.setEnabled(true);
+            okButton.setEnabled(true);
         } else {
             closeButton.setText(rMap.getString("closeButton.closeText"));
             closeButton.setToolTipText(rMap.getString("closeButton.closeTip"));
+
+            revertButton.setEnabled(false);
+            applyButton.setEnabled(false);
+            okButton.setEnabled(false);
         }
     }
 
-    /**
-     * 
-     */
+    @Action
+    public void revertChanges() {
+        int tableSize = tableModel.getRowCount();
+        int curPos = 0;
+        for (int i = 0; i < tableSize; i++) {
+            if (tableModel.getValueAt(curPos, DELTA_COLUMN_ID)
+                          .equals(new String("."))) {
+                tableModel.removeRow(curPos);
+            } else {
+                curPos++;
+            }
+        }
+
+        containsChange = false;
+        this.updateDialogState();
+    }
+
+    @Action
+    public void applyChanges() {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if (tableModel.getValueAt(i, DELTA_COLUMN_ID)
+                          .equals(new String("."))) {
+                // If the row is an element that has changed - we need to push
+                // this into the database.
+                
+            }            
+        }        
+    }
+
     @Action
     public void closeWindow() {
         this.setVisible(false);
@@ -230,6 +260,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(jScrollPane1, gridBagConstraints);
 
+        revertButton.setAction(actionMap.get("revertChanges")); // NOI18N
         revertButton.setText(bundle.getString("revertButton.text")); // NOI18N
         revertButton.setToolTipText(bundle.getString("revertButton.tip")); // NOI18N
         revertButton.setEnabled(false);
@@ -240,6 +271,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         getContentPane().add(revertButton, gridBagConstraints);
 
+        applyButton.setAction(actionMap.get("applyChanges")); // NOI18N
         applyButton.setText(bundle.getString("applyButton.text")); // NOI18N
         applyButton.setToolTipText(bundle.getString("applyButton.tip")); // NOI18N
         applyButton.setEnabled(false);

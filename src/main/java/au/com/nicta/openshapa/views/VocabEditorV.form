@@ -196,6 +196,9 @@
     </Container>
     <Component class="javax.swing.JButton" name="revertButton">
       <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="au.com.nicta.openshapa.views.VocabEditorV" id="revertChanges" methodName="revertChanges"/>
+        </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="au/com/nicta/openshapa/views/resources/VocabEditorV.properties" key="revertButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
@@ -213,6 +216,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="applyButton">
       <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="au.com.nicta.openshapa.views.VocabEditorV" id="applyChanges" methodName="applyChanges"/>
+        </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="au/com/nicta/openshapa/views/resources/VocabEditorV.properties" key="applyButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
