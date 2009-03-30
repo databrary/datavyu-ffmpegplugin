@@ -2917,6 +2917,14 @@ public abstract class Database
 
     } /* Database::replaceMatrixVE(mve) */
 
+    /**
+     * Adds a vocab element to the database.
+     *
+     * @param ve The vocab element to add to the database.
+     * @return The ID of the vocab element within the database.
+     * @throws au.com.nicta.openshapa.db.SystemErrorException If unable to add
+     * the vocab element to the database.
+     */
     public long addVocabElement(final VocabElement ve)
     throws SystemErrorException {
         try {
