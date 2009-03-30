@@ -8,6 +8,7 @@ import au.com.nicta.openshapa.controllers.NewVariableC;
 import au.com.nicta.openshapa.controllers.RunScriptC;
 import au.com.nicta.openshapa.controllers.RunTestsC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
+import au.com.nicta.openshapa.controllers.VocabEditorC;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.Component;
@@ -76,6 +77,14 @@ implements KeyEventDispatcher {
     @Action
     public void showNewVariableForm() {
         new NewVariableC();
+    }
+
+    /**
+     * Action for editing vocabs.
+     */
+    @Action
+    public void showVocabEditor() {
+        new VocabEditorC();
     }
 
     /**
@@ -156,6 +165,7 @@ implements KeyEventDispatcher {
         jMenu3 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
@@ -228,6 +238,10 @@ implements KeyEventDispatcher {
 
         jSeparator1.setName("jSeparator1"); // NOI18N
         jMenu3.add(jSeparator1);
+
+        jMenuItem4.setAction(actionMap.get("showVocabEditor")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        jMenu3.add(jMenuItem4);
 
         jMenuItem1.setAction(actionMap.get("showNewVariableForm")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
@@ -471,6 +485,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
