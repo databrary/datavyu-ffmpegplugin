@@ -51,7 +51,7 @@ public class FloatDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         floatMve = new MatrixVocabElement(db, "float_mve");
@@ -745,12 +745,12 @@ public class FloatDataValueTest extends DataValueTest {
             fdv_sr = new FloatDataValue(db, ffa_sr.getID());
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1208,12 +1208,12 @@ public class FloatDataValueTest extends DataValueTest {
             fdv_sr1 = new FloatDataValue(db, ffa_sr.getID(), 200.0);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1743,12 +1743,12 @@ public class FloatDataValueTest extends DataValueTest {
             fdv2 = new FloatDataValue(db, ufa.getID(), 999.999);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2064,12 +2064,12 @@ public class FloatDataValueTest extends DataValueTest {
             fdv_sr1 = new FloatDataValue(db, ffa_sr.getID(), 200.0);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2398,12 +2398,12 @@ public class FloatDataValueTest extends DataValueTest {
             fdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

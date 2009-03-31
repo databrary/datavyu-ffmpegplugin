@@ -2993,12 +2993,12 @@ public class MatrixVocabElementTest {
                 db.vl.addElement(base_ve);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -3218,12 +3218,12 @@ public class MatrixVocabElementTest {
                 db.vl.addElement(base_ve);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -3424,12 +3424,12 @@ public class MatrixVocabElementTest {
                 db.vl.addElement(base_ve);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -3610,12 +3610,12 @@ public class MatrixVocabElementTest {
                 db.vl.addElement(base_ve);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -3823,12 +3823,12 @@ public class MatrixVocabElementTest {
                 db.vl.addElement(base_ve);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||

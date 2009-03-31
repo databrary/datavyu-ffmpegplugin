@@ -35,7 +35,7 @@ public class MatrixTest {
      * @throws SystemErrorException if trouble
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         testdb = new ODBCDatabase();
 
         testMatrixMve = new MatrixVocabElement(testdb, "matrix_mve");
@@ -375,12 +375,12 @@ public class MatrixTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1299,12 +1299,12 @@ public class MatrixTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -3463,12 +3463,12 @@ public class MatrixTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -5038,12 +5038,12 @@ public class MatrixTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -8208,12 +8208,12 @@ public class MatrixTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -9871,12 +9871,12 @@ public class MatrixTest {
             mve1ID = mve1.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

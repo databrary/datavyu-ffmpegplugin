@@ -37,7 +37,7 @@ public class TimeStampDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         MatrixVocabElement matrix_mve0 = new MatrixVocabElement(db, "mve0");
@@ -665,12 +665,12 @@ public class TimeStampDataValueTest extends DataValueTest {
             tsdv_sr = new TimeStampDataValue(db, tsfa_sr.getID());
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1121,12 +1121,12 @@ public class TimeStampDataValueTest extends DataValueTest {
                   new TimeStamp(db_l.getTicks(), (60 * 60 * db_l.getTicks()) + 1));
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||
@@ -1708,12 +1708,12 @@ public class TimeStampDataValueTest extends DataValueTest {
                               new TimeStamp(db_l.getTicks(), 60 * db_l.getTicks()));
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||
@@ -2137,12 +2137,12 @@ public class TimeStampDataValueTest extends DataValueTest {
                     new TimeStamp(db_l.getTicks(), 12 * 60 * 60 * db_l.getTicks()));
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||
@@ -2520,12 +2520,12 @@ public class TimeStampDataValueTest extends DataValueTest {
             tsdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||

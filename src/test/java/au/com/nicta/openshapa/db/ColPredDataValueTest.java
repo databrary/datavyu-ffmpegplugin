@@ -41,7 +41,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -587,12 +587,12 @@ public class ColPredDataValueTest extends DataValueTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1934,12 +1934,12 @@ public class ColPredDataValueTest extends DataValueTest {
             matrix_mve2 = db.getMatrixVE(matrix_mve2_ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2513,12 +2513,12 @@ public class ColPredDataValueTest extends DataValueTest {
                                             alt_float_cp0_arg_list);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( alt_db == null ) ||
@@ -2849,12 +2849,12 @@ public class ColPredDataValueTest extends DataValueTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -3887,12 +3887,12 @@ public class ColPredDataValueTest extends DataValueTest {
             matrix_mve2 = db.getMatrixVE(matrix_mve2_ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

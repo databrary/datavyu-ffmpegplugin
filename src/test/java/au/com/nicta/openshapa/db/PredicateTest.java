@@ -29,7 +29,7 @@ public class PredicateTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         PredicateVocabElement pve0 = new PredicateVocabElement(db, "test0");
@@ -512,10 +512,9 @@ public class PredicateTest {
             predID1 = db.addPredVE(pve1);
 
             pred1 = new Predicate(db, predID1);
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
         }
 
@@ -1215,10 +1214,10 @@ public class PredicateTest {
             argList1a.add(arg);
 
             pred1a = new Predicate(db, predID1, argList1a);
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -2324,10 +2323,10 @@ public class PredicateTest {
             pve3 = db.getPredVE(pve3ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -3529,10 +3528,10 @@ public class PredicateTest {
             pve12 = db.getPredVE(pve12ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -6122,10 +6121,10 @@ public class PredicateTest {
             argList1.add(arg);
 
             pred2a = new Predicate(db, pveID2, argList1);
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -6917,10 +6916,10 @@ public class PredicateTest {
             pve1 = db.getPredVE(pve1ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }

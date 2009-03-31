@@ -70,7 +70,7 @@ public final class DataColumnTest {
      * performed before each test case.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
         f_mve0 = new MatrixVocabElement(db, "f_col0");
         f_mve0.setType(MatrixVocabElement.MatrixType.FLOAT);

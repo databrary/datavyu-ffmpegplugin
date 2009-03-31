@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.controllers;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MacshapaDatabase;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.Constants;
@@ -74,6 +75,8 @@ public class NewDatabaseC implements ActionListener {
             model.setTicks(Constants.TICKS_PER_SECOND);            
         } catch (SystemErrorException e) {
             logger.error("Unable to create new database", e);
+        } catch (LogicErrorException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
         }
     }
 

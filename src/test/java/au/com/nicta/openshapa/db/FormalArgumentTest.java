@@ -343,12 +343,12 @@ public class FormalArgumentTest {
                 p0 = new PredicateVocabElement(db, "p0");
                 db.vl.addElement(p0);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||

@@ -263,12 +263,12 @@ public class PredFormalArgTest {
                 db.vl.addElement(p6);
 
                 testFinished = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! testFinished ) ||
@@ -1899,12 +1899,12 @@ public class PredFormalArgTest {
             progress++;
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( ! completed ) ||
@@ -2496,10 +2496,10 @@ public class PredFormalArgTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -3087,12 +3087,12 @@ public class PredFormalArgTest {
                 db.vl.addElement(p6);
 
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||

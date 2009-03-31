@@ -24,7 +24,7 @@ public class ColPredTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
         
         MatrixVocabElement floatMVE = new MatrixVocabElement(db, "floatMVE");
@@ -594,12 +594,12 @@ public class ColPredTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1744,12 +1744,12 @@ public class ColPredTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -4112,12 +4112,12 @@ public class ColPredTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -5782,12 +5782,12 @@ public class ColPredTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -10188,12 +10188,12 @@ public class ColPredTest {
             text_mve_ID = text_mve.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -12142,12 +12142,12 @@ public class ColPredTest {
             mve1ID = mve1.getID();
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            SystemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

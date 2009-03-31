@@ -2,11 +2,13 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -40,6 +42,14 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** The number of columns in the table model. */
     private static final int NUM_COLUMNS = 3;
 
+    private static final String DELTA = new String(".");
+
+    private static final String NO_DELTA = new String("");
+
+    private static final String P_TYPE = new String("P");
+
+    private static final String M_TYPE = new String("M");
+
     private boolean containsChange;
 
     /** Creates new form VocabEditorV */
@@ -58,16 +68,36 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         initComponents();
 
-        // Populate table with vocab data from the database.
-        
+        // Populate current vocab list with vocab data from the database.
+        try {
+             Vector<PredicateVocabElement> predVEs = db.getPredVEs();
+            for (PredicateVocabElement pve : predVEs) {
+                Object row[] = new Object[NUM_COLUMNS];
+                row[DELTA_COLUMN_ID] = NO_DELTA;
+                row[TYPE_COLUMN_ID] = P_TYPE;
+                row[VOCAB_COLUMN_ID] = pve;
+                tableModel.addRow(row);
+            }
+
+            Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
+            for (MatrixVocabElement mve : matVEs) {
+                Object row[] = new Object[NUM_COLUMNS];
+                row[DELTA_COLUMN_ID] = NO_DELTA;
+                row[TYPE_COLUMN_ID] = M_TYPE;
+                row[VOCAB_COLUMN_ID] = mve;
+                tableModel.addRow(row);
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to populate current vocab list", e);
+        }
     }
 
     @Action
     public void addPredicate() {
         Object row[] = new Object[NUM_COLUMNS];
         
-        row[DELTA_COLUMN_ID] = new String(".");
-        row[TYPE_COLUMN_ID] = new String("P");
+        row[DELTA_COLUMN_ID] = DELTA;
+        row[TYPE_COLUMN_ID] = P_TYPE;
         try {
             row[VOCAB_COLUMN_ID] = new PredicateVocabElement(db, "predicate");
         } catch (SystemErrorException e) {
@@ -83,8 +113,8 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void addMatrix() {
         Object row[] = new Object[NUM_COLUMNS];
 
-        row[DELTA_COLUMN_ID] = new String(".");
-        row[TYPE_COLUMN_ID] = new String("M");
+        row[DELTA_COLUMN_ID] = DELTA;
+        row[TYPE_COLUMN_ID] = M_TYPE;
         try {
             row[VOCAB_COLUMN_ID] = new MatrixVocabElement(db, "matrix");
         } catch (SystemErrorException e) {
@@ -123,8 +153,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         int tableSize = tableModel.getRowCount();
         int curPos = 0;
         for (int i = 0; i < tableSize; i++) {
-            if (tableModel.getValueAt(curPos, DELTA_COLUMN_ID)
-                          .equals(new String("."))) {
+            if (tableModel.getValueAt(curPos, DELTA_COLUMN_ID).equals(DELTA)) {
                 tableModel.removeRow(curPos);
             } else {
                 curPos++;
@@ -138,18 +167,19 @@ public class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void applyChanges() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-            if (tableModel.getValueAt(i, DELTA_COLUMN_ID)
-                          .equals(new String("."))) {
+            if (tableModel.getValueAt(i, DELTA_COLUMN_ID).equals(DELTA)) {
                 // If the row is an element that has changed - we need to push
                 // this into the database.
                 try {
                     db.addVocabElement((VocabElement) tableModel.getValueAt(i,
                                                               VOCAB_COLUMN_ID));
-                    tableModel.setValueAt(new String(""), i, DELTA_COLUMN_ID);
+                    tableModel.setValueAt(NO_DELTA, i, DELTA_COLUMN_ID);
                     containsChange = false;
                     this.updateDialogState();
                 } catch (SystemErrorException e) {
                     logger.error("Unable to apply vocab changes", e);
+                } catch (LogicErrorException le) {
+                    OpenSHAPA.getApplication().showWarningDialog(le);
                 }
             }            
         }        
@@ -333,5 +363,4 @@ public class VocabEditorV extends OpenSHAPADialog {
     private javax.swing.JButton revertButton;
     private javax.swing.JCheckBox varyArgCheckBox;
     // End of variables declaration//GEN-END:variables
-
 }

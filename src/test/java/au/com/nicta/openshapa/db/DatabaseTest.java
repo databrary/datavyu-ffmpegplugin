@@ -614,7 +614,7 @@ public abstract class DatabaseTest {
     }
 
     private static Predicate MakeDemoPredicate(Database db)
-                                            throws SystemErrorException {
+    throws SystemErrorException, LogicErrorException {
         PredicateVocabElement pve0;
         FormalArgument farg;
 
@@ -745,7 +745,8 @@ public abstract class DatabaseTest {
      *    - None.
      */
     @Test
-    public void TestClassDatabase() throws SystemErrorException {
+    public void TestClassDatabase()
+    throws SystemErrorException, LogicErrorException {
         PrintStream outStream = System.out;
         boolean verbose = true;
 
@@ -3233,7 +3234,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestGetMatrixVE(java.io.PrintStream outStream,
                                           boolean verbose)
-        throws SystemErrorException
+    throws SystemErrorException, LogicErrorException
     {
         String testBanner =
             "Testing getMatrixVE()                                            ";
@@ -3751,8 +3752,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestGetMatrixVEs(java.io.PrintStream outStream,
                                            boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing getMatrixVEs()                                           ";
         String passBanner = "PASSED\n";
@@ -3837,7 +3837,7 @@ public abstract class DatabaseTest {
                  ( pve == null ) ||
                  ( mve_id == DBIndex.INVALID_ID ) ||
                  ( pve_id == DBIndex.INVALID_ID ) ||
-                 ( mves0 != null ) ||
+                 ( !mves0.isEmpty() ) ||
                  ( mves1 == null ) ||
                  ( threwSystemErrorException ) )
             {
@@ -3885,7 +3885,7 @@ public abstract class DatabaseTest {
                         outStream.print("pve_id == INVALID_ID.\n");
                     }
 
-                    if ( mves0 != null )
+                    if ( !mves0.isEmpty() )
                     {
                         outStream.print("mves0 != null.\n");
                     }
@@ -3975,8 +3975,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestMatrixNameInUse(java.io.PrintStream outStream,
                                               boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing matrixNameInUse()                                        ";
         String passBanner = "PASSED\n";
@@ -4262,8 +4261,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestMatrixVEExists(java.io.PrintStream outStream,
                                              boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing matrixVEExists()                                         ";
         String passBanner = "PASSED\n";
@@ -4646,8 +4644,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestRemoveMatrixVE(java.io.PrintStream outStream,
                                              boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing removeMatrixVE()                                         ";
         String passBanner = "PASSED\n";
@@ -4964,8 +4961,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestReplaceMatrixVE(java.io.PrintStream outStream,
                                               boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing replaceMatrixVE()                                        ";
         String passBanner = "PASSED\n";
@@ -5311,8 +5307,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestAddPredVE(java.io.PrintStream outStream,
                                         boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing addPredVE()                                              ";
         String passBanner = "PASSED\n";
@@ -5595,8 +5590,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestGetPredVE(java.io.PrintStream outStream,
                                         boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing getPredVE()                                              ";
         String passBanner = "PASSED\n";
@@ -6113,8 +6107,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestGetPredVEs(java.io.PrintStream outStream,
                                          boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing getPredVEs()                                             ";
         String passBanner = "PASSED\n";
@@ -6199,7 +6192,7 @@ public abstract class DatabaseTest {
                  ( pve == null ) ||
                  ( mve_id == DBIndex.INVALID_ID ) ||
                  ( pve_id == DBIndex.INVALID_ID ) ||
-                 ( pves0 != null ) ||
+                 ( !pves0.isEmpty() ) ||
                  ( pves1 == null ) ||
                  ( threwSystemErrorException ) )
             {
@@ -6247,7 +6240,7 @@ public abstract class DatabaseTest {
                         outStream.print("pve_id == INVALID_ID.\n");
                     }
 
-                    if ( pves0 != null )
+                    if ( !pves0.isEmpty() )
                     {
                         outStream.print("pves0 != null.\n");
                     }
@@ -6337,8 +6330,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestPredNameInUse(java.io.PrintStream outStream,
                                             boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing predNameInUse()                                          ";
         String passBanner = "PASSED\n";
@@ -6624,8 +6616,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestPredVEExists(java.io.PrintStream outStream,
                                            boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing predVEExists()                                           ";
         String passBanner = "PASSED\n";
@@ -7030,8 +7021,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestRemovePredVE(java.io.PrintStream outStream,
                                            boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing removePredVE()                                           ";
         String passBanner = "PASSED\n";
@@ -7347,8 +7337,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestReplacePredVE(java.io.PrintStream outStream,
                                             boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing replacePredVE()                                          ";
         String passBanner = "PASSED\n";
@@ -7695,8 +7684,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestGetVocabElement(java.io.PrintStream outStream,
                                               boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing getVocabElement()                                        ";
         String passBanner = "PASSED\n";
@@ -8141,8 +8129,7 @@ public abstract class DatabaseTest {
 
     public static boolean TestVocabElementExists(java.io.PrintStream outStream,
                                                  boolean verbose)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         String testBanner =
             "Testing vocabElementExists()                                     ";
         String passBanner = "PASSED\n";

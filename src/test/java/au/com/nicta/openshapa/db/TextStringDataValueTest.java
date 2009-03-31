@@ -42,7 +42,7 @@ public class TextStringDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
 
         txt_mve = new MatrixVocabElement(db, "txt_mve");
@@ -718,12 +718,12 @@ public class TextStringDataValueTest extends DataValueTest {
             tdv = new TextStringDataValue(db_l, tfa_l.getID());
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||
@@ -1071,12 +1071,12 @@ public class TextStringDataValueTest extends DataValueTest {
             tdv = new TextStringDataValue(db_l, tfa_l.getID(), "echo");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db_l == null ) ||
@@ -1467,12 +1467,12 @@ public class TextStringDataValueTest extends DataValueTest {
             tdv1 = new TextStringDataValue(db, tfa1.getID(), "delta");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1784,12 +1784,12 @@ public class TextStringDataValueTest extends DataValueTest {
             tdv2 = new TextStringDataValue(db, tfa.getID(), "foxtrot");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2100,12 +2100,12 @@ public class TextStringDataValueTest extends DataValueTest {
             tdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

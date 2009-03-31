@@ -9,8 +9,12 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import java.util.HashMap;
 import au.com.nicta.openshapa.util.OpenHashtable;
+import java.util.Vector;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * Class VocabList
@@ -317,30 +321,25 @@ public class VocabList
      */
 
     protected void addElement(VocabElement ve)
-       throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(VocabList.class);
+
         final String mName = "VocabList::addElement(ve): ";
         VocabElementListeners nl = null;
 
         if (ve == null) {
             throw new SystemErrorException(mName + "Bad ve param");
-        }
-        else if ( ve.getDB() != db )
-        {
+        } else if (ve.getDB() != db) {
             throw new SystemErrorException(mName + "fe.getDB() != db");
-        }
-        else if ( ve.getID() != DBIndex.INVALID_ID )
-        {
+        } else if (ve.getID() != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName +
                                            "ve.getID() != INVALID_ID");
-        }
-        else if ( this.vl.containsReference(ve) )
-        {
-            throw new SystemErrorException(mName + "ve already in vl?!?");
-        }
-        else if ( this.nameMap.containsKey(ve.name) )
-        {
-            throw new SystemErrorException(mName + "ve name in use!?!");
+        } else if (this.vl.containsReference(ve)
+                   || this.nameMap.containsKey(ve.name)) {
+            throw new LogicErrorException(rMap.getString("Error.veExists",
+                                                         ve.getName()));
         }
 
         this.db.cascadeStart();
@@ -474,7 +473,7 @@ public class VocabList
     protected java.util.Vector<MatrixVocabElement> getMatricies()
         throws SystemErrorException
     {
-        java.util.Vector<MatrixVocabElement> matricies = null;
+        Vector<MatrixVocabElement> matricies = new Vector<MatrixVocabElement>();
         VocabElement ve;
         MatrixVocabElement mve;
         java.util.Enumeration<VocabElement> entries;
@@ -491,11 +490,6 @@ public class VocabList
                 if ( ( ! mve.getSystem() ) &&
                      ( mve.getType() == MatrixVocabElement.MatrixType.MATRIX ) )
                 {
-                    if ( matricies == null )
-                    {
-                        matricies = new java.util.Vector<MatrixVocabElement>();
-                    }
-
                     matricies.add(new MatrixVocabElement(mve));
                 }
             }
@@ -511,7 +505,7 @@ public class VocabList
      *
      * Construct and return a vector containing copies of all non-system
      * predicates in the vocab list.  If the vocab list contains no non-system
-     * predicates, return null.
+     * predicates, it returns an empty vector.
      *                                                  JRM -- 6/19/07
      *
      * Changes:
@@ -522,7 +516,8 @@ public class VocabList
     protected java.util.Vector<PredicateVocabElement> getPreds()
         throws SystemErrorException
     {
-        java.util.Vector<PredicateVocabElement> preds = null;
+        Vector<PredicateVocabElement> preds =
+                                            new Vector<PredicateVocabElement>();
         VocabElement ve;
         PredicateVocabElement pve;
         java.util.Enumeration<VocabElement> entries;
@@ -538,10 +533,6 @@ public class VocabList
 
                 if ( ! pve.getSystem() )
                 {
-                    if ( preds == null )
-                    {
-                        preds = new java.util.Vector<PredicateVocabElement>();
-                    }
                     preds.add(new PredicateVocabElement(pve));
                 }
             }

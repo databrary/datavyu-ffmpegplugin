@@ -1301,8 +1301,7 @@ public abstract class Database
      */
 
     public long addColumn(Column col)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         final String mName = "Database::addColumn(col): ";
         long newColID = DBIndex.INVALID_ID;
 
@@ -1366,7 +1365,7 @@ public abstract class Database
      */
 
     private long addDataColumn(DataColumn dc)
-        throws SystemErrorException
+        throws SystemErrorException, LogicErrorException
     {
         final String mName = "Database::addDataColumn(dc): ";
         long colID = DBIndex.INVALID_ID;
@@ -2676,8 +2675,7 @@ public abstract class Database
      */
 
     private long addMatrixVE(MatrixVocabElement mve)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         final String mName = "Database::addMatrixVE(mve): ";
         MatrixVocabElement local_mve = null;
 
@@ -2926,7 +2924,7 @@ public abstract class Database
      * the vocab element to the database.
      */
     public long addVocabElement(final VocabElement ve)
-    throws SystemErrorException {
+    throws SystemErrorException, LogicErrorException {
         try {
             // Throw an error if the vocab element is null.
             if (ve == null) {
@@ -2961,8 +2959,7 @@ public abstract class Database
      */
 
     public long addPredVE(PredicateVocabElement pve)
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         final String mName = "Database::addPredVE(pve): ";
         PredicateVocabElement local_pve = null;
 

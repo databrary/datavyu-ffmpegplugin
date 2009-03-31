@@ -41,7 +41,7 @@ public class PredDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
         predMVE = new MatrixVocabElement(db, "pred_mve");
         predMVE.setType(MatrixVocabElement.MatrixType.PREDICATE);
@@ -584,10 +584,10 @@ public class PredDataValueTest extends DataValueTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -750,12 +750,12 @@ public class PredDataValueTest extends DataValueTest {
                 pdv_sr = new PredDataValue(db, pfa_sr.getID());
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -1279,10 +1279,10 @@ public class PredDataValueTest extends DataValueTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -1490,12 +1490,12 @@ public class PredDataValueTest extends DataValueTest {
                 pdv_sr1 = new PredDataValue(db, pfa_sr.getID(), p3);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -2074,10 +2074,10 @@ public class PredDataValueTest extends DataValueTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -2287,12 +2287,12 @@ public class PredDataValueTest extends DataValueTest {
                 pdv2 = new PredDataValue(db, ufa.getID(), p6);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -2751,10 +2751,10 @@ public class PredDataValueTest extends DataValueTest {
                 alt_p1 = new Predicate(alt_db, alt_pve1ID);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.toString();
+            } catch (LogicErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
             }
@@ -3139,10 +3139,10 @@ public class PredDataValueTest extends DataValueTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -3365,12 +3365,12 @@ public class PredDataValueTest extends DataValueTest {
                 pdv_sr1 = new PredDataValue(db, pfa_sr.getID(), p0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -3846,10 +3846,10 @@ public class PredDataValueTest extends DataValueTest {
 
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = e.toString();
+        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
         }
@@ -3986,12 +3986,12 @@ public class PredDataValueTest extends DataValueTest {
                 pdv1.itsCellID = 501; // invalid value for print test
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||

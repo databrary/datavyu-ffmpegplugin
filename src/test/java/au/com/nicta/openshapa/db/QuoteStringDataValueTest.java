@@ -44,7 +44,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
         qs_mve = new MatrixVocabElement(db, "qs_mve");
         qs_mve.setType(MatrixVocabElement.MatrixType.MATRIX);
@@ -787,12 +787,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
             qsdv = new QuoteStringDataValue(db, qsfa.getID());
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1140,12 +1140,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
             qsdv = new QuoteStringDataValue(db, qsfa.getID(), "echo");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1537,12 +1537,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
             qsdv1 = new QuoteStringDataValue(db, ufa.getID(), "delta");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1851,12 +1851,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
             qsdv2 = new QuoteStringDataValue(db, qsfa.getID(), "foxtrot");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2167,12 +2167,12 @@ public class QuoteStringDataValueTest extends DataValueTest {
             qsdv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

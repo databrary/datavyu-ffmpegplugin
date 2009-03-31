@@ -3006,12 +3006,12 @@ public class DataCellTest extends CellTest {
             }
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.getMessage();
         }
 
         if ( ( pve10 == null ) ||

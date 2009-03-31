@@ -44,7 +44,7 @@ public class NominalDataValueTest extends DataValueTest {
      * @throws au.com.nicta.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException {
+    public void setUp() throws SystemErrorException, LogicErrorException {
         db = new ODBCDatabase();
         nom_mve = new MatrixVocabElement(db, "nom_mve");
         nom_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
@@ -785,12 +785,12 @@ public class NominalDataValueTest extends DataValueTest {
             ndv_sr = new NominalDataValue(db, nfa_sr.getID());
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1225,12 +1225,12 @@ public class NominalDataValueTest extends DataValueTest {
             ndv_sr1 = new NominalDataValue(db, nfa_sr.getID(), "delta");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1666,12 +1666,12 @@ public class NominalDataValueTest extends DataValueTest {
             ndv5 = new NominalDataValue(db, ufa.getID(), "?");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2124,12 +2124,12 @@ public class NominalDataValueTest extends DataValueTest {
             ndv_sr1 = new NominalDataValue(db, nfa_sr.getID(), "mike");
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2458,12 +2458,12 @@ public class NominalDataValueTest extends DataValueTest {
             ndv1.itsCellID = 501; // invalid value for print test
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
+        } catch (LogicErrorException le) {
+            threwSystemErrorException = true;
+            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

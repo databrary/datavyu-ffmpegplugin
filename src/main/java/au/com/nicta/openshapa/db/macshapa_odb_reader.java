@@ -1791,7 +1791,7 @@ public class macshapa_odb_reader
     
     char lookahead_char = ' ';
     
-    MacshapaDatabase db = new MacshapaDatabase();
+    MacshapaDatabase db;
     
     int odb_file_format_version = -1;
     
@@ -1951,10 +1951,10 @@ public class macshapa_odb_reader
      **********************************************************************/
 
     protected macshapa_odb_reader()
-        throws SystemErrorException
-    {
+    throws SystemErrorException, LogicErrorException {
         super();
-        
+
+        this.db = new MacshapaDatabase();
         this.l0_tok = new Token(this);
         this.l1_tok = new Token(this);
         this.l2_tok = new Token(this);
@@ -8765,8 +8765,12 @@ public class macshapa_odb_reader
             }
             
             new_pve.setVarLen(variable_length);
-            
-            this.db.addPredVE(new_pve);
+
+            try {
+                this.db.addPredVE(new_pve);
+            } catch (LogicErrorException le) {
+                throw new SystemErrorException("Unable to add pred ve.");
+            }
 	}
 
 	return;
@@ -11816,7 +11820,11 @@ public class macshapa_odb_reader
                  * before we insert it -- thus must be careful not
                  * to corrupt it.
                  */
-                this.db.vl.addElement(mve);
+                try {
+                    this.db.vl.addElement(mve);
+                } catch (LogicErrorException le) {
+                    throw new SystemErrorException("mve add failed.");
+                }
         
                 mve_id = mve.getID();
         
@@ -15621,7 +15629,11 @@ public class macshapa_odb_reader
              * before we insert it -- thus must be careful not
              * to corrupt it.
              */
-            this.db.vl.addElement(query_mve);
+            try {
+                this.db.vl.addElement(query_mve);
+            } catch (LogicErrorException le) {
+                throw new SystemErrorException("Unable to add new mve.");
+            }
 
             query_mve_ID = query_mve.getID();
         

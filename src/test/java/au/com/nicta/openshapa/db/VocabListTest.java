@@ -493,8 +493,8 @@ public class VocabListTest {
             if ( ( ! completed ) ||
                  ( db == null ) ||
                  ( vl == null ) ||
-                 ( matricies != null ) ||
-                 ( preds != null ) ||
+                 ( !matricies.isEmpty() ) ||
+                 ( !preds.isEmpty() ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -516,13 +516,13 @@ public class VocabListTest {
                         outStream.print("vl not allocated with db?!?!?l.\n");
                     }
 
-                    if ( preds != null )
+                    if ( !preds.isEmpty() )
                     {
                         outStream.print(
                                 "unexpected return from getPreds()(1).\n");
                     }
 
-                    if ( matricies != null )
+                    if ( !matricies.isEmpty() )
                     {
                         outStream.print(
                                 "unexpected return from getMatricies()(1).\n");
@@ -666,12 +666,12 @@ public class VocabListTest {
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -725,8 +725,8 @@ public class VocabListTest {
                  ( cp_foxtrot == null ) ||
                  ( cp_golf == null ) ||
                  ( cp_hotel == null ) ||
-                 ( matricies != null ) ||
-                 ( preds != null ) ||
+                 ( !matricies.isEmpty() ) ||
+                 ( !preds.isEmpty() ) ||
                  ( threwSystemErrorException ) )
             {
                 failures++;
@@ -808,13 +808,13 @@ public class VocabListTest {
                         outStream.print("bad col pred fArg(s).\n");
                     }
 
-                    if ( preds != null )
+                    if ( !preds.isEmpty() )
                     {
                         outStream.print(
                                 "unexpected return from getPreds()(2).\n");
                     }
 
-                    if ( matricies != null )
+                    if ( !matricies.isEmpty() )
                     {
                         outStream.print(
                                 "unexpected return from getMatricies()(2).\n");
@@ -898,12 +898,12 @@ public class VocabListTest {
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -1064,12 +1064,12 @@ public class VocabListTest {
                 matricies = vl.getMatricies();
                 preds = vl.getPreds();
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
@@ -1646,12 +1646,12 @@ public class VocabListTest {
                 cp_hotel = m1.getCPFormalArg(5);
 
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||
@@ -1862,12 +1862,12 @@ public class VocabListTest {
                 ve3 = vl.getVocabElement("p1");
 
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( inVL0 != false ) || ( inVL1 != true ) ||
@@ -2246,12 +2246,12 @@ public class VocabListTest {
             {
                 vl.addElement(p0);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -2324,12 +2324,12 @@ public class VocabListTest {
             {
                 vl.addElement(p4);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -2407,12 +2407,12 @@ public class VocabListTest {
                 old_id = DBElementTest.ResetID(p3);
                 vl.addElement(p3);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -2521,12 +2521,12 @@ public class VocabListTest {
             {
                 vl.addElement(null);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -2591,16 +2591,15 @@ public class VocabListTest {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 vl.addElement(p3dup);
                 methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -5285,12 +5284,12 @@ public class VocabListTest {
                 progress++;
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
+            } catch (LogicErrorException le) {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||
