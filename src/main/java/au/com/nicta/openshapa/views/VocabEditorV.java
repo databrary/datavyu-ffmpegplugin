@@ -10,6 +10,8 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -63,15 +65,22 @@ public class VocabEditorV extends OpenSHAPADialog {
         tableModel = new DefaultTableModel();
         tableModel.addColumn("Delta");
         tableModel.addColumn("Type");
-        tableModel.addColumn("vocab");
+        tableModel.addColumn("vocab");        
 
         containsChange = false;
 
         initComponents();
 
+        tableModel.addTableModelListener(new TableModelListener() {
+           public void tableChanged(TableModelEvent e) {
+               onTableValueChange(e);
+           }
+        });
+        currentVocabList.setCellSelectionEnabled(true);
+
         // Populate current vocab list with vocab data from the database.
         try {
-             Vector<PredicateVocabElement> predVEs = db.getPredVEs();
+            Vector<PredicateVocabElement> predVEs = db.getPredVEs();
             for (PredicateVocabElement pve : predVEs) {
                 Object row[] = new Object[NUM_COLUMNS];
                 row[DELTA_COLUMN_ID] = NO_DELTA;
@@ -91,6 +100,12 @@ public class VocabEditorV extends OpenSHAPADialog {
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
         }
+    }
+
+    public void onTableValueChange(TableModelEvent e) {
+        int c = e.getColumn();
+        int r = e.getFirstRow();
+        Object o = e.getSource();
     }
 
     @Action
@@ -183,6 +198,7 @@ public class VocabEditorV extends OpenSHAPADialog {
                     logger.error("Unable to apply vocab changes", e);
                 } catch (LogicErrorException le) {
                     OpenSHAPA.getApplication().showWarningDialog(le);
+                    break;  // Only show one error dialog to the user at a time.
                 }
             }            
         }        
@@ -218,7 +234,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         varyArgCheckBox = new javax.swing.JCheckBox();
         deleteButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        currentVocabList = new javax.swing.JTable();
         revertButton = new javax.swing.JButton();
         applyButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
@@ -298,9 +314,9 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
-        jTable1.setModel(tableModel);
-        jTable1.setName("jTable1"); // NOI18N
-        jScrollPane1.setViewportView(jTable1);
+        currentVocabList.setModel(tableModel);
+        currentVocabList.setName("currentVocabList"); // NOI18N
+        jScrollPane1.setViewportView(currentVocabList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -314,6 +330,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         revertButton.setAction(actionMap.get("revertChanges")); // NOI18N
         revertButton.setText(bundle.getString("revertButton.text")); // NOI18N
         revertButton.setToolTipText(bundle.getString("revertButton.tip")); // NOI18N
+        revertButton.setEnabled(false);
         revertButton.setName("revertButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -324,6 +341,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         applyButton.setAction(actionMap.get("applyChanges")); // NOI18N
         applyButton.setText(bundle.getString("applyButton.text")); // NOI18N
         applyButton.setToolTipText(bundle.getString("applyButton.tip")); // NOI18N
+        applyButton.setEnabled(false);
         applyButton.setName("applyButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -360,13 +378,13 @@ public class VocabEditorV extends OpenSHAPADialog {
     private javax.swing.JButton applyButton;
     private javax.swing.JComboBox argTypeComboBox;
     private javax.swing.JButton closeButton;
+    private javax.swing.JTable currentVocabList;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JButton okButton;
     private javax.swing.JButton revertButton;
     private javax.swing.JCheckBox varyArgCheckBox;
