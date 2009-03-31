@@ -20,6 +20,7 @@ import au.com.nicta.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
+import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 import org.apache.log4j.Logger;
@@ -175,6 +176,20 @@ implements ExternalDataCellListener, Selectable {
      */
     public long getCellID() {
         return cellID;
+    }
+
+    /**
+     * @return onset as String
+     */
+    public String getOnsetDisplay() {
+        return onset.getText();
+    }
+
+    /**
+     * @return offset as String
+     */
+    public String getOffsetDisplay() {
+        return offset.getText();
     }
 
     /**
@@ -397,6 +412,10 @@ implements ExternalDataCellListener, Selectable {
     public void setOnsetvPos(int vPos) {
         setLocation(getX(), vPos);
         setOnsetProcessed(true);
+    }
+
+    public final Vector<DataValueView> getValue() {
+        return dataPanel.getMatrix();
     }
 
 }

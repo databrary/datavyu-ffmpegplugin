@@ -2,7 +2,10 @@ package org.uispec4j;
 
 import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import au.com.nicta.openshapa.views.discrete.ColumnHeaderPanel;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
+import java.util.Iterator;
+import java.util.Vector;
 import junit.framework.Assert;
 
 
@@ -66,8 +69,30 @@ public class Column extends AbstractUIComponent {
     }
 
     /**
-     * returns cells in header - based on type, start time, endtime or ID
+     * Returns cells in the column.
+     * @return Vector<Cell> cells in column
      */
+    public final Vector<Cell> getCells() {
+        Vector<SpreadsheetCell> originalCells = ssColumn.getCells();
+        Vector<Cell> returnCells = new Vector();
+
+        // Iterate through cells, create new Cell and add to new vector
+        Iterator itr = originalCells.iterator();
+        while (itr.hasNext()) {
+            returnCells.add(new Cell((SpreadsheetCell) itr.next()));
+        }
+
+        return returnCells;
+    }
+
+
+
+    /**
+     * Requests focus for this column, for example to create new cells.
+     */
+    public void requestFocus() {
+        ssColumn.setSelected(true);
+    }
 
 
 }
