@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
+import au.com.nicta.openshapa.db.MatrixVocabElement.MatrixType;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
@@ -116,7 +117,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         row[DELTA_COLUMN_ID] = DELTA;
         row[TYPE_COLUMN_ID] = M_TYPE;
         try {
-            row[VOCAB_COLUMN_ID] = new MatrixVocabElement(db, "matrix");
+            MatrixVocabElement ve = new MatrixVocabElement(db, "matrix");
+            ve.setType(MatrixType.MATRIX);
+            row[VOCAB_COLUMN_ID] = ve;
         } catch (SystemErrorException e) {
             logger.error("Unable to create matrix vocab element", e);
         }
@@ -186,8 +189,14 @@ public class VocabEditorV extends OpenSHAPADialog {
     }
 
     @Action
+    public void ok() {
+        applyChanges();
+        setVisible(false);
+    }
+
+    @Action
     public void closeWindow() {
-        this.setVisible(false);
+        setVisible(false);
     }
 
     /** This method is called from within the constructor to
@@ -305,7 +314,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         revertButton.setAction(actionMap.get("revertChanges")); // NOI18N
         revertButton.setText(bundle.getString("revertButton.text")); // NOI18N
         revertButton.setToolTipText(bundle.getString("revertButton.tip")); // NOI18N
-        revertButton.setEnabled(false);
         revertButton.setName("revertButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -316,7 +324,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         applyButton.setAction(actionMap.get("applyChanges")); // NOI18N
         applyButton.setText(bundle.getString("applyButton.text")); // NOI18N
         applyButton.setToolTipText(bundle.getString("applyButton.tip")); // NOI18N
-        applyButton.setEnabled(false);
         applyButton.setName("applyButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -324,6 +331,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         getContentPane().add(applyButton, gridBagConstraints);
 
+        okButton.setAction(actionMap.get("ok")); // NOI18N
         okButton.setText(bundle.getString("okButton.text")); // NOI18N
         okButton.setToolTipText(bundle.getString("okButton.tip")); // NOI18N
         okButton.setEnabled(false);
