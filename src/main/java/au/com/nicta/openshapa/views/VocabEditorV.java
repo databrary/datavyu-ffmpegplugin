@@ -5,6 +5,7 @@ import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.db.VocabElement;
 import java.awt.event.ActionListener;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
@@ -56,6 +57,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         containsChange = false;
 
         initComponents();
+
+        // Populate table with vocab data from the database.
+        
     }
 
     @Action
@@ -138,12 +142,15 @@ public class VocabEditorV extends OpenSHAPADialog {
                           .equals(new String("."))) {
                 // If the row is an element that has changed - we need to push
                 // this into the database.
-                /*
                 try {
-                    this
+                    db.addVocabElement((VocabElement) tableModel.getValueAt(i,
+                                                              VOCAB_COLUMN_ID));
+                    tableModel.setValueAt(new String(""), i, DELTA_COLUMN_ID);
+                    containsChange = false;
+                    this.updateDialogState();
                 } catch (SystemErrorException e) {
                     logger.error("Unable to apply vocab changes", e);
-                }*/
+                }
             }            
         }        
     }
