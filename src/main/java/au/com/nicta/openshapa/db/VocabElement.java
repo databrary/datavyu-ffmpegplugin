@@ -717,7 +717,7 @@ public abstract class VocabElement extends DBElement
      *                                          JRM -- 4/30/07
      *
      */
-    protected FormalArgument getFormalArg(int n)
+    public FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
         final String mName = "VocabElement::getFormalArg(): ";

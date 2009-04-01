@@ -4,15 +4,16 @@ import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
-import au.com.nicta.openshapa.db.MatrixVocabElement.MatrixType;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
-import au.com.nicta.openshapa.db.VocabElement;
+import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
+import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
+import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.Box;
+import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -24,122 +25,74 @@ import org.jdesktop.application.ResourceMap;
  */
 public class VocabEditorV extends OpenSHAPADialog {
 
-    /** The table model of the current vocab listing. */
-    private DefaultTableModel tableModel;
-
     /** The database that this vocab editor is manipulating. */
     private Database db;
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(VocabEditorV.class);
 
-    /** The ID of the column that holds delta information. */
-    private static final int DELTA_COLUMN_ID = 0;
-
-    /** The ID of the column that holds type information. */
-    private static final int TYPE_COLUMN_ID = 1;
-
-    /** The ID of the column that holds the actual vocab element. */
-    private static final int VOCAB_COLUMN_ID = 2;
-
-    /** The number of columns in the table model. */
-    private static final int NUM_COLUMNS = 3;
-
-    private static final String DELTA = new String(".");
-
-    private static final String NO_DELTA = new String("");
-
-    private static final String P_TYPE = new String("P");
-
-    private static final String M_TYPE = new String("M");
-
     private boolean containsChange;
 
+    private Vector<VocabElementV> veViews;
+
     /** Creates new form VocabEditorV */
-    public VocabEditorV(java.awt.Frame parent, boolean modal,
+    public VocabEditorV(java.awt.Frame parent,
+                        boolean modal,
                         final ActionListener listener) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
-
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("Delta");
-        tableModel.addColumn("Type");
-        tableModel.addColumn("vocab");        
-
         containsChange = false;
-
         initComponents();
 
-        tableModel.addTableModelListener(new TableModelListener() {
-           public void tableChanged(TableModelEvent e) {
-               onTableValueChange(e);
-           }
-        });
-        currentVocabList.setCellSelectionEnabled(true);
+        veViews = new Vector<VocabElementV>();
 
         // Populate current vocab list with vocab data from the database.
         try {
             Vector<PredicateVocabElement> predVEs = db.getPredVEs();
             for (PredicateVocabElement pve : predVEs) {
-                Object row[] = new Object[NUM_COLUMNS];
-                row[DELTA_COLUMN_ID] = NO_DELTA;
-                row[TYPE_COLUMN_ID] = P_TYPE;
-                row[VOCAB_COLUMN_ID] = pve;
-                tableModel.addRow(row);
+                veViews.add(new PredicateVEV(pve));
             }
 
             Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
             for (MatrixVocabElement mve : matVEs) {
-                Object row[] = new Object[NUM_COLUMNS];
-                row[DELTA_COLUMN_ID] = NO_DELTA;
-                row[TYPE_COLUMN_ID] = M_TYPE;
-                row[VOCAB_COLUMN_ID] = mve;
-                tableModel.addRow(row);
+                veViews.add(new MatrixVEV(mve));
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
         }
-    }
 
-    public void onTableValueChange(TableModelEvent e) {
-        int c = e.getColumn();
-        int r = e.getFirstRow();
-        Object o = e.getSource();
+        this.updateDialogState();
     }
 
     @Action
-    public void addPredicate() {
-        Object row[] = new Object[NUM_COLUMNS];
-        
-        row[DELTA_COLUMN_ID] = DELTA;
-        row[TYPE_COLUMN_ID] = P_TYPE;
+    public void addPredicate() {        
         try {
-            row[VOCAB_COLUMN_ID] = new PredicateVocabElement(db, "predicate");
+            PredicateVocabElement pve = new PredicateVocabElement(db, "predicate");
+            PredicateVEV pvev = new PredicateVEV(pve);
+            pvev.setHasChanged(true);
+            veViews.add(pvev);
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
         }
 
-        tableModel.addRow(row);
         containsChange = true;
         this.updateDialogState();
     }
 
     @Action
     public void addMatrix() {
-        Object row[] = new Object[NUM_COLUMNS];
-
-        row[DELTA_COLUMN_ID] = DELTA;
-        row[TYPE_COLUMN_ID] = M_TYPE;
         try {
-            MatrixVocabElement ve = new MatrixVocabElement(db, "matrix");
-            ve.setType(MatrixType.MATRIX);
-            row[VOCAB_COLUMN_ID] = ve;
+            MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
+            MatrixVEV mvev = new MatrixVEV(mve);
+            mvev.setHasChanged(true);
+            veViews.add(mvev);
+
         } catch (SystemErrorException e) {
-            logger.error("Unable to create matrix vocab element", e);
+            logger.error("Unable to create predicate vocab element", e);
         }
 
-        tableModel.addRow(row);
         containsChange = true;
         this.updateDialogState();
     }
@@ -164,44 +117,53 @@ public class VocabEditorV extends OpenSHAPADialog {
             applyButton.setEnabled(false);
             okButton.setEnabled(false);
         }
+
+        jPanel1.removeAll();
+        Box vertical = Box.createVerticalBox();
+
+        for (VocabElementV vev : veViews) {
+            vertical.add(vev);
+        }
+
+        // Add a pad cell, add the box to the current vocab list and revalidate.
+        vertical.add(new JPanel());
+        jPanel1.add(vertical, BorderLayout.NORTH);
+        validate();
     }
 
     @Action
     public void revertChanges() {
-        int tableSize = tableModel.getRowCount();
+        int tableSize = veViews.size();
         int curPos = 0;
         for (int i = 0; i < tableSize; i++) {
-            if (tableModel.getValueAt(curPos, DELTA_COLUMN_ID).equals(DELTA)) {
-                tableModel.removeRow(curPos);
+            if (veViews.get(curPos).hasChanged()) {
+                veViews.remove(curPos);
             } else {
                 curPos++;
             }
         }
 
         containsChange = false;
-        this.updateDialogState();
+        updateDialogState();
     }
 
     @Action
     public void applyChanges() {
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            if (tableModel.getValueAt(i, DELTA_COLUMN_ID).equals(DELTA)) {
-                // If the row is an element that has changed - we need to push
-                // this into the database.
-                try {
-                    db.addVocabElement((VocabElement) tableModel.getValueAt(i,
-                                                              VOCAB_COLUMN_ID));
-                    tableModel.setValueAt(NO_DELTA, i, DELTA_COLUMN_ID);
+
+        try {
+            for (VocabElementV vev : veViews) {
+                if (vev.hasChanged()) {
+                    db.addVocabElement(vev.getVocabElement());
+                    vev.setHasChanged(false);
                     containsChange = false;
-                    this.updateDialogState();
-                } catch (SystemErrorException e) {
-                    logger.error("Unable to apply vocab changes", e);
-                } catch (LogicErrorException le) {
-                    OpenSHAPA.getApplication().showWarningDialog(le);
-                    break;  // Only show one error dialog to the user at a time.
+                    updateDialogState();
                 }
-            }            
-        }        
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to apply vocab changes", e);
+        } catch (LogicErrorException le) {
+            OpenSHAPA.getApplication().showWarningDialog(le);
+        }
     }
 
     @Action
@@ -225,16 +187,16 @@ public class VocabEditorV extends OpenSHAPADialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        addPredicateButton = new javax.swing.JButton();
+        addMatrixButton = new javax.swing.JButton();
+        moveArgLeftButton = new javax.swing.JButton();
+        moveArgRightButton = new javax.swing.JButton();
         addArgButton = new javax.swing.JButton();
         argTypeComboBox = new javax.swing.JComboBox();
         varyArgCheckBox = new javax.swing.JCheckBox();
         deleteButton = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        currentVocabList = new javax.swing.JTable();
+        currentVocabList = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
         revertButton = new javax.swing.JButton();
         applyButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
@@ -248,29 +210,29 @@ public class VocabEditorV extends OpenSHAPADialog {
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(VocabEditorV.class, this);
-        jButton1.setAction(actionMap.get("addPredicate")); // NOI18N
-        jButton1.setText(bundle.getString("addPredicateButton.text")); // NOI18N
-        jButton1.setToolTipText(bundle.getString("addPredicateButton.tip")); // NOI18N
-        jButton1.setName("jButton1"); // NOI18N
-        getContentPane().add(jButton1, new java.awt.GridBagConstraints());
+        addPredicateButton.setAction(actionMap.get("addPredicate")); // NOI18N
+        addPredicateButton.setText(bundle.getString("addPredicateButton.text")); // NOI18N
+        addPredicateButton.setToolTipText(bundle.getString("addPredicateButton.tip")); // NOI18N
+        addPredicateButton.setName("addPredicateButton"); // NOI18N
+        getContentPane().add(addPredicateButton, new java.awt.GridBagConstraints());
 
-        jButton2.setAction(actionMap.get("addMatrix")); // NOI18N
-        jButton2.setText(bundle.getString("addMatrixButton.text")); // NOI18N
-        jButton2.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
-        jButton2.setName("jButton2"); // NOI18N
-        getContentPane().add(jButton2, new java.awt.GridBagConstraints());
+        addMatrixButton.setAction(actionMap.get("addMatrix")); // NOI18N
+        addMatrixButton.setText(bundle.getString("addMatrixButton.text")); // NOI18N
+        addMatrixButton.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
+        addMatrixButton.setName("addMatrixButton"); // NOI18N
+        getContentPane().add(addMatrixButton, new java.awt.GridBagConstraints());
 
-        jButton3.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
-        jButton3.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
-        jButton3.setEnabled(false);
-        jButton3.setName("jButton3"); // NOI18N
-        getContentPane().add(jButton3, new java.awt.GridBagConstraints());
+        moveArgLeftButton.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
+        moveArgLeftButton.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
+        moveArgLeftButton.setEnabled(false);
+        moveArgLeftButton.setName("moveArgLeftButton"); // NOI18N
+        getContentPane().add(moveArgLeftButton, new java.awt.GridBagConstraints());
 
-        jButton4.setText(bundle.getString("moveArgRightButton.text")); // NOI18N
-        jButton4.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
-        jButton4.setEnabled(false);
-        jButton4.setName("jButton4"); // NOI18N
-        getContentPane().add(jButton4, new java.awt.GridBagConstraints());
+        moveArgRightButton.setText(bundle.getString("moveArgRightButton.text")); // NOI18N
+        moveArgRightButton.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
+        moveArgRightButton.setEnabled(false);
+        moveArgRightButton.setName("moveArgRightButton"); // NOI18N
+        getContentPane().add(moveArgRightButton, new java.awt.GridBagConstraints());
 
         addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
         addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
@@ -312,11 +274,12 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(deleteButton, gridBagConstraints);
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-        currentVocabList.setModel(tableModel);
         currentVocabList.setName("currentVocabList"); // NOI18N
-        jScrollPane1.setViewportView(currentVocabList);
+        currentVocabList.setPreferredSize(new java.awt.Dimension(4, 400));
+
+        jPanel1.setName("jPanel1"); // NOI18N
+        jPanel1.setLayout(new java.awt.GridLayout(1, 1));
+        currentVocabList.setViewportView(jPanel1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -325,7 +288,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        getContentPane().add(jScrollPane1, gridBagConstraints);
+        getContentPane().add(currentVocabList, gridBagConstraints);
 
         revertButton.setAction(actionMap.get("revertChanges")); // NOI18N
         revertButton.setText(bundle.getString("revertButton.text")); // NOI18N
@@ -352,7 +315,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         okButton.setAction(actionMap.get("ok")); // NOI18N
         okButton.setText(bundle.getString("okButton.text")); // NOI18N
         okButton.setToolTipText(bundle.getString("okButton.tip")); // NOI18N
-        okButton.setEnabled(false);
         okButton.setName("okButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -375,16 +337,16 @@ public class VocabEditorV extends OpenSHAPADialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArgButton;
+    private javax.swing.JButton addMatrixButton;
+    private javax.swing.JButton addPredicateButton;
     private javax.swing.JButton applyButton;
     private javax.swing.JComboBox argTypeComboBox;
     private javax.swing.JButton closeButton;
-    private javax.swing.JTable currentVocabList;
+    private javax.swing.JScrollPane currentVocabList;
     private javax.swing.JButton deleteButton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton moveArgLeftButton;
+    private javax.swing.JButton moveArgRightButton;
     private javax.swing.JButton okButton;
     private javax.swing.JButton revertButton;
     private javax.swing.JCheckBox varyArgCheckBox;

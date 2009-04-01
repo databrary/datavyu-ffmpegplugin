@@ -366,28 +366,6 @@ public final class PredicateVocabElement extends VocabElement
 
 
     /**
-     * getFormalArg()
-     *
-     * Make FormalArgument::getFormalArg() accessible to
-     * the outside world.
-     *
-     *                                          JRM -- 3/4/07
-     *
-     * Changes:
-     *
-     *   - None.
-     */
-    @Override
-    public FormalArgument getFormalArg(int n)
-        throws SystemErrorException
-    {
-
-        return super.getFormalArg(n);
-
-    } /* PredicateVocabElement::getFormalArg() */
-
-
-    /**
      * getNumFormalArgs()
      *
      * Make VocabElement::getNumFormalArgs() public.
