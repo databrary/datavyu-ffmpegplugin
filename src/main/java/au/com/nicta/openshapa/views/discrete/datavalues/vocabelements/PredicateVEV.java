@@ -42,8 +42,9 @@ public class PredicateVEV extends VocabElementV {
 
             try {
                 pveModel.setName(cValue.toString());
-                this.setHasChanged(true);
-                this.rebuildContents();
+                this.getNameComonent().advanceCaret();
+                setHasChanged(true);
+                rebuildContents();
             } catch (SystemErrorException se) {
                 logger.error("Unable to set new predicate name", se);
             }

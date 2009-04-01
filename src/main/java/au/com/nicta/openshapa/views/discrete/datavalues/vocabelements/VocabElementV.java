@@ -2,17 +2,16 @@ package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
+import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,7 +30,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
 
     private JLabel deltaIcon;
 
-    private JTextField veNameField;
+    private Editor veNameField;
 
     private ImageIcon deltaImageIcon;
 
@@ -57,7 +56,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         typeIcon.setMinimumSize(ICON_SIZE);
         typeIcon.setPreferredSize(ICON_SIZE);
 
-        veNameField = new JTextField();
+        veNameField = new VocabElementNameV();
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
 
@@ -87,7 +86,8 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.add(typeIcon);
 
         boolean hasFocus = veNameField.hasFocus();
-        int caret = veNameField.getCaretPosition();
+        veNameField.storeCaretPosition();
+        //int caret = veNameField.getCaretPosition();
         veNameField.setText(veModel.getName());
 
         this.add(veNameField);
@@ -110,7 +110,8 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
 
         // Maintain focus after draw.
         if (hasFocus) {
-            veNameField.setCaretPosition(caret);
+            //veNameField.setCaretPosition(caret);
+            veNameField.restoreCaretPosition();
             veNameField.requestFocus();
         }
     }
@@ -133,7 +134,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         return veModel;
     }
 
-    final public JTextField getNameComonent() {
+    final public Editor getNameComonent() {
         return this.veNameField;
     }
 
