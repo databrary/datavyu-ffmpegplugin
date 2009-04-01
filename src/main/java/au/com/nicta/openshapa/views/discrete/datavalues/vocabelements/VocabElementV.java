@@ -5,17 +5,21 @@ import au.com.nicta.openshapa.db.VocabElement;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author cfreeman
  */
-public abstract class VocabElementV extends JPanel implements Cloneable {
+public abstract class VocabElementV extends JPanel implements KeyListener {
 
     private static final int VE_WIDTH = 16;
 
@@ -35,6 +39,8 @@ public abstract class VocabElementV extends JPanel implements Cloneable {
 
     private VocabElement veModel;
 
+    private static Logger logger = Logger.getLogger(VocabElementV.class);
+
     protected VocabElementV(VocabElement vocabElement) {
         URL iconURL = getClass().getResource("/icons/d_16.png");
         deltaImageIcon = new ImageIcon(iconURL);
@@ -45,16 +51,15 @@ public abstract class VocabElementV extends JPanel implements Cloneable {
         deltaIcon.setMaximumSize(ICON_SIZE);
         deltaIcon.setMinimumSize(ICON_SIZE);
         deltaIcon.setPreferredSize(ICON_SIZE);
-        //this.add(deltaIcon);
 
         typeIcon = new JLabel();
         typeIcon.setMaximumSize(ICON_SIZE);
         typeIcon.setMinimumSize(ICON_SIZE);
         typeIcon.setPreferredSize(ICON_SIZE);
-        //this.add(typeIcon);
 
         veNameField = new JTextField();
         veNameField.setBorder(null);
+        veNameField.addKeyListener(this);
 
         this.setBackground(Color.WHITE);
         ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);
@@ -76,12 +81,15 @@ public abstract class VocabElementV extends JPanel implements Cloneable {
         this.typeIcon.setIcon(newIcon);
     }
 
-    final private void rebuildContents() {
+    final protected void rebuildContents() {
         this.removeAll();
         this.add(deltaIcon);
         this.add(typeIcon);
-        
+
+        boolean hasFocus = veNameField.hasFocus();
+        int caret = veNameField.getCaretPosition();
         veNameField.setText(veModel.getName());
+
         this.add(veNameField);
         this.add(new JLabel("("));
         try {
@@ -95,13 +103,17 @@ public abstract class VocabElementV extends JPanel implements Cloneable {
                 }
             }
         } catch (SystemErrorException e) {
-            
+            logger.error("unable to rebuild contents.", e);
         }
         this.add(new JLabel(")"));
-    }
+        this.validate();
 
-    @Override
-    public abstract Object clone();
+        // Maintain focus after draw.
+        if (hasFocus) {
+            veNameField.setCaretPosition(caret);
+            veNameField.requestFocus();
+        }
+    }
 
     final public void setHasChanged(boolean hasChanged) {
         if (hasChanged) {
@@ -121,4 +133,15 @@ public abstract class VocabElementV extends JPanel implements Cloneable {
         return veModel;
     }
 
+    final public JTextField getNameComonent() {
+        return this.veNameField;
+    }
+
+    final public void keyPressed(KeyEvent e) {
+        
+    }
+
+    final public void keyReleased(KeyEvent e) {
+        
+    }
 }

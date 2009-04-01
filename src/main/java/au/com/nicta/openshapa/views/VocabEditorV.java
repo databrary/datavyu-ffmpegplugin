@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -33,6 +34,8 @@ public class VocabEditorV extends OpenSHAPADialog {
 
     private boolean containsChange;
 
+    private JTextField componentToSelect;
+
     private Vector<VocabElementV> veViews;
 
     /** Creates new form VocabEditorV */
@@ -44,6 +47,8 @@ public class VocabEditorV extends OpenSHAPADialog {
         db = OpenSHAPA.getDatabase();
         containsChange = false;
         initComponents();
+        componentToSelect = null;
+
 
         veViews = new Vector<VocabElementV>();
 
@@ -72,6 +77,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             PredicateVEV pvev = new PredicateVEV(pve);
             pvev.setHasChanged(true);
             veViews.add(pvev);
+            componentToSelect = pvev.getNameComonent();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -88,6 +94,9 @@ public class VocabEditorV extends OpenSHAPADialog {
             MatrixVEV mvev = new MatrixVEV(mve);
             mvev.setHasChanged(true);
             veViews.add(mvev);
+            componentToSelect = mvev.getNameComonent();
+            componentToSelect.requestFocus();
+            componentToSelect.selectAll();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -129,6 +138,10 @@ public class VocabEditorV extends OpenSHAPADialog {
         vertical.add(new JPanel());
         jPanel1.add(vertical, BorderLayout.NORTH);
         validate();
+        if (componentToSelect != null) {
+            componentToSelect.requestFocus();
+            componentToSelect.selectAll();
+        }
     }
 
     @Action
