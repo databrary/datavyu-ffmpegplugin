@@ -48,20 +48,18 @@ public class VocabEditorV extends OpenSHAPADialog {
         containsChange = false;
         initComponents();
         componentToSelect = null;
-
-
         veViews = new Vector<VocabElementV>();
 
         // Populate current vocab list with vocab data from the database.
         try {
             Vector<PredicateVocabElement> predVEs = db.getPredVEs();
             for (PredicateVocabElement pve : predVEs) {
-                veViews.add(new PredicateVEV(pve));
+                veViews.add(new PredicateVEV(pve, this));
             }
 
             Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
             for (MatrixVocabElement mve : matVEs) {
-                veViews.add(new MatrixVEV(mve));
+                veViews.add(new MatrixVEV(mve, this));
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
@@ -74,10 +72,10 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void addPredicate() {        
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db, "predicate");
-            PredicateVEV pvev = new PredicateVEV(pve);
+            PredicateVEV pvev = new PredicateVEV(pve, this);
             pvev.setHasChanged(true);
             veViews.add(pvev);
-            componentToSelect = pvev.getNameComonent();
+            componentToSelect = pvev.getNameComponent();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -91,12 +89,10 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void addMatrix() {
         try {
             MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
-            MatrixVEV mvev = new MatrixVEV(mve);
+            MatrixVEV mvev = new MatrixVEV(mve, this);
             mvev.setHasChanged(true);
             veViews.add(mvev);
-            componentToSelect = mvev.getNameComonent();
-            componentToSelect.requestFocus();
-            componentToSelect.selectAll();
+            componentToSelect = mvev.getNameComponent();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -106,7 +102,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         this.updateDialogState();
     }
 
-    private void updateDialogState() {
+    public void updateDialogState() {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(VocabEditorV.class);
@@ -141,6 +137,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         if (componentToSelect != null) {
             componentToSelect.requestFocus();
             componentToSelect.selectAll();
+            componentToSelect = null;
         }
     }
 

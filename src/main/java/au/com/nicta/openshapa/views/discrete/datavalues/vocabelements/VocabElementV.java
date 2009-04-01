@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
+import au.com.nicta.openshapa.views.VocabEditorV;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,7 +25,8 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
 
     private static final int VE_HEIGHT = 16;
 
-    private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH, VE_HEIGHT);
+    private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH,
+                                                             VE_HEIGHT);
 
     private JLabel typeIcon;
 
@@ -38,13 +40,16 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
 
     private VocabElement veModel;
 
+    private VocabEditorV parentEditor;
+
     private static Logger logger = Logger.getLogger(VocabElementV.class);
 
-    protected VocabElementV(VocabElement vocabElement) {
+    protected VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         URL iconURL = getClass().getResource("/icons/d_16.png");
         deltaImageIcon = new ImageIcon(iconURL);
         hasVEChanged = false;
         veModel = vocabElement;
+        parentEditor = vev;
 
         deltaIcon = new JLabel();
         deltaIcon.setMaximumSize(ICON_SIZE);
@@ -63,7 +68,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.setBackground(Color.WHITE);
         ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);
         this.setMaximumSize(new Dimension(50000, VE_HEIGHT));
-        
+
         this.rebuildContents();
     }
 
@@ -84,10 +89,10 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.removeAll();
         this.add(deltaIcon);
         this.add(typeIcon);
+        this.parentEditor.updateDialogState();
 
         boolean hasFocus = veNameField.hasFocus();
         veNameField.storeCaretPosition();
-        //int caret = veNameField.getCaretPosition();
         veNameField.setText(veModel.getName());
 
         this.add(veNameField);
@@ -106,14 +111,13 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
             logger.error("unable to rebuild contents.", e);
         }
         this.add(new JLabel(")"));
-        this.validate();
+        validate();
 
         // Maintain focus after draw.
         if (hasFocus) {
-            //veNameField.setCaretPosition(caret);
-            veNameField.restoreCaretPosition();
             veNameField.requestFocus();
-        }
+            veNameField.restoreCaretPosition();
+        }        
     }
 
     final public void setHasChanged(boolean hasChanged) {
@@ -134,7 +138,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         return veModel;
     }
 
-    final public Editor getNameComonent() {
+    final public Editor getNameComponent() {
         return this.veNameField;
     }
 

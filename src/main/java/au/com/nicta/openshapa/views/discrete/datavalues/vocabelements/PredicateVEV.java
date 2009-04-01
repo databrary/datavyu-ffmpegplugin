@@ -2,10 +2,11 @@ package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.views.VocabEditorV;
+import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import javax.swing.ImageIcon;
-import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
 /**
@@ -17,8 +18,8 @@ public class PredicateVEV extends VocabElementV {
 
     private static Logger logger = Logger.getLogger(PredicateVEV.class);
 
-    public PredicateVEV(final PredicateVocabElement pve) {
-        super(pve);
+    public PredicateVEV(PredicateVocabElement pve, VocabEditorV vev) {
+        super(pve, vev);
         pveModel = pve;
         URL iconURL = getClass().getResource("/icons/p_16.png");
         ImageIcon icon = new ImageIcon(iconURL);
@@ -30,19 +31,50 @@ public class PredicateVEV extends VocabElementV {
     }
 
     final public void keyTyped(KeyEvent e) {
+        // The backspace key removes digits from behind the caret.
+        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+            && e.getKeyChar() == '\u0008') {
+
+            // Can't delete empty int datavalue.
+            this.getNameComponent().removeBehindCaret();
+            try {
+                pveModel.setName(getNameComponent().getText());
+            } catch (SystemErrorException se) {
+                logger.error("Unable to delete from predicate name", se);
+            }
+            setHasChanged(true);
+            rebuildContents();
+
+
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            // Can't delete empty int datavalue.
+            this.getNameComponent().removeAheadOfCaret();
+            try {
+                pveModel.setName(getNameComponent().getText());
+            } catch (SystemErrorException se) {
+                logger.error("Unable to delete from predicate name", se);
+            }
+            setHasChanged(true);
+            rebuildContents();
 
         // If the character is not reserved - add it to the name of the pred
-        if (e.getKeyChar() != '<' && e.getKeyChar() != '>' &&
-            e.getKeyChar() != '(' && e.getKeyChar() != ')' &&
-            e.getKeyChar() != ',' && e.getKeyChar() != '"') {
-
-            JTextField field = getNameComonent();
-            StringBuffer cValue = new StringBuffer(field.getText());
-            cValue.insert(field.getCaretPosition(), e.getKeyChar());
+        } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>' &&
+                   e.getKeyChar() != '(' && e.getKeyChar() != ')' &&
+                   e.getKeyChar() != ',' && e.getKeyChar() != '"') {
 
             try {
+                Editor field = getNameComponent();
+                field.removeSelectedText();
+                //rebuildContents();
+                
+                StringBuffer cValue = new StringBuffer(field.getText());
+                cValue.insert(field.getCaretPosition(), e.getKeyChar());
+            
                 pveModel.setName(cValue.toString());
-                this.getNameComonent().advanceCaret();
+                field.advanceCaret();
                 setHasChanged(true);
                 rebuildContents();
             } catch (SystemErrorException se) {
