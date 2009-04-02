@@ -35,9 +35,11 @@ public class VocabEditorV extends OpenSHAPADialog {
 
     private boolean containsChange;
 
-    private JTextField componentToSelect;
+    private JTextField selectedEditor;
 
     private Vector<VocabElementV> veViews;
+
+    private VocabElementV selectedVocabElement;
 
     /** Creates new form VocabEditorV */
     public VocabEditorV(java.awt.Frame parent,
@@ -48,7 +50,8 @@ public class VocabEditorV extends OpenSHAPADialog {
         db = OpenSHAPA.getDatabase();
         containsChange = false;
         initComponents();
-        componentToSelect = null;
+        selectedEditor = null;
+        selectedVocabElement = null;
         veViews = new Vector<VocabElementV>();
 
         // Populate current vocab list with vocab data from the database.
@@ -76,7 +79,8 @@ public class VocabEditorV extends OpenSHAPADialog {
             PredicateVEV pvev = new PredicateVEV(pve, this);
             pvev.setHasChanged(true);
             veViews.add(pvev);
-            componentToSelect = pvev.getNameComponent();
+            selectedEditor = pvev.getNameComponent();
+            selectedVocabElement = pvev;
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -94,7 +98,8 @@ public class VocabEditorV extends OpenSHAPADialog {
             MatrixVEV mvev = new MatrixVEV(mve, this);
             mvev.setHasChanged(true);
             veViews.add(mvev);
-            componentToSelect = mvev.getNameComponent();
+            selectedEditor = mvev.getNameComponent();
+            selectedVocabElement = mvev;
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -125,11 +130,29 @@ public class VocabEditorV extends OpenSHAPADialog {
             okButton.setEnabled(false);
         }
 
+        if (selectedVocabElement != null) {
+            addArgButton.setEnabled(true);
+            argTypeComboBox.setEnabled(true);
+            varyArgCheckBox.setEnabled(true);
+            deleteButton.setEnabled(true);
+        } else {
+            addArgButton.setEnabled(false);
+            argTypeComboBox.setEnabled(false);
+            varyArgCheckBox.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
+
         jPanel1.removeAll();
         Box vertical = Box.createVerticalBox();
 
+        selectedVocabElement = null;
         for (VocabElementV vev : veViews) {
             vertical.add(vev);
+            if (vev.hasFocus()) {
+                // An vocab element has focus - enable certain things.
+                selectedVocabElement = vev;
+                break;
+            }
         }
 
         // Add a pad cell, add the box to the current vocab list and revalidate.
@@ -138,9 +161,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         validate();
 
         // Select new component if freshly created.
-        if (componentToSelect != null) {
-            componentToSelect.requestFocus();
-            componentToSelect = null;
+        if (selectedEditor != null) {
+            selectedEditor.requestFocus();
+            selectedEditor = null;
         }
     }
 
@@ -257,7 +280,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(addArgButton, gridBagConstraints);
 
-        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Untyped", "Text", "Nominal", "Predicate", "Integer", "Float" }));
         argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
         argTypeComboBox.setEnabled(false);
         argTypeComboBox.setName("argTypeComboBox"); // NOI18N
@@ -306,7 +329,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         revertButton.setAction(actionMap.get("revertChanges")); // NOI18N
         revertButton.setText(bundle.getString("revertButton.text")); // NOI18N
         revertButton.setToolTipText(bundle.getString("revertButton.tip")); // NOI18N
-        revertButton.setEnabled(false);
         revertButton.setName("revertButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -317,7 +339,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         applyButton.setAction(actionMap.get("applyChanges")); // NOI18N
         applyButton.setText(bundle.getString("applyButton.text")); // NOI18N
         applyButton.setToolTipText(bundle.getString("applyButton.tip")); // NOI18N
-        applyButton.setEnabled(false);
         applyButton.setName("applyButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;

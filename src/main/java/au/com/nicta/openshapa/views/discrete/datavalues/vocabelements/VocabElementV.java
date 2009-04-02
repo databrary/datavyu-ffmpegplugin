@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
+import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,6 +41,8 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
 
     private VocabElement veModel;
 
+    private Vector<FormalArgumentV> argViews;
+
     private VocabEditorV parentEditor;
 
     private static Logger logger = Logger.getLogger(VocabElementV.class);
@@ -50,6 +53,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         hasVEChanged = false;
         veModel = vocabElement;
         parentEditor = vev;
+        argViews = new Vector<FormalArgumentV>();
 
         deltaIcon = new JLabel();
         deltaIcon.setMaximumSize(ICON_SIZE);
@@ -72,6 +76,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.rebuildContents();
     }
 
+    /*
     protected VocabElementV(VocabElementV vocabElementV) {
         typeIcon = vocabElementV.typeIcon;
         deltaIcon = vocabElementV.deltaIcon;
@@ -79,7 +84,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         deltaImageIcon = vocabElementV.deltaImageIcon;
         hasVEChanged = vocabElementV.hasVEChanged;
         veModel = vocabElementV.veModel;
-    }
+    }*/
 
     final protected void setTypeIcon(final ImageIcon newIcon) {
         this.typeIcon.setIcon(newIcon);
@@ -100,7 +105,9 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         try {
             for (int i = 0; i < veModel.getNumFormalArgs(); i++) {
                 this.add(new JLabel("<"));
-                this.add(new FormalArgumentV(veModel.getFormalArg(i)));
+                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i));
+                this.argViews.add(fargV);
+                this.add(fargV);
                 this.add(new JLabel(">"));
 
                 if (i < (veModel.getNumFormalArgs() - 1)) {
@@ -151,6 +158,21 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
             default:
                 break;
         }
+    }
+
+    @Override
+    final public boolean hasFocus() {
+        if (this.veNameField.hasFocus()) {
+            return true;
+        } else {
+            for (int i = 0; i < argViews.size(); i++) {
+                if (argViews.get(i).hasFocus()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     final public void keyReleased(KeyEvent e) {
