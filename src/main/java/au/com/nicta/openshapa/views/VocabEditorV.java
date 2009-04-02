@@ -134,9 +134,10 @@ public class VocabEditorV extends OpenSHAPADialog {
         vertical.add(new JPanel());
         jPanel1.add(vertical, BorderLayout.NORTH);
         validate();
+
+        // Select new component if freshly created.
         if (componentToSelect != null) {
             componentToSelect.requestFocus();
-            componentToSelect.selectAll();
             componentToSelect = null;
         }
     }

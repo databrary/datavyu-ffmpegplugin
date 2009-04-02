@@ -116,8 +116,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         // Maintain focus after draw.
         if (hasFocus) {
             veNameField.requestFocus();
-            veNameField.restoreCaretPosition();
-        }        
+        }
     }
 
     final public void setHasChanged(boolean hasChanged) {

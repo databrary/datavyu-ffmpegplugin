@@ -14,6 +14,6 @@ public class FormalArgumentV extends JTextField {
         model = formalArg;
 
         this.setBorder(null);
-        this.setText(model.getFargName());
+        this.setText(model.getFargName());        
     }
 }

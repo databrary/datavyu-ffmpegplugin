@@ -41,7 +41,6 @@ public class PredicateVEV extends VocabElementV {
             setHasChanged(true);
             rebuildContents();
 
-
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {

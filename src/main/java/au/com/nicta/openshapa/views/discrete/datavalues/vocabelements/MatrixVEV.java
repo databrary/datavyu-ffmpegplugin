@@ -41,7 +41,6 @@ public class MatrixVEV extends VocabElementV {
             setHasChanged(true);
             rebuildContents();
 
-
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
@@ -63,7 +62,7 @@ public class MatrixVEV extends VocabElementV {
 
             try {
                 Editor field = getNameComponent();
-                field.removeSelectedText();
+                field.removeSelectedText();                
 
                 StringBuffer cValue = new StringBuffer(field.getText());
                 cValue.insert(field.getCaretPosition(), e.getKeyChar());
