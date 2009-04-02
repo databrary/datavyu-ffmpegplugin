@@ -68,8 +68,7 @@ public class PredicateVEV extends VocabElementV {
             try {
                 Editor field = getNameComponent();
                 field.removeSelectedText();
-                //rebuildContents();
-                
+
                 StringBuffer cValue = new StringBuffer(field.getText());
                 cValue.insert(field.getCaretPosition(), e.getKeyChar());
             

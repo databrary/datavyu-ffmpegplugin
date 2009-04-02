@@ -143,10 +143,18 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
     }
 
     final public void keyPressed(KeyEvent e) {
-        
+                switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+            default:
+                break;
+        }
     }
 
     final public void keyReleased(KeyEvent e) {
-        
+        // Ignore key release
     }
 }
