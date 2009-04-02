@@ -103,7 +103,7 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
                 this.add(new FormalArgumentV(veModel.getFormalArg(i)));
                 this.add(new JLabel(">"));
 
-                if (i < veModel.getNumFormalArgs()) {
+                if (i < (veModel.getNumFormalArgs() - 1)) {
                     this.add(new JLabel(","));
                 }
             }

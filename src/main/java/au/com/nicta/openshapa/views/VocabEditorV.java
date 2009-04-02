@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
+import au.com.nicta.openshapa.db.MatrixVocabElement.MatrixType;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
@@ -89,6 +90,7 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void addMatrix() {
         try {
             MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
+            mve.setType(MatrixType.MATRIX);
             MatrixVEV mvev = new MatrixVEV(mve, this);
             mvev.setHasChanged(true);
             veViews.add(mvev);

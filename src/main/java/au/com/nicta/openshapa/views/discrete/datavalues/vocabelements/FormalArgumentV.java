@@ -14,6 +14,11 @@ public class FormalArgumentV extends JTextField {
         model = formalArg;
 
         this.setBorder(null);
-        this.setText(model.getFargName());        
+
+        // Formal argument name contains "<" and ">" characters which we don't
+        // actually want.
+        String fargName = model.getFargName()
+                               .substring(1, model.getFargName().length() - 1);
+        this.setText(fargName);
     }
 }
