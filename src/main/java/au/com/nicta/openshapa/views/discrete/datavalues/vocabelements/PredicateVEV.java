@@ -26,10 +26,6 @@ public class PredicateVEV extends VocabElementV {
         this.setTypeIcon(icon);
     }
 
-    public PredicateVEV(PredicateVEV pvev) {
-        super(pvev);
-    }
-
     final public void keyTyped(KeyEvent e) {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
