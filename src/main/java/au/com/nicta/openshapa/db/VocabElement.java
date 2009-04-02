@@ -384,9 +384,8 @@ public abstract class VocabElement extends DBElement
      *    - None.
      *
      */
-    protected void appendFormalArg(FormalArgument newArg)
-        throws SystemErrorException
-    {
+    public void appendFormalArg(FormalArgument newArg)
+    throws SystemErrorException {
         final String mName = "VocabElement::appendFormalArg(): ";
 
         if ( fArgList == null )

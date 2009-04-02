@@ -318,30 +318,6 @@ public final class PredicateVocabElement extends VocabElement
     /*** formal argument list management overrides ***/
 
     /**
-     * appendFormalArg()
-     *
-     * Make FormalArgument::appendFormalArg() accessible to
-     * the outside world, but add some error checking.
-     *
-     *                                          JRM -- 3/04/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public void appendFormalArg(FormalArgument newArg)
-        throws SystemErrorException
-    {
-
-        super.appendFormalArg(newArg);
-
-        return;
-
-    } /* PredicateVocabElement::appendFormalArg() */
-
-
-    /**
      * deleteFormalArg()
      *
      * Make FormalArgument::deleteFormalArg() accessible to

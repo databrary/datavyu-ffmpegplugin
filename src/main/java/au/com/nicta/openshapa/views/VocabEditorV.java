@@ -2,11 +2,15 @@ package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.FormalArgument;
+import au.com.nicta.openshapa.db.IntFormalArg;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
 import au.com.nicta.openshapa.db.MatrixVocabElement.MatrixType;
 import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.db.UnTypedFormalArg;
+import au.com.nicta.openshapa.db.VocabElement;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
@@ -107,6 +111,26 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         containsChange = true;
         this.updateDialogState();
+    }
+
+    @Action
+    public void addArgument() {
+        try {
+            String type = (String) this.argTypeComboBox.getSelectedItem();
+            FormalArgument fa;
+
+            if (type.equals("Untyped")) {
+                fa = new UnTypedFormalArg(db, "<arg>");
+            } else {
+                fa = new IntFormalArg(db, "<arg>");
+            }
+
+            VocabElement ve = selectedVocabElement.getVocabElement();
+            ve.appendFormalArg(fa);
+
+        } catch (SystemErrorException e) {
+            logger.error("Unable to create formal argument.", e);
+        }
     }
 
     public void updateDialogState() {
@@ -270,6 +294,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         moveArgRightButton.setName("moveArgRightButton"); // NOI18N
         getContentPane().add(moveArgRightButton, new java.awt.GridBagConstraints());
 
+        addArgButton.setAction(actionMap.get("addArgument")); // NOI18N
         addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
         addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
         addArgButton.setEnabled(false);
