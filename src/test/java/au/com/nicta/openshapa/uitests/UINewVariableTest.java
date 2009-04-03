@@ -84,6 +84,9 @@ public final class UINewVariableTest extends UISpecTestCase {
         /*assertTrue(("" + (ss.getSpreadsheetColumn(varName).getCells()
                 .elementAt(0).getValue().elementAt(0))).equals("<val>"));*/
         System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getValue().elementAt(0).getValue());
+        System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getValue().size());
+        System.err.println(ss.getSpreadsheetColumn(varName).getCells().size());
+
 
 
 
