@@ -108,7 +108,7 @@ implements KeyListener, ExternalVocabElementListener {
                 }
 
                 this.add(new JLabel("<"));
-                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i));
+                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), parentEditor);
                 this.argViews.add(fargV);
                 this.add(fargV);
 

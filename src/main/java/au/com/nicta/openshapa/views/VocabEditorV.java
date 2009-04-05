@@ -179,16 +179,14 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void updateDialogState() {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
-
                                       .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
         for (VocabElementV vev : veViews) {
+            // A vocab element has focus - enable certain things.
             if (vev.hasFocus()) {
-                // A vocab element has focus - enable certain things.
                 selectedVocabElement = vev;
-                break;
             }
 
             // A vocab element contains a change - enable certain things.
