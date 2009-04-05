@@ -30,7 +30,7 @@ public class FormalArgumentV extends JTextField implements FocusListener  {
     }
 
     /**
-     * The action to invoke if the focus is gained by this DataValueView.
+     * The action to invoke if the focus is gained by this component.
      *
      * @param fe The Focus Event that triggered this action.
      */
@@ -39,7 +39,7 @@ public class FormalArgumentV extends JTextField implements FocusListener  {
     }
 
     /**
-     * The action to invoke if the focus is lost from this DataValueView.
+     * The action to invoke if the focus is lost from this component.
      *
      * @param fe The FocusEvent that triggered this action.
      */

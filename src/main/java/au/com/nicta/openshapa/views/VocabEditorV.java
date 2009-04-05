@@ -220,6 +220,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             deleteButton.setEnabled(true);
             varyArgCheckBox.setSelected(selectedVocabElement.getVocabElement()
                                                             .getVarLen());
+            //selectedVocabElement.getArgWithFocus();
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);

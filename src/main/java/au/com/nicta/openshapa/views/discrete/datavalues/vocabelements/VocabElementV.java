@@ -180,14 +180,24 @@ implements KeyListener, ExternalVocabElementListener {
         if (this.veNameField.hasFocus()) {
             return true;
         } else {
-            for (int i = 0; i < argViews.size(); i++) {
-                if (argViews.get(i).hasFocus()) {
+            for (FormalArgumentV view : argViews) {
+                if (view.hasFocus()) {
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    final public FormalArgumentV getArgWithFocus() {
+        for (FormalArgumentV view : argViews) {
+            if (view.hasFocus()) {
+                return view;
+            }
+        }
+
+        return null;
     }
 
     public void VEChanged(Database db,
