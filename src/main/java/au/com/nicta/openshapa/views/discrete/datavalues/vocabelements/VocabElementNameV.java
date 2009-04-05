@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
+import au.com.nicta.openshapa.views.VocabEditorV;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -10,11 +11,11 @@ import java.awt.event.FocusListener;
  */
 public class VocabElementNameV extends Editor implements FocusListener {
 
-    private boolean initialSelection;
+    private VocabEditorV parent;
 
-    public VocabElementNameV() {
+    public VocabElementNameV(VocabEditorV p) {
         this.addFocusListener(this);
-        this.initialSelection = true;
+        this.parent = p;
     }
 
     /**
@@ -23,13 +24,7 @@ public class VocabElementNameV extends Editor implements FocusListener {
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(FocusEvent fe) {
-        // Only select all if the data value view is a placeholder.
-        if (this.initialSelection) {
-            this.selectAll();
-            this.initialSelection = false;
-        } else {
-            this.restoreCaretPosition();
-        }
+        this.parent.updateDialogState();
     }
 
     /**
@@ -39,5 +34,4 @@ public class VocabElementNameV extends Editor implements FocusListener {
      */
     public void focusLost(FocusEvent fe) {
     }
-
 }

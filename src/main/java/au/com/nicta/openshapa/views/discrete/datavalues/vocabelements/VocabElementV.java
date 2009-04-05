@@ -1,5 +1,8 @@
 package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.ExternalVocabElementListener;
+import au.com.nicta.openshapa.db.FormalArgument;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
 import au.com.nicta.openshapa.views.VocabEditorV;
@@ -7,6 +10,7 @@ import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
@@ -20,7 +24,10 @@ import org.apache.log4j.Logger;
  *
  * @author cfreeman
  */
-public abstract class VocabElementV extends JPanel implements KeyListener {
+public abstract class VocabElementV extends JPanel
+implements KeyListener, ExternalVocabElementListener {
+
+    private static final int MARGIN = 5;
 
     private static final int VE_WIDTH = 16;
 
@@ -65,9 +72,10 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         typeIcon.setMinimumSize(ICON_SIZE);
         typeIcon.setPreferredSize(ICON_SIZE);
 
-        veNameField = new VocabElementNameV();
+        veNameField = new VocabElementNameV(vev);
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
+        veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
 
         this.setBackground(Color.WHITE);
         ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);
@@ -76,21 +84,11 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.rebuildContents();
     }
 
-    /*
-    protected VocabElementV(VocabElementV vocabElementV) {
-        typeIcon = vocabElementV.typeIcon;
-        deltaIcon = vocabElementV.deltaIcon;
-        veNameField = vocabElementV.veNameField;
-        deltaImageIcon = vocabElementV.deltaImageIcon;
-        hasVEChanged = vocabElementV.hasVEChanged;
-        veModel = vocabElementV.veModel;
-    }*/
-
     final protected void setTypeIcon(final ImageIcon newIcon) {
         this.typeIcon.setIcon(newIcon);
     }
 
-    final protected void rebuildContents() {
+    final public void rebuildContents() {
         this.removeAll();
         this.add(deltaIcon);
         this.add(typeIcon);
@@ -104,20 +102,24 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         this.add(new JLabel("("));
         try {
             for (int i = 0; i < veModel.getNumFormalArgs(); i++) {
+
+                if (i > 0) {
+                    this.add(new JLabel(","));
+                }
+
                 this.add(new JLabel("<"));
                 FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i));
                 this.argViews.add(fargV);
                 this.add(fargV);
-                this.add(new JLabel(">"));
 
-                if (i < (veModel.getNumFormalArgs() - 1)) {
-                    this.add(new JLabel(","));
-                }
+                this.add(new JLabel(">"));
             }
         } catch (SystemErrorException e) {
             logger.error("unable to rebuild contents.", e);
         }
         this.add(new JLabel(")"));
+
+        repaint();
         validate();
 
         // Maintain focus after draw.
@@ -160,6 +162,10 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         }
     }
 
+    final public void keyReleased(KeyEvent e) {
+        // Ignore key release
+    }
+
     @Override
     final public boolean hasFocus() {
         if (this.veNameField.hasFocus()) {
@@ -175,7 +181,20 @@ public abstract class VocabElementV extends JPanel implements KeyListener {
         return false;
     }
 
-    final public void keyReleased(KeyEvent e) {
-        // Ignore key release
+    public void VEChanged(Database db,
+                          long VEID,
+                          boolean nameChanged,
+                          String oldName,
+                          String newName,
+                          boolean varLenChanged,
+                          boolean oldVarLen,
+                          boolean newVarLen,
+                          boolean fargListChanged,
+                          Vector<FormalArgument> oldFargList,
+                          Vector<FormalArgument> newFargList) {
+    }
+
+    public void VEDeleted(Database db, long VEID) {
+        // Ignored for the moment.
     }
 }

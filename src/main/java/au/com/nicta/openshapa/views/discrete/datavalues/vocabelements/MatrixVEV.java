@@ -38,8 +38,6 @@ public class MatrixVEV extends VocabElementV {
             } catch (SystemErrorException se) {
                 logger.error("Unable to delete from predicate name", se);
             }
-            setHasChanged(true);
-            rebuildContents();
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
@@ -52,8 +50,6 @@ public class MatrixVEV extends VocabElementV {
             } catch (SystemErrorException se) {
                 logger.error("Unable to delete from predicate name", se);
             }
-            setHasChanged(true);
-            rebuildContents();
 
         // If the character is not reserved - add it to the name of the pred
         } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>' &&
@@ -69,13 +65,13 @@ public class MatrixVEV extends VocabElementV {
 
                 mveModel.setName(cValue.toString());
                 field.advanceCaret();
-                setHasChanged(true);
-                rebuildContents();
             } catch (SystemErrorException se) {
                 logger.error("Unable to set new predicate name", se);
             }
         }
 
+        setHasChanged(true);
+        rebuildContents();
         e.consume();
     }
 }
