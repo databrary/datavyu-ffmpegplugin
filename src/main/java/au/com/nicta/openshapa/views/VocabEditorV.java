@@ -39,6 +39,7 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** The logger for the vocab editor. */
     private static Logger logger = Logger.getLogger(VocabEditorV.class);
 
+    /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
 
     /** The collection of vocab element views in the current vocab listing. */
@@ -154,10 +155,25 @@ public class VocabEditorV extends OpenSHAPADialog {
     }
 
     @Action
-    public void delete() {
+    public void setVaryingArgs() {
         if (selectedVocabElement != null) {
-            
+            try {
+                selectedVocabElement.getVocabElement()
+                                    .setVarLen(varyArgCheckBox.isSelected());
+                selectedVocabElement.rebuildContents();
+            } catch (SystemErrorException e) {
+                logger.error("Unable to set varying arguments.", e);
+            }
         }
+    }
+
+    @Action
+    public void delete() {
+        /*
+        if (selectedVocabElement != null) {
+            db.removePredVE(WIDTH);
+        }*/
+        updateDialogState();
     }
 
     public void updateDialogState() {
@@ -204,6 +220,8 @@ public class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(true);
             varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
+            varyArgCheckBox.setSelected(selectedVocabElement.getVocabElement()
+                                                            .getVarLen());
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
@@ -342,6 +360,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(argTypeComboBox, gridBagConstraints);
 
+        varyArgCheckBox.setAction(actionMap.get("setVaryingArgs")); // NOI18N
         varyArgCheckBox.setText(bundle.getString("varyArgCheckBox.text")); // NOI18N
         varyArgCheckBox.setToolTipText(bundle.getString("varyArgCheckBox.tip")); // NOI18N
         varyArgCheckBox.setEnabled(false);
@@ -352,6 +371,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(varyArgCheckBox, gridBagConstraints);
 
+        deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
         deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); // NOI18N
         deleteButton.setEnabled(false);

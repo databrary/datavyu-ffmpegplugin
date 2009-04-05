@@ -114,11 +114,20 @@ implements KeyListener, ExternalVocabElementListener {
 
                 this.add(new JLabel(">"));
             }
+
+            if (veModel.getVarLen()) {
+                if (veModel.getNumFormalArgs() > 0) {
+                    this.add(new JLabel(","));
+                }
+
+                this.add(new JLabel(" ..."));
+            }
         } catch (SystemErrorException e) {
             logger.error("unable to rebuild contents.", e);
         }
         this.add(new JLabel(")"));
 
+        // Redraw the component (to clear anything underlying).
         repaint();
         validate();
 

@@ -354,14 +354,7 @@ public abstract class VocabElement extends DBElement
                                    "Attempt to modify a system vocab element");
         }
 
-        if ( ( varLen != true ) && ( varLen != false ) )
-        {
-            /* I don't think this can happen, but check it anyway. */
-            throw new SystemErrorException(mName + "Invalid varLen param");
-        }
-
         this.varLen = varLen;
-
         return;
 
     } /* FormalArgument::setVarLen() */
