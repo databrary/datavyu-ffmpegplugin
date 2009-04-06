@@ -1359,7 +1359,7 @@ public class VocabList
         {
             throw new SystemErrorException(mName + "type mis-match.");
         }
-        else if ( old_ve.getNumFormalArgs() <= 0 )
+        else if ( old_ve.getNumFormalArgs() < 0 )
         {
             throw new SystemErrorException(mName +
                                            "old_ve.getNumFormalArgs() <= 0");

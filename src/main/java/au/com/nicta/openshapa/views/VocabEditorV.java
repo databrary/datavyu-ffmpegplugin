@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.views;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.DBIndex;
 import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.FloatFormalArg;
 import au.com.nicta.openshapa.db.FormalArgument;
@@ -283,7 +284,15 @@ public class VocabEditorV extends OpenSHAPADialog {
         try {
             for (VocabElementV vev : veViews) {
                 if (vev.hasChanged()) {
-                    db.addVocabElement(vev.getVocabElement());
+                    VocabElement ve = vev.getVocabElement();
+
+                    if (ve.getID() == DBIndex.INVALID_ID) {                        
+                        long id = db.addVocabElement(ve);
+                        vev.setModel(db.getVocabElement(id));
+                    } else {
+                        
+                        db.replaceVocabElement(ve);
+                    }
                     vev.setHasChanged(false);                    
                 }
             }

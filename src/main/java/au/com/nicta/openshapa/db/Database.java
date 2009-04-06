@@ -2915,6 +2915,22 @@ public abstract class Database
 
     } /* Database::replaceMatrixVE(mve) */
 
+    public void replaceVocabElement(final VocabElement ve)
+    throws SystemErrorException {       
+        try {
+            if (ve == null) {
+                throw new SystemErrorException("Cant to replace vocab element");
+            }
+
+            VocabElement local_mve = (VocabElement) ve.clone();
+            this.vl.replaceVocabElement(local_mve);
+
+        } catch (CloneNotSupportedException e) {
+            throw new SystemErrorException("Cant to replace vocab element");
+        }
+    }
+
+
     /**
      * Adds a vocab element to the database.
      *

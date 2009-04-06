@@ -83,6 +83,11 @@ implements KeyListener, ExternalVocabElementListener {
         this.rebuildContents();
     }
 
+    final public void setModel(VocabElement vocabElement) {
+        veModel = vocabElement;
+        this.rebuildContents();
+    }
+
     final protected void setTypeIcon(final ImageIcon newIcon) {
         this.typeIcon.setIcon(newIcon);
     }

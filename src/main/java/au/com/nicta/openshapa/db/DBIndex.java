@@ -46,7 +46,7 @@ public class DBIndex
      */
 
      /** Value assigned to an ID that has not been specified */
-     static final long INVALID_ID = 0;
+     public static final long INVALID_ID = 0;
 
      /** The next ID to be assigned */
      private long nextID = 1;
