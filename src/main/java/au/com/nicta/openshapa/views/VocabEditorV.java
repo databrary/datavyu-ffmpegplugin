@@ -51,6 +51,9 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
 
+    /** Collection of vocab element views that are to be deleted completely. */
+    private Vector<VocabElementV> veViewsToDeleteCompletely;
+
     /** Vertical frame for holding the current listing of Vocab elements. */
     private Box verticalFrame;
 
@@ -73,6 +76,7 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
+        veViewsToDeleteCompletely = new Vector<VocabElementV>();
         verticalFrame = Box.createVerticalBox();
         try {
             Vector<PredicateVocabElement> predVEs = db.getPredVEs();

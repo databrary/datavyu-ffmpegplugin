@@ -1,7 +1,5 @@
 package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
-import au.com.nicta.openshapa.db.Database;
-import au.com.nicta.openshapa.db.ExternalVocabElementListener;
 import au.com.nicta.openshapa.db.FormalArgument;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
@@ -24,33 +22,45 @@ import org.apache.log4j.Logger;
  * @author cfreeman
  */
 public abstract class VocabElementV extends JPanel
-implements KeyListener, ExternalVocabElementListener {
+implements KeyListener {
 
     //private static final int MARGIN = 5;
 
+    /** The width of icon to use in the vocab element view. */
     private static final int VE_WIDTH = 16;
 
+    /** The height of the icon to use in the vocab element view. */
     private static final int VE_HEIGHT = 16;
 
+    /** The dimensions to use for icons in the vocab element view. */
     private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH,
                                                              VE_HEIGHT);
 
+    /** The label to use for the type of vocab element. */
     private JLabel typeIcon;
 
+    /** The label to use for if this vocab element has changed. */
     private JLabel deltaIcon;
 
+    /** The field containing the name of the vocab element. */
     private Editor veNameField;
 
+    /** The icon to use for if this vocab element has changed or not. */
     private ImageIcon deltaImageIcon;
 
+    /** Has this vocab element changed or not? */
     boolean hasVEChanged;
 
+    /** The underlying model that this vocab element view represents. */
     private VocabElement veModel;
 
+    /** The collection of argument views. */
     private Vector<FormalArgumentV> argViews;
 
+    /** The parent editor for this vocab element view. */
     private VocabEditorV parentEditor;
 
+    /** The error logger for this class. */
     private static Logger logger = Logger.getLogger(VocabElementV.class);
 
     protected VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
@@ -123,7 +133,8 @@ implements KeyListener, ExternalVocabElementListener {
                 }
 
                 this.add(new JLabel("<"));
-                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), i, this, parentEditor);
+                FormalArgumentV fargV = new FormalArgumentV(
+                                veModel.getFormalArg(i), i, this, parentEditor);
                 this.argViews.add(fargV);
                 this.add(fargV);
                 this.add(new JLabel(">"));
@@ -225,22 +236,5 @@ implements KeyListener, ExternalVocabElementListener {
         }
 
         return null;
-    }
-
-    public void VEChanged(Database db,
-                          long VEID,
-                          boolean nameChanged,
-                          String oldName,
-                          String newName,
-                          boolean varLenChanged,
-                          boolean oldVarLen,
-                          boolean newVarLen,
-                          boolean fargListChanged,
-                          Vector<FormalArgument> oldFargList,
-                          Vector<FormalArgument> newFargList) {
-    }
-
-    public void VEDeleted(Database db, long VEID) {
-        // Ignored for the moment.
     }
 }
