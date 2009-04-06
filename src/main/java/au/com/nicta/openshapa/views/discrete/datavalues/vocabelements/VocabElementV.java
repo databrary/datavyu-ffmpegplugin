@@ -10,7 +10,6 @@ import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
@@ -27,7 +26,7 @@ import org.apache.log4j.Logger;
 public abstract class VocabElementV extends JPanel
 implements KeyListener, ExternalVocabElementListener {
 
-    private static final int MARGIN = 5;
+    //private static final int MARGIN = 5;
 
     private static final int VE_WIDTH = 16;
 
@@ -75,7 +74,7 @@ implements KeyListener, ExternalVocabElementListener {
         veNameField = new VocabElementNameV(vev);
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
-        veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
+        //veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
 
         this.setBackground(Color.WHITE);
         ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);
@@ -98,9 +97,20 @@ implements KeyListener, ExternalVocabElementListener {
         veNameField.storeCaretPosition();
         veNameField.setText(veModel.getName());
 
+        FormalArgument focusedArg = null;
+
         this.add(veNameField);
         this.add(new JLabel("("));
         try {
+            for (int i = 0; i < argViews.size(); i++) {
+                FormalArgumentV view = argViews.get(0);
+                if (view.hasFocus()) {
+                    focusedArg = view.getModel();
+                }
+
+                argViews.remove(0);
+            }
+
             for (int i = 0; i < veModel.getNumFormalArgs(); i++) {
 
                 if (i > 0) {
@@ -108,10 +118,9 @@ implements KeyListener, ExternalVocabElementListener {
                 }
 
                 this.add(new JLabel("<"));
-                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), parentEditor);
+                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), this, parentEditor);
                 this.argViews.add(fargV);
                 this.add(fargV);
-
                 this.add(new JLabel(">"));
             }
 
@@ -132,9 +141,12 @@ implements KeyListener, ExternalVocabElementListener {
         validate();
 
         // Maintain focus after draw.
-        if (hasFocus) {
+        if (hasFocus && focusedArg != null) {
             veNameField.requestFocus();
+        } else if (focusedArg != null) {
+            getArgumentView(focusedArg).requestFocus();
         }
+
     }
 
     final public void setHasChanged(boolean hasChanged) {
@@ -149,6 +161,16 @@ implements KeyListener, ExternalVocabElementListener {
 
     final public boolean hasChanged() {
         return hasVEChanged;
+    }
+
+    final public FormalArgumentV getArgumentView(FormalArgument fa) {
+        for (FormalArgumentV view : argViews) {
+            if (view.getModel().equals(fa)) {
+                return view;
+            }
+        }
+
+        return null;
     }
 
     final public VocabElement getVocabElement() {

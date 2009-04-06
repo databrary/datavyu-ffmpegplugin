@@ -14,6 +14,7 @@ import au.com.nicta.openshapa.db.QuoteStringFormalArg;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.UnTypedFormalArg;
 import au.com.nicta.openshapa.db.VocabElement;
+import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.FormalArgumentV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
@@ -42,6 +43,8 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
 
+    private FormalArgumentV selectedArgument;
+
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
 
@@ -57,6 +60,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         db = OpenSHAPA.getDatabase();
         initComponents();
         selectedVocabElement = null;
+        selectedArgument = null;
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
@@ -96,7 +100,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             verticalFrame.validate();
             veViews.add(pvev);
 
-            pvev.getNameComponent().selectAll();
+            //pvev.getNameComponent().selectAll();
             pvev.getNameComponent().requestFocus();
 
         } catch (SystemErrorException e) {
@@ -117,7 +121,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             verticalFrame.validate();
             veViews.add(mvev);
 
-            mvev.getNameComponent().selectAll();
+            //mvev.getNameComponent().selectAll();
             mvev.getNameComponent().requestFocus();
 
         } catch (SystemErrorException e) {
@@ -147,7 +151,17 @@ public class VocabEditorV extends OpenSHAPADialog {
 
             VocabElement ve = selectedVocabElement.getVocabElement();
             ve.appendFormalArg(fa);
-            selectedVocabElement.rebuildContents();
+
+            // Store the selectedVocabElement in a temp variable - rebuilding
+            // contents may alter the currently selected vocab element.
+            VocabElementV temp = selectedVocabElement;
+            temp.rebuildContents();
+
+            // Select the contents of the newly created formal argument.
+            FormalArgumentV faV = temp.getArgumentView(fa);
+            //faV.selectAll();
+            faV.requestFocus();
+
             updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to create formal argument.", e);
@@ -235,6 +249,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         int curPos = 0;
         for (int i = 0; i < tableSize; i++) {
             if (veViews.get(curPos).hasChanged()) {
+                verticalFrame.remove(veViews.get(curPos));
                 veViews.remove(curPos);
             } else {
                 curPos++;
@@ -251,10 +266,11 @@ public class VocabEditorV extends OpenSHAPADialog {
             for (VocabElementV vev : veViews) {
                 if (vev.hasChanged()) {
                     db.addVocabElement(vev.getVocabElement());
-                    vev.setHasChanged(false);
-                    updateDialogState();
+                    vev.setHasChanged(false);                    
                 }
             }
+
+            updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
