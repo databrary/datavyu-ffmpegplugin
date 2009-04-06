@@ -16,17 +16,20 @@ import org.apache.log4j.Logger;
  */
 public final class FormalArgumentV extends Editor
 implements FocusListener, KeyListener {
-    FormalArgument model;
+    private FormalArgument model;
 
-    VocabElementV parentElementV;
+    private VocabElementV parentElementV;
 
-    VocabEditorV parentV;
+    private VocabEditorV parentV;
 
     private static Logger logger = Logger.getLogger(FormalArgumentV.class);
 
     private boolean initialSelection;
 
+    private int argumentPos;
+
     public FormalArgumentV(FormalArgument formalArg,
+                           int n,
                            VocabElementV parentElement,
                            VocabEditorV parent) {
         super();
@@ -34,6 +37,7 @@ implements FocusListener, KeyListener {
         parentV = parent;
         parentElementV = parentElement;
         initialSelection = true;
+        argumentPos = n;
 
         this.setBorder(null);
 
@@ -48,6 +52,10 @@ implements FocusListener, KeyListener {
 
     public FormalArgument getModel() {
         return model;
+    }
+
+    public int getArgPos() {
+        return argumentPos;
     }
 
     /**

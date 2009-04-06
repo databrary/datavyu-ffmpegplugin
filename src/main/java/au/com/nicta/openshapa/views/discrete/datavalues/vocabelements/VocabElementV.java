@@ -118,7 +118,7 @@ implements KeyListener, ExternalVocabElementListener {
                 }
 
                 this.add(new JLabel("<"));
-                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), this, parentEditor);
+                FormalArgumentV fargV = new FormalArgumentV(veModel.getFormalArg(i), i, this, parentEditor);
                 this.argViews.add(fargV);
                 this.add(fargV);
                 this.add(new JLabel(">"));
@@ -141,7 +141,7 @@ implements KeyListener, ExternalVocabElementListener {
         validate();
 
         // Maintain focus after draw.
-        if (hasFocus && focusedArg != null) {
+        if (hasFocus && focusedArg == null) {
             veNameField.requestFocus();
         } else if (focusedArg != null) {
             getArgumentView(focusedArg).requestFocus();

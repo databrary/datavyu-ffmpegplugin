@@ -386,31 +386,6 @@ public final class PredicateVocabElement extends VocabElement
     } /* PredicateVocabElement::insertFormalArg() */
 
 
-    /**
-     * replaceFormalArg()
-     *
-     * Make VocabElement::replaceFormalArg() public.
-     *
-     *                                          JRM -- 3/04/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public void replaceFormalArg(FormalArgument newArg,
-                                 int n)
-        throws SystemErrorException
-    {
-        super.replaceFormalArg(newArg, n);
-
-        return;
-
-    } /* PredicateVocabElement::replaceFormalArg() */
-
-
-
-
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/

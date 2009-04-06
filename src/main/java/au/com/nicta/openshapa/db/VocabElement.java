@@ -912,10 +912,8 @@ public abstract class VocabElement extends DBElement
      *
      */
 
-    protected void replaceFormalArg(FormalArgument newArg,
-                                    int n)
-        throws SystemErrorException
-    {
+    public void replaceFormalArg(FormalArgument newArg, int n)
+    throws SystemErrorException {
         deleteFormalArg(n);
         insertFormalArg(newArg, n);
 

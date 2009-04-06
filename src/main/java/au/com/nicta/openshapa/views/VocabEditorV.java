@@ -20,6 +20,7 @@ import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.PredicateV
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -159,7 +160,6 @@ public class VocabEditorV extends OpenSHAPADialog {
 
             // Select the contents of the newly created formal argument.
             FormalArgumentV faV = temp.getArgumentView(fa);
-            //faV.selectAll();
             faV.requestFocus();
 
             updateDialogState();
@@ -387,6 +387,11 @@ public class VocabEditorV extends OpenSHAPADialog {
         argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
         argTypeComboBox.setEnabled(false);
         argTypeComboBox.setName("argTypeComboBox"); // NOI18N
+        argTypeComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                argTypeComboBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -396,7 +401,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         varyArgCheckBox.setAction(actionMap.get("setVaryingArgs")); // NOI18N
         varyArgCheckBox.setText(bundle.getString("varyArgCheckBox.text")); // NOI18N
         varyArgCheckBox.setToolTipText(bundle.getString("varyArgCheckBox.tip")); // NOI18N
-        varyArgCheckBox.setEnabled(false);
         varyArgCheckBox.setName("varyArgCheckBox"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -407,7 +411,6 @@ public class VocabEditorV extends OpenSHAPADialog {
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
         deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); // NOI18N
-        deleteButton.setEnabled(false);
         deleteButton.setName("deleteButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
@@ -479,6 +482,49 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void argTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_argTypeComboBoxItemStateChanged
+        if (selectedVocabElement != null
+            && selectedArgument != null
+            && evt.getStateChange() == ItemEvent.SELECTED) {
+
+            // Need to change the type of the selected argument.
+            FormalArgument oldArg = selectedArgument.getModel();
+            FormalArgument newArg = null;
+
+            try {
+                if (evt.getItem().equals("Untyped")) {
+                    newArg = new UnTypedFormalArg(db, oldArg.getFargName());
+                } else if (evt.getItem().equals("Text")) {
+                    newArg = new QuoteStringFormalArg(db, oldArg.getFargName());
+                } else if (evt.getItem().equals("Nominal")) {
+                    newArg = new NominalFormalArg(db, oldArg.getFargName());
+                } else if (evt.getItem().equals("Integer")) {
+                    newArg = new IntFormalArg(db, oldArg.getFargName());
+                } else {
+                    newArg = new FloatFormalArg(db, oldArg.getFargName());
+                }
+
+                //VocabElement ve = selectedVocabElement.getVocabElement();
+                selectedVocabElement.getVocabElement().replaceFormalArg(newArg, selectedArgument.getArgPos());
+                selectedVocabElement.setHasChanged(true);
+
+                // Store the selectedVocabElement in a temp variable - rebuilding
+                // contents may alter the currently selected vocab element.
+                VocabElementV temp = selectedVocabElement;
+                temp.rebuildContents();
+
+                // Select the contents of the newly created formal argument.
+                FormalArgumentV faV = temp.getArgumentView(newArg);
+                faV.requestFocus();
+
+                updateDialogState();
+
+            } catch (SystemErrorException se) {
+                logger.error("Unable to alter selected argument.", se);
+            }
+        }
+    }//GEN-LAST:event_argTypeComboBoxItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArgButton;
