@@ -13,9 +13,12 @@ public class VocabElementNameV extends Editor implements FocusListener {
 
     private VocabEditorV parent;
 
+    private boolean initialSelection;
+
     public VocabElementNameV(VocabEditorV p) {
         this.addFocusListener(this);
         this.parent = p;
+        this.initialSelection = true;
     }
 
     /**
@@ -24,6 +27,13 @@ public class VocabElementNameV extends Editor implements FocusListener {
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(FocusEvent fe) {
+        if (this.initialSelection) {
+            this.selectAll();
+            this.initialSelection = false;
+        } else {
+            this.restoreCaretPosition();
+        }
+
         this.parent.updateDialogState();
     }
 
