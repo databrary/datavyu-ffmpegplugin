@@ -1,4 +1,8 @@
 target
 test.txtDB
 *.log
-.DS_Store
+*.DS_Store
+*._.DS_Store
+*._*.png
+*._*.pdf
+*._*.properties
