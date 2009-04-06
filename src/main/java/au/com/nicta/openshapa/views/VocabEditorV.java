@@ -197,10 +197,12 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         boolean containsC = false;
         selectedVocabElement = null;
+        selectedArgument = null;
         for (VocabElementV vev : veViews) {
             // A vocab element has focus - enable certain things.
             if (vev.hasFocus()) {
                 selectedVocabElement = vev;
+                selectedArgument = vev.getArgWithFocus();
             }
 
             // A vocab element contains a change - enable certain things.
@@ -240,6 +242,22 @@ public class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(false);
             varyArgCheckBox.setEnabled(false);
             deleteButton.setEnabled(false);
+        }
+
+        if (selectedArgument != null) {
+            FormalArgument fa = selectedArgument.getModel();
+
+            if (fa.getClass().equals(IntFormalArg.class)) {
+                this.argTypeComboBox.setSelectedItem("Integer");
+            } else if (fa.getClass().equals(FloatFormalArg.class)) {
+                this.argTypeComboBox.setSelectedItem("Float");
+            } else if (fa.getClass().equals(NominalFormalArg.class)) {
+                this.argTypeComboBox.setSelectedItem("Nominal");
+            } else if (fa.getClass().equals(QuoteStringFormalArg.class)) {
+                this.argTypeComboBox.setSelectedItem("Text");
+            } else {
+                this.argTypeComboBox.setSelectedItem("Untyped");
+            }
         }
     }
 
