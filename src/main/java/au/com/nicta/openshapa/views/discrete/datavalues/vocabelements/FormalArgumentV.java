@@ -16,18 +16,32 @@ import org.apache.log4j.Logger;
  */
 public final class FormalArgumentV extends Editor
 implements FocusListener, KeyListener {
+    /** The underlying model that this view represents. */
     private FormalArgument model;
 
+    /** The parent vocab element view that this argument belongs too. */
     private VocabElementV parentElementV;
 
+    /** The parent editor window that this argument belongs too. */
     private VocabEditorV parentV;
 
+    /** The error logger for this class. */
     private static Logger logger = Logger.getLogger(FormalArgumentV.class);
 
+    /** Is this the initial selection of the formal argument view? */
     private boolean initialSelection;
 
+    /** The position of the model within the parent vocab element. */
     private int argumentPos;
 
+    /**
+     * Constructor
+     *
+     * @param formalArg The formal argument that this view will represent.
+     * @param n The position of the formal argument in the parent element.
+     * @param parentElement The parent vocab element for the argument.
+     * @param parent The parent vocab editor for the formal argument.
+     */
     public FormalArgumentV(FormalArgument formalArg,
                            int n,
                            VocabElementV parentElement,
@@ -45,15 +59,22 @@ implements FocusListener, KeyListener {
         // actually want.
         String fargName = model.getFargName()
                                .substring(1, model.getFargName().length() - 1);
-        this.setText(fargName);
-        this.addFocusListener(this);
-        this.addKeyListener(this);
+        setText(fargName);
+        addFocusListener(this);
+        addKeyListener(this);
     }
 
+    /**
+     * @return The model of the formal argument that this view represents.
+     */
     public FormalArgument getModel() {
         return model;
     }
 
+    /**
+     * @return The position of this formal argument within its parent vocab
+     * element.
+     */
     public int getArgPos() {
         return argumentPos;
     }
@@ -64,14 +85,14 @@ implements FocusListener, KeyListener {
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(FocusEvent fe) {
-        if (this.initialSelection) {
-            this.selectAll();
-            this.initialSelection = false;
+        if (initialSelection) {
+            selectAll();
+            initialSelection = false;
         } else {
-            this.restoreCaretPosition();
+            restoreCaretPosition();
         }
 
-        this.parentV.updateDialogState();
+        parentV.updateDialogState();
     }
 
     /**
@@ -82,6 +103,11 @@ implements FocusListener, KeyListener {
     public void focusLost(FocusEvent fe) {
     }
 
+    /**
+     * The action to inovke when a key is typed in this component.
+     *
+     * @param e The event that triggered this action.
+     */
     final public void keyTyped(KeyEvent e) {
                 // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
@@ -130,6 +156,11 @@ implements FocusListener, KeyListener {
         e.consume();
     }
 
+    /**
+     * The action to invoke when a key is pressed within the FormalArgumentV.
+     *
+     * @param e The event that triggered this action.
+     */
     final public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
@@ -142,6 +173,11 @@ implements FocusListener, KeyListener {
         }
     }
 
+    /**
+     * The action to invoke when a key is released within the FormalArgumentV.
+     *
+     * @param e The event that triggered this action.
+     */
     final public void keyReleased(KeyEvent e) {
         // Ignore key release
     }
