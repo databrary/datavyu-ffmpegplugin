@@ -45,6 +45,7 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
 
+    /** The currently selected formal argument. */
     private FormalArgumentV selectedArgument;
 
     /** The collection of vocab element views in the current vocab listing. */
@@ -53,7 +54,13 @@ public class VocabEditorV extends OpenSHAPADialog {
     /** Vertical frame for holding the current listing of Vocab elements. */
     private Box verticalFrame;
 
-    /** Creates new form VocabEditorV */
+    /**
+     * Constructor.
+     *
+     * @param parent The parent frame for the vocab editor.
+     * @param modal Is this dialog to be modal or not?
+     * @param listener The action listener to invoke.
+     */
     public VocabEditorV(java.awt.Frame parent,
                         boolean modal,
                         final ActionListener listener) {
@@ -91,6 +98,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
     }
 
+    /**
+     * The action to invoke when the user clicks on the add predicate button.
+     */
     @Action
     public void addPredicate() {        
         try {
@@ -101,8 +111,6 @@ public class VocabEditorV extends OpenSHAPADialog {
             verticalFrame.add(pvev, (verticalFrame.getComponentCount() - 1));
             verticalFrame.validate();
             veViews.add(pvev);
-
-            //pvev.getNameComponent().selectAll();
             pvev.getNameComponent().requestFocus();
 
         } catch (SystemErrorException e) {
@@ -112,6 +120,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
     }
 
+    /**
+     * The action to invoke when the user clicks on the add matrix button.
+     */
     @Action
     public void addMatrix() {
         try {
@@ -122,8 +133,6 @@ public class VocabEditorV extends OpenSHAPADialog {
             verticalFrame.add(mvev, (verticalFrame.getComponentCount() - 1));
             verticalFrame.validate();
             veViews.add(mvev);
-
-            //mvev.getNameComponent().selectAll();
             mvev.getNameComponent().requestFocus();
 
         } catch (SystemErrorException e) {
@@ -133,6 +142,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
     }
 
+    /**
+     * The action to invoke when the user clicks on the add argument button.
+     */
     @Action
     public void addArgument() {
         try {
@@ -169,6 +181,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         }
     }
 
+    /**
+     * The action to invoke when the user toggles the varying argument state.
+     */
     @Action
     public void setVaryingArgs() {
         if (selectedVocabElement != null) {
@@ -182,6 +197,9 @@ public class VocabEditorV extends OpenSHAPADialog {
         }
     }
 
+    /**
+     * The action to invoke when the user presses the delete button.
+     */
     @Action
     public void delete() {
         /*
@@ -191,6 +209,76 @@ public class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
     }
 
+    /**
+     * The action to invoke when the user presses the revert button.
+     */
+    @Action
+    public void revertChanges() {
+        int tableSize = veViews.size();
+        int curPos = 0;
+        for (int i = 0; i < tableSize; i++) {
+            if (veViews.get(curPos).hasChanged()) {
+                verticalFrame.remove(veViews.get(curPos));
+                veViews.remove(curPos);
+            } else {
+                curPos++;
+            }
+        }
+
+        updateDialogState();
+    }
+
+    /**
+     * The action to invoke when the user presses the apply button.
+     */
+    @Action
+    public void applyChanges() {
+
+        try {
+            for (VocabElementV vev : veViews) {
+                if (vev.hasChanged()) {
+                    VocabElement ve = vev.getVocabElement();
+
+                    if (ve.getID() == DBIndex.INVALID_ID) {                        
+                        long id = db.addVocabElement(ve);
+                        vev.setModel(db.getVocabElement(id));
+                    } else {
+                        
+                        db.replaceVocabElement(ve);
+                    }
+                    vev.setHasChanged(false);                    
+                }
+            }
+
+            updateDialogState();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to apply vocab changes", e);
+        } catch (LogicErrorException le) {
+            OpenSHAPA.getApplication().showWarningDialog(le);
+        }
+    }
+
+    /**
+     * The action to invoke when the user presses the OK button.
+     */
+    @Action
+    public void ok() {
+        applyChanges();
+        setVisible(false);
+    }
+
+    /**
+     * The action to invoke when the user presses the cancel button.
+     */
+    @Action
+    public void closeWindow() {
+        setVisible(false);
+    }
+
+    /**
+     * Method to update the visual state of the dialog to match the underlying
+     * model.
+     */
     public void updateDialogState() {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -237,7 +325,6 @@ public class VocabEditorV extends OpenSHAPADialog {
             deleteButton.setEnabled(true);
             varyArgCheckBox.setSelected(selectedVocabElement.getVocabElement()
                                                             .getVarLen());
-            //selectedVocabElement.getArgWithFocus();
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
@@ -260,60 +347,6 @@ public class VocabEditorV extends OpenSHAPADialog {
                 this.argTypeComboBox.setSelectedItem("Untyped");
             }
         }
-    }
-
-    @Action
-    public void revertChanges() {
-        int tableSize = veViews.size();
-        int curPos = 0;
-        for (int i = 0; i < tableSize; i++) {
-            if (veViews.get(curPos).hasChanged()) {
-                verticalFrame.remove(veViews.get(curPos));
-                veViews.remove(curPos);
-            } else {
-                curPos++;
-            }
-        }
-
-        updateDialogState();
-    }
-
-    @Action
-    public void applyChanges() {
-
-        try {
-            for (VocabElementV vev : veViews) {
-                if (vev.hasChanged()) {
-                    VocabElement ve = vev.getVocabElement();
-
-                    if (ve.getID() == DBIndex.INVALID_ID) {                        
-                        long id = db.addVocabElement(ve);
-                        vev.setModel(db.getVocabElement(id));
-                    } else {
-                        
-                        db.replaceVocabElement(ve);
-                    }
-                    vev.setHasChanged(false);                    
-                }
-            }
-
-            updateDialogState();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to apply vocab changes", e);
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
-        }
-    }
-
-    @Action
-    public void ok() {
-        applyChanges();
-        setVisible(false);
-    }
-
-    @Action
-    public void closeWindow() {
-        setVisible(false);
     }
 
     /** This method is called from within the constructor to
@@ -492,6 +525,11 @@ public class VocabEditorV extends OpenSHAPADialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * The action to invoke when the user changes the formal argument dropdown.
+     *
+     * @param evt The event that triggered this action.
+     */
     private void argTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_argTypeComboBoxItemStateChanged
         if (selectedVocabElement != null
             && selectedArgument != null
@@ -515,11 +553,14 @@ public class VocabEditorV extends OpenSHAPADialog {
                 }
 
                 //VocabElement ve = selectedVocabElement.getVocabElement();
-                selectedVocabElement.getVocabElement().replaceFormalArg(newArg, selectedArgument.getArgPos());
+                selectedVocabElement.getVocabElement()
+                                    .replaceFormalArg(newArg,
+                                                  selectedArgument.getArgPos());
                 selectedVocabElement.setHasChanged(true);
 
-                // Store the selectedVocabElement in a temp variable - rebuilding
-                // contents may alter the currently selected vocab element.
+                // Store the selectedVocabElement in a temp variable -
+                // rebuilding contents may alter the currently selected vocab
+                // element.
                 VocabElementV temp = selectedVocabElement;
                 temp.rebuildContents();
 
