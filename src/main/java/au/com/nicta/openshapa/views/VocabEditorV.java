@@ -206,10 +206,18 @@ public class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void delete() {
-        /*
-        if (selectedVocabElement != null) {
-            db.removePredVE(WIDTH);
-        }*/
+
+        // User has vocab element selected - mark it for deletion.
+        if (selectedVocabElement != null && selectedArgument == null) {
+            selectedVocabElement.setDeleted(true);
+            veViewsToDeleteCompletely.add(selectedVocabElement);
+        
+        // User has argument selected - delete it from the vocab element.
+        } else if (selectedArgument != null) {
+
+            
+        }
+
         updateDialogState();
     }
 

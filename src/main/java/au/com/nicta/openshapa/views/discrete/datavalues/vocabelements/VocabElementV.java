@@ -8,9 +8,13 @@ import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.font.TextAttribute;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -63,6 +67,8 @@ implements KeyListener {
     /** The error logger for this class. */
     private static Logger logger = Logger.getLogger(VocabElementV.class);
 
+    //private Map<TextAttribute, Object> attributes;
+
     protected VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         URL iconURL = getClass().getResource("/icons/d_16.png");
         deltaImageIcon = new ImageIcon(iconURL);
@@ -84,6 +90,12 @@ implements KeyListener {
         veNameField = new VocabElementNameV(vev);
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
+
+        //attributes = new HashMap<TextAttribute, Object>();
+        //attributes.put(TextAttribute.FAMILY, "Lucida Grande-Plain-13");
+        //attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+        //Font fn = new Font(attributes);
+        //veNameField.setFont(fn);
         //veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
 
         this.setBackground(Color.WHITE);
@@ -236,5 +248,18 @@ implements KeyListener {
         }
 
         return null;
+    }
+
+    final public void setDeleted(boolean delete) {
+        Map<TextAttribute, Object> as = new HashMap<TextAttribute, Object>();
+
+        if (delete) {
+            as.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+        }
+
+        veNameField.setFont(new Font(as));
+        veNameField.setText(veNameField.getText());
+
+        this.rebuildContents();
     }
 }
