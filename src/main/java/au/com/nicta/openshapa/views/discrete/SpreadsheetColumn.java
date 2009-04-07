@@ -299,7 +299,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             newCell.setWidth(getWidth() - 1);
             datapanel.add(newCell);
             datapanel.remove(filler);
-            newCell.requestFocus();//.requestFocusInWindow();
+            //newCell.requestFocusInWindow();
             //UISPEC4J: The line above was commented out for testing purposes. Will discuss. - michael
         } catch (SystemErrorException e) {
             logger.error("Problem inserting a new SpreadsheetCell", e);

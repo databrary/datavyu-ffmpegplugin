@@ -1,6 +1,8 @@
 package au.com.nicta.openshapa.uitests;
 
 
+import org.uispec4j.ComponentAmbiguityException;
+import org.uispec4j.ItemNotFoundException;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import au.com.nicta.openshapa.OpenSHAPA;
@@ -99,34 +101,10 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testPredicateVariable() throws Exception {
         String varName = "pred var";
         String varType = "PREDICATE";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new PREDICATE variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("predicate").click();
-        assertTrue(newVarWindow.getRadioButton("predicate").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "predicate";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        validateVariableType(varName, varType, varRadio);
     }
 
     /**
@@ -136,35 +114,10 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testIntegerVariable() throws Exception {
         String varName = "int var";
         String varType = "INTEGER";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new INTEGER variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("integer").click();
-        assertTrue(newVarWindow.getRadioButton("integer").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "integer";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        validateVariableType(varName, varType, varRadio);
     }
 
     /**
@@ -174,34 +127,10 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testNominalVariable() throws Exception {
         String varName = "nom var";
         String varType = "NOMINAL";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new NOMINAL variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("nominal").click();
-        assertTrue(newVarWindow.getRadioButton("nominal").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "nominal";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        validateVariableType(varName, varType, varRadio);
     }
 
     /**
@@ -211,34 +140,10 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testMatrixVariable() throws Exception {
         String varName = "matrix var";
         String varType = "MATRIX";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new MATRIX variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("matrix").click();
-        assertTrue(newVarWindow.getRadioButton("matrix").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "matrix";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        validateVariableType(varName, varType, varRadio);
     }
 
     /**
@@ -248,35 +153,32 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testFloatVariable() throws Exception {
         String varName = "float var";
         String varType = "FLOAT";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new FLOAT variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("float").click();
-        assertTrue(newVarWindow.getRadioButton("float").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "float";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-        
+        validateVariableType(varName, varType, varRadio);
+    }
 
+    private void validateVariableType(String varName,
+                                      String varType,
+                                      String varRadio) throws Exception {
+        // 1. Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+        // 2a. Create new PREDICATE variable,
+        //open spreadsheet and check that it's there
+        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu("Spreadsheet").getSubMenu("New Variable").triggerClick());
+        newVarWindow.getTextBox("nameField").insertText(varName, 0);
+        newVarWindow.getRadioButton(varRadio).click();
+        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
+        newVarWindow.getButton("Ok").click();
+        //check that correct column has been created
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+        assertNotNull(ss.getSpreadsheetColumn(varName));
+        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName().equals(varName));
+        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType().equals(varType));
+        //check that column has no cells
+        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
     }
 }
