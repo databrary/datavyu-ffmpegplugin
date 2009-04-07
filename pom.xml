@@ -267,11 +267,11 @@
       <version>7</version>
     </dependency>
 	
-	<dependency>
-	  <groupId>uispec4j</groupId>
-	  <artifactId>uispec4j</artifactId>
-	  <version>1.5</version>
-	</dependency>
+    <dependency>
+      <groupId>uispec4j</groupId>
+      <artifactId>uispec4j</artifactId>
+      <version>1.5</version>
+    </dependency>
 
   </dependencies>
 </project>
