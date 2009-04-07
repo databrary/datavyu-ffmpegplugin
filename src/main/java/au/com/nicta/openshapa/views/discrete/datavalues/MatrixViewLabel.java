@@ -138,4 +138,8 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
         //this.setBorder(BorderFactory.createEtchedBorder());
         this.repaint();
     }
+
+    public final Vector<DataValueView> getMatrix() {
+        return argViews;
+    }
 }
