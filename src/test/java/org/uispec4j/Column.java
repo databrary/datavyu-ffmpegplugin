@@ -76,9 +76,10 @@ public class Column extends AbstractUIComponent {
         Vector<SpreadsheetCell> originalCells = ssColumn.getCells();
         Vector<Cell> returnCells = new Vector();
 
-        // Iterate through cells, create new Cell and add to new vector
+        // Iterate through cells, create new Cells and add to new vector
         Iterator itr = originalCells.iterator();
         while (itr.hasNext()) {
+            //((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).mouseClicked(null);
             returnCells.add(new Cell((SpreadsheetCell) itr.next()));
         }
 
