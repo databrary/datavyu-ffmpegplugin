@@ -299,6 +299,10 @@ implements MouseListener, KeyListener, FocusListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(MouseEvent me) {
+        // Select all if the data value view is a placeholder.
+        if (value.isEmpty()) {
+            this.selectAll();
+        }
     }
 
     /**
