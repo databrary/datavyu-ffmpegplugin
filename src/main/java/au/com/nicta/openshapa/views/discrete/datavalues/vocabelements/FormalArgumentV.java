@@ -35,17 +35,17 @@ implements FocusListener, KeyListener {
     private int argumentPos;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param formalArg The formal argument that this view will represent.
      * @param n The position of the formal argument in the parent element.
      * @param parentElement The parent vocab element for the argument.
      * @param parent The parent vocab editor for the formal argument.
      */
-    public FormalArgumentV(FormalArgument formalArg,
-                           int n,
-                           VocabElementV parentElement,
-                           VocabEditorV parent) {
+    public FormalArgumentV(final FormalArgument formalArg,
+                           final int n,
+                           final VocabElementV parentElement,
+                           final VocabEditorV parent) {
         super();
         model = formalArg;
         parentV = parent;
@@ -134,9 +134,9 @@ implements FocusListener, KeyListener {
             }
 
         // If the character is not reserved - add it to the name of the pred
-        } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>' &&
-                   e.getKeyChar() != '(' && e.getKeyChar() != ')' &&
-                   e.getKeyChar() != ',' && e.getKeyChar() != '"') {
+        } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>'
+                   && e.getKeyChar() != '(' && e.getKeyChar() != ')'
+                   && e.getKeyChar() != ',' && e.getKeyChar() != '"') {
 
             try {
                 removeSelectedText();

@@ -1,5 +1,6 @@
 package au.com.nicta.openshapa.views.discrete.datavalues.vocabelements;
 
+import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.FormalArgument;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.VocabElement;
@@ -8,18 +9,16 @@ import au.com.nicta.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.font.TextAttribute;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 /**
  *
@@ -46,6 +45,9 @@ implements KeyListener {
     /** The label to use for if this vocab element has changed. */
     private JLabel deltaIcon;
 
+    /** The label to use for if this vocab element is marked for removal. */
+    private JLabel deleteIcon;
+
     /** The field containing the name of the vocab element. */
     private Editor veNameField;
 
@@ -54,6 +56,9 @@ implements KeyListener {
 
     /** Has this vocab element changed or not? */
     boolean hasVEChanged;
+
+    /** Is this vocab element view marked for removal? */
+    boolean deleteVE;
 
     /** The underlying model that this vocab element view represents. */
     private VocabElement veModel;
@@ -67,12 +72,15 @@ implements KeyListener {
     /** The error logger for this class. */
     private static Logger logger = Logger.getLogger(VocabElementV.class);
 
-    //private Map<TextAttribute, Object> attributes;
-
     protected VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
-        URL iconURL = getClass().getResource("/icons/d_16.png");
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(VocabElementV.class);
+
+        URL iconURL = getClass().getResource(rMap.getString("delta.icon"));
         deltaImageIcon = new ImageIcon(iconURL);
         hasVEChanged = false;
+        deleteVE = false;
         veModel = vocabElement;
         parentEditor = vev;
         argViews = new Vector<FormalArgumentV>();
@@ -81,21 +89,23 @@ implements KeyListener {
         deltaIcon.setMaximumSize(ICON_SIZE);
         deltaIcon.setMinimumSize(ICON_SIZE);
         deltaIcon.setPreferredSize(ICON_SIZE);
+        deltaIcon.setToolTipText(rMap.getString("delta.tooltip"));
 
         typeIcon = new JLabel();
         typeIcon.setMaximumSize(ICON_SIZE);
         typeIcon.setMinimumSize(ICON_SIZE);
         typeIcon.setPreferredSize(ICON_SIZE);
+        typeIcon.setToolTipText(rMap.getString("type.tooltip"));
+
+        deleteIcon = new JLabel();
+        deleteIcon.setMaximumSize(ICON_SIZE);
+        deleteIcon.setMinimumSize(ICON_SIZE);
+        deleteIcon.setPreferredSize(ICON_SIZE);
 
         veNameField = new VocabElementNameV(vev);
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
-
-        //attributes = new HashMap<TextAttribute, Object>();
-        //attributes.put(TextAttribute.FAMILY, "Lucida Grande-Plain-13");
-        //attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-        //Font fn = new Font(attributes);
-        //veNameField.setFont(fn);
+        veNameField.setToolTipText(rMap.getString("name.tooltip"));
         //veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
 
         this.setBackground(Color.WHITE);
@@ -117,6 +127,7 @@ implements KeyListener {
     final public void rebuildContents() {
         this.removeAll();
         this.add(deltaIcon);
+        this.add(deleteIcon);
         this.add(typeIcon);
         this.parentEditor.updateDialogState();
 
@@ -251,15 +262,17 @@ implements KeyListener {
     }
 
     final public void setDeleted(boolean delete) {
-        Map<TextAttribute, Object> as = new HashMap<TextAttribute, Object>();
-
         if (delete) {
-            as.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+            deleteIcon.setText("D");
+        } else {
+            deleteIcon.setText(null);
         }
-
-        veNameField.setFont(new Font(as));
-        veNameField.setText(veNameField.getText());
+        deleteVE = delete;
 
         this.rebuildContents();
+    }
+
+    final public boolean isDeletable() {
+        return deleteVE;
     }
 }

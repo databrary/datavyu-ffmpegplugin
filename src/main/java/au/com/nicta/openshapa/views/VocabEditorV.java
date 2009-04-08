@@ -22,6 +22,7 @@ import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabEleme
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.Frame;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.JPanel;
@@ -34,7 +35,7 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author cfreeman
  */
-public class VocabEditorV extends OpenSHAPADialog {
+public final class VocabEditorV extends OpenSHAPADialog {
 
     /** The database that this vocab editor is manipulating. */
     private Database db;
@@ -64,13 +65,14 @@ public class VocabEditorV extends OpenSHAPADialog {
      * @param modal Is this dialog to be modal or not?
      * @param listener The action listener to invoke.
      */
-    public VocabEditorV(java.awt.Frame parent,
-                        boolean modal,
+    public VocabEditorV(final Frame parent,
+                        final boolean modal,
                         final ActionListener listener) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
         initComponents();
+        setName(this.getClass().getSimpleName());
         selectedVocabElement = null;
         selectedArgument = null;
 
@@ -92,6 +94,7 @@ public class VocabEditorV extends OpenSHAPADialog {
                 verticalFrame.add(matrixV);
                 veViews.add(matrixV);
             }
+
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
         }
@@ -106,7 +109,7 @@ public class VocabEditorV extends OpenSHAPADialog {
      * The action to invoke when the user clicks on the add predicate button.
      */
     @Action
-    public void addPredicate() {        
+    public void addPredicate() {
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db,
                                                                   "predicate");
@@ -133,7 +136,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
             mve.setType(MatrixType.MATRIX);
             MatrixVEV mvev = new MatrixVEV(mve, this);
-            mvev.setHasChanged(true);                       
+            mvev.setHasChanged(true);
             verticalFrame.add(mvev, (verticalFrame.getComponentCount() - 1));
             verticalFrame.validate();
             veViews.add(mvev);
@@ -173,6 +176,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             // Store the selectedVocabElement in a temp variable - rebuilding
             // contents may alter the currently selected vocab element.
             VocabElementV temp = selectedVocabElement;
+            temp.setHasChanged(true);
             temp.rebuildContents();
 
             // Select the contents of the newly created formal argument.
@@ -180,6 +184,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             faV.requestFocus();
 
             updateDialogState();
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create formal argument.", e);
         }
@@ -209,13 +214,13 @@ public class VocabEditorV extends OpenSHAPADialog {
 
         // User has vocab element selected - mark it for deletion.
         if (selectedVocabElement != null && selectedArgument == null) {
-            selectedVocabElement.setDeleted(true);
             veViewsToDeleteCompletely.add(selectedVocabElement);
-        
+            selectedVocabElement.setDeleted(true);
+
         // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
+            VocabElement ve = selectedVocabElement.getVocabElement();
 
-            
         }
 
         updateDialogState();
@@ -228,6 +233,11 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void revertChanges() {
         int tableSize = veViews.size();
         int curPos = 0;
+
+        for (VocabElementV view : veViewsToDeleteCompletely) {
+            view.setDeleted(false);
+        }
+
         for (int i = 0; i < tableSize; i++) {
             if (veViews.get(curPos).hasChanged()) {
                 verticalFrame.remove(veViews.get(curPos));
@@ -247,22 +257,30 @@ public class VocabEditorV extends OpenSHAPADialog {
     public void applyChanges() {
 
         try {
+            for (VocabElementV view : veViewsToDeleteCompletely) {
+                db.removeVE(view.getVocabElement().getID());
+                verticalFrame.remove(view);
+                veViews.remove(view);
+            }
+
             for (VocabElementV vev : veViews) {
                 if (vev.hasChanged()) {
-                    VocabElement ve = vev.getVocabElement();
 
-                    if (ve.getID() == DBIndex.INVALID_ID) {                        
+                    VocabElement ve = vev.getVocabElement();
+                    if (ve.getID() == DBIndex.INVALID_ID) {
                         long id = db.addVocabElement(ve);
                         vev.setModel(db.getVocabElement(id));
+
                     } else {
-                        
                         db.replaceVocabElement(ve);
                     }
-                    vev.setHasChanged(false);                    
+                    vev.setHasChanged(false);
                 }
             }
 
+            veViewsToDeleteCompletely.clear();
             updateDialogState();
+
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
@@ -307,7 +325,7 @@ public class VocabEditorV extends OpenSHAPADialog {
             }
 
             // A vocab element contains a change - enable certain things.
-            if (vev.hasChanged()) {
+            if (vev.hasChanged() || vev.isDeletable()) {
                 containsC = true;
             }
         }
@@ -476,6 +494,7 @@ public class VocabEditorV extends OpenSHAPADialog {
         currentVocabList.setName("currentVocabList"); // NOI18N
         currentVocabList.setPreferredSize(new java.awt.Dimension(4, 400));
 
+        jPanel1.setToolTipText(bundle.getString("vocablist.tooltip")); // NOI18N
         jPanel1.setName("jPanel1"); // NOI18N
         jPanel1.setLayout(new java.awt.GridLayout(1, 1));
         currentVocabList.setViewportView(jPanel1);

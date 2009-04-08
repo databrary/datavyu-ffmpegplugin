@@ -15,7 +15,7 @@ public class VocabElementNameV extends Editor implements FocusListener {
 
     private boolean initialSelection;
 
-    public VocabElementNameV(VocabEditorV p) {
+    public VocabElementNameV(final VocabEditorV p) {
         this.addFocusListener(this);
         this.parent = p;
         this.initialSelection = true;

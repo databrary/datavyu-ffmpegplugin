@@ -3143,6 +3143,10 @@ public abstract class Database
         return this.vl.predInVocabList(targetName);
     }
 
+    public void removeVE(long targetID) throws SystemErrorException {
+        this.vl.removeVocabElement(targetID);
+    }
+
 
     /**
      * removePredVE(id)
