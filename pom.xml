@@ -4,7 +4,7 @@
   <groupId>au.com.nicta.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.5</version>
+  <version>0.6</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
