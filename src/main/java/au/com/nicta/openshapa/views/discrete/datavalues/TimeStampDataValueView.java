@@ -275,7 +275,25 @@ public abstract class TimeStampDataValueView extends DataValueView {
 
                 // Can't delete empty time stamp data value.
                 if (!tdv.isEmpty()) {
+                    int caret = getSelectionEnd();
                     this.removeAheadOfCaret();
+
+                    boolean nextIsReserved = false;
+
+                    for (int i = 0; i < this.getPreservedChars().size(); i++) {
+                        if (getText().charAt(caret)
+                            == this.getPreservedChars().get(i)) {
+                            nextIsReserved = true;
+                            break;
+                        }
+                    }
+
+                    if (nextIsReserved) {
+                        setCaretPosition(caret);
+                    } else {
+                        setCaretPosition(caret - 1);
+                    }
+
                     advanceCaret();
                     tdv.setItsValue(buildValue(getText()));
                     e.consume();

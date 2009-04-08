@@ -215,7 +215,7 @@ public abstract class Editor extends JTextField {
 
         // Set the text for this data value to the new string.
         this.setText(cValue.toString());
-        this.setCaretPosition(start);
+        this.setCaretPosition(pos);
     }
 
 }

@@ -274,6 +274,7 @@ implements KeyEventDispatcher {
         });
         jMenu3.add(weakTemporalOrderMenuItem);
 
+        strongTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
         strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
