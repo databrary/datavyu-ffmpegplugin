@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 public class SpreadsheetView extends JPanel implements Scrollable {
 
     /** Maximum unit scroll amount. */
-    private int maxUnitIncrement = 50;
+    private static final int MAX_UNIT_INCREMENT = 50;
 
     /** Creates new form SpreadsheetView. */
     public SpreadsheetView() {
@@ -70,16 +70,16 @@ public class SpreadsheetView extends JPanel implements Scrollable {
         //and the nearest tick mark in the indicated direction.
         if (direction < 0) {
             int newPosition = currentPosition
-                                - (currentPosition / maxUnitIncrement)
-                                * maxUnitIncrement;
+                                - (currentPosition / MAX_UNIT_INCREMENT)
+                                * MAX_UNIT_INCREMENT;
             if (newPosition == 0) {
-                return maxUnitIncrement;
+                return MAX_UNIT_INCREMENT;
             } else {
                 return newPosition;
             }
         } else {
-            return ((currentPosition / maxUnitIncrement) + 1)
-                   * maxUnitIncrement
+            return ((currentPosition / MAX_UNIT_INCREMENT) + 1)
+                   * MAX_UNIT_INCREMENT
                    - currentPosition;
         }
     }
@@ -98,9 +98,9 @@ public class SpreadsheetView extends JPanel implements Scrollable {
                                                  final int orientation,
                                                  final int direction) {
         if (orientation == SwingConstants.HORIZONTAL) {
-            return visibleRect.width - maxUnitIncrement;
+            return visibleRect.width - MAX_UNIT_INCREMENT;
         } else {
-            return visibleRect.height - maxUnitIncrement;
+            return visibleRect.height - MAX_UNIT_INCREMENT;
         }
     }
 
