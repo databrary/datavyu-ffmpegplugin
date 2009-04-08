@@ -6,15 +6,23 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 /**
- *
+ * A view element for a vocab element name (i.e. the 'GOAL' of GOAL().
+ *=
  * @author cfreeman
  */
 public class VocabElementNameV extends Editor implements FocusListener {
 
+    /** The parent vocab editor that this view resides within. */
     private VocabEditorV parent;
 
+    /** The initial selection of the vocab element name, true yes. false no */
     private boolean initialSelection;
 
+    /**
+     * Contructor.
+     *
+     * @param p The parent vocab editor that this view resides within.
+     */
     public VocabElementNameV(final VocabEditorV p) {
         this.addFocusListener(this);
         this.parent = p;

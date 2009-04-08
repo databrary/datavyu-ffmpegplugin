@@ -28,8 +28,6 @@ import org.jdesktop.application.ResourceMap;
 public abstract class VocabElementV extends JPanel
 implements KeyListener {
 
-    //private static final int MARGIN = 5;
-
     /** The width of icon to use in the vocab element view. */
     private static final int VE_WIDTH = 16;
 
@@ -107,7 +105,6 @@ implements KeyListener {
         veNameField.setBorder(null);
         veNameField.addKeyListener(this);
         veNameField.setToolTipText(rMap.getString("name.tooltip"));
-        //veNameField.setMargin(new Insets(MARGIN, MARGIN, MARGIN, MARGIN));
 
         this.setBackground(Color.WHITE);
         ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);

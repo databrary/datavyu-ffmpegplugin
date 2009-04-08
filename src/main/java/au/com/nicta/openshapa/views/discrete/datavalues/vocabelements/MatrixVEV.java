@@ -10,14 +10,23 @@ import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 
 /**
+ * A view for a matrix vocab element.
  *
  * @author cfreeman
  */
 public class MatrixVEV extends VocabElementV {
+    /** The model that this view represents. */
     private MatrixVocabElement mveModel;
 
+    /** The logger for this class. */
     private static Logger logger = Logger.getLogger(MatrixVEV.class);
 
+    /**
+     * Constructor.
+     *
+     * @param mve The matrix vocab element that this view will represent.
+     * @param vev The parent view for this vocab element view.
+     */
     public MatrixVEV(MatrixVocabElement mve, VocabEditorV vev) {
         super(mve, vev);
         mveModel = mve;
@@ -26,6 +35,11 @@ public class MatrixVEV extends VocabElementV {
         this.setTypeIcon(icon);
     }
 
+    /**
+     * The action to invoke whent the user types a key.
+     *
+     * @param e The event that triggered this action.
+     */
     final public void keyTyped(KeyEvent e) {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
@@ -52,13 +66,13 @@ public class MatrixVEV extends VocabElementV {
             }
 
         // If the character is not reserved - add it to the name of the pred
-        } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>' &&
-                   e.getKeyChar() != '(' && e.getKeyChar() != ')' &&
-                   e.getKeyChar() != ',' && e.getKeyChar() != '"') {
+        } else if (e.getKeyChar() != '<' && e.getKeyChar() != '>'
+                   && e.getKeyChar() != '(' && e.getKeyChar() != ')'
+                   && e.getKeyChar() != ',' && e.getKeyChar() != '"') {
 
             try {
                 Editor field = getNameComponent();
-                field.removeSelectedText();                
+                field.removeSelectedText();
 
                 StringBuffer cValue = new StringBuffer(field.getText());
                 cValue.insert(field.getCaretPosition(), e.getKeyChar());
