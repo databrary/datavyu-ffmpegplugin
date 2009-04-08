@@ -170,7 +170,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 fa = new FloatFormalArg(db, "<float>");
             }
 
-            VocabElement ve = selectedVocabElement.getVocabElement();
+            VocabElement ve = selectedVocabElement.getModel();
             ve.appendFormalArg(fa);
 
             // Store the selectedVocabElement in a temp variable - rebuilding
@@ -197,7 +197,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void setVaryingArgs() {
         if (selectedVocabElement != null) {
             try {
-                selectedVocabElement.getVocabElement()
+                selectedVocabElement.getModel()
                                     .setVarLen(varyArgCheckBox.isSelected());
                 selectedVocabElement.rebuildContents();
             } catch (SystemErrorException e) {
@@ -219,7 +219,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
-            VocabElement ve = selectedVocabElement.getVocabElement();
+            VocabElement ve = selectedVocabElement.getModel();
 
         }
 
@@ -258,7 +258,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
-                db.removeVE(view.getVocabElement().getID());
+                db.removeVE(view.getModel().getID());
                 verticalFrame.remove(view);
                 veViews.remove(view);
             }
@@ -266,7 +266,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             for (VocabElementV vev : veViews) {
                 if (vev.hasChanged()) {
 
-                    VocabElement ve = vev.getVocabElement();
+                    VocabElement ve = vev.getModel();
                     if (ve.getID() == DBIndex.INVALID_ID) {
                         long id = db.addVocabElement(ve);
                         vev.setModel(db.getVocabElement(id));
@@ -353,7 +353,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(true);
             varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
-            varyArgCheckBox.setSelected(selectedVocabElement.getVocabElement()
+            varyArgCheckBox.setSelected(selectedVocabElement.getModel()
                                                             .getVarLen());
         } else {
             addArgButton.setEnabled(false);
@@ -584,7 +584,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 }
 
                 //VocabElement ve = selectedVocabElement.getVocabElement();
-                selectedVocabElement.getVocabElement()
+                selectedVocabElement.getModel()
                                     .replaceFormalArg(newArg,
                                                   selectedArgument.getArgPos());
                 selectedVocabElement.setHasChanged(true);

@@ -28,7 +28,7 @@ public class NewVariableC implements ActionListener {
     private static Logger logger = Logger.getLogger(NewVariableC.class);
 
     /**
-     * Constructor, creates the new variable controller
+     * Constructor, creates the new variable controller.
      */
     public NewVariableC() {
         model = OpenSHAPA.getDatabase();

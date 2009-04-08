@@ -21,14 +21,14 @@ import org.apache.log4j.Logger;
  */
 public abstract class TimeStampDataValueView extends DataValueView {
 
-    // Conversion factor for converting hours to ticks.
-    private static long HH_TO_TICKS =  3600000;
+    /** Conversion factor for converting hours to ticks. */
+    private static final long HH_TO_TICKS = 3600000;
 
-    // Conversion factor for converting minutes to ticks.
-    private static long MM_TO_TICKS = 60000;
+    /** Conversion factor for converting minutes to ticks. */
+    private static final long MM_TO_TICKS = 60000;
 
-    // Conversion factor for converting seconds to ticks.
-    private static int SS_TO_TICKS = 1000;
+    /** Conversion factor for converting seconds to ticks. */
+    private static final int SS_TO_TICKS = 1000;
 
     /** Logger for this class. */
     private static Logger logger = Logger

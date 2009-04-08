@@ -21,6 +21,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 /**
+ * A view for a vocab element.
  *
  * @author cfreeman
  */
@@ -55,10 +56,10 @@ implements KeyListener {
     private ImageIcon deltaImageIcon;
 
     /** Has this vocab element changed or not? */
-    boolean hasVEChanged;
+    private boolean hasVEChanged;
 
     /** Is this vocab element view marked for removal? */
-    boolean deleteVE;
+    private boolean deleteVE;
 
     /** The underlying model that this vocab element view represents. */
     private VocabElement veModel;
@@ -115,16 +116,29 @@ implements KeyListener {
         this.rebuildContents();
     }
 
-    final public void setModel(VocabElement vocabElement) {
+    /**
+     * Replaces the model used for this vocab element view.
+     *
+     * @param vocabElement The new model to use with this view.
+     */
+    public final void setModel(VocabElement vocabElement) {
         veModel = vocabElement;
         this.rebuildContents();
     }
 
-    final protected void setTypeIcon(final ImageIcon newIcon) {
+    /**
+     * Replaces the type icon with the supplied parameter.
+     *
+     * @param newIcon The new icon to use for the type of vocab element.
+     */
+    protected final void setTypeIcon(final ImageIcon newIcon) {
         this.typeIcon.setIcon(newIcon);
     }
 
-    final public void rebuildContents() {
+    /**
+     * Updates the display of the vocab element view by rebuilding its contents.
+     */
+    public final void rebuildContents() {
         this.removeAll();
         this.add(deltaIcon);
         this.add(deleteIcon);
@@ -188,7 +202,14 @@ implements KeyListener {
 
     }
 
-    final public void setHasChanged(boolean hasChanged) {
+    /**
+     * Updates the vocab element view with a visual representation of if the
+     * vocab element has changed or not.
+     *
+     * @param hasChanged Has the vocab element changed or not; true if yes,
+     * false otherwise.
+     */
+    public final void setHasChanged(final boolean hasChanged) {
         if (hasChanged) {
             deltaIcon.setIcon(deltaImageIcon);
         } else {
@@ -198,11 +219,22 @@ implements KeyListener {
         hasVEChanged = hasChanged;
     }
 
-    final public boolean hasChanged() {
+    /**
+     * @return Has the vocab element changed or not; true if yes, false
+     * otherwise.
+     */
+    public final boolean hasChanged() {
         return hasVEChanged;
     }
 
-    final public FormalArgumentV getArgumentView(FormalArgument fa) {
+    /**
+     * Gets a view for the supplied formal argument.
+     *
+     * @param fa The formal argument for which we want a view for.
+     * @return The view for the supplied formal argument if it exists, null
+     * otherwise.
+     */
+    public final FormalArgumentV getArgumentView(final FormalArgument fa) {
         for (FormalArgumentV view : argViews) {
             if (view.getModel().equals(fa)) {
                 return view;
@@ -212,15 +244,26 @@ implements KeyListener {
         return null;
     }
 
-    final public VocabElement getVocabElement() {
+    /**
+     * @return The model (VocabElement) that this view represents.
+     */
+    public final VocabElement getModel() {
         return veModel;
     }
 
-    final public Editor getNameComponent() {
+    /**
+     * @return The component for the name of the vocab element.
+     */
+    public final Editor getNameComponent() {
         return this.veNameField;
     }
 
-    final public void keyPressed(KeyEvent e) {
+    /**
+     * The action to invoke when the user presses a key.
+     *
+     * @param e The event that triggered this action.
+     */
+    public final void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -232,12 +275,20 @@ implements KeyListener {
         }
     }
 
+    /**
+     * The action to invoke when the user releases a key.
+     *
+     * @param e The event that triggered this action.
+     */
     final public void keyReleased(KeyEvent e) {
         // Ignore key release
     }
 
+    /**
+     * @return True if this component has focus, false otherwise.
+     */
     @Override
-    final public boolean hasFocus() {
+    public final boolean hasFocus() {
         if (this.veNameField.hasFocus()) {
             return true;
         } else {
@@ -251,7 +302,11 @@ implements KeyListener {
         return false;
     }
 
-    final public FormalArgumentV getArgWithFocus() {
+    /**
+     * @return The view of the formal argument that has focus, null if no formal
+     * argument view in this vocab element has focus.
+     */
+    public final FormalArgumentV getArgWithFocus() {
         for (FormalArgumentV view : argViews) {
             if (view.hasFocus()) {
                 return view;
@@ -261,7 +316,13 @@ implements KeyListener {
         return null;
     }
 
-    final public void setDeleted(boolean delete) {
+    /**
+     * Sets the deleted flag for this vocab element.
+     *
+     * @param delete True if this entire vocab element is flagged for deletion,
+     * false otherwise.
+     */
+    public final void setDeleted(final boolean delete) {
         if (delete) {
             deleteIcon.setText("D");
         } else {
@@ -272,7 +333,11 @@ implements KeyListener {
         this.rebuildContents();
     }
 
-    final public boolean isDeletable() {
+    /**
+     * @return True if this entire vocab element is flagged for deletion, false
+     * otherwise.
+     */
+    public final boolean isDeletable() {
         return deleteVE;
     }
 }

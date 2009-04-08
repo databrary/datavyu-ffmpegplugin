@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import org.apache.log4j.Logger;
 
 /**
+ * This is a view of a Vocab Element Formal Argument.
  *
  * @author cfreeman
  */
