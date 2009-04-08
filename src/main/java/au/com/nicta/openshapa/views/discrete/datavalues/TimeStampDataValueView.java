@@ -153,7 +153,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
     /**
      * Attempt to paste teh contents of the clipboard into this timestamp.
      */
-    public void pasteTimeStamp() {
+    public final void pasteTimeStamp() {
         // Get the contents of the clipboard.
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clipboard.getContents(null);
@@ -265,8 +265,6 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 // Can't delete empty time stamp data value.
                 if (!tdv.isEmpty()) {
                     this.removeBehindCaret();
-                    //StringBuffer currentValue = new StringBuffer(getText());
-                    //currentValue.insert(getCaretPosition(), "0");
                     tdv.setItsValue(buildValue(getText()));
                     e.consume();
                 }
@@ -278,8 +276,6 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 // Can't delete empty time stamp data value.
                 if (!tdv.isEmpty()) {
                     this.removeAheadOfCaret();
-                    StringBuffer currentValue = new StringBuffer(getText());
-                    //currentValue.insert(getCaretPosition(), "0");
                     advanceCaret();
                     tdv.setItsValue(buildValue(getText()));
                     e.consume();
@@ -317,7 +313,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
      * @param ts The new value of that this TimeStampDataValueView will
      * represent.
      */
-    public void setValue(final TimeStamp ts) {
+    public final void setValue(final TimeStamp ts) {
         try {
             TimeStampDataValue tsdv = (TimeStampDataValue) this.getValue();
             tsdv.setItsValue(ts);
@@ -336,7 +332,7 @@ public abstract class TimeStampDataValueView extends DataValueView {
      *
      * @return A Double value that can be used setting the database.
      */
-    public TimeStamp buildValue(final String textField) {
+    public final TimeStamp buildValue(final String textField) {
         try {
             long ticks = 0;
 
