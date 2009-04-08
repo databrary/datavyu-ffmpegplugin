@@ -2,12 +2,19 @@ package au.com.nicta.openshapa.controllers;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.views.ConsoleV;
+import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedList;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.apache.log4j.Logger;
 
@@ -44,6 +51,28 @@ public class RunScriptC {
         runScript(rubyFile);
     }
 
+    /**
+     * Build the ruby scripting engine.
+     */
+    private ScriptEngine setupRuby() {
+        ScriptEngine rubyEngine = null;
+        // we need to avoid using the
+        // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+        // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+        JRubyScriptEngineManager m = new JRubyScriptEngineManager();
+
+        // Whoops - JRubyScriptEngineManager may have failed, if that does
+        // not construct engines for jruby correctly, switch to
+        // javax.script.ScriptEngineManager
+        if (m.getEngineFactories().size() == 0) {
+            ScriptEngineManager m2 = new ScriptEngineManager();
+            rubyEngine = m2.getEngineByName("jruby");
+        } else {
+            rubyEngine = m.getEngineByName("jruby");
+        }
+        return rubyEngine;
+    }
+
     /** the maximum size of the recently ran script list. */
     private static final int MAX_RECENT_SCRIPT_SIZE = 5;
 
@@ -53,6 +82,9 @@ public class RunScriptC {
      * @param rubyFile The file of the ruby script to run.
      */
     private void runScript(final File rubyFile) {
+
+        ScriptEngine rubyEngine = setupRuby();
+
         // Update the list of most recently used scripts.
         LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
         // If the lastscripts is full - pull the last one off to make room.
@@ -60,17 +92,38 @@ public class RunScriptC {
             lastScripts.removeLast();
         }
         // Add the script to the list.
+        if (!lastScripts.contains(rubyFile)) {
         lastScripts.addFirst(rubyFile);
         OpenSHAPA.setLastScriptsExecuted(lastScripts);
+        }
 
         try {
             OpenSHAPA.getApplication().show(ConsoleV.getInstance());
 
+            rubyEngine.getContext().setWriter(OpenSHAPA.getConsoleWriter());
+
             // Place a reference to the database within the scripting engine.
-            OpenSHAPA.getRubyEngine().put("db", OpenSHAPA.getDatabase());
+            rubyEngine.put("db", OpenSHAPA.getDatabase());
 
             FileReader reader = new FileReader(rubyFile);
-            OpenSHAPA.getRubyEngine().eval(reader);
+            rubyEngine.eval(reader);
+
+            // Remove the reference to db
+            rubyEngine.put("db", new Object());
+
+            Reader reader1 = new StringReader("");
+            rubyEngine.getContext().setReader(reader1);
+
+            // Build output streams for the scripting engine.
+            try {
+                PipedInputStream consoleOutputStream = new PipedInputStream();
+                PipedOutputStream sIn =
+                                     new PipedOutputStream(consoleOutputStream);
+                PrintWriter consoleWriter = new PrintWriter(sIn);
+                rubyEngine.getContext().setWriter(consoleWriter);
+            } catch (java.io.IOException e) {
+                logger.error("Unable to execute script: ", e);
+            }
         } catch (ScriptException e) {
             PrintWriter consoleWriter = OpenSHAPA.getConsoleWriter();
             consoleWriter.println("***** SCRIPT ERRROR *****");

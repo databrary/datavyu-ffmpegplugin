@@ -9,7 +9,6 @@ import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.views.ListVariables;
 import au.com.nicta.openshapa.views.OpenSHAPAView;
 import au.com.nicta.openshapa.views.QTVideoController;
-import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -18,8 +17,6 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.util.LinkedList;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -175,26 +172,11 @@ implements KeyEventDispatcher {
             lastCreatedCellID = 0;
             lastCreatedColID = 0;
 
-            // Build the ruby scripting engine - we need to avoid using the
-            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
-            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
-
-            // Whoops - JRubyScriptEngineManager may have failed, if that does
-            // not construct engines for jruby correctly, switch to
-            // javax.script.ScriptEngineManager
-            if (m.getEngineFactories().size() == 0) {
-                ScriptEngineManager m2 = new ScriptEngineManager();
-                rubyEngine = m2.getEngineByName("jruby");
-            } else {
-                rubyEngine = m.getEngineByName("jruby");
-            }
 
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
             consoleWriter = new PrintWriter(sIn);
-            rubyEngine.getContext().setWriter(consoleWriter);
             lastScriptsExecuted = new LinkedList<File>();
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
@@ -320,13 +302,6 @@ implements KeyEventDispatcher {
         return OpenSHAPA.getApplication().consoleOutputStream;
     }
 
-    /**
-     * @return The ruby scripting engine to use with OpenSHAPA.
-     */
-    public static ScriptEngine getRubyEngine() {
-        return OpenSHAPA.getApplication().rubyEngine;
-    }
-
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {MAC, WINDOWS, UNKNOWN};
 
@@ -381,9 +356,6 @@ implements KeyEventDispatcher {
 
     /** The current database we are working on. */
     private Database db;
-
-    /** Ruby scripting engine to use for this instance of openshapa. */
-    private ScriptEngine rubyEngine;
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;
