@@ -10,14 +10,10 @@ package au.com.nicta.openshapa.util;
 import java.io.*;
 import java.util.*;
 import java.net.*;
-import au.com.nicta.openshapa.db.Cell;
-import au.com.nicta.openshapa.db.Column;
-import au.com.nicta.openshapa.db.Database;
-import au.com.nicta.openshapa.db.FormalArgument;
-import au.com.nicta.openshapa.db.VocabElement;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 import javax.xml.parsers.*;
+import org.openshapa.util.OpenHashtable;
 
 /**
  * Configuration loading module.

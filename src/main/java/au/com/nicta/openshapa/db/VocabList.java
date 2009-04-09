@@ -11,10 +11,10 @@ package au.com.nicta.openshapa.db;
 
 import au.com.nicta.openshapa.OpenSHAPA;
 import java.util.HashMap;
-import au.com.nicta.openshapa.util.OpenHashtable;
 import java.util.Vector;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.util.OpenHashtable;
 
 /**
  * Class VocabList

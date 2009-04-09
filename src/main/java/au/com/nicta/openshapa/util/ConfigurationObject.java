@@ -8,7 +8,7 @@
 package au.com.nicta.openshapa.util;
 
 import java.util.Enumeration;
-import au.com.nicta.openshapa.util.OpenHashtable;
+import org.openshapa.util.OpenHashtable;
 import org.xml.sax.Attributes;
 
 /*

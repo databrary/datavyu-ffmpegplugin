@@ -12,9 +12,9 @@ package au.com.nicta.openshapa.db;
 import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.util.HashUtils;
 import java.util.HashMap;
-import au.com.nicta.openshapa.util.OpenHashtable;
 import java.util.Enumeration;
 import java.util.Vector;
+import org.openshapa.util.OpenHashtable;
 
 /**
  * Class ColumnList

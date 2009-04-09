@@ -11,7 +11,8 @@ package au.com.nicta.openshapa.db;
 
 import au.com.nicta.openshapa.util.Constants;
 import au.com.nicta.openshapa.util.HashUtils;
-import au.com.nicta.openshapa.util.OpenHashtable;
+import org.openshapa.util.OpenHashtable;
+
 
 /**
  * class DBIndex
