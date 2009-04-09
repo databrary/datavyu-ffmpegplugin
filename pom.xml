@@ -30,7 +30,8 @@
       </plugin>
     </plugins>
   </reporting>
-
+ 
+  <!-- Our continous integration server. -->
   <ciManagement>
     <system>continuum</system>
     <url>http://openshapa.nicta.org.au/dashboard/</url>
