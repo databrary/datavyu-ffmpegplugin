@@ -7,6 +7,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
@@ -789,4 +791,37 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::validCell() */
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += HashUtils.Obj2H(itsCells) * Constants.SEED2;
+
+        return hash;
+    }
+
+    /**
+     * Compares this reference column against a object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        ReferenceColumn rc = (ReferenceColumn) obj;
+        return super.equals(obj)
+               && (itsCells == null ? rc.itsCells == null
+                                    : itsCells.equals(rc.itsCells));
+    }
 } /* Class ReferenceColumn */
