@@ -603,7 +603,6 @@ public final class TimeStampDataValue extends DataValue
         return hash;
     }
 
-
     /**
      * Compares this TimeStampDataValue against another object.
      *
