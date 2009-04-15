@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class IntFormalArg
  *
@@ -48,7 +51,6 @@ public class IntFormalArg extends FormalArgument
     boolean subRange = false;
     long minVal = Long.MIN_VALUE;
     long maxVal = Long.MAX_VALUE;
-
 
 
     /*************************************************************************/
@@ -342,4 +344,38 @@ public class IntFormalArg extends FormalArgument
 
     } /* IntFormalArg::isValidValue() */
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += (new Boolean(subRange)).hashCode() * Constants.SEED2;
+        hash += HashUtils.Long2H(minVal) * Constants.SEED3;
+        hash += HashUtils.Long2H(maxVal) * Constants.SEED4;
+
+        return hash;
+    }
+
+    /**
+     * Compares this integer formal argument against a object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        IntFormalArg ifa = (IntFormalArg) obj;
+        return super.equals(obj) && subRange == ifa.subRange
+               && minVal == ifa.minVal && maxVal == ifa.maxVal;
+    }
 } /* class IntFormalArg */

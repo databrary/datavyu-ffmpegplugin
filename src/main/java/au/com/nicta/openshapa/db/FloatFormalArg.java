@@ -9,6 +9,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * Class FloatFormalArg
  *
@@ -48,8 +51,6 @@ public class FloatFormalArg extends FormalArgument
     boolean subRange = false;
     double minVal = (-1.0 * Double.MAX_VALUE);
     double maxVal = Double.MAX_VALUE;
-
-
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -352,4 +353,38 @@ public class FloatFormalArg extends FormalArgument
 
     } /* FloatFormalArg::isValidValue() */
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += (new Boolean(subRange)).hashCode() * Constants.SEED2;
+        hash += HashUtils.Long2H((long) minVal) * Constants.SEED3;
+        hash += HashUtils.Long2H((long) maxVal) * Constants.SEED4;
+
+        return hash;
+    }
+
+    /**
+     * Compares this float formal argument against a object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        FloatFormalArg ffa = (FloatFormalArg) obj;
+        return super.equals(obj) && subRange == ffa.subRange
+               && minVal == ffa.minVal && maxVal == ffa.maxVal;
+    }
 } /* class FloatFormalArg */
