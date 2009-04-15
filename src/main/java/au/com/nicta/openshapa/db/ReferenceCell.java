@@ -7,6 +7,9 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
+
 /**
  * A reference cell
  *
@@ -22,8 +25,9 @@ public class ReferenceCell extends Cell
      *      This ID should be set on construction, and not changed thereafter.
      */
 
-    /** ID of referenced cell */
+    /** ID of referenced cell. */
     private long targetID = DBIndex.INVALID_ID;
+
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -235,4 +239,35 @@ public class ReferenceCell extends Cell
 
     } /* referenceCell::lookuptargetCell() */
 
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += HashUtils.Long2H(targetID) * Constants.SEED2;
+
+        return hash;
+    }
+
+    /**
+     * Compares this reference cell against a object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        ReferenceCell rc = (ReferenceCell) obj;
+        return super.equals(obj) && targetID == rc.targetID;
+    }
 } // Class ReferenceCell

@@ -4932,7 +4932,7 @@ public class Matrix implements Cloneable {
     @Override
     public int hashCode() {
         int hash = HashUtils.Long2H(mveID) * Constants.SEED1;
-        hash += (HashUtils.Obj2H(argList)) * Constants.SEED2;        
+        hash += (HashUtils.Obj2H(argList)) * Constants.SEED2;
         hash += (varLen ? 1 : 0) * Constants.SEED3;
 
         return hash;
