@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+
 /**
  * Class TextStringFormalArg
  *
@@ -32,7 +34,6 @@ public class TextStringFormalArg extends FormalArgument
      */
 
     boolean subRange = false;
-
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -223,5 +224,37 @@ public class TextStringFormalArg extends FormalArgument
         return Database.IsValidTextString(obj);
 
     } /* TextStringFormalArg::isValidValue() */
+
+    /**
+     * @return A hash code value for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += (new Boolean(subRange)).hashCode() * Constants.SEED2;
+
+        return hash;
+    }
+
+    /**
+     * Compares this text string formal argument against a object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        TextStringFormalArg tsfa = (TextStringFormalArg) obj;
+        return super.equals(obj) && subRange == tsfa.subRange;
+    }
 
 } /* class TextStringFormalArg */

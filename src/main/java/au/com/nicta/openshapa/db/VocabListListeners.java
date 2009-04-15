@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+
 /**
  * Class VocabListListeners
  *
@@ -22,15 +24,8 @@ package au.com.nicta.openshapa.db;
  */
 public class VocabListListeners extends Listeners
 {
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-
-    /* itsVL:   Pointer to the instance of VocabList with which this
-     *      instance of VocabListListeners is associated.
-     */
-
-    VocabList itsVL = null;
+    /** The VocabList with which VocabListListeners is associated with. */
+    private VocabList itsVL = null;
 
 
     /*************************************************************************/
@@ -282,5 +277,4 @@ public class VocabListListeners extends Listeners
         // return; /* commented out to keep the compiler happy */
 
     } /* VocabListListeners::registerExternalListener() */
-
 } /* class VocabListListeners */

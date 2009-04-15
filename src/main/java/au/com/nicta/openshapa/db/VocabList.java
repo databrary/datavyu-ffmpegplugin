@@ -10,6 +10,8 @@
 package au.com.nicta.openshapa.db;
 
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.HashMap;
 import java.util.Vector;
 import org.jdesktop.application.Application;
@@ -68,7 +70,6 @@ public class VocabList
      *  and notify them as appropriate.
      */
     protected VocabListListeners listeners = null;
-
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -1958,5 +1959,42 @@ public class VocabList
         return s;
 
     } /* VocabList::toDBString() */
+
+    /**
+     * @return A hashcode for the object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = HashUtils.Obj2H(db) * Constants.SEED1;
+        hash += vl.hashCode() * Constants.SEED2;
+        hash += nameMap.hashCode() * Constants.SEED3;
+        hash += HashUtils.Obj2H(listeners) * Constants.SEED4;
+
+        return hash;
+    }
+
+    /**
+     * Compares this VocabList against another object.
+     *
+     * @param obj The object to compare this against.
+     * @return true if the Object obj is logically equal to this, false
+     * otherwise
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        VocabList v = (VocabList) obj;
+        return (db == null ? v.db == null : db.equals(v.db)) && vl.equals(v.vl)
+               && nameMap.equals(v.nameMap)
+               && (listeners == null ? v.listeners == null
+                                     : listeners.equals(v.listeners));
+    }
 
 } /* class VocabList */
