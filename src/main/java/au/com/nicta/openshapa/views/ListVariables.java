@@ -100,7 +100,7 @@ implements ExternalColumnListListener {
     public void addRow(final DataColumn dbColumn, final ResourceMap rMap) {
         Object[] vals = new Object[TOTAL_COLUMNS];
 
-        vals[VCOLUMN] = dbColumn.getHidden();
+        vals[VCOLUMN] = !dbColumn.getHidden();
         vals[NCOLUMN] = dbColumn.getName();
         switch (dbColumn.getItsMveType()) {
             case FLOAT:
