@@ -9,6 +9,8 @@
 
 package au.com.nicta.openshapa.db;
 
+import au.com.nicta.openshapa.util.Constants;
+import au.com.nicta.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
@@ -76,7 +78,6 @@ public abstract class VocabElement extends DBElement
      *  listeners, and notify them as appropriate.
      */
     protected VocabElementListeners listeners = null;
-
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -1230,88 +1231,48 @@ public abstract class VocabElement extends DBElement
 
     } /* VocabElement::setListeners() */
 
+    /**
+     * @return A hash value for this object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * Constants.SEED1;
+        hash += HashUtils.Obj2H(name) * Constants.SEED2;
+        hash += (new Boolean(system)).hashCode() * Constants.SEED3;
+        hash += (new Boolean(varLen)).hashCode() * Constants.SEED4;
+        hash += HashUtils.Obj2H(fArgList) * Constants.SEED5;
+        hash += HashUtils.Obj2H(listeners) * Constants.SEED6;
 
-//    /**
-//     * addChangeListener()
-//     *
-//     * Add a change listener to the listeners list.
-//     *
-//     *                                  JRM -- 2/28/07
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     */
-//
-//    public void addChangeListener(VocabChangeListener newListener)
-//        throws SystemErrorException
-//    {
-//        final String mName = "VocabElement::addChangeListener(): ";
-//
-//        if ( listeners == null )
-//        {
-//            /* listeners hasn't been instantiated yet -- scream and die */
-//            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
-//        }
-//        else if ( newListener == null )
-//        {
-//            throw new SystemErrorException(mName + "newListener is null");
-//        }
-//        else if ( listeners.contains(newListener) )
-//        {
-//            throw new SystemErrorException(mName +
-//                                           "newListener already in listeners");
-//        }
-//
-//        listeners.add(newListener);
-//
-//        return;
-//
-//  } /* VocabElement::addChangeListener() */
-//
-//
-//    /**
-//     * removeChangeListener()
-//     *
-//     * Remove a change listener to the listeners list.
-//     *
-//     *                                  JRM -- 2/28/07
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     */
-//
-//    public void removeChangeListener(VocabChangeListener target)
-//        throws SystemErrorException
-//    {
-//        final String mName = "VocabElement::addChangeListener(): ";
-//
-//        if ( listeners == null )
-//        {
-//            /* listeners hasn't been instantiated yet -- scream and die */
-//            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
-//        }
-//        else if ( target == null )
-//        {
-//            throw new SystemErrorException(mName + "newListener is null");
-//        }
-//        else if ( ! listeners.remove(target) )
-//        {
-//            throw new SystemErrorException(mName + "target not in listeners");
-//        }
-//
-//        if ( listeners.contains(target) )
-//        {
-//            throw new SystemErrorException(mName +
-//                                            "listener still contains target?!?");
-//        }
-//
-//        return;
-//
-//  } /* VocabElement::removeChangeListener() */
-//
+        return hash;
+    }
+
+    /**
+     * Compares this UndefinedDataValue against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal to this
+     * UndefinedDataValue, or false otherwise.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        VocabElement ve = (VocabElement) obj;
+        return super.equals(obj)
+            && (name == null ? ve.name == null : name.equals(ve.name))
+            && system == ve.system
+            && varLen == ve.varLen
+            && (fArgList == null ? ve.fArgList == null
+                                 : fArgList.equals(ve.fArgList))
+            && (listeners == null ? ve.listeners == null
+                                  : listeners.equals(ve.listeners));
+    }
 
 } /* class VocabElement */
