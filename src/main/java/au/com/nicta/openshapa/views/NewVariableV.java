@@ -1,7 +1,11 @@
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.controllers.Controller;
+import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
-import java.awt.event.ActionListener;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import org.apache.log4j.Logger;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -11,23 +15,27 @@ import java.awt.event.ActionListener;
 public final class NewVariableV extends OpenSHAPADialog {
 
     /** The parent action to notify when the user completes this dialog. */
-    private ActionListener notifier;
+    private Controller cont;
+
+    /** The logger for this class. */
+    private static Logger logger = Logger.getLogger(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.
      *
      * @param parent The parent of this form.
      * @param modal Should the dialog be modal or not?
-     * @param listener The listener to notify when the user has created a new
-     * variable.
+     * @param controller The controller to notify when the user has created a
+     * new variable.
      */
-    public NewVariableV(final java.awt.Frame parent, final boolean modal,
-                        final ActionListener listener) {
+    public NewVariableV(final java.awt.Frame parent,
+                        final boolean modal,
+                        final Controller controller) {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
 
-        notifier = listener;
+        cont = controller;
 
         // init button group
         buttonGroup1.add(textTypeButton);
@@ -198,8 +206,19 @@ public final class NewVariableV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        notifier.actionPerformed(evt);
-        this.dispose();
+        try {
+            cont.execute();
+            this.dispose();
+        // Whoops, user has done something strange - show warning dialog.
+        } catch (LogicErrorException fe) {
+            OpenSHAPA.getApplication().showWarningDialog(fe);
+
+        // Whoops, programmer has done something strange - show error
+        // message.
+        } catch (SystemErrorException e) {
+            logger.error("Unable to add variable to database", e);
+            OpenSHAPA.getApplication().showErrorDialog();
+        }
 }//GEN-LAST:event_okButtonActionPerformed
 
     /**

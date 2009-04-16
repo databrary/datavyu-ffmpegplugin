@@ -6,10 +6,7 @@ import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.LogicErrorException;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.NewVariableV;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JFrame;
-import org.apache.log4j.Logger;
 
 /**
  * Controller for creating new variables.
@@ -17,15 +14,12 @@ import org.apache.log4j.Logger;
  * @author cfreeman (refactored into seperate controller class.)
  * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
-public class NewVariableC implements ActionListener {
+public class NewVariableC implements Controller {
     /** The that this controller alters. */
     private Database model;
 
     /** The view that this controller gets information from. */
     private NewVariableV view;
-
-    /** The logger for OpenSHAPA. */
-    private static Logger logger = Logger.getLogger(NewVariableC.class);
 
     /**
      * Constructor, creates the new variable controller.
@@ -40,25 +34,12 @@ public class NewVariableC implements ActionListener {
     }
 
     /**
-     * Action to invoke when a new variable is added to the database.
-     *
-     * @param evt The event that triggered this action.
+     * Execute controller - i.e. add a new variable to the database.
      */
-    public void actionPerformed(final ActionEvent evt) {
-        try {
-            DataColumn dc = new DataColumn(model, view.getVariableName(),
-                                                  view.getVariableType());
-            model.addColumn(dc);
-
-        // Whoops, user has done something strange - show warning dialog.
-        } catch (LogicErrorException fe) {
-            OpenSHAPA.getApplication().showWarningDialog(fe);
-
-        // Whoops, programmer has done something strange - show error
-        // message.
-        } catch (SystemErrorException e) {
-            logger.error("Unable to add variable to database", e);
-            OpenSHAPA.getApplication().showErrorDialog();
-        }
+    public void execute() throws SystemErrorException, LogicErrorException {
+        DataColumn dc = new DataColumn(model,
+                                       view.getVariableName(),
+                                       view.getVariableType());
+        model.addColumn(dc);
     }
 }
