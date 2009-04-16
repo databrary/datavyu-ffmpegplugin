@@ -202,6 +202,12 @@ public class VocabListTest {
                                          foxtrot, golf, hotel, null);
         m5.setSystem();
         odb.vl.addElement(m5);
+        FormalArgument m5Ord = m5.getCPFormalArg(0);
+        FormalArgument m5Onset = m5.getCPFormalArg(1);
+        FormalArgument m5Offset = m5.getCPFormalArg(2);
+        FormalArgument cpFoxtrot = m5.getCPFormalArg(3);
+        FormalArgument cpGolf = m5.getCPFormalArg(4);
+        FormalArgument cpHotel = m5.getCPFormalArg(5);
 
         assertTrue(odb.vl.getMatricies().isEmpty());
         assertTrue(odb.vl.getPreds().isEmpty());
@@ -211,39 +217,13 @@ public class VocabListTest {
         assertTrue(VerifyVLContents(3, keys, values, odb.vl,
                                     outStream, verbose, 11));
 
-        /*
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,
-                               7,  8,  9, 10, 11, 12,
-                              13, 14, 15, 16, 17, 18,
-                              19, 20, 21, 22, 23, 24,
-                              25, 26, 27, 28, 29, 30,
-                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                              41, 42,
-                              43, 44, 45};
-            DBElement idxValues[] =
-                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha,
-                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
-                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
-                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
-                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
-                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset,
-                                               cp_foxtrot, cp_golf, cp_hotel,
-                     p0, lima,
-                     p1, mike, nero};
-
-            if ( ! VerifyVLContents(8, keys, values, vl, outStream,
-                                    verbose, 11) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(45, idxKeys, idxValues,
-                                               db.idx, outStream,
-                                               verbose, 111) )
-            {
-                failures++;
-            }
-         */
+        long idxKeys[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        DBElement idxValues[] = {p0, lima, p1, mike, nero, m5, foxtrot, golf,
+                                 hotel, m5Ord, m5Onset, m5Offset, cpFoxtrot,
+                                 cpGolf, cpHotel};
+        assertTrue(DBIndexTest.VerifyIndexContents(15, idxKeys, idxValues,
+                                                   odb.idx, outStream,
+                                                   verbose, 111));
     }
 
     /**
