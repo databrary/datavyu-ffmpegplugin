@@ -1,6 +1,7 @@
 package au.com.nicta.openshapa.db;
 
 import java.io.PrintStream;
+import java.util.Vector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,14 +15,16 @@ public class VocabListTest {
 
     private PrintStream outStream;
     private boolean verbose;
+    private Database odb;
 
     public VocabListTest() {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws SystemErrorException {
         outStream = System.out;
         verbose = true;
+        odb = new ODBCDatabase();
     }
 
     @After
@@ -41,39 +44,31 @@ public class VocabListTest {
      *    - None.
      */
 
-    public static MatrixVocabElement
-            ConstructTestMatrix(Database db,
-                                String name,
-                                MatrixVocabElement.MatrixType type,
-                                FormalArgument arg0,
-                                FormalArgument arg1,
-                                FormalArgument arg2,
-                                FormalArgument arg3)
-       throws SystemErrorException
-    {
-        MatrixVocabElement matrix = null;
+    public static MatrixVocabElement ConstructTestMatrix(Database db,
+                                                         String name,
+                                             MatrixVocabElement.MatrixType type,
+                                                         FormalArgument arg0,
+                                                         FormalArgument arg1,
+                                                         FormalArgument arg2,
+                                                         FormalArgument arg3)
+    throws SystemErrorException {
 
-        matrix = new MatrixVocabElement(db, name);
-
+        MatrixVocabElement matrix = new MatrixVocabElement(db, name);
         matrix.setType(type);
 
-        if ( arg0 != null )
-        {
+        if (arg0 != null) {
             matrix.appendFormalArg(arg0);
         }
 
-        if ( arg1 != null )
-        {
+        if (arg1 != null) {
             matrix.appendFormalArg(arg1);
         }
 
-        if ( arg2 != null )
-        {
+        if (arg2 != null) {
             matrix.appendFormalArg(arg2);
         }
 
-        if ( arg3 != null )
-        {
+        if (arg3 != null) {
             matrix.appendFormalArg(arg3);
         }
 
@@ -100,742 +95,123 @@ public class VocabListTest {
                                                           FormalArgument arg1,
                                                           FormalArgument arg2,
                                                           FormalArgument arg3)
-       throws SystemErrorException
-    {
-        PredicateVocabElement pred = null;
+    throws SystemErrorException {
+        PredicateVocabElement pred = new PredicateVocabElement(db, name);
 
-        pred = new PredicateVocabElement(db, name);
-
-        if ( arg0 != null )
-        {
+        if (arg0 != null) {
             pred.appendFormalArg(arg0);
         }
 
-        if ( arg1 != null )
-        {
+        if (arg1 != null) {
             pred.appendFormalArg(arg1);
         }
 
-        if ( arg2 != null )
-        {
+        if (arg2 != null) {
             pred.appendFormalArg(arg2);
         }
 
-        if ( arg3 != null )
-        {
+        if (arg3 != null) {
             pred.appendFormalArg(arg3);
         }
 
         return pred;
-
     } /* VocabList::ConstructTestPred() */
 
+    /**
+     * Tests a single argument constructor failure for this class.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     *
+     * @author JRM (original regression test - 2007/05/08).
+     * @author cfreeman (refactored to junit - 2009/04/16).
+     */
+    @Test (expected = SystemErrorException.class)
+    public void Test1ArgConstructorFailure() throws SystemErrorException {
+        VocabList vl = new VocabList(null);
+    }
 
     /**
-     * Test1ArgConstructor()
+     * Tests a single argument constructor for this class.
      *
-     * Run a battery of tests on the one argument constructor for this
-     * class, and on the instance returned.
+     * @throws au.com.nicta.openshapa.db.SystemErrorException if unable to
+     * correctly create the vocablist.
      *
-     *                                              JRM - 5/8/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @author JRM (original regression test - 2007/05/08).
+     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
-    public void Test1ArgConstructor() {
-        String testBanner =
-            "Testing 1 argument constructor for class VocabList               ";
-        String passBanner = "PASSED\n";
-        String failBanner = "FAILED\n";
-        String systemErrorExceptionString = null;
-        boolean methodReturned = false;
-        boolean pass = true;
-        boolean threwSystemErrorException = false;
-        int failures = 0;
-        String s = null;
-        Database db = null;
-        VocabList vl = null;
+    public void Test1ArgConstructor() throws SystemErrorException {
+        VocabList vl = new VocabList(odb);
 
-        outStream.print(testBanner);
-
-        if ( verbose )
-        {
-            outStream.print("\n");
-        }
-
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            db = null;
-            vl = null;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                db = new ODBCDatabase();
-                vl = new VocabList(db);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( ! methodReturned ) ||
-                 ( db == null ) ||
-                 ( vl == null ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ! methodReturned )
-                    {
-                        outStream.print("One or more class allocations " +
-                                        "failed to complete.\n");
-                    }
-
-                    if ( db == null )
-                    {
-                        outStream.print(
-                                "new ODBCDatabase() returned null.\n");
-                    }
-
-                    if ( vl == null )
-                    {
-                        outStream.print(
-                                "new VocabList(db) returned null.\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("new VocabList(db) threw " +
-                                "unexpected system error exception: \"%s\".\n",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            if ( vl.db != db )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    outStream.print("Unexpected initial vl.db != db.\n");
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            if ( ( vl.vl == null ) ||
-                 ( ! vl.vl.isEmpty() ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    outStream.printf("vl null or non-empty on creation.\n");
-                }
-            }
-        }
-
-
-        /* Verify that the constructor fails when passed an invalid db. */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            vl = null;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                vl = new VocabList((Database)null);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( vl != null ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("new VocabList(null) returned.\n");
-                    }
-
-                    if ( vl != null )
-                    {
-                        outStream.print(
-                             "new VocabList(null) returned non-null.\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.print("new VocabList(null) failed to " +
-                                "throw system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures > 0 )
-        {
-            pass = false;
-
-            if ( verbose )
-            {
-                outStream.printf("%d failures.\n", failures);
-            }
-        }
-        else if ( verbose )
-        {
-            outStream.print("All tests passed.\n");
-        }
-
-        if ( verbose )
-        {
-            /* print the banner again. */
-            outStream.print(testBanner);
-        }
-
-        if ( pass )
-        {
-            outStream.print(passBanner);
-        }
-        else
-        {
-            outStream.print(failBanner);
-        }
-
-        assertTrue(pass);
-
-    } /* DBIndex::Test1ArgConstructor() */
-
-
+        assertTrue(vl.db == odb);
+        assertTrue(vl.vl != null);
+        assertTrue(vl.vl.isEmpty());
+    }
 
     /**
-     * TestGetPredAndMatricies()
+     * Allocate a database, and verify that getPreds() and getMatricies() return
+     * null when run on an empty vocab list.
      *
-     * Run a battery of tests on the getMatricies() and getPreds() methods.
+     * @throws au.com.nicta.openshapa.db.SystemErrorException If unable to
+     * correctly get predicates or matricies.
      *
-     *                                              JRM -- 6/19/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @author JRM (original regression test - 2007/06/19).
+     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
-    public void TestGetPredsAndMatricies() throws SystemErrorException {
-        String testBanner =
-            "Testing getPreds() and getMatricies()                            ";
-        String passBanner = "PASSED\n";
-        String failBanner = "FAILED\n";
-        String systemErrorExceptionString = null;
-        boolean completed = false;
-        boolean pass = true;
-        boolean threwSystemErrorException = false;
-        int failures = 0;
-        long p0_id = DBIndex.INVALID_ID;
-        long p1_id = DBIndex.INVALID_ID;
-        long p2_id = DBIndex.INVALID_ID;
-        long p3_id = DBIndex.INVALID_ID;
-        long p4_id = DBIndex.INVALID_ID;
-        long p5_id = DBIndex.INVALID_ID;
-        long p6_id = DBIndex.INVALID_ID;
-        long p7_id = DBIndex.INVALID_ID;
-        long m0_id = DBIndex.INVALID_ID;
-        long m1_id = DBIndex.INVALID_ID;
-        long m2_id = DBIndex.INVALID_ID;
-        long m3_id = DBIndex.INVALID_ID;
-        long m4_id = DBIndex.INVALID_ID;
-        long m5_id = DBIndex.INVALID_ID;
-        long m6_id = DBIndex.INVALID_ID;
-        long m7_id = DBIndex.INVALID_ID;
-        Database db = null;
-        VocabList vl = null;
-        PredicateVocabElement p0 = null;
-        PredicateVocabElement p1 = null;
-        PredicateVocabElement p2 = null;
-        PredicateVocabElement p3 = null;
-        PredicateVocabElement p4 = null;
-        PredicateVocabElement p5 = null;
-        PredicateVocabElement p6 = null;
-        PredicateVocabElement p7 = null;
-        MatrixVocabElement m0 = null;
-        MatrixVocabElement m1 = null;
-        MatrixVocabElement m2 = null;
-        MatrixVocabElement m3 = null;
-        MatrixVocabElement m4 = null;
-        MatrixVocabElement m5 = null;
-        MatrixVocabElement m6 = null;
-        MatrixVocabElement m7 = null;
-        IntFormalArg alpha = null;
-        FloatFormalArg bravo = null;
-        NominalFormalArg charlie = null;
-        TextStringFormalArg delta = null;
-        PredFormalArg echo = null;
-        UnTypedFormalArg foxtrot = null;
-        UnTypedFormalArg golf = null;
-        UnTypedFormalArg hotel = null;
-        UnTypedFormalArg hotela = null;
-        UnTypedFormalArg india = null;
-        UnTypedFormalArg juno = null;
-        UnTypedFormalArg kilo = null;
-        UnTypedFormalArg lima = null;
-        UnTypedFormalArg mike = null;
-        UnTypedFormalArg nero = null;
-        UnTypedFormalArg oscar = null;
-        UnTypedFormalArg papa = null;
-        UnTypedFormalArg quebec = null;
-        UnTypedFormalArg reno = null;
-        UnTypedFormalArg sierra = null;
-        UnTypedFormalArg tango = null;
-        FormalArgument m0_ord = null;
-        FormalArgument m0_onset = null;
-        FormalArgument m0_offset = null;
-        FormalArgument m1_ord = null;
-        FormalArgument m1_onset = null;
-        FormalArgument m1_offset = null;
-        FormalArgument m2_ord = null;
-        FormalArgument m2_onset = null;
-        FormalArgument m2_offset = null;
-        FormalArgument m3_ord = null;
-        FormalArgument m3_onset = null;
-        FormalArgument m3_offset = null;
-        FormalArgument m4_ord = null;
-        FormalArgument m4_onset = null;
-        FormalArgument m4_offset = null;
-        FormalArgument m5_ord = null;
-        FormalArgument m5_onset = null;
-        FormalArgument m5_offset = null;
-        FormalArgument m6_ord = null;
-        FormalArgument m6_onset = null;
-        FormalArgument m6_offset = null;
-        FormalArgument m7_ord = null;
-        FormalArgument m7_onset = null;
-        FormalArgument m7_offset = null;
-        FormalArgument cp_alpha = null;
-        FormalArgument cp_bravo = null;
-        FormalArgument cp_charlie = null;
-        FormalArgument cp_delta = null;
-        FormalArgument cp_echo = null;
-        FormalArgument cp_foxtrot = null;
-        FormalArgument cp_golf = null;
-        FormalArgument cp_hotel = null;
-        FormalArgument cp_india = null;
-        FormalArgument cp_juno = null;
-        FormalArgument cp_kilo = null;
-        FormalArgument cp_lima = null;
-        FormalArgument cp_mike = null;
-        FormalArgument cp_nero = null;
-        FormalArgument cp_oscar = null;
-        FormalArgument cp_papa = null;
-        FormalArgument cp_quebec = null;
-        FormalArgument cp_reno = null;
-        FormalArgument cp_sierra = null;
-        java.util.Vector<MatrixVocabElement> matricies = null;
-        java.util.Vector<PredicateVocabElement> preds = null;
+    public void TestGetPredsAndMatricies1() throws SystemErrorException {
+        Vector<MatrixVocabElement> matricies = odb.vl.getMatricies();
+        Vector<PredicateVocabElement> preds = odb.vl.getPreds();
 
-        outStream.print(testBanner);
+        assertTrue(preds.isEmpty());
+        assertTrue(matricies.isEmpty());
+    }
 
-        if ( verbose )
-        {
-            outStream.print("\n");
-        }
+    /**
+     * Insert several system and/or non matrixType.MATRIX matricies, and run
+     * getMatricies() & getPreds() again.  They should still return null.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException If unable to
+     * correctly get predicates or matricies.
+     *
+     * @author JRM (original regression test - 2007/06/19).
+     * @author cfreeman (refactored to junit - 2009/04/16).
+     */
+    @Test
+    public void TestGetPredsAndMatricies2()
+    throws SystemErrorException, LogicErrorException {
+        UnTypedFormalArg foxtrot = new UnTypedFormalArg(odb, "<foxtrot>");
+        UnTypedFormalArg golf = new UnTypedFormalArg(odb, "<golf>");
+        UnTypedFormalArg hotel = new UnTypedFormalArg(odb, "<hotel>");
+        UnTypedFormalArg lima = new UnTypedFormalArg(odb, "<lima>");
+        UnTypedFormalArg mike = new UnTypedFormalArg(odb, "<mike>");
+        UnTypedFormalArg nero = new UnTypedFormalArg(odb, "<nero>");
 
-        /* Allocate a database, and verify that getPreds() and getMatricies()
-         * return null when run on an empty vocab list.
-         */
-        if ( failures == 0 )
-        {
-            completed = false;
-            threwSystemErrorException = false;
-            db = null;
-            vl = null;
-            systemErrorExceptionString = null;
+        PredicateVocabElement p0 = ConstructTestPred(odb, "p0", lima,
+                                                     null, null, null);
+        p0.setSystem();
+        odb.vl.addElement(p0);
 
-            try
-            {
-                db = new ODBCDatabase();
-                vl = db.vl;
-                matricies = vl.getMatricies();
-                preds = vl.getPreds();
-                completed = true;
-            }
+        PredicateVocabElement p1 = ConstructTestPred(odb, "p1", mike,
+                                                     nero, null, null);
+        p1.setSystem();
+        odb.vl.addElement(p1);
 
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( ! completed ) ||
-                 ( db == null ) ||
-                 ( vl == null ) ||
-                 ( !matricies.isEmpty() ) ||
-                 ( !preds.isEmpty() ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ! completed )
-                    {
-                        outStream.print("test failed to complete(1).\n");
-                    }
-
-                    if ( db == null )
-                    {
-                        outStream.print("new ODBCDatabase() returned null.\n");
-                    }
-
-                    if ( vl == null )
-                    {
-                        outStream.print("vl not allocated with db?!?!?l.\n");
-                    }
-
-                    if ( !preds.isEmpty() )
-                    {
-                        outStream.print(
-                                "unexpected return from getPreds()(1).\n");
-                    }
-
-                    if ( !matricies.isEmpty() )
-                    {
-                        outStream.print(
-                                "unexpected return from getMatricies()(1).\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("unexpected system error " +
-                                "exception(1): \"%s\".\n",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
-
-        /* Insert several system and/or non matrixType.MATRIX matricies,
-         * and run getMatricies() & getPreds() again.  They should still return
-         * null.
-         */
-        if ( failures == 0 )
-        {
-            completed = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                alpha   = new IntFormalArg(db, "<alpha>");
-                bravo   = new FloatFormalArg(db, "<bravo>");
-                charlie = new NominalFormalArg(db, "<charlie>");
-                delta   = new TextStringFormalArg(db);
-                echo    = new PredFormalArg(db, "<echo>");
-                foxtrot = new UnTypedFormalArg(db, "<foxtrot>");
-                golf    = new UnTypedFormalArg(db, "<golf>");
-                hotel   = new UnTypedFormalArg(db, "<hotel>");
-                india   = new UnTypedFormalArg(db, "<india>");
-                juno    = new UnTypedFormalArg(db, "<juno>");
-                kilo    = new UnTypedFormalArg(db, "<kilo>");
-                lima    = new UnTypedFormalArg(db, "<lima>");
-                mike    = new UnTypedFormalArg(db, "<mike>");
-                nero    = new UnTypedFormalArg(db, "<nero>");
-                oscar   = new UnTypedFormalArg(db, "<oscar>");
-                papa    = new UnTypedFormalArg(db, "<papa>");
-                quebec  = new UnTypedFormalArg(db, "<quebec>");
-                reno    = new UnTypedFormalArg(db, "<reno>");
-                sierra  = new UnTypedFormalArg(db, "<sierra>");
-                tango   = new UnTypedFormalArg(db, "<tango>");
-
-                p0 = ConstructTestPred(db, "p0", lima, null, null, null);
-                p0.setSystem();
-                p1 = ConstructTestPred(db, "p1", mike, nero, null, null);
-                p1.setSystem();
-                p2 = ConstructTestPred(db, "p2", oscar, null, null, null);
-                p3 = ConstructTestPred(db, "p3", papa, null, null, null);
-                p4 = ConstructTestPred(db, "p4", quebec, null, null, null);
-                p5 = ConstructTestPred(db, "p5", reno, null, null, null);
-                p6 = ConstructTestPred(db, "p6", sierra, null, null, null);
-                p7 = ConstructTestPred(db, "p7", tango, null, null, null);
-
-                m0 = ConstructTestMatrix(db, "m0",
-                                         MatrixVocabElement.MatrixType.INTEGER,
-                                         alpha, null, null, null);
-                m1 = ConstructTestMatrix(db, "m1",
-                                         MatrixVocabElement.MatrixType.FLOAT,
-                                         bravo, null, null, null);
-                m2 = ConstructTestMatrix(db, "m2",
-                                         MatrixVocabElement.MatrixType.NOMINAL,
-                                         charlie, null, null, null);
-                m3 = ConstructTestMatrix(db, "m3",
-                                         MatrixVocabElement.MatrixType.TEXT,
-                                         delta, null, null, null);
-                m4 = ConstructTestMatrix(db, "m4",
-                                         MatrixVocabElement.MatrixType.PREDICATE,
-                                         echo, null, null, null);
-                m5 = ConstructTestMatrix(db, "m5",
+        MatrixVocabElement m5 = ConstructTestMatrix(odb, "m5",
                                          MatrixVocabElement.MatrixType.MATRIX,
                                          foxtrot, golf, hotel, null);
-                m5.setSystem();
-                m6 = ConstructTestMatrix(db, "m6",
-                                         MatrixVocabElement.MatrixType.MATRIX,
-                                         india, juno, null, null);
-                m7 = ConstructTestMatrix(db, "m7",
-                                         MatrixVocabElement.MatrixType.MATRIX,
-                                         kilo, null, null, null);
+        m5.setSystem();
+        odb.vl.addElement(m5);
 
-                vl.addElement(m0);
+        assertTrue(odb.vl.getMatricies().isEmpty());
+        assertTrue(odb.vl.getPreds().isEmpty());
 
-                m0_id = m0.getID();
-                m0_ord = m0.getCPFormalArg(0);
-                m0_onset = m0.getCPFormalArg(1);
-                m0_offset = m0.getCPFormalArg(2);
-                cp_alpha = m0.getCPFormalArg(3);
+        long keys[] = {p0.getID(), p1.getID(), m5.getID()};
+        VocabElement values[] = {p0, p1, m5};
+        assertTrue(VerifyVLContents(3, keys, values, odb.vl,
+                                    outStream, verbose, 11));
 
-                vl.addElement(m1);
-
-                m1_id = m1.getID();
-                m1_ord = m1.getCPFormalArg(0);
-                m1_onset = m1.getCPFormalArg(1);
-                m1_offset = m1.getCPFormalArg(2);
-                cp_bravo = m1.getCPFormalArg(3);
-
-                vl.addElement(m2);
-
-                m2_id = m2.getID();
-                m2_ord = m2.getCPFormalArg(0);
-                m2_onset = m2.getCPFormalArg(1);
-                m2_offset = m2.getCPFormalArg(2);
-                cp_charlie = m2.getCPFormalArg(3);
-
-                vl.addElement(m3);
-
-                m3_id = m3.getID();
-                m3_ord = m3.getCPFormalArg(0);
-                m3_onset = m3.getCPFormalArg(1);
-                m3_offset = m3.getCPFormalArg(2);
-                cp_delta = m3.getCPFormalArg(3);
-
-                vl.addElement(m4);
-
-                m4_id = m4.getID();
-                m4_ord = m4.getCPFormalArg(0);
-                m4_onset = m4.getCPFormalArg(1);
-                m4_offset = m4.getCPFormalArg(2);
-                cp_echo = m4.getCPFormalArg(3);
-
-                vl.addElement(m5);
-
-                m5_id = m5.getID();
-                m5_ord = m5.getCPFormalArg(0);
-                m5_onset = m5.getCPFormalArg(1);
-                m5_offset = m5.getCPFormalArg(2);
-                cp_foxtrot = m5.getCPFormalArg(3);
-                cp_golf = m5.getCPFormalArg(4);
-                cp_hotel = m5.getCPFormalArg(5);
-
-                vl.addElement(p0);
-                p0_id = p0.getID();
-                vl.addElement(p1);
-                p1_id = p1.getID();
-
-                matricies = vl.getMatricies();
-                preds = vl.getPreds();
-                completed = true;
-            } catch (SystemErrorException e) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
-            }
-
-            if ( ( ! completed ) ||
-                 ( alpha == null ) || ( bravo == null ) ||
-                 ( charlie == null ) || ( delta == null ) ||
-                 ( echo == null ) || ( foxtrot == null ) ||
-                 ( golf == null ) || ( hotel == null ) ||
-                 ( india == null ) || ( juno == null ) ||
-                 ( kilo == null ) || ( lima == null ) ||
-                 ( mike == null ) || ( nero == null ) ||
-                 ( oscar == null ) || ( papa == null ) ||
-                 ( quebec == null ) || ( reno == null ) ||
-                 ( sierra == null ) || ( tango == null ) ||
-                 ( p0 == null ) || ( p1 == null ) || ( p2 == null ) ||
-                 ( p3 == null ) || ( p4 == null ) || ( p5 == null ) ||
-                 ( p6 == null ) || ( p7 == null ) ||
-                 ( m0 == null ) || ( m1 == null ) || ( m2 == null ) ||
-                 ( m3 == null ) || ( m4 == null ) || ( m5 == null ) ||
-                 ( m6 == null ) || ( m7 == null ) ||
-                 ( m0_id == DBIndex.INVALID_ID ) ||
-                 ( m1_id == DBIndex.INVALID_ID ) ||
-                 ( m2_id == DBIndex.INVALID_ID ) ||
-                 ( m3_id == DBIndex.INVALID_ID ) ||
-                 ( m4_id == DBIndex.INVALID_ID ) ||
-                 ( m5_id == DBIndex.INVALID_ID ) ||
-                 ( p0_id == DBIndex.INVALID_ID ) ||
-                 ( p1_id == DBIndex.INVALID_ID ) ||
-                 ( m0_ord == null ) ||
-                 ( m0_onset == null ) ||
-                 ( m0_offset == null ) ||
-                 ( m1_ord == null ) ||
-                 ( m1_onset == null ) ||
-                 ( m1_offset == null ) ||
-                 ( m2_ord == null ) ||
-                 ( m2_onset == null ) ||
-                 ( m2_offset == null ) ||
-                 ( m3_ord == null ) ||
-                 ( m3_onset == null ) ||
-                 ( m3_offset == null ) ||
-                 ( m4_ord == null ) ||
-                 ( m4_onset == null ) ||
-                 ( m4_offset == null ) ||
-                 ( m5_ord == null ) ||
-                 ( m5_onset == null ) ||
-                 ( m5_offset == null ) ||
-                 ( cp_alpha == null ) ||
-                 ( cp_bravo == null ) ||
-                 ( cp_charlie == null ) ||
-                 ( cp_delta == null ) ||
-                 ( cp_echo == null ) ||
-                 ( cp_foxtrot == null ) ||
-                 ( cp_golf == null ) ||
-                 ( cp_hotel == null ) ||
-                 ( !matricies.isEmpty() ) ||
-                 ( !preds.isEmpty() ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ! completed )
-                    {
-                        outStream.print("test failed to complete(2).\n");
-                    }
-
-                    if ( ( alpha == null ) || ( bravo == null ) ||
-                         ( charlie == null ) || ( delta == null ) ||
-                         ( echo == null ) || ( foxtrot == null ) ||
-                         ( golf == null ) || ( hotel == null ) ||
-                         ( india == null ) || ( juno == null ) ||
-                         ( kilo == null ) || ( lima == null ) ||
-                         ( mike == null ) || ( nero == null ) ||
-                         ( oscar == null ) || ( papa == null ) ||
-                         ( quebec == null ) || ( reno == null ) ||
-                         ( sierra == null ) || ( tango == null ) )
-                    {
-                        outStream.print("formal arg alloc(s) failed.\n");
-                    }
-
-                    if ( ( p0 == null ) || ( p1 == null ) || ( p2 == null ) ||
-                         ( p3 == null ) || ( p4 == null ) || ( p5 == null ) ||
-                         ( p6 == null ) || ( p7 == null ) )
-                    {
-                        outStream.print("predicate alloc(s) failed.\n");
-                    }
-
-                    if ( ( m0 == null ) || ( m1 == null ) || ( m2 == null ) ||
-                         ( m3 == null ) || ( m4 == null ) || ( m5 == null ) ||
-                         ( m6 == null ) || ( m7 == null ) )
-                    {
-                        outStream.print("matrix alloc(s) failed.\n");
-                    }
-
-                    if ( ( m0_id == DBIndex.INVALID_ID ) ||
-                         ( m1_id == DBIndex.INVALID_ID ) ||
-                         ( m2_id == DBIndex.INVALID_ID ) ||
-                         ( m3_id == DBIndex.INVALID_ID ) ||
-                         ( m4_id == DBIndex.INVALID_ID ) ||
-                         ( m5_id == DBIndex.INVALID_ID ) ||
-                         ( p0_id == DBIndex.INVALID_ID ) ||
-                         ( p1_id == DBIndex.INVALID_ID ) )
-                    {
-                        outStream.print("bad ID assignment(s).\n");
-                    }
-
-                    if ( ( m0_ord == null ) ||
-                         ( m0_onset == null ) ||
-                         ( m0_offset == null ) ||
-                         ( m1_ord == null ) ||
-                         ( m1_onset == null ) ||
-                         ( m1_offset == null ) ||
-                         ( m2_ord == null ) ||
-                         ( m2_onset == null ) ||
-                         ( m2_offset == null ) ||
-                         ( m3_ord == null ) ||
-                         ( m3_onset == null ) ||
-                         ( m3_offset == null ) ||
-                         ( m4_ord == null ) ||
-                         ( m4_onset == null ) ||
-                         ( m4_offset == null ) ||
-                         ( m5_ord == null ) ||
-                         ( m5_onset == null ) ||
-                         ( m5_offset == null ) ||
-                         ( cp_alpha == null ) ||
-                         ( cp_bravo == null ) ||
-                         ( cp_charlie == null ) ||
-                         ( cp_delta == null ) ||
-                         ( cp_echo == null ) ||
-                         ( cp_foxtrot == null ) ||
-                         ( cp_golf == null ) ||
-                         ( cp_hotel == null ) )
-                    {
-                        outStream.print("bad col pred fArg(s).\n");
-                    }
-
-                    if ( !preds.isEmpty() )
-                    {
-                        outStream.print(
-                                "unexpected return from getPreds()(2).\n");
-                    }
-
-                    if ( !matricies.isEmpty() )
-                    {
-                        outStream.print(
-                                "unexpected return from getMatricies()(2).\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("unexpected system error " +
-                                "exception(2): \"%s\".\n",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
-
-
-        if ( failures == 0 )
-        {
-            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id,
-                           p0_id, p1_id};
-            VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1};
+        /*
             long idxKeys[] = { 1,  2,  3,  4,  5,  6,
                                7,  8,  9, 10, 11, 12,
                               13, 14, 15, 16, 17, 18,
@@ -867,389 +243,129 @@ public class VocabListTest {
             {
                 failures++;
             }
-       }
-
-
-        /* Insert one non-system predicate and one non-system matrixType.MATRIX
-         * predicate, and run getMatricies() & getPreds() again.  Copies should
-         * show up in the returned vectors.
          */
-        if ( failures == 0 )
-        {
-            completed = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
+    }
 
-            try
-            {
-                vl.addElement(m6);
+    /**
+     * Insert several system and/or non matrixType.MATRIX matricies, and run
+     * getMatricies() & getPreds() again.  They should still return null.
+     *
+     * @throws au.com.nicta.openshapa.db.SystemErrorException
+     *
+     * @author JRM (original regression test - 2007/06/19).
+     * @author cfreeman (refactored to junit - 2009/04/16).
+     */
+    @Test
+    public void TestGetPredsAndMatricies3()
+    throws SystemErrorException, LogicErrorException {
+        UnTypedFormalArg india = new UnTypedFormalArg(odb, "<india>");
+        UnTypedFormalArg juno = new UnTypedFormalArg(odb, "<juno>");
+        UnTypedFormalArg oscar = new UnTypedFormalArg(odb, "<oscar>");
+        UnTypedFormalArg kilo = new UnTypedFormalArg(odb, "<kilo>");
+        UnTypedFormalArg lima = new UnTypedFormalArg(odb, "<lima>");
+        UnTypedFormalArg mike = new UnTypedFormalArg(odb, "<mike>");
+        UnTypedFormalArg nero = new UnTypedFormalArg(odb, "<nero>");
+        UnTypedFormalArg  papa = new UnTypedFormalArg(odb, "<papa>");
+        UnTypedFormalArg quebec = new UnTypedFormalArg(odb, "<quebec>");
+        UnTypedFormalArg reno = new UnTypedFormalArg(odb, "<reno>");
+        UnTypedFormalArg sierra = new UnTypedFormalArg(odb, "<sierra>");
+        UnTypedFormalArg tango = new UnTypedFormalArg(odb, "<tango>");
 
-                m6_id = m6.getID();
-                m6_ord = m6.getCPFormalArg(0);
-                m6_onset = m6.getCPFormalArg(1);
-                m6_offset = m6.getCPFormalArg(2);
-                cp_india = m6.getCPFormalArg(3);
-                cp_juno = m6.getCPFormalArg(4);
+        MatrixVocabElement m6 = ConstructTestMatrix(odb, "m6",
+                                         MatrixVocabElement.MatrixType.MATRIX,
+                                         india, juno, null, null);
+        odb.vl.addElement(m6);
+        long m6Id = m6.getID();
+        FormalArgument m6_ord = m6.getCPFormalArg(0);
+        FormalArgument m6_onset = m6.getCPFormalArg(1);
+        FormalArgument m6_offset = m6.getCPFormalArg(2);
+        FormalArgument cp_india = m6.getCPFormalArg(3);
+        FormalArgument cp_juno = m6.getCPFormalArg(4);
 
-                vl.addElement(p2);
+        PredicateVocabElement p2 = ConstructTestPred(odb, "p2", oscar,
+                                                     null, null, null);
+        odb.vl.addElement(p2);
+        long p2Id = p2.getID();
 
-                p2_id = p2.getID();
+        PredicateVocabElement p3 = p3 = ConstructTestPred(odb, "p3", papa,
+                                                          null, null, null);
+        odb.vl.addElement(p3);
+        long p3Id = p3.getID();
 
-                matricies = vl.getMatricies();
-                preds = vl.getPreds();
-                completed = true;
-            } catch (SystemErrorException e) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
-            }
+        PredicateVocabElement p4 = ConstructTestPred(odb, "p4", quebec,
+                                                     null, null, null);
+        odb.vl.addElement(p4);
+        long p4Id = p4.getID();
 
-            if ( ( ! completed ) ||
-                 ( m6_ord == null ) ||
-                 ( m6_onset == null ) ||
-                 ( m6_offset == null ) ||
-                 ( cp_india == null ) ||
-                 ( cp_juno == null ) ||
-                 ( m6_id == DBIndex.INVALID_ID ) ||
-                 ( p2_id == DBIndex.INVALID_ID ) ||
-                 ( matricies == null ) ||
-                 ( preds == null ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
+        PredicateVocabElement p5 = ConstructTestPred(odb, "p5", reno,
+                                                     null, null, null);
+        odb.vl.addElement(p5);
+        long p5Id = p5.getID();
 
-                if ( verbose )
-                {
-                    if ( ! completed )
-                    {
-                        outStream.print("test failed to complete(3).\n");
-                    }
+        MatrixVocabElement m7 = ConstructTestMatrix(odb, "m7",
+                                         MatrixVocabElement.MatrixType.MATRIX,
+                                         kilo, null, null, null);
+        odb.vl.addElement(m7);
+        long m7Id = m7.getID();
+        FormalArgument m7Ord = m7.getCPFormalArg(0);
+        FormalArgument m7Onset = m7.getCPFormalArg(1);
+        FormalArgument m7Offset = m7.getCPFormalArg(2);
+        FormalArgument cpKilo = m7.getCPFormalArg(3);
 
-                    if ( ( m6_ord == null ) ||
-                         ( m6_onset == null ) ||
-                         ( m6_offset == null ) ||
-                         ( cp_india == null ) ||
-                         ( cp_juno == null ) )
-                    {
-                        outStream.print("bad col pred fArg(s).\n");
-                    }
+        PredicateVocabElement p6 = ConstructTestPred(odb, "p6", sierra,
+                                                     null, null, null);
+        odb.vl.addElement(p6);
+        long p6Id = p6.getID();
 
-                    if ( ( m6_id == DBIndex.INVALID_ID ) ||
-                         ( p2_id == DBIndex.INVALID_ID ) )
-                    {
-                        outStream.print("bad ID assignment(s).\n");
-                    }
+        PredicateVocabElement p7 = ConstructTestPred(odb, "p7", tango,
+                                                     null, null, null);
+        odb.vl.addElement(p7);
+        long p7Id = p7.getID();
 
-                    if ( preds == null )
-                    {
-                        outStream.print(
-                                "unexpected return from getPreds()(3).\n");
-                    }
+        assertTrue(m6_ord != null);
+        assertTrue(m6_onset != null);
+        assertTrue(m6_offset != null);
+        assertTrue(cp_india != null);
+        assertTrue(cp_juno != null);
+        assertTrue(m6Id != DBIndex.INVALID_ID);
+        assertTrue(p2Id != DBIndex.INVALID_ID);
+        assertTrue(p3Id != DBIndex.INVALID_ID);
+        assertTrue(p4Id != DBIndex.INVALID_ID);
+        assertTrue(p5Id != DBIndex.INVALID_ID);
+        assertTrue(p6Id != DBIndex.INVALID_ID);
+        assertTrue(p7Id != DBIndex.INVALID_ID);
+        assertTrue(m7Id != DBIndex.INVALID_ID);
+        assertTrue(m7Ord != null);
+        assertTrue(m7Onset != null);
+        assertTrue(m7Offset != null);
+        assertTrue(cpKilo != null);
+        assertTrue(odb.vl.getMatricies() != null);
+        assertTrue(odb.vl.getMatricies().size() == 2);
+        assertTrue(odb.vl.getPreds() != null);
+        assertTrue(odb.vl.getPreds().size() == 6);
 
-                    if ( matricies == null )
-                    {
-                        outStream.print(
-                                "unexpected return from getMatricies()(3).\n");
-                    }
+        MatrixVocabElement matrixValues[] = {m6, m7};
+        assertTrue(VerifyVectorContents(odb.vl.getMatricies(), 2,
+                                        matrixValues, outStream, verbose, 4));
 
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("unexpected system error " +
-                                "exception(3): \"%s\".\n",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
+        PredicateVocabElement predValues[] = {p2, p3, p4, p5, p6, p7};
+        assertTrue(VerifyVectorContents(odb.vl.getPreds(), 6, predValues,
+                                        outStream, verbose, 4));
 
+        long keys[] = {m6Id, m7Id, p2Id, p3Id, p4Id, p5Id, p6Id, p7Id};
+        VocabElement values[] = {m6, m7, p2, p3, p4, p5, p6, p7};
+        assertTrue(VerifyVLContents(8, keys, values, odb.vl, outStream,
+                                    verbose, 3));
 
-        if ( failures == 0 )
-        {
-            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id,
-                           p0_id, p1_id, m6_id, p2_id};
-            VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1, m6, p2};
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,
-                               7,  8,  9, 10, 11, 12,
-                              13, 14, 15, 16, 17, 18,
-                              19, 20, 21, 22, 23, 24,
-                              25, 26, 27, 28, 29, 30,
-                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                              41, 42,
-                              43, 44, 45,
-                              46, 47, 48, 49, 50, 51, 52, 53,
-                              54, 55};
-            DBElement idxValues[] =
-                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha,
-                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
-                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
-                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
-                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
-                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset,
-                                               cp_foxtrot, cp_golf, cp_hotel,
-                     p0, lima,
-                     p1, mike, nero,
-                     m6, india, juno, m6_ord, m6_onset, m6_offset,
-                                      cp_india, cp_juno,
-                     p2, oscar};
-            MatrixVocabElement matrixValues[] = {m6};
-            PredicateVocabElement predValues[] = {p2};
-
-            if ( ! VerifyVLContents(10, keys, values, vl, outStream,
-                                    verbose, 2) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(55, idxKeys, idxValues,
-                                               db.idx, outStream,
-                                               verbose, 2) )
-            {
-                failures++;
-            }
-
-            if ( ! VerifyVectorContents(matricies, 1, matrixValues,
-                                        outStream, verbose, 2) )
-            {
-                failures++;
-            }
-
-            if ( ! VerifyVectorContents(preds, 1, predValues,
-                                        outStream, verbose, 2) )
-            {
-                failures++;
-            }
-        }
-
-        /* Insert more non-systems preds and matricies.  Check the output
-         * yet again.
-         */
-        if ( failures == 0 )
-        {
-            completed = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                vl.addElement(p3);
-
-                p3_id = p3.getID();
-
-                vl.addElement(p4);
-
-                p4_id = p4.getID();
-
-                vl.addElement(p5);
-
-                p5_id = p5.getID();
-
-                vl.addElement(m7);
-
-                m7_id = m7.getID();
-                m7_ord = m7.getCPFormalArg(0);
-                m7_onset = m7.getCPFormalArg(1);
-                m7_offset = m7.getCPFormalArg(2);
-                cp_kilo = m7.getCPFormalArg(3);
-
-                vl.addElement(p6);
-
-                p6_id = p6.getID();
-
-                vl.addElement(p7);
-
-                p7_id = p7.getID();
-
-                matricies = vl.getMatricies();
-                preds = vl.getPreds();
-                completed = true;
-            } catch (SystemErrorException e) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
-            }
-
-            if ( ( ! completed ) ||
-                 ( p3_id == DBIndex.INVALID_ID ) ||
-                 ( p4_id == DBIndex.INVALID_ID ) ||
-                 ( p5_id == DBIndex.INVALID_ID ) ||
-                 ( p6_id == DBIndex.INVALID_ID ) ||
-                 ( p7_id == DBIndex.INVALID_ID ) ||
-                 ( m7_id == DBIndex.INVALID_ID ) ||
-                 ( m7_ord == null ) ||
-                 ( m7_onset == null ) ||
-                 ( m7_offset == null ) ||
-                 ( cp_kilo == null ) ||
-                 ( matricies == null ) ||
-                 ( matricies.size() != 2 ) ||
-                 ( preds == null ) ||
-                 ( preds.size() != 6 ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ! completed )
-                    {
-                        outStream.print("test failed to complete(4).\n");
-                    }
-
-                    if ( ( p3_id == DBIndex.INVALID_ID ) ||
-                         ( p4_id == DBIndex.INVALID_ID ) ||
-                         ( p5_id == DBIndex.INVALID_ID ) ||
-                         ( p6_id == DBIndex.INVALID_ID ) ||
-                         ( p7_id == DBIndex.INVALID_ID ) ||
-                         ( m7_id == DBIndex.INVALID_ID ) )
-                    {
-                        outStream.print("bad ID assignment(s).\n");
-                    }
-
-                    if ( ( m7_ord == null ) ||
-                        ( m7_onset == null ) ||
-                        ( m7_offset == null ) ||
-                        ( cp_kilo == null ) )
-                    {
-                        outStream.print("bad col pred fArg(s).\n");
-                    }
-
-                    if ( ( preds == null ) ||
-                         ( preds.size() != 1 ) ||
-                         ( preds.get(0) == p2 ) ||
-                         ( preds.get(0).toDBString().
-                            compareTo(p2.toDBString()) != 0 ) )
-                    {
-                        outStream.print(
-                                "unexpected return from getPreds()(4).\n");
-                    }
-
-                    if ( ( matricies == null ) ||
-                         ( matricies.size() != 2 ) ||
-                         ( matricies.get(0) == m6 ) ||
-                         ( matricies.get(0).toDBString().
-                            compareTo(m6.toDBString()) != 0 ) )
-                    {
-                        outStream.print(
-                                "unexpected return from getMatricies()(4).\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("unexpected system error " +
-                                "exception(4): \"%s\".\n",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {m0_id, m1_id, m2_id, m3_id, m4_id, m5_id,
-                           p0_id, p1_id, m6_id, p2_id, p3_id, p4_id, p5_id,
-                           m7_id, p6_id, p7_id};
-            VocabElement values[] = {m0, m1, m2, m3, m4, m5, p0, p1, m6, p2,
-                                     p3, p4, p5, m7, p6, p7};
-            long idxKeys[] = { 1,  2,  3,  4,  5,  6,
-                               7,  8,  9, 10, 11, 12,
-                              13, 14, 15, 16, 17, 18,
-                              19, 20, 21, 22, 23, 24,
-                              25, 26, 27, 28, 29, 30,
-                              31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                              41, 42,
-                              43, 44, 45,
-                              46, 47, 48, 49, 50, 51, 52, 53,
-                              54, 55,
-                              56, 57,
-                              58, 59,
-                              60, 61,
-                              62, 63, 64, 65, 66, 67,
-                              68, 69,
-                              70, 71};
-            DBElement idxValues[] =
-                    {m0, alpha, m0_ord, m0_onset, m0_offset, cp_alpha,
-                     m1, bravo, m1_ord, m1_onset, m1_offset, cp_bravo,
-                     m2, charlie, m2_ord, m2_onset, m2_offset, cp_charlie,
-                     m3, delta, m3_ord, m3_onset, m3_offset, cp_delta,
-                     m4, echo, m4_ord, m4_onset, m4_offset, cp_echo,
-                     m5, foxtrot, golf, hotel, m5_ord, m5_onset, m5_offset,
-                                               cp_foxtrot, cp_golf, cp_hotel,
-                     p0, lima,
-                     p1, mike, nero,
-                     m6, india, juno, m6_ord, m6_onset, m6_offset,
-                                      cp_india, cp_juno,
-                     p2, oscar,
-                     p3, papa,
-                     p4, quebec,
-                     p5, reno,
-                     m7, kilo, m7_ord, m7_onset, m7_offset, cp_kilo,
-                     p6, sierra,
-                     p7, tango};
-            MatrixVocabElement matrixValues[] = {m6, m7};
-            PredicateVocabElement predValues[] = {p2, p3, p4, p5, p6, p7};
-
-            if ( ! VerifyVLContents(16, keys, values, vl, outStream,
-                                    verbose, 3) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(71, idxKeys, idxValues,
-                                               db.idx, outStream,
-                                               verbose, 3) )
-            {
-                failures++;
-            }
-
-            if ( ! VerifyVectorContents(matricies, 2, matrixValues,
-                                        outStream, verbose, 4) )
-            {
-                failures++;
-            }
-
-            if ( ! VerifyVectorContents(preds, 6, predValues,
-                                        outStream, verbose, 4) )
-            {
-                failures++;
-            }
-        }
-
-
-        if ( failures > 0 )
-        {
-            pass = false;
-
-            if ( verbose )
-            {
-                outStream.printf("%d failures.\n", failures);
-            }
-        }
-        else if ( verbose )
-        {
-            outStream.print("All tests passed.\n");
-        }
-
-        if ( verbose )
-        {
-            /* print the banner again. */
-            outStream.print(testBanner);
-        }
-
-        if ( pass )
-        {
-            outStream.print(passBanner);
-        }
-        else
-        {
-            outStream.print(failBanner);
-        }
-
-        assertTrue(pass);
-    } /* DBIndex::TestGetPredsAndMatricies() */
-
+        long idxKeys[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                          17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+        DBElement idxValues[] = {m6, india, juno, m6_ord, m6_onset, m6_offset,
+                                 cp_india, cp_juno, p2, oscar, p3, papa, p4,
+                                 quebec, p5, reno, m7, kilo, m7Ord, m7Onset,
+                                 m7Offset, cpKilo, p6, sierra, p7, tango};
+        assertTrue(DBIndexTest.VerifyIndexContents(26, idxKeys, idxValues,
+                                               odb.idx, outStream, verbose, 3));
+    }
 
     /**
      * TestVLManagement()
