@@ -106,7 +106,6 @@
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <configuration>
-            <!--
           <licenseLocation>/var/clover/clover.license</licenseLocation>
           <cloverDatabase>/var/clover/openshapa.db</cloverDatabase>
           <historyDir>/var/clover/openshapa</historyDir>
@@ -114,7 +113,6 @@
           <excludes>
             <exclude>**/VocabListTest.java</exclude>
           </excludes>
-          -->
         </configuration>
       </plugin>
 
