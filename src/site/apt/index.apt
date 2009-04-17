@@ -14,16 +14,16 @@ Download
 
   <<Latest Releases:>>
 
-    * 2009-04-09: <<0.5-Alpha>> ({{{http://openshapa.nicta.org.au/download/openshapa-0.5-bin-20090408170044.zip}Download}}, {{{http://openshapa.nicta.org.au/releases/Alpha-0.5_Release_Notes.pdf}Release Notes}})
+    * 2009-04-09: <<0.5-Alpha>> ({{{http://openshapa.org/download/openshapa-0.5-bin-20090408170044.zip}Download}}, {{{http://openshapa.org/releases/Alpha-0.5_Release_Notes.pdf}Release Notes}})
 
-    * 2009-03-12: <<0.4-Alpha>> ({{{http://openshapa.nicta.org.au/download/openshapa-0.4-bin-20090311115831.zip}Download}}, {{{http://openshapa.nicta.org.au/releases/Alpha-0.4_Release_Notes.pdf}Release Notes}})
+    * 2009-03-12: <<0.4-Alpha>> ({{{http://openshapa.org/download/openshapa-0.4-bin-20090311115831.zip}Download}}, {{{http://openshapa.org/releases/Alpha-0.4_Release_Notes.pdf}Release Notes}})
 
-    * 2009-02-12: <<0.3-Alpha>> ({{{http://openshapa.nicta.org.au/download/openshapa-0.3-bin-20090212163712.zip}Download}}, {{{http://openshapa.nicta.org.au/releases/Alpha-0.3_Release_Notes.pdf}Release Notes}})
+    * 2009-02-12: <<0.3-Alpha>> ({{{http://openshapa.org/download/openshapa-0.3-bin-20090212163712.zip}Download}}, {{{http://openshapa.org/releases/Alpha-0.3_Release_Notes.pdf}Release Notes}})
 
 
   <<Development Snapshots:>>
 
-  {{{http://openshapa.nicta.org.au/download/}These development snapshots}}
+  {{{http://openshapa.org/download/}These development snapshots}}
   contain the very latest development work, and are a little unstable. However
   we need your help to try and test the latest features.
 
@@ -32,8 +32,7 @@ Documentation
 
   For information on how to install and use OpenSHAPA and best practices to help
   you get the most out of your research data, see the
-  {{{http://openshapa.nicta.org.au/fogbugz/default.php?W19}OpenSHAPA User
-  Guide}}.
+  {{{http://openshapa.org/fogbugz/default.php?W19}OpenSHAPA User Guide}}.
 
 
 Contribute
@@ -46,11 +45,11 @@ Contribute
       we remove the lid).
 
     * <<Test:>> Live dangerously by grabbing the latest
-      {{{http://openshapa.nicta.org.au/download/}development snapshot}} and
-      {{{http://openshapa.nicta.org.au/fogbugz/default.php?W48}reporting
+      {{{http://openshapa.org/download/}development snapshot}} and
+      {{{http://openshapa.org/fogbugz/default.php?W48}reporting
       any issues}} you find.
 
     * <<Document:>> Did it take you a while to figure something out, or was
       existing documentation out of date or wrong? Help others stand on your
-      shoulders by {{{http://openshapa.nicta.org.au/fogbugz/default.php?W49}improving
+      shoulders by {{{http://openshapa.org/fogbugz/default.php?W49}improving
       documentation}}.

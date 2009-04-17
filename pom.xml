@@ -34,19 +34,19 @@
   <!-- Our continous integration server. -->
   <ciManagement>
     <system>continuum</system>
-    <url>http://openshapa.nicta.org.au/dashboard/</url>
+    <url>http://openshapa.org/dashboard/</url>
   </ciManagement>
 
   <!-- Our bugtracking. -->
   <issueManagement>
     <system>Fogbugz</system>
-    <url>http://openshapa.nicta.org.au/fogbugz</url>
+    <url>http://openshapa.org/fogbugz</url>
   </issueManagement>
 
   <!-- Our source control. -->
   <scm>
     <tag>master</tag>
-    <url>http://openshapa.nicta.org.au/viewgit/?a=summary&amp;p=openshapa</url>
+    <url>http://openshapa.org/viewgit/?a=summary&amp;p=openshapa</url>
   </scm>
 
   <!-- The location for generating the website. -->
@@ -66,7 +66,7 @@
 
     <repository>
       <id>openshapa</id>
-      <url>http://openshapa.nicta.org.au/maven2</url>
+      <url>http://openshapa.org/maven2</url>
     </repository>
   </repositories>
 
