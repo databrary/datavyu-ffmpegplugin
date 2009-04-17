@@ -22,12 +22,7 @@
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
+      </plugin>      
     </plugins>
   </reporting>
  
