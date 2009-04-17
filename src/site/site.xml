@@ -9,7 +9,7 @@
       <item name="Contributor Guide" href="http://www.openshapa.org/fogbugz/default.php?W20" />
       <item name="Forum" href="http://www.openshapa.org/fogbugz/default.php?OpenSHAPA" />
       <item name="Issue Database" href="http://www.openshapa.org/fogbugz/" />
-      <item name="Code Coverage" href="http://www.openshapa.org/clover" />
+      <item name="Code Coverage" href="http://www.openshapa.org/dev/clover" />
       <item name="Daily Build" href="http://www.openshapa.org/dashboard/tab/build/detail/openshapa" />
     </menu>
 
