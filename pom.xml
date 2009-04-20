@@ -55,13 +55,21 @@
   <!-- External repositories - where to find third-party dependancies. -->
   <repositories>
     <repository>
-      <id>jboss</id>
-      <url>http://repository.jboss.com/maven2</url>
+      <id>central</id>
+      <url>http://openshapa.org/maven2</url>
+      <layout>default</layout>
     </repository>
 
     <repository>
       <id>openshapa</id>
       <url>http://openshapa.org/maven2</url>
+      <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>maven</id>
+      <url>http://repo1.maven.org/maven2</url>
+      <layout>default</layout>
     </repository>
   </repositories>
 
@@ -222,8 +230,8 @@
     </dependency>
 
     <dependency>
-        <groupId>jruby</groupId>
-        <artifactId>jruby_engine</artifactId>
+        <groupId>org.jruby</groupId>
+        <artifactId>jruby-engine</artifactId>
         <version>1.1.6</version>
     </dependency>
 
@@ -234,7 +242,7 @@
     </dependency>
 
     <dependency>
-      <groupId>apache-log4j</groupId>
+      <groupId>org.apache</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>
     </dependency>
@@ -246,13 +254,13 @@
     </dependency>
     
     <dependency>
-      <groupId>org.mobicents.external.appframework</groupId>
+      <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
       <version>1.0.3</version>
     </dependency>
 
     <dependency>
-      <groupId>org.mobicents.external.appframework</groupId>
+      <groupId>org.jdesktop</groupId>
       <artifactId>swing-worker</artifactId>
       <version>1.1</version>
     </dependency>
@@ -262,12 +270,13 @@
       <artifactId>QTJava</artifactId>
       <version>7</version>
     </dependency>
-	
+	<!--
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.0-RC3</version>
+      <version>2.0-RC3</version>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.openshapa</groupId>
