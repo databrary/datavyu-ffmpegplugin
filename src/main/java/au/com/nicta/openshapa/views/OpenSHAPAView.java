@@ -68,7 +68,7 @@ implements KeyEventDispatcher {
      */
     @Action
     public void showNewDatabaseForm() {
-        new NewDatabaseC();        
+        new NewDatabaseC();
     }
 
     /**

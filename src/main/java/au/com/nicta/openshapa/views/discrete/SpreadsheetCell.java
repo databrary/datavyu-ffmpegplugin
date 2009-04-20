@@ -150,14 +150,15 @@ implements ExternalDataCellListener, Selectable {
 
         dataPanel.setMatrix(dc.getVal());
 
+
         // Set the appearance of the spreadsheet cell.
-        setBackground(java.awt.SystemColor.window);
+        setBackground(UIConfiguration.spreadsheetBackgroundColor);
         this.setBorder(NORMAL_BORDER);
         setLayout(new java.awt.BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
-        topPanel.setBackground(java.awt.SystemColor.window);
+        topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
         topPanel.setLayout(new java.awt.GridLayout(1, 3, 5, 0));
         add(topPanel, java.awt.BorderLayout.NORTH);
         topPanel.add(ord);
@@ -166,7 +167,7 @@ implements ExternalDataCellListener, Selectable {
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
-        dataPanel.setBackground(java.awt.SystemColor.window);
+        dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
         dataPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 5));
         add(dataPanel, java.awt.BorderLayout.WEST);
     }
