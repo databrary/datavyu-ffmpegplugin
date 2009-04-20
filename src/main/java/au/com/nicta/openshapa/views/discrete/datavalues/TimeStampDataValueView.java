@@ -200,6 +200,12 @@ public abstract class TimeStampDataValueView extends DataValueView {
                 TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
                 TimeStamp ts = tsdv.getItsValue();
 
+                // If the user has selected text - ensure that the paste
+                // location is the start of the selection.
+                if (getSelectionEnd() > getSelectionStart()) {
+                    setCaretPosition(getSelectionStart());
+                }
+
                 // For each digit in the clipboard - add it to the timestamp
                 // rebuilding the timestamp as we go (to get smart edits).
                 for (int i = 0; i < text.length(); i++) {
