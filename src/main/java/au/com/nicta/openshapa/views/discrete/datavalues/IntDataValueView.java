@@ -39,8 +39,8 @@ public final class IntDataValueView extends DataValueView {
      * Constructor.
      *
      * @param cellSelection The parent selection for spreadsheet cells.
-     * @param cellSelection The parent selection for spreadsheet cells.
-     * @param dataValue The intDataValue that this view represents.
+     * @param cell The parent cell for the int datavalue view.
+     * @param intDataValue The intDataValue that this view represents.
      * @param editable Is this DataValueView editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
@@ -48,7 +48,7 @@ public final class IntDataValueView extends DataValueView {
                             final DataCell cell,
                             final IntDataValue intDataValue,
                             final boolean editable) {
-        super (cellSelection, cell, intDataValue, editable);
+        super(cellSelection, cell, intDataValue, editable);
     }
 
     /**
@@ -60,9 +60,9 @@ public final class IntDataValueView extends DataValueView {
         IntDataValue idv = (IntDataValue) getValue();
 
         // '-' key toggles the state of a negative / positive number.
-        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD ||
-             e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
-             && e.getKeyChar() == '-') {
+        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
+          || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
+          && e.getKeyChar() == '-') {
 
             // Move the caret to behind the - sign, or the front of the number.
             if (idv.getItsValue() < 0) {
@@ -82,7 +82,13 @@ public final class IntDataValueView extends DataValueView {
             // Can't delete empty int datavalue.
             if (!idv.isEmpty()) {
                 this.removeBehindCaret();
-                idv.setItsValue(buildValue(this.getText()));
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Integer newI = buildValue(this.getText());
+                if (newI != null) {
+                    idv.setItsValue(newI);
+                }
                 e.consume();
             }
 
@@ -93,7 +99,13 @@ public final class IntDataValueView extends DataValueView {
             // Can't delete empty int datavalue.
             if (!idv.isEmpty()) {
                 this.removeAheadOfCaret();
-                idv.setItsValue(buildValue(this.getText()));
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Integer newI = buildValue(this.getText());
+                if (newI != null) {
+                    idv.setItsValue(newI);
+                }
                 e.consume();
             }
 
@@ -124,7 +136,7 @@ public final class IntDataValueView extends DataValueView {
      */
     public Integer buildValue(final String textField) {
         if (textField == null || textField.equals("")) {
-            return new Integer(0);
+            return null;
         } else {
             return new Integer(textField);
         }

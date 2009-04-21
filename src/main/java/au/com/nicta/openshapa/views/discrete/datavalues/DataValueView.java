@@ -10,7 +10,6 @@ import au.com.nicta.openshapa.util.UIConfiguration;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -121,9 +120,9 @@ implements MouseListener, KeyListener, FocusListener {
      * @param matrixIndex The index of the dataValue we wish to have this view
      * represent within the parent matrix.
      */
-    public void setValue(final DataCell dataCell,
-                         final Matrix matrix,
-                         final int matrixIndex) {
+    public final void setValue(final DataCell dataCell,
+                               final Matrix matrix,
+                               final int matrixIndex) {
         parentCell = dataCell;
         parentMatrix = matrix;
         index = matrixIndex;
@@ -139,7 +138,7 @@ implements MouseListener, KeyListener, FocusListener {
      * @param editable is this view editable or not, true if hte data view is
      * editable, false otherwise.
      */
-    private void initDataValueView(final boolean editable) {        
+    private void initDataValueView(final boolean editable) {
         setEditable(editable);
 
         // Add listeners.
@@ -150,6 +149,8 @@ implements MouseListener, KeyListener, FocusListener {
         // Set visual appearance.
         setBorder(null);
         setOpaque(false);
+        setFont(UIConfiguration.spreadsheetDataFont);
+        setForeground(UIConfiguration.spreadsheetForegroundColor);
 
         // Set the content.
         updateStrings();
@@ -175,44 +176,21 @@ implements MouseListener, KeyListener, FocusListener {
     /**
      * @return The parent cell that this view represents some element of.
      */
-    public DataCell getParentCell() {
+    public final DataCell getParentCell() {
         return parentCell;
     }
 
     /**
      * @return The DataValue that this view represents.
      */
-    public DataValue getValue() {
+    public final DataValue getValue() {
         return value;
-    }
-
-    /**
-     * Paints the view to the nominated Graphics context.
-     *
-     * @param g The graphics context to which this view will be painted.
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        setFont(UIConfiguration.spreadsheetDataFont);
-        setForeground(UIConfiguration.spreadsheetForegroundColor);
-
-        //TODO: Editable fonts, sizes and general spreadsheet apperance.
-        //if (this.isdata) {
-        //    this.setFont(uiconfig.spreadsheetDataFont);
-        //} else {
-        //    this.setFont(uiconfig.spreadsheetTimeStampFont);
-        //}
-        //this.setForeground(uiconfig.spreadsheetForegroundColor);
-        //
-
-        //updateStrings();
-        super.paintComponent(g);
     }
 
     /**
      * Updates the content of this DataValueView as displayed to the user.
      */
-    public void updateStrings() {
+    public final void updateStrings() {
         String t = "";
         if (this.value != null && !this.value.isEmpty()) {
             t = value.toString();
@@ -259,6 +237,10 @@ implements MouseListener, KeyListener, FocusListener {
      * @param fe The FocusEvent that triggered this action.
      */
     public void focusLost(FocusEvent fe) {
+        if (this.getText() == null || this.getText().equals("")) {
+            value.clearValue();
+            updateDatabase();
+        }
     }
 
     /**

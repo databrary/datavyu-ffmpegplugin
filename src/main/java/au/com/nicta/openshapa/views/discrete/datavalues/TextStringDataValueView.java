@@ -52,7 +52,7 @@ public final class TextStringDataValueView extends DataValueView {
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u0008') {
-            
+
             // Can't delete empty text string data value.
             if (!tsdv.isEmpty()) {
                 this.removeBehindCaret();

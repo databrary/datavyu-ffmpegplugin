@@ -131,6 +131,10 @@ public abstract class DataValue extends DBElement
         return this.empty;
     }
 
+    public void clearValue() {
+        this.empty = true;
+    }
+
     /**
      * Used to identify that a value has been set for this DataValue.
      */

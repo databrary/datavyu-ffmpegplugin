@@ -62,7 +62,7 @@ public final class NominalDataValueView extends DataValueView {
         reservedChars.put(';', ';');
     }
 
-        /**
+    /**
      * The action to invoke when a key is pressed.
      *
      * @param e The key event that triggered this action.
@@ -149,7 +149,7 @@ public final class NominalDataValueView extends DataValueView {
      *
      * @param e The key event that trigged this paste nominal action.
      */
-    public void pasteNominal(KeyEvent e) {
+    public final void pasteNominal(KeyEvent e) {
         // Consume the paste event.
         e.consume();
 
@@ -217,7 +217,7 @@ public final class NominalDataValueView extends DataValueView {
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
-            
+
             // Can't delete an empty nominal data value.
             if (!ndv.isEmpty()) {
                 this.removeAheadOfCaret();
@@ -236,7 +236,6 @@ public final class NominalDataValueView extends DataValueView {
             restoreCaretPosition();
             e.consume();
 
-        
         } else {
             e.consume();
         }

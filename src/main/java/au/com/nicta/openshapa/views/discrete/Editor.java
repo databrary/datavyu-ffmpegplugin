@@ -109,7 +109,7 @@ public abstract class Editor extends JTextField {
 
         // Underlying Text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
-        } else {
+        } else if (getText() != null && getText().length() > 0) {
             // Check ahead of caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret ahead one spot
             // and leave the preserved character untouched.
@@ -148,7 +148,7 @@ public abstract class Editor extends JTextField {
 
         // Underlying text field has no selection, just a caret. Go ahead and
         // manipulate it as such.
-        } else {
+        } else if (getText() != null && getText().length() > 0) {
             // Check behind the caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret back one spot
             // and leave the preserved character untouched.

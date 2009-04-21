@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.FloatDataValue;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.views.discrete.Selector;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
 /**
@@ -13,6 +14,9 @@ import java.awt.event.KeyEvent;
  * @author cfreeman
  */
 public final class FloatDataValueView extends DataValueView {
+
+    /** The base of the number system we are using. */
+    private static final int BASE = 10;
 
     /**
      * Constructor.
@@ -45,9 +49,9 @@ public final class FloatDataValueView extends DataValueView {
         FloatDataValue fdv = (FloatDataValue) getValue();
 
         // '-' key toggles the state of a negative / positive number.
-        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD ||
-             e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
-             && e.getKeyChar() == '-') {
+        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
+          || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
+          && e.getKeyChar() == '-') {
 
             // Move the caret to behind the - sign, or the front of the number.
             if (fdv.getItsValue() < 0.0) {
@@ -65,7 +69,7 @@ public final class FloatDataValueView extends DataValueView {
                    && e.getKeyChar() == '.') {
             // Shift the decimal point to the current caret position.
             int factor = getCaretPosition() - getText().indexOf('.');
-            fdv.setItsValue(fdv.getItsValue() * Math.pow(10, factor));
+            fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
             e.consume();
 
         // The backspace key removes digits from behind the caret.
@@ -75,7 +79,13 @@ public final class FloatDataValueView extends DataValueView {
             // Can't delete empty float data value.
             if (!fdv.isEmpty()) {
                 this.removeBehindCaret();
-                fdv.setItsValue(buildValue(this.getText()));
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Double newD = buildValue(this.getText());
+                if (newD != null) {
+                    fdv.setItsValue(newD);
+                }
                 e.consume();
             }
 
@@ -86,7 +96,13 @@ public final class FloatDataValueView extends DataValueView {
             // Can't delete empty float data value.
             if (!fdv.isEmpty()) {
                 this.removeAheadOfCaret();
-                fdv.setItsValue(buildValue(this.getText()));
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Double newD = buildValue(this.getText());
+                if (newD != null) {
+                    fdv.setItsValue(newD);
+                }
                 e.consume();
             }
 
@@ -116,10 +132,18 @@ public final class FloatDataValueView extends DataValueView {
      * @return A Double value that can be used setting the database.
      */
     public Double buildValue(final String textField) {
-        if (textField == null || textField.equals("")) {
-            return new Double(0);
+        if (textField == null || textField.equals(".")) {
+            return null;
         } else {
             return new Double(textField);
+        }
+    }
+
+    @Override
+    public void focusLost(final FocusEvent fe) {
+        if (this.getText() == null || this.getText().equals(".")) {
+            this.getValue().clearValue();
+            updateDatabase();
         }
     }
 }
