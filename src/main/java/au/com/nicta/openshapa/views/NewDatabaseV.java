@@ -29,6 +29,7 @@ public class NewDatabaseV extends OpenSHAPADialog {
         // i.e. window size, position, etc.
         setName(this.getClass().getSimpleName());
         notifier = listener;
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     /** This method is called from within the constructor to

@@ -44,6 +44,8 @@ public final class NewVariableV extends OpenSHAPADialog {
         buttonGroup1.add(matrixTypeButton);
         buttonGroup1.add(integerTypeButton);
         buttonGroup1.add(floatTypeButton);
+
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     /** This method is called from within the constructor to
@@ -183,7 +185,7 @@ public final class NewVariableV extends OpenSHAPADialog {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(layout.createSequentialGroup()
                         .add(jLabel2)
-                        .addContainerGap(193, Short.MAX_VALUE))
+                        .addContainerGap(179, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -194,7 +196,7 @@ public final class NewVariableV extends OpenSHAPADialog {
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(cancelButton)
                             .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(37, 37, 37))))
+                        .addContainerGap())))
         );
 
         pack();

@@ -35,7 +35,7 @@
   <!-- Our bugtracking. -->
   <issueManagement>
     <system>Fogbugz</system>
-    <url>http://openshapa.org/fogbugz</url>
+    <url>https://openshapa.org/fogbugz</url>
   </issueManagement>
 
   <!-- Our source control. -->

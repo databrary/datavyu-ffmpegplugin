@@ -43,7 +43,8 @@ implements KeyEventDispatcher {
      * with regard to the KeyEvent; false  otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
-        if (evt.getID() != KeyEvent.KEY_PRESSED) {
+        if (evt.getID() != KeyEvent.KEY_PRESSED
+            || evt.getKeyLocation() != KeyEvent.KEY_LOCATION_NUMPAD) {
             return false;
         }
 

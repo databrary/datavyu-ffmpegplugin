@@ -103,6 +103,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         verticalFrame.add(new JPanel());
         jPanel1.add(verticalFrame, BorderLayout.NORTH);
         updateDialogState();
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     /**
