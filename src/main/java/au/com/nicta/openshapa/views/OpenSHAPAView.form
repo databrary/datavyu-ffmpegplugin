@@ -143,6 +143,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="newCellMenuItem">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="ENTER"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="newCellMenuItem" noResource="true"/>
               </Properties>
               <Events>

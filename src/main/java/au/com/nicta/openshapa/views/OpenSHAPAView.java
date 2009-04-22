@@ -254,6 +254,7 @@ implements KeyEventDispatcher {
         jSeparator2.setName("jSeparator2"); // NOI18N
         jMenu3.add(jSeparator2);
 
+        newCellMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, 0));
         newCellMenuItem.setName("newCellMenuItem"); // NOI18N
         newCellMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -361,7 +362,7 @@ implements KeyEventDispatcher {
 }//GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
-     * The action to invoke when the user selects 'strong temporal ordering.'
+     * The action to invoke when the user selects 'strong temporal ordering'.
      *
      * @param evt The event that fired this action.
      */
@@ -371,7 +372,7 @@ implements KeyEventDispatcher {
 }//GEN-LAST:event_strongTemporalMenuItemActionPerformed
 
     /**
-     * The action to invoke when the user selects 'weak temporal ordering.'
+     * The action to invoke when the user selects 'weak temporal ordering'.
      *
      * @param evt The event that fired this action.
      */
@@ -449,7 +450,7 @@ implements KeyEventDispatcher {
     public JMenuItem createScriptMenuItemFromFile(final File f) {
         JMenuItem menuItem = new JMenuItem();
         menuItem.setText(f.toString());
-        menuItem.setName(f.toString());        
+        menuItem.setName(f.toString());
         menuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runRecentScript(evt);

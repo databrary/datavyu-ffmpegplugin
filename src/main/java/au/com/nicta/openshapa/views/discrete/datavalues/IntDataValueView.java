@@ -56,7 +56,7 @@ public final class IntDataValueView extends DataValueView {
      *
      * @param e The KeyEvent that triggered this action.
      */
-    public void keyTyped(KeyEvent e) {        
+    public void keyTyped(KeyEvent e) {
         IntDataValue idv = (IntDataValue) getValue();
 
         // '-' key toggles the state of a negative / positive number.
