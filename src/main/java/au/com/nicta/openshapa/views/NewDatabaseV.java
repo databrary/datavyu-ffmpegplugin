@@ -1,34 +1,39 @@
 package au.com.nicta.openshapa.views;
 
+import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.Database;
+import au.com.nicta.openshapa.db.LogicErrorException;
+import au.com.nicta.openshapa.db.MacshapaDatabase;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.util.Constants;
 import java.awt.Frame;
-import java.awt.event.ActionListener;
+import javax.swing.JFrame;
+import org.apache.log4j.Logger;
+import org.jdesktop.application.ResourceMap;
 
 /**
  * The dialog for users to create a new database.
  *
  * @author cfreeman
  */
-public class NewDatabaseV extends OpenSHAPADialog {
+public final class NewDatabaseV extends OpenSHAPADialog {
 
-    /** The parent action to notify when the user completes this dialog. */
-    ActionListener notifier;
+    /** The logger for this class. */
+    private static Logger logger = Logger.getLogger(NewDatabaseV.class);
 
     /**
-     * Creates new form NewDatabaseView
+     * Creates new form NewDatabaseView.
      *
      * @param parent The parent of this JDialog.
      * @param modal Is this dialog modal or not?
-     * @param listener The parent listener, of the action to invoke when the
-     * user clicks on the OK button.
      */
-    public NewDatabaseV(Frame parent, boolean modal, ActionListener listener) {
+    public NewDatabaseV(Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
 
         // Need to set a unique name so that we save and restore session data
         // i.e. window size, position, etc.
         setName(this.getClass().getSimpleName());
-        notifier = listener;
         this.getRootPane().setDefaultButton(okButton);
     }
 
@@ -137,7 +142,14 @@ public class NewDatabaseV extends OpenSHAPADialog {
      * @param evt The event that triggered this action
      */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        this.dispose();
+        try {
+            this.dispose();
+            this.finalize();
+
+        // Whoops, unable to destroy dialog correctly.
+        } catch (Throwable e) {
+            logger.error("Unable to release window NewVariableV.", e);
+        }
 }//GEN-LAST:event_cancelButtonActionPerformed
 
     /**
@@ -146,8 +158,40 @@ public class NewDatabaseV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        notifier.actionPerformed(evt);
-        this.dispose();
+        try {
+            Database model = new MacshapaDatabase();
+            model.setName(this.getDatabaseName());
+            model.setDescription(this.getDatabaseDescription());
+
+            OpenSHAPA.setDatabase(model);
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                       .getMainView();
+            s.showSpreadsheet();
+
+            // Update the name of the window to include the name of the new
+            // database.
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            ResourceMap rMap = OpenSHAPA.getApplication()
+                                        .getContext()
+                                        .getResourceMap(OpenSHAPA.class);
+
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - " + this.getDatabaseName());
+
+            this.dispose();
+            this.finalize();
+
+            // TODO- BugzID:79 This needs to move above showSpreadsheet,
+            // when setTicks is fully implemented.
+            model.setTicks(Constants.TICKS_PER_SECOND);
+
+        } catch (SystemErrorException e) {
+            logger.error("Unable to create new database", e);
+        } catch (LogicErrorException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
+        } catch (Throwable e) {
+            logger.error("Unable to clean up the new database view.");
+        }
 }//GEN-LAST:event_okButtonActionPerformed
 
     /**

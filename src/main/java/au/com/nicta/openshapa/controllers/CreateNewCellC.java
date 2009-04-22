@@ -149,8 +149,8 @@ public final class CreateNewCellC {
     private static Logger logger = Logger.getLogger(CreateNewCellC.class);
 
     /** The view (the spreadsheet) for this controller. */
-    SpreadsheetPanel view;
+    private SpreadsheetPanel view;
 
     /** The model (the database) for this controller. */
-    Database model;
+    private Database model;
 }
