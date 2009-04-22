@@ -23,7 +23,10 @@ import org.apache.log4j.Logger;
  *
  * @author cfreeman
  */
-public class RunScriptC {
+public final class RunScriptC {
+
+    /** the maximum size of the recently ran script list. */
+    private static final int MAX_RECENT_SCRIPT_SIZE = 5;
 
     /**
      * Constructs and invokes the runscript controller.
@@ -53,8 +56,10 @@ public class RunScriptC {
 
     /**
      * Build the ruby scripting engine.
+     *
+     * @return ruby scripting engine to use.
      */
-    private ScriptEngine setupRuby() {
+    public ScriptEngine setupRuby() {
         ScriptEngine rubyEngine = null;
         // we need to avoid using the
         // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
@@ -73,15 +78,12 @@ public class RunScriptC {
         return rubyEngine;
     }
 
-    /** the maximum size of the recently ran script list. */
-    private static final int MAX_RECENT_SCRIPT_SIZE = 5;
-
     /**
      * Action for running a script.
      *
      * @param rubyFile The file of the ruby script to run.
      */
-    private void runScript(final File rubyFile) {
+    public void runScript(final File rubyFile) {
 
         ScriptEngine rubyEngine = setupRuby();
 

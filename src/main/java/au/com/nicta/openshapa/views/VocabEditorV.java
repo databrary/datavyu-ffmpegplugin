@@ -66,8 +66,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param listener The action listener to invoke.
      */
     public VocabEditorV(final Frame parent,
-                        final boolean modal,
-                        final ActionListener listener) {
+                        final boolean modal) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
@@ -295,7 +294,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void ok() {
         applyChanges();
-        setVisible(false);
+        try {
+            this.dispose();
+            this.finalize();
+        } catch (Throwable e) {
+            logger.error("Unable to destroy vocab editor view.", e);
+        }
     }
 
     /**
@@ -303,7 +307,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void closeWindow() {
-        setVisible(false);
+        try {
+            this.dispose();
+            this.finalize();
+        } catch (Throwable e) {
+            logger.error("Unable to destroy vocab editor view.", e);
+        }
     }
 
     /**
