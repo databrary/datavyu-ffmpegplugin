@@ -20,7 +20,6 @@ import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import au.com.nicta.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
 import java.util.Vector;
