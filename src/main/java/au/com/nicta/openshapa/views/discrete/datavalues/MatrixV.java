@@ -26,7 +26,7 @@ public class MatrixV extends SpreadsheetElementPanel {
     /** The data views used for each of the arguments. */
     private Vector<DataValueV> argViews;
 
-    /** The logger for MatrixV. */
+    /** The logger for this class. */
     private static Logger logger = Logger.getLogger(MatrixV.class);
 
     /**
