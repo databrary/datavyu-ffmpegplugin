@@ -4,6 +4,7 @@
     <menu name="OpenSHAPA">
       <item name="Introduction" href="index.html"/>
       <item name="Features" href="features.html"/>
+      <item name="News" href="http://www.openshapa.org/news" />
       <item name="Download" href="download"/>
       <item name="User Guide" href="http://www.openshapa.org/fogbugz/default.php?W19" />
       <item name="Contributor Guide" href="http://www.openshapa.org/fogbugz/default.php?W20" />
