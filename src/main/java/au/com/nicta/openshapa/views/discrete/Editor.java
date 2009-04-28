@@ -4,6 +4,8 @@ import java.util.Vector;
 import javax.swing.JTextField;
 
 /**
+ * Abstract editor - used to edit the value of OpenSHAPA data types (i.e. ints,
+ * floats, nominals, timestamps, etc).
  *
  * @author cfreeman
  */
@@ -32,6 +34,10 @@ public abstract class Editor extends JTextField {
         advanceCaret = false;
         isDeletingChar = true;
         preservedChars = new Vector<Character>();
+
+        // Set visual appearance.
+        setBorder(null);
+        setOpaque(false);
     }
 
     /**
@@ -220,5 +226,4 @@ public abstract class Editor extends JTextField {
         this.setText(cValue.toString());
         this.setCaretPosition(start);
     }
-
 }

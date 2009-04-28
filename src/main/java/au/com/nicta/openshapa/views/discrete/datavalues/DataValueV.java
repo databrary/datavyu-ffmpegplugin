@@ -1,0 +1,259 @@
+package au.com.nicta.openshapa.views.discrete.datavalues;
+
+import au.com.nicta.openshapa.db.DataCell;
+import au.com.nicta.openshapa.db.DataValue;
+import au.com.nicta.openshapa.db.FormalArgument;
+import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.MatrixVocabElement;
+import au.com.nicta.openshapa.db.SystemErrorException;
+import au.com.nicta.openshapa.util.UIConfiguration;
+import au.com.nicta.openshapa.views.discrete.Selector;
+import au.com.nicta.openshapa.views.discrete.SpreadsheetElementPanel;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import org.apache.log4j.Logger;
+
+/**
+ * This abstract view is a representation of database DataValues, concrete views
+ * for each of the concrete DataValues exist.
+ *
+ * @author cfreeman
+ */
+public abstract class DataValueV extends SpreadsheetElementPanel
+implements MouseListener {
+
+    /** The selection (used for cells) for the parent spreadsheet. */
+    private Selector spreadsheetSelection;
+
+    /** The parent matrix for the DataValue that this view represents.*/
+    private Matrix parentMatrix;
+
+    /** The DataValue that this view represents. **/
+    private DataValue model = null;
+
+    /** The parent datacell for the DataValue that this view represents. */
+    private DataCell parentCell;
+
+    /** The index of the datavalue within its parent matrix. */
+    private int index;
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(DataValueV.class);
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param dataCell The parent dataCell for this dataValueView.
+     * @param matrix The parent matrix for this dataValueView.
+     * @param matrixIndex The index of the DataValue within the parent matrix
+     * that we want this view to represent.
+     */
+    public DataValueV(final Selector cellSelection,
+                      final DataCell dataCell,
+                      final Matrix matrix,
+                      final int matrixIndex) {
+        super();
+        try {
+            spreadsheetSelection = cellSelection;
+            parentMatrix = matrix;
+            parentCell = dataCell;
+            index = matrixIndex;
+            model = matrix.getArgCopy(index);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to create DataValue View: ", ex);
+        }
+
+        initDataValueView();
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param dataCell The parent dataCell for this dataValueView.
+     * @param dataValue The dataValue that this view represents.
+     */
+    public DataValueV(final Selector cellSelection,
+                      final DataCell dataCell,
+                      final DataValue dataValue) {
+        spreadsheetSelection = cellSelection;
+        parentMatrix = null;
+        parentCell = dataCell;
+        index = -1;
+        model = dataValue;
+
+        initDataValueView();
+    }
+
+    /**
+     * Override to address bug(?) in JTextField see java bug id 4446522
+     * for discussion. Probably not the final answer but resolves the
+     * clipping of first character displayed.
+     * @return the dimension of this textfield
+     */
+    @Override
+    public final Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        size.width += 1;
+        return size;
+    }
+
+    /**
+     * Sets the value of this view, i.e. the DataValue that this view will
+     * represent.
+     *
+     * @param dataCell The parent dataCell for the DataValue that this view
+     * represents.
+     * @param matrix The parent matrix for the DataValue that this view
+     * represents.
+     * @param matrixIndex The index of the dataValue we wish to have this view
+     * represent within the parent matrix.
+     */
+    public void setValue(final DataCell dataCell,
+                         final Matrix matrix,
+                         final int matrixIndex) {
+        parentCell = dataCell;
+        parentMatrix = matrix;
+        index = matrixIndex;
+
+        updateStrings();
+    }
+
+    /**
+     * Initalises the datavalue view by registering listeners and setting the
+     * appearance.
+     */
+    private void initDataValueView() {
+        // Add listeners.
+        addMouseListener(this);
+
+        // Set visual appearance.
+        setBorder(null);
+        setOpaque(false);
+
+        setFont(UIConfiguration.spreadsheetDataFont);
+        setForeground(UIConfiguration.spreadsheetForegroundColor);
+    }
+
+    /**
+     * Updates the database with the latest value from this DataValueV (i.e.
+     * after the user has altered it).
+     */
+    public void updateDatabase() {
+        try {
+            // Update the OpenSHAPA database with the latest values.
+            parentMatrix.replaceArg(index, model);
+            parentCell.setVal(parentMatrix);
+            parentCell.getDB().replaceCell(parentCell);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to update Database: ", ex);
+        }
+    }
+
+    /**
+     * Updates the content of this DataValueV as displayed to the user.
+     */
+    public abstract void updateStrings();
+
+    /**
+     * @return The parent cell that this view represents some element of.
+     */
+    public final DataCell getParentCell() {
+        return parentCell;
+    }
+
+    /**
+     * @return The DataValue that this view represents.
+     */
+    public final DataValue getValue() {
+        return model;
+    }
+
+    /**
+     * @return The model that this data value view represents.
+     */
+    public final DataValue getModel() {
+        return this.model;
+    }
+
+    /**
+     * @return The parent matrix for this data value view.
+     */
+    public final Matrix getParentMatrix() {
+        return this.parentMatrix;
+    }
+
+    /**
+     * @return The spreadsheet selector used for this data value view.
+     */
+    public final Selector getSelector() {
+        return spreadsheetSelection;
+    }
+
+    /**
+     * @return The displayable version of the null argument.
+     */
+    public final String getNullArg() {
+        String t = "";
+        try {
+            long mveid = parentMatrix.getMveID();
+            MatrixVocabElement mve = parentMatrix.getDB().getMatrixVE(mveid);
+            FormalArgument fa = mve.getFormalArg(index);
+            t = fa.toString();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to get NULL arg", e);
+
+        }
+        return t;
+    }
+
+    /**
+     * The action to invoke when the mouse enters this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public final void mouseEntered(final MouseEvent me) {
+        // Currently we do nothing with the mouse entered event.
+    }
+
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public final void mouseExited(final MouseEvent me) {
+        // Currently we do nothing with the mouse exited event.
+    }
+
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public final void mousePressed(final MouseEvent me) {
+        // Currently we do nothing with the mouse pressed event.
+    }
+
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public final void mouseReleased(final MouseEvent me) {
+        // Currently we do nothing with the mouse released event.
+    }
+
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public abstract void mouseClicked(MouseEvent me);
+}

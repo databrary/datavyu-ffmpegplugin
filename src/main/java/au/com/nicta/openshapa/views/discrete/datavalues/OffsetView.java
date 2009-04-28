@@ -39,7 +39,7 @@ public final class OffsetView extends TimeStampDataValueView {
     @Override
     public void updateDatabase() {
         try {
-            storeCaretPosition();
+            this.getEditor().storeCaretPosition();
             TimeStampDataValue tsdv = (TimeStampDataValue) this.getValue();
             getParentCell().setOffset(tsdv.getItsValue());
             getParentCell().getDB().replaceCell(getParentCell());

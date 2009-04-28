@@ -1,9 +1,8 @@
 package org.uispec4j;
 
 import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
-import au.com.nicta.openshapa.views.discrete.datavalues.DataValueView;
+import au.com.nicta.openshapa.views.discrete.datavalues.MatrixV;
 import java.awt.Component;
-import java.util.Vector;
 import junit.framework.Assert;
 
 
@@ -69,13 +68,9 @@ public class Cell extends AbstractUIComponent {
     }
 
     /**
-     * returns the value, which is a Vector of DataValueView.
-     * This is a matrix, which may change in the future, but right now,
-     * it is not easy to hide this implementation.
-     * @return Vector<DataValueView> value as a vector of DataValueView
+     * @return The data value view (matrixV) for the cell.
      */
-    public final Vector<DataValueView> getValue() {
-        return ssCell.getValue();
+    public final MatrixV getDataValueV() {
+        return ssCell.getDataValueV();
     }
-
 }

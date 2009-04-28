@@ -12,15 +12,14 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.util.UIConfiguration;
-import au.com.nicta.openshapa.views.discrete.datavalues.DataValueView;
+import au.com.nicta.openshapa.views.discrete.datavalues.DataValueV;
 import au.com.nicta.openshapa.views.discrete.datavalues.IntDataValueView;
-import au.com.nicta.openshapa.views.discrete.datavalues.MatrixViewLabel;
+import au.com.nicta.openshapa.views.discrete.datavalues.MatrixV;
 import au.com.nicta.openshapa.views.discrete.datavalues.OffsetView;
 import au.com.nicta.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 import org.apache.log4j.Logger;
@@ -28,8 +27,11 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 /**
+ * Visual representation of a spreadsheet cell.
  *
- * @author  felix
+ * @author Felix (intial stub)
+ * @author switcher
+ * @author cfreeman
  */
 public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {
@@ -38,10 +40,10 @@ implements ExternalDataCellListener, Selectable {
     private SpreadsheetElementPanel topPanel;
 
     /** A panel for holding the value of the cell. */
-    private MatrixViewLabel dataPanel;
+    private MatrixV dataPanel;
 
     /** The Ordinal display component. */
-    private DataValueView ord;
+    private DataValueV ord;
 
     /** The Onset display component. */
     private OnsetView onset;
@@ -132,9 +134,9 @@ implements ExternalDataCellListener, Selectable {
         setOrdinal(dc.getOrd());
 
         onset = new OnsetView(selection,
-                           dc,
-                           new TimeStampDataValue(cellDB),
-                           true);
+                              dc,
+                              new TimeStampDataValue(cellDB),
+                              true);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.setValue(dc.getOnset());
 
@@ -145,7 +147,7 @@ implements ExternalDataCellListener, Selectable {
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.setValue(dc.getOffset());
 
-        dataPanel = new MatrixViewLabel(selection, dc, null);
+        dataPanel = new MatrixV(selection, dc, null);
         dataPanel.setFont(UIConfiguration.spreadsheetDataFont);
 
         dataPanel.setMatrix(dc.getVal());
@@ -159,7 +161,7 @@ implements ExternalDataCellListener, Selectable {
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
         topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-        topPanel.setLayout(new java.awt.GridLayout(1, 3, 5, 0));
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 2));
         add(topPanel, java.awt.BorderLayout.NORTH);
         topPanel.add(ord);
         topPanel.add(onset);
@@ -168,7 +170,7 @@ implements ExternalDataCellListener, Selectable {
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
         dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-        dataPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 5));
+        dataPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 2));
         add(dataPanel, java.awt.BorderLayout.WEST);
     }
 
@@ -183,14 +185,14 @@ implements ExternalDataCellListener, Selectable {
      * @return onset as String
      */
     public String getOnsetDisplay() {
-        return onset.getText();
+        return onset.toString();
     }
 
     /**
      * @return offset as String
      */
     public String getOffsetDisplay() {
-        return offset.getText();
+        return offset.toString();
     }
 
     /**
@@ -227,7 +229,7 @@ implements ExternalDataCellListener, Selectable {
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public IntDataValue getOrdinal() {
-        return ((IntDataValue)this.ord.getValue());
+        return ((IntDataValue) this.ord.getValue());
     }
 
     /**
@@ -415,8 +417,10 @@ implements ExternalDataCellListener, Selectable {
         setOnsetProcessed(true);
     }
 
-    public final Vector<DataValueView> getValue() {
-        return dataPanel.getMatrix();
+    /**
+     * @return The data value view used for this spreadsheet cell.
+     */
+    public final MatrixV getDataValueV() {
+        return dataPanel;
     }
-
 }

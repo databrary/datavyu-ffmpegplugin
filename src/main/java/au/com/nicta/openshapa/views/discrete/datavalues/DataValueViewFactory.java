@@ -15,17 +15,33 @@ import au.com.nicta.openshapa.db.UndefinedDataValue;
 import au.com.nicta.openshapa.views.discrete.Selector;
 
 /**
+ * A Factory for creating data value views.
  *
  * @author cfreeman
  */
 public class DataValueViewFactory {
 
     /**
-     *
-     * @param dv
-     * @return
+     * Constructor.
      */
-    public static DataValueView build(Selector s, DataCell c, Matrix m, int i)
+    private DataValueViewFactory() {
+    }
+
+    /**
+     * Creates a data value view from the specified data value within a matrix.
+     *
+     * @param s The parent selector to use for the created view.
+     * @param c The parent data cell that this view resides within.
+     * @param m The matrix holding the datavalue that this view will represent.
+     * @param i The index of the datavalue within the previous matrix that this
+     * view will represent.
+     *
+     * @return A data value view to represent the specified data value.
+     *
+     * @throws SystemErrorException If unable to create the view for the
+     * specified data value view.
+     */
+    public static DataValueV build(Selector s, DataCell c, Matrix m, int i)
     throws SystemErrorException {
 
         DataValue dv = m.getArgCopy(i);

@@ -11,8 +11,9 @@ import au.com.nicta.openshapa.views.discrete.Selector;
  * @author cfreeman
  */
 public final class TimeStampValueView extends TimeStampDataValueView {
+
     /**
-     * Constructor
+     * Constructor.
      *
      * @param cellSelection The parent cell selection.
      * @param cell The parent cell for this value timestamp.

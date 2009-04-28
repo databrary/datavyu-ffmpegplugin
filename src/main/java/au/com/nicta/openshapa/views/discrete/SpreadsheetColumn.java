@@ -47,7 +47,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     private ColumnChanges colChanges;
 
     /** Default column width. */
-    private static final int DEFAULT_COLUMN_WIDTH = 210;
+    private static final int DEFAULT_COLUMN_WIDTH = 230;
 
     /** Default column height. */
     private static final int DEFAULT_HEADER_HEIGHT = 16;
@@ -312,8 +312,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param cellID ID of the DataCell that is being deleted.
      */
     public void DColCellDeletion(final Database db,
-                                       final long colID,
-                                       final long cellID) {
+                                 final long colID,
+                                 final long cellID) {
         colChanges.cellDeleted.add(cellID);
     }
 
@@ -325,8 +325,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param cellID ID of the DataCell that is being inserted.
      */
     public void DColCellInsertion(final Database db,
-                                        final long colID,
-                                        final long cellID) {
+                                  final long colID,
+                                  final long cellID) {
         colChanges.cellInserted.add(cellID);
     }
 
@@ -352,22 +352,22 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param newSelected New Selected value.
      */
     public void DColConfigChanged(final Database db,
-                                      final long colID,
-                                      final boolean nameChanged,
-                                      final String oldName,
-                                      final String newName,
-                                      final boolean hiddenChanged,
-                                      final boolean oldHidden,
-                                      final boolean newHidden,
-                                      final boolean readOnlyChanged,
-                                      final boolean oldReadOnly,
-                                      final boolean newReadOnly,
-                                      final boolean varLenChanged,
-                                      final boolean oldVarLen,
-                                      final boolean newVarLen,
-                                      final boolean selectedChanged,
-                                      final boolean oldSelected,
-                                      final boolean newSelected) {
+                                  final long colID,
+                                  final boolean nameChanged,
+                                  final String oldName,
+                                  final String newName,
+                                  final boolean hiddenChanged,
+                                  final boolean oldHidden,
+                                  final boolean newHidden,
+                                  final boolean readOnlyChanged,
+                                  final boolean oldReadOnly,
+                                  final boolean newReadOnly,
+                                  final boolean varLenChanged,
+                                  final boolean oldVarLen,
+                                  final boolean newVarLen,
+                                  final boolean selectedChanged,
+                                  final boolean oldSelected,
+                                  final boolean newSelected) {
         colChanges.nameChanged = nameChanged;
         colChanges.varLenChanged = varLenChanged;
     }
@@ -378,7 +378,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param colID The ID assigned to the DataColumn.
      */
     public void DColDeleted(final Database db,
-                                  final long colID) {
+                            final long colID) {
         colChanges.colDeleted = true;
     }
 

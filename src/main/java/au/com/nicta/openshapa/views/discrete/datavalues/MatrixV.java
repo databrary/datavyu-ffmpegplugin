@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  *
  * @author swhitcher
 */
-public class MatrixViewLabel extends SpreadsheetElementPanel {
+public class MatrixV extends SpreadsheetElementPanel {
 
     /** The selection (used for cells) for the parent spreadsheet. */
     private Selector sheetSelection;
@@ -24,26 +24,26 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
     private DataCell parentCell = null;
 
     /** The data views used for each of the arguments. */
-    private Vector<DataValueView> argViews;
+    private Vector<DataValueV> argViews;
 
-    /** The logger for MatrixViewLabel. */
-    private static Logger logger = Logger.getLogger(MatrixViewLabel.class);
+    /** The logger for MatrixV. */
+    private static Logger logger = Logger.getLogger(MatrixV.class);
 
     /**
-     * Creates a new instance of MatrixViewLabel.
+     * Creates a new instance of MatrixV.
      *
      * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent datacell for this spreadsheet cell.
      * @param matrix The Matrix holding datavalues that this view label will
      * represent.
      */
-    public MatrixViewLabel(final Selector cellSelection,
+    public MatrixV(final Selector cellSelection,
                            final DataCell cell,
                            final Matrix matrix) {
         super();
         sheetSelection = cellSelection;
         parentCell = cell;
-        argViews = new Vector<DataValueView>();
+        argViews = new Vector<DataValueV>();
         setMatrix(matrix);
     }
 
@@ -52,7 +52,7 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
      * otherwise.
      */
     @Override
-    public boolean isFocusOwner() {
+    public final boolean isFocusOwner() {
         for (int i = 0; i < argViews.size(); i++) {
             if (this.argViews.get(i).isFocusOwner()) {
                 return true;
@@ -67,7 +67,7 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
      * element in the formal argument list.
      */
     @Override
-    public void requestFocus() {
+    public final void requestFocus() {
         if (this.argViews.firstElement() != null) {
             this.argViews.firstElement().requestFocus();
         }
@@ -106,7 +106,7 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
 
             // Build the visual representation of this matrix.
             for (int i = 0; i < argViews.size(); i++) {
-                DataValueView dv = argViews.get(i);
+                DataValueV dv = argViews.get(i);
 
                 if (dv != null) {
                     this.add(dv);
@@ -127,7 +127,7 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
                 this.add(label);
             }
 
-        // The matrixView does not contain components, alter the contents of
+        // The matrixView does contain components, alter the contents of
         // what already exists.
         } else {
             for (int i = 0; i < argViews.size(); i++) {
@@ -139,7 +139,10 @@ public class MatrixViewLabel extends SpreadsheetElementPanel {
         this.repaint();
     }
 
-    public final Vector<DataValueView> getMatrix() {
+    /**
+     * @return The child views of this composite view.
+     */
+    public final Vector<DataValueV> getChildren() {
         return argViews;
     }
 }

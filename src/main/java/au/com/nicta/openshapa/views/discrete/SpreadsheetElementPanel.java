@@ -29,7 +29,7 @@ implements MouseListener, KeyListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseEntered(MouseEvent me) {
+    public void mouseEntered(final MouseEvent me) {
     }
 
     /**
@@ -37,7 +37,7 @@ implements MouseListener, KeyListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseExited(MouseEvent me) {
+    public void mouseExited(final MouseEvent me) {
     }
 
     /**
@@ -45,7 +45,7 @@ implements MouseListener, KeyListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mousePressed(MouseEvent me) {
+    public void mousePressed(final MouseEvent me) {
     }
 
     /**
@@ -53,7 +53,7 @@ implements MouseListener, KeyListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseReleased(MouseEvent me) {
+    public void mouseReleased(final MouseEvent me) {
     }
 
     /**
@@ -61,15 +61,15 @@ implements MouseListener, KeyListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseClicked(MouseEvent me) {
+    public void mouseClicked(final MouseEvent me) {
     }
 
     /**
-     * The action to invoke when a key is pressed on the keyboard
+     * The action to invoke when a key is pressed on the keyboard.
      *
      * @param ke The key event that triggered this action.
      */
-    public void keyPressed(KeyEvent ke) {
+    public void keyPressed(final KeyEvent ke) {
     }
 
     /**
@@ -77,7 +77,7 @@ implements MouseListener, KeyListener {
      *
      * @param ke The key event that triggered this action.
      */
-    public void keyReleased(KeyEvent ke) {
+    public void keyReleased(final KeyEvent ke) {
     }
 
     /**
@@ -85,7 +85,7 @@ implements MouseListener, KeyListener {
      *
      * @param ke The key event that triggered this action.
      */
-    public void keyTyped(KeyEvent ke) {
+    public void keyTyped(final KeyEvent ke) {
     }
 
     /**
@@ -96,7 +96,7 @@ implements MouseListener, KeyListener {
      * @param ke They keyboard event that was dispatched to this component.
      */
     @Override
-    public void processKeyEvent(KeyEvent ke) {
+    public final void processKeyEvent(final KeyEvent ke) {
         super.processKeyEvent(ke);
 
         if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
@@ -113,7 +113,7 @@ implements MouseListener, KeyListener {
      * @param me The mouse event that was dispatched to this component.
      */
     @Override
-    public void processMouseEvent(MouseEvent me) {
+    public final void processMouseEvent(final MouseEvent me) {
         super.processMouseEvent(me);
 
         if (!me.isConsumed()) {
