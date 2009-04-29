@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TextStringDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
@@ -40,6 +41,29 @@ public final class TextStringDataValueView extends DataValueElementV {
                                    final int matrixIndex,
                                    final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent cell that this view resides within.
+     * @param predicate The parent predicate for the text string that this data
+     * value view represents.
+     * @param predicateIndex The index of the text string data value within the
+     * above parent predicate that this view represents.
+     * @param editable Is the data value view editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
+    public TextStringDataValueView(final Selector cellSelection,
+                                   final DataCell cell,
+                                   final PredDataValue predicate,
+                                   final int predicateIndex,
+                                   final Matrix matrix,
+                                   final int matrixIndex,
+                                   final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
     }
 
     /**

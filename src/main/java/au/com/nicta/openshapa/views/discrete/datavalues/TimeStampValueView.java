@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Selector;
 
 /**
@@ -30,5 +31,28 @@ public final class TimeStampValueView extends TimeStampDataValueView {
                               final int matrixIndex,
                               final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection.
+     * @param cell The parent cell for this timestamp.
+     * @param predicate The parent predicate that holds the data value that this
+     * view will represent.
+     * @param predicateIndex The index of the formal argument within the parent
+     * predicate that this will act as a view for.
+     * @param editable Is the data value editable or not - true if it is
+     * editable false otherwise.
+     */
+    public TimeStampValueView(final Selector cellSelection,
+                              final DataCell cell,
+                              final PredDataValue predicate,
+                              final int predicateIndex,
+                              final Matrix matrix,
+                              final int matrixIndex,
+                              final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
     }
 }

@@ -7,6 +7,7 @@ import au.com.nicta.openshapa.db.IntDataValue;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.NominalDataValue;
 import au.com.nicta.openshapa.db.PredDataValue;
+import au.com.nicta.openshapa.db.Predicate;
 import au.com.nicta.openshapa.db.QuoteStringDataValue;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TextStringDataValue;
@@ -45,8 +46,8 @@ public class DataValueViewFactory {
     throws SystemErrorException {
 
         DataValue dv = m.getArgCopy(i);
-        if (dv.getClass() == FloatDataValue.class) {
 
+        if (dv.getClass() == FloatDataValue.class) {
             return new FloatDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == IntDataValue.class) {
             return new IntDataValueView(s, c, m, i, true);
@@ -62,6 +63,52 @@ public class DataValueViewFactory {
             return new QuoteStringDataValueView(s, c, m, i, true);
         } else if (dv.getClass() == UndefinedDataValue.class) {
             return new UndefinedDataValueView(s, c, m, i, true);
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates data value view from the specified data value within a predicate.
+     *
+     * @param s The parent selector to use for the created view.
+     * @param c The parent data cell that this view resides within.
+     * @param p The predicate holding the data value that this view will
+     * represent.
+     * @param i The index of the datavalue within the previous predicate that
+     * this view will represent.
+     *
+     * @return A data value view to represent the specified data value.
+     *
+     * @throws SystemErrorException If unable to create the view for the
+     * specified data value view.
+     */
+    public static DataValueV build(Selector s, DataCell c, PredDataValue p,
+                                   int pi, Matrix m, int mi)
+    throws SystemErrorException {
+
+        Predicate pred = p.getItsValue();
+        DataValue dv = pred.getArgCopy(pi);
+        if (dv.getClass() == FloatDataValue.class) {
+            return new FloatDataValueView(s, c, p, pi, m, mi, true);
+        } else if (dv.getClass() == IntDataValue.class) {
+            return new IntDataValueView(s, c, p, pi, m, mi, true);
+        } else if (dv.getClass() == TimeStampDataValue.class) {
+            return new TimeStampValueView(s, c, p, pi, m, mi, true);
+        } else if (dv.getClass() == TextStringDataValue.class) {
+            return new TextStringDataValueView(s, c, p, pi, m, mi, true);
+        } else if (dv.getClass() == NominalDataValue.class) {
+            return new NominalDataValueView(s, c, p, pi, m, mi, true);
+        // Currently we are unable to nest predicates and matrices within each
+        // other. Need to change the database datavalues to a composite pattern
+        // so we can recursively update as needed.
+
+        //} else if (dv.getClass() == PredDataValue.class) {
+        //    return new PredicateDataValueView(s, c, p, i, true);
+        } else if (dv.getClass() == QuoteStringDataValue.class) {
+            return new QuoteStringDataValueView(s, c, p, pi, m, mi, true);
+        } else if (dv.getClass() == UndefinedDataValue.class) {
+            return new UndefinedDataValueView(s, c, p, pi, m, mi, true);
         }
 
         return null;

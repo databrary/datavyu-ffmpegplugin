@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
@@ -31,6 +32,29 @@ public final class UndefinedDataValueView extends DataValueElementV {
                                   final int matrixIndex,
                                   final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selector to use with this data value
+     * view.
+     * @param cell The parent cell that this data value view will reside within.
+     * @param predicate The predicate holding the data value that this view will
+     * represent.
+     * @param predicateIndex Teh index of the data value within the predicate.
+     * @param editable Is the value editable or not, true if it is editable,
+     * false otherwise.
+     */
+    public UndefinedDataValueView(final Selector cellSelection,
+                                  final DataCell cell,
+                                  final PredDataValue predicate,
+                                  final int predicateIndex,
+                                  final Matrix matrix,
+                                  final int matrixIndex,
+                                  final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
     }
 
     /**

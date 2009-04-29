@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Toolkit;
@@ -66,6 +67,29 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                                   final int matrixIndex,
                                   final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection that may contain the view.
+     * @param cell The parent cell that this view partially represents.
+     * @param predicate The parent predicate containing the formal argument that
+     * this view represents.
+     * @param predicateIndex the index of the formal argument that this view
+     * represents.
+     * @param editable Is this view editable or not, true if the view is
+     * editable. False otherwise.
+     */
+    public TimeStampDataValueView(final Selector cellSelection,
+                                  final DataCell cell,
+                                  final PredDataValue predicate,
+                                  final int predicateIndex,
+                                  final Matrix matrix,
+                                  final int matrixIndex,
+                                  final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
     }
 
     /**

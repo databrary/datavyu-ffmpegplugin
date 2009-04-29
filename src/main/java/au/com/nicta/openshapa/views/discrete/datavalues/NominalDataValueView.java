@@ -4,6 +4,7 @@ import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.NominalDataValue;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
@@ -53,6 +54,38 @@ public final class NominalDataValueView extends DataValueElementV {
                                 final int matrixIndex,
                                 final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+        this.initNominalDataValueView();
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent datacell for the nominal data value that this view
+     * represents.
+     * @param predicate The parent predicate for the nominal data value that
+     * this view represents.
+     * @param predicateIndex The index of the nominal data value within the
+     * above predicate that this view represents.
+     * @param editable Is teh data value view editable by the user? True if the
+     * value is permitted to be altered by teh user. False otherwise.
+     */
+    public NominalDataValueView(final Selector cellSelection,
+                                final DataCell cell,
+                                final PredDataValue predicate,
+                                final int predicateIndex,
+                                final Matrix matrix,
+                                final int matrixIndex,
+                                final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
+        this.initNominalDataValueView();
+    }
+
+    /**
+     * Initalises the nominal data value view.
+     */
+    private void initNominalDataValueView() {
         reservedChars = new HashMap<Character, Character>();
         reservedChars.put(')', ')');
         reservedChars.put('(', '(');

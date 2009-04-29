@@ -1583,73 +1583,82 @@ public class Predicate extends DBElement
 
     } /* Predicate::deregisterWithPve() */
 
+    /**
+     * Gets the n-th argument of the predicate
+     *
+     * @n The index of the argument within the predicate that you wish to copy.
+     *
+     * @return A copy of the n-th argument if it exists, or null if it doesn't.
+     *
+     * @throws SystemErrorException If unable to create a copy of the n-th
+     * predicate argument.
+     *
+     * @author JRM
+     * @author cfreeman
+     * @date 2009/04/29
+     */
+    public DataValue getArgCopy(int n) throws SystemErrorException {        
+        DataValue arg = this.getArg(n);
+        DataValue argCopy = null;
+
+        if (arg != null) {
+            try {
+                argCopy = (DataValue) arg.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new SystemErrorException("Unable to clone DataValue");
+            }
+        }
+
+        return argCopy;
+    }
 
     /**
-     * getArg()
+     * Gets the n-th argument of the predicate.
      *
-     * Return a reference to the n-th argument if it exists, or null if it
+     * @param n The index of the argument that you wish to fish a reference for.
+     *
+     * @return A reference to the n-th argument if it exists, or null if it
      * doesn't.
      *
-     *                                      JRM -- 8/23/07
+     * @throws SystemErrorException If unable to create a copy
+     *
+     * @author JRM
+     * @date 2007/08/23
      */
-
-    protected DataValue getArg(int n)
-        throws SystemErrorException
-    {
+    protected DataValue getArg(int n) throws SystemErrorException {
         final String mName = "Predicate::getArg(): ";
-        int numArgs;
         DataValue arg = null;
 
-        if ( pveID == DBIndex.INVALID_ID )
-        {
+        if (pveID == DBIndex.INVALID_ID) {
             arg = null;
-        }
-        else if ( argList == null )
-        {
-            /* argList hasn't been instantiated yet -- scream and die */
+
+        // argList hasn't been instantiated yet -- scream and die
+        } else if (argList == null) {
             throw new SystemErrorException(mName + "argList unitialized?!?!");
-        }
-        else if ( n < 0 )
-        {
-            /* can't have a negative index -- scream and die */
+
+        // Can't have a negative index -- scream and die
+        } else if (n < 0) {
             throw new SystemErrorException(mName + "negative index supplied");
-        }
-        else if ( n >= argList.size() )
-        {
-            /* n-th formal argument doesn't exist -- return null */
+
+        // n-th formal argument doesn't exist -- return null
+        } else if (n >= argList.size()) {
             arg = null;
-        }
-        else /* we have work to do */
-        {
+
+        // we have work to do
+        } else {
             arg = argList.get(n);
 
-            if ( arg == null )
-            {
+            if (arg == null) {
                 throw new SystemErrorException(mName + "arg is null?!?");
             }
 
-            if ( ! ( ( arg instanceof ColPredDataValue ) ||
-                     ( arg instanceof FloatDataValue ) ||
-                     ( arg instanceof IntDataValue ) ||
-                     ( arg instanceof NominalDataValue ) ||
-                     ( arg instanceof PredDataValue ) ||
-                     ( arg instanceof TimeStampDataValue ) ||
-                     ( arg instanceof QuoteStringDataValue ) ||
-                     ( arg instanceof TextStringDataValue ) ||
-                     ( arg instanceof UndefinedDataValue ) ) )
-            {
-                throw new SystemErrorException(mName + "arg of unknown type");
-            }
-
-            if ( arg instanceof TextStringDataValue )
-            {
+            if (arg instanceof TextStringDataValue) {
                 throw new SystemErrorException(mName +
                         "TextStringDataValue in a pred arg list?!?");
             }
         }
 
         return arg;
-
     } /* VocabElement::getArg() */
 
 

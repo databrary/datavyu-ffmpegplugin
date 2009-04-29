@@ -2,6 +2,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
@@ -30,6 +31,29 @@ public final class QuoteStringDataValueView extends DataValueElementV {
                                     final int matrixIndex,
                                     final boolean editable) {
         super(cellSelection, cell, matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent cell selection.
+     * @param cell The parent cell for this value timestamp.
+     * @param predicate The parent predicate that holds the data value that this
+     * view will represent.
+     * @param predicateIndex The index of the data value within the above
+     * predicate that this view will represent.
+     * @param editable Is thie datavalue editable or not - true if it is
+     * editable, false otherwise.
+     */
+    public QuoteStringDataValueView(final Selector cellSelection,
+                                    final DataCell cell,
+                                    final PredDataValue predicate,
+                                    final int predicateIndex,
+                                    final Matrix matrix,
+                                    final int matrixIndex,
+                                    final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
     }
 
     /**

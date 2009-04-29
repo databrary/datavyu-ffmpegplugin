@@ -5,6 +5,8 @@ import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.FormalArgument;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.MatrixVocabElement;
+import au.com.nicta.openshapa.db.PredDataValue;
+import au.com.nicta.openshapa.db.Predicate;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import au.com.nicta.openshapa.views.discrete.Selector;
@@ -29,6 +31,9 @@ implements MouseListener {
     /** The parent matrix for the DataValue that this view represents.*/
     private Matrix parentMatrix;
 
+    /** The parent predicate for the DataValue that this view represents. */
+    private PredDataValue parentPredicate;
+
     /** The DataValue that this view represents. **/
     private DataValue model = null;
 
@@ -36,7 +41,10 @@ implements MouseListener {
     private DataCell parentCell;
 
     /** The index of the datavalue within its parent matrix. */
-    private int index;
+    private int mIndex;
+
+    /** The index of the data value within its parent predicate. */
+    private int pIndex;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueV.class);
@@ -58,14 +66,46 @@ implements MouseListener {
         try {
             spreadsheetSelection = cellSelection;
             parentMatrix = matrix;
+            parentPredicate = null;
             parentCell = dataCell;
-            index = matrixIndex;
-            model = matrix.getArgCopy(index);
+            mIndex = matrixIndex;
+            model = matrix.getArgCopy(mIndex);
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
         }
 
         initDataValueView();
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param dataCell The parent dataCell for this dataValueView.
+     * @param predicate The parent predicate for this dataValueView.
+     * @param predicateIndex The index of the DataValue within the parent
+     * predicate that we want this view to represent.
+     */
+    public DataValueV(final Selector cellSelection,
+                      final DataCell dataCell,
+                      final PredDataValue predicate,
+                      final int predicateIndex,
+                      final Matrix matrix,
+                      final int matrixIndex) {
+        super();
+        try {
+            spreadsheetSelection = cellSelection;
+            parentMatrix = matrix;
+            mIndex = matrixIndex;
+            parentPredicate = predicate;
+            parentCell = dataCell;
+            pIndex = predicateIndex;
+
+            Predicate p = predicate.getItsValue();
+            model = p.getArgCopy(pIndex);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to create DataValue view: ", ex);
+        }
     }
 
     /**
@@ -80,8 +120,9 @@ implements MouseListener {
                       final DataValue dataValue) {
         spreadsheetSelection = cellSelection;
         parentMatrix = null;
+        parentPredicate = null;
         parentCell = dataCell;
-        index = -1;
+        mIndex = -1;
         model = dataValue;
 
         initDataValueView();
@@ -106,6 +147,35 @@ implements MouseListener {
      *
      * @param dataCell The parent dataCell for the DataValue that this view
      * represents.
+     * @param predicate The parent predicate for the datavalue that this view
+     * represents.
+     * @param predicateIndex The index of the data value in the above predicate
+     * that this view represents.
+     * @param matrix The parent matrix for the data value that this view
+     * represents.
+     * @param matrixIndex The index of the data value we wish to have this view
+     * represent within the parent matrix.
+     */
+    public void setValue(final DataCell dataCell,
+                         final PredDataValue predicate,
+                         final int predicateIndex,
+                         final Matrix matrix,
+                         final int matrixIndex) {
+        parentCell = dataCell;
+        parentPredicate = predicate;
+        pIndex = predicateIndex;
+        parentMatrix = matrix;
+        mIndex = matrixIndex;
+
+        updateStrings();
+    }
+
+    /**
+     * Sets the value of this view, i.e. the DataValue that this view will
+     * represent.
+     *
+     * @param dataCell The parent dataCell for the DataValue that this view
+     * represents.
      * @param matrix The parent matrix for the DataValue that this view
      * represents.
      * @param matrixIndex The index of the dataValue we wish to have this view
@@ -116,7 +186,7 @@ implements MouseListener {
                          final int matrixIndex) {
         parentCell = dataCell;
         parentMatrix = matrix;
-        index = matrixIndex;
+        mIndex = matrixIndex;
 
         updateStrings();
     }
@@ -144,7 +214,16 @@ implements MouseListener {
     public void updateDatabase() {
         try {
             // Update the OpenSHAPA database with the latest values.
-            parentMatrix.replaceArg(index, model);
+            if (parentMatrix != null && parentPredicate == null) {                
+                parentMatrix.replaceArg(mIndex, model);                
+            } else if (parentMatrix != null && parentPredicate != null) {
+
+                Predicate p = parentPredicate.getItsValue();
+                p.replaceArg(pIndex, model);
+                parentPredicate.setItsValue(p);
+                parentMatrix.replaceArg(mIndex, parentPredicate);
+            }
+
             parentCell.setVal(parentMatrix);
             parentCell.getDB().replaceCell(parentCell);
         } catch (SystemErrorException ex) {
@@ -200,7 +279,7 @@ implements MouseListener {
         try {
             long mveid = parentMatrix.getMveID();
             MatrixVocabElement mve = parentMatrix.getDB().getMatrixVE(mveid);
-            FormalArgument fa = mve.getFormalArg(index);
+            FormalArgument fa = mve.getFormalArg(mIndex);
             t = fa.toString();
         } catch (SystemErrorException e) {
             logger.error("Unable to get NULL arg", e);
