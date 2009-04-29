@@ -5,7 +5,13 @@ Introduction
 
 Temporal Ordering
 
-    Visualising temporal data (screenshot).
+    OpenSHAPA has the ability to order data in a simple matrix format, but also
+    has <Temporal Ordering>, where your observed events are ordered by onset and
+    duration. Ideal for making comparison of events where time of occurrence is
+    important. Temporal ordering comes in two flavours: weak and strong, where
+    weak temporal ordering compresses large periods of time where no observed
+    events. While strong temporal ordering preserves the scale of these in
+    between periods.
 
 Data Viewer
 
@@ -17,5 +23,7 @@ Reports
 
 Extendable
 
-    Plugins / scripting framework to allow others build on the OpenSHAPA
-    framework. Permitting mixing and matching a variety of data sources.
+    OpenSHAPA is embedded with a scripting engine based on the ruby language,
+    enabling you to programatically manipulate your database with scripts
+    allowing you to easily query, export and clean observations stored in the
+    database.
