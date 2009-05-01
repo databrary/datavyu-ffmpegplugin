@@ -6,6 +6,7 @@ import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.db.TimeStamp;
 import au.com.nicta.openshapa.db.TimeStampDataValue;
 import au.com.nicta.openshapa.OpenSHAPA;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Toolkit;
@@ -71,6 +72,29 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
     /**
      * Constructor.
      *
+     * @param cellSelection The parent cell selection that may contain the view.
+     * @param cell The parent cell that this view partially represents.
+     * @param predicate The parent predicate containing the formal argument that
+     * this view represents.
+     * @param predicateIndex the index of the formal argument that this view
+     * represents.
+     * @param editable Is this view editable or not, true if the view is
+     * editable. False otherwise.
+     */
+    public TimeStampDataValueView(final Selector cellSelection,
+                                  final DataCell cell,
+                                  final PredDataValue predicate,
+                                  final int predicateIndex,
+                                  final Matrix matrix,
+                                  final int matrixIndex,
+                                  final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param cellSelection The parent cell selection that may contain this view
      * @param cell The parent cell that this view partially represents.
      * @param timeStampDataValue The wrapper timeStampDataValue that this view
@@ -104,7 +128,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
      */
     public final void setValue(final TimeStamp ts) {
         try {
-            TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
+            TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
             tsdv.setItsValue(ts);
             updateStrings();
             this.getEditor().restoreCaretPosition();
@@ -244,7 +268,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         text = text.replace(chars, "");
                     }
 
-                    TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
+                    TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
                     TimeStamp ts = tsdv.getItsValue();
 
                     // If the user has selected text - ensure that the paste
@@ -309,7 +333,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
          */
         public void keyTyped(final KeyEvent e) {
             try {
-                TimeStampDataValue tdv = (TimeStampDataValue) getValue();
+                TimeStampDataValue tdv = (TimeStampDataValue) getModel();
 
                 // The backspace key removes digits from behind the caret.
                 if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN

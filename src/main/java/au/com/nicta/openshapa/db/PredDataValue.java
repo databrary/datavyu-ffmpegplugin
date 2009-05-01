@@ -84,6 +84,7 @@ public final class PredDataValue extends DataValue
 
         // calling setItsValue(null) actually sets it to an empty predicate
         this.setItsValue(null);
+        this.clearValue();
 
     } /* PredDataValue::PredDataValue(db) */
 
@@ -96,6 +97,7 @@ public final class PredDataValue extends DataValue
         this.setItsValue(null);
 
         this.setItsFargID(fargID);
+        this.clearValue();
 
     } /* PredDataValue::PredDataValue(db, fargID) */
 

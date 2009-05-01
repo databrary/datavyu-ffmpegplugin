@@ -8,6 +8,7 @@ import au.com.nicta.openshapa.views.discrete.Selector;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetElementPanel;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,7 +27,7 @@ public class MatrixV extends SpreadsheetElementPanel {
     /** The data views used for each of the arguments. */
     private Vector<DataValueV> argViews;
 
-    /** The logger for MatrixV. */
+    /** The logger for this class. */
     private static Logger logger = Logger.getLogger(MatrixV.class);
 
     /**
@@ -38,13 +39,20 @@ public class MatrixV extends SpreadsheetElementPanel {
      * represent.
      */
     public MatrixV(final Selector cellSelection,
-                           final DataCell cell,
-                           final Matrix matrix) {
+                   final DataCell cell,
+                   final Matrix matrix) {
         super();
+
+        //FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        //this.setLayout(layout);
+
+
         sheetSelection = cellSelection;
         parentCell = cell;
         argViews = new Vector<DataValueV>();
         setMatrix(matrix);
+        
+        
     }
 
     /**
@@ -100,20 +108,23 @@ public class MatrixV extends SpreadsheetElementPanel {
             // stack in some additional labels.
             if (argViews.size() > 1) {
                 JLabel label = new JLabel("(");
+                label.setBorder(new EmptyBorder(0, 0, 0, 0));
                 label.setFont(UIConfiguration.spreadsheetDataFont);
                 this.add(label);
             }
 
             // Build the visual representation of this matrix.
             for (int i = 0; i < argViews.size(); i++) {
-                DataValueV dv = argViews.get(i);
+                DataValueV dv = argViews.get(i);                
 
                 if (dv != null) {
+                    dv.setBorder(new EmptyBorder(0, 0, 0, 0));
                     this.add(dv);
                 }
 
                 if (argViews.size() > 1 && i < (argViews.size() - 1)) {
                     JLabel label = new JLabel(",");
+                    label.setBorder(new EmptyBorder(0, 0, 0, 5));
                     label.setFont(UIConfiguration.spreadsheetDataFont);
                     this.add(label);
                 }
@@ -123,6 +134,7 @@ public class MatrixV extends SpreadsheetElementPanel {
             // stack in some additional labels.
             if (argViews.size() > 1) {
                 JLabel label = new JLabel(")");
+                label.setBorder(new EmptyBorder(0, 0, 0, 0));
                 label.setFont(UIConfiguration.spreadsheetDataFont);
                 this.add(label);
             }
@@ -135,7 +147,7 @@ public class MatrixV extends SpreadsheetElementPanel {
             }
         }
 
-        //this.setBorder(BorderFactory.createEtchedBorder());
+        this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.repaint();
     }
 

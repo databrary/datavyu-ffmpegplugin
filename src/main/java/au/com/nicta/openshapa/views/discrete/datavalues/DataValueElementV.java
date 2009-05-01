@@ -3,17 +3,20 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.DataValue;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import javax.swing.border.EmptyBorder;
 
 /**
- * A DataValueElementView - i.e. a leaf view of a data value.
+ * A DataValueElementView - i.e. A leaf view of a data value.
  *
  * @author cfreeman
  */
@@ -21,6 +24,18 @@ public abstract class DataValueElementV extends DataValueV {
 
     /** The editor to use for this data value element view. */
     private Editor elementEditor;
+
+    /**
+     * Constructor.
+     *
+     * @param model The data value that this view will represent.
+     * @param editable Is this data value element editable, true if it is, false
+     * otherwise.
+     */
+    DataValueElementV(final DataValue model, final boolean editable) {
+        super(model);
+        initDataValueElementV(editable);
+    }
 
     /**
      * Constructor.
@@ -41,10 +56,35 @@ public abstract class DataValueElementV extends DataValueV {
                       final boolean editable) {
 
         super(cellSelection, cell, matrix, matrixIndex);
-        elementEditor = this.buildEditor();
-        this.elementEditor.setEditable(editable);
-        this.add(elementEditor);
-        this.updateStrings();
+        initDataValueElementV(editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The selection to use for this data value element
+     * view.
+     * @param cell The parent cell that holds this DataValueElementv.
+     * @param predicate The parent matrix for this data value element view.
+     * @param predicateIndex The index of the data value within the above
+     * predicate that this view is to represent.
+     * @param matrix The parent matrix for this data value element view.
+     * @param matrixIndex The index of the data value within the above matrix
+     * that this view is to represent.
+     * @param editable Is this data value element editable, true if it is, false
+     * otherwise.
+     */
+    DataValueElementV(final Selector cellSelection,
+                      final DataCell cell,
+                      final PredDataValue predicate,
+                      final int predicateIndex,
+                      final Matrix matrix,
+                      final int matrixIndex,
+                      final boolean editable) {
+
+        super(cellSelection, cell, predicate,
+              predicateIndex, matrix, matrixIndex);
+        initDataValueElementV(editable);
     }
 
     /**
@@ -63,8 +103,22 @@ public abstract class DataValueElementV extends DataValueV {
                              final boolean editable) {
 
         super(cellSelection, cell, dataValue);
+        initDataValueElementV(editable);
+    }
+
+    /**
+     * Performs initalisation of this data value element view.
+     *
+     * @param editable Is the data value element view editable, true if it is,
+     * false otherwise.
+     */
+    private void initDataValueElementV(final boolean editable) {
+        FlowLayout l = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        this.setLayout(l);
+
         elementEditor = this.buildEditor();
         this.elementEditor.setEditable(editable);
+        this.elementEditor.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.add(elementEditor);
         this.updateStrings();
     }
@@ -73,6 +127,17 @@ public abstract class DataValueElementV extends DataValueV {
      * @return Builds the editor to be used for this data value.
      */
     protected abstract Editor buildEditor();
+
+    @Override
+    public void setValue(final DataCell dataCell,
+                         final PredDataValue predicate,
+                         final int predicateIndex,
+                         final Matrix matrix,
+                         final int matrixIndex) {
+        super.setValue(dataCell, predicate,
+                       predicateIndex, matrix, matrixIndex);
+        this.elementEditor.restoreCaretPosition();
+    }
 
     @Override
     public void setValue(final DataCell dataCell,
@@ -170,11 +235,16 @@ public abstract class DataValueElementV extends DataValueV {
          */
         public void focusGained(final FocusEvent fe) {
             // BugzID:320 Deselect Cells before selecting cell contents.
-            getSelector().deselectAll();
-            getSelector().deselectOthers();
+            Selector s = getSelector();
+
+            if (s != null) {
+                s.deselectAll();
+                s.deselectOthers();
+            }
 
             // Only select all if the data value view is a placeholder.
-            if (getModel().isEmpty()) {
+            DataValue d = getModel();
+            if (d != null && d.isEmpty()) {
                 this.selectAll();
             }
         }

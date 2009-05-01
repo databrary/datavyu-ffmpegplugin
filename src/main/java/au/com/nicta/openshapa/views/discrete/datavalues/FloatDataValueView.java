@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.FloatDataValue;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
@@ -40,6 +41,29 @@ public final class FloatDataValueView extends DataValueElementV {
     }
 
     /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent data cell that this view will reside within.
+     * @param predicate The parent predicate for the int data value that this
+     * view represents.
+     * @param predicateIndex The index of the int data value view within the
+     * above parent matrix that this view represents.
+     * @param editable Is the data value view editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
+    public FloatDataValueView(final Selector cellSelection,
+                              final DataCell cell,
+                              final PredDataValue predicate,
+                              final int predicateIndex,
+                              final Matrix matrix,
+                              final int matrixIndex,
+                              final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
+    }
+
+    /**
      * @return Builds the editor to be used for this data value.
      */
     protected Editor buildEditor() {
@@ -60,7 +84,7 @@ public final class FloatDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            FloatDataValue fdv = (FloatDataValue) getValue();
+            FloatDataValue fdv = (FloatDataValue) getModel();
 
             // '-' key toggles the state of a negative / positive number.
             if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD

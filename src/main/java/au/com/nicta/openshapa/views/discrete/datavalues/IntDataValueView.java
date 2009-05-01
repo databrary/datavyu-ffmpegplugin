@@ -3,6 +3,7 @@ package au.com.nicta.openshapa.views.discrete.datavalues;
 import au.com.nicta.openshapa.db.DataCell;
 import au.com.nicta.openshapa.db.IntDataValue;
 import au.com.nicta.openshapa.db.Matrix;
+import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
@@ -40,6 +41,33 @@ public final class IntDataValueView extends DataValueElementV {
      * Constructor.
      *
      * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent datacell for the int data value that this view
+     * represents.
+     * @param predicate The parent predicate for the int data value that this
+     * view represents.
+     * @param predicateIndex The index of the int data value within the above
+     * parent matrix that this view represents.
+     * @param matrix The parent matrix holding the datavalue that this view
+     * represents.
+     * @param matrixIndex The index of the datavalue within the above matrix.
+     * @param editable Is the data value view editable by the user? True if the
+     * value is permitted to be altered by the user. False otherwise.
+     */
+    public IntDataValueView(final Selector cellSelection,
+                            final DataCell cell,
+                            final PredDataValue predicate,
+                            final int predicateIndex,
+                            final Matrix matrix,
+                            final int matrixIndex,
+                            final boolean editable) {
+        super(cellSelection, cell, predicate, predicateIndex,
+              matrix, matrixIndex, editable);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent cell for the int datavalue view.
      * @param intDataValue The intDataValue that this view represents.
      * @param editable Is this DataValueV editable by the user? True if the
@@ -71,7 +99,7 @@ public final class IntDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            IntDataValue idv = (IntDataValue) getValue();
+            IntDataValue idv = (IntDataValue) getModel();
 
             // '-' key toggles the state of a negative / positive number.
             if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
