@@ -101,11 +101,11 @@ public class Cell extends AbstractUIComponent {
         }
     }
 
-   /* public final void enterEditorText(int part, String s) {
+   public final void enterEditorText(int part, String s) {
         for (int i = 0; i < s.length(); i++) {
             pressEditorKey(part, new Key(s.charAt(i)));
         }
-    }*/
+    }
 
     public final void pressEditorKey(int i, Key k) {
         DataValueEditor e = getEditor(i);
