@@ -4,6 +4,8 @@ import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
 import au.com.nicta.openshapa.views.discrete.ColumnHeaderPanel;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.Vector;
 import junit.framework.Assert;
@@ -79,7 +81,8 @@ public class Column extends AbstractUIComponent {
         // Iterate through cells, create new Cells and add to new vector
         Iterator itr = originalCells.iterator();
         while (itr.hasNext()) {
-            //((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).mouseClicked(null);
+
+            //((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).mouseClicked(new MouseEvent(InputEvent.BUTTON1_MASK));
             returnCells.add(new Cell((SpreadsheetCell) itr.next()));
         }
 

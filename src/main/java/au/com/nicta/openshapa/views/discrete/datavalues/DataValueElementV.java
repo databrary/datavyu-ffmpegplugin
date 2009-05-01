@@ -151,7 +151,7 @@ public abstract class DataValueElementV extends DataValueV {
     /**
      * The editor for the int data value.
      */
-    abstract class DataValueEditor extends Editor
+    public abstract class DataValueEditor extends Editor
     implements FocusListener, KeyListener {
 
         /**

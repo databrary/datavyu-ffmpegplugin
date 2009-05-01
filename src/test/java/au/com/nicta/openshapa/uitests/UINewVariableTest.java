@@ -40,51 +40,10 @@ public final class UINewVariableTest extends UISpecTestCase {
     public void testTextVariable() throws Exception {
         String varName = "textVar";
         String varType = "TEXT";
-
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-
-        MenuBar menuBar = window.getMenuBar();
-
-        // 2a. Create new TEXT variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(
-                menuBar.getMenu("Spreadsheet").getSubMenu("New Variable")
-                .triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton("text").click();
-        assertTrue(newVarWindow.getRadioButton("text").isSelected());
-        newVarWindow.getButton("Ok").click();
-
-
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
+        String varRadio = "text";
 
         //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-
-        //3. Create new cell, check that it has been created and is empty
-        //ss.getSpreadsheetColumn(varName).requestFocus();
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().size() == 1);
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).
-                getOrd() == 1);
-        assertTrue((ss.getSpreadsheetColumn(varName).getCells().elementAt(0).
-                getOnsetTime().toString()).equals("00:00:00:000"));
-        assertTrue((ss.getSpreadsheetColumn(varName).getCells().elementAt(0).
-                getOffsetTime().toString()).equals("00:00:00:000"));
-        String value = ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().elementAt(0).toString();
-        assertTrue(value.equals("<val>"));
-        System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().elementAt(0).getValue());
-        System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().size());
-        System.err.println(ss.getSpreadsheetColumn(varName).getCells().size());
+        validateVariableType(varName, varType, varRadio);
     }
 
     /**

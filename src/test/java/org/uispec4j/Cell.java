@@ -1,9 +1,13 @@
 package org.uispec4j;
 
 import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
-import au.com.nicta.openshapa.views.discrete.datavalues.MatrixV;
+import au.com.nicta.openshapa.views.discrete.datavalues.DataValueElementV;
+import au.com.nicta.openshapa.views.discrete.datavalues.DataValueElementV.DataValueEditor;
+import au.com.nicta.openshapa.views.discrete.datavalues.DataValueV;
 import java.awt.Component;
+import java.util.Vector;
 import junit.framework.Assert;
+import org.uispec4j.utils.KeyUtils;
 
 
 
@@ -68,9 +72,55 @@ public class Cell extends AbstractUIComponent {
     }
 
     /**
-     * @return The data value view (matrixV) for the cell.
+     * returns the value, which is a Vector of DataValueView.
+     * This is a matrix, which may change in the future, but right now,
+     * it is not easy to hide this implementation.
+     * @return Vector<DataValueView> value as a vector of DataValueView
      */
-    public final MatrixV getDataValueV() {
-        return ssCell.getDataValueV();
+    public final Vector<DataValueV> getValue() {
+        return ssCell.getDataValueV().getChildren();
+    }
+
+    public final DataValueElementV getView(int part) {
+        DataValueV v = getValue().elementAt(part);
+        if (v instanceof DataValueElementV) {
+            return (DataValueElementV) v;
+
+        // Can't build DataValueElementV predicate or matrix.
+        } else {
+            return null;
+        }
+    }
+
+    public final DataValueEditor getEditor(int part) {
+        DataValueElementV v = getView(part);
+        if (v != null) {
+            return (DataValueEditor) v.getEditor();
+        } else {
+            return null;
+        }
+    }
+
+   /* public final void enterEditorText(int part, String s) {
+        for (int i = 0; i < s.length(); i++) {
+            pressEditorKey(part, new Key(s.charAt(i)));
+        }
+    }*/
+
+    public final void pressEditorKey(int i, Key k) {
+        DataValueEditor e = getEditor(i);
+        e.focusGained(null);
+        KeyUtils.typeKey(e, k);
+    }
+
+    public final TextBox getTextBox(int part) {
+        DataValueElementV view = getView(part);
+
+        if (view != null) {
+            return new TextBox(view.getEditor());
+
+        } else {
+            return null;
+        }
     }
 }
