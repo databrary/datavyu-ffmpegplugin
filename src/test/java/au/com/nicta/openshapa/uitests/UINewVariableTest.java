@@ -82,7 +82,7 @@ public final class UINewVariableTest extends UISpecTestCase {
                 getOffsetTime().toString()).equals("00:00:00:000"));
         String value = ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().elementAt(0).toString();
         assertTrue(value.equals("<val>"));
-        System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().elementAt(0).getValue());
+        System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().elementAt(0).getModel());
         System.err.println(ss.getSpreadsheetColumn(varName).getCells().elementAt(0).getDataValueV().getChildren().size());
         System.err.println(ss.getSpreadsheetColumn(varName).getCells().size());
     }

@@ -8,7 +8,6 @@ import au.com.nicta.openshapa.views.discrete.Editor;
 import au.com.nicta.openshapa.views.discrete.Selector;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -25,6 +24,18 @@ public abstract class DataValueElementV extends DataValueV {
 
     /** The editor to use for this data value element view. */
     private Editor elementEditor;
+
+    /**
+     * Constructor.
+     *
+     * @param model The data value that this view will represent.
+     * @param editable Is this data value element editable, true if it is, false
+     * otherwise.
+     */
+    DataValueElementV(final DataValue model, final boolean editable) {
+        super(model);
+        initDataValueElementV(editable);
+    }
 
     /**
      * Constructor.
@@ -57,6 +68,9 @@ public abstract class DataValueElementV extends DataValueV {
      * @param predicate The parent matrix for this data value element view.
      * @param predicateIndex The index of the data value within the above
      * predicate that this view is to represent.
+     * @param matrix The parent matrix for this data value element view.
+     * @param matrixIndex The index of the data value within the above matrix
+     * that this view is to represent.
      * @param editable Is this data value element editable, true if it is, false
      * otherwise.
      */
@@ -98,15 +112,13 @@ public abstract class DataValueElementV extends DataValueV {
      * @param editable Is the data value element view editable, true if it is,
      * false otherwise.
      */
-    private final void initDataValueElementV(final boolean editable) {
+    private void initDataValueElementV(final boolean editable) {
         FlowLayout l = new FlowLayout(FlowLayout.LEFT, 0, 0);
         this.setLayout(l);
 
         elementEditor = this.buildEditor();
         this.elementEditor.setEditable(editable);
-        this.elementEditor.setMargin(new Insets(0, 0, 0, 0));
         this.elementEditor.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.add(elementEditor);
         this.updateStrings();
     }
@@ -223,11 +235,16 @@ public abstract class DataValueElementV extends DataValueV {
          */
         public void focusGained(final FocusEvent fe) {
             // BugzID:320 Deselect Cells before selecting cell contents.
-            getSelector().deselectAll();
-            getSelector().deselectOthers();
+            Selector s = getSelector();
+
+            if (s != null) {
+                s.deselectAll();
+                s.deselectOthers();
+            }
 
             // Only select all if the data value view is a placeholder.
-            if (getModel().isEmpty()) {
+            DataValue d = getModel();
+            if (d != null && d.isEmpty()) {
                 this.selectAll();
             }
         }

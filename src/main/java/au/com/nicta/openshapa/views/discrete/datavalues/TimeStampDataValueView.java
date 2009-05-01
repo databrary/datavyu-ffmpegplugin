@@ -128,7 +128,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
      */
     public final void setValue(final TimeStamp ts) {
         try {
-            TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
+            TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
             tsdv.setItsValue(ts);
             updateStrings();
             this.getEditor().restoreCaretPosition();
@@ -268,7 +268,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         text = text.replace(chars, "");
                     }
 
-                    TimeStampDataValue tsdv = (TimeStampDataValue) getValue();
+                    TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
                     TimeStamp ts = tsdv.getItsValue();
 
                     // If the user has selected text - ensure that the paste
@@ -333,7 +333,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
          */
         public void keyTyped(final KeyEvent e) {
             try {
-                TimeStampDataValue tdv = (TimeStampDataValue) getValue();
+                TimeStampDataValue tdv = (TimeStampDataValue) getModel();
 
                 // The backspace key removes digits from behind the caret.
                 if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN

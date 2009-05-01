@@ -51,6 +51,20 @@ implements MouseListener {
 
     /**
      * Constructor.
+     */
+    public DataValueV(final DataValue value) {
+        spreadsheetSelection = null;
+        parentMatrix = null;
+        parentPredicate = null;
+        parentCell = null;
+        mIndex = 0;
+        model = value;
+
+        initDataValueView();
+    }
+
+    /**
+     * Constructor.
      *
      * @param cellSelection The parent selection for spreadsheet cells.
      * @param dataCell The parent dataCell for this dataValueView.
@@ -214,8 +228,8 @@ implements MouseListener {
     public void updateDatabase() {
         try {
             // Update the OpenSHAPA database with the latest values.
-            if (parentMatrix != null && parentPredicate == null) {                
-                parentMatrix.replaceArg(mIndex, model);                
+            if (parentMatrix != null && parentPredicate == null) {
+                parentMatrix.replaceArg(mIndex, model);
             } else if (parentMatrix != null && parentPredicate != null) {
 
                 Predicate p = parentPredicate.getItsValue();
@@ -241,13 +255,6 @@ implements MouseListener {
      */
     public final DataCell getParentCell() {
         return parentCell;
-    }
-
-    /**
-     * @return The DataValue that this view represents.
-     */
-    public final DataValue getValue() {
-        return model;
     }
 
     /**

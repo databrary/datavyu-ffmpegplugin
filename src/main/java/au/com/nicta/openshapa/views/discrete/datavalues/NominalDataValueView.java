@@ -123,7 +123,7 @@ public final class NominalDataValueView extends DataValueElementV {
                     break;
 
                 case KeyEvent.VK_LEFT:
-                    if (getValue().isEmpty()) {
+                    if (getModel().isEmpty()) {
                         e.consume();
                         break;
                     }
@@ -145,7 +145,7 @@ public final class NominalDataValueView extends DataValueElementV {
 
                 case KeyEvent.VK_RIGHT:
                     // Can't use arrow keys on an empty
-                    if (getValue().isEmpty()) {
+                    if (getModel().isEmpty()) {
                         e.consume();
                         break;
                     }
@@ -233,7 +233,7 @@ public final class NominalDataValueView extends DataValueElementV {
                 setCaretPosition(getCaretPosition() + text.length());
 
                 // Push the character changes into the database.
-                NominalDataValue ndv = (NominalDataValue) getValue();
+                NominalDataValue ndv = (NominalDataValue) getModel();
                 ndv.setItsValue(fieldContents.toString());
                 updateDatabase();
 
@@ -250,7 +250,7 @@ public final class NominalDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            NominalDataValue ndv = (NominalDataValue) getValue();
+            NominalDataValue ndv = (NominalDataValue) getModel();
 
             // The backspace key removes digits from behind the caret.
             if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN

@@ -1,21 +1,17 @@
 package au.com.nicta.openshapa.views.discrete.datavalues;
 
-import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.db.DataCell;
-import au.com.nicta.openshapa.db.Database;
 import au.com.nicta.openshapa.db.Matrix;
 import au.com.nicta.openshapa.db.PredDataValue;
 import au.com.nicta.openshapa.db.Predicate;
-import au.com.nicta.openshapa.db.PredicateVocabElement;
 import au.com.nicta.openshapa.db.SystemErrorException;
 import au.com.nicta.openshapa.util.UIConfiguration;
 import au.com.nicta.openshapa.views.discrete.Selector;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 
@@ -32,7 +28,7 @@ public final class PredicateDataValueView extends DataValueV {
     private DataCell parentCell = null;
 
     /** The name of the predicate. */
-    private JTextField predicateName;
+    private PredicateNameV predicateName;
 
     /** The parent matrix for this predicate. */
     private Matrix parentMatrix;
@@ -46,6 +42,25 @@ public final class PredicateDataValueView extends DataValueV {
     /** The logger for this class. */
     private static Logger logger = Logger
                                    .getLogger(PredicateDataValueView.class);
+
+
+    public PredDataValue getPredDataValue() {
+        try {
+            return (PredDataValue) parentMatrix.getArgCopy(parentIndex);
+        } catch (SystemErrorException se) {
+            return null;
+        }
+    }
+
+    public Predicate getPredicate() {
+        try {
+            PredDataValue pdv = (PredDataValue) parentMatrix
+                                                .getArgCopy(parentIndex);
+            return pdv.getItsValue();
+        } catch (SystemErrorException se) {
+            return null;
+        }
+    }
 
     /**
      * Constructor.
@@ -70,53 +85,26 @@ public final class PredicateDataValueView extends DataValueV {
         parentCell = cell;
         parentMatrix = matrix;
         parentIndex = matrixIndex;
-        predicateName = new JTextField();
-
-        predicateName.addKeyListener(new KeyListener() {
-            /**
-             * The action to invoke when a key is released.
-             *
-             * @param e The KeyEvent that triggered this action.
-             */
-            public void keyReleased(final KeyEvent e) {
-                matchPredicates();
-                revalidate();
-                repaint();
-            }
-
-            /**
-             * The action to invoke when a key is typed.
-             *
-             * @param e The KeyEvent that triggered this action.
-             */
-            public void keyTyped(final KeyEvent e) {
-                matchPredicates();
-                revalidate();
-                repaint();
-            }
-
-            /**
-             * The action to invoke when a key is pressed.
-             *
-             * @param e The KeyEvent that triggered this action.
-             */
-            public void keyPressed(final KeyEvent e) {
-                revalidate();
-                repaint();
-            }
-        });
-        this.setPredicate();
+        predicateName = new PredicateNameV(this);
+        this.add(predicateName);
+        this.setPredicate(this.getPredicate());
     }
 
-    public void setPredicate() {
+    public void clearPreds() {
+        while(this.getComponentCount() > 1) {
+            this.remove(1);
+        }
+    }
+
+    public void setPredicate(Predicate p) {
         try {
             PredDataValue pdv = (PredDataValue) parentMatrix
                                                 .getArgCopy(parentIndex);
-            Predicate p = pdv.getItsValue();
+            pdv.setItsValue(p);           
 
             // If this matrixView does not contain any components build up
             // view representations for each of the arguments.
-            if (p != null && getComponentCount() == 0) {
+            if (p != null && getComponentCount() <= 1) {
 
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < p.getNumArgs(); i++) {
@@ -129,9 +117,7 @@ public final class PredicateDataValueView extends DataValueV {
 
             // If this predicate View does not contain any components. Insert
             // the components for each of the view repsentations.
-            if (getComponentCount() == 0) {
-                predicateName.setText(p.getPredName());
-                this.add(predicateName);
+            if (getComponentCount() <= 1) {
 
                 if (argViews.size() > 1) {
                     JLabel label = new JLabel("(");
@@ -203,7 +189,7 @@ public final class PredicateDataValueView extends DataValueV {
                          final Matrix matrix,
                          final int matrixIndex) {
         super.setValue(dataCell, matrix, matrixIndex);
-        this.setPredicate();       
+        this.setPredicate(this.getPredicate());
         updateStrings();
     }
 
@@ -218,25 +204,5 @@ public final class PredicateDataValueView extends DataValueV {
 
     @Override
     public void updateStrings() {
-    }
-
-    public void matchPredicates() {
-        try {
-            Database db = OpenSHAPA.getDatabase();
-            Vector<PredicateVocabElement> pves = db.getPredVEs();
-
-            for (int i = 0; i < pves.size(); i++) {
-                if (pves.get(i).getName().equals(predicateName.getText())) {
-                    // W00t we match - expand the arguments.
-                    this.add(new JTextField("("));
-
-                    predicateName.requestFocus();
-                    return;
-                }
-            }
-
-        } catch (SystemErrorException se) {
-            logger.error("Unable to match predicate names", se);
-        }
     }
 }

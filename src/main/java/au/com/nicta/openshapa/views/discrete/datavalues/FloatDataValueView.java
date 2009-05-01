@@ -84,7 +84,7 @@ public final class FloatDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            FloatDataValue fdv = (FloatDataValue) getValue();
+            FloatDataValue fdv = (FloatDataValue) getModel();
 
             // '-' key toggles the state of a negative / positive number.
             if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD

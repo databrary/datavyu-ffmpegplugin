@@ -40,7 +40,7 @@ public final class OnsetView extends TimeStampDataValueView {
     public void updateDatabase() {
         try {
             this.getEditor().storeCaretPosition();
-            TimeStampDataValue tsdv = (TimeStampDataValue) this.getValue();
+            TimeStampDataValue tsdv = (TimeStampDataValue) this.getModel();
             getParentCell().setOnset(tsdv.getItsValue());
             getParentCell().getDB().replaceCell(getParentCell());
         } catch (SystemErrorException se) {

@@ -209,7 +209,7 @@ implements ExternalDataCellListener, Selectable {
      * @deprecated The underlying IntDataValue should be altered, not the view.
      */
     private void setOrdinal(int ord) {
-        ((IntDataValue)this.ord.getValue()).setItsValue(ord);
+        ((IntDataValue)this.ord.getModel()).setItsValue(ord);
         this.ord.updateStrings();
         this.validate();
     }
@@ -236,7 +236,7 @@ implements ExternalDataCellListener, Selectable {
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public IntDataValue getOrdinal() {
-        return ((IntDataValue) this.ord.getValue());
+        return ((IntDataValue) this.ord.getModel());
     }
 
     /**

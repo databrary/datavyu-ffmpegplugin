@@ -84,7 +84,7 @@ public final class TextStringDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            TextStringDataValue tsdv = (TextStringDataValue) getValue();
+            TextStringDataValue tsdv = (TextStringDataValue) getModel();
 
             // The backspace key removes digits from behind the caret.
             if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN

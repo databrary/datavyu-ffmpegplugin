@@ -47,6 +47,9 @@ public final class IntDataValueView extends DataValueElementV {
      * view represents.
      * @param predicateIndex The index of the int data value within the above
      * parent matrix that this view represents.
+     * @param matrix The parent matrix holding the datavalue that this view
+     * represents.
+     * @param matrixIndex The index of the datavalue within the above matrix.
      * @param editable Is the data value view editable by the user? True if the
      * value is permitted to be altered by the user. False otherwise.
      */
@@ -96,7 +99,7 @@ public final class IntDataValueView extends DataValueElementV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyTyped(final KeyEvent e) {
-            IntDataValue idv = (IntDataValue) getValue();
+            IntDataValue idv = (IntDataValue) getModel();
 
             // '-' key toggles the state of a negative / positive number.
             if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
