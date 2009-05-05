@@ -62,7 +62,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
      *
      * @param parent The parent frame for the vocab editor.
      * @param modal Is this dialog to be modal or not?
-     * @param listener The action listener to invoke.
      */
     public VocabEditorV(final Frame parent,
                         final boolean modal) {

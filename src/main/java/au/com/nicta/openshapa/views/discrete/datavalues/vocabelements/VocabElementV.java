@@ -13,9 +13,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -29,10 +31,10 @@ public abstract class VocabElementV extends JPanel
 implements KeyListener {
 
     /** The width of icon to use in the vocab element view. */
-    private static final int VE_WIDTH = 16;
+    private static final int VE_WIDTH = 22;
 
     /** The height of the icon to use in the vocab element view. */
-    private static final int VE_HEIGHT = 16;
+    private static final int VE_HEIGHT = 22;
 
     /** The dimensions to use for icons in the vocab element view. */
     private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH,
@@ -107,7 +109,8 @@ implements KeyListener {
         veNameField.setToolTipText(rMap.getString("name.tooltip"));
 
         this.setBackground(Color.WHITE);
-        ((FlowLayout) this.getLayout()).setAlignment(FlowLayout.LEFT);
+        FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        this.setLayout(layout);
         this.setMaximumSize(new Dimension(50000, VE_HEIGHT));
 
         this.rebuildContents();
@@ -149,7 +152,9 @@ implements KeyListener {
         FormalArgument focusedArg = null;
 
         this.add(veNameField);
+
         this.add(new JLabel("("));
+
         try {
             for (int i = 0; i < argViews.size(); i++) {
                 FormalArgumentV view = argViews.get(0);
@@ -163,10 +168,11 @@ implements KeyListener {
             for (int i = 0; i < veModel.getNumFormalArgs(); i++) {
 
                 if (i > 0) {
-                    this.add(new JLabel(","));
+                    this.add(new JLabel(", "));
                 }
 
                 this.add(new JLabel("<"));
+
                 FormalArgumentV fargV = new FormalArgumentV(
                                 veModel.getFormalArg(i), i, this, parentEditor);
                 this.argViews.add(fargV);
@@ -176,14 +182,15 @@ implements KeyListener {
 
             if (veModel.getVarLen()) {
                 if (veModel.getNumFormalArgs() > 0) {
-                    this.add(new JLabel(","));
+                    this.add(new JLabel(", "));
                 }
 
-                this.add(new JLabel(" ..."));
+                this.add(new JLabel("..."));
             }
         } catch (SystemErrorException e) {
             logger.error("unable to rebuild contents.", e);
         }
+
         this.add(new JLabel(")"));
 
         // Redraw the component (to clear anything underlying).

@@ -115,7 +115,7 @@ public class MatrixV extends SpreadsheetElementPanel {
 
             // Build the visual representation of this matrix.
             for (int i = 0; i < argViews.size(); i++) {
-                DataValueV dv = argViews.get(i);                
+                DataValueV dv = argViews.get(i);
 
                 if (dv != null) {
                     dv.setBorder(new EmptyBorder(0, 0, 0, 0));
