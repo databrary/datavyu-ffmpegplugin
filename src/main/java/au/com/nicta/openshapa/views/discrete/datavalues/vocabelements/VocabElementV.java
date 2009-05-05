@@ -13,11 +13,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.Vector;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -121,7 +119,7 @@ implements KeyListener {
      *
      * @param vocabElement The new model to use with this view.
      */
-    public final void setModel(VocabElement vocabElement) {
+    public final void setModel(final VocabElement vocabElement) {
         veModel = vocabElement;
         this.rebuildContents();
     }
@@ -268,7 +266,7 @@ implements KeyListener {
      * @param e The event that triggered this action.
      */
     public final void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
                 // Ignore - handled when the key is typed.
@@ -284,7 +282,7 @@ implements KeyListener {
      *
      * @param e The event that triggered this action.
      */
-    final public void keyReleased(KeyEvent e) {
+    public final void keyReleased(final KeyEvent e) {
         // Ignore key release
     }
 

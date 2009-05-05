@@ -273,7 +273,7 @@ public class QuoteStringFormalArg extends FormalArgument
             return false;
         }
 
-        TextStringFormalArg tsfa = (TextStringFormalArg) obj;
+        QuoteStringFormalArg tsfa = (QuoteStringFormalArg) obj;
         return super.equals(obj) && subRange == tsfa.subRange;
     }
 

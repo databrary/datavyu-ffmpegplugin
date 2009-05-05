@@ -503,6 +503,22 @@ public abstract class VocabElement extends DBElement
 
     } /* VocabElement::copyFormalArgList() */
 
+    /**
+     * Finds the index of the supplied formal argument.
+     *
+     * @param fa The formal argument to look for within the vocab element.
+     * @return The index of the suppliced formal argument if found, -1 if the
+     * supplied formal argument does not exist within the vocab element
+     */
+    public int findFormalArgIndex(final FormalArgument fa) {
+        for (int i = 0; i < this.fArgList.size(); i++) {
+            if (fa.equals(this.fArgList.get(i))) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     /**
      * deleteFormalArg()
@@ -518,7 +534,7 @@ public abstract class VocabElement extends DBElement
      *
      */
 
-    protected void deleteFormalArg(int n)
+    public void deleteFormalArg(int n)
         throws SystemErrorException
     {
         final String mName = "VocabElement::deleteFormalArg(): ";
@@ -800,9 +816,8 @@ public abstract class VocabElement extends DBElement
      *
      */
 
-    protected void insertFormalArg(FormalArgument newArg,
-                                   int n)
-        throws SystemErrorException
+    public void insertFormalArg(FormalArgument newArg, int n)
+    throws SystemErrorException
     {
         final String mName = "VocabElement::insertFormalArg(): ";
 

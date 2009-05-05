@@ -283,9 +283,6 @@ public final class PredicateVocabElement extends VocabElement
 
     } /* PredicateVocabElement::toString() */
 
-
-    /*** accessor overrides ***/
-
     /* setName() -- Override of method in VocabElement
      *
      * Does some additional error checking and then calls the superclass
@@ -313,82 +310,6 @@ public final class PredicateVocabElement extends VocabElement
         return;
 
     } /* PredicateVocabElement::setName() */
-
-
-    /*** formal argument list management overrides ***/
-
-    /**
-     * deleteFormalArg()
-     *
-     * Make FormalArgument::deleteFormalArg() accessible to
-     * the outside world.
-     *
-     *                                          JRM -- 3/4/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public void deleteFormalArg(int n)
-        throws SystemErrorException
-    {
-
-        super.deleteFormalArg(n);
-
-        return;
-
-    } /* PredicateVocabElement::deleteFormalArg() */
-
-
-    /**
-     * getNumFormalArgs()
-     *
-     * Make VocabElement::getNumFormalArgs() public.
-     *
-     *                                      JRM 3/04/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public int getNumFormalArgs()
-        throws SystemErrorException
-    {
-
-        return super.getNumFormalArgs();
-
-    } /* PredicateVocabElement::getNumFormalArgs() */
-
-    /**
-     * insertFormalArg()
-     *
-     *
-     * Make VocabElement::insertFormalArgs() public.
-     *
-     *                                          JRM -- 3/04/07
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-    @Override
-    public void insertFormalArg(FormalArgument newArg,
-                                int n)
-        throws SystemErrorException
-    {
-
-        super.insertFormalArg(newArg, n);
-
-        return;
-
-    } /* PredicateVocabElement::insertFormalArg() */
-
-
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
 
     /**
      * getNumElements()
