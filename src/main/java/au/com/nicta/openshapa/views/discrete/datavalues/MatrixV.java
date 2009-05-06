@@ -43,16 +43,10 @@ public class MatrixV extends SpreadsheetElementPanel {
                    final Matrix matrix) {
         super();
 
-        //FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 0, 0);
-        //this.setLayout(layout);
-
-
         sheetSelection = cellSelection;
         parentCell = cell;
         argViews = new Vector<DataValueV>();
         setMatrix(matrix);
-        
-        
     }
 
     /**
@@ -115,7 +109,7 @@ public class MatrixV extends SpreadsheetElementPanel {
 
             // Build the visual representation of this matrix.
             for (int i = 0; i < argViews.size(); i++) {
-                DataValueV dv = argViews.get(i);                
+                DataValueV dv = argViews.get(i);
 
                 if (dv != null) {
                     dv.setBorder(new EmptyBorder(0, 0, 0, 0));

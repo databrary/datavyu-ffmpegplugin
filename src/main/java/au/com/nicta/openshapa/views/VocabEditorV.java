@@ -48,6 +48,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
     /** The currently selected formal argument. */
     private FormalArgumentV selectedArgument;
 
+    /** Index of the currently selected formal argument within the element. */
+    private int selectedArgumentI;
+
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
 
@@ -62,7 +65,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
      *
      * @param parent The parent frame for the vocab editor.
      * @param modal Is this dialog to be modal or not?
-     * @param listener The action listener to invoke.
      */
     public VocabEditorV(final Frame parent,
                         final boolean modal) {
@@ -73,6 +75,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         setName(this.getClass().getSimpleName());
         selectedVocabElement = null;
         selectedArgument = null;
+        selectedArgumentI = -1;
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
@@ -149,6 +152,42 @@ public final class VocabEditorV extends OpenSHAPADialog {
     }
 
     /**
+     * The action to invoke when the user clicks on the move arg left button.
+     */
+    @Action
+    public void moveArgumentLeft() {
+        try {
+            VocabElement ve = selectedVocabElement.getModel();
+            ve.deleteFormalArg(selectedArgumentI);
+            ve.insertFormalArg(selectedArgument.getModel(),
+                               (selectedArgumentI - 1));
+            selectedVocabElement.setHasChanged(true);
+            selectedVocabElement.rebuildContents();
+
+            updateDialogState();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to move formal argument left", e);
+        }
+    }
+
+    /**
+     * The action to invoke when the user clicks on the move arg right button.
+     */
+    @Action
+    public void moveArgumentRight() {
+        try {
+            VocabElement ve = selectedVocabElement.getModel();
+            ve.deleteFormalArg(selectedArgumentI);
+            ve.insertFormalArg(selectedArgument.getModel(),
+                               (selectedArgumentI + 1));
+            selectedVocabElement.setHasChanged(true);
+            selectedVocabElement.rebuildContents();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to move formal argument right", e);
+        }
+    }
+
+    /**
      * The action to invoke when the user clicks on the add argument button.
      */
     @Action
@@ -210,7 +249,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void delete() {
-
         // User has vocab element selected - mark it for deletion.
         if (selectedVocabElement != null && selectedArgument == null) {
             veViewsToDeleteCompletely.add(selectedVocabElement);
@@ -219,7 +257,13 @@ public final class VocabEditorV extends OpenSHAPADialog {
         // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             VocabElement ve = selectedVocabElement.getModel();
-
+            try {
+                ve.deleteFormalArg(selectedArgumentI);
+                selectedVocabElement.setHasChanged(true);
+                selectedVocabElement.rebuildContents();
+            } catch (SystemErrorException e) {
+                logger.error("Unable to selected argument", e);
+            }
         }
 
         updateDialogState();
@@ -385,6 +429,31 @@ public final class VocabEditorV extends OpenSHAPADialog {
             } else {
                 this.argTypeComboBox.setSelectedItem("Untyped");
             }
+
+            // W00t - argument is selected - populate the index so that the user
+            // can shift the argument around.
+            selectedArgumentI = selectedVocabElement.getModel()
+                               .findFormalArgIndex(selectedArgument.getModel());
+
+            if (selectedArgumentI > 0) {
+                this.moveArgLeftButton.setEnabled(true);
+            } else {
+                this.moveArgLeftButton.setEnabled(false);
+            }
+
+            try {
+                if (selectedArgumentI < (selectedVocabElement.getModel()
+                                                     .getNumFormalArgs() - 1)) {
+                    this.moveArgRightButton.setEnabled(true);
+                } else {
+                    this.moveArgRightButton.setEnabled(false);
+                }
+            } catch (SystemErrorException e) {
+                logger.error("Unable to get num of formal args", e);
+            }
+        } else {
+            this.moveArgLeftButton.setEnabled(false);
+            this.moveArgRightButton.setEnabled(false);
         }
     }
 
@@ -437,6 +506,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         getContentPane().add(addMatrixButton, gridBagConstraints);
 
+        moveArgLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
         moveArgLeftButton.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
         moveArgLeftButton.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
         moveArgLeftButton.setEnabled(false);
@@ -445,6 +515,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         getContentPane().add(moveArgLeftButton, gridBagConstraints);
 
+        moveArgRightButton.setAction(actionMap.get("moveArgumentRight")); // NOI18N
         moveArgRightButton.setText(bundle.getString("moveArgRightButton.text")); // NOI18N
         moveArgRightButton.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
         moveArgRightButton.setEnabled(false);
