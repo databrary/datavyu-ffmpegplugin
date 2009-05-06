@@ -369,6 +369,8 @@
         <hr/>
       </div>
     </div>
+  <!-- Piwik -->
+<a href="http://piwik.org" title="Free web analytics" onclick="window.open(this.href);return(false);">
 <script type="text/javascript">
 var pkBaseURL = (("https:" == document.location.protocol) ? "https://openshapa.org/piwik/" : "http://openshapa.org/piwik/");
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
@@ -378,5 +380,9 @@ piwik_idsite = 1;
 piwik_url = pkBaseURL + "piwik.php";
 piwik_log(piwik_action_name, piwik_idsite, piwik_url);
 </script>
+
+<object><noscript><p>Free web analytics <img src="http://openshapa.org/piwik/piwik.php?idsite=1" style="border:0" alt=""/></p></noscript></object></a>
+<!-- End Piwik Tag -->
+
   </body>
 </html>
