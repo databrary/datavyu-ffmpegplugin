@@ -59,8 +59,7 @@ public final class SaveDatabaseC {
                     out.write(c.getOffset().toString());
                     out.write(",");
                     String value = c.getVal().toString();
-                    value = value.replace('(', ' ');
-                    value = value.replace(')', ' ');
+                    value = value.substring(1, value.length() - 1);
                     out.write(value);
                     out.newLine();
                 }
