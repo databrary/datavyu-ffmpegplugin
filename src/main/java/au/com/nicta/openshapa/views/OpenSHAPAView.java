@@ -7,6 +7,7 @@ import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
 import au.com.nicta.openshapa.controllers.RunScriptC;
 import au.com.nicta.openshapa.controllers.RunTestsC;
+import au.com.nicta.openshapa.controllers.SaveDatabaseC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
 import au.com.nicta.openshapa.controllers.VocabEditorC;
 import au.com.nicta.openshapa.util.FileFilters.CSVFilter;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -80,7 +82,12 @@ implements KeyEventDispatcher {
     public void saveAs() {
         JFileChooser jd = new JFileChooser();
         jd.addChoosableFileFilter(new CSVFilter());
-        jd.showSaveDialog(this.getComponent());
+        int result = jd.showSaveDialog(this.getComponent());
+
+        FileFilter ff = jd.getFileFilter();
+        if (result == JFileChooser.APPROVE_OPTION) {
+            new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+        }
     }
 
     /**
