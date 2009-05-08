@@ -7,8 +7,10 @@ import au.com.nicta.openshapa.controllers.NewDatabaseC;
 import au.com.nicta.openshapa.controllers.NewVariableC;
 import au.com.nicta.openshapa.controllers.RunScriptC;
 import au.com.nicta.openshapa.controllers.RunTestsC;
+import au.com.nicta.openshapa.controllers.SaveDatabaseC;
 import au.com.nicta.openshapa.controllers.SetSheetLayoutC;
 import au.com.nicta.openshapa.controllers.VocabEditorC;
+import au.com.nicta.openshapa.util.FileFilters.CSVFilter;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
 import au.com.nicta.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.Component;
@@ -16,7 +18,9 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.util.LinkedList;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -69,6 +73,21 @@ implements KeyEventDispatcher {
     @Action
     public void showNewDatabaseForm() {
         new NewDatabaseC();
+    }
+
+    /**
+     * Action for saving the current database as a particular file.
+     */
+    @Action
+    public void saveAs() {
+        JFileChooser jd = new JFileChooser();
+        jd.addChoosableFileFilter(new CSVFilter());
+        int result = jd.showSaveDialog(this.getComponent());
+
+        FileFilter ff = jd.getFileFilter();
+        if (result == JFileChooser.APPROVE_OPTION) {
+            new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+        }
     }
 
     /**
@@ -160,6 +179,7 @@ implements KeyEventDispatcher {
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem openMenuItem = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -210,13 +230,18 @@ implements KeyEventDispatcher {
 
         menuBar.setName("menuBar"); // NOI18N
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(OpenSHAPAView.class, this);
+        fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(au.com.nicta.openshapa.OpenSHAPA.class).getContext().getActionMap(OpenSHAPAView.class, this);
         openMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
         openMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
         openMenuItem.setName("openMenuItem"); // NOI18N
         fileMenu.add(openMenuItem);
+
+        jMenuItem5.setAction(actionMap.get("saveAs")); // NOI18N
+        jMenuItem5.setName("jMenuItem5"); // NOI18N
+        fileMenu.add(jMenuItem5);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
         fileMenu.add(fileMenuSeparator);
@@ -487,6 +512,7 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
