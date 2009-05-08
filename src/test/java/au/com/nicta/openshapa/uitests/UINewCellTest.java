@@ -29,10 +29,12 @@ import org.uispec4j.Window;
  */
 public final class UINewCellTest extends UISpecTestCase {
 
-    @Override
     /**
-     * @throws java.lang.Exception
+     * Initialiser called before each unit test
+     *
+     * @throws java.lang.Exception When unable to initialise test
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
@@ -84,12 +86,7 @@ public final class UINewCellTest extends UISpecTestCase {
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getTextBox(0);
-
-            /*c.pressEditorKey(0, Key.d1);
-            c.pressEditorKey(0, Key.A);
-            c.pressEditorKey(0, Key.d9);*/
             c.enterEditorText(0, testInput[i].toLowerCase());
-
             System.err.println(t.getText());
             //assertTrue(t.getText().equalsIgnoreCase(testInput[i]));
         }
@@ -140,17 +137,5 @@ public final class UINewCellTest extends UISpecTestCase {
             assertTrue(t.getText().equalsIgnoreCase("19"));
         }
     } 
-
-    public void simulateKey(KeyEvent e, JComponent c) {
-        MouseEvent event = new MouseEvent(c, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 0, 0, 1, false);
-        try {
-        java.lang.reflect.Field f = AWTEvent.class.getDeclaredField("focusManagerIsDispatching");
-        f.setAccessible(true);
-        f.set(event, Boolean.TRUE);
-        ((Component) c).dispatchEvent(event);
-        } catch (Exception e2) {
-            
-        }
-    }
 
 }

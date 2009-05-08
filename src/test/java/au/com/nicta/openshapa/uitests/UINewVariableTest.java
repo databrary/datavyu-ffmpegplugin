@@ -20,10 +20,12 @@ import org.uispec4j.Window;
  */
 public final class UINewVariableTest extends UISpecTestCase {
 
-    @Override
     /**
-     * @throws java.lang.Exception
+     * Initialiser called before each unit test
+     *
+     * @throws java.lang.Exception When unable to initialise test
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
