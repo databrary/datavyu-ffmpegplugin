@@ -14,8 +14,6 @@ import org.jdesktop.application.ResourceMap;
 
 /**
  * The dialog to list database variables.
- *
- * @author cfreeman
  */
 public final class ListVariables extends OpenSHAPADialog
 implements ExternalColumnListListener {

@@ -12,9 +12,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 /**
- * 
- *
- * @author cfreeman
+ * A view for a predicate name.
  */
 public final class PredicateNameV extends DataValueElementV {
 

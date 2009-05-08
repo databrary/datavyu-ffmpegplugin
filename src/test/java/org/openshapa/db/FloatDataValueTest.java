@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class FloatDataValue.
- *
- * @author cfreeman
  */
 public class FloatDataValueTest extends DataValueTest {
     /** tolerance for double comparisons in tests. */

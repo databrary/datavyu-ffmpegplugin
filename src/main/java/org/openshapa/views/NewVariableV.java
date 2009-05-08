@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
- *
- * @author cfreeman
  */
 public final class NewVariableV extends OpenSHAPADialog {
 

@@ -5,8 +5,7 @@ import org.openshapa.views.VocabEditorV;
 import javax.swing.JFrame;
 
 /**
- *
- * @author cfreeman
+ * A controller for invoking the vocab editor.
  */
 public class VocabEditorC {
 

@@ -21,8 +21,6 @@ import quicktime.std.movies.media.SampleTimeInfo;
 
 /**
  * The viewer for a quicktime video file.
- *
- * @author cfreeman
  */
 public final class QTVideoViewer extends JFrame
 implements MovieDrawingComplete {

@@ -8,8 +8,6 @@ import org.apache.log4j.Logger;
 
 /**
  * A view representation for an offset timestamp.
- *
- * @author cfreeman
  */
 public final class OffsetView extends TimeStampDataValueView {
 

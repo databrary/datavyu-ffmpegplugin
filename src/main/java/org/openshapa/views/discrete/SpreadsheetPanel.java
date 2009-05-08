@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
  * OpenSHAPA database as a spreadsheet.
  *
  * @author switcher (initial revision)
- * @author cfreeman (refactor)
  */
 public class SpreadsheetPanel extends JPanel
     implements ExternalColumnListListener {

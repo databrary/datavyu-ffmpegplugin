@@ -5,8 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author cfreeman
+ * Unit tests for the data value class.
  */
 public abstract class DataValueTest extends DBElementTest {
 

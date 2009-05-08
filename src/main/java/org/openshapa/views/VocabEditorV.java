@@ -31,8 +31,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 /**
- *
- * @author cfreeman
+ * A view for editing the database vocab.
  */
 public final class VocabEditorV extends OpenSHAPADialog {
 

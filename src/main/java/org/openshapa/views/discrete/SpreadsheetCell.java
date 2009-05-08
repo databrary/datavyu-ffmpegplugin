@@ -32,7 +32,6 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author Felix (intial stub)
  * @author switcher
- * @author cfreeman
  */
 public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {

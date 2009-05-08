@@ -9,8 +9,6 @@ import java.awt.event.KeyEvent;
 
 /**
  * A view representation for an undefined data value.
- *
- * @author cfreeman
  */
 public final class UndefinedDataValueView extends DataValueElementV {
 

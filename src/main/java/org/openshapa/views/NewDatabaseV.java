@@ -13,8 +13,6 @@ import org.jdesktop.application.ResourceMap;
 
 /**
  * The dialog for users to create a new database.
- *
- * @author cfreeman
  */
 public final class NewDatabaseV extends OpenSHAPADialog {
 

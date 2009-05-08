@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Test class for the ColPred class.
- *
- * @author cfreeman
  */
 public class ColPredTest {
 

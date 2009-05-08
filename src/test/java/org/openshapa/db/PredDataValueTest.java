@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class PredDataValue.
- *
- * @author cfreeman
  */
 public class PredDataValueTest extends DataValueTest {
     private static Database db;

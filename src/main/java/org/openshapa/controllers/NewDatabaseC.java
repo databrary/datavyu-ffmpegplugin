@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 /**
  * Controller for creating new databases.
  *
- * @author cfreeman (refactored into seperate controller class.)
  * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
 public class NewDatabaseC {

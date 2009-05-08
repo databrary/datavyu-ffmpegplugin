@@ -6,9 +6,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 /**
- * A view element for a vocab element name (i.e. the 'GOAL' of GOAL().
- *=
- * @author cfreeman
+ * A view element for a vocab element name (i.e. the 'GOAL' of GOAL(). 
  */
 public class VocabElementNameV extends Editor implements FocusListener {
 

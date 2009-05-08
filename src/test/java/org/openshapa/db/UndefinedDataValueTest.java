@@ -7,8 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author cfreeman
+ * Unit tests for the undefined data value class.
  */
 public class UndefinedDataValueTest extends DataValueTest {
 

@@ -15,8 +15,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Controller for saving the database to disk.
- *
- * @author cfreeman
  */
 public final class SaveDatabaseC {
 

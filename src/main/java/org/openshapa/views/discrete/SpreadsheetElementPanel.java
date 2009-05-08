@@ -9,8 +9,6 @@ import javax.swing.JPanel;
 /**
  * A JPanel which can be used for piecing together spreadsheet elements, it will
  * correctly pass on mouse events.
- *
- * @author cfreeman
  */
 public class SpreadsheetElementPanel extends JPanel
 implements MouseListener, KeyListener {

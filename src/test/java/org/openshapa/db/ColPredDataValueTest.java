@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class ColPredDataValue.
- *
- * @author cfreeman
  */
 public class ColPredDataValueTest extends DataValueTest {
 

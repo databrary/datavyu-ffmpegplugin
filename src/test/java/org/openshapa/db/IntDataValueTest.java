@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class IntDataValue.
- *
- * @author cfreeman
  */
 public class IntDataValueTest extends DataValueTest {
     private Database db;

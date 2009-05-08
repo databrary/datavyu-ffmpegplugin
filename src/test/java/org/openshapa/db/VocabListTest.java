@@ -123,7 +123,6 @@ public class VocabListTest {
      * @throws org.openshapa.db.SystemErrorException
      *
      * @author JRM (original regression test - 2007/05/08).
-     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test (expected = SystemErrorException.class)
     public void Test1ArgConstructorFailure() throws SystemErrorException {
@@ -137,7 +136,6 @@ public class VocabListTest {
      * correctly create the vocablist.
      *
      * @author JRM (original regression test - 2007/05/08).
-     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
     public void Test1ArgConstructor() throws SystemErrorException {
@@ -156,7 +154,6 @@ public class VocabListTest {
      * correctly get predicates or matricies.
      *
      * @author JRM (original regression test - 2007/06/19).
-     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
     public void TestGetPredsAndMatricies1() throws SystemErrorException {
@@ -175,7 +172,6 @@ public class VocabListTest {
      * correctly get predicates or matricies.
      *
      * @author JRM (original regression test - 2007/06/19).
-     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
     public void TestGetPredsAndMatricies2()
@@ -233,7 +229,6 @@ public class VocabListTest {
      * @throws org.openshapa.db.SystemErrorException
      *
      * @author JRM (original regression test - 2007/06/19).
-     * @author cfreeman (refactored to junit - 2009/04/16).
      */
     @Test
     public void TestGetPredsAndMatricies3()

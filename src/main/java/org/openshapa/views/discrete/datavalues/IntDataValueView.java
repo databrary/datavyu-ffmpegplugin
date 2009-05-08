@@ -11,8 +11,6 @@ import java.awt.event.KeyEvent;
 /**
  * This class is the view representation of a IntDataValue as stored within the
  * database.
- *
- * @author cfreeman
  */
 public final class IntDataValueView extends DataValueElementV {
 

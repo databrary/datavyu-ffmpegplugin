@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 /**
  * This class is the view representation of a NominalDataValue as stored within
  * the database.
- *
- * @author cfreeman
  */
 public final class NominalDataValueView extends DataValueElementV {
 

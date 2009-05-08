@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
  * The dialog for the scripting console. Renders output from scripts and other
  * things which dumps things to the console. Implemented as a singleton. Only
  * A single console is used in OpenSHAPA.
- *
- * @author cfreeman
  */
 public class ConsoleV extends OpenSHAPADialog {
 

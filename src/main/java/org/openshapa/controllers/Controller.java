@@ -5,7 +5,6 @@ import org.openshapa.db.SystemErrorException;
 
 /**
  *
- * @author cfreeman
  */
 public interface Controller {
     void execute() throws SystemErrorException, LogicErrorException;

@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class TextStringDataValue.
- *
- * @author cfreeman
  */
 public class TextStringDataValueTest extends DataValueTest {
     Database db;

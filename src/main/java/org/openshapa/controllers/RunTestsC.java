@@ -23,8 +23,6 @@ import org.junit.runner.notification.Failure;
 
 /**
  * Controller for running regression tests on the OpenSHAPA code-base.
- *
- * @author cfreeman
  */
 public class RunTestsC {
 

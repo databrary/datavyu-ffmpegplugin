@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 
 /**
  * An abstract view for TimeStampDataValues.
- *
- * @author cfreeman
  */
 public abstract class TimeStampDataValueView extends DataValueElementV {
 

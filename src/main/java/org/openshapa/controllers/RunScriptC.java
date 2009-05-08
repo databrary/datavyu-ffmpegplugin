@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Controller for running scripts.
- *
- * @author cfreeman
  */
 public final class RunScriptC {
 

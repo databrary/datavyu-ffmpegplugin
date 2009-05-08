@@ -7,17 +7,14 @@ import org.openshapa.db.Predicate;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.UIConfiguration;
 import org.openshapa.views.discrete.Selector;
-import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 
 /**
- *
- * @author cfreeman
+ * A view of a predicate data value.
  */
 public final class PredicateDataValueView extends DataValueV {
 

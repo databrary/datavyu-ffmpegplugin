@@ -10,8 +10,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class Predicate.
- *
- * @author cfreeman
  */
 public class PredicateTest {
 

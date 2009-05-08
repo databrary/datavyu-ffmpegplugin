@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 /**
  * This class is a view representation of a TextStringDataValue as stored within
  * the database.
- *
- * @author cfreeman
  */
 public final class TextStringDataValueView extends DataValueElementV {
 
