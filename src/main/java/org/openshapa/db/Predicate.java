@@ -1594,7 +1594,6 @@ public class Predicate extends DBElement
      * predicate argument.
      *
      * @author JRM
-     * @author cfreeman
      * @date 2009/04/29
      */
     public DataValue getArgCopy(int n) throws SystemErrorException {        
