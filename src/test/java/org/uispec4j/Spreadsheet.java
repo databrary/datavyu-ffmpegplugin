@@ -1,8 +1,8 @@
 package org.uispec4j;
 
-import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
-import au.com.nicta.openshapa.views.discrete.ColumnHeaderPanel;
-import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
+import org.openshapa.views.discrete.SpreadsheetColumn;
+import org.openshapa.views.discrete.ColumnHeaderPanel;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.awt.Component;
 import java.util.Iterator;
 import java.util.Vector;

@@ -1,9 +1,9 @@
 package org.uispec4j;
 
-import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
-import au.com.nicta.openshapa.views.discrete.datavalues.DataValueElementV;
-import au.com.nicta.openshapa.views.discrete.datavalues.DataValueElementV.DataValueEditor;
-import au.com.nicta.openshapa.views.discrete.datavalues.DataValueV;
+import org.openshapa.views.discrete.SpreadsheetCell;
+import org.openshapa.views.discrete.datavalues.DataValueElementV;
+import org.openshapa.views.discrete.datavalues.DataValueElementV.DataValueEditor;
+import org.openshapa.views.discrete.datavalues.DataValueV;
 import java.awt.Component;
 import java.util.Vector;
 import junit.framework.Assert;
