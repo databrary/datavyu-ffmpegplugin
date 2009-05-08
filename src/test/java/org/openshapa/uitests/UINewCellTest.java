@@ -46,6 +46,75 @@ public final class UINewCellTest extends UISpecTestCase {
         "NOMINAL", "MATRIX", "FLOAT"
     };
 
+     /**
+     * Test creating a new INTEGER cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewNominalCell() throws Exception {
+        String varName = "nomVar";
+        String varType = "NOMINAL";
+        String varRadio = "nominal";
+
+        String[] testInput = {"Subject stands )up", "$10,432",
+            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
+            "If x>7 then x|2"};
+
+        String[] expectedTestOutput = {"Subject stands up", "$10432",
+            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
+            "If x7 then x2"};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        newVariable(varName, varType, varRadio);
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent())));
+
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < 6; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == 6);
+
+        for (int i = 0; i < 6; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getTextBox(0);
+
+            c.enterEditorText(0, testInput[i]);
+
+            System.err.println(t.getText());
+            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+        }
+
+        //5. Check copy pasting
+        Clipboard c = null;
+        for (int i = 1; i < 7; i++) {
+            int j = i % 6;
+            TextBox t = cells.elementAt(i - 1).getTextBox(0);
+            c.putText(testInput[j]);
+            t.setText("");
+            t.pasteFromClipboard();
+           // System.err.println(t.getText());
+            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+    }
+
     /**
      * Test creating a new INTEGER cell.
      * @throws java.lang.Exception on any error
@@ -96,7 +165,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterEditorText(0, testInput[i]);
 
-            System.err.println(t.getText());
+            //System.err.println(t.getText());
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
@@ -109,7 +178,7 @@ public final class UINewCellTest extends UISpecTestCase {
             t.setText("");
             t.pasteFromClipboard();
            // System.err.println(t.getText());
-        //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
