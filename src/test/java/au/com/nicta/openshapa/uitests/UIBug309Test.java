@@ -4,8 +4,6 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import au.com.nicta.openshapa.OpenSHAPA;
 import au.com.nicta.openshapa.views.discrete.SpreadsheetPanel;
-import java.awt.Component;
-import javax.swing.JDialog;
 import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
@@ -50,7 +48,7 @@ public final class UIBug309Test extends UISpecTestCase {
      * Type is selected randomly since it should not affect this.
      * @throws java.lang.Exception on any error
      */
-    public void testEnterInsteadOfClicking() throws Exception {
+    public void testEnterInsteadOfClickingNewVariable() throws Exception {
         String varName = "textVar";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
@@ -77,5 +75,5 @@ public final class UIBug309Test extends UISpecTestCase {
                 .equals(varType));
         //check that column has no cells
         assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-    }
+    }    
 }
