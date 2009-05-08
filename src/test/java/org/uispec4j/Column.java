@@ -1,8 +1,8 @@
 package org.uispec4j;
 
-import au.com.nicta.openshapa.views.discrete.SpreadsheetColumn;
-import au.com.nicta.openshapa.views.discrete.ColumnHeaderPanel;
-import au.com.nicta.openshapa.views.discrete.SpreadsheetCell;
+import org.openshapa.views.discrete.SpreadsheetColumn;
+import org.openshapa.views.discrete.ColumnHeaderPanel;
+import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;

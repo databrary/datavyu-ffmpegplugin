@@ -2,14 +2,14 @@ require 'java'
 require 'csv'
 require 'time'
 
-import 'au.com.nicta.openshapa.db.Database'
-import 'au.com.nicta.openshapa.db.DataColumn'
-import 'au.com.nicta.openshapa.db.MatrixVocabElement'
-import 'au.com.nicta.openshapa.db.FloatDataValue'
-import 'au.com.nicta.openshapa.db.DBElement'
-import 'au.com.nicta.openshapa.db.TimeStamp'
-import 'au.com.nicta.openshapa.db.DataCell'
-import 'au.com.nicta.openshapa.db.SystemErrorException'
+import 'org.openshapa.db.Database'
+import 'org.openshapa.db.DataColumn'
+import 'org.openshapa.db.MatrixVocabElement'
+import 'org.openshapa.db.FloatDataValue'
+import 'org.openshapa.db.DBElement'
+import 'org.openshapa.db.TimeStamp'
+import 'org.openshapa.db.DataCell'
+import 'org.openshapa.db.SystemErrorException'
 
 begin
   # Create a data column, for our new
