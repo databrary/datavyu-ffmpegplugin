@@ -3472,509 +3472,6 @@ public class VocabListTest {
             }
         }
 
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 30) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 30) )
-            {
-                failures++;
-            }
-        }
-
-
-        /*
-         * Finally, verify that replaceVocabElement fails in the expected places.
-         */
-        /* Start by feeding it a null ve */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                vl.replaceVocabElement(null);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement(null) " +
-                                        "completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(null) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 31) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 31) )
-            {
-                failures++;
-            }
-        }
-
-
-        /* Next, feed replaceVocabElement a DBElement with a db field that
-         * doesn't match that of vl.
-         */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                p5.setID(5);
-                vl.replaceVocabElement(p5);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement" +
-                                        "(bad db) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(bad db) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 32) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 32) )
-            {
-                failures++;
-            }
-        }
-
-
-        /* Next, feed replaceVocabElement a VocabElement with a id field set to
-         * INVALID_ID.
-         */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                vl.replaceVocabElement(p6);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement" +
-                                "(INVALID_ID) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(INVALID_ID) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 33) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 33) )
-            {
-                failures++;
-            }
-        }
-
-
-        /* next, try to replace an element that isn't in the vocab list */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                p6.setID(1);
-                vl.replaceVocabElement(p6);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement" +
-                                "(no_such_id) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(no_such_id) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 34) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 34) )
-            {
-                failures++;
-            }
-        }
-
-
-        /* Try to replace an vocab list entry with an VocabElement
-         * of a different sub-class.
-         */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                p6.setID(m3a.getID());
-                vl.replaceVocabElement(p6);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement" +
-                                "(type mismatch) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(type mismatch) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 35) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 35) )
-            {
-                failures++;
-            }
-        }
-
-        /* Finally, try to replace a formal argument in a vocab element
-         * with a formal argument of a different subcless.  This should
-         * throw a system error.
-         */
-        if ( failures == 0 )
-        {
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                m2a = (MatrixVocabElement)vl.getVocabElement(13);
-                m2a = new MatrixVocabElement(m2a);
-                quebec.setID(m2a.getFormalArg(1).getID());
-                m2a.replaceFormalArg(quebec, 1);
-                vl.replaceVocabElement(m2a);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.replaceVocabElement" +
-                                "(farg type mismatch) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.replaceVocabElement(farg type " +
-                                        "mismatch) failed to throw a system " +
-                                        "error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 36) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 36) )
-            {
-                failures++;
-            }
-        }
-
-
         if ( failures > 0 )
         {
             pass = false;
@@ -4008,6 +3505,87 @@ public class VocabListTest {
 
     } /* DBIndex::TestVLManagement() */
 
+    /**
+     * Verify that replaceVocabElement fails when a VocabElement with a id field
+     * set to INVALID_ID.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestVLManagement4()
+    throws SystemErrorException, LogicErrorException {
+        PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
+                                                     null, null, null);
+        odb.vl.replaceVocabElement(p6);
+    }
+
+    /**
+     * Verify that replaceVocabElement fails when null is supplied as the
+     * argument.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestVLMangement3()
+    throws SystemErrorException, LogicErrorException {
+        odb.vl.replaceVocabElement(null);
+    }
+
+    /**
+     * Try to replace an element that isn't in the vocab list.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestVLManagement2()
+    throws SystemErrorException, LogicErrorException {
+        PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
+                                                     null, null, null);
+        odb.vl.addElement(p6);
+        p6.setID(1);
+        odb.vl.replaceVocabElement(p6);
+    }
+
+    /**
+     * Try to replace a vocab list entry with a VocabElement of a different
+     * sub-class.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestVLManagement1()
+    throws SystemErrorException, LogicErrorException {
+        PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null, null,
+                                                     null, null);
+        FloatFormalArg mike = new FloatFormalArg(odb, "<mike>");
+        MatrixVocabElement m3 = ConstructTestMatrix(odb, "m3",
+                                         MatrixVocabElement.MatrixType.FLOAT,
+                                         mike, null, null, null);
+        odb.vl.addElement(p6);
+        odb.vl.addElement(m3);
+
+        p6.setID(m3.getID());
+        odb.vl.replaceVocabElement(p6);
+    }
+
+    /**
+     * Try to replace a formal argument in a vocab element with a formal
+     * argument of a different subclass. This should throw a system error.
+     *
+     * @throws SystemErrorException Expected exception.
+     * @throws LogicErrorException
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestVLManagement0()
+    throws SystemErrorException, LogicErrorException {
+
+        VocabList vl = this.odb.vl;
+        UnTypedFormalArg oscar = new UnTypedFormalArg(odb, "<oscar>");
+        NominalFormalArg quebec = new NominalFormalArg(odb, "<quebec>");
+
+        MatrixVocabElement m1 = ConstructTestMatrix(odb, "m1",
+                                         MatrixVocabElement.MatrixType.MATRIX,
+                                         oscar, null, null, null);
+        vl.addElement(m1);
+        MatrixVocabElement m2a = (MatrixVocabElement) vl.getVocabElement(m1
+                                                                      .getID());
+
+        m2a = new MatrixVocabElement(m2a);
+        quebec.setID(m2a.getFormalArg(0).getID());
+        m2a.replaceFormalArg(quebec, 0);
+    }
 
     /**
      * TestToStringMethods()
