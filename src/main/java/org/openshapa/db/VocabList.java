@@ -1311,6 +1311,10 @@ public class VocabList
      *    - Modified method to deal with the column predicate argument list
      *      of the MatrixVacabElement.
      *                                                  JRM -- 8/31/08
+     *
+     *    - Removed the check getNumFormalArguments less than 0,
+     *      getNumFormalArguments wraps Vector.size() - which never returns a
+     *      value less than zero.
      */
 
     protected void replaceVocabElement(VocabElement ve)
@@ -1343,11 +1347,6 @@ public class VocabList
             throw new SystemErrorException(mName +
                                            "ve.getID() == INVALID_ID");
         }
-        else if ( ve.getNumFormalArgs() < 0 )
-        {
-            throw new SystemErrorException(mName +
-                                           "ve.getNumFormalArgs() < 0");
-        }
 
         old_ve = this.vl.get(ve.getID());
 
@@ -1356,15 +1355,11 @@ public class VocabList
             throw new SystemErrorException(mName +
                     "can't replace -- not in vocab list.");
         }
-        else if ( ve.getClass() != old_ve.getClass() )
+        else if ( !ve.getClass().equals(old_ve.getClass()) )
         {
             throw new SystemErrorException(mName + "type mis-match.");
         }
-        else if ( old_ve.getNumFormalArgs() < 0 )
-        {
-            throw new SystemErrorException(mName +
-                                           "old_ve.getNumFormalArgs() <= 0");
-        }
+
 
         /* before we actually do anything, scan the old and new formal argument
          * lists, and verify that there are no type changes or duplicate IDs.
