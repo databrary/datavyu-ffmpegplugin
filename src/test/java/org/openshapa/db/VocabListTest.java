@@ -2552,683 +2552,6 @@ public class VocabListTest {
             }
         }
 
-
-        /*
-         * Next, verify that matrixInVocabList() fails where expected.  This is
-         * pretty easy, as the only ways matrixInVocabList() should fail are if
-         * you pass it the INVALID_ID, null, the empty string, or an invalid
-         * name.
-         */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.matrixInVocabList(DBIndex.INVALID_ID);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList" +
-                                        "(INVALID_ID) returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList" +
-                                        "(INVALID_ID) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.matrixInVocabList(INVALID_ID) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 20) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 20) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass matrixInVocabList() a null */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.matrixInVocabList(null);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList(null) " +
-                                        "returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList(null) " +
-                                        "completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.matrixInVocabList(null) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 21) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 21) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass matrixInVocabList() the empty string */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.matrixInVocabList("");
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList(\"\") " +
-                                        "returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList(\"\") " +
-                                        "completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.matrixInVocabList(\"\") " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 22) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 22) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass matrixInVocabList() an invalid name */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.matrixInVocabList("<invalid>");
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList" +
-                                        "(\"<invalid>\") returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.matrixInVocabList" +
-                                        "(\"<invalid>\") completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.matrixInVocabList(\"<invalid>\") " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 23) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 23) )
-            {
-                failures++;
-            }
-        }
-
-
-        /*
-         * Next, verify that predInVocabList() fails where expected.  This is
-         * pretty easy, as the only ways predInVocabList() should fail are if
-         * you pass it the INVALID_ID, null, the empty string, or an invalid
-         * name.
-         */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.predInVocabList(DBIndex.INVALID_ID);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.predInVocabList" +
-                                        "(INVALID_ID) returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.predInVocabList" +
-                                        "(INVALID_ID) completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.predInVocabList(INVALID_ID) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 24) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 24) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass predInVocabList() a null */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.predInVocabList(null);
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.predInVocabList(null) " +
-                                        "returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.predInVocabList(null) " +
-                                        "completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.predInVocabList(null) " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 25) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 25) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass predInVocabList() the empty string */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.predInVocabList("");
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.predInVocabList(\"\") " +
-                                        "returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.predInVocabList(\"\") " +
-                                        "completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.predInVocabList(\"\") " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 26) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 26) )
-            {
-                failures++;
-            }
-        }
-
-        /* pass predInVocabList() an invalid name */
-        if ( failures == 0 )
-        {
-            boolean isInIndex = false;
-
-            methodReturned = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                isInIndex = vl.predInVocabList("<invalid>");
-                methodReturned = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( isInIndex ) ||
-                 ( methodReturned ) ||
-                 ( ! threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( isInIndex )
-                    {
-                        outStream.print("Call to vl.predInVocabList" +
-                                        "(\"<invalid>\") returned true.\n");
-                    }
-
-                    if ( methodReturned )
-                    {
-                        outStream.print("Call to vl.predInVocabList" +
-                                        "(\"<invalid>\") completed.\n");
-                    }
-
-                    if ( ! threwSystemErrorException )
-                    {
-                        outStream.print("vl.predInVocabList(\"<invalid>\") " +
-                                "failed to throw a system error exception.\n");
-                    }
-                }
-            }
-        }
-
-        if ( failures == 0 )
-        {
-            long keys[] = {9, 12, 23, 33, 39};
-            VocabElement values[] = {p1a, m1a, m2, m3a, p3};
-            long idxKeys[] = { 9, 10, 41,
-                              12, 13, 14, 15, 16, 17, 18, 44, 20, 21, 42, 43,
-                              23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-                              33, 34, 35, 36, 37, 38,
-                              39, 40};
-            DBElement idxValues[] =
-                    {p1a, bravoa, nero,
-                     m1a, echoa, foxtrota, hotela,
-                         m1a_ord, m1a_onset, m1a_offset,
-                         cp_echoa, cp_foxtrota, cp_hotela, oscar, cp_oscar,
-                     m2, juno, kilo, lima, m2_ord, m2_onset, m2_offset,
-                                           cp_juno, cp_kilo, cp_lima,
-                     m3a, mikea, m3a_ord, m3a_onset, m3a_offset, cp_mikea,
-                     p3, india};
-
-            if ( ! VerifyVLContents(5, keys, values, vl, outStream,
-                                    verbose, 27) )
-            {
-                failures++;
-            }
-
-            if ( ! DBIndexTest.VerifyIndexContents(33, idxKeys, idxValues,
-                                               vl.db.idx, outStream,
-                                               verbose, 27) )
-            {
-                failures++;
-            }
-        }
-
-
         /*
          * Next, verify that removeVocabElement() in the expected places.
          */
@@ -3504,6 +2827,70 @@ public class VocabListTest {
         assertTrue(pass);
 
     } /* DBIndex::TestVLManagement() */
+
+    /**
+     * Verify that matrixInVocabList fails when invalid string is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestMatrixInVocabListFailure04() throws SystemErrorException {
+        odb.vl.matrixInVocabList("<invalid>");
+    }
+
+    /**
+     * Verify that matrixInVocabList fails when empty string is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestMatrixInVocabListFailure03() throws SystemErrorException {
+        odb.vl.matrixInVocabList("");
+    }
+
+    /**
+     * Verify that matrixInVocabList fails when NULL is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestMatrixInVocabListFailure02() throws SystemErrorException {
+        odb.vl.matrixInVocabList(null);
+    }
+
+    /**
+     * Verify that matrixInVocabList faile when an INVALID_ID is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestMatrixInVocabListFailure01() throws SystemErrorException {
+        odb.vl.matrixInVocabList(DBIndex.INVALID_ID);
+    }
+
+    /**
+     * Verify that predInVocabList fails when invalid string is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestPredInVocabListFailure04() throws SystemErrorException {
+        odb.vl.predInVocabList("<invalid>");
+    }
+
+    /**
+     * Verify that predInVocabList fails when empty string is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestPredInVocabListFailure03() throws SystemErrorException {
+        odb.vl.predInVocabList("");
+    }
+
+    /**
+     * Verify that predInVocabList fails when NULL is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestPredInVocabListFailure02() throws SystemErrorException {
+        odb.vl.predInVocabList(null);
+    }
+
+    /**
+     * Verify that predInVocabList faile when an INVALID_ID is supplied.
+     */
+    @Test (expected=SystemErrorException.class)
+    public void TestpredInVocabListFailure01() throws SystemErrorException {
+        odb.vl.predInVocabList(DBIndex.INVALID_ID);
+    }
 
     /**
      * Verify that replaceVocabElement fails when a VocabElement with a id field
