@@ -6,8 +6,6 @@ package org.openshapa.views.discrete;
  * Defines methods so an object can be in a selection of objects.
  * Implementor must be a JPanel or other swing object that receives
  * mouseclick events.
- *
- * @author swhitcher
  */
 public interface Selectable {
 

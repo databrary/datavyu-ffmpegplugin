@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class TextStringFormalArgTest {
 

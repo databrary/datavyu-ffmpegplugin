@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Controller for creating new cell.
- *
- * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
 public final class CreateNewCellC {
 

@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public abstract class DatabaseTest {
 

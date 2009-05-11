@@ -11,7 +11,6 @@ import javax.swing.JLabel;
 /**
  * ColumnHeaderPanel displays the column variable name.
  * Public for use by UISpec4J
- * @author swhitcher
  */
 public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
 

@@ -13,9 +13,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Label view of the Matrix (database cell) data.
- *
- * @author swhitcher
-*/
+ */
 public class MatrixV extends SpreadsheetElementPanel {
 
     /** The selection (used for cells) for the parent spreadsheet. */

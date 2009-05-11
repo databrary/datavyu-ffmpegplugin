@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Test class for Matrix.
- *
- * @author swhitcher
  */
 public class MatrixTest {
     /** Test fixture database. */

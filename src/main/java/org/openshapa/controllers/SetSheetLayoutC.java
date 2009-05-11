@@ -6,8 +6,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * Controller for setting the spreadsheet layout.
- *
- * @author switcher (logic of controller - pulled from spreadsheet panel.)
  */
 public final class SetSheetLayoutC {
 

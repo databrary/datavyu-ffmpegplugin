@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public abstract class CellTest extends DBElementTest {
 

@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 /**
  * SheetLayoutWeakTemporal - implements the weak temporal ordering style
  * from original MacSHAPA.
- * @author swhitcher
  */
 public class SheetLayoutWeakTemporal extends SheetLayout {
 

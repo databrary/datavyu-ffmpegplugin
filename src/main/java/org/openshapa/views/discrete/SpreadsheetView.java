@@ -9,7 +9,6 @@ import javax.swing.SwingConstants;
 /**
  * SpreadsheetView implements the Scrollable interface and
  * is the view to use in the viewport of the JScrollPane in Spreadsheet.
- * @author swhitcher
  */
 public class SpreadsheetView extends JPanel implements Scrollable {
 

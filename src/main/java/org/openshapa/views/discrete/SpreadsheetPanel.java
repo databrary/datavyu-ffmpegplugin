@@ -21,8 +21,6 @@ import org.apache.log4j.Logger;
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
  * OpenSHAPA database as a spreadsheet.
- *
- * @author switcher (initial revision)
  */
 public class SpreadsheetPanel extends JPanel
     implements ExternalColumnListListener {

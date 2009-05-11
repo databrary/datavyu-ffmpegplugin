@@ -5,7 +5,6 @@ import java.util.Vector;
 
 /**
  * Factory for SheetLayouts.
- * @author swhitcher
  */
 public final class SheetLayoutFactory {
 

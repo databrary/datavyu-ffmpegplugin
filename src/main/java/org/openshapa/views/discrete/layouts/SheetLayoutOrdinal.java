@@ -8,7 +8,6 @@ import java.util.Vector;
 /**
  * SheetLayoutOrdinal implements the ordinal style layout of SpreadsheetCells
  * in the spreadsheet.
- * @author swhitcher
  */
 public class SheetLayoutOrdinal extends SheetLayout {
 
