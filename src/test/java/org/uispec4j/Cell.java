@@ -7,6 +7,9 @@ import org.openshapa.views.discrete.datavalues.DataValueV;
 import java.awt.Component;
 import java.util.Vector;
 import junit.framework.Assert;
+import org.openshapa.views.discrete.Editor;
+import org.openshapa.views.discrete.datavalues.OffsetView;
+import org.openshapa.views.discrete.datavalues.OnsetView;
 import org.uispec4j.utils.KeyUtils;
 
 
@@ -24,6 +27,11 @@ public class Cell extends AbstractUIComponent {
      * UISpec4J convention to declare associated class.
      */
     public static final Class[] SWING_CLASSES = {SpreadsheetCell.class};
+
+    public static final int VALUE = 0;
+    public static final int ONSET = 1;
+    public static final int OFFSET = 2;
+
 
     /**
      * Since this is an Adaptor class, this is the class being adapted.
@@ -60,7 +68,7 @@ public class Cell extends AbstractUIComponent {
      * @return Timestamp onset timestamp
      */
     public final Timestamp getOnsetTime() {
-        return new Timestamp(ssCell.getOnsetDisplay());
+        return new Timestamp(this.getOnset().getText());
     }
 
     /**
@@ -68,7 +76,27 @@ public class Cell extends AbstractUIComponent {
      * @return Timestamp offset timestamp
      */
     public final Timestamp getOffsetTime() {
-        return new Timestamp(ssCell.getOffsetDisplay());
+        return new Timestamp(this.getOffset().getText());
+    }
+
+     /**
+     * Returns TextBox of Onset so that components are easily accessible.
+     * @return TextBox onset
+     */
+    public final TextBox getOnset() {
+        OnsetView v = ssCell.getOnset();
+        Editor e = ((DataValueElementV) v).getEditor();
+        return new TextBox(e);
+    }
+
+    /**
+     * Returns TextBox of Offset so that components are easily accessible.
+     * @return TextBox offset
+     */
+    public final TextBox getOffset() {
+        OffsetView v = ssCell.getOffset();
+        Editor e = ((DataValueElementV) v).getEditor();
+        return new TextBox(e);
     }
 
     /**
@@ -103,17 +131,40 @@ public class Cell extends AbstractUIComponent {
 
    public final void enterEditorText(int part, String s) {
         for (int i = 0; i < s.length(); i++) {
-            pressEditorKey(part, new Key(s.charAt(i)));
+            pressEditorKey(VALUE, part, new Key(s.charAt(i)));
         }
     }
 
-    public final void pressEditorKey(int i, Key k) {
-        DataValueEditor e = getEditor(i);
+   public final void enterOnsetText(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            pressEditorKey(ONSET, 0, new Key(s.charAt(i)));
+        }
+    }
+
+   public final void enterOffsetText(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            pressEditorKey(OFFSET, 0, new Key(s.charAt(i)));
+        }
+    }
+
+    public final void pressEditorKey(int component, int i, Key k) {
+        DataValueEditor e;
+        switch(component) {
+            case VALUE: e = getEditor(i); break;
+            case ONSET: e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor(); break;
+            case OFFSET: e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor(); break;
+            default: e = getEditor(i);
+        }
+
         e.focusGained(null);
         KeyUtils.typeKey(e, k);
     }
 
-    public final TextBox getTextBox(int part) {
+    public final void pressEditorKey(int component, Key k) {
+        pressEditorKey(component, 0, k);
+    }
+
+    public final TextBox getValueTextBox(int part) {
         DataValueElementV view = getView(part);
 
         if (view != null) {

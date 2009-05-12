@@ -191,15 +191,15 @@ implements ExternalDataCellListener, Selectable {
     /**
      * @return onset as String
      */
-    public String getOnsetDisplay() {
-        return onset.toString();
+    public OnsetView getOnset() {
+        return onset;
     }
 
     /**
      * @return offset as String
      */
-    public String getOffsetDisplay() {
-        return offset.toString();
+    public OffsetView getOffset() {
+        return offset;
     }
 
     /**

@@ -21,11 +21,14 @@ import org.uispec4j.Window;
 /**
  * Test for the New Cells.
  * @author mmuthukrishna
+ * @todo After bugs resolved, add more advanced cell tests involving
+ * left/right caret movement
  */
+
 public final class UINewCellTest extends UISpecTestCase {
 
     /**
-     * Initialiser called before each unit test
+     * Initialiser called before each unit test.
      *
      * @throws java.lang.Exception When unable to initialise test
      */
@@ -35,16 +38,17 @@ public final class UINewCellTest extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
-    static {
-      UISpec4J.init();
-    }
-
     /**
      * Different cell variable types.
      */
     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
         "NOMINAL", "MATRIX", "FLOAT"
     };
+
+
+    static {
+      UISpec4J.init();
+    }
 
      /**
      * Test creating a new INTEGER cell.
@@ -59,6 +63,8 @@ public final class UINewCellTest extends UISpecTestCase {
             "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
             "If x>7 then x|2"};
 
+        int numOfTests = testInput.length;
+
         String[] expectedTestOutput = {"Subject stands up", "$10432",
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x7 then x2"};
@@ -69,49 +75,47 @@ public final class UINewCellTest extends UISpecTestCase {
 
         //1. Create new TEXT variable,
         //open spreadsheet and check that it's there
-        newVariable(varName, varType, varRadio);
+        createNewVariable(varName, varType, varRadio);
 
         Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
                 (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent())));
 
         //3. Create 6 new cell, check that they have been created
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
         }
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
-        assertTrue(cells.size() == 6);
+        assertTrue(cells.size() == numOfTests);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
             assertTrue((cells.elementAt(i).getOnsetTime().toString())
                     .equals("00:00:00:000"));
             assertTrue((cells.elementAt(i).getOffsetTime().toString())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getTextBox(0);
+            TextBox t = c.getValueTextBox(0);
 
             c.enterEditorText(0, testInput[i]);
 
-            System.err.println(t.getText());
-            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+            //BugzID379: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
         //5. Check copy pasting
         Clipboard c = null;
-        for (int i = 1; i < 7; i++) {
-            int j = i % 6;
-            TextBox t = cells.elementAt(i - 1).getTextBox(0);
+        for (int i = 1; i < numOfTests + 1; i++) {
+            int j = i % numOfTests;
+            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
             c.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
-           // System.err.println(t.getText());
-            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+            //BugzID383: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
@@ -128,6 +132,8 @@ public final class UINewCellTest extends UISpecTestCase {
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
+        int numOfTests = testInput.length;
+
         String[] expectedTestOutput = testInput;
 
         // Retrieve the components
@@ -136,49 +142,114 @@ public final class UINewCellTest extends UISpecTestCase {
 
         //1. Create new TEXT variable,
         //open spreadsheet and check that it's there
-        newVariable(varName, varType, varRadio);
+        createNewVariable(varName, varType, varRadio);
 
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) 
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
                 (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent())));
 
         //3. Create 6 new cell, check that they have been created
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
         }
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
-        assertTrue(cells.size() == 6);
+        assertTrue(cells.size() == numOfTests);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
             assertTrue((cells.elementAt(i).getOnsetTime().toString())
                     .equals("00:00:00:000"));
             assertTrue((cells.elementAt(i).getOffsetTime().toString())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getTextBox(0);
+            TextBox t = c.getValueTextBox(0);
 
             c.enterEditorText(0, testInput[i]);
 
-            //System.err.println(t.getText());
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
         //5. Check copy pasting
         Clipboard c = null;
-        for (int i = 1; i < 7; i++) {
-            int j = i % 6;
-            TextBox t = cells.elementAt(i - 1).getTextBox(0);
+        for (int i = 1; i < numOfTests + 1; i++) {
+            int j = i % numOfTests;
+            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
             c.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
-           // System.err.println(t.getText());
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+    }
+
+    /**
+     * Test creating a new FLOAT cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewFloatCell() throws Exception {
+        String varName = "floatVar";
+        String varType = "FLOAT";
+        String varRadio = "float";
+
+        String[] testInput = {"1a.9", "10-43.2",
+            "!289(", "178.&", "~~~)",
+            "If x?7 then. x? 2"};
+
+        int numOfTests = testInput.length;
+
+        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variable
+        createNewVariable(varName, varType, varRadio);
+
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent())));
+
+        //2. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == numOfTests);
+
+        for (int i = 0; i < numOfTests; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+
+            c.enterEditorText(0, testInput[i]);
+
+            //BugzID382: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+        }
+
+       //5. Check copy pasting
+        Clipboard c = null;
+        for (int i = 1; i < numOfTests + 1; i++) {
+            int j = i % numOfTests;
+            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
+            c.putText(testInput[j]);
+            t.setText("");
+            t.pasteFromClipboard();
+            //BugzID:384: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
@@ -195,6 +266,8 @@ public final class UINewCellTest extends UISpecTestCase {
             "!289(", "178&", "~~~)",
             "If x?7 then x? 2"};
 
+        int numOfTests = testInput.length;
+
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
             "72"};
 
@@ -203,60 +276,56 @@ public final class UINewCellTest extends UISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
 
         //1. Create new variable
-        newVariable(varName, varType, varRadio);
+        createNewVariable(varName, varType, varRadio);
 
-
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) 
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
                 (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent())));
 
         //2. Create 6 new cell, check that they have been created
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
         }
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
-        assertTrue(cells.size() == 6);
+        assertTrue(cells.size() == numOfTests);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
             assertTrue((cells.elementAt(i).getOnsetTime().toString())
                     .equals("00:00:00:000"));
             assertTrue((cells.elementAt(i).getOffsetTime().toString())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getTextBox(0);
+            TextBox t = c.getValueTextBox(0);
 
             c.enterEditorText(0, testInput[i]);
 
-            //System.err.println(t.getText());
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
        //5. Check copy pasting
         Clipboard c = null;
-        for (int i = 1; i < 7; i++) {
-            int j = i % 6;
-            TextBox t = cells.elementAt(i-1).getTextBox(0);
+        for (int i = 1; i < numOfTests + 1; i++) {
+            int j = i % numOfTests;
+            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
             c.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
-            //System.err.println(t.getText());
-            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+            //BugzID369: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
     /**
-     * Test creating a new cell.
-     * Instead of clicking new cell, just press Enter.
+     * Test creating a new cell by pressing enter instead of clicking.
      * @throws java.lang.Exception on any error
      */
-    public void testEnterInsteadOfClickingNewCell() throws Exception {
-        String varName = "textVar";
+    public void testCreateNewCellWithEnter() throws Exception {
+        String varName = "testVar";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
@@ -282,16 +351,16 @@ public final class UINewCellTest extends UISpecTestCase {
          * Then press enter on it
          */
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        /*assertTrue(cells.size() == 1);
-        assertTrue(cells.elementAt(0).getOrd() == 1);
-        assertTrue((cells.elementAt(0).getOnsetTime().toString())
-                .equals("00:00:00:000"));
-        assertTrue((cells.elementAt(0).getOffsetTime().toString())
-                .equals("00:00:00:000"));
-        assertTrue(cells.elementAt(0).getTextBox(0).getText().equals("<val>"));*/
     }
 
-    private void newVariable(final String varName,
+    /**
+     * Create a new variable.
+     * @param varName String for the name of the variable
+     * @param varType String for the variable type
+     * @param varRadio String for the corresponding radio button to click
+     * @throws java.lang.Exception on any error
+     */
+    private void createNewVariable(final String varName,
             final String varType,
             final String varRadio) throws Exception {
         // 1. Retrieve the components
