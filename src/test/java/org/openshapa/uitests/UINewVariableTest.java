@@ -113,25 +113,36 @@ public final class UINewVariableTest extends UISpecTestCase {
         validateVariableType(varName, varType, varRadio);
     }
 
-    private void validateVariableType(String varName,
-                                      String varType,
-                                      String varRadio) throws Exception {
+    /**
+     * Creates a new variable and checks that it has been created.
+     * @param varName String for variable name
+     * @param varType String for variable type
+     * @param varRadio String for corresponding radio button for varType
+     * @throws java.lang.Exception on any error
+     */
+    private void validateVariableType(final String varName,
+                                      final String varType,
+                                      final String varRadio) throws Exception {
         // 1. Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new PREDICATE variable,
+        // 2a. Create new variable,
         //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu("Spreadsheet").getSubMenu("New Variable").triggerClick());
+        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("New Variable").triggerClick());
         newVarWindow.getTextBox("nameField").insertText(varName, 0);
         newVarWindow.getRadioButton(varRadio).click();
         assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
         newVarWindow.getButton("Ok").click();
         //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
         assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName().equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType().equals(varType));
+        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
+                .equals(varName));
+        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
+                .equals(varType));
         //check that column has no cells
         assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
     }
