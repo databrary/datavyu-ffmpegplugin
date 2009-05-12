@@ -17,8 +17,6 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * A DataValueElementView - i.e. A leaf view of a data value.
- *
- * @author cfreeman
  */
 public abstract class DataValueElementV extends DataValueV {
 

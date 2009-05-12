@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class ColPredDataValue.
- *
- * @author cfreeman
  */
 public class ColPredDataValueTest extends DataValueTest {
 
@@ -402,7 +400,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 10/10/08
+     *                                               -- 10/10/08
      *
      * Changes:
      *
@@ -1807,7 +1805,7 @@ public class ColPredDataValueTest extends DataValueTest {
      *
      * Run a battery of tests on the accessors supported by this class.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -2655,7 +2653,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -3752,7 +3750,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Run a battery of tests on the toString methods supported by
      * this class.
      *
-     *                                              JRM -- 10/11/08
+     *                                               -- 10/11/08
      *
      * Changes:
      *
@@ -4371,7 +4369,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Verify that the supplied instances of ColPredDataValue are distinct, that
      * they contain no common references (other than db), and that they have
      * the same value.
-     *                                              JRM -- 10/3/08
+     *                                               -- 10/3/08
      *
      * Changes:
      *

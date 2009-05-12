@@ -7,7 +7,6 @@ import java.util.Vector;
 
 /**
  * Manages clicking around a group of "Selectable" objects.
- * @author swhitcher
  */
 public final class Selector {
 

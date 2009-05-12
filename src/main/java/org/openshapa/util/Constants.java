@@ -2,8 +2,6 @@ package org.openshapa.util;
 
 /**
  * Class containing common constants for OpenSHAPA.
- *
- * @author cfreeman
  */
 public class Constants {
 

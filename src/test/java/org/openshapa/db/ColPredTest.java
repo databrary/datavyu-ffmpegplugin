@@ -9,8 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  * Test class for the ColPred class.
- *
- * @author cfreeman
  */
 public class ColPredTest {
 
@@ -230,7 +228,7 @@ public class ColPredTest {
      * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 9/10/08
+     *                                               -- 9/10/08
      *
      * Changes:
      *
@@ -461,7 +459,7 @@ public class ColPredTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 9/10/08
+     *                                               -- 9/10/08
      *
      * Changes:
      *
@@ -1579,7 +1577,7 @@ public class ColPredTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 9/11/08
+     *                                               -- 9/11/08
      *
      * Changes:
      *
@@ -3954,7 +3952,7 @@ public class ColPredTest {
      *
      * Run a battery of tests on the accessors for this class.
      *
-     *                                      JRM -- 10/01/08
+     *                                       -- 10/01/08
      *
      * Changes:
      *
@@ -5401,7 +5399,7 @@ public class ColPredTest {
      *
      * Run a battery of tests on the arg list management facilities.
      *
-     *                                              JRM -- 10/01/08
+     *                                               -- 10/01/08
      *
      * Changes:
      *
@@ -10010,7 +10008,7 @@ public class ColPredTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 10/01/08
+     *                                               -- 10/01/08
      *
      * Changes:
      *
@@ -11892,7 +11890,7 @@ public class ColPredTest {
      *
      * Return the number of failures detected.
      *
-     *                                              JRM -- 10/3/08
+     *                                               -- 10/3/08
      *
      * Changes:
      *
@@ -12043,7 +12041,7 @@ public class ColPredTest {
      * Run a battery of tests on the to string methods for this
      * class.
      *
-     *                                              JRM -- 10/3/08
+     *                                               -- 10/3/08
      *
      * Changes:
      *
@@ -12583,7 +12581,7 @@ public class ColPredTest {
      *
      * Return 0 if the constructor fails as expected, and 1 if it does not.
      *
-     *                                              JRM -- 9/30/08
+     *                                               -- 9/30/08
      *
      * Changes:
      *
@@ -12654,7 +12652,7 @@ public class ColPredTest {
      *
      * Verify that the specified replacement of an argument list
      * entry succeeds.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *
@@ -12905,7 +12903,7 @@ public class ColPredTest {
      *
      * Verify that the specified replacement of an argument list
      * entry fails.
-     *                                              JRM -- 10/3/08
+     *                                               -- 10/3/08
      *
      * Changes:
      *
@@ -13044,7 +13042,7 @@ public class ColPredTest {
      * Verify that the supplied instances of ColPred are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
-     *                                              JRM -- 10/01/08
+     *                                               -- 10/01/08
      *
      * Changes:
      *

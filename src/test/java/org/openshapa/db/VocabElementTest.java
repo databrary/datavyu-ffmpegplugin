@@ -11,7 +11,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class VocabElementTest {
 
@@ -45,14 +44,14 @@ public class VocabElementTest {
      * subclass of VocabElement in the same condidtion it found
      * it in, so it is probably best to discard the instance on return.
      *
-     *                                          JRM -- 3/17/07
+     *                                           -- 3/17/07
      *
      * Changes:
      *
      *    - Added the setNameOnSystemVEOK field, as I had forgotten that
      *      it was OK to change the name of a system MVE and needed to
      *      modify the test to allow it.
-     *                                          JRM -- 11/18/08
+     *                                           -- 11/18/08
      */
 
     public static int TestAccessors(VocabElement ve,
@@ -674,7 +673,7 @@ public class VocabElementTest {
      * subclass of VocabElement in the same condition it found
      * it in, so it is probably best to discard the instance on return.
      *
-     *                                          JRM -- 3/17/07
+     *                                           -- 3/17/07
      *
      * Changes:
      *
@@ -2233,7 +2232,7 @@ public class VocabElementTest {
      * the failure count, and (if verbose is true) generate a diagnostic
      * message
      *
-     *                                          JRM -- 3/17/07
+     *                                           -- 3/17/07
      *
      * Changes:
      *
@@ -2363,7 +2362,7 @@ public class VocabElementTest {
      * value.  If a discrepency is found, increment the failure count, and
      * (if verbose is true) generate a diagnostic message
      *
-     *                                          JRM -- 3/17/07
+     *                                           -- 3/17/07
      *
      * Changes:
      *

@@ -19,8 +19,6 @@ import org.apache.log4j.Logger;
 /**
  * This abstract view is a representation of database DataValues, concrete views
  * for each of the concrete DataValues exist.
- *
- * @author cfreeman
  */
 public abstract class DataValueV extends SpreadsheetElementPanel
 implements MouseListener {

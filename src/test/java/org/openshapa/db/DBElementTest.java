@@ -6,8 +6,6 @@ import static org.junit.Assert.*;
 
 /**
  * Abstract test class for the abstract DBElement class.
- *
- * @author cfreeman
  */
 public abstract class DBElementTest {
 

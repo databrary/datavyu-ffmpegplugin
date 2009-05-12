@@ -6,8 +6,6 @@ import javax.swing.JTextField;
 /**
  * Abstract editor - used to edit the value of OpenSHAPA data types (i.e. ints,
  * floats, nominals, timestamps, etc).
- *
- * @author cfreeman
  */
 public abstract class Editor extends JTextField {
 

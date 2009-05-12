@@ -18,8 +18,6 @@ package org.openshapa.db;
  * database of interest.
  *
  * The methods specified in this interface will be called when appropriate.
- *
- * @author mainzer
  */
 public interface ExternalDataColumnListener
 {
@@ -38,7 +36,7 @@ public interface ExternalDataColumnListener
      * The cellID parameter contains the ID assigned to the DataCell that is
      * being deleted.
      *
-     *                                          JRM -- 2/6/08
+     *                                          -- 2/6/08
      *
      * Changes:
      *
@@ -64,7 +62,7 @@ public interface ExternalDataColumnListener
      * The cellID parameter contains the ID assigned to the DataCell that is
      * being inserted.
      *
-     *                                          JRM -- 2/6/08
+     *                                          -- 2/6/08
      *
      * Changes:
      *
@@ -112,7 +110,7 @@ public interface ExternalDataColumnListener
      * field of the DataCell.
      *
      *
-     *                                          JRM -- 2/6/08
+     *                                          -- 2/6/08
      *
      * Changes:
      *
@@ -148,7 +146,7 @@ public interface ExternalDataColumnListener
      *
      * The colID parameter contains the ID assigned to the DataColumn.
      *
-     *                                          JRM -- 2/6/08
+     *                                          -- 2/6/08
      *
      * Changes:
      *

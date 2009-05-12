@@ -16,8 +16,6 @@ import org.openshapa.util.Constants;
  *
  * Instances of TextStringFormalArg are used as the formal argument in the
  * single element matricies used to implement text column variables
- *
- * @author mainzer
  */
 public class TextStringFormalArg extends FormalArgument
 {
@@ -52,7 +50,7 @@ public class TextStringFormalArg extends FormalArgument
      * The second version takes an instance of TextStringFormalArg and uses it
      * to make a copy.
      *
-     *                                          JRM -- 2/12/07
+     *                                          -- 2/12/07
      *
      * Changes:
      *
@@ -95,7 +93,7 @@ public class TextStringFormalArg extends FormalArgument
      *
      * Accessor routine used to obtain the current values of the subRange field.
      *
-     *                                          JRM -- 2/12/07
+     *                                          -- 2/12/07
      *
      * Changes:
      *
@@ -210,7 +208,7 @@ public class TextStringFormalArg extends FormalArgument
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                             -- 2/5/07
      *
      * Changes:
      *

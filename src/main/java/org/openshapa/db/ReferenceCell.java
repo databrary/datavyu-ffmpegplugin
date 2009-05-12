@@ -49,7 +49,7 @@ public class ReferenceCell extends Cell
      * The third takes a reference to an instance of ReferenceCell as its
      * parameter, and returns a copy.
      *
-     *                                              JRM -- 8/29/07
+     *                                               -- 8/29/07
      *
      * Changes:
      *
@@ -106,7 +106,7 @@ public class ReferenceCell extends Cell
      *
      * Return the ID of the target DataCell.
      *
-     *                          JRM -- 8/29/07
+     *                           -- 8/29/07
      *
      * Changes:
      *
@@ -201,7 +201,7 @@ public class ReferenceCell extends Cell
      * Attempt to look up the target of the reference cell, and return a
      * reference to the DataCell if it exists.  If there is no such DataCell,
      * throw a system error.
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *

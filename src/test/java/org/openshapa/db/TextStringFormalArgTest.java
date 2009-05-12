@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class TextStringFormalArgTest {
 
@@ -833,7 +832,7 @@ public class TextStringFormalArgTest {
      * and since those methods are tested extensively elsewhere, we only
      * need to verify that they are called correctly.
      *
-     *                                          JRM -- 3/11/07
+     *                                           -- 3/11/07
      *
      * Changes:
      *
@@ -1088,7 +1087,7 @@ public class TextStringFormalArgTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 3/11/07
+     *               -- 3/11/07
      *
      * Changes:
      *

@@ -22,9 +22,7 @@ import org.openshapa.util.HashUtils;
  * referred to as "ints" in the user interface, it seems to make more sense
  * to use the "IntFormalArg" name.
  *
- *                                                      JRM -- 1/26/07
- *
- * @author mainzer
+ *                                                       -- 1/26/07
  */
 public class IntFormalArg extends FormalArgument
 {
@@ -69,7 +67,7 @@ public class IntFormalArg extends FormalArgument
      * and one that takes a reference to an instance of IntFormalArg and uses
      * it to create a copy.
      *
-     *                                          JRM -- 1/25/07
+     *                                           -- 1/25/07
      *
      * Changes:
      *
@@ -156,7 +154,7 @@ public class IntFormalArg extends FormalArgument
      *
      * Otherwise, set subRange to true, and set the new minVal and maxVal.
      *
-     *                                          JRM -- 2/5/07
+     *                                           -- 2/5/07
      *
      * Changes:
      *
@@ -199,7 +197,7 @@ public class IntFormalArg extends FormalArgument
      *
      * Accessor routines used to obtain the current values of the subRange,
      * minVal, and maxVal fields.
-     *                                          JRM -- 2/5/07
+     *                                           -- 2/5/07
      *
      * Changes:
      *
@@ -318,7 +316,7 @@ public class IntFormalArg extends FormalArgument
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                              -- 2/5/07
      *
      * Changes:
      *

@@ -18,10 +18,7 @@ package org.openshapa.db;
  *
  * The methods specified in this interface will be called when appropriate.
  *
- *                                                  JRM -- 2/6/08
- *
- *
- * @author mainzer
+ *                                                   -- 2/6/08
  */
 public interface InternalDataCellListener
 {
@@ -76,7 +73,7 @@ public interface InternalDataCellListener
      *          reference.  Thus listeners MUST NOT alter these Strings, or
      *          retain references to them.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -117,7 +114,7 @@ public interface InternalDataCellListener
      *
      * The CellID parameter contains the ID assigned to the target DataCell.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *

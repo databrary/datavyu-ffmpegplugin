@@ -16,10 +16,7 @@ package org.openshapa.db;
  * de-registering internal and external listeners for changes in the column
  * list, and sending notifications.
  *
- *                                              JRM -- 2/11/08
- *
- *
- * @author mainzer
+ *                                               -- 2/11/08
  */
 public class ColumnListListeners extends Listeners
 {
@@ -45,7 +42,7 @@ public class ColumnListListeners extends Listeners
      * class is very simple, so all the construtor does is call the super and
      * then set itsCL.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -89,7 +86,7 @@ public class ColumnListListeners extends Listeners
      * Advise the listeners of the deletion of a Column of the specified
      * id from the column list.
      *
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      *
      * Changes:
      *
@@ -130,7 +127,7 @@ public class ColumnListListeners extends Listeners
      * Advise the listeners of the inserion of a VocabElement of the specified
      * id into the vocab list.
      *
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      *
      * Changes:
      *
@@ -174,7 +171,7 @@ public class ColumnListListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -204,7 +201,7 @@ public class ColumnListListeners extends Listeners
      * Deregister an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -229,7 +226,7 @@ public class ColumnListListeners extends Listeners
      *
      * Register an external listener.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -259,7 +256,7 @@ public class ColumnListListeners extends Listeners
      * Register an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *

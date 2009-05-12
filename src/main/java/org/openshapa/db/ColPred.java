@@ -1,12 +1,3 @@
-/*
- * ColPred.java
- *
- * Created on August 7, 2008, 11:21 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -15,115 +6,51 @@ import java.util.Vector;
 
 
 /**
- * Class ColPred
- *
  * Primitive class for column predicates.  Instances of this class are used to
  * store column predicates in a database.  Recall that column predicates
  * are defined by implication when matrix vocab elements.  Thus instance of
  * this class are tightly bound to their host database and its vocab list.
  *
- *                                                  JRM -- 8/7/08
- *
- * @author mainzer
+ * @date 2008/08/07
  */
 public class ColPred extends DBElement
-        implements InternalMatrixVocabElementListener
-{
+implements InternalMatrixVocabElementListener {
 
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /* mveID:   Long containing the ID of the MatrixVocabElement whose
-     *      implied column predicate is represented in this instance of
-     *      ColPred, or INVALID_ID if the ColPred is undefined.
-     *
-     * mveName: String containing the name of the column represented in
-     *      this instance of ColPred, or the empty string if the ColPred
-     *      is undefined.
-     *
-     *      Note that this is also the name of the associated
-     *      MatrixVocabElement -- if any.
-     *
-     * argList: Vector of data values representing the arguments of the
-     *      ColPred represented in this data value, or null if the ColPred
-     *      is undefined.
-     *
-     * varLen:  Boolean flag indicating whether the argument list is of
-     *      variable length.
-     *
-     * cellID:  Long containing the ID of the DataCell in which this instance
-     *      of ColPred appears (if any).
-     *
-     * queryVarOK: Boolean flag used to indicate whether parameters can be
-     *      be query variables.
-     *
-     */
-
-    /** ID of the represented ColPred */
+    /** Long containing the ID of the MatrixVocabElement whose implied column
+     * predicate is represented in this instance of ColPred, or INVALID_ID if
+     * the ColPred is undefined. */
     protected long mveID = DBIndex.INVALID_ID;
 
-    /** Name of the represented mve / ColPred */
+    /** String containing the name of the column represented in this instance of
+     * ColPred, or the empty string if the ColPred is undefined. */
     protected String mveName = null;
 
-    /** Argument list of the ColPred */
+    /** Vector of data values representing the arguments of the ColPred
+     * represented in this data value, or null if the ColPred is undefined. */
     protected Vector<DataValue> argList = null;
 
-    /** Whether the ColPred has a variable length argument list */
+    /** Flag indicating whether the argument list is of variable length. */
     protected boolean varLen = false;
 
-    /** ID of cell in which this col pred appears, if any */
+    /** Long containing the ID of the DataCell in which this instance of ColPred
+     *  appears (if any). */
     protected long cellID = DBIndex.INVALID_ID;
 
-    /** whether parameters can be query variables */
+    /** flag used to indicate whether parameters can be query variables. */
     protected boolean queryVarOK = false;
 
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * ColPred()
+     * Constructs an undefined instance of ColPred (that is, an instance that is
+     * not yet an instance of some ColPred in the vocab list).
      *
-     * Constructor for instances of ColPred.
+     * @param db The parent database within which this ColPred will reside.
      *
-     * Five versions of this constructor.
+     * @throws org.openshapa.db.SystemErrorException If the supplied database is
+     * null.
      *
-     * The first takes only a reference to a database as its parameter and
-     * constructs an undefined instance of ColPred (that is, an instance
-     * that is not yet an instance of some ColPred in the vocab list).
-     *
-     * The second takes a reference to a database, and a MatrixVocabElement
-     * ID, and constructs a representation of the specified column predicate
-     * with an empty/undefined argument list.
-     *
-     * The third takes a reference to a database, a MatrixVocabElementID,
-     * and a vector of DataValue specifying the values assigned to each of the
-     * column predicate's arguments, and then constructs an instance of
-     * ColPred representing the specified column predicate with the indicated
-     * values as its arguments.
-     *
-     * The fourth takes a reference to an instance of ColPred as an
-     * argument, and uses it to create a copy.
-     *
-     * The fifth is much the same as the fourth, save that if the blindCopy
-     * parameter is true, it creates a copy of the supplied ColPred without
-     * making reference to the underlying MatrixVocabElement.  This is
-     * necessary if the mve has changed, and we need to make a copy of the
-     * old version of the ColPred so we can touch it up for changes in
-     * the pve.
-     *
-     *                                              JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2008/08/10
      */
-
-    public ColPred(Database db)
-        throws SystemErrorException
-    {
+    public ColPred(Database db) throws SystemErrorException {
          super(db);
 
          final String mName = "ColPred::ColPred(db): ";
@@ -133,13 +60,24 @@ public class ColPred extends DBElement
          }
 
          this.mveName = new String("");
+    }
 
-    } /* ColPred::ColPred(db) */
-
-    public ColPred(Database db,
-                   long mveID)
-        throws SystemErrorException
-    {
+    /**
+     * Constructs a column predicate from the supplied database and id of a
+     * matrix vocab element within the supplied database. The Id of the matrix
+     * vocab element is used as a template for the arguments of this ColPred.
+     * The argument list is initalised with empty/undefined values.
+     *
+     * @param db The parent database within which this ColPred will reside.
+     * @param mveID The ID of the matrix vocab element that will be used as a
+     * template for this ColPred.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPred from the supplied arguments.
+     *
+     * @date 2008/08/10
+     */
+    public ColPred(Database db, long mveID) throws SystemErrorException {
         super(db);
 
         final String mName = "ColPred::ColPred(db, predID): ";
@@ -176,14 +114,28 @@ public class ColPred extends DBElement
 
             this.argList = this.constructEmptyArgList(mve);
         }
-    } /* ColPred::ColPred(db, mveID) */
+    }
 
-
-    public ColPred(Database db,
-                   long mveID,
-                   java.util.Vector<DataValue> argList)
-        throws SystemErrorException
-    {
+    /**
+     * Takes a reference to a database, a MatrixVocabElementID, and a vector of
+     * DataValue specifying the values assigned to each of the column
+     * predicate's arguments, and then constructs an instance of ColPred
+     * representing the specified column predicate with the indicated values as
+     * its arguments.
+     *
+     * @param db The parent database within which this ColPred will reside.
+     * @param mveID The ID of the matrix vocab element to use as a template for
+     * the empty ColPred
+     * @param argList A list of values to use when initalising the arguments of
+     * this ColPred
+     *
+     * @throws org.openshapa.db.SystemErrorException When unable to create the
+     * ColPred from the supplied arguments.
+     *
+     * @date 2008/08/10
+     */
+    public ColPred(Database db, long mveID, Vector<DataValue> argList)
+    throws SystemErrorException {
         super(db);
 
         final String mName = "ColPred::ColPred(db, mveID, argList): ";
@@ -219,12 +171,19 @@ public class ColPred extends DBElement
 
             this.argList = this.copyArgList(argList, true);
         }
-    } /* ColPred::ColPred(db, pveID, argList) */
+    }
 
-
-    public ColPred(ColPred colPred)
-        throws SystemErrorException
-    {
+    /**
+     * Copy constructor, creates a new ColPred from the supplied ColPred
+     *
+     * @param colPred The ColPred to copy.
+     *
+     * @throws org.openshapa.db.SystemErrorException When unable to create the
+     * ColPred from the supplied arguments.
+     *
+     * @date 2008/08/10
+     */
+    public ColPred(ColPred colPred) throws SystemErrorException {
         super(colPred);
 
         final String mName = "ColPred::ColPred(colPred): ";
@@ -247,14 +206,26 @@ public class ColPred extends DBElement
         {
             this.argList = this.copyArgList(colPred.argList, false);
         }
+    }
 
-    } /* ColPred::ColPred(pred) */
-
-
-    protected ColPred(ColPred colPred,
-                      boolean blindCopy)
-        throws SystemErrorException
-    {
+    /**
+     * Copy Constructor, creates a new ColPred from the supplied ColPred. If
+     * creating a blind copy of the ColPred, it creates a copy of the supplied
+     * ColPred without making reference to the underlying MatrixVocabElement.
+     * This is necessary if the mve has changed, and we need to make a copy of
+     * the old version of the ColPred so we can touch it up for changes in the
+     * pve.
+     *
+     * @param colPred The ColPred to copy
+     * @param blindCopy Perform a blind copy or not?
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPred from the supplied arguments.
+     *
+     * @date 2008/08/10
+     */
+    protected ColPred(ColPred colPred, boolean blindCopy)
+    throws SystemErrorException {
         super(colPred);
 
         final String mName = "ColPred::ColPred(pred, blindCopy): ";
@@ -281,7 +252,7 @@ public class ColPred extends DBElement
         {
             this.argList = this.copyArgList(colPred.argList, false);
         }
-    }/* ColPred::ColPred(colPred, blindCopy) */
+    }
 
     /**
      * Creates a new copy of the object.
@@ -303,89 +274,50 @@ public class ColPred extends DBElement
         return clone;
     }
 
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
     /**
-     * getCellID()
+     * @return The ID of the parent data cell (if any - INVALID_ID if none) of
+     * this ColPred.
      *
-     * Return the current value of the cellID field.
-     *
-     *                          JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    public long getCellID()
-    {
-
+    public long getCellID() {
         return this.cellID;
-
-    } /* ColPred::getCellID() */
-
+    }
 
     /**
+     * @return The ID of the matrix vocab element that serves as a template
+     * (if any - INVALID_ID if none) for this column predicate.
      *
-     * getMveID()
-     *
-     * Return the current value of the mveID field.
-     *
-     *                          JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    public long getMveID()
-    {
-
+    public long getMveID() {
         return this.mveID;
-
-    } /* ColPred::getMveID() */
-
+    }
 
     /**
-     * getMveName()
+     * @return A copy of the name of the column that this ColPred represents.
      *
-     * Return a copy of the current value of the mveName field.
-     *
-     *                                      JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    public String getMveName()
-    {
-
+    public String getMveName() {
         return new String(this.mveName);
-
-    } /* ColPred::getMveName() */
-
+    }
 
     /**
-     * setMveID()
+     * Set the ID of the matrix vocab element of which this instance of ColPred
+     * will contain a value. If requested, try to salvage (copy) the argument
+     * list (if any).
      *
-     * Set the ID of the mve of which this instance of ColPred will contain a
-     * value.  If requested, try to salvage the argument list (if any).
+     * @param mveID The ID of the matrix vocab element to set for this ColPred.
+     * @param salvage True if you wish to salvage (copy) the argument list.
      *
-     *                                          JRM -- 8/10/08
+     * @throws org.openshapa.db.SystemErrorException If unable to set the matrix
+     * vocab element ID for this ColPred.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    public void setMveID(long mveID,
-                         boolean salvage)
-        throws SystemErrorException
-    {
+    public void setMveID(long mveID, boolean salvage)
+    throws SystemErrorException {
         final String mName = "ColPred::setMveID(mveID, preserveArgs): ";
         int i;
         int newNumArgs;
@@ -482,48 +414,58 @@ public class ColPred extends DBElement
         }
 
         return;
-
-    } /* ColPred::setPredID(mveID, salvage) */
+    }
 
     /**
-     * getVarLen()
+     * @return Does this column predicate have a variable length number of
+     * arguments (true) or not (false).
      *
-     * Return the current value of the varLen field.
-     *
-     *                          JRM -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    public boolean getVarLen()
-    {
-
+    public boolean getVarLen() {
         return this.varLen;
-
-    } /* ColPred::getVarLen() */
-
-
-    /*************************************************************************/
-    /********************* MVE Change Management: ****************************/
-    /*************************************************************************/
+    }
 
     /**
-     * MVEChanged()
+     * Callback method for when a matrix vocab element is changed within the
+     * database.
      *
-     * Needed to implement the InternalMatrixVocabElementListener interface.
+     * @param db The database holding the matrix vocab element that is being
+     * altered.
+     * @param MVEID The id of the matrix vocab element that is being altered.
+     * @param nameChanged Flag indicating if the name of the matrix vocab
+     * element has changed.
+     * @param oldName The old name of the matrix vocab element.
+     * @param newName The new name of the matrix vocab element post alteration.
+     * @param varLenChanged Flag indicating if the variable argument flag is
+     * being altered within the matrix vocab element.
+     * @param oldVarLen The old variable argument flag.
+     * @param newVarLen The new variable argument flag post alteration.
+     * @param fargListChanged Flag indicating if the
+     * @param n2o
+     * @param o2n
+     * @param fargNameChanged
+     * @param fargSubRangeChanged
+     * @param fargRangeChanged
+     * @param fargDeleted
+     * @param fargInserted
+     * @param oldFargList
+     * @param newFargList
+     * @param cpn2o
+     * @param cpo2n
+     * @param cpFargNameChanged
+     * @param cpFargSubRangeChanged
+     * @param cpFargRangeChanged
+     * @param cpFargDeleted
+     * @param cpFargInserted
+     * @param oldCPFargList
+     * @param newCPFargList
      *
-     * Advise the host data cell that it contains a column predicate whose
-     * associated mve definition has changed.
+     * @throws org.openshapa.db.SystemErrorException Thrown when unable to
+     * correctly execute the callback for the matrix vocab element change.
      *
-     *                                            JRM -- 8/8/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/08
      */
-
     public void MVEChanged(Database db,
                           long MVEID,
                           boolean nameChanged,
@@ -540,8 +482,8 @@ public class ColPred extends DBElement
                           boolean[] fargRangeChanged,
                           boolean[] fargDeleted,
                           boolean[] fargInserted,
-                          java.util.Vector<FormalArgument> oldFargList,
-                          java.util.Vector<FormalArgument> newFargList,
+                          Vector<FormalArgument> oldFargList,
+                          Vector<FormalArgument> newFargList,
                           long[] cpn2o,
                           long[] cpo2n,
                           boolean[] cpFargNameChanged,
@@ -549,10 +491,9 @@ public class ColPred extends DBElement
                           boolean[] cpFargRangeChanged,
                           boolean[] cpFargDeleted,
                           boolean[] cpFargInserted,
-                          java.util.Vector<FormalArgument> oldCPFargList,
-                          java.util.Vector<FormalArgument> newCPFargList)
-        throws SystemErrorException
-    {
+                          Vector<FormalArgument> oldCPFargList,
+                          Vector<FormalArgument> newCPFargList)
+    throws SystemErrorException {
         final String mName = "ColPred::MVEChanged(): ";
         DBElement dbe = null;
         DataCell dc = null;
@@ -613,28 +554,23 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::MVEChanged() */
-
+    }
 
     /**
-     * MVEDeleted()
+     * Call back method that is invoked when a matrix vocab element is deleted.
      *
-     * Needed to implement the InternalMatrixVocabElementListener interface.
+     * @param db The database that is holding the matrix vocab element that is
+     * about to be deleted.
+     * @param MVEID The id of the matrix vocab element to be deleted from the
+     * database.
      *
-     * Advise the host data cell that it contains a column predicate whose
-     * associated column and mve has been deleted.
+     * @throws org.openshapa.db.SystemErrorException When unable to delete the
+     * matrix vocab element.
      *
-     *                                  JRM -- 8/8/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/08
      */
-
-    public void MVEDeleted(Database db,
-                           long MVEID)
-        throws SystemErrorException
-    {
+    public void MVEDeleted(Database db, long MVEID)
+    throws SystemErrorException {
         final String mName = "ColPred::MVEDeleted(): ";
         DBElement dbe = null;
         DataCell dc = null;
@@ -668,30 +604,18 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::MVEDeleted() */
-
-
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
+    }
 
     /**
-     * argListToDBString()
+     * @return The current argument list as a string that can be dumped to a
+     * database file.
      *
-     * Construct a string containing the values of the arguments in a
-     * format that displays the full status of the arguments and
-     * facilitates debugging.
-     *                                          JRM -- 8/23/07
+     * @throws org.openshapa.db.SystemErrorException If unable to convert the
+     * argument list to a string.
      *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/23
      */
-
-    protected String argListToDBString()
-        throws SystemErrorException
-    {
+    protected String argListToDBString() throws SystemErrorException {
         final String mName = "Predicate::argListToDBString(): ";
         int i = 0;
         int numArgs = 0;
@@ -731,25 +655,18 @@ public class ColPred extends DBElement
 
         return s;
 
-    } /* ColPred::argListToDBString() */
-
+    }
 
     /**
-     * argListToString()
+     * @return The formal argument list as a string in the format:
+     * (value0, value1, ..., valueN).
      *
-     * Construct a string containing the values of the arguments in the
-     * format: (value0, value1, ... value).
-     *                                          JRM -- 8/23/07
+     * @throws org.openshapa.db.SystemErrorException When unable to convert the
+     * formal argument list into a string.
      *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/23
      */
-
-    protected String argListToString()
-        throws SystemErrorException
-    {
+    protected String argListToString() throws SystemErrorException {
         final String mName = "ColPred::argListToString(): ";
         int i = 0;
         int numArgs = 0;
@@ -789,12 +706,9 @@ public class ColPred extends DBElement
 
         return s;
 
-    } /* ColPred::argListToString() */
-
+    }
 
     /**
-     * insertInIndex()
-     *
      * This method is called when the DataCell whose value contains this
      * instance of ColPred is first inserted in the database and becomes the
      * first cannonical version of the DataCell.
@@ -806,16 +720,13 @@ public class ColPred extends DBElement
      * as a listener with the mve, and pass the insert in index message down
      * to the argument list.
      *
-     *                                              JRM -- 8/8/08
+     * @param DCID The ID of the parent data column for this column predicate.
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException
      *
-     *    - None.
+     * @date 2008/08/08
      */
-
-    protected void insertInIndex(long DCID)
-        throws SystemErrorException
-    {
+    protected void insertInIndex(long DCID) throws SystemErrorException {
         final String mName = "ColPred::insertInIndex(): ";
 
         this.getDB().idx.addElement(this);
@@ -826,7 +737,7 @@ public class ColPred extends DBElement
 
         if ( this.mveID != DBIndex.INVALID_ID )
         {
-            // TODO: register as a listener for this.mveID
+            // TODO -- register as a listener for this.mveID
 
             if ( this.argList == null )
             {
@@ -842,26 +753,25 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::insertInIndex(DCID) */
-
+    }
 
     /**
-     * lookupMatrixVE()
+     * Given an ID, attempt to look up the associated MatrixVocabElement in the
+     * database associated with the instance of ColPred.  Return a reference to
+     * same.  If there is no such MatrixVocabElement, throw a system error.
      *
-     * Given an ID, attempt to look up the associated MatrixVocabElement
-     * in the database associated with the instance of ColPred.  Return a
-     * reference to same.  If there is no such MatrixVocabElement, throw
-     * a system error.
-     *                                              JRM -- 8/20/07
+     * @param mveID The ID of the matrix vocab element that is associated with
+     * this column predicate.
      *
-     * Changes:
+     * @return The matrix vocab element associated with this ColPred.
      *
-     *    - None.
+     * @throws org.openshapa.db.SystemErrorException If unable to serach for the
+     * matrix vocab element, or if there is no such matrix vocab element.
+     *
+     * @date 2007/08/20
      */
-
     private MatrixVocabElement lookupMatrixVE(long mveID)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "ColPred::lookupMatrixVE(mveID): ";
         DBElement dbe;
         MatrixVocabElement mve;
@@ -888,12 +798,9 @@ public class ColPred extends DBElement
 
         return mve;
 
-    } /* ColPred::lookupMatrixVE(mveID) */
-
+    }
 
     /**
-     * removeFromIndex()
-     *
      * This method is called when the DataCell whose value contains this
      * instance of ColPred is deleted from the database, and thus all the
      * DBElements that constitute its value must be removed from the
@@ -905,16 +812,15 @@ public class ColPred extends DBElement
      * as a listener with the MVE, and pass the remove from index message down
      * to the argument list.
      *
-     *                                              JRM -- 8/8/08
+     * @param DCID The ID of the parent data column that is used to when
+     * removing child data values.
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException If unable to remove the
+     * column predicate from the database index.
      *
-     *    - None.
+     * @date 2008/08/08
      */
-
-    protected void removeFromIndex(long DCID)
-        throws SystemErrorException
-    {
+    protected void removeFromIndex(long DCID) throws SystemErrorException {
         final String mName = "ColPred::removeFromIndex(): ";
 
         if ( this.cellID != DCID )
@@ -928,7 +834,7 @@ public class ColPred extends DBElement
         // an ID.
         if ( this.mveID != DBIndex.INVALID_ID )
         {
-            // TODO: de-register as a listener for this.mveID
+            // TODO -- de-register as a listener for this.mveID
 
             if ( this.argList == null )
             {
@@ -943,29 +849,15 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::removeFromIndex(DCID) */
+    }
 
-
-   /**
-     * toDBString()
+    /**
+     * @return A representation of the ColPred as a database string. (This is
+     * intended for debugging purposses).
      *
-     * Returns a database String representation of the ColPred for comparison
-     * against the expected value.<br>
-     *
-     * <i>This function is intended for debugging purposses.</i>
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * TODO -- Add cell id to DB String.
      */
-
-    // TODO:  Added cellID to DB string
-
-    public String toDBString()
-    {
+    public String toDBString() {
         String s;
 
         try
@@ -984,23 +876,12 @@ public class ColPred extends DBElement
 
         return s;
 
-    } /* ColPred::toDBString() */
-
+    }
 
     /**
-     * toString()
-     *
-     * Returns a String representation of the ColPred for display.
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @return A string representaiton of this ColPred.
      */
-    public String toString()
-    {
+    public String toString() {
         String s;
 
         try
@@ -1015,38 +896,27 @@ public class ColPred extends DBElement
 
         return (s);
 
-    } /* ColPred::toString() */
-
-
-    /*************************************************************************/
-    /********************* Argument List Management: *************************/
-    /*************************************************************************/
-
+    }
 
     /**
-     * blindCopyArgList()
+     * Given a reference to a Vector containing an argument list for the ColPred
+     * indicated by the current value of mveID, copy the argument list without
+     * attempting any sanity checks against the mve.
      *
-     * Given a reference to a Vector containing an argument list for the
-     * ColPred indicated by the current value of mveID, copy the argument
-     * list without attempting any sanity checks against the mve.
+     * This is necessary if the definition of the mve has changed, and we need a
+     * copy of the ColPred to modify into accordance with the new version.
      *
-     * This is necessary if the definition of the mve has changed, and we
-     * need a copy of the ColPred to modify into accordance with the new
-     * version.
+     * @param srcArgList The source list of datavalues that we are making a
+     * blind copy of.
      *
-     * Throw a system error if any errors are detected.  Otherwise, return the
-     * copy.
+     * @return The blind copy of datavalues.
      *
-     *                                              JRM -- 8/8/08
+     * @throws org.openshapa.db.SystemErrorException If any errors are detected.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/08
      */
-
     private Vector<DataValue> blindCopyArgList(Vector<DataValue> srcArgList)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "ColPred::blindCopyArgList(srcArgList): ";
         int i;
         int numArgs;
@@ -1095,28 +965,24 @@ public class ColPred extends DBElement
 
         return newArgList;
 
-    } /* ColPred::blindCopyArgList(srcArgList) */
-
+    }
 
     /**
-     * constructEmptyArgList()
+     * Given a reference to a MatrixVocabElement, construct an empty argument
+     * list as directed by the column predicate formal argument list of the
+     * supplied MatrixVocabElement.
      *
-     * Given a reference to a MatrixVocabElement, construct an empty
-     * argument list as directed by the column predicate formal argument list
-     * of the supplied MatrixVocabElement.
+     * @param mve The matrix vocab element to use as a template for the argument
+     * types that we are constructing.
      *
-     * Return the newly constructed argument list.
+     * @return The newly constructed argument list.
      *
-     *                                              JRM -- 8/8/08
+     * @throws org.openshapa.db.SystemErrorException
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/08
      */
-
     private Vector<DataValue> constructEmptyArgList(MatrixVocabElement mve)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "ColPred::constructEmptyArgList(pve): ";
         int i;
         int numArgs;
@@ -1168,28 +1034,27 @@ public class ColPred extends DBElement
 
         return argList;
 
-    } /* ColPred::constructEmptyArgList(pve) */
-
+    }
 
     /**
-     * copyArgList()
+     * Given a reference to a Vector containing an argument list for the ColPred
+     * indicated by the current value of mveID, attempt to make a copy of that
+     * argument list.
      *
-     * Given a reference to a Vector containing an argument list for the
-     * ColPred indicated by the current value of mveID, attempt to make a
-     * copy of that argument list.  Throw a system error if any errors are
-     * detected.  Otherwise, return the copy.
+     * @param srcArgList The argument list to copy.
+     * @param clearID True if you want to clear the values of the copied data
+     * values, false if you want them left unchanged.
      *
-     *                                              JRM -- 8/08/08
+     * @return A copy of the supplied argument list.
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException If any errors are detected
+     * during the copy.
      *
-     *    - None
+     * @date 2008/08/08
      */
-
     private Vector<DataValue> copyArgList(Vector<DataValue> srcArgList,
                                           boolean clearID)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "ColPred::copyArgList(srcArgList, clearID): ";
         int i;
         int numArgs;
@@ -1215,10 +1080,6 @@ public class ColPred extends DBElement
 
         if ( srcArgList.size() != numArgs )
         {
-// TODO: delete this eventually
-//            System.out.printf("actual/expected num args = %d/%d.\n",
-//                              srcArgList.size(), numArgs);
-//            int j = 1/0;
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
 
@@ -1569,12 +1430,9 @@ public class ColPred extends DBElement
 
         return newArgList;
 
-    } /* ColPred::copyArgList(srcArgList, clearID) */
-
+    }
 
     /**
-     * deregisterWithMve()
-     *
      * If the ColPred is defined (i.e. this.mveID is not DBIndex.INVALID_ID,
      * deregister the ColPred with its matrix vocab element as an internal
      * vocal element listener.  Also pass the deregister predicates and/or
@@ -1585,19 +1443,22 @@ public class ColPred extends DBElement
      * This method should only be called if this instance of the column
      * predicate is the cannonical instance -- that is the instance listed
      * in the index.
-     *                                              JRM -- 8/8/08
      *
-     * Changes:
+     * @param cascadeMveDel
+     * @param cascadeMveID
+     * @param cascadePveDel
+     * @param cascadePveID
      *
-     *    - None.
+     * @throws org.openshapa.db.SystemErrorException If unable to deregister the
+     * matrix vocab element.
+     *
+     * @date 2008/08/08
      */
-
     protected void deregisterWithMve(boolean cascadeMveDel,
                                      long cascadeMveID,
                                      boolean cascadePveDel,
                                      long cascadePveID)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "ColPred::deregisterWithPve(): ";
         DBElement dbe = null;
         MatrixVocabElement mve = null;
@@ -1654,21 +1515,23 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::deregisterWithMve() */
-
+    }
 
     /**
-     * getArg()
+     * Gets the datavalue for a specified argument.
      *
-     * Return a reference to the n-th argument if it exists, or null if it
-     * doesn't.
+     * @param n The index of the argument that you wish to fish the data value
+     * for.
      *
-     *                                      JRM -- 8/23/07
+     * @return A reference to the n-th argumentof the ColPred if it exists, null
+     * otherwise.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to get the n-th
+     * argument of the ColPred.
+     *
+     * @date 2007/08/23
      */
-
-    protected DataValue getArg(int n)
-        throws SystemErrorException
-    {
+    protected DataValue getArg(int n) throws SystemErrorException {
         final String mName = "ColPred::getArg(): ";
         int numArgs;
         DataValue arg = null;
@@ -1717,24 +1580,20 @@ public class ColPred extends DBElement
 
         return arg;
 
-    } /* ColPred::getArg() */
-
+    }
 
     /**
-     * getArgCopy()
+     * Gets a copy of a datavalue of the specified arguments.
      *
-     * Return a reference to a copy of the n-th argument if it exists, or
-     * null if it doesn't.
-     *                                      JRM -- 10/3/08
+     * @param n The index of the argument to get a copy of.
      *
-     * Changes:
+     * @return A copy of the n-th argument of the ColPred, null if it doesn't
+     * exist.
      *
-     *    - None.
+     * @throws org.openshapa.db.SystemErrorException If unable to get a copy of
+     * the nominated argument.
      */
-
-    public DataValue getArgCopy(int n)
-        throws SystemErrorException
-    {
+    public DataValue getArgCopy(int n) throws SystemErrorException {
         final String mName = "ColPred::getArgCopy(): ";
         DataValue arg = null;
         DataValue argCopy = null;
@@ -1752,24 +1611,17 @@ public class ColPred extends DBElement
 
         return argCopy;
 
-    } /* ColPred::getArgCopy() */
-
+    }
 
     /**
-     * getNumArgs()
+     * @return The number of arguments used in this ColPred.
      *
-     * Return the number of arguments.  Return 0 if the mveID hasn't been
-     * specified yet.
-     *                                      JRM -- 8/11/08
+     * @throws org.openshapa.db.SystemErrorException If the matrix vocab element
+     * id has not yet been specified.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/11
      */
-
-    public int getNumArgs()
-        throws SystemErrorException
-    {
+    public int getNumArgs() throws SystemErrorException {
         final String mName = "ColPred::getNumArgs(): ";
         int numArgs = 0;
 
@@ -1791,12 +1643,9 @@ public class ColPred extends DBElement
 
         return numArgs;
 
-    } /* ColPred::getNumArgs() */
-
+    }
 
     /**
-     * registerWithMve()
-     *
      * If the column predicate is defined (i.e. this.itsMveID is not
      * DBIndex.INVALID_ID, register the column predicate with the matrix
      * vocab element that implies it as an internal vocal element listener.
@@ -1807,16 +1656,13 @@ public class ColPred extends DBElement
      * This method should only be called if this instance of the column
      * predicate is the cannonical instance -- that is the instance listed
      * in the index.
-     *                                              JRM -- 8/11/08
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException If any errors occur when
+     * registerting with the matrix vocab element.
      *
-     *    - None.
+     * @date 2008/08/11
      */
-
-    protected void registerWithMve()
-        throws SystemErrorException
-    {
+    protected void registerWithMve() throws SystemErrorException {
         final String mName = "ColPred::registerWithMve(): ";
         DBElement dbe = null;
         MatrixVocabElement mve = null;
@@ -1873,26 +1719,21 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* Predicate::registerWithPve() */
-
+    }
 
     /**
-     * replaceArg()
+     * Replace the n-th argument with the supplied data value.
      *
-     * Replace the argument specified by n with the supplied datavalue.  Throw
-     * a system error if any errors are detected.
+     * @param n The index of the argument to replace with newArg.
+     * @param newArg The new datavalue to use when replacing the n-th argument.
      *
-     *                                              JRM -- 8/23/07
+     * @throws org.openshapa.db.SystemErrorException If unable to replace the
+     * n-th argument
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/23
      */
-
-    public void replaceArg(int n,
-                           DataValue newArg)
-        throws SystemErrorException
-    {
+    public void replaceArg(int n, DataValue newArg)
+    throws SystemErrorException {
         final String mName = "Predicate::replaceArg(n, newArg): ";
         int i;
         int numArgs;
@@ -1970,26 +1811,48 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* Predicate::replaceArg(n, newArg) */
-
+    }
 
     /**
-     * updateForMVEDefChange()
-     *
-     * If this column predicate is defined by the indicated matrix vocab element,
-     * update it for any changes in the implied column predicate.
+     * If this column predicate is defined by the indicated matrix vocab
+     * element, update it for any changes in the implied column predicate.
      *
      * Then, scan the list of data values in the column predicate, and pass an
      * update for matrix vocab element definition change message to any col pred
      * or pred data values that may appear in the argument list.
      *
-     *                                          JRM -- 8/11/08
+     * @param db
+     * @param mveID
+     * @param nameChanged
+     * @param oldName
+     * @param newName
+     * @param varLenChanged
+     * @param oldVarLen
+     * @param newVarLen
+     * @param fargListChanged
+     * @param n2o
+     * @param o2n
+     * @param fargNameChanged
+     * @param fargSubRangeChanged
+     * @param fargRangeChanged
+     * @param fargDeleted
+     * @param fargInserted
+     * @param oldFargList
+     * @param newFargList
+     * @param cpn2o
+     * @param cpo2n
+     * @param cpFargNameChanged
+     * @param cpFargSubRangeChanged
+     * @param cpFargRangeChanged
+     * @param cpFargDeleted
+     * @param cpFargInserted
+     * @param oldCPFargList
+     * @param newCPFargList
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException
      *
-     *    - None.
+     * @date 2008/08/11
      */
-
     protected void updateForMVEDefChange(
                                  Database db,
                                  long mveID,
@@ -2018,8 +1881,8 @@ public class ColPred extends DBElement
                                  boolean[] cpFargInserted,
                                  java.util.Vector<FormalArgument> oldCPFargList,
                                  java.util.Vector<FormalArgument> newCPFargList)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
+
         final String mName = "ColPred::updateForMVEDefChange(): ";
         DBElement dbe = null;
         MatrixVocabElement mve = null;
@@ -2178,29 +2041,24 @@ public class ColPred extends DBElement
 
         return;
 
-    } /* ColPred::updateForMVEDefChange() */
-
+    }
 
     /**
-     * updateForMVEDeletion()
-     *
      * It the supplied mveID matches this.mveID, set this.mveID to INVALID_ID.
      *
      * Otherwise, if the column predicate is defined, scan its argument list
      * and pass the update for mve deletion message to any predicate or
      * column predicate data values that may appear in the argument list.
      *
-     *                                          JRM -- 8/10/08
+     * @param db
+     * @param deletedMveID
      *
-     * Changes:
+     * @throws org.openshapa.db.SystemErrorException
      *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    protected void updateForMVEDeletion(Database db,
-                                        long deletedMveID)
-        throws SystemErrorException
-    {
+    protected void updateForMVEDeletion(Database db, long deletedMveID)
+    throws SystemErrorException {
         final String mName = "ColPred::updateForMVEDeletion(): ";
         int i;
         int numArgs;
@@ -2313,7 +2171,7 @@ public class ColPred extends DBElement
      * update for predicate vocab element definition change message to any
      * column predicate or predicate data values.
      *
-     *                                          JRM -- 8/11/08
+     *                                           -- 8/11/08
      *
      * Changes:
      *
@@ -2422,7 +2280,7 @@ public class ColPred extends DBElement
      * If the column predicate is defined, scan its argument list and
      * pass the update for pve deletion message to any predicate or column
      * predicate data values that may appear in the argument list.
-     *                                          JRM -- 8/08/08
+     *                                           -- 8/08/08
      *
      * Changes:
      *
@@ -2608,7 +2466,7 @@ public class ColPred extends DBElement
      *
      * Proceed as per the no structural change case.
      *
-     *                                      JRM -- 8/31/08
+     *                                       -- 8/31/08
      *
      * Changes:
      *
@@ -3132,7 +2990,7 @@ public class ColPred extends DBElement
      * to the supplied formal argument.  Throw a system error if it is not.
      * This method is a pure sanity checking method -- it should always pass.
      *
-     *                                              JRM -- 10/28/08
+     *                                               -- 10/28/08
      *
      * Changes:
      *
@@ -3555,7 +3413,7 @@ public class ColPred extends DBElement
      * if any DataValue or Predicate has not been inserted in the index, then
      * none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3651,7 +3509,7 @@ public class ColPred extends DBElement
      * it any DataValue or Column Predicate has not been inserted in the index,
      * then none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3760,7 +3618,7 @@ public class ColPred extends DBElement
      * The method does nothing if all is as it should be, and throws a system
      * error if any problems are detected.
      *
-     *                                              JRM -- 10/28/08
+     *                                               -- 10/28/08
      *
      * Changes:
      *
@@ -4653,7 +4511,7 @@ public class ColPred extends DBElement
      *
      * Proceed as above.
      *
-     *                                              JRM -- 8/30/08
+     *                                               -- 8/30/08
      *
      * Changes:
      *
@@ -4981,7 +4839,7 @@ public class ColPred extends DBElement
      * Call the superclass version of the method, and then pass the clear id
      * message on to the argument list.
      *
-     *                                              JRM 2/19/08
+     *                                               2/19/08
      *
      * Changes:
      *
@@ -5026,7 +4884,7 @@ public class ColPred extends DBElement
      * Returns a reference to the newly constructed predicate if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 8/31/08
+     *                                               -- 8/31/08
      *
      * Changes:
      *

@@ -5,8 +5,6 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * A file filter for CSV files.
- *
- * @author cfreeman
  */
 public class CSVFilter extends FileFilter {
     /**

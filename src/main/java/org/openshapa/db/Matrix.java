@@ -13,9 +13,7 @@ import java.util.Vector;
  * created, instances of this class are tightly bound to their host database,
  * Column, and associated MatricVocabElement.
  *
- *                                                  JRM -- 8/19/07
- *
- * @author mainzer
+ *                                                   -- 8/19/07
  */
 public class Matrix implements Cloneable {
 
@@ -84,7 +82,7 @@ public class Matrix implements Cloneable {
      * necessary when a mve or pve changes, and we need a copy of the data cell
      * to modify into conformance with the changes
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -272,7 +270,7 @@ public class Matrix implements Cloneable {
      *
      * Return the current value of the db field.
      *
-     *                          JRM -- 8/23/07
+     *                           -- 8/23/07
      *
      * Changes:
      *
@@ -292,7 +290,7 @@ public class Matrix implements Cloneable {
      *
      * Return the current value of the mveID field.
      *
-     *                          JRM -- 8/23/07
+     *                           -- 8/23/07
      *
      * Changes:
      *
@@ -312,7 +310,7 @@ public class Matrix implements Cloneable {
      *
      * Return the current value of the varLen field.
      *
-     *                          JRM -- 8/23/07
+     *                           -- 8/23/07
      *
      * Changes:
      *
@@ -337,7 +335,7 @@ public class Matrix implements Cloneable {
      * Construct a string containing the values of the arguments in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/23/07
+     *                                           -- 8/23/07
      *
      * Changes:
      *
@@ -395,7 +393,7 @@ public class Matrix implements Cloneable {
      *
      * Construct a string containing the values of the arguments in the
      * format: (value0, value1, ... value).
-     *                                          JRM -- 8/23/07
+     *                                           -- 8/23/07
      *
      * Changes:
      *
@@ -454,7 +452,7 @@ public class Matrix implements Cloneable {
      * In addition, any DBElements in the matrix are instructed to insert
      * themselves in the index as appropriate.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -511,7 +509,7 @@ public class Matrix implements Cloneable {
      * in the database associated with the instance of Matrix.  Return a
      * reference to same.  If there is no such MatrixVocabElement, throw
      * a system error.
-     *                                              JRM -- 8/20/07
+     *                                               -- 8/20/07
      *
      * Changes:
      *
@@ -561,7 +559,7 @@ public class Matrix implements Cloneable {
      * sanity checking, and passing the remove from index message on to its
      * constituent DataValues.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -702,7 +700,7 @@ public class Matrix implements Cloneable {
      * Throw a system error if any errors aredetected.  Otherwise, return the
      * copy.
      *
-     *                                              JRM -- 4/6/08
+     *                                               -- 4/6/08
      *
      * Changes:
      *
@@ -777,7 +775,7 @@ public class Matrix implements Cloneable {
      *
      * Return the newly constructed argument list.
      *
-     *                                              JRM -- 8/20/07
+     *                                               -- 8/20/07
      *
      * Changes:
      *
@@ -849,7 +847,7 @@ public class Matrix implements Cloneable {
      * copy of that argument list.  Throw a system error if any errors are
      * detected.  Otherwise, return the copy.
      *
-     *                                              JRM -- 8/20/07
+     *                                               -- 8/20/07
      *
      * Changes:
      *
@@ -1062,13 +1060,13 @@ public class Matrix implements Cloneable {
      * that appears in the Matrix to deregister as internal (matrix) vocab
      * element listeners with its associated matrix or predicate vocab element.
      *
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
      *    - Modified method to work with column predicates as well.
      *
-     *                                              JRM -- 8/31/08
+     *                                               -- 8/31/08
      */
 
     protected void deregisterPreds(boolean cascadeMveDel,
@@ -1106,7 +1104,7 @@ public class Matrix implements Cloneable {
      * Return a reference to the n-th argument if it exists, or null if it
      * doesn't.
      *
-     *                                      JRM -- 8/23/07
+     *                                       -- 8/23/07
      */
 
     protected DataValue getArg(int n)
@@ -1168,7 +1166,7 @@ public class Matrix implements Cloneable {
      *
      * Return a reference to a copy of the n-th argument if it exists, or
      * null if it doesn't.
-     *                                      JRM -- 5/23/08
+     *                                       -- 5/23/08
      *
      * Changes:
      *
@@ -1203,7 +1201,7 @@ public class Matrix implements Cloneable {
      *
      * Return the number of arguments.  Return 0 if the predID hasn't been
      * specified yet.
-     *                                      JRM -- 8/23/07
+     *                                       -- 8/23/07
      *
      * Changes:
      *
@@ -1248,13 +1246,13 @@ public class Matrix implements Cloneable {
      * vocab element listeners with its associated matrix or predicate vocab
      * element.
      *
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
      *    - Modified to work with column predicates as well.
      *
-     *                                              JRM -- 8/31/08
+     *                                               -- 8/31/08
      */
 
     protected void registerPreds()
@@ -1283,7 +1281,7 @@ public class Matrix implements Cloneable {
      * Replace the argument specified by n with the supplied datavalue.  Throw
      * a system error if any errors are detected.
      *
-     *                                              JRM -- 8/23/07
+     *                                               -- 8/23/07
      *
      * Changes:
      *
@@ -1485,7 +1483,7 @@ public class Matrix implements Cloneable {
      * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element definition change message to any predicate
      * or column predicate data values.
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -1619,7 +1617,7 @@ public class Matrix implements Cloneable {
      * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element deletion message to any column predicate or
      * predicate data values.
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -1743,7 +1741,7 @@ public class Matrix implements Cloneable {
      * Scan the list of data values in the matrix, and pass an update for
      * predicate vocab element definition change message to any predicate
      * data values.
-     *                                          JRM -- 3/23/08
+     *                                           -- 3/23/08
      *
      * Changes:
      *
@@ -1828,7 +1826,7 @@ public class Matrix implements Cloneable {
      * Scan the list of data values in the matrix, and pass an update for
      * predicate vocab element definition change message to any predicate
      * data values.
-     *                                          JRM -- 3/23/08
+     *                                           -- 3/23/08
      *
      * Changes:
      *
@@ -2012,7 +2010,7 @@ public class Matrix implements Cloneable {
      *
      * Proceed as per the no structural change case.
      *
-     *                                      JRM -- 2/20/08
+     *                                       -- 2/20/08
      *
      * Changes:
      *
@@ -3216,7 +3214,7 @@ public class Matrix implements Cloneable {
      * the DataValues and Predicates in the matrix are invalid.  This is purely
      * a sanity checking routine.  The test should always pass.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3565,7 +3563,7 @@ public class Matrix implements Cloneable {
      * must be new as well -- that is the id must be INVALID_ID pending
      * initial insertion in the index.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3659,7 +3657,7 @@ public class Matrix implements Cloneable {
      *
      * Proceed as per the no structural change case.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -4727,7 +4725,7 @@ public class Matrix implements Cloneable {
      * Returns a reference to the newly constructed matrix if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

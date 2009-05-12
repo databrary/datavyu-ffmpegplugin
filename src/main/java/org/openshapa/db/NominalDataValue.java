@@ -16,8 +16,6 @@ import org.openshapa.util.HashUtils;
 /**
  * An instance of NominalDataValue is used to store a nominal value
  * assigned to a formal argument.
- *
- * @author mainzer
  */
 public final class NominalDataValue extends DataValue {
 
@@ -83,7 +81,7 @@ public final class NominalDataValue extends DataValue {
      * The fourth takes a reference to an instance of NominalDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -168,7 +166,7 @@ public final class NominalDataValue extends DataValue {
      * If the data value is currently defined, return a string containing a
      * copy of the the current value of the data value.  Otherwise return null.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -197,11 +195,11 @@ public final class NominalDataValue extends DataValue {
      * nonce, we just set itsValue to null -- indicating that the nominal
      * data value is undefined.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
-     *    - Added code to maintain this.isQueryVar. JRM -- 10/20/08
+     *    - Added code to maintain this.isQueryVar.  -- 10/20/08
      */
 
     public void setItsValue(String value)
@@ -300,7 +298,7 @@ public final class NominalDataValue extends DataValue {
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -330,7 +328,7 @@ public final class NominalDataValue extends DataValue {
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -368,7 +366,7 @@ public final class NominalDataValue extends DataValue {
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -436,7 +434,7 @@ public final class NominalDataValue extends DataValue {
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -503,7 +501,7 @@ public final class NominalDataValue extends DataValue {
      * This method should never be passed an invalid nominal, so if it
      * ever receives one, it will throw a system error exception.
      *
-     *                                              JRM -- 07/08/18
+     *                                               -- 07/08/18
      *
      * Changes:
      *
@@ -577,7 +575,7 @@ public final class NominalDataValue extends DataValue {
      * Return true if the current value of the nominal is a valid MacSHAPA
      * style query variable name, and false otherwise.
      *
-     *                                              JRM -- 10/20/08
+     *                                               -- 10/20/08
      *
      * Changes:
      *
@@ -606,7 +604,7 @@ public final class NominalDataValue extends DataValue {
      * Returns a reference to the newly constructed NominalDataValue if
      * successful.  Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

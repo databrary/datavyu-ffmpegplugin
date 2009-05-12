@@ -11,8 +11,6 @@ import java.awt.event.KeyEvent;
 /**
  * This class is the view representation of a FloatDataValue as stored within
  * the database.
- *
- * @author cfreeman
  */
 public final class FloatDataValueView extends DataValueElementV {
 

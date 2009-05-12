@@ -17,7 +17,7 @@ import java.util.Vector;
  * Instances of ReferenceColumn are used to implement spreadsheet variables
  * whose cells are mirrors of other cells in the database.
  *
- *                                              JRM -- 8/30/07
+ *                                               -- 8/30/07
  *
  * @author FGA
  */
@@ -58,7 +58,7 @@ public class ReferenceColumn extends Column
      *  The third takes an instance of ReferenceColum as its parameter, and returns
      *  a copy.  Note that the itsCells field is NOT copied.
      *
-     *                                              JRM -- 8/29/07
+     *                                               -- 8/29/07
      *
      * Changes:
      *
@@ -132,7 +132,7 @@ public class ReferenceColumn extends Column
      *
      * Update numCells in passing.
      *
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *
@@ -250,7 +250,7 @@ public class ReferenceColumn extends Column
      * should only be called when the ReferenceColumn is being inserted in the
      * column list.
      *
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -283,7 +283,7 @@ public class ReferenceColumn extends Column
      * Construct a string containing the values of the cells in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -334,7 +334,7 @@ public class ReferenceColumn extends Column
      *
      * Construct a string containing the values of the cells in the column.
      *
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -389,7 +389,7 @@ public class ReferenceColumn extends Column
      *
      * Append the supplied DataCell to the end of the vector of cells.
      *
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -437,7 +437,7 @@ public class ReferenceColumn extends Column
      * the actual cell -- not a copy.  For almost all purposes, the returned
      * cell should be treated as read only.
      *
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *
@@ -478,7 +478,7 @@ public class ReferenceColumn extends Column
      *
      * Return a copy of the cell at the specified ord.
      *
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -500,7 +500,7 @@ public class ReferenceColumn extends Column
      * Insert the supplied ReferenceCell in the indicated location in the vector
      * of ReferenceCells.  Update the ords of the cells after the insertion point.
      *
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *
@@ -570,7 +570,7 @@ public class ReferenceColumn extends Column
      *
      * Return a reference to the ReferenceCell removed from itsCells.
      *
-     *                                      JRM -- 8/30/07
+     *                                       -- 8/30/07
      *
      * Changes:
      *
@@ -647,7 +647,7 @@ public class ReferenceColumn extends Column
      *
      * Replace the ReferenceCell at targetOrd in this.itsCells with the supplied
      * ReferenceCell.  Return the old ReferenceCell.
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *
@@ -712,7 +712,7 @@ public class ReferenceColumn extends Column
      *
      *
      * Sort itsCells by cell onset.
-     *                                              JRM -- 3/20/08
+     *                                               -- 3/20/08
      *
      * Changes:
      *
@@ -735,7 +735,7 @@ public class ReferenceColumn extends Column
      * Verify that a cell has been correctly initialized for insertion into
      * itsCells.  Return true if it has been, and false otherwise.
      *
-     *                                              JRM -- 8/30/07
+     *                                               -- 8/30/07
      *
      * Changes:
      *

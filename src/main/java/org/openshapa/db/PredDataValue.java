@@ -16,8 +16,6 @@ import org.openshapa.util.HashUtils;
 /**
  * An instance of PredDataValue is used to store a predicate value
  * assigned to a formal argument.
- *
- * @author mainzer
  */
 public final class PredDataValue extends DataValue
 {
@@ -70,7 +68,7 @@ public final class PredDataValue extends DataValue
      * a copy of the old predicate so we can touch it up for changes in the
      * associated pve.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -190,7 +188,7 @@ public final class PredDataValue extends DataValue
      *
      * Return a copy of the current value of the data value.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -215,7 +213,7 @@ public final class PredDataValue extends DataValue
      * of a predicate, as a change in a predicate's argument list may cause
      * the normal sanity checks to fail.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -237,7 +235,7 @@ public final class PredDataValue extends DataValue
      * If itsValue is an instance of a predicate vocab element, return the
      * ID assigned to that pve, or the INVALID_ID if it is not.
      *
-     *                                      JRM -- 4/24/08
+     *                                       -- 4/24/08
      *
      * Changes:
      *
@@ -269,7 +267,7 @@ public final class PredDataValue extends DataValue
      * at least for now, if the predicate is out of range, we will simply
      * replace it with an empty predicate.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -369,7 +367,7 @@ public final class PredDataValue extends DataValue
      * Call the superclass version of the method, and then pass the clear id
      * message on to the associated predicate, if any.
      *
-     *                                              JRM 2/19/08
+     *                                               2/19/08
      *
      * Changes:
      *
@@ -398,7 +396,7 @@ public final class PredDataValue extends DataValue
      * Call the super, and then pass the insert in index message down to the
      * predicate.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -430,7 +428,7 @@ public final class PredDataValue extends DataValue
      * Call the super, and then pass the remove from index message down to the
      * predicate.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -463,7 +461,7 @@ public final class PredDataValue extends DataValue
      * Call the super, and then pass an update index for replacement message
      * down to the predicate.
      *
-     *                                          JRM -- 2/20/08
+     *                                           -- 2/20/08
      *
      * Changes:
      *
@@ -530,7 +528,7 @@ public final class PredDataValue extends DataValue
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -559,7 +557,7 @@ public final class PredDataValue extends DataValue
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -601,7 +599,7 @@ public final class PredDataValue extends DataValue
      * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element definition change message to the predicate
      * (if defined).
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -702,7 +700,7 @@ public final class PredDataValue extends DataValue
      * Scan the list of data values in the matrix, and pass an update for
      * matrix vocab element definition change message to any column predicate
      * or predicate data values.
-     *                                          JRM -- 8/30/08
+     *                                           -- 8/30/08
      *
      * Changes:
      *
@@ -741,7 +739,7 @@ public final class PredDataValue extends DataValue
      * Scan the list of data values in the matrix, and pass an update for
      * predicate vocab element definition change message to the predicate
      * (if defined).
-     *                                          JRM -- 3/23/08
+     *                                           -- 3/23/08
      *
      * Changes:
      *
@@ -824,7 +822,7 @@ public final class PredDataValue extends DataValue
      * Scan the list of data values in the matrix, and pass an update for
      * predicate vocab element definition change message to any predicate
      * data values.
-     *                                          JRM -- 3/23/08
+     *                                           -- 3/23/08
      *
      * Changes:
      *
@@ -862,7 +860,7 @@ public final class PredDataValue extends DataValue
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -932,7 +930,7 @@ public final class PredDataValue extends DataValue
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -990,7 +988,7 @@ public final class PredDataValue extends DataValue
      * If the supplied value is in range for the associated formal argument,
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
-     *                                              JRM -- 070815
+     *                                               -- 070815
      *
      * Changes:
      *
@@ -1068,7 +1066,7 @@ public final class PredDataValue extends DataValue
      * cause it to deregister with its associated PVE (if any), and pass
      * the message down to any column predicates or predicates that may
      * appear in its argument list.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -1101,7 +1099,7 @@ public final class PredDataValue extends DataValue
      * cause it to register with its associated PVE (if any), and pass
      * the message down to any predicates that may appear in its argument
      * list.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -1166,7 +1164,7 @@ public final class PredDataValue extends DataValue
      * Returns a reference to the newly constructed PredDataValue if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

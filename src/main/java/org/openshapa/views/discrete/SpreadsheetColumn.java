@@ -16,8 +16,6 @@ import org.apache.log4j.Logger;
 /**
  * This class maintains the visual representation of the column in the
  * Spreadsheet window.
- *
- * @author swhitcher
  */
 public final class SpreadsheetColumn
 implements ExternalDataColumnListener, ExternalCascadeListener {

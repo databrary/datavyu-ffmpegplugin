@@ -11,8 +11,6 @@ import org.apache.log4j.Logger;
 
 /**
  * A view for a predicate vocab element.
- *
- * @author cfreeman
  */
 public class PredicateVEV extends VocabElementV {
 

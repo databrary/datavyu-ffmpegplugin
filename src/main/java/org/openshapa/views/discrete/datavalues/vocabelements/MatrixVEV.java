@@ -11,8 +11,6 @@ import org.apache.log4j.Logger;
 
 /**
  * A view for a matrix vocab element.
- *
- * @author cfreeman
  */
 public class MatrixVEV extends VocabElementV {
     /** The model that this view represents. */

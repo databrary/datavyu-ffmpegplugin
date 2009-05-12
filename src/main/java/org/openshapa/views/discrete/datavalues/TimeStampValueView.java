@@ -8,8 +8,6 @@ import org.openshapa.views.discrete.Selector;
 /**
  * A view representation for timestamp values as arguments / parameters of
  * matrices, predicates, etc.
- *
- * @author cfreeman
  */
 public final class TimeStampValueView extends TimeStampDataValueView {
 

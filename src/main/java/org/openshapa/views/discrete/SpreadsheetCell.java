@@ -31,8 +31,6 @@ import org.jdesktop.application.ResourceMap;
  * Visual representation of a spreadsheet cell.
  *
  * @author Felix (intial stub)
- * @author switcher
- * @author cfreeman
  */
 public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {

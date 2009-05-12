@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public abstract class DatabaseTest {
 
@@ -123,7 +122,7 @@ public abstract class DatabaseTest {
      * Run a variety of valid and invalid objects past IsValidInt, and
      * see if it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -730,7 +729,7 @@ public abstract class DatabaseTest {
      * Since Database is an abstract class, the test code tests only the
      * class methods.
      *
-     *                                          JRM 3/05/07
+     *                                           3/05/07
      */
 
     /**
@@ -738,7 +737,7 @@ public abstract class DatabaseTest {
      *
      * Main routine for all test code for the Database class proper.
      *
-     *                                          JRM 3/03/07
+     *                                           3/03/07
      *
      * Changes:
      *
@@ -906,7 +905,7 @@ public abstract class DatabaseTest {
      *
      * Main routine for all OpenSHAPA database test code.
      *
-     *                                          JRM 3/03/05
+     *                                           3/03/05
      *
      * Changes:
      *
@@ -950,7 +949,7 @@ public abstract class DatabaseTest {
      * Run a variety of valid and invalid strings past IsValidFArgName, and
      * see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -1150,7 +1149,7 @@ public abstract class DatabaseTest {
      * Run a variety of valid and invalid objects past IsValidFloat, and
      * see if it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -1353,7 +1352,7 @@ public abstract class DatabaseTest {
      * Run a variety of valid and invalid objects past IsValidInt, and
      * see if it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -1557,7 +1556,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidNominal, and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -1812,7 +1811,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidPredName, and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -2024,7 +2023,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidSVarName, and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -2236,7 +2235,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidTextString(), and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -2473,7 +2472,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidTextString(), and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -2683,7 +2682,7 @@ public abstract class DatabaseTest {
      * Run a variety of objects and valid and invalid strings past
      * IsValidQuoteString, and see it it gets the right answer.
      *
-     *                                          JRM -- 3/03/07
+     *                                           -- 3/03/07
      *
      * Changes:
      *
@@ -2941,7 +2940,7 @@ public abstract class DatabaseTest {
      * most functionality is provided via a call to one of the VocabList
      * methods.
      *
-     *                                              JRM -- 7/16/07
+     *                                               -- 7/16/07
      *
      * Changes:
      *
@@ -3225,7 +3224,7 @@ public abstract class DatabaseTest {
      * most functionality is provided via a call to one of the VocabList
      * methods.
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -3743,7 +3742,7 @@ public abstract class DatabaseTest {
      * Test the getMatrixVEs() method.  Only cursory testing is needed, as
      * getMatrixVEs() just calls vl.getMatricies().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -3966,7 +3965,7 @@ public abstract class DatabaseTest {
      * Test the matrixNameInUse() method.  Only cursory testing is needed, as
      * matrixNameInUse() just calls vl.inVocabList().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -4252,7 +4251,7 @@ public abstract class DatabaseTest {
      * Test the matrixVEExists() method.  Only cursory testing is needed, as
      * the function just calls vl.matrixInVocabList().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -4635,7 +4634,7 @@ public abstract class DatabaseTest {
      * Test the removeMatrixVE() method.  Only cursory testing is needed, as
      * the function does little more than calls vl.removeVocabElement().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -4952,7 +4951,7 @@ public abstract class DatabaseTest {
      * Test the replaceMatrixVE() method.  Only cursory testing is needed, as
      * the function does little more than call vl.replaceVocabElement().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -5298,7 +5297,7 @@ public abstract class DatabaseTest {
      * most functionality is provided via a call to one of the VocabList
      * methods.
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -5581,7 +5580,7 @@ public abstract class DatabaseTest {
      * most functionality is provided via a call to one of the VocabList
      * methods.
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -6098,7 +6097,7 @@ public abstract class DatabaseTest {
      * Test the getPredVEs() method.  Only cursory testing is needed, as
      * getPredVEs() just calls vl.getMatricies().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -6321,7 +6320,7 @@ public abstract class DatabaseTest {
      * Test the predNameInUse() method.  Only cursory testing is needed, as
      * predNameInUse() just calls vl.inVocabList().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -6607,7 +6606,7 @@ public abstract class DatabaseTest {
      * Test the predVEExists() method.  Only cursory testing is needed, as
      * the function just calls vl.predInVocabList().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -7012,7 +7011,7 @@ public abstract class DatabaseTest {
      * Test the removePredVE() method.  Only cursory testing is needed, as
      * the function does little more than calls vl.removeVocabElement().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -7328,7 +7327,7 @@ public abstract class DatabaseTest {
      * Test the replaceMatrixVE() method.  Only cursory testing is needed, as
      * the function does little more than call vl.replaceVocabElement().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -7675,7 +7674,7 @@ public abstract class DatabaseTest {
      * Test the getVocabElement() method.  Only cursory testing is needed, as
      * most functionality is provided via a call to vl.getVocabElement().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -8120,7 +8119,7 @@ public abstract class DatabaseTest {
      * Test the vocabElementxists() method.  Only cursory testing is needed,
      * as the function just calls vl.inVocabList().
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -8526,7 +8525,7 @@ public abstract class DatabaseTest {
      *
      * Run Felix's test.
      *
-     *                                              JRM -- 7/17/07
+     *                                               -- 7/17/07
      *
      * Changes:
      *
@@ -8672,7 +8671,7 @@ public abstract class DatabaseTest {
      * Main routine for all test code testing internal propagation of changes
      * through the database via the internal listeners.
      *
-     *                                          JRM 3/25/08
+     *                                           3/25/08
      *
      * Changes:
      *
@@ -8740,7 +8739,7 @@ public abstract class DatabaseTest {
      * Verify that data cell deletions propogate through the database as
      * expected.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -8812,7 +8811,7 @@ public abstract class DatabaseTest {
      * Verify that data cell deletions propogate through the database as
      * expected.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -8884,7 +8883,7 @@ public abstract class DatabaseTest {
      * Verify that modifications to data cells propogate through
      * the database as expected.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -8955,7 +8954,7 @@ public abstract class DatabaseTest {
      * Verify that modifications in matrix vocab elements propogate through
      * the database as expected.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -9038,7 +9037,7 @@ public abstract class DatabaseTest {
      *
      * Return the number of failures.
      *
-     *                                              JRM -- 4/25/08
+     *                                               -- 4/25/08
      *
      * Changes:
      *
@@ -10836,7 +10835,7 @@ public abstract class DatabaseTest {
      * Verify that deletions of predicate vocab elements propagate through
      * the database as expected.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -10914,7 +10913,7 @@ public abstract class DatabaseTest {
      *
      * Return the number of failures.
      *
-     *                                              JRM -- 4/18/08
+     *                                               -- 4/18/08
      *
      * Changes:
      *
@@ -11937,7 +11936,7 @@ public abstract class DatabaseTest {
      *    formal arguemnst and verify that the changes are reflected correctly
      *    in the cells.  Combine the above and verify the expected results.
      *
-     *                                              JRM -- 3/25/08
+     *                                               -- 3/25/08
      *
      * Changes:
      *
@@ -12014,7 +12013,7 @@ public abstract class DatabaseTest {
      *
      * Return the number of failures.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

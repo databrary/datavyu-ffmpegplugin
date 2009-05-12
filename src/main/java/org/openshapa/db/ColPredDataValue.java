@@ -1,12 +1,3 @@
-/*
- * ColColPredDataValue.java
- *
- * Created on August 10, 2008, 4:32 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -18,27 +9,19 @@ import org.openshapa.util.HashUtils;
  *
  * Recall that a column predicate is the predicate implied by a
  * MatrixVocabElement.
- *
- * @author mainzer
  */
-public final class ColPredDataValue extends DataValue
-{
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * itsValue: Instance of ColPred containing a representation of the
-     *      current value assigned to the predicate.
-     *
-     * minVal & maxVal don't appear in PredDataValue as a subrange of
-     *      predicates is expressed as a set of allowed predicates.  Given the
-     *      potential size of this set, we don't keep a copy of it here --
-     *      referring directly to the associated formal argument when needed
-     *      instead.
-     */
+public final class ColPredDataValue extends DataValue {
 
-    /** ID of the represented predicate */
+    /** Instance of ColPred containing a representation of the current value
+     * assigned to the predicate. */
     protected ColPred itsValue = null;
+
+    /*
+     * minVal & maxVal don't appear in PredDataValue as a subrange of predicates
+     * is expressed as a set of allowed predicates.  Given the potential size of
+     * this set, we don't keep a copy of it here -- referring directly to the
+     * associated formal argument when needed instead.
+     */
 
 
     /*************************************************************************/
@@ -72,7 +55,7 @@ public final class ColPredDataValue extends DataValue
      * a copy of the old predicate so we can touch it up for changes in the
      * associated pve.
      *
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -80,9 +63,15 @@ public final class ColPredDataValue extends DataValue
      *
      */
 
-    public ColPredDataValue(Database db)
-        throws SystemErrorException
-    {
+    /**
+     * Creates an empty ColPredDataValue.
+     *
+     * @param db The parent database for this datavalue.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue
+     */
+    public ColPredDataValue(Database db) throws SystemErrorException {
         super(db);
 
         this.setItsValue(null);
@@ -169,7 +158,7 @@ public final class ColPredDataValue extends DataValue
      *
      * Return a copy of the current value of the data value.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -194,7 +183,7 @@ public final class ColPredDataValue extends DataValue
      * of a predicate, as a change in a predicate's argument list may cause
      * the normal sanity checks to fail.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -217,7 +206,7 @@ public final class ColPredDataValue extends DataValue
      * MatrixVocabElement, return the ID assigned to that mve, or the
      * INVALID_ID if it is not.
      *
-     *                                      JRM -- 8/10/08
+     *                                       -- 8/10/08
      *
      * Changes:
      *
@@ -244,7 +233,7 @@ public final class ColPredDataValue extends DataValue
      *
      * Set itsValue to the specified value.
      *
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -304,7 +293,7 @@ public final class ColPredDataValue extends DataValue
      * Call the superclass version of the method, and then pass the clear id
      * message on to the associated column predicate, if any.
      *
-     *                                              JRM 2/19/08
+     *                                               2/19/08
      *
      * Changes:
      *
@@ -332,7 +321,7 @@ public final class ColPredDataValue extends DataValue
      * Call the super, and then pass the insert in index message down to the
      * column predicate.
      *
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -363,7 +352,7 @@ public final class ColPredDataValue extends DataValue
      * Call the super, and then pass the remove from index message down to the
      * predicate.
      *
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -395,7 +384,7 @@ public final class ColPredDataValue extends DataValue
      * Call the super, and then pass an update index for replacement message
      * down to the predicate.
      *
-     *                                          JRM -- 2/20/08
+     *                                           -- 2/20/08
      *
      * Changes:
      *
@@ -461,7 +450,7 @@ public final class ColPredDataValue extends DataValue
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/10/08
+     *                                   -- 8/10/08
      *
      * @return the string value.
      *
@@ -490,7 +479,7 @@ public final class ColPredDataValue extends DataValue
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -532,7 +521,7 @@ public final class ColPredDataValue extends DataValue
      * If the associated column predicate is defined, pass an update for
      * matrix vocab element definition change message to it.
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -633,7 +622,7 @@ public final class ColPredDataValue extends DataValue
      * If the associated column predicate is defined, pass an update for
      * matrix vocab element deletion message to it.
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -672,7 +661,7 @@ public final class ColPredDataValue extends DataValue
      * If the associated column predicate is defined, pass an update for
      * predicate vocab element definition change message to it.
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -755,7 +744,7 @@ public final class ColPredDataValue extends DataValue
      * If the associated column predicate is defined, pass an update for
      * predicate vocab element deletion message to it.
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -793,7 +782,7 @@ public final class ColPredDataValue extends DataValue
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -863,7 +852,7 @@ public final class ColPredDataValue extends DataValue
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -908,7 +897,7 @@ public final class ColPredDataValue extends DataValue
      * If the supplied value is in range for the associated formal argument,
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -948,7 +937,7 @@ public final class ColPredDataValue extends DataValue
      * cause it to deregister with its associated MVE (if any), and pass
      * the message down to any column predicates or predicates that may
      * appear in its argument list.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -981,7 +970,7 @@ public final class ColPredDataValue extends DataValue
      * cause it to register with its associated MVE (if any), and pass
      * the message down to any column predicates or predicates that may
      * appear in its argument list.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -1050,7 +1039,7 @@ public final class ColPredDataValue extends DataValue
      * Returns a reference to the newly constructed ColPredDataValue if
      * successful.  Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

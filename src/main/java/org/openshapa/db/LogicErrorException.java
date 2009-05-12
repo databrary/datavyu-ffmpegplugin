@@ -8,8 +8,6 @@ package org.openshapa.db;
  * All Logic error messages are recoverable, we display a warning message to the
  * user of the mistake they have made and allow them to fix the error and
  * procede
- *
- * @author cfreeman
  */
 public final class LogicErrorException extends java.lang.Exception {
 

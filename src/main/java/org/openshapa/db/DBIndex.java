@@ -22,9 +22,7 @@ import org.openshapa.util.OpenHashtable;
  * IDs, and handles the matter of replacing one representation of a DBElement
  * with the next.
  *
- *                                          JRM -- 4/22/07
- *
- * @author mainzer
+ *                                           -- 4/22/07
  */
 public class DBIndex
 {
@@ -183,7 +181,7 @@ public class DBIndex
      *
      * Assign the provided DBElement an id, and insert it into the index.
      *
-     *                                                 JRM -- 4/23/07
+     *                                                  -- 4/23/07
      *
      * Changes:
      *
@@ -234,7 +232,7 @@ public class DBIndex
      *
      * Get the instance of DBElement corresponding with the supplied id.
      *
-     *                                                 JRM -- 4/23/07
+     *                                                  -- 4/23/07
      *
      * Changes:
      *
@@ -297,7 +295,7 @@ public class DBIndex
      *
      * Remove the instance of DBElement with the specified id from the index.
      *
-     *                                                 JRM -- 4/23/07
+     *                                                  -- 4/23/07
      *
      * Changes:
      *
@@ -333,7 +331,7 @@ public class DBIndex
      * of the supplied instance.  Remove the instance from the index, and
      * replace it with the supplied instance.
      *
-     *                                                 JRM -- 4/23/07
+     *                                                  -- 4/23/07
      *
      * Changes:
      *

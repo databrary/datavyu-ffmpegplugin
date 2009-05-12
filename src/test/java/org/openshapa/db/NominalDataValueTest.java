@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 
 /**
  * Junit test cases for the class NominalDataValue.
- *
- * @author cfreeman
  */
 public class NominalDataValueTest extends DataValueTest {
     private Database db;
@@ -512,7 +510,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -723,7 +721,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -1159,7 +1157,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -1591,13 +1589,13 @@ public class NominalDataValueTest extends DataValueTest {
      *
      * Run a battery of tests on the accessors supported by this class.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
      *    - Added test code for the new isQueryVar() method.
      *
-     *                                              JRM -- 10/20/08
+     *                                               -- 10/20/08
      */
     @Test
     public void TestAccessors() throws SystemErrorException {
@@ -2054,7 +2052,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -2375,7 +2373,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Run a battery of tests on the toString methods supported by
      * this class.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -2618,7 +2616,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Verify that the supplied instances of NominalDataValue are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

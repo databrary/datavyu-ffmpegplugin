@@ -27,7 +27,7 @@ import org.jdesktop.application.ResourceMap;
  * its vector ov cells is used to allow the user to modify the
  * user accessible fields.
  *
- *                                              JRM -- 8/29/07
+ *                                               -- 8/29/07
  *
  * Changes:
  *
@@ -172,7 +172,7 @@ public abstract class Column
      *  The third takes and instance of Copumn as its parameter, and returns
      *  a copy.
      *
-     *                                              JRM -- 8/29/07
+     *                                               -- 8/29/07
      *
      * Changes:
      *
@@ -238,7 +238,7 @@ public abstract class Column
      *
      * This method should be called exactly once -- when the Column is
      * inserted into the column list.
-     *                                              JRM -- 6/19/07
+     *                                               -- 6/19/07
      *
      * Changes:
      *
@@ -254,7 +254,7 @@ public abstract class Column
      *
      * Subclasses must define this method, which must sort itsCells by cell
      * onset.
-     *                                              JRM -- 3/20/08
+     *                                               -- 3/20/08
      *
      * Changes:
      *
@@ -275,7 +275,7 @@ public abstract class Column
      *
      * Get and set the value of the hidden field.
      *
-     *                                      JRM -- 8/29/07
+     *                                       -- 8/29/07
      *
      * Changes:
      *
@@ -304,7 +304,7 @@ public abstract class Column
      *
      * Get and set the value of the readOnly field.
      *
-     *                                      JRM -- 8/29/07
+     *                                       -- 8/29/07
      *
      * Changes:
      *
@@ -334,7 +334,7 @@ public abstract class Column
      * Get and set the current value of the numCells field.  Observe that
      * setNumCells is protected.
      *
-     *                          JRM -- 8/30/07
+     *                           -- 8/30/07
      *
      * Changes:
      *
@@ -373,7 +373,7 @@ public abstract class Column
      * For setName() the supplied name must be a valid svar name, and must
      * be unique in both the vocab list and the column list.
      *
-     *                                          JRM -- 8/30/07
+     *                                           -- 8/30/07
      *
      * Changes:
      *
@@ -438,7 +438,7 @@ public abstract class Column
      *
      * Get and set the value of the selected field.
      *
-     *                              JRM -- 2/8/08
+     *                               -- 2/8/08
      *
      * Changes:
      *
@@ -473,7 +473,7 @@ public abstract class Column
      * Cell MUST be the current cannonical incarnation.  This should be verified
      * by the subclass.
      *
-     *                                              JRM -- 3/6/08
+     *                                               -- 3/6/08
      *
      * Changes:
      *
@@ -537,7 +537,7 @@ public abstract class Column
      *
      * Finally set this.cascadeInProgress to true, and exit.
      *
-     *                                  JRM -- 3/15/08
+     *                                   -- 3/15/08
      *
      * Changes:
      *
@@ -582,7 +582,7 @@ public abstract class Column
      *
      * Delete any entries from the pending set, and then discard it.
      *
-     *                                              JRM -- 3/14/08
+     *                                               -- 3/14/08
      *
      * Changes:
      *
@@ -633,7 +633,7 @@ public abstract class Column
      * Then clear the pending set, set this.cascadeInProgress to false,
      * and exit.
      *
-     *                                  JRM -- 3/15/08
+     *                                   -- 3/15/08
      *
      * Changes:
      *
@@ -682,7 +682,7 @@ public abstract class Column
      *
      * This method is intened to be over-ridden as needed by subclasses.
      *
-     *                                              JRM -- 3/23/08
+     *                                               -- 3/23/08
      *
      * Changes:
      *
@@ -706,7 +706,7 @@ public abstract class Column
      *
      * This method is intened to be over-ridden as needed by subclasses.
      *
-     *                                              JRM -- 3/23/08
+     *                                               -- 3/23/08
      *
      * Changes:
      *

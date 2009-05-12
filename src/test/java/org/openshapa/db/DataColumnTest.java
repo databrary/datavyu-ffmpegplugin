@@ -856,7 +856,7 @@ public final class DataColumnTest {
      * don't care about the type of the column.  Thus for simplicity, most of
      * tests are performed on a float column.
      *
-     *                                              JRM -- 12/31/07
+     *                                               -- 12/31/07
      *
      * Changes:
      *
@@ -3208,7 +3208,7 @@ public final class DataColumnTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 12/29/07
+     *                                               -- 12/29/07
      *
      * Changes:
      *
@@ -3960,7 +3960,7 @@ public final class DataColumnTest {
      *
      * Run a battery of tests on the toString methods of the class.
      *
-     *                                              JRM -- 12/31/07
+     *                                               -- 12/31/07
      *
      * Changes:
      *
@@ -5249,7 +5249,7 @@ public final class DataColumnTest {
      * base instance.  Instead itsCells in the copy is always set to null,
      * regardless of the value of itsCells in the base instance).
      *
-     *                                              JRM -- 12/30/07
+     *                                               -- 12/30/07
      *
      * Changes:
      *

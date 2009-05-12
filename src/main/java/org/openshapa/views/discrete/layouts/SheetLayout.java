@@ -5,7 +5,6 @@ import java.util.Vector;
 
 /**
  * SheetLayout - abstract class for spreadsheet layouts.
- * @author swhitcher
  */
 public abstract class SheetLayout {
 

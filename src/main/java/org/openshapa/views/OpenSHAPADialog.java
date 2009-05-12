@@ -8,8 +8,6 @@ import javax.swing.JDialog;
 /**
  * Generic OpenSHAPA dialog - handles work common to all dialogs (handling of
  * keystrokes, etc).
- *
- * @author cfreeman
  */
 public abstract class OpenSHAPADialog extends JDialog
 implements KeyEventDispatcher {

@@ -11,7 +11,6 @@ import org.openshapa.util.HashUtils;
  * contained in the instance.
  *
  * @author FGA
- * @author JRM
  */
 public abstract class DBElement implements Cloneable {
 
@@ -52,7 +51,6 @@ public abstract class DBElement implements Cloneable {
      *
      * @throws SystemErrorException If the supplied database is null.
      *
-     * @author JRM
      * @date 2007/04/11
      */
      public DBElement(Database db) throws SystemErrorException {
@@ -74,7 +72,6 @@ public abstract class DBElement implements Cloneable {
       * @throws SystemErrorException If the DBElement or dbe database is null,
       * or if the lastModUID of the dbe is invalid.
       *
-      * @author JRM
       * @date 2007/04/11
       */
      public DBElement(final DBElement dbe) throws SystemErrorException {
@@ -103,7 +100,6 @@ public abstract class DBElement implements Cloneable {
     /**
      * Set the id to INVALID_ID.
      *
-     * @author JRM
      * @date 2008/02/19
      */
     protected void clearID() throws SystemErrorException {
@@ -115,7 +111,6 @@ public abstract class DBElement implements Cloneable {
      * @return A reference to the database with which this DBElement is
      * associated with.
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public Database getDB() {
@@ -125,7 +120,6 @@ public abstract class DBElement implements Cloneable {
     /**
      * @return The unique ID assigned to this DBElement.
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public long getID() {
@@ -138,7 +132,6 @@ public abstract class DBElement implements Cloneable {
      *
      * @return last mod UID
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public int getLastModUID() {
@@ -152,7 +145,6 @@ public abstract class DBElement implements Cloneable {
      *
      * @throws SystemErrorException If the supplied id is invalid.
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public void setID(long id) throws SystemErrorException {
@@ -173,7 +165,6 @@ public abstract class DBElement implements Cloneable {
      * @throws SystemErrorException If the database this element references is
      * null.
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public void setLastModUID() throws SystemErrorException {
@@ -203,7 +194,6 @@ public abstract class DBElement implements Cloneable {
      * @throws SystemErrorException if The database this element references is
      * null, or if the supplied userid is invalid.
      *
-     * @author JRM
      * @date 2007/04/11
      */
     public void setLastModUID(int uid) throws SystemErrorException {

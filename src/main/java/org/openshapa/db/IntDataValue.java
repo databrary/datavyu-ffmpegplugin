@@ -16,8 +16,6 @@ import org.openshapa.util.HashUtils;
 /**
  * An instance of IntDataValue is used to store an integer value
  * assigned to a formal argument.
- *
- * @author mainzer
  */
 public final class IntDataValue extends DataValue
 {
@@ -86,7 +84,7 @@ public final class IntDataValue extends DataValue
      * The fourth takes a reference to an instance of IntDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -144,7 +142,7 @@ public final class IntDataValue extends DataValue
      *
      * Return the current value of the data value.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -164,7 +162,7 @@ public final class IntDataValue extends DataValue
      * Set itsValue to the specified value.  If subrange is true, coerce the
      * value into the subrange.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -236,7 +234,7 @@ public final class IntDataValue extends DataValue
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -258,7 +256,7 @@ public final class IntDataValue extends DataValue
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -285,7 +283,7 @@ public final class IntDataValue extends DataValue
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -353,7 +351,7 @@ public final class IntDataValue extends DataValue
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -420,7 +418,7 @@ public final class IntDataValue extends DataValue
      * If the supplied value is in range for the associated formal argument,
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
-     *                                              JRM -- 070815
+     *                                               -- 070815
      *
      * Changes:
      *
@@ -458,7 +456,7 @@ public final class IntDataValue extends DataValue
      * Returns a reference to the newly constructed IntDataValue if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

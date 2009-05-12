@@ -8,8 +8,7 @@ import org.openshapa.views.discrete.Selector;
 import java.awt.event.KeyEvent;
 
 /**
- *
- * @author cfreeman
+ * A view for a quote string data value.
  */
 public final class QuoteStringDataValueView extends DataValueElementV {
 

@@ -17,8 +17,6 @@ import org.openshapa.views.discrete.Selector;
 
 /**
  * A Factory for creating data value views.
- *
- * @author cfreeman
  */
 public class DataValueViewFactory {
 

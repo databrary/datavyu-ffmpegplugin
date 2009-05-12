@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public abstract class CellTest extends DBElementTest {
 
@@ -28,7 +27,7 @@ public abstract class CellTest extends DBElementTest {
      * Verify that the accessors supported by the Cell abstract class function
      * correctly when run on the supplied instance of some subclass of Cell.
      *
-     *                                              JRM -- 12/3/07
+     *                                               -- 12/3/07
      *
      * Changes:
      *
@@ -297,7 +296,7 @@ public abstract class CellTest extends DBElementTest {
      * contain no common references (other than db), and that they have the
      * same value.
      *
-     *                                              JRM -- 12/3/07
+     *                                               -- 12/3/07
      *
      * Changes:
      *
@@ -440,7 +439,7 @@ public abstract class CellTest extends DBElementTest {
      * Verify that the supplied instance of Cell has been correctly
      * initialized by a constructor.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *

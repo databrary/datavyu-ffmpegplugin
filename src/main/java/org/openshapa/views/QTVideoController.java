@@ -14,8 +14,6 @@ import org.jdesktop.application.Action;
 
 /**
  * Quicktime video controller.
- *
- * @author cfreeman
  */
 public final class QTVideoController extends OpenSHAPADialog {
 

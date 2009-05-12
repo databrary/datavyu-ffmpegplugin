@@ -82,7 +82,7 @@ public abstract class Database
      *
      * Constructor for Database.  Sets up data structures used by all flavors
      * of databases.
-     *                                              JRM -- 4/30/07
+     *                                               -- 4/30/07
      *
      * Changes:
      *
@@ -172,7 +172,7 @@ public abstract class Database
 //     *      confusion.  Also changed type to AFormalArgumentto
 //     *      reflect changes in class structure.
 //     *
-//     *                                      -- JRM - 3/03/07
+//     *                                      --  - 3/03/07
 //     */
 //
 //    public abstract FormalArgument getFormalArgument(long argumentID);
@@ -219,7 +219,7 @@ public abstract class Database
 //     *      NOTE: We must support many types of formal arguments.  Thus this
 //     *            method makes little sense.  Expect that I will rework this
 //     *            completely.
-//     *                                  -- JRM - 3/03/07
+//     *                                  --  - 3/03/07
 //     *
 //     * Creates a new formal argument.
 //     * @return the newly created formal argument
@@ -241,7 +241,7 @@ public abstract class Database
 //     *
 //     *    - Changed return type to match changes in class structure for
 //     *      vocab elements.
-//     *                                          -- JRM - 3/03/07
+//     *                                          --  - 3/03/07
 //     */
 //
 //    public abstract VocabElement createMatrixVocabElement();
@@ -256,7 +256,7 @@ public abstract class Database
 //     *
 //     *    - Changed return type to match changes in class structure for
 //     *      vocab elements.
-//     *                                          -- JRM - 3/03/07
+//     *                                          --  - 3/03/07
 //     */
 //
 //    public abstract VocabElement createPredicateVocabElement();
@@ -334,7 +334,7 @@ public abstract class Database
      *
      * Get the current user ID.
      *
-     *               JRM -- 4/11/07
+     *                -- 4/11/07
      *
      * @return  ID of the user who is currently working on the database.
      *
@@ -355,7 +355,7 @@ public abstract class Database
      *
      * Get the description of the database.
      *
-     *                    JRM -- 4/10/07
+     *                     -- 4/10/07
      *
      * @return  A copy of the description field of the instance of Database, or
      *          null if the description is undefined.
@@ -383,7 +383,7 @@ public abstract class Database
      *
      * Get the name of the database.
      *
-     *                    JRM -- 4/10/07
+     *                     -- 4/10/07
      *
      * @return  A copy of the name field of the instance of Database, or null
      *          if the name is undefined.
@@ -411,7 +411,7 @@ public abstract class Database
      *
      * Gets the current value of the temporal ordering flag.
      *
-     *                              JRM -- 3/20/08
+     *                               -- 3/20/08
      *
      * @return Value of this.temporalOrdering.
      *
@@ -452,7 +452,7 @@ public abstract class Database
      * Set the description of the database.  Note that null is a valid
      * new description, as the database description is optional.
      *
-     *                                  JRM -- 4/10/07
+     *                                   -- 4/10/07
      *
      * @return  void
      *
@@ -483,7 +483,7 @@ public abstract class Database
      * Set the description of the database.  Note that null is a valid
      * new description, as the database description is optional.
      *
-     *                                  JRM -- 4/10/07
+     *                                   -- 4/10/07
      *
      * @return  void
      *
@@ -521,7 +521,7 @@ public abstract class Database
      * Set the current value of the temporal ordering flag.  If the flag is
      * switched from false to true, sort all the columns.
      *
-     *                              JRM -- 3/20/08
+     *                               -- 3/20/08
      *
      * @return void.
      *
@@ -703,7 +703,7 @@ public abstract class Database
      *
      * Returns the id assigned to the newly appended cell
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -800,7 +800,7 @@ public abstract class Database
      *
      * Returns the id assigned to the newly inserted cell
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -892,7 +892,7 @@ public abstract class Database
      * Given a cell id, look it up in the index, and return copy.  Throw a
      * system error exception if no such cell exists.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
@@ -948,7 +948,7 @@ public abstract class Database
      * the target column, and return copy.  Throw a system error exception
      * if no such cell exists.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
@@ -1003,7 +1003,7 @@ public abstract class Database
      * The id, itsColID, itsMveID, and itsMveType fields of the new cell
      * must match that of the old.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1129,7 +1129,7 @@ public abstract class Database
      *
      * Remove the specified cell from its column and discard it.
      *
-     *                                          JRM -- 8/31/07
+     *                                           -- 8/31/07
      *
      * Changes:
      *
@@ -1293,7 +1293,7 @@ public abstract class Database
      * of the columns cells.  Then create a default initial MatrixVocabElement
      * as appropriate for the type of the DataColumn.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
@@ -1357,7 +1357,7 @@ public abstract class Database
      * that the column name is valid and not in use, as that has been checked
      * already.
      *
-     *                                                  JRM -- 8/30/07
+     *                                                   -- 8/30/07
      *
      * Changes:
      *
@@ -1447,7 +1447,7 @@ public abstract class Database
      * the column list (and in passing, the index), and return the newly
      * assigned ID of the column.
      *
-     *                                                  JRM -- 8/30/07
+     *                                                   -- 8/30/07
      *
      * Changes:
      *
@@ -1501,7 +1501,7 @@ public abstract class Database
      * Test to see if a column name is in use.  Return true if it is, and false
      * if it isn't.  Throw a system error if the name is invalid.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1542,7 +1542,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1585,7 +1585,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1628,7 +1628,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1666,7 +1666,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1704,7 +1704,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1742,7 +1742,7 @@ public abstract class Database
      *
      * If no such column exists, throw a system error.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
@@ -1780,13 +1780,13 @@ public abstract class Database
      *
      * If there are no Columns, return null.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
      *    - Modified the method to return an empty vector if there are not
      *      Columns.
-     *                                              JRM -- 11/24/08
+     *                                               -- 11/24/08
      */
 
     public java.util.Vector<Column> getColumns()
@@ -1807,13 +1807,13 @@ public abstract class Database
      *
      * If there are no DataColumns, return null.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
      *    - Modified the method to return an empty vector if there are no
      *      DataColumns.
-     *                                              JRM -- 11/24/08
+     *                                               -- 11/24/08
      */
 
     public java.util.Vector<DataColumn> getDataColumns()
@@ -1834,13 +1834,13 @@ public abstract class Database
      *
      * If there are no ReferenceColumns, return null.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changes:
      *
      *    - Modified the method to return an empty vector if there are no
      *      DataColumns.
-     *                                              JRM -- 11/24/08
+     *                                               -- 11/24/08
      */
 
     public java.util.Vector<ReferenceColumn> getReferenceColumns()
@@ -1862,7 +1862,7 @@ public abstract class Database
      * If the Column is a DataColumn, also remove the MatrixVocabElement
      * associated with the DataColumn.
      *
-     *                                              JRM -- 8/31/07
+     *                                               -- 8/31/07
      *
      * Changed:
      *
@@ -1939,7 +1939,7 @@ public abstract class Database
      * We will probably want to relax this in the future, but we will keep
      * this restriction for now.
      *
-     *                                                 JRM -- 8/31/07
+     *                                                  -- 8/31/07
      *
      * Changes:
      *
@@ -2092,7 +2092,7 @@ public abstract class Database
      *
      * Note the end of a cascade of changes.  Note that such cascades
      * may be nested.
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2114,7 +2114,7 @@ public abstract class Database
      *
      * Note the beginning of a cascade of changes.  Note that such cascades
      * may be nested.
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2138,7 +2138,7 @@ public abstract class Database
      * ExternalCascadeListener interface, and must be registered with the
      * Database on entry.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2164,7 +2164,7 @@ public abstract class Database
      * ExternalCascadeListener interface, and must be registered with the
      * Database on entry.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2190,7 +2190,7 @@ public abstract class Database
      * ExternalColumnListListener interface, and must be registered with the
      * column list on entry.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2216,7 +2216,7 @@ public abstract class Database
      * ExternalDataCellListener interface, and must be registered with the
      * target on entry.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2255,7 +2255,7 @@ public abstract class Database
      * ExternalDataColumnListener interface, and must be registered with the
      * target on entry.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2294,7 +2294,7 @@ public abstract class Database
      * ExternalVocabElementListener interface, and must be registered with the
      * target on entry.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2333,7 +2333,7 @@ public abstract class Database
      * ExternalVocabListListener interface, and must be registered with the
      * vocab list on entry.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2359,7 +2359,7 @@ public abstract class Database
      * ExternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2385,7 +2385,7 @@ public abstract class Database
      * ExternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2411,7 +2411,7 @@ public abstract class Database
      * ExternalDataCellListener interface.  The listener will be informed
      * of changes in and deletions of data cells in the target column.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2450,7 +2450,7 @@ public abstract class Database
      * ExternalDataColumnListener interface.  The listener will be informed
      * of changes in and deletions of data cells in the target column.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2489,7 +2489,7 @@ public abstract class Database
      * InternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -2515,7 +2515,7 @@ public abstract class Database
      * ExternalVocabElementListener interface.  The listener will be informed
      * of changes in and deletions of vocab elements.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2555,7 +2555,7 @@ public abstract class Database
      * of the insertion and deletion of vocab element into and from the
      * vocab list.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -2617,7 +2617,7 @@ public abstract class Database
     /* more general methods are absolutely necessary.  This will make it     */
     /* easier to put predicates and matricies (i.e. column variables) in     */
     /* separate name spaces should we ever wish to.                          */
-    /*                                                  JRM -- 6/11/07       */
+    /*                                                   -- 6/11/07       */
     /*                                                                       */
     /* MatrixVocabElement based methods:                                     */
     /*                                                                       */
@@ -2667,7 +2667,7 @@ public abstract class Database
      * are created as part of columns, there is no need for this routine
      * outside the database code.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2704,7 +2704,7 @@ public abstract class Database
      * MatrixVocabElement.  Throws a system error if no such
      * MatrixVocabElement exists.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2737,7 +2737,7 @@ public abstract class Database
      * MatrixVocabElement.  Throws a system error if no such
      * MatrixVocabElement exists.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2770,7 +2770,7 @@ public abstract class Database
      * matrixType.MATRIX, construct a vector containing copies of all such
      * entries, and return it.  If there are no such entries, return null.
      *
-     *                                              JRM -- 6/18/07
+     *                                               -- 6/18/07
      *
      * Changes:
      *
@@ -2790,7 +2790,7 @@ public abstract class Database
      * Given a valid matrix (i.e. column variable) name, return true if it is
      * in use, and false if it is not.  Throws a system error on a null or
      * invalid name.
-     *                                              JRM -- 6/13/07
+     *                                               -- 6/13/07
      *
      * Changes:
      *
@@ -2810,7 +2810,7 @@ public abstract class Database
      * Given a matrix vocab element id, return true if the vocab list contains
      * a MatrixVocabElement with that id, and false otherwise.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2830,7 +2830,7 @@ public abstract class Database
      * Given a matrix vocab element name, return true if the vocab list contains
      * a MatrixVocabElement with that name, and false otherwise.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2855,7 +2855,7 @@ public abstract class Database
      * This method is private, as matrix vocab elements are inserted and
      * deleted with columns.  Thus there should be no need of the method
      * outside the database code.
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2887,7 +2887,7 @@ public abstract class Database
      * Throws a system error if the old version doesn't exist.  Update the
      * index in passing, and adjust for changes in the formal argument list.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -2967,7 +2967,7 @@ public abstract class Database
      * vocab list and index.  Return the ID assigned to the copy.
      * Throws a system error if any errors are detected.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3004,7 +3004,7 @@ public abstract class Database
      * PredicateVocabElement.  Throws a system error if no such
      * PredicateVocabElement exists.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3037,7 +3037,7 @@ public abstract class Database
      * PredicateVocabElement.  Throws a system error if no such
      * PredicateVocabElement exists.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3070,7 +3070,7 @@ public abstract class Database
      * containing copies of all such entries, and return it.  If there are no
      * such entries, return null.
      *
-     *                                              JRM -- 6/18/07
+     *                                               -- 6/18/07
      *
      * Changes:
      *
@@ -3090,7 +3090,7 @@ public abstract class Database
      * Given a valid predicate name, return true if it is in use, and false
      * if it is not.  Throws a system error on a null or invalid name.
      *
-     *                                              JRM -- 6/13/07
+     *                                               -- 6/13/07
      *
      * Changes:
      *
@@ -3110,7 +3110,7 @@ public abstract class Database
      * Given a predicate vocab element id, return true if the vocab list
      * contains a PredicateVocabElement with that id, and false otherwise.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3130,7 +3130,7 @@ public abstract class Database
      * Given a predicate vocab element name, return true if the vocab list
      * contain a PredicateVocabElement with that name, and false otherwise.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3156,7 +3156,7 @@ public abstract class Database
      * PredicateVocabElement from the index, along with all of its formal
      * parameters.  Throws a system error if the target doesn't exist.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3188,7 +3188,7 @@ public abstract class Database
      * Throws a system error if the old version doesn't exist.  Update the
      * index in passing, and adjust for changes in the formal argument list.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3229,7 +3229,7 @@ public abstract class Database
      * element is not know at the time of call.  This should seldom be the
      * case.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3284,7 +3284,7 @@ public abstract class Database
      * element is not know at the time of call.  This should seldom be the
      * case.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3339,7 +3339,7 @@ public abstract class Database
      * element is not know at the time of call.  This should seldom be the
      * case.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3363,7 +3363,7 @@ public abstract class Database
      * element is not know at the time of call.  This should seldom be the
      * case.
      *
-     *                                              JRM -- 6/12/07
+     *                                               -- 6/12/07
      *
      * Changes:
      *
@@ -3533,7 +3533,7 @@ public abstract class Database
      * unicode, but for now, we will take a stict ASCII view of the issue.
      * Thus, for present purposes, a graphical character is a character with
      * ASCII code 0x21 - 0x7E inclusive.
-     *                                          JRM -- 1/23/07
+     *                                           -- 1/23/07
      *
      * Changes:
      *
@@ -3575,7 +3575,7 @@ public abstract class Database
      * but we will stay with the old MacSHAPA definitions for now.  Anything
      * we do here will be an extension, so we shouldn't introduce any
      * incompatibilities.
-     *                                      JRM -- 1/23/07
+     *                                       -- 1/23/07
      *
      * Changes:
      *
@@ -3648,7 +3648,7 @@ public abstract class Database
      * Were it not for that issue, "IsValidDouble()" would make much more
      * sense.
      *
-     *                                          JRM -- 2/7/07
+     *                                           -- 2/7/07
      *
      * Changes:
      *
@@ -3685,7 +3685,7 @@ public abstract class Database
      *
      * Return true if it is, and false otherwise.
      *
-     *                                          JRM -- 2/7/07
+     *                                           -- 2/7/07
      *
      * Changes:
      *
@@ -3734,7 +3734,7 @@ public abstract class Database
      *
      * Eventually we will have to extend this definition to make full use of
      * Unicode, but that can wait for now.
-     *                                          JRM -- 1/24/07
+     *                                           -- 1/24/07
      *
      * Changes:
      *
@@ -3832,7 +3832,7 @@ public abstract class Database
      *
      * Eventually we will have to extend this definition to make full use of
      * Unicode, but that can wait for now.
-     *                                          JRM -- 1/24/07
+     *                                           -- 1/24/07
      *
      * Changes:
      *
@@ -3921,7 +3921,7 @@ public abstract class Database
      *
      * Eventually we will have to extend this definition to make full use of
      * Unicode, but that can wait for now.
-     *                                          JRM -- 1/24/07
+     *                                           -- 1/24/07
      *
      * Changes:
      *
@@ -4030,7 +4030,7 @@ public abstract class Database
      *
      * Eventually we will have to extend this definition to make full use of
      * Unicode, but that can wait for now.
-     *                                          JRM -- 1/25/07
+     *                                           -- 1/25/07
      *
      * Changes:
      *
@@ -4087,7 +4087,7 @@ public abstract class Database
      * number of ticks is non-negative, and that the number of ticks per
      * second is positive.
      *
-     *                                              JRM -- 2/11/07
+     *                                               -- 2/11/07
      *
      * Changes;
      *
@@ -4115,7 +4115,7 @@ public abstract class Database
              ( s.getTime() > TimeStamp.MAX_TICKS ) ||
              ( s.getTPS() < TimeStamp.MIN_TPS ) ||
              ( s.getTPS() > TimeStamp.MAX_TPS ) )
-            /* JRM */
+            /*  */
             /* TODO: add a check to verify that the tps matches the db tps ?? */
         {
             return false;
@@ -4143,7 +4143,7 @@ public abstract class Database
      *
      * Eventually we will have to extend this definition to make full use of
      * Unicode, but that can wait for now.
-     *                                          JRM -- 1/25/07
+     *                                           -- 1/25/07
      *
      * Changes:
      *

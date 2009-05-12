@@ -15,8 +15,6 @@ import org.openshapa.util.HashUtils;
 /**
  * An instance of QuoteStringDataValue is used to store a quote string value
  * assigned to a formal argument.
- *
- * @author mainzer
  */
 
 public final class QuoteStringDataValue extends DataValue {
@@ -64,7 +62,7 @@ public final class QuoteStringDataValue extends DataValue {
      * The fourth takes a reference to an instance of QuoteStringDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -149,7 +147,7 @@ public final class QuoteStringDataValue extends DataValue {
      * If the data value is currently defined, return a string containing a
      * copy of the the current value of the data value.  Otherwise return null.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -176,7 +174,7 @@ public final class QuoteStringDataValue extends DataValue {
      *
      * Set itsValue to the specified value.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -226,7 +224,7 @@ public final class QuoteStringDataValue extends DataValue {
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -256,7 +254,7 @@ public final class QuoteStringDataValue extends DataValue {
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -294,7 +292,7 @@ public final class QuoteStringDataValue extends DataValue {
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -366,7 +364,7 @@ public final class QuoteStringDataValue extends DataValue {
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -425,7 +423,7 @@ public final class QuoteStringDataValue extends DataValue {
      * Thus we simply check to see if the value is valid, and return the
      * value if it is.  If it isn't, throw a system error.
      *
-     *                                              JRM -- 07/08/18
+     *                                               -- 07/08/18
      *
      * Changes:
      *
@@ -466,7 +464,7 @@ public final class QuoteStringDataValue extends DataValue {
      * Returns a reference to the newly constructed QuoteStringDataValue if
      * successful.  Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

@@ -22,8 +22,6 @@ import org.jdesktop.application.ResourceMap;
 
 /**
  * A view for a vocab element.
- *
- * @author cfreeman
  */
 public abstract class VocabElementV extends JPanel
 implements KeyListener {

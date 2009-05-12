@@ -11,7 +11,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class FormalArgumentTest {
 
@@ -47,7 +46,7 @@ public class FormalArgumentTest {
      *
      * Note that for now we don't test itsVocabElement here.  Will do that in
      * another method.
-     *                                          JRM -- 3/10/07
+     *                                           -- 3/10/07
      *
      * Changes:
      *
@@ -281,7 +280,7 @@ public class FormalArgumentTest {
      * itsVocabElementID fields.   This test requires allocation of a vocab
      * element and the database, and thus could not implemented until those
      * features were in place.
-     *                                          JRM -- 6/14/07
+     *                                           -- 6/14/07
      *
      * Changes:
      *

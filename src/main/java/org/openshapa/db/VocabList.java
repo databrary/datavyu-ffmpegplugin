@@ -27,9 +27,7 @@ import org.openshapa.util.OpenHashtable;
  * Note that while the VocabList is quite similar to the DBIndex class, it
  * isn't close enough to be a subclass.
  *
- *                                          JRM -- 4/30/07
- *
- * @author mainzer
+ *                                           -- 4/30/07
  */
 public class VocabList
 {
@@ -79,7 +77,7 @@ public class VocabList
      * VocabList()
      *
      * Constructor for the VocabList class.
-     *                                             JRM -- 4/30/07
+     *                                              -- 4/30/07
      *
      * Changes:
      *
@@ -164,7 +162,7 @@ public class VocabList
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of VocabListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -199,7 +197,7 @@ public class VocabList
      * Note that internal listeners are not supported at present, but the
      * error will be caught at a lower level.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -232,7 +230,7 @@ public class VocabList
      * Otherwise, pass the register external change listeners message on to the
      * instance of VocabListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -267,7 +265,7 @@ public class VocabList
      * Note that internal listeners are not supported at present, however the
      * error will be caught at a lower level.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -301,7 +299,7 @@ public class VocabList
      * Insert the vocab element and all the associated formal arguments into
      * the index, an insert the vocab element in the vocab list.
      *
-     *                                                 JRM -- 4/23/07
+     *                                                  -- 4/23/07
      *
      * Changes:
      *
@@ -311,7 +309,7 @@ public class VocabList
      *      calls to mark the start and finish of the potential cascade of
      *      changes.
      *
-     *                                                  JRM -- 2/5/08
+     *                                                   -- 2/5/08
      *
      *    - Modified code to create an instance of MatrixVocabElementListeners
      *      if the supplied vocab element is a mve, and to use that instance
@@ -379,19 +377,19 @@ public class VocabList
      *
      * Add the formal argument list of the supplied vocab element to the
      * database index.
-     *                                             JRM -- 4/30/07
+     *                                              -- 4/30/07
      *
      * Changes:
      *
      *    - Modified method to avoid calling getNumFormalArgs() on matrix ve's
      *      that haven't had their type declared yet.
      *
-     *                                              JRM -- 6/15/07
+     *                                               -- 6/15/07
      *
      *    - Modified method to assign IDs to column predicate formal arguments
      *      in instances of MatrixVocabElement.
      *
-     *                                              JRM -- 8/31/08
+     *                                               -- 8/31/08
      */
 
     private void addFargListToIndex(VocabElement ve)
@@ -464,7 +462,7 @@ public class VocabList
      * Construct and return a vector containing copies of all non-system
      * matricies of MatrixType.MATRIX in the vocab list.  If the vocab list
      * contains no such matricies, return null.
-     *                                                  JRM -- 6/19/07
+     *                                                   -- 6/19/07
      *
      * Changes:
      *
@@ -507,7 +505,7 @@ public class VocabList
      * Construct and return a vector containing copies of all non-system
      * predicates in the vocab list.  If the vocab list contains no non-system
      * predicates, it returns an empty vector.
-     *                                                  JRM -- 6/19/07
+     *                                                   -- 6/19/07
      *
      * Changes:
      *
@@ -549,7 +547,7 @@ public class VocabList
      *
      * Get the instance of VocabElement corresponding with the supplied id.
      *
-     *                                                 JRM -- 4/30/07
+     *                                                  -- 4/30/07
      *
      * Changes:
      *
@@ -584,7 +582,7 @@ public class VocabList
      *
      * Get the instance of VocabElement corresponding with the supplied name.
      *
-     *                                                  JRM -- 6/3/07
+     *                                                   -- 6/3/07
      *
      * Changes:
      *
@@ -643,7 +641,7 @@ public class VocabList
      * Get the instance of MatrixVocabElement corresponding with the supplied
      * id. Throw a system error if no such mve exists.
      *
-     *                                                 JRM -- 8/30/07
+     *                                                  -- 8/30/07
      *
      * Changes:
      *
@@ -686,7 +684,7 @@ public class VocabList
      * Get the instance of PredicateVocabElement corresponding with the
      * supplied name.  Throw a system error exception.
      *
-     *                                                  JRM -- 8/30/07
+     *                                                   -- 8/30/07
      *
      * Changes:
      *
@@ -751,7 +749,7 @@ public class VocabList
      * Get the instance of PredVocabElement corresponding with the supplied
      * id. Throw a system error if no such pve exists.
      *
-     *                                                 JRM -- 8/30/07
+     *                                                  -- 8/30/07
      *
      * Changes:
      *
@@ -794,7 +792,7 @@ public class VocabList
      * Get the instance of PredicateVocabElement corresponding with the
      * supplied name.  Throw a system error if there is no such element.
      *
-     *                                                  JRM -- 6/3/07
+     *                                                   -- 6/3/07
      *
      * Changes:
      *
@@ -889,7 +887,7 @@ public class VocabList
      * Return true if the supplied predicate of variable name currently appears
      * in the vocab list, and false otherwise.
      *
-     *                                              JRM -- 6/3/07
+     *                                               -- 6/3/07
      *
      * Changes:
      *
@@ -1130,7 +1128,7 @@ public class VocabList
      * vocab list.  Similarly, remove the VocabElement and all its associated
      * formal parameters from the index.
      *
-     *                                                 JRM -- 4/30/07
+     *                                                  -- 4/30/07
      *
      * Changes:
      *
@@ -1141,12 +1139,12 @@ public class VocabList
      *      Finally, added calls to mark the beginning and end of any
      *      resulting cascade of changes.
      *
-     *                                                  JRM -- 2/5/08
+     *                                                   -- 2/5/08
      *
      *    - Added code to delete column predicate formal arguments from
      *      the index in the case of MatrixVocabElement.
      *
-     *                                                  JRM -- 8/31/08
+     *                                                   -- 8/31/08
      */
 
     protected void removeVocabElement(long targetID)
@@ -1298,7 +1296,7 @@ public class VocabList
      *      Similarly, don't try to recycle the IDs of formal arguments if you
      *      change the type.  Just leave the ID set it INVALID_ID.
      *
-     *                                                 JRM -- 5/1/07
+     *                                                  -- 5/1/07
      *
      * Changes:
      *
@@ -1306,11 +1304,15 @@ public class VocabList
      *      the vocab element to the new, and to notify listeners of the
      *      changes.  Also added calls to mark the beginning and end of any
      *      resulting cascade of changes.
-     *                                                  JRM -- 2/5/08
+     *                                                   -- 2/5/08
      *
      *    - Modified method to deal with the column predicate argument list
      *      of the MatrixVacabElement.
-     *                                                  JRM -- 8/31/08
+     *                                                   -- 8/31/08
+     *
+     *    - Removed the check getNumFormalArguments less than 0,
+     *      getNumFormalArguments wraps Vector.size() - which never returns a
+     *      value less than zero.
      */
 
     protected void replaceVocabElement(VocabElement ve)
@@ -1343,11 +1345,6 @@ public class VocabList
             throw new SystemErrorException(mName +
                                            "ve.getID() == INVALID_ID");
         }
-        else if ( ve.getNumFormalArgs() < 0 )
-        {
-            throw new SystemErrorException(mName +
-                                           "ve.getNumFormalArgs() < 0");
-        }
 
         old_ve = this.vl.get(ve.getID());
 
@@ -1356,15 +1353,11 @@ public class VocabList
             throw new SystemErrorException(mName +
                     "can't replace -- not in vocab list.");
         }
-        else if ( ve.getClass() != old_ve.getClass() )
+        else if ( !ve.getClass().equals(old_ve.getClass()) )
         {
             throw new SystemErrorException(mName + "type mis-match.");
         }
-        else if ( old_ve.getNumFormalArgs() < 0 )
-        {
-            throw new SystemErrorException(mName +
-                                           "old_ve.getNumFormalArgs() <= 0");
-        }
+
 
         /* before we actually do anything, scan the old and new formal argument
          * lists, and verify that there are no type changes or duplicate IDs.

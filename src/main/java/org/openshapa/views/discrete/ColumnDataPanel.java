@@ -8,8 +8,6 @@ import javax.swing.BorderFactory;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
- *
- * @author swhitcher
  */
 public class ColumnDataPanel extends SpreadsheetElementPanel {
 

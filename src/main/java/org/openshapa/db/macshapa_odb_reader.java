@@ -13,7 +13,6 @@ import java.util.Vector;
         
 /**
  *
- * @author mainzer
  */
 public class macshapa_odb_reader
 {
@@ -1095,7 +1094,7 @@ public class macshapa_odb_reader
 	 * Constructor for an new instance of Token.  This method calls the 
          * super class constructor, and sets the reader field
 	 *
-	 *                                                JRM - 12/14/08
+	 *                                                 - 12/14/08
 	 *
 	 * Parameters:
 	 *
@@ -1135,7 +1134,7 @@ public class macshapa_odb_reader
 	 * must also force the string assocated with the token to a legal value.
 	 * This method tends to this matter.
 	 *
-	 *                                                JRM - 6/3/08
+	 *                                                 - 6/3/08
 	 *
 	 * Parameters:
 	 *
@@ -1189,7 +1188,7 @@ public class macshapa_odb_reader
          * Coerce a floating point token to an integer token, coercing the 
          * value to the nearest legal integer value.
          *
-         *						JRM - 7/29/08
+         *						 - 7/29/08
          *
          * Parameters:
          *
@@ -1280,7 +1279,7 @@ public class macshapa_odb_reader
          * This is done by overwriting illegal characters in this.str with '_' 
          * characters.
          *
-         *						JRM - 7/30/08
+         *						 - 7/30/08
          *
          * Parameters:
          *
@@ -1474,7 +1473,7 @@ public class macshapa_odb_reader
          * This is done by overwriting illegal characters in this.str 
          * with '_' characters.
          *
-         *						JRM - 7/26/08
+         *						 - 7/26/08
          *
          * Parameters:
          *
@@ -1549,7 +1548,7 @@ public class macshapa_odb_reader
 	 * StringBuilder referenced by this.str.  If this.str is null, 
 	 * initialize it with the enpty string and then append new_char to it.
 	 *
-	 *					JRM - 6/3/08
+	 *					 - 6/3/08
 	 *
 	 * Parameters:
 	 *
@@ -1583,7 +1582,7 @@ public class macshapa_odb_reader
 	 * Debugging routine that returns the contents of an instance of 
 	 * Token rpresented in a string.
 	 * 
-	 *					    JRM - 6/4/08
+	 *					     - 6/4/08
 	 *
 	 * Parameters:
 	 *
@@ -1936,7 +1935,7 @@ public class macshapa_odb_reader
      *
      * Constructor for an new instance of macshapa_odb_reader.  
      *
-     *                                                JRM - 12/14/08
+     *                                                 - 12/14/08
      *
      * Parameters:
      *
@@ -1980,7 +1979,7 @@ public class macshapa_odb_reader
      * If in addition the scan_fatal parameter is true, also set this.abort_scan 
      * to TRUE.
      *
-     *                                              JRM - 5/26/08
+     *                                               - 5/26/08
      *
      * Parameters:
      *
@@ -2098,7 +2097,7 @@ public class macshapa_odb_reader
      * If this.warning_count is greater than or equal to this.max_warnings, 
      * issue a MAX_WARNINGS_EXCEEDED_ERR.
      *
-     *                                          JRM - 5/26/08
+     *                                           - 5/26/08
      *
      * Parameters:
      *
@@ -2176,7 +2175,7 @@ public class macshapa_odb_reader
      * next line if appropriate.  Maintain the this.line_buf_index field,
      * and set this.lookahead_char to ' ' when the end of file is reached.
      *
-     *                                          JRM - 5/27/08
+     *                                           - 5/27/08
      *
      * Parameters:
      *
@@ -2253,7 +2252,7 @@ public class macshapa_odb_reader
      * Load the next line from the input file into rthis.line, and post the 
      * line to the listing file (if it is defined).  
      *
-     *                                              JRM - 5/27/08
+     *                                               - 5/27/08
      *
      * Parameters:
      *
@@ -2310,7 +2309,7 @@ public class macshapa_odb_reader
      *
      * Write the current contents of this.line to the listing.
      *
-     *                                                    JRM - 6/1/08
+     *                                                     - 6/1/08
      *
      * Parameters:
      *
@@ -2437,7 +2436,7 @@ public class macshapa_odb_reader
      *
      * Rewrites of the standard C library routines for use by the lexer.
      *
-     *						    JRM 6/7/08
+     *						     6/7/08
      *
      **************************************************************************/
     
@@ -2530,7 +2529,7 @@ public class macshapa_odb_reader
      * However at end of file, we must generate new end of file tokens as the 
      * queue empties.
      *
-     *                                                 JRM - 6/4/08
+     *                                                  - 6/4/08
      *
      * Parameters:
      *
@@ -2613,7 +2612,7 @@ public class macshapa_odb_reader
     * character or a the end of file is encountered.  Note that this routine
     * recognizes comments, and treats them as white space.
     *
-    *                                                JRM - 6/4/08
+    *                                                 - 6/4/08
     *
     * Parameters:
     *
@@ -2705,7 +2704,7 @@ public class macshapa_odb_reader
     * we load UNKNOWN_ALIST_LABEL into token_ptr->aux so that the parser can
     * deal with the situation gracefully.
     *
-    *                                                     JRM - 6/5/08
+    *                                                      - 6/5/08
     *
     * Parameters:
     *
@@ -2881,7 +2880,7 @@ public class macshapa_odb_reader
      * The end of a numeric token is indicated by the first character
      * in the input stream that cannot be generated by the above productions.
      *
-     *                                                 JRM - 6/5/08
+     *                                                  - 6/5/08
      *
      * Parameters:
      *
@@ -3125,7 +3124,7 @@ public class macshapa_odb_reader
      * gracefully.  This should case should only arise when we attemp to read
      * an open database file generated by a later version of MacSHAPA.
      *
-     *                                         JRM - 6/5/08
+     *                                          - 6/5/08
      *
      * Parameters:
      *
@@ -3324,7 +3323,7 @@ public class macshapa_odb_reader
      * lower case letters and '-'s, and tests to see if the identifier is 
      * one of the two reserved words.
      *
-     *                                                  JRM - 6/6/08
+     *                                                   - 6/6/08
      *
      *  Parameters:
      *
@@ -3501,7 +3500,7 @@ public class macshapa_odb_reader
     * string token, forcing them to a legal value ('_'), and issueing a warning
     * should we encounter them.
     *
-    *                                                   JRM -- 6/6/08
+    *                                                    -- 6/6/08
     *
     * Parameters:
     *
@@ -3684,7 +3683,7 @@ public class macshapa_odb_reader
      *    depending on the severity of the lapse, and if appropriate, replaces
      *    the illegal character with a legal one.
      *
-     *                                                  JRM - 6/7/08
+     *                                                   - 6/7/08
      *
      * Parameters:
      *
@@ -4060,7 +4059,7 @@ public class macshapa_odb_reader
      * Read the next token from the input file, and load it into the instance
      * of Token referenced by token.
      *
-     *                                                  JRM - 6/7/08
+     *                                                   - 6/7/08
      *
      * Parameters:
      *
@@ -4665,7 +4664,7 @@ public class macshapa_odb_reader
      *                                                                                                
      * Functions whose names are followed by a 'R' are recursive.                                     
      *                                                                                                
-     *                                                      JRM - 6/8/08                         
+     *                                                       - 6/8/08                         
      *                                                                                                
      ***************************************************************************************************/
 
@@ -4693,7 +4692,7 @@ public class macshapa_odb_reader
      * all items until it comes to the right parenthesis that ends the a-list
      * entry.
      *
-     *                                                     JRM - 6/8/08
+     *                                                      - 6/8/08
      *
      * Parameters:
      *
@@ -4802,7 +4801,7 @@ public class macshapa_odb_reader
      *                          'macshapa-db'
      *
      *
-     *                                                 JRM - 6/8/08
+     *                                                  - 6/8/08
      *
      * Parameters:
      *
@@ -4917,7 +4916,7 @@ public class macshapa_odb_reader
      * messages if they do not.
      *
      *
-     *                                            JRM - 6/8/08
+     *                                             - 6/8/08
      *
      * Parameters:
      *
@@ -5058,7 +5057,7 @@ public class macshapa_odb_reader
      *	    <db_body> --> '(' <header_section> <user_section>
      *                        <query_section> <system_section> ')'
      *
-     *                                                  JRM - 6/8/08
+     *                                                   - 6/8/08
      *
      * Parameters:
      *
@@ -5327,7 +5326,7 @@ public class macshapa_odb_reader
      *                             <arbitrary_list>
      *
      *
-     *                                                JRM - 6/8/08
+     *                                                 - 6/8/08
      *
      * Parameters:
      *
@@ -5527,7 +5526,7 @@ public class macshapa_odb_reader
      * settings of all fields that can be modified by attributes in the 
      * HEADER> section, and returns it.
      *
-     *                                           JRM - 6/8/08
+     *                                            - 6/8/08
      *
      * Parameters:
      *
@@ -5574,7 +5573,7 @@ public class macshapa_odb_reader
      *
      *	    <db-name-attribute> --> '(' 'NAME>' <quote_string> ')'
      *
-     *                                             JRM - 6/8/08
+     *                                              - 6/8/08
      *
      * Parameters:
      *
@@ -5764,7 +5763,7 @@ public class macshapa_odb_reader
      *
      *	    <db-version-attribute> --> '(' 'VERSION>' <integer> ')'
      *
-     *                                             JRM - 6/9/08
+     *                                              - 6/9/08
      *
      * Parameters:
      *
@@ -5958,7 +5957,7 @@ public class macshapa_odb_reader
      *
      *	    <db-version-attribute> --> '(' 'DEBUG-LEVEL>' <integer> ')'
      *
-     *                                                  JRM - 6/9/08
+     *                                                   - 6/9/08
      *
      * Parameters:
      *
@@ -6179,7 +6178,7 @@ public class macshapa_odb_reader
      *      <max-warnings-attribute> --> '(' 'MAX-WARNINGS>' <integer> ')'
      *
      *
-     *                                            JRM - 6/9/08
+     *                                             - 6/9/08
      *
      * Parameters:
      *
@@ -6425,7 +6424,7 @@ public class macshapa_odb_reader
      *
      *	    <header_section> --> '(' 'HEADER>' <header-alist> ')'
      *
-     *                                       JRM - 6/10/08
+     *                                        - 6/10/08
      *
      *  Parameters:
      *
@@ -6581,7 +6580,7 @@ public class macshapa_odb_reader
 		/* since we are cleaning up any excess values in the HEADER> */
 		/* section, this else clause is unreachable at present.      */
 		/* Should we choose to drop this attempt at error recovery,  */
-		/* this clause will again become reachable.   JRM - 9/15/95  */
+		/* this clause will again become reachable.    - 9/15/95  */
 
 		post_warning_message(RIGHT_PAREN_EXPECTED_WARN,
 			"The closing parenthesis was missing from " +
@@ -6606,7 +6605,7 @@ public class macshapa_odb_reader
      *
      *	    <db-version-attribute> --> '(' 'MAX-ERRORS>' <integer> ')'
      *
-     *                                                                                                      JRM - 9/6/95
+     *                                                                                                       - 9/6/95
      *
      *  Parameters:
      *
@@ -6811,7 +6810,7 @@ public class macshapa_odb_reader
      *
      *	    <db-version-attribute> --> '(' 'MAX-WARNINGS>' <integer> ')'
      *
-     *                                                JRM - 6/10/08
+     *                                                 - 6/10/08
      *
      *  Parameters:
      *
@@ -7014,7 +7013,7 @@ public class macshapa_odb_reader
      *
      * Dump the contents of the supplied DataCell to the listing file.
      *        
-     *                                                 JRM - 2/16/08
+     *                                                  - 2/16/08
      *
      * Parameters:
      *
@@ -7050,7 +7049,7 @@ public class macshapa_odb_reader
      * Dump the supplied spreadsheet variable definition data to the 
      * listing file.
      *        
-     *                                                 JRM - 2/16/08
+     *                                                  - 2/16/08
      *
      * Parameters:
      *
@@ -7099,7 +7098,7 @@ public class macshapa_odb_reader
      * FloatDataValue, issuing a warning message, and consuming the offending 
      * value.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -7264,7 +7263,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -7361,7 +7360,7 @@ public class macshapa_odb_reader
      * This method parses a foral argument value in the context of a matrix or 
      * predicate argument.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -7451,7 +7450,7 @@ public class macshapa_odb_reader
      * offending value.  However, in the case of a float token, the
      * float value is silently coerced to an integer.  
      *        
-     *                                                JRM - 6/12/08
+     *                                                 - 6/12/08
      *
      *  Parameters:
      *
@@ -7625,7 +7624,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -7735,7 +7734,7 @@ public class macshapa_odb_reader
      *        
      *        <time_stamp> --> '(' 'TIME>' <integer> ')' 
      *        
-     *                                            JRM - 6/13/08
+     *                                             - 6/13/08
      *
      * Parameters:
      *
@@ -7907,7 +7906,7 @@ public class macshapa_odb_reader
      * NominalDataValue, issuing a warning message, and consuming the 
      * offending value.
      *        
-     *                                            JRM - 6/14/08
+     *                                             - 6/14/08
      *
      * Parameters:
      *
@@ -8093,7 +8092,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -8239,7 +8238,7 @@ public class macshapa_odb_reader
      *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                                JRM - 6/14/08
+     *                                                 - 6/14/08
      *
      * Parameters:
      *
@@ -8462,7 +8461,7 @@ public class macshapa_odb_reader
      *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                             JRM - 6/14/08
+     *                                              - 6/14/08
      *
      * Parameters:
      *
@@ -8808,7 +8807,7 @@ public class macshapa_odb_reader
      *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -8961,7 +8960,7 @@ public class macshapa_odb_reader
      * If the formal argument list is empty, the function writes a default
      * formal argument list to the insertion buffer.
      *
-     *                                                 JRM - 6/14/08
+     *                                                  - 6/14/08
      *
      * Parameters:
      *
@@ -9140,7 +9139,7 @@ public class macshapa_odb_reader
      * or of inapropriate type, this function writes a default formal argument
      * list to the insertion buffer.
      *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -9334,7 +9333,7 @@ public class macshapa_odb_reader
      *                                       <pred_def_list> ')'
      *        
      *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -9571,7 +9570,7 @@ public class macshapa_odb_reader
      * the order in the formal arguments appeared in the spreadsheet variable 
      * declaration.
      *        
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -10034,7 +10033,7 @@ public class macshapa_odb_reader
      *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -10199,7 +10198,7 @@ public class macshapa_odb_reader
      * default value if the integer is missing.  Out of range values are 
      * forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -10422,7 +10421,7 @@ public class macshapa_odb_reader
      * default value if the integer is missing.  Out of range values are 
      * forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -10676,7 +10675,7 @@ public class macshapa_odb_reader
      *        
      *     <matrix_cell_value> --> <pred_arg>
      *        
-     *                                                    JRM - 6/15/08
+     *                                                     - 6/15/08
      *
      * Parameters:
      *
@@ -10895,7 +10894,7 @@ public class macshapa_odb_reader
      * COLUMN-WIDTH> attribute, or a default value if the integer is missing.  
      * Out of range values are forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -11139,7 +11138,7 @@ public class macshapa_odb_reader
      *
      *    <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                            JRM - 6/15/08
+     *                                             - 6/15/08
      *
      * Parameters:
      *
@@ -11379,7 +11378,7 @@ public class macshapa_odb_reader
      *
      *     <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -11900,7 +11899,7 @@ public class macshapa_odb_reader
      *
      *     <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -12044,7 +12043,7 @@ public class macshapa_odb_reader
      *                                      <s_var_dec_list> ')'
      *        
      *
-     *                                                    JRM - 6/16/08
+     *                                                     - 6/16/08
      *
      * Parameters:
      *
@@ -12279,7 +12278,7 @@ public class macshapa_odb_reader
      *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -12605,7 +12604,7 @@ public class macshapa_odb_reader
      * s_var_ptr parameter pointes to the MacSHAPA Variable data structure
      * associated with the spreadsheet variable.
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -12896,7 +12895,7 @@ public class macshapa_odb_reader
      *        
      *     <matrix_cell_value> --> <pred_arg>
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13159,7 +13158,7 @@ public class macshapa_odb_reader
      *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13303,7 +13302,7 @@ public class macshapa_odb_reader
      *     <s_var_defs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DEFINITIONS>' 
      *                                    <s_var_def_list> ')'
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13483,7 +13482,7 @@ public class macshapa_odb_reader
      *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -13678,7 +13677,7 @@ public class macshapa_odb_reader
      * If the formal argument list is empty, the function writes a default
      * formal argument list to the insertion buffer.
      *
-     *                                                 JRM - 6/18/08
+     *                                                  - 6/18/08
      *
      * Parameters:
      *
@@ -13978,7 +13977,7 @@ public class macshapa_odb_reader
      * or of inapropriate type, this function loads a default formal argument
      * list in to a vector of String and returns it.
      *
-     *                                                    JRM - 9/21/95
+     *                                                     - 9/21/95
      *
      * Parameters:
      *
@@ -14185,7 +14184,7 @@ public class macshapa_odb_reader
      * of the TYPE> a-list entry, or the code for <<MATRIX>> if the value is 
      * either missing or of an inappropriate type.
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -14413,7 +14412,7 @@ public class macshapa_odb_reader
      * TextStringDataValue.  Where this is inconvenient, the value is discarded, 
      * and the TextStringDataValue is set to contain an empty string.        
      *        
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -14574,7 +14573,7 @@ public class macshapa_odb_reader
      * Note that the attributes in the user alist must appear in the order
      * given, as each may employ definitions introduced in its predicessor.
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -14832,7 +14831,7 @@ public class macshapa_odb_reader
      *         <user_section> --> '(' 'USER>' <user-alist> ')'
      *        
      *
-     *                                             JRM - 9/11/95
+     *                                              - 9/11/95
      *
      * Parameters:
      *
@@ -14998,7 +14997,7 @@ public class macshapa_odb_reader
      *        
      * <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>' <boolean> ')'
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -15204,7 +15203,7 @@ public class macshapa_odb_reader
      * OpenSHAPA doesn't maintain a local vocab list, so we just discard the 
      * data in the vocab list.
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -15371,7 +15370,7 @@ public class macshapa_odb_reader
      * In addition to parsing the query list, this function also inserts each
      * query in the list into the query variable.
      *
-     *						JRM - 12/14/08
+     *						 - 12/14/08
      *
      * Parameters:
      *
@@ -15576,7 +15575,7 @@ public class macshapa_odb_reader
      *          <query_list> --> '(' (<pred_cell_value>)* ')'
      *
      *
-     *                                              JRM - 12/14/08
+     *                                               - 12/14/08
      *
      * Parameters:
      *
@@ -15783,7 +15782,7 @@ public class macshapa_odb_reader
                      * section this else clause is unreachable at present.  
                      * Should we choose to drop the above attempt at error 
                      * recovery, this clause will again become reachable.
-                     *                                  JRM -10/24/95
+                     *                                   -10/24/95
                      */
 
                     post_warning_message(RIGHT_PAREN_EXPECTED_WARN, 
@@ -15840,7 +15839,7 @@ public class macshapa_odb_reader
 //     * purpose, instead of modifying the user spreadsheet variable parsing
 //     * code.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16038,7 +16037,7 @@ public class macshapa_odb_reader
 //     * correctly at this time, and this seems to be one of the safest places
 //     * to cut corners.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16178,7 +16177,7 @@ public class macshapa_odb_reader
 //     * instance, in this function we test to make sure that we are dealing with
 //     * a valid alignment variable name.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16440,7 +16439,7 @@ public class macshapa_odb_reader
 //     * When this function is called, we are guaranteed that the name of the 
 //     * alignment has already been written to the input buffer.  
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16813,7 +16812,7 @@ public class macshapa_odb_reader
 //     * exists.  parse_group_list() uses these pointers to link all the cells
 //     * mentioned in the group list into a single group.
 //     *
-//     *                                             JRM - 6/28/08
+//     *                                              - 6/28/08
 //     *
 //     * Parameters:
 //     *
@@ -16941,7 +16940,7 @@ public class macshapa_odb_reader
 //     * by the spreadsheet variable / ord pair.  If successful, the function 
 //     * returns a pointer to the varcell.  Otherwise the function returns NULL.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -17295,7 +17294,7 @@ public class macshapa_odb_reader
 //     * variable cells.  However, the actual construction of the groups is done
 //     * in parse_group_list().
 //     *
-//     *                                             JRM - 6/20/08
+//     *                                              - 6/20/08
 //     *
 //     * Parameters:
 //     *
@@ -17479,7 +17478,7 @@ public class macshapa_odb_reader
 //     * However the actual construction of groups is done in 
 //     * parse_group_list().
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -17664,7 +17663,7 @@ public class macshapa_odb_reader
 //     * is undefined (i.e. NULL).  This allows us to load the formats from a 
 //     * database file without loading the rest of the database as well.
 //     *
-//     *                                             JRM - 10/31/95
+//     *                                              - 10/31/95
 //     *
 //     * Parameters:
 //     *
@@ -18006,7 +18005,7 @@ public class macshapa_odb_reader
 //     *     <imp_prod_program_action_text_attribute> -->
 //     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -18249,7 +18248,7 @@ public class macshapa_odb_reader
 //     *     <imp_prod_program_action_text_attribute> -->
 //     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -18446,7 +18445,7 @@ public class macshapa_odb_reader
 //     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -18680,7 +18679,7 @@ public class macshapa_odb_reader
 //     * production into it, and appends it to the linked list of instances of 
 //     * Prod associated with the instance of the Format structure.  
 //     *
-//     *                                             JRM - 7/1/08
+//     *                                              - 7/1/08
 //     *
 //     * Parameters:
 //     *
@@ -19106,7 +19105,7 @@ public class macshapa_odb_reader
 //     * random.  It is the value to which the hardPrec field is initialized in 
 //     * the allocProd() function in import_internals.c.)
 //     *
-//     *                                             JRM - 7/2/08
+//     *                                              - 7/2/08
 //     *
 //     * Parameters:
 //     *
@@ -19315,7 +19314,7 @@ public class macshapa_odb_reader
 //     * The function returns NULL if an error is detected, or if a required
 //     * attribute is missing.
 //     *
-//     *                                             JRM - 7/2/08
+//     *                                              - 7/2/08
 //     *
 //     * Parameters:
 //     *
@@ -19596,7 +19595,7 @@ public class macshapa_odb_reader
 //     * <imp_prod_insert_action_offset_attribute> --> 
 //     *                                  '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/10/08
+//     *                                              - 7/10/08
 //     *
 //     * Parameters:
 //     *
@@ -19788,7 +19787,7 @@ public class macshapa_odb_reader
 //     * <imp_prod_insert_action_onset_attribute> -->
 //     *                      '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/11/08
+//     *                                              - 7/11/08
 //     *
 //     * Parameters:
 //     *
@@ -20013,7 +20012,7 @@ public class macshapa_odb_reader
 //     *
 //     * Note that a NULL pointer will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -20218,7 +20217,7 @@ public class macshapa_odb_reader
 //     *
 //     * Note that a NULL pointer will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -20348,7 +20347,7 @@ public class macshapa_odb_reader
 //     * <imp_prod_insert_action_val_attribute> --> 
 //     *                                  '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -20545,7 +20544,7 @@ public class macshapa_odb_reader
 //     * <imp_prod_insert_action_var_attribute> --> 
 //     *                          '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -20742,7 +20741,7 @@ public class macshapa_odb_reader
 //     *
 //     *     <imp_prod_is_shown_attribute> --> '(' 'IS-SHOWN>' <boolean> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -20926,7 +20925,7 @@ public class macshapa_odb_reader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21171,7 +21170,7 @@ public class macshapa_odb_reader
 //     *     <imp_prod_program_action_text_attribute> -->
 //     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21287,7 +21286,7 @@ public class macshapa_odb_reader
 //     *
 //     *     <imp_prod_name_attribute> --> '(' 'NAME>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21494,7 +21493,7 @@ public class macshapa_odb_reader
 //     *
 //     *     <imp_prod_pattern_attribute> --> '(' 'PATTERN>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21722,7 +21721,7 @@ public class macshapa_odb_reader
 //     * The function returns NULL if an error is detected, or if a required
 //     * attribute is missing.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21943,7 +21942,7 @@ public class macshapa_odb_reader
 //     *
 //     * Note that null will be returned if the list is empty.
 //     *
-//     *                                             JRM - 11/2/95
+//     *                                              - 11/2/95
 //     *
 //     * Parameters:
 //     *
@@ -22138,7 +22137,7 @@ public class macshapa_odb_reader
 //     *
 //     * Note that a null will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -22287,7 +22286,7 @@ public class macshapa_odb_reader
 //     * <imp_prod_program_action_text_attribute> --> 
 //     *                                  '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -22544,7 +22543,7 @@ public class macshapa_odb_reader
 //     *     <imp_prod_program_action_text_attribute> -->
 //     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -22731,7 +22730,7 @@ public class macshapa_odb_reader
 //     * 
 //     *     <shapa_pane_var_name> --> <s_var_name>
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -22921,7 +22920,7 @@ public class macshapa_odb_reader
 //     * document, thereby making them visible on the spreadsheet.  However,
 //     * the actual insertions are made in shapa_pane_var_list().
 //     *
-//     *                                             JRM - 10/28/95
+//     *                                              - 10/28/95
 //     *
 //     * Parameters:
 //     *
@@ -23129,7 +23128,7 @@ public class macshapa_odb_reader
 //     * Note that the attributes in the system alist may appear in any order,
 //     * or they may be ommited entirely.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -23379,7 +23378,7 @@ public class macshapa_odb_reader
 //     *     <system_section> --> '(' 'SYSTEM>' <system_alist> ')'
 //     * 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -23559,7 +23558,7 @@ public class macshapa_odb_reader
      * than the maximum number of arguments.  In such cases, we simply 
      * discard all the excess items until we come to the closing parenthesis.
      *
-     *                                             JRM - 10/3/95
+     *                                              - 10/3/95
      *
      * Parameters:
      *
@@ -23650,7 +23649,7 @@ public class macshapa_odb_reader
      *
      * Dump the supplied predicate to the listing file
      *
-     *                                           JRM - 6/8/08
+     *                                            - 6/8/08
      *
      * Parameters:
      *
@@ -23716,7 +23715,7 @@ public class macshapa_odb_reader
      * Note that we are guaranteed that upon entry, the next token is a left 
      * parenthesis. 
      * 
-     *                                             JRM - 12/11/08
+     *                                              - 12/11/08
      *
      * Parameters:
      *
@@ -24179,7 +24178,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by creating an empty PredDataValue, issuing 
      * a warning message, and consuming the offending value.
      * 
-     *                                             JRM - 7/13/08
+     *                                              - 7/13/08
      *
      * Parameters:
      *
@@ -24337,7 +24336,7 @@ public class macshapa_odb_reader
      * Note that we are guaranteed that upon entry, the next token is a left 
      * parenthesis. 
      * 
-     *                                             JRM - 12/11/08
+     *                                              - 12/11/08
      *
      * Parameters:
      *
@@ -24801,7 +24800,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *        
-     *                                                    JRM - 6/12/08
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
@@ -24914,7 +24913,7 @@ public class macshapa_odb_reader
      * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *
-     *                                             JRM - 7/13/08
+     *                                              - 7/13/08
      *
      * Parameters:
      *

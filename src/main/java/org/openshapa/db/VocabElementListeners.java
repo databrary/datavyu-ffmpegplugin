@@ -16,9 +16,7 @@ package org.openshapa.db;
  * de-registering internal and external listeners for changed in Vocab Elements,
  * and notifying the registered listeners when changes occur.
  *
- *                                              JRM -- 2/2/08
- *
- * @author mainzer
+ *                                               -- 2/2/08
  */
 public class VocabElementListeners extends Listeners
 {
@@ -157,7 +155,7 @@ public class VocabElementListeners extends Listeners
      * VocabElementListeners to manage listeners for all incarnations of a given
      * VocabElement.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -202,7 +200,7 @@ public class VocabElementListeners extends Listeners
      *
      * Update the itsVE field for a new incarnation of the target VocabElement.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -246,7 +244,7 @@ public class VocabElementListeners extends Listeners
      *
      * Discard all notes on changes that should be reported to the listeners.
      *
-     *                                                  JRM -- 8/26/08
+     *                                                   -- 8/26/08
      *
      * Changes:
      *
@@ -280,7 +278,7 @@ public class VocabElementListeners extends Listeners
      * Given references to the old and new versions of the target VocabElement,
      * make note of any changes that should be reported to the listeners.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -546,7 +544,7 @@ public class VocabElementListeners extends Listeners
      *
      * Call the external listeners to advise them of changes.
      *
-     *                                              JRM -- 8/26/08
+     *                                               -- 8/26/08
      *
      * Changes:
      *
@@ -593,7 +591,7 @@ public class VocabElementListeners extends Listeners
      *
      * Call the internal listeners to advise them of changes.
      *
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -658,7 +656,7 @@ public class VocabElementListeners extends Listeners
      * NotifyListenersOfChanges(), call the listeners to advise them of the
      * changes, and then clear the fields used to note changes.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -692,7 +690,7 @@ public class VocabElementListeners extends Listeners
      * Advise any external listeners of the deletion of the associated
      * VocabElement.
      *
-     *                                                  JRM -- 8/26/08
+     *                                                   -- 8/26/08
      *
      * Changes:
      *
@@ -731,7 +729,7 @@ public class VocabElementListeners extends Listeners
      * Advise any internal listeners of the deletion of the associated
      * VocabElement.
      *
-     *                                                  JRM -- 8/26/08
+     *                                                   -- 8/26/08
      *
      * Changes:
      *
@@ -771,7 +769,7 @@ public class VocabElementListeners extends Listeners
      *
      * Advise any listeners of the deletion of the associated VocabElement.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -805,7 +803,7 @@ public class VocabElementListeners extends Listeners
      * correctly typed.  If it is, do nothing.  If it isn't, throw a system
      * error with the appropriate diagnostic message.
      *
-     *                                              JRM -- 8/26/98
+     *                                               -- 8/26/98
      *
      * Changes:
      *
@@ -836,7 +834,7 @@ public class VocabElementListeners extends Listeners
      * correctly typed.  If it is, do nothing.  If it isn't, throw a system
      * error with the appropriate diagnostic message.
      *
-     *                                              JRM -- 8/26/98
+     *                                               -- 8/26/98
      *
      * Changes:
      *
@@ -865,7 +863,7 @@ public class VocabElementListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -896,7 +894,7 @@ public class VocabElementListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -925,7 +923,7 @@ public class VocabElementListeners extends Listeners
      *
      * Register an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -956,7 +954,7 @@ public class VocabElementListeners extends Listeners
      *
      * Register an internal listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *

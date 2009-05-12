@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
  * TODO: Work out the interface to allow user to set the scale. Current
  * approach just checks the range of cells in seconds and tries to fit it
  * to somewhere between 1000 and 5000 pixels of scrolling on screen.
- * @author swhitcher
  */
 public class SheetLayoutStrongTemporal extends SheetLayout {
 

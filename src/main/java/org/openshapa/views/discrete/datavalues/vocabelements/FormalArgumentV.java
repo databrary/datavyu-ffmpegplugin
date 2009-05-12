@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 
 /**
  * This is a view of a Vocab Element Formal Argument.
- *
- * @author cfreeman
  */
 public final class FormalArgumentV extends Editor
 implements FocusListener, KeyListener {

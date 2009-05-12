@@ -16,9 +16,7 @@ package org.openshapa.db;
  * de-registering internal and external listeners for notification of the
  * beginning and end of cascades of changes through the database.
  *
- *                                              JRM -- 2/11/08
- *
- * @author mainzer
+ *                                               -- 2/11/08
  */
 public class CascadeListeners extends Listeners
 {
@@ -53,7 +51,7 @@ public class CascadeListeners extends Listeners
      * class is very simple, so all the construtor does is call the super and
      * then set itsCL.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -88,7 +86,7 @@ public class CascadeListeners extends Listeners
      * of a cascade of changes.  Notify external listeners first, and then the
      * internal listeners.  In any case, increment this.refCount.
      *
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      *
      * Changes:
      *
@@ -157,7 +155,7 @@ public class CascadeListeners extends Listeners
      * of a cascade of changes.  Notify internal listeners first, and then the
      * external listeners.  In any case, decrement this.refCount.
      *
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      *
      * Changes:
      *
@@ -234,7 +232,7 @@ public class CascadeListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -265,7 +263,7 @@ public class CascadeListeners extends Listeners
      * Deregister an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -295,7 +293,7 @@ public class CascadeListeners extends Listeners
      *
      * Register an external listener.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -326,7 +324,7 @@ public class CascadeListeners extends Listeners
      * Register an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *

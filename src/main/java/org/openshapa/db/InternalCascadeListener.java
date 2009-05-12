@@ -16,10 +16,7 @@ package org.openshapa.db;
  * and end of a cascade of changes should implement this interface and
  * register with the database.
  *
- *                                                  JRM -- 2/11/08
- *
- *
- * @author mainzer
+ *                                                   -- 2/11/08
  */
 public interface InternalCascadeListener
 {
@@ -28,7 +25,7 @@ public interface InternalCascadeListener
      *
      * Called at the beginning of a cascade of changes through the database.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *
@@ -43,7 +40,7 @@ public interface InternalCascadeListener
      *
      * Called at the end of a cascade of changes through the database.
      *
-     *                                              JRM -- 2/11/08
+     *                                               -- 2/11/08
      *
      * Changes:
      *

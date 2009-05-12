@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 /**
  * This class is the view representation of a NominalDataValue as stored within
  * the database.
- *
- * @author cfreeman
  */
 public final class NominalDataValueView extends DataValueElementV {
 
@@ -164,23 +162,6 @@ public final class NominalDataValueView extends DataValueElementV {
                     }
                     break;
 
-                case KeyEvent.VK_V:
-                    // Depending on platform, check appropriate modifier keys
-                    // and paste into timestamp.
-                    switch (OpenSHAPA.getPlatform()) {
-                        case MAC:
-                            if (e.isMetaDown()) {
-                                pasteNominal(e);
-                            }
-                            break;
-                        default:
-                            if (e.isControlDown()) {
-                                pasteNominal(e);
-                            }
-                            break;
-                    }
-                    break;
-
                 case KeyEvent.VK_DOWN:
                 case KeyEvent.VK_UP:
                     // Key stroke gets passed up a parent element to navigate
@@ -193,12 +174,9 @@ public final class NominalDataValueView extends DataValueElementV {
 
         /**
          * Pastes contents of the clipboard into the nominal data value view.
-         *
-         * @param e The key event that trigged this paste nominal action.
          */
-        public final void pasteNominal(final KeyEvent e) {
-            // Consume the paste event.
-            e.consume();
+        @Override
+        public final void paste() {
 
             // Get the contents of the clipboard.
             Clipboard clipboard = Toolkit.getDefaultToolkit()

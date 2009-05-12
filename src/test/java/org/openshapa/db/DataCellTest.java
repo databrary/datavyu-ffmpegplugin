@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class DataCellTest extends CellTest {
 
@@ -145,7 +144,7 @@ public class DataCellTest extends CellTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -942,7 +941,7 @@ public class DataCellTest extends CellTest {
      * Run a battery of tests on the four argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -1759,7 +1758,7 @@ public class DataCellTest extends CellTest {
      * Run a battery of tests on the seven argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -2514,7 +2513,7 @@ public class DataCellTest extends CellTest {
      * Verify that the accessors supported by the DataCell class function
      * correctly when run on the supplied instance of DataCell.
      *
-     *                                              JRM -- 12/4/07
+     *                                               -- 12/4/07
      *
      * Changes:
      *
@@ -3272,7 +3271,7 @@ public class DataCellTest extends CellTest {
      *
      * Run a battery of tests on the accessor methods for this class.
      *
-     *                                              JRM -- 12/4/07
+     *                                               -- 12/4/07
      *
      * Changes:
      *
@@ -4273,7 +4272,7 @@ public class DataCellTest extends CellTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -5435,7 +5434,7 @@ public class DataCellTest extends CellTest {
      *
      * Run a battery of tests on the accessor methods for this class.
      *
-     *                                              JRM -- 12/4/07
+     *                                               -- 12/4/07
      *
      * Changes:
      *
@@ -7198,7 +7197,7 @@ public class DataCellTest extends CellTest {
      * Verify that the 7 argument constructor fails with the supplied
      * argument.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -7288,7 +7287,7 @@ public class DataCellTest extends CellTest {
      * contain no common references (other than db), and that they have the
      * same value.
      *
-     *                                              JRM -- 12/3/07
+     *                                               -- 12/3/07
      *
      * Changes:
      *
@@ -7385,7 +7384,7 @@ public class DataCellTest extends CellTest {
      * Verify that the supplied instance of Cell has been correctly
      * initialized by a constructor.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *

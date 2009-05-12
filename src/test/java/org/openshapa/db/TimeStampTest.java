@@ -7,7 +7,6 @@ import org.junit.Test;
 
 /**
  *
- * @author swhitcher
  */
 public class TimeStampTest {
 
@@ -35,7 +34,7 @@ public class TimeStampTest {
      * Verify that the supplied instances of TimeStamp are distinct,
      * that they contain no common references, and that they
      * represent the same value.
-     *                                              JRM -- 12/1/07
+     *                                               -- 12/1/07
      *
      * Changes:
      *

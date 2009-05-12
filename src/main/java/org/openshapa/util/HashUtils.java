@@ -2,8 +2,6 @@ package org.openshapa.util;
 
 /**
  * Class for a couple of helper functions for generating hashcodes.
- *
- * @author cfreeman
  */
 public final class HashUtils {
 

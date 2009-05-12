@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author swhitcher
  */
 public class DBIndexTest {
 
@@ -39,7 +38,7 @@ public class DBIndexTest {
      *
      * Test function that returns the number of entries in the supplied
      * instance of DBIndex.
-     *                                          JRM - 5/21/07
+     *                                           - 5/21/07
      *
      * Changes:
      *
@@ -276,7 +275,7 @@ public class DBIndexTest {
      *
      * Run a battery of tests on index management.
      *
-     *                                  JRM -- 4/24/07
+     *                                   -- 4/24/07
      *
      * Changes:
      *
@@ -1576,7 +1575,7 @@ public class DBIndexTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 5/31/07
+     *               -- 5/31/07
      *
      * Changes:
      *
@@ -1831,7 +1830,7 @@ public class DBIndexTest {
      *
      * Return true if this holds, and false otherwise.
      *
-     *                                                  JRM -- 4/24/07
+     *                                                   -- 4/24/07
      *
      * Changes:
      *

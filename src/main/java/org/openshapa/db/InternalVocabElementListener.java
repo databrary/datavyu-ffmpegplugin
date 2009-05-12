@@ -19,7 +19,7 @@ package org.openshapa.db;
  *
  * The methods specified in this interface will be called when appropriate.
  *
- *                                                  JRM -- 2/2/08
+ *                                                   -- 2/2/08
  *
  * Note:  When this interface was defined, it was possible to handle listeners
  *        for changes to both MatrixVocabElements and PredicateVocabElements
@@ -32,10 +32,7 @@ package org.openshapa.db;
  *        Thus pending further modifications, this interface will be used
  *        only by listeners for changes to PredicateVocabElements.
  *
- *                                                  JRM -- 8/26/08
- *
- *
- * @author mainzer
+ *                                                   -- 8/26/08
  */
 public interface InternalVocabElementListener
 {
@@ -80,7 +77,7 @@ public interface InternalVocabElementListener
      *          these vectors and arrays or their contents, or retain
      *          references to them.
      *
-     *                                          JRM -- 2/2/08
+     *                                           -- 2/2/08
      *
      * Changes:
      *
@@ -124,7 +121,7 @@ public interface InternalVocabElementListener
      * Note that the target vocab element will not actually be deleted until
      * all listeners have been notified.
      *
-     *                                          JRM -- 2/2/08
+     *                                           -- 2/2/08
      *
      * Changes:
      *

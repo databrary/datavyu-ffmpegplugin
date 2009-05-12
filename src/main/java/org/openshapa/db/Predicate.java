@@ -22,9 +22,7 @@ import java.util.Vector;
  * list before they can be created, instances of this class are tightly
  * bound to their host database and its vocab list.
  *
- *                                                  JRM -- 8/19/07
- *
- * @author mainzer
+ *                                                  -- 8/19/07
  */
 public class Predicate extends DBElement
         implements InternalVocabElementListener
@@ -113,7 +111,7 @@ public class Predicate extends DBElement
      * old version of the predicate so we can touch it up for changes in
      * the pve.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -293,7 +291,7 @@ public class Predicate extends DBElement
      *
      * Return the current value of the cellID field.
      *
-     *                          JRM -- 4/4/08
+     *                          -- 4/4/08
      *
      * Changes:
      *
@@ -314,7 +312,7 @@ public class Predicate extends DBElement
      *
      * Return the current value of the pveID field.
      *
-     *                          JRM -- 8/23/07
+     *                          -- 8/23/07
      *
      * Changes:
      *
@@ -334,7 +332,7 @@ public class Predicate extends DBElement
      *
      * Return a copy of the current value of the predName field.
      *
-     *                                      JRM -- 8/23/07
+     *                                      -- 8/23/07
      *
      * Changes:
      *
@@ -355,7 +353,7 @@ public class Predicate extends DBElement
      * Set the predicate of which this instance of Predicate will contain a
      * value.  If requested, try to salvage the argument list (if any).
      *
-     *                                          JRM -- 8/23/07
+     *                                          -- 8/23/07
      *
      * Changes:
      *
@@ -470,7 +468,7 @@ public class Predicate extends DBElement
      *
      * Return the current value of the varLen field.
      *
-     *                          JRM -- 8/23/07
+     *                          -- 8/23/07
      *
      * Changes:
      *
@@ -497,7 +495,7 @@ public class Predicate extends DBElement
      * Advise the host data cell that it contains a predicate whose associated
      * pve definition has changed.
      *
-     *                                            JRM -- 3/20/08
+     *                                            -- 3/20/08
      *
      * Changes:
      *
@@ -584,7 +582,7 @@ public class Predicate extends DBElement
      * Advise the host data cell that it contains a predicate whose associated
      * pve has been deleted.
      *
-     *                                  JRM -- 3/20/08
+     *                                  -- 3/20/08
      *
      * Changes:
      *
@@ -640,7 +638,7 @@ public class Predicate extends DBElement
      * Construct a string containing the values of the arguments in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/23/07
+     *                                          -- 8/23/07
      *
      * Changes:
      *
@@ -698,7 +696,7 @@ public class Predicate extends DBElement
      *
      * Construct a string containing the values of the arguments in the
      * format: (value0, value1, ... value).
-     *                                          JRM -- 8/23/07
+     *                                          -- 8/23/07
      *
      * Changes:
      *
@@ -765,7 +763,7 @@ public class Predicate extends DBElement
      * as a listener with the PVE, and pass the insert in index message down
      * to the argument list.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -811,7 +809,7 @@ public class Predicate extends DBElement
      * in the database associated with the instance of Predicate.  Return a
      * reference to same.  If there is no such PredicateVocabElement, throw
      * a system error.
-     *                                              JRM -- 8/20/07
+     *                                              -- 8/20/07
      *
      * Changes:
      *
@@ -864,7 +862,7 @@ public class Predicate extends DBElement
      * as a listener with the PVE, and pass the remove from index message down
      * to the argument list.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -997,7 +995,7 @@ public class Predicate extends DBElement
      * Throw a system error if any errors aredetected.  Otherwise, return the
      * copy.
      *
-     *                                              JRM -- 4/6/08
+     *                                              -- 4/6/08
      *
      * Changes:
      *
@@ -1067,7 +1065,7 @@ public class Predicate extends DBElement
      *
      * Return the newly constructed argument list.
      *
-     *                                              JRM -- 8/20/07
+     *                                              -- 8/20/07
      *
      * Changes:
      *
@@ -1144,12 +1142,12 @@ public class Predicate extends DBElement
      * copy of that argument list.  Throw a system error if any errors are
      * detected.  Otherwise, return the copy.
      *
-     *                                              JRM -- 8/20/07
+     *                                              -- 8/20/07
      *
      * Changes:
      *
      *    - Added the clearID parameter and supporting code.
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      */
 
     private Vector<DataValue> copyArgList(Vector<DataValue> srcArgList,
@@ -1511,7 +1509,7 @@ public class Predicate extends DBElement
      * This method should only be called if this instance of the predicate
      * is the cannonical instance -- that is the instance listed in the
      * index.
-     *                                              JRM -- 3/24/08
+     *                                              -- 3/24/08
      *
      * Changes:
      *
@@ -1593,11 +1591,9 @@ public class Predicate extends DBElement
      * @throws SystemErrorException If unable to create a copy of the n-th
      * predicate argument.
      *
-     * @author JRM
-     * @author cfreeman
      * @date 2009/04/29
      */
-    public DataValue getArgCopy(int n) throws SystemErrorException {        
+    public DataValue getArgCopy(int n) throws SystemErrorException {
         DataValue arg = this.getArg(n);
         DataValue argCopy = null;
 
@@ -1622,7 +1618,6 @@ public class Predicate extends DBElement
      *
      * @throws SystemErrorException If unable to create a copy
      *
-     * @author JRM
      * @date 2007/08/23
      */
     protected DataValue getArg(int n) throws SystemErrorException {
@@ -1667,7 +1662,7 @@ public class Predicate extends DBElement
      *
      * Return the number of arguments.  Return 0 if the pveID hasn't been
      * specified yet.
-     *                                      JRM -- 8/23/07
+     *                                      -- 8/23/07
      *
      * Changes:
      *
@@ -1713,7 +1708,7 @@ public class Predicate extends DBElement
      * This method should only be called if this instance of the predicate
      * is the cannonical instance -- that is the instanced listed in the
      * index.
-     *                                              JRM -- 3/24/08
+     *                                              -- 3/24/08
      *
      * Changes:
      *
@@ -1790,7 +1785,7 @@ public class Predicate extends DBElement
      * Replace the argument specified by n with the supplied datavalue.  Throw
      * a system error if any errors are detected.
      *
-     *                                              JRM -- 8/23/07
+     *                                              -- 8/23/07
      *
      * Changes:
      *
@@ -1892,7 +1887,7 @@ public class Predicate extends DBElement
      * Scan the list of data values in the predicate, and pass an update for
      * matrix vocab element definition change message to any column predicate
      * or predicate data values.
-     *                                          JRM -- 8/26/08
+     *                                          -- 8/26/08
      *
      * Changes:
      *
@@ -2026,7 +2021,7 @@ public class Predicate extends DBElement
      * pass the update for mve deletion message to any column predicates or
      * predicates that may appear in the argument list.
      *
-     *                                          JRM -- 8/26/08
+     *                                          -- 8/26/08
      *
      * Changes:
      *
@@ -2102,7 +2097,7 @@ public class Predicate extends DBElement
      * Scan the list of data values in the predicate, and pass an update for
      * predicate vocab element definition change message to any predicate
      * data values.
-     *                                          JRM -- 3/23/08
+     *                                          -- 3/23/08
      *
      * Changes:
      *
@@ -2261,7 +2256,7 @@ public class Predicate extends DBElement
      * pass the update for pve deletion message to any column predicates or
      * predicates that may appear in the argument list.
      *
-     *                                          JRM -- 3/23/08
+     *                                          -- 3/23/08
      *
      * Changes:
      *
@@ -2447,7 +2442,7 @@ public class Predicate extends DBElement
      * In this case, verify that this.pveID != cascadePveID, and then proceed
      * as per the no structural change case.
      *
-     *                                      JRM -- 2/20/08
+     *                                      -- 2/20/08
      *
      * Changes:
      *
@@ -2998,7 +2993,7 @@ public class Predicate extends DBElement
      * to the supplied formal argument.  Throw a system error if it is not.
      * This method is a pure sanity checking method -- it should always pass.
      *
-     *                                              JRM -- 10/28/08
+     *                                              -- 10/28/08
      *
      * Changes:
      *
@@ -3413,7 +3408,7 @@ public class Predicate extends DBElement
      * if any DataValue or Predicate has not been inserted in the index, then
      * none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -3510,7 +3505,7 @@ public class Predicate extends DBElement
      * it any DataValue or Predicate has not been inserted in the index, then
      * none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -3628,7 +3623,7 @@ public class Predicate extends DBElement
      * The method does nothing if all is as it should be, and throws a system
      * error if any problems are detected.
      *
-     *                                              JRM -- 10/28/08
+     *                                              -- 10/28/08
      *
      * Changes:
      *
@@ -4480,7 +4475,7 @@ public class Predicate extends DBElement
      * In this case, verify that this.pveID != cascadePveID, and then proceed
      * as above.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -4844,7 +4839,7 @@ public class Predicate extends DBElement
      * Call the superclass version of the method, and then pass the clear id
      * message on to the argument list.
      *
-     *                                              JRM 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -4889,7 +4884,7 @@ public class Predicate extends DBElement
      * Returns a reference to the newly constructed predicate if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                              -- 3/31/08
      *
      * Changes:
      *
