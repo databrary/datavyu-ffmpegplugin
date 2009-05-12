@@ -1,54 +1,28 @@
-/*
- * Cell.java
- *
- * Created on December 7, 2006, 3:15 PM
- *
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 
 /**
- * Class Cell
- *
  * Abstract class for OpenSHAPA data and reference cells.  Data and reference
  * cells don't have all that much in common, so this class is a bit sparse.
  *
- *                                                   -- 8/24/07j
- *
- *
- * @author FGA
+ * @date 2007/08/24
  */
-public abstract class Cell extends DBElement
-{
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * itsColID: ID of the instance of Column within which the cell resides.
-     *
-     * comment: String intended to allow the user to attach a comment to the
-     *      cell.
-     *
-     * ord: Number of this cell in its host column.  This number should
-     *      be 1 + the index of the cell in the column's Vector of cells.
-     *
-     * selected:  Boolean flag indicating whether the cell is currently
-     *      selected.
-     */
+public abstract class Cell extends DBElement {
 
-    /** ID of the column within which the cell resides. */
+    /** ID of the instance column within which the cell resides. */
     protected long itsColID = DBIndex.INVALID_ID;
 
-    /** arbitrary comment associated with the cell */
+    /** arbitrary comment associated with the cell. */
     protected String comment = null;
 
-    /** ord of cell */
-    int ord = -1; /* a convenient invalid value */
+    /** Number of this cell in its host column. This number should be 1 + the
+     *  index of the cell in the column's vector of cells. It is set to -1
+     *  initially as it is an invalid value. */
+    int ord = -1;
 
-    /** whether the cell is selected */
+    /** Flag indicating whether the cell is currently selected. */
     boolean selected = false;
 
 //    /* TODO -- revisit this field and the associated code */
@@ -57,53 +31,49 @@ public abstract class Cell extends DBElement
 //     */
 //    Vector<CellChangeListener> cellListeners = new Vector<CellChangeListener>();
 
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * Cell()
+     * Creates an undefined instance of the cell (that is an instance that is
+     * not yet assocated with some column).
      *
-     * Constructor for instances of Cell.
-     *
-     * Only three versions of this constructor, as the management of itsColID
-     * varies between the subclasses.
-     *
-     * The first takes only a reference to a database as its parameter and
-     * constructs an undefined instance of Cell (that is, an instance
-     * that is not yet associated with some column).
-     *
-     * The second takes a reference to a database, and a comment.  The comment
-     * is copied, and the comment field is used to refer to the copy.
-     *
-     *  The third takes and instance of Cell as its parameter, and returns
-     *  a copy.
-     *
-     *  Observe that none of the constructor accept a column ID, as this is
-     *  best handled by the subclasses.
-     *
-     *                                               -- 8/24/07
+     * Does not accept a column ID - this is best handled by the subclasses.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param db The parent database that this cell will reside within.
      *
+     * @throws org.openshapa.db.SystemErrorException When unable to create the
+     * cell from the supplied database.
+     *
+     * @date 2007/08/24
      */
-
-    public Cell(Database db)
-        throws SystemErrorException
-    {
-
+    public Cell(Database db) throws SystemErrorException {
         super(db);
+    }
 
-    } /* Cell::Cell(db) */
-
-
-    public Cell(Database db,
-                String comment)
-        throws SystemErrorException
-    {
+    /**
+     * Creates an undefined instance of the cell (that is an instance that is
+     * not yet assocaited with some column).
+     *
+     * Does not accept a column ID - this is best handled by the subclasses.
+     *
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
+     *
+     * @param db The parent database that this cell will reside within.
+     * @param comment The comment that is copied, and the comment field is used
+     * to refer to the copy.
+     *
+     * @throws org.openshapa.db.SystemErrorException When unable to create the
+     * cell from the supplied arguments.
+     *
+     * @date 2007/08/24
+     */
+    public Cell(Database db, String comment) throws SystemErrorException {
         super(db);
 
         if ( comment != null )
@@ -114,11 +84,25 @@ public abstract class Cell extends DBElement
         {
             comment = null;
         }
-    } /* Cell::Cell(db, comment) */
+    }
 
-    public Cell(Cell c)
-        throws SystemErrorException
-    {
+    /**
+     * Copy constructor. Creates a new cell from the supplied cell.
+     *
+     * Does not accept a column ID - this is best handled by the subclasses.
+     *
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
+     *
+     * @param c The cell to
+     * @throws org.openshapa.db.SystemErrorException When unable to create the
+     * cell from the supplied arguments.
+     *
+     * @date 2007/08/24
+     */
+    public Cell(Cell c) throws SystemErrorException {
         super((DBElement)c);
 
         this.itsColID = c.itsColID;
@@ -131,45 +115,25 @@ public abstract class Cell extends DBElement
         {
             this.comment = new String(c.comment);
         }
-    } /* Cell::Cell(c) */
-
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
+    }
 
     /**
-     * getItsColID()
+     * @return The ID of the parent column that this cell resides within.
      *
-     * Return the current value of the itsColID field.
-     *
-     *                                           -- 8/29/07
-     *
-     * Changes:
-     *
-     *    - none.
+     * @date 2007/08/29
      */
-
     public long getItsColID()
     {
 
         return this.itsColID;
 
-    } /* Cell::getItsColID() */
-
+    }
 
     /**
-     * getComment() & setComment()
+     * @return A copy of the comment that is currently attached to the cell.
      *
-     * Get and set the comment field.  Observe that a copy is made in both
-     * cases.  In both cases,
-     *                                           -- 8/24/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/24
      */
-
     public String getComment()
     {
         if ( this.comment != null )
@@ -180,8 +144,21 @@ public abstract class Cell extends DBElement
         {
             return null;
         }
-    } /* Cell::getComment() */
+    }
 
+    /**
+     * Attaches a new comment to the cell. Note it attaches a copy of the
+     * comment, not the original reference.
+     *
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
+     *
+     * @param comment The new comment to attach to the cell.
+     *
+     * @date 2007/08/24
+     */
     public void setComment(String comment)
     {
         if ( comment != null )
@@ -195,31 +172,38 @@ public abstract class Cell extends DBElement
 
         return;
 
-    } /* /* Cell::getComment() */
-
+    }
 
     /**
-     * getOrd() & setOrd()
+     * @return The ordinal value of the cell (i.e. 1 + the index within the
+     * cell's parent column).
      *
-     * Get and set the ord of the cell.
-     *
-     *                       -- 8/29/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/29
      */
-
     public int getOrd()
     {
 
         return this.ord;
 
-    } /* Cell::getOrd() */
+    }
 
-    public void setOrd(int newOrd)
-        throws SystemErrorException
-    {
+    /**
+     * Sets the ordinal value of the cell (i.e. 1 + the index within the cell's
+     * parent column).
+     *
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
+     *
+     * @param newOrd The new ordinal value to use for the cell.
+     *
+     * @throws org.openshapa.db.SystemErrorException If the supplied newOrd
+     * is not a valid value (less than 1).
+     *
+     * @date 2007/08/29
+     */
+    public void setOrd(int newOrd) throws SystemErrorException {
         final String mName = "Cell::setOrd(newOrd): ";
 
         if ( newOrd < 1 )
@@ -231,28 +215,28 @@ public abstract class Cell extends DBElement
 
         return;
 
-    } /* Cell::setOrd(newOrd) */
-
+    }
 
     /**
-     * getSelected() & setSelected()
+     * @return A boolean flag - is the cell selected (true) or not (false).
      *
-     * Get and set the value of the selected field.
-     *
-     *                               -- 2/8/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/02
      */
-
     public boolean getSelected()
     {
 
         return this.selected;
 
-    } /* Cell::getSelected() */
+    }
 
+    /**
+     * Sets the selected state of the cell.
+     *
+     * @param selected The new selected state of the cell, true if selected,
+     * false otherwise.
+     *
+     * @date 2008/08/02
+     */
     public void setSelected(boolean selected)
     {
 
@@ -260,7 +244,7 @@ public abstract class Cell extends DBElement
 
         return;
 
-    } /* Cell::setSelected() */
+    }
 
     /**
      * @return A hash code value for the object.
@@ -302,8 +286,7 @@ public abstract class Cell extends DBElement
             && (this.selected == c.selected);
     }
 
-
-
+//    TODO -- Revisit code.
 //    /**
 //     * Adds a cell listener reference to cell
 //     * @param cellListener The cell listener to add
