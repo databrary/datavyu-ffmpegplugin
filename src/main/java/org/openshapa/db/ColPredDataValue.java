@@ -23,46 +23,6 @@ public final class ColPredDataValue extends DataValue {
      * associated formal argument when needed instead.
      */
 
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
-    /**
-     * ColPredDataValue()
-     *
-     * Constructor for instances of ColPredDataValue.
-     *
-     * Five versions of this constructor.
-     *
-     * The first takes a reference to a database as its parameter and just
-     * calls the super() constructor.
-     *
-     * The second takes a reference to a database, and a formal argument ID, and
-     * attempts to set the itsFargID field of the data value accordingly.
-     *
-     * The third takes a reference to a database, a formal argument ID, and
-     * a value as arguments, and attempts to set the itsFargID and itsValue
-     * of the data value accordingly.
-     *
-     * The fourth takes a reference to an instance of ColPredDataValue as an
-     * argument, and uses it to create a copy.
-     *
-     * The fifth is much the same as the fourth, save that it takes the
-     * additional blindCopy parameter.  If this parameter is true, the
-     * PredDataValue is copied without reference to the pve's underlying
-     * any predicates.  This is necessary if a pve has changed, and we need
-     * a copy of the old predicate so we can touch it up for changes in the
-     * associated pve.
-     *
-     *                                               -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
-     *
-     */
-
     /**
      * Creates an empty ColPredDataValue.
      *
@@ -70,42 +30,70 @@ public final class ColPredDataValue extends DataValue {
      *
      * @throws org.openshapa.db.SystemErrorException If unable to create the
      * ColPredDataValue
+     *
+     * @date 2008/08/10
      */
     public ColPredDataValue(Database db) throws SystemErrorException {
         super(db);
 
         this.setItsValue(null);
 
-    } /* ColPredDataValue::ColPredDataValue(db) */
+    }
 
-    public ColPredDataValue(Database db,
-                            long fargID)
-        throws SystemErrorException
-    {
+    /**
+     * Creates an empty ColPredDataValue.
+     *
+     * @param db The parent database that this data value resides within.
+     * @param fargID The ID of formal argument that this data value belongs too.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue
+     *
+     * @date 2008/08/10
+     */
+    public ColPredDataValue(Database db, long fargID)
+    throws SystemErrorException {
         super(db);
 
         this.setItsValue(null);
 
         this.setItsFargID(fargID);
 
-    } /* ColPredDataValue::ColPredDataValue(db, fargID) */
+    }
 
-    public ColPredDataValue(Database db,
-                            long fargID,
-                            ColPred value)
-        throws SystemErrorException
-    {
+    /**
+     * Creates a ColPredDataValue.
+     *
+     * @param db The parent database that this data value resides within.
+     * @param fargID The ID of formal argument that this data value belongs too.
+     * @param value The value to use for this new ColPredDataValue.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue.
+     *
+     * @date 2008/08/10
+     */
+    public ColPredDataValue(Database db, long fargID, ColPred value)
+    throws SystemErrorException {
         super(db);
 
         this.setItsValue(value);
 
         this.setItsFargID(fargID);
 
-    } /* ColPredDataValue::ColPredDataValue(db, fargID, value) */
+    }
 
-    public ColPredDataValue(ColPredDataValue dv)
-        throws SystemErrorException
-    {
+    /**
+     * Copy constructor.
+     *
+     * @param dv The ColPredDataValue to create a copy of.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue.
+     *
+     * @date 2008/08/10
+     */
+    public ColPredDataValue(ColPredDataValue dv) throws SystemErrorException {
         super(dv);
 
         if ( dv.itsValue != null )
@@ -113,12 +101,24 @@ public final class ColPredDataValue extends DataValue {
             this.itsValue  = new ColPred(dv.itsValue);
         }
 
-    } /* ColPredDataValue::ColPredDataValue(dv) */
+    }
 
-    protected ColPredDataValue(ColPredDataValue dv,
-                               boolean blindCopy)
-        throws SystemErrorException
-    {
+    /**
+     * Copy constructor,
+     *
+     * @param dv The ColPredDataValue to create a copy of.
+     * @param blindCopy If true, the PredDataValue is copied without reference
+     * to the pve's underlying any predicates.  This is necessary if a pve has
+     * changed, and we need a copy of the old predicate so we can touch it up
+     * for changes in the associated pve.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue
+     *
+     * @date 2008/08/10
+     */
+    protected ColPredDataValue(ColPredDataValue dv, boolean blindCopy)
+    throws SystemErrorException {
         super(dv);
 
         if ( dv.itsValue != null )
@@ -126,7 +126,7 @@ public final class ColPredDataValue extends DataValue {
             this.itsValue  = new ColPred(dv.itsValue, blindCopy);
         }
 
-    } /* ColPredDataValue::ColPredDataValue(dv, blindCopy) */
+    }
 
     /**
      * Creates a new copy of the object.
@@ -138,7 +138,7 @@ public final class ColPredDataValue extends DataValue {
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
-        ColPredDataValue clone; // = (ColPredDataValue) super.clone();
+        ColPredDataValue clone;
         try {
             clone = new ColPredDataValue(this);
         } catch (SystemErrorException e) {
@@ -148,74 +148,43 @@ public final class ColPredDataValue extends DataValue {
         return clone;
     }
 
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
     /**
-     * getItsValue()
+     * @return A copy of the current value of the data value.
      *
-     * Return a copy of the current value of the data value.
+     * @throws org.openshapa.db.SystemErrorException If unable to get the
+     * ColPred of this ColPredDataValue.
      *
-     *                           -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/16
      */
-
-    public ColPred getItsValue()
-        throws SystemErrorException
-    {
-
+    public ColPred getItsValue() throws SystemErrorException {
         return new ColPred(this.itsValue);
-
-    } /* ColPredDataValue::getItsValue() */
-
+    }
 
     /**
-     * getItsValueBlind()
+     * @return A blind copy of the current value of the data value. This is
+     * necessary if we are adjusting for a change in the definition of a
+     * predicate, as a change in a predicate's argument list may cause the
+     * normal sanity checks to fail.
      *
-     * Return a blind copy of the current value of the data value.
+     * @throws org.openshapa.db.SystemErrorException If unable to create a blind
+     * copy of the underlying ColPred.
      *
-     * This is necessary if we are adjusting for a change in the definition
-     * of a predicate, as a change in a predicate's argument list may cause
-     * the normal sanity checks to fail.
-     *
-     *                           -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
-
-    protected ColPred getItsValueBlind()
-        throws SystemErrorException
-    {
-
+    protected ColPred getItsValueBlind() throws SystemErrorException {
         return new ColPred(this.itsValue, true);
-
-    } /* ColPredDataValue::getItsValueBlind() */
-
+    }
 
     /**
-     * getItsValueMveID()
+     * @return The matrix vocab element ID of the underlying col pred value.
      *
-     * If itsValue is an instance of the column predicate implied by a
-     * MatrixVocabElement, return the ID assigned to that mve, or the
-     * INVALID_ID if it is not.
      *
-     *                                       -- 8/10/08
+     * @throws org.openshapa.db.SystemErrorException If unable to get the matrix
+     * vocab element id of the value.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    protected long getItsValueMveID()
-        throws SystemErrorException
-    {
+    protected long getItsValueMveID() throws SystemErrorException {
         long pveID = DBIndex.INVALID_ID;
 
         if ( this.itsValue != null )
@@ -225,27 +194,18 @@ public final class ColPredDataValue extends DataValue {
 
         return pveID;
 
-    } /* ColPredDataValue::getItsValueMveID() */
-
+    }
 
     /**
-     * setItsValue()
+     * Sets the value of the ColPredDataValue to the supplied value.
      *
-     * Set itsValue to the specified value.
+     * @param value The new value to use for this ColPredDataValue.
      *
-     *                                               -- 8/10/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @throws org.openshapa.db.SystemErrorException If unable to set the new
+     * value for this ColPredDataValue.
      */
-
-    public void setItsValue(ColPred value)
-        throws SystemErrorException
-    {
+    public void setItsValue(ColPred value) throws SystemErrorException {
         final String mName = "ColPredDataValue::setItsValue(): ";
-        DBElement dbe;
-        ColPredFormalArg cpfa;
 
         if ( ( value != null ) &&
              ( value.getDB() != this.getDB() ) )
@@ -274,7 +234,7 @@ public final class ColPredDataValue extends DataValue {
         this.valueSet();
         return;
 
-    } /* ColPredDataValue::setItsValue() */
+    }
 
     /**
      * @return true if the value equals the default value
@@ -283,26 +243,16 @@ public final class ColPredDataValue extends DataValue {
         return itsValue == null;
     }
 
-    /*************************************************************************/
-    /*************************** Overrides: **********************************/
-    /*************************************************************************/
-
     /**
-     * clearID()
+     * Clears the ID of this ColPredDataValue (resets it to INVALID_ID).
      *
-     * Call the superclass version of the method, and then pass the clear id
-     * message on to the associated column predicate, if any.
+     * @throws org.openshapa.db.SystemErrorException If unable to clear the ID
+     * of this ColPredDataValue
      *
-     *                                               2/19/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/02/19
      */
-
-    protected void clearID()
-        throws SystemErrorException
-    {
+    @Override
+    protected void clearID() throws SystemErrorException {
         super.clearID();
 
         if ( this.itsValue != null )
@@ -312,25 +262,21 @@ public final class ColPredDataValue extends DataValue {
 
         return;
 
-    } /* ColPredDataValue::clearID() */
-
+    }
 
     /**
-     * insertInIndex()
+     * Inserts this ColPredDataValue into nomindated data cell.
      *
-     * Call the super, and then pass the insert in index message down to the
-     * column predicate.
+     * @param DCID The ID of the data cell which you wish to insert this
+     * ColPredDataValue into.
      *
-     *                                               -- 8/10/08
+     * @throws org.openshapa.db.SystemErrorException If unable to insert this
+     * ColPredDataValue into a data cell.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    protected void insertInIndex(long DCID)
-        throws SystemErrorException
-    {
+    @Override
+    protected void insertInIndex(long DCID) throws SystemErrorException {
         final String mName = "ColPredDataValue::insertInIndex(): ";
 
         super.insertInIndex(DCID);
@@ -344,24 +290,21 @@ public final class ColPredDataValue extends DataValue {
 
         return;
 
-    } /* ColPredDataValue::insertInIndex(DCID) */
+    }
 
     /**
-     * removeFromIndex()
+     * Removes this ColPredDataValue from its parent Data cell.
      *
-     * Call the super, and then pass the remove from index message down to the
-     * predicate.
+     * @param DCID The ID of the data cell which you wish to remove this
+     * ColPredDataValue from.
      *
-     *                                               -- 8/10/08
+     * @throws org.openshapa.db.SystemErrorException If unable to remove this
+     * from its parent data cell.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/10
      */
-
-    protected void removeFromIndex(long DCID)
-        throws SystemErrorException
-    {
+    @Override
+    protected void removeFromIndex(long DCID) throws SystemErrorException {
         final String mName = "ColPredDataValue::removeFromIndex(): ";
 
         super.removeFromIndex(DCID);
@@ -375,7 +318,7 @@ public final class ColPredDataValue extends DataValue {
 
         return;
 
-    } /* ColPredDataValue::removeFromIndex(DCID) */
+    }
 
 
     /**
@@ -442,25 +385,14 @@ public final class ColPredDataValue extends DataValue {
 
         return;
 
-    } /* ColPredDataValue::replaceInIndex() */
-
+    }
 
     /**
-     * toString()
+     * @return A string representation of the ColPredDataValue.
      *
-     * Returns a String representation of the DBValue for display.
-     *
-     *                                   -- 8/10/08
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *     - None.
+     * @date 2008/08/10
      */
-
-    public String toString()
-    {
+    public String toString() {
         if ( this.itsValue == null )
         {
             return("()");
@@ -471,25 +403,13 @@ public final class ColPredDataValue extends DataValue {
         }
     }
 
-
     /**
-     * toDBString()
+     * @return A database string representation of the DBValue for comparision
+     * against the databass's expected value (for debugging purposes).
      *
-     * Returns a database String representation of the DBValue for comparison
-     * against the database's expected value.<br>
-     * <i>This function is intended for debugging purposses.</i>
-     *
-     *                                       -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/15
      */
-
-    public String toDBString()
-    {
+    public String toDBString() {
         final String mName = "ColPredDataValue::toDBString(): ";
 
         if ( ( this.itsValue == null ) ||
@@ -512,7 +432,7 @@ public final class ColPredDataValue extends DataValue {
                     ") (subRange " + this.subRange + "))");
         }
 
-    } /* ColPredDataValue::toDBString() */
+    }
 
 
     /**
