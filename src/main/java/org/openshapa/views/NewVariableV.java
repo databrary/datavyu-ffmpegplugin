@@ -68,9 +68,11 @@ public final class NewVariableV extends OpenSHAPADialog {
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setName("Form"); // NOI18N
-
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/NewVariableV"); // NOI18N
+        setTitle(bundle.getString("title.text")); // NOI18N
+        setName("Form"); // NOI18N
+        setResizable(false);
+
         jLabel1.setText(bundle.getString("jLabel2.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
