@@ -8,6 +8,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
+import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
@@ -79,24 +80,22 @@ public final class UITimestampTest extends UISpecTestCase {
 
         //5. Check copy pasting
         Clipboard clip = null;
+        c = createNewCells(numOfTests);
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
 
-            String[] expectedPasteOutput = {"12:34:56:789", "78:29:00:000",
+            String[] expectedPasteOutput = {"12:34:56:789", "68:29:00:000",
                 "00:00:00:000", "12:34:56:789", "00:00:00:000", "13:19:33:999",
                 "13:19:33:999"};
 
-            TextBox tOnset = c.elementAt(i).getOnset();
-            TextBox tOffset = c.elementAt(i).getOffset();
+            TextBox tOnset = c.elementAt(i - 1).getOnset();
+            TextBox tOffset = c.elementAt(i - 1).getOffset();
             clip.putText(testInput[j]);
-            tOnset.setText("00:00:00:000");
-            tOffset.setText("00:00:00:000");
             tOnset.pasteFromClipboard();
             tOffset.pasteFromClipboard();
             assertTrue(tOnset.getText().equalsIgnoreCase(expectedPasteOutput[j]));
             assertTrue(tOffset.getText().equalsIgnoreCase(expectedPasteOutput[j]));
         }
-
     }
 
     /**
