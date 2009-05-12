@@ -16,7 +16,6 @@ import org.openshapa.util.HashUtils;
 
 /**
  *
- * @author mainzer
  */
 public abstract class FormalArgument
         extends DBElement
@@ -35,7 +34,7 @@ public abstract class FormalArgument
      *      but rather by DataValue and its subclasses so as to allow them
      *      to track the types of the formal arguments they instantiate.
      *
-     *                                          JRM -- 7/21/07
+     *                                           -- 7/21/07
      */
 
     public enum FArgType {UNDEFINED,
@@ -108,7 +107,7 @@ public abstract class FormalArgument
      * Note that in both cases must update the undo list to reflect the
      * fact that this formal argument has just been created.
      *
-     *                                              JRM -- 1/24/07
+     *                                               -- 1/24/07
      *
      * Changes:
      *
@@ -212,7 +211,7 @@ public abstract class FormalArgument
      *
      * Accessor methods for the fargName field.
      *
-     *                              JRM -- 1/24/06
+     *                               -- 1/24/06
      *
      * Changes:
      *
@@ -259,7 +258,7 @@ public abstract class FormalArgument
      * Return the type of the formal agrument.  There is not setFargType, as
      * fargType is set by the constructor, and is not changed thereafter.
      *
-     *                                              JRM -- 8/15/07
+     *                                               -- 8/15/07
      *
      * Changes:
      *
@@ -286,7 +285,7 @@ public abstract class FormalArgument
      *
      * Accessor methods for the hidden field.
      *
-     *                              JRM -- 2/14/07
+     *                               -- 2/14/07
      *
      * Changes:
      *
@@ -322,7 +321,7 @@ public abstract class FormalArgument
      *
      * Accessor methods for the itsVocabElement field.
      *
-     *                              JRM -- 3/1/07
+     *                               -- 3/1/07
      *
      * Changes:
      *
@@ -350,7 +349,7 @@ public abstract class FormalArgument
      *
      * Accessor methods for the itsVocabElement field.
      *
-     *                              JRM -- 6/141/07
+     *                               -- 6/141/07
      *
      * Changes:
      *
@@ -483,7 +482,7 @@ public abstract class FormalArgument
      *
      * Note that the supplied formal arg must be of defined type.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -525,7 +524,7 @@ public abstract class FormalArgument
      * Note that the method will throw a system error if the two instances
      * of FormalArgument are not incarnations of the same formal argument.
      *
-     *                                          JRM -- 2/4/08
+     *                                           -- 2/4/08
      *
      * Changes;
      *
@@ -573,7 +572,7 @@ public abstract class FormalArgument
      * Note that the method will throw a system error if the two instances
      * of FormalArgument are not incarnations of the same formal argument.
      *
-     *                                          JRM -- 2/4/08
+     *                                           -- 2/4/08
      *
      * Changes;
      *
@@ -781,7 +780,7 @@ public abstract class FormalArgument
      * Note that the method will throw a system error if the two instances
      * of FormalArgument are not incarnations of the same formal argument.
      *
-     *                                          JRM -- 2/4/08
+     *                                           -- 2/4/08
      *
      * Changes;
      *
@@ -965,7 +964,7 @@ public abstract class FormalArgument
      * Test to see if two formal arguments are logically equal.  Return true
      * if they are, and false otherwise.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -1193,7 +1192,7 @@ public abstract class FormalArgument
      * formal argument list maintained by MatrixVocabElements so as to
      * facilitate use of the column predicate implied by matrix vocab elements.
      *
-     *                                                  JRM -- 8/9/08
+     *                                                   -- 8/9/08
      *
      * Changes:
      *
@@ -1269,7 +1268,7 @@ public abstract class FormalArgument
      * formal argument list maintained by MatrixVocabElements so as to
      * facilitate use of the column predicate implied by matrix vocab elements.
      *
-     *                                                  JRM -- 8/9/08
+     *                                                   -- 8/9/08
      *
      * Changes:
      *

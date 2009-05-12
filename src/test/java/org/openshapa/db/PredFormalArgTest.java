@@ -2285,7 +2285,7 @@ public class PredFormalArgTest {
      * other classes that didn't exit yet when the PredicateFormalArg
      * class was created.
      *
-     *                                          JRM -- 11/22/07
+     *                                           -- 11/22/07
      *
      * Changes:
      *
@@ -2896,7 +2896,7 @@ public class PredFormalArgTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 3/11/07
+     *               -- 3/11/07
      *
      * Changes:
      *

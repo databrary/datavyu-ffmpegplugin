@@ -19,10 +19,7 @@ package org.openshapa.db;
  *
  * The methods specified in this interface will be called when appropriate.
  *
- *                                                  JRM -- 2/2/08
- *
- *
- * @author mainzer
+ *                                                   -- 2/2/08
  */
 public interface ExternalVocabElementListener
 {
@@ -61,7 +58,7 @@ public interface ExternalVocabElementListener
      *          reference.  Thus the listeners MUST NOT alter these vectors
      *          or their contents, or retain references to them.
      *
-     *                                          JRM -- 2/2/08
+     *                                           -- 2/2/08
      *
      * Changes:
      *
@@ -97,7 +94,7 @@ public interface ExternalVocabElementListener
      * Note that the target vocab element will not actually be deleted until
      * all listeners have been notified.
      *
-     *                                          JRM -- 2/2/08
+     *                                           -- 2/2/08
      *
      * Changes:
      *

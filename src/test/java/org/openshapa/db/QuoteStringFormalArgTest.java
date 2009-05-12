@@ -32,7 +32,7 @@ public class QuoteStringFormalArgTest {
      *
      * Run a battery of tests on the accessors for this class.
      *
-     *                                      JRM - 3/13/07
+     *                                       - 3/13/07
      *
      * Changes:
      *
@@ -307,7 +307,7 @@ public class QuoteStringFormalArgTest {
      * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 3/13/07
+     *                                               -- 3/13/07
      *
      * Changes:
      *
@@ -500,7 +500,7 @@ public class QuoteStringFormalArgTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 3/13/07
+     *                                               -- 3/13/07
      *
      * Changes:
      *
@@ -718,7 +718,7 @@ public class QuoteStringFormalArgTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instance returned.
      *
-     *                                          JRM 3/13/07
+     *                                           3/13/07
      *
      * Changes:
      *
@@ -1043,7 +1043,7 @@ public class QuoteStringFormalArgTest {
      * and since those methods are tested extensively elsewhere, we only
      * need to verify that they are called correctly.
      *
-     *                                          JRM -- 3/13/07
+     *                                           -- 3/13/07
      *
      * Changes:
      *
@@ -1297,7 +1297,7 @@ public class QuoteStringFormalArgTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *                          JRM -- 3/13/07
+     *                           -- 3/13/07
      *
      * Changes:
      *

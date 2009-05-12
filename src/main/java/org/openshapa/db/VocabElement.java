@@ -20,8 +20,6 @@ import java.util.Vector;
  *
  * This class contains functionality that is common to matrix and predicate
  * vocabulary elements.
- *
- * @author mainzer
  */
 public abstract class VocabElement extends DBElement
 {
@@ -95,11 +93,11 @@ public abstract class VocabElement extends DBElement
      * Note that the version that sets the name does only limited error
      * checking -- full error checking is the responsibility of the subclass.
      *
-     *                                              JRM -- 2/14/07
+     *                                               -- 2/14/07
      *
      * Changes:
      *
-     *    - Added a copy constructor.               JRM -- 4/30/07
+     *    - Added a copy constructor.                -- 4/30/07
      */
 
     public VocabElement(Database db)
@@ -225,7 +223,7 @@ public abstract class VocabElement extends DBElement
      * Subclasses must define this method, which must return true if the
      * given VocabElement is in form suitable for insertion in the vocab list,
      * and false if it isn't.
-     *                                              JRM -- 6/19/07
+     *                                               -- 6/19/07
      *
      * Changes:
      *
@@ -247,7 +245,7 @@ public abstract class VocabElement extends DBElement
      * Accessor methods for the name field.  Note that we only do minimal
      * error checking, as that is responsibility of the subclass.
      *
-     *                                          JRM -- 2/14/07
+     *                                           -- 2/14/07
      *
      * Changes:
      *
@@ -292,7 +290,7 @@ public abstract class VocabElement extends DBElement
      * is initialized to false, and can only be set to true.  Once it is set
      * to true, the vocab element cannot be modified.
      *
-     *                                               JRM -- 2/14/07
+     *                                                -- 2/14/07
      *
      * Changes:
      *
@@ -331,7 +329,7 @@ public abstract class VocabElement extends DBElement
      *
      * Accessor methods for the varLen field.
      *
-     *                                      JRM -- 2/14/07
+     *                                       -- 2/14/07
      *
      * Changes:
      *
@@ -371,7 +369,7 @@ public abstract class VocabElement extends DBElement
      * Append the supplied formal argument to the end of the formal argument
      * list.
      *
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -420,14 +418,14 @@ public abstract class VocabElement extends DBElement
      *
      * Returns a copy of the n-th formal argument, or null if there
      * is no such argument.
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
      *   - Added code setting the itsVocabElement field of the copy to null,
      *     and simillarly setting the itsVocabElementID field to the
      *     INVALID_ID.
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      */
 
@@ -473,7 +471,7 @@ public abstract class VocabElement extends DBElement
      *
      * Construct and return a vector containing a copy of the formal argument
      * list.
-     *                                          JRM -- 2/2/08
+     *                                           -- 2/2/08
      *
      * Changes:
      *
@@ -526,7 +524,7 @@ public abstract class VocabElement extends DBElement
      * Delete the n-th formal argument from the formal argument list.  Throw a
      * system error exception if there is no n-th formal argument.
      *
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -582,7 +580,7 @@ public abstract class VocabElement extends DBElement
      * Construct a string containing the names of the formal arguments in a
      * format that displays the full status of the formal arguments and
      * facilitates debugging.
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -628,7 +626,7 @@ public abstract class VocabElement extends DBElement
      *
      * Construct a string containing the names of the formal arguments in the
      * format: (<arg0>, <arg1>, ... <argn>).
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -675,7 +673,7 @@ public abstract class VocabElement extends DBElement
      * Scan the formal argument list, and test to see if the supplied formal
      * argument list is unique.  Return true if it is, and false otherwise.
      *
-     *                                      JRM -- 3/18/07
+     *                                       -- 3/18/07
      *
      * Changes:
      *
@@ -716,14 +714,14 @@ public abstract class VocabElement extends DBElement
      *
      * Returns a copy of the n-th formal argument, or null if there
      * is no such argument.
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
      *   - Modified the method to simply return the formal argument.  This
      *     change is due to a decision to handle vocab  changes at the
      *     level of vocab elements
-     *                                          JRM -- 4/30/07
+     *                                           -- 4/30/07
      *
      */
     public FormalArgument getFormalArg(int n)
@@ -777,7 +775,7 @@ public abstract class VocabElement extends DBElement
      *
      * Return the number of formal arguments.
      *
-     *                                      JRM 3/03/07
+     *                                       3/03/07
      *
      * Changes:
      *
@@ -808,7 +806,7 @@ public abstract class VocabElement extends DBElement
      * arguments in the list to begin with.  Any existing arguments with
      * index greater than or equal to n have their indicies increased by 1.
      *
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -871,7 +869,7 @@ public abstract class VocabElement extends DBElement
       * arguments, if any.  This method should be called after the VocabElement
       * is assigned an ID and inserted into the vocab list.
       *
-      *                                         JRM -- 6/17/07
+      *                                          -- 6/17/07
       *
       * Changes:
       *
@@ -920,7 +918,7 @@ public abstract class VocabElement extends DBElement
      * Throw a system error exception if there is no n-th formal argument
      * to begin with.
      *
-     *                                          JRM -- 2/27/07
+     *                                           -- 2/27/07
      *
      * Changes:
      *
@@ -949,7 +947,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -982,7 +980,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the deregister internal change listeners message on to
      * the instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1012,7 +1010,7 @@ public abstract class VocabElement extends DBElement
      *
      * Return the corrent value of this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1035,7 +1033,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass a note changes message on to the instance of
      * VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1069,7 +1067,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the notify listeners of changes message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1102,7 +1100,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the notify listeners of deletion message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1136,7 +1134,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the register external change listeners message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1169,7 +1167,7 @@ public abstract class VocabElement extends DBElement
      * Otherwise, pass the register internal change listeners message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1208,7 +1206,7 @@ public abstract class VocabElement extends DBElement
      *
      * In all other cases, throw a system error exception.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *

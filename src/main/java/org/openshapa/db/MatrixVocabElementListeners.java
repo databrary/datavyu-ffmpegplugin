@@ -31,9 +31,7 @@ package org.openshapa.db;
  * list of changes to the regular argument list, it is convenient to construct
  * change list for it here so as to simplify processing elsewhere.
  *
- *                                              JRM -- 2/2/08
- *
- * @author mainzer
+ *                                               -- 2/2/08
  */
 public class MatrixVocabElementListeners extends VocabElementListeners
 {
@@ -134,7 +132,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      * MatrixVocabElementListeners to manage listeners for all incarnations
      * of a given MatrixVocabElement.
      *
-     *                                              JRM -- 8/25/08
+     *                                               -- 8/25/08
      *
      * Changes:
      *
@@ -172,7 +170,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      * Verify that ve is an instance of MatrxiVocabElement, and then call the
      * inherited method.
      *
-     *                                              JRM -- 8/25/08
+     *                                               -- 8/25/08
      *
      * Changes:
      *
@@ -211,7 +209,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      *
      * Discard all notes on changes that should be reported to the listeners.
      *
-     *                                                  JRM -- 8/26/08
+     *                                                   -- 8/26/08
      *
      * Changes:
      *
@@ -249,7 +247,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      * of this call to construct the column predicate formal argument list
      * related data structures
      *
-     *                                                  JRM -- 8/25/08
+     *                                                   -- 8/25/08
      *
      * Changes:
      *
@@ -397,7 +395,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      *
      * Call the internal listeners to advise them of changes.
      *
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -465,7 +463,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      * Advise any internal listeners of the deletion of the associated
      * MatrixVocabElement.
      *
-     *                                                  JRM -- 8/26/08
+     *                                                   -- 8/26/08
      *
      * Changes:
      *
@@ -507,7 +505,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      * correctly typed.  If it is, do nothing.  If it isn't, throw a system
      * error with the appropriate diagnostic message.
      *
-     *                                              JRM -- 8/26/98
+     *                                               -- 8/26/98
      *
      * Changes:
      *

@@ -25,9 +25,7 @@ import org.openshapa.util.OpenHashtable;
  * Note that while the ColumnList is quite similar to the DBIndex class, it
  * isn't close enough to be a subclass.
  *
- *                                          JRM -- 8/31/07
- *
- * @author mainzer
+ *                                           -- 8/31/07
  */
 public class ColumnList
 {
@@ -75,7 +73,7 @@ public class ColumnList
      * ColumnList()
      *
      * Constructor for the ColumnList class.
-     *                                             JRM -- 4/30/07
+     *                                              -- 4/30/07
      *
      * Changes:
      *
@@ -199,7 +197,7 @@ public class ColumnList
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of ColumnListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -231,7 +229,7 @@ public class ColumnList
      * Otherwise, pass the deregister internal change listeners message on to
      * the instance of ColumnListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -264,7 +262,7 @@ public class ColumnList
      * Otherwise, pass the register external change listeners message on to the
      * instance of ColumnListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/11/08
+     *                                           -- 2/11/08
      *
      * Changes:
      *
@@ -296,7 +294,7 @@ public class ColumnList
      * Otherwise, pass the register internal change listeners message on to the
      * instance of ColumnListListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -333,7 +331,7 @@ public class ColumnList
      * Insert the Column into the index, and into the column list.  Call the
      * columns constructItsCells() method.
      *
-     *                                                 JRM -- 8/30/07
+     *                                                  -- 8/30/07
      *
      * Changes:
      *
@@ -342,11 +340,11 @@ public class ColumnList
      *      list listeners of the column addition.  Finally, added calls to
      *      mark the beginning and end of any resulting cascade of changes.
      *
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      *
      *    - Added code to register the column as an internal listener of its
      *      matrix vocab element.
-     *                                                  JRM -- 3/22/08
+     *                                                   -- 3/22/08
      */
 
     protected void addColumn(Column col)
@@ -453,7 +451,7 @@ public class ColumnList
      *
      * Tell each column in the column list to sort its cells in onset order.
      *
-     *                                              JRM -- 3/20/08
+     *                                               -- 3/20/08
      *
      * Changes:
      *
@@ -486,7 +484,7 @@ public class ColumnList
      *
      * Get the instance of Column corresponding with the supplied id.
      *
-     *                                                 JRM -- 8/31/07
+     *                                                  -- 8/31/07
      *
      * Changes:
      *
@@ -521,7 +519,7 @@ public class ColumnList
      *
      * Get the instance of Column corresponding with the supplied name.
      *
-     *                                                  JRM -- 8/30/07
+     *                                                   -- 8/30/07
      *
      * Changes:
      *
@@ -578,7 +576,7 @@ public class ColumnList
      * Construct and return a vector containing copies of all Columns
      * in the column list.  If the column list is empty, return null.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
@@ -611,13 +609,13 @@ public class ColumnList
      * Construct and return a vector containing copies of all DataColumns
      * in the column list.  If the column list is empty, return null.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
      *    - Modified the method to return an empty vector if there are
      *      no data columns in the column list.
-     *                                                  JRM -- 11/24/08
+     *                                                   -- 11/24/08
      */
 
     protected java.util.Vector<DataColumn> getDataColumns()
@@ -651,13 +649,13 @@ public class ColumnList
      * Construct and return a vector containing copies of all DataColumns
      * in the column list.  If the column list is empty, return null.
      *
-     *                                                  JRM -- 8/31/07
+     *                                                   -- 8/31/07
      *
      * Changes:
      *
      *    - Modified the method to return an empty vector if there are
      *      no reference columns in the column list.
-     *                                                  JRM -- 11/24/08
+     *                                                   -- 11/24/08
      */
 
     protected java.util.Vector<ReferenceColumn> getReferenceColumns()
@@ -726,7 +724,7 @@ public class ColumnList
      * Return true if the supplied column name currently appears
      * in the column list, and false otherwise.
      *
-     *                                              JRM -- 6/3/07
+     *                                               -- 6/3/07
      *
      * Changes:
      *
@@ -967,7 +965,7 @@ public class ColumnList
      *
      * Then remove the target Column from the column list and from the index.
      *
-     *                                                 JRM -- 8/31/07
+     *                                                  -- 8/31/07
      *
      * Changes:
      *
@@ -976,7 +974,7 @@ public class ColumnList
      *      Added code to notify column list listeners of the column removal.
      *      Finally added calls to mark the beginning and end of any resulting
      *      cascade of changes.
-     *                                                  JRM -- 2/11/08
+     *                                                   -- 2/11/08
      */
 
     protected void removeColumn(long targetID)
@@ -1069,7 +1067,7 @@ public class ColumnList
      *      method doesn't deal with this issue -- we handle it at a higher
      *      level.
      *
-     *                                                 JRM -- 8/31/07
+     *                                                  -- 8/31/07
      *
      * Changes:
      *
@@ -1077,7 +1075,7 @@ public class ColumnList
      *      the data column to the new, and to notify the listeners of the
      *      changes.  Added calls to mark the beginning and end of any resulting
      *      cascade of changes.
-     *                                                  JRM -- 2/5/08
+     *                                                   -- 2/5/08
      */
 
     protected void replaceDataColumn(DataColumn new_dc, boolean cascade)
@@ -1263,7 +1261,7 @@ public class ColumnList
      *      version of itself only.  If you play with IDs and try to use this to
      *      replace one ReferenceColumn with another, it will choke.
      *
-     *                                                 JRM -- 8/31/07
+     *                                                  -- 8/31/07
      *
      * Changes:
      *

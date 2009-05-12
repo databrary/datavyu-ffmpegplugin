@@ -17,7 +17,7 @@ import java.util.Vector;
  * Instances of DataColumn are used to implement text, nominal, float, integer,
  * predicate, and matrix columns (AKA spreadsheet variables) in the database.
  *
- *                                                  JRM -- 8/29/07
+ *                                                  -- 8/29/07
  *
  * @author FGA
  */
@@ -151,7 +151,7 @@ public class DataColumn extends Column
      *  The third takes an instance of DataColum as its parameter, and returns
      *  a copy.  Note that the itsCells field is NOT copied.
      *
-     *                                              JRM -- 8/29/07
+     *                                              -- 8/29/07
      *
      * Changes:
      *
@@ -278,7 +278,7 @@ public class DataColumn extends Column
      *
      * Update numCells in passing.
      *
-     *                                              JRM -- 8/30/07
+     *                                              -- 8/30/07
      *
      * Changes:
      *
@@ -317,7 +317,7 @@ public class DataColumn extends Column
      * openshapa.db package.  Also the method can only be called once, and
      * may not be used to set itsMveID to the INVALID_ID.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -379,7 +379,7 @@ public class DataColumn extends Column
      *
      * Return the current value of the itsMveType field.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -399,7 +399,7 @@ public class DataColumn extends Column
      *
      * Return the current value of the varLen field.
      *
-     *                          JRM -- 8/23/07
+     *                          -- 8/23/07
      *
      * Changes:
      *
@@ -425,7 +425,7 @@ public class DataColumn extends Column
      * should only be called when the DataColumn is being inserted in the
      * column list.
      *
-     *                                          JRM -- 8/30/07
+     *                                          -- 8/30/07
      *
      * Changes:
      *
@@ -462,7 +462,7 @@ public class DataColumn extends Column
      * This method should be only be called just before a data column is
      * removed from the column list.
      *
-     *                                              JRM -- 3/23/08
+     *                                              -- 3/23/08
      *
      * Changes:
      *
@@ -515,7 +515,7 @@ public class DataColumn extends Column
      * This method should be only be called just after a newly cleared
      * data column is inserted into the column list.
      *
-     *                                              JRM -- 3/23/08
+     *                                              -- 3/23/08
      *
      * Changes:
      *
@@ -643,7 +643,7 @@ public class DataColumn extends Column
      * Cell MUST be the current cannonical incarnation.  This should be verified
      * by the subclass.
      *
-     *                                              JRM -- 3/6/08
+     *                                              -- 3/6/08
      *
      * Changes:
      *
@@ -716,7 +716,7 @@ public class DataColumn extends Column
      * This method may be called by cells in the pending list in response
      * to an exitCascade call.
      *
-     *                                              JRM -- 3/15/08
+     *                                              -- 3/15/08
      *
      * Changes:
      *
@@ -846,7 +846,7 @@ public class DataColumn extends Column
      * Then clear the pending set, set this.cascadeInProgress to false,
      * and exit.
      *
-     *                                  JRM -- 3/15/08
+     *                                  -- 3/15/08
      *
      * Changes:
      *
@@ -913,7 +913,7 @@ public class DataColumn extends Column
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -946,7 +946,7 @@ public class DataColumn extends Column
      * Otherwise, pass the deregister internal change listeners message on to
      * the instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -976,7 +976,7 @@ public class DataColumn extends Column
      *
      * Return the corrent value of this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -999,7 +999,7 @@ public class DataColumn extends Column
      * Otherwise, pass a note changes message on to the instance of
      * DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1033,7 +1033,7 @@ public class DataColumn extends Column
      * Otherwise, pass the notify listeners of changes message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1066,7 +1066,7 @@ public class DataColumn extends Column
      * Otherwise, pass the notify listeners of deletion message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1100,7 +1100,7 @@ public class DataColumn extends Column
      * Otherwise, pass the register external change listeners message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1133,7 +1133,7 @@ public class DataColumn extends Column
      * Otherwise, pass the register internal change listeners message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1172,7 +1172,7 @@ public class DataColumn extends Column
      *
      * In all other cases, throw a system error exception.
      *
-     *                                          JRM -- 2/5/08
+     *                                          -- 2/5/08
      *
      * Changes:
      *
@@ -1233,7 +1233,7 @@ public class DataColumn extends Column
      * even if it must be eventually, since we can't do this until both are
      * inserted into their respective lists.
      *
-     *                                              JRM -- 8/31/07
+     *                                              -- 8/31/07
      *
      * Changes:
      *
@@ -1328,7 +1328,7 @@ public class DataColumn extends Column
      * Given an ID, attempt to look up the associated MatrixVocabElement
      * in the database associated with the DataColumn.  If there is no such
      * MatrixVocabElement, throw  a system error.
-     *                                              JRM -- 8/24/07
+     *                                              -- 8/24/07
      *
      * Changes:
      *
@@ -1373,7 +1373,7 @@ public class DataColumn extends Column
      * Construct a string containing the values of the cells in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/30/07
+     *                                          -- 8/30/07
      *
      * Changes:
      *
@@ -1425,7 +1425,7 @@ public class DataColumn extends Column
      *
      * Construct a string containing the values of the cells in the column.
      *
-     *                                          JRM -- 8/30/07
+     *                                          -- 8/30/07
      *
      * Changes:
      *
@@ -1481,7 +1481,7 @@ public class DataColumn extends Column
      *
      * Append the supplied DataCell to the end of the vector of cells.
      *
-     *                                          JRM -- 8/30/07
+     *                                          -- 8/30/07
      *
      * Changes:
      *
@@ -1491,7 +1491,7 @@ public class DataColumn extends Column
      *      calls to mark the beginning and end of any resulting cascade of
      *      changes.
      *
-     *                                          JRM -- 2/10/08
+     *                                          -- 2/10/08
      */
 
     protected void appendCell(DataCell newCell)
@@ -1556,7 +1556,7 @@ public class DataColumn extends Column
      * the actual cell -- not a copy.  For almost all purposes, the returned
      * cell should be treated as read only.
      *
-     *                                              JRM -- 8/30/07
+     *                                              -- 8/30/07
      *
      * Changes:
      *
@@ -1598,7 +1598,7 @@ public class DataColumn extends Column
      *
      * Return a copy of the cell at the specified ord.
      *
-     *                                          JRM -- 8/30/07
+     *                                          -- 8/30/07
      *
      * Changes:
      *
@@ -1620,7 +1620,7 @@ public class DataColumn extends Column
      * Insert the supplied DataCell in the indicated location in the vector
      * of DataCells.  Update the ords of the cells after the insertion point.
      *
-     *                                              JRM -- 8/30/07
+     *                                              -- 8/30/07
      *
      * Changes:
      *
@@ -1629,7 +1629,7 @@ public class DataColumn extends Column
      *      DataColumn cell insertion message to listeners.  Finally, added
      *      calls to mark the beginning and end of any resulting cascade of
      *      changes.
-     *                                              JRM -- 2/10/08
+     *                                              -- 2/10/08
      */
 
     protected void insertCell(DataCell newCell,
@@ -1727,7 +1727,7 @@ public class DataColumn extends Column
      *
      * Return a reference to the DataCell removed from itsCells.
      *
-     *                                      JRM -- 8/30/07
+     *                                      -- 8/30/07
      *
      * Changes:
      *
@@ -1820,7 +1820,7 @@ public class DataColumn extends Column
      *
      * Replace the DataCell at targetOrd in this.itsCells with the supplied
      * DataCell.  Return the old DataCell.
-     *                                              JRM -- 8/30/07
+     *                                              -- 8/30/07
      *
      * Changes:
      *
@@ -1828,7 +1828,7 @@ public class DataColumn extends Column
      *      instance of DataCellListeners from the old to the new incarnation
      *      of the data cell.  Added calls to mark the beginning and end of
      *      any resulting cascade of changes.
-     *                                              JRM -- 2/10/08
+     *                                              -- 2/10/08
      *
      *    - Reworked code to use the cascade mechanism.  In essence, we now
      *      recruit the target cell into the cascade, and set its pending
@@ -1911,7 +1911,7 @@ public class DataColumn extends Column
      * Must re-write this method so as to update ords efficiently, avoid java's
      * built in sort() routine, and include suitable sanity checking.
      *
-     *                                              JRM -- 1/22/08
+     *                                              -- 1/22/08
      *
      * Changes:
      *
@@ -1976,7 +1976,7 @@ public class DataColumn extends Column
      * sort(), the necessity of touching up all the ords, and the stupidity
      * I had to go though to handle a system error exception.
      *
-     *                                              JRM -- 3/20/08
+     *                                              -- 3/20/08
      *
      * Changes:
      *
@@ -2066,7 +2066,7 @@ public class DataColumn extends Column
      * Verify that a cell has been correctly initialized for insertion into
      * itsCells.  Return true if it has been, and false otherwise.
      *
-     *                                              JRM -- 8/30/07
+     *                                              -- 8/30/07
      *
      * Changes:
      *
@@ -2135,7 +2135,7 @@ public class DataColumn extends Column
      * Verify that this.cascadeInProgress is true.  Throw a system
      * it it isn't.
      *
-     *                                  JRM -- 3/20/08
+     *                                  -- 3/20/08
      *
      * Changes:
      *
@@ -2283,7 +2283,7 @@ public class DataColumn extends Column
      *
      * Throw a system error if the method is ever called.
      *
-     *                                  JRM -- 3/20/08
+     *                                  -- 3/20/08
      *
      * Changes:
      *

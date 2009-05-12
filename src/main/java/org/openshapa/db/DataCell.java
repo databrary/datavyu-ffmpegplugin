@@ -20,7 +20,7 @@ import org.openshapa.util.HashUtils;
  *           this only implies that they have identical onsets -- not that
  *           they are in any way identical.
  *
- *                                          JRM -- 8/24/07
+ *                                          -- 8/24/07
  * Regular cell definition
  * @author FGA
  */
@@ -261,7 +261,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * when a mve or pve has changes, and we need a copy of the cell to
      * modify into conformance with the modified mve or pve.
      *
-     *                                              JRM -- 8/24/07
+     *                                              -- 8/24/07
      *
      * Changes:
      *
@@ -447,7 +447,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Return the current value of the itsMveID field.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -467,7 +467,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Return the current value of the itsMveType field.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -487,7 +487,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Get and set the value of the offset field.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -527,7 +527,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Get and set the value of the onset field.
      *
-     *                                      JRM -- 8/29/07
+     *                                      -- 8/29/07
      *
      * Changes:
      *
@@ -566,7 +566,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Return a copy of the current value of the data cell.
      *
-     *                              JRM -- 8/29/07
+     *                              -- 8/29/07
      *
      * Changes:
      *
@@ -589,7 +589,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * with the matrix vocab element, or with the predicate vocab elements
      * associated with any predicates that may appear in the matrix.
      *
-     *                              JRM -- 8/29/07
+     *                              -- 8/29/07
      *
      * Changes:
      *
@@ -612,7 +612,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * val parameter, and if no errors are detected, create a copy and
      * store it in this.val
      *
-     *                                              JRM -- 8/29/07
+     *                                              -- 8/29/07
      *
      * Changes:
      *
@@ -735,7 +735,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * this.pending.getComment().  Otherwise return the value of
      * this.getComment().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -767,7 +767,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * If we are in a cascade, and this.pending != null, return the value of
      * this.pending.getOnset().  Otherwise return the value of this.getOnset().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -799,7 +799,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * If we are in a cascade, and this.pending != null, return the value of
      * this.pending.getOnset().  Otherwise return the value of this.getOnset().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -831,7 +831,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * If we are in a cascade, and this.pending != null, return the value of
      * this.pending.getOrd().  Otherwise return the value of this.getOrd().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -863,7 +863,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * If we are in a cascade, and this.pending != null, return the value of
      * this.pending.getVal().  Otherwise return the value of this.getVal().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -898,7 +898,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Pass the supplied comment on to this.pending.setComment().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -935,7 +935,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Pass the supplied offset on to this.pending.setOffset().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -972,7 +972,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Pass the supplied onset on to this.pending.setOnset().
      *
-     *                                          JRM -- 3/15/08
+     *                                          -- 3/15/08
      *
      * Changes:
      *
@@ -1009,7 +1009,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * this.pending.setOrd().  Otherwise, pass the supplied value on to
      * this.setOrd().
      *
-     *                                          JRM -- 3/15/08
+     *                                           -- 3/15/08
      *
      * Changes:
      *
@@ -1060,7 +1060,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * cell is an acceptable replacement value, and set this.pending to
      * refer to the supplied data cell.
      *
-     *                                          JRM -- 3/20/08
+     *                                           -- 3/20/08
      *
      * Changes:
      *
@@ -1103,7 +1103,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Pass the supplied val on to this.pending.setVal().
      *
-     *                                          JRM -- 3/15/08
+     *                                           -- 3/15/08
      *
      * Changes:
      *
@@ -1157,13 +1157,13 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * as for efficiency reasons, the same copy is passed to all the listeners
      * on any given vocab element changed call.
      *
-     *                                              JRM -- 3/20/08
+     *                                               -- 3/20/08
      *
      * Changes:
      *
      *    - Added the column predicate related parameters to the method's
      *      argument list.
-     *                                              JRM -- 8/26/08
+     *                                               -- 8/26/08
      */
 
     protected void cascadeUpdateForFargListChange(
@@ -1285,7 +1285,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * we have already made note of our being in the cascade due to a change
      * in the MVE indicated by the mveID parameter.  In this latter case,
      * exit without taking any action.
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -1728,7 +1728,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Finally, if this.oldOrd is not zero, set this.ord to this.oldOrd, and
      * set this.oldOrd to zero.
      *
-     *                                          JRM -- 3/15/08
+     *                                           -- 3/15/08
      *
      * Changes:
      *
@@ -1784,7 +1784,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * 7) Add this cell to the host data column's pending list.
      *
-     *                                          JRM -- 5/15/08
+     *                                           -- 5/15/08
      *
      * Changes:
      *
@@ -1865,7 +1865,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * This method is called by the host data column when it receives an end
      * cascade message.
      *
-     *                                          JRM -- 5/15/08
+     *                                           -- 5/15/08
      *
      * Changes:
      *
@@ -1927,7 +1927,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Return this.inCascade.
      *
-     *              JRM -- 3/20/08
+     *               -- 3/20/08
      *
      * Changes:
      *
@@ -1954,7 +1954,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -1987,7 +1987,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the deregister internal change listeners message on to
      * the instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2017,7 +2017,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * Return the corrent value of this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2040,7 +2040,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass a note changes message on to the instance of
      * DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2079,7 +2079,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the notify listeners of changes message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2112,7 +2112,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the notify listeners of deletion message on to the
      * instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2146,7 +2146,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the register external change listeners message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2179,7 +2179,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Otherwise, pass the register internal change listeners message on to the
      * instance of DataCellListeners pointed to by this.listeners.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2218,7 +2218,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *
      * In all other cases, throw a system error exception.
      *
-     *                                          JRM -- 2/5/08
+     *                                           -- 2/5/08
      *
      * Changes:
      *
@@ -2271,7 +2271,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * The objective is to get all instances of Predicate that may appear in
      * the value of the cell to deregister as internal vocab element listeners
      * with their associated PVEs.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -2310,7 +2310,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Note that this method assumes that the DataCell has been inserted in
      * the index and assigned an ID before the method is called.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -2345,7 +2345,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * in the database associated with the DataCell.  If there is no
      * such DataColumn, throw  a system error.
      *
-     *                                              JRM -- 11/28/07
+     *                                               -- 11/28/07
      *
      * Changes:
      *
@@ -2391,7 +2391,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * in the database associated with the DataColumn.  If there is no
      * such MatrixVocabElement, throw  a system error.
      *
-     *                                              JRM -- 8/24/07
+     *                                               -- 8/24/07
      *
      * Changes:
      *
@@ -2439,7 +2439,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * The objective is to get all instances of Predicate that may appear in
      * the value of the cell to register as internal vocab element listeners
      * with their associated PVEs.
-     *                                              JRM -- 3/24/08
+     *                                               -- 3/24/08
      *
      * Changes:
      *
@@ -2477,7 +2477,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Note that this method assumes that the DataCell is still in the index
      * at the time of call.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -2513,7 +2513,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * the database as the first incarnation of the cell is valid for the
      * target data column / matrix vocab element.
      *
-     *                                      JRM -- 2/19/08
+     *                                       -- 2/19/08
      *
      * Changes:
      *
@@ -2546,7 +2546,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * underlying matrix and vocab elements, only changes in the argument
      * list of the cell proper.
      *
-     *                                      JRM -- 2/19/08
+     *                                       -- 2/19/08
      *
      * Changes:
      *
@@ -2618,7 +2618,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * be the pending cell that will be used to replace the old cell upon
      * cascade termination.
      *
-     *                                              JRM -- 8/26/08
+     *                                               -- 8/26/08
      *
      * Changes:
      *
@@ -2767,7 +2767,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * instance of predicate somewhere in the value of the cell receiving a
      * VEChanged() message from the predicate vocab element in question.
      *
-     *                                          JRM -- 8/26/08
+     *                                           -- 8/26/08
      *
      * Changes:
      *
@@ -3046,7 +3046,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Returns a reference to the newly constructed DataCell if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

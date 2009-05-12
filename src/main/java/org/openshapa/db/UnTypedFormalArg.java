@@ -17,7 +17,6 @@ package org.openshapa.db;
 
 /**
  *
- * @author mainzer
  */
 public class UnTypedFormalArg
         extends FormalArgument
@@ -47,7 +46,7 @@ public class UnTypedFormalArg
      *
      *    - None.
      *
-     *                                          JRM -- 1/25/07
+     *                                           -- 1/25/07
      */
 
     public UnTypedFormalArg(Database db)
@@ -237,7 +236,7 @@ public class UnTypedFormalArg
      * Note that the method will not accept valid text strings -- these can
      * only be used to replace instance of class TextStringFormalArg.
      *
-     *                                             JRM -- 2/5/07
+     *                                              -- 2/5/07
      *
      * Changes:
      *

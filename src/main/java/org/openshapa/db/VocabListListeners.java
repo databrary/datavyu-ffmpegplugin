@@ -18,9 +18,7 @@ import org.openshapa.util.Constants;
  * de-registering internal and external listeners for changes in the vocab
  * list, and sending notifications.
  *
- *                                              JRM -- 2/2/08
- *
- * @author mainzer
+ *                                               -- 2/2/08
  */
 public class VocabListListeners extends Listeners
 {
@@ -39,7 +37,7 @@ public class VocabListListeners extends Listeners
      * class is very simple, so all the construtor does is call the super and
      * then set itsVL.
      *
-     *                                              JRM -- 2/6/08
+     *                                               -- 2/6/08
      *
      * Changes:
      *
@@ -83,7 +81,7 @@ public class VocabListListeners extends Listeners
      * Advise the listeners of the deletion of a VocabElement of the specified
      * id from the vocab list.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -124,7 +122,7 @@ public class VocabListListeners extends Listeners
      * Advise the listeners of the inserion of a VocabElement of the specified
      * id into the vocab list.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -168,7 +166,7 @@ public class VocabListListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -198,7 +196,7 @@ public class VocabListListeners extends Listeners
      * Deregister an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -223,7 +221,7 @@ public class VocabListListeners extends Listeners
      *
      * Register an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -259,7 +257,7 @@ public class VocabListListeners extends Listeners
      * Register an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *

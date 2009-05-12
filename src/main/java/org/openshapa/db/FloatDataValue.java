@@ -15,8 +15,6 @@ import java.text.DecimalFormat;
 /**
  * An instance of FloatDataValue is used to store a floating point value
  * assigned to a formal argument.
- *
- * @author mainzer
  */
 public final class FloatDataValue extends DataValue {
     /*************************************************************************/
@@ -85,7 +83,7 @@ public final class FloatDataValue extends DataValue {
      * The fourth takes a reference to an instance of FloatDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      * @param db Database associated
      * @throws SystemErrorException if superclass throws
      */
@@ -140,7 +138,7 @@ public final class FloatDataValue extends DataValue {
      *
      * Return the current value of the data value.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -159,7 +157,7 @@ public final class FloatDataValue extends DataValue {
      * Set itsValue to the specified value.  If subrange is true, coerce the
      * value into the subrange.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -226,7 +224,7 @@ public final class FloatDataValue extends DataValue {
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -249,7 +247,7 @@ public final class FloatDataValue extends DataValue {
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -276,7 +274,7 @@ public final class FloatDataValue extends DataValue {
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -344,7 +342,7 @@ public final class FloatDataValue extends DataValue {
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -423,7 +421,7 @@ public final class FloatDataValue extends DataValue {
      * If the supplied value is in range for the associated formal argument,
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
-     *                                              JRM -- 070815
+     *                                               -- 070815
      *
      * Changes:
      *
@@ -460,7 +458,7 @@ public final class FloatDataValue extends DataValue {
      * Return reference to the newly constructed FloatDataValue if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 3/31/08
+     *                                               -- 3/31/08
      *
      * Changes:
      *

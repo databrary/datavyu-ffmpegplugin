@@ -226,7 +226,7 @@ public class PredDataValueTest extends DataValueTest {
      * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -422,7 +422,7 @@ public class PredDataValueTest extends DataValueTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -1091,7 +1091,7 @@ public class PredDataValueTest extends DataValueTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -1877,7 +1877,7 @@ public class PredDataValueTest extends DataValueTest {
      *
      * Run a battery of tests on the accessors supported by this class.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -2937,7 +2937,7 @@ public class PredDataValueTest extends DataValueTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -3689,7 +3689,7 @@ public class PredDataValueTest extends DataValueTest {
      * Run a battery of tests on the toString methods supported by
      * this class.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -4143,7 +4143,7 @@ public class PredDataValueTest extends DataValueTest {
      * Verify that the supplied instances of PredDataValue are distinct, that
      * they contain no common references (other than db), and that they have
      * the same value.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

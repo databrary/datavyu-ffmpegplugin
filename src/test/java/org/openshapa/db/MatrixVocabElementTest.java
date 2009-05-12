@@ -447,7 +447,7 @@ public class MatrixVocabElementTest {
      *
      * Run a battery of tests on the formal argument list management methods
      * for this class.
-     *                                          JRM -- 3/18/07
+     *                                           -- 3/18/07
      *
      * Changes:
      *
@@ -643,7 +643,7 @@ public class MatrixVocabElementTest {
      * Run a battery of tests on the formal argument list management methods
      * for float instances of this class.
      *
-     *                                          JRM -- 3/22/07
+     *                                           -- 3/22/07
      *
      * Changes:
      *
@@ -974,7 +974,7 @@ public class MatrixVocabElementTest {
      * Run a battery of tests on the formal argument list management methods
      * for integer instances of this class.
      *
-     *                                          JRM -- 3/22/07
+     *                                           -- 3/22/07
      *
      * Changes:
      *
@@ -1310,7 +1310,7 @@ public class MatrixVocabElementTest {
      * in matrix argument list management.  All we have to do here is verify
      * that attempts to append or insert text string formal arguments fail.
      *
-     *                                          JRM -- 3/26/07
+     *                                           -- 3/26/07
      *
      * Changes:
      *
@@ -1445,7 +1445,7 @@ public class MatrixVocabElementTest {
      * Run a battery of tests on the formal argument list management methods
      * for Nominal instances of this class.
      *
-     *                                          JRM -- 3/22/07
+     *                                           -- 3/22/07
      *
      * Changes:
      *
@@ -1779,7 +1779,7 @@ public class MatrixVocabElementTest {
      * Run a battery of tests on the formal argument list management methods
      * for Predicate instances of this class.
      *
-     *                                          JRM -- 3/22/07
+     *                                           -- 3/22/07
      *
      * Changes:
      *
@@ -2119,7 +2119,7 @@ public class MatrixVocabElementTest {
      * Run a battery of tests on the formal argument list management methods
      * for text string instances of this class.
      *
-     *                                          JRM -- 3/22/07
+     *                                           -- 3/22/07
      *
      * Changes:
      *
@@ -4078,7 +4078,7 @@ public class MatrixVocabElementTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 3/11/07
+     *               -- 3/11/07
      *
      * Changes:
      *
@@ -4233,7 +4233,7 @@ public class MatrixVocabElementTest {
      * in the supplied instance of MatrixVocabElement.  Return the
      * number of failures.  If verbose, also issue a diabnostic message.
      *
-     *                                  JRM -- 3/22/07
+     *                                   -- 3/22/07
      *
      * Changes:
      *

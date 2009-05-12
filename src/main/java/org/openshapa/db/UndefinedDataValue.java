@@ -6,8 +6,6 @@ import org.openshapa.util.HashUtils;
 /**
  * An instance of UndefinedDataValue is used as a place holder for an untyped
  * formal argument until a value is assigned.
- *
- * @author mainzer
  */
 
 public final class UndefinedDataValue extends DataValue
@@ -44,7 +42,7 @@ public final class UndefinedDataValue extends DataValue
      * The third takes a reference to an instance of UndefinedDataValue as an
      * argument, and uses it to create a copy.
      *
-     *                                              JRM -- 8/16/07  
+     *                                               -- 8/16/07  
      *
      * Changes:
      *
@@ -111,7 +109,7 @@ public final class UndefinedDataValue extends DataValue
      *
      * Return a string containing a copy of the current value of the data value.
      *
-     *                          JRM -- 8/16/07
+     *                           -- 8/16/07
      *
      * Changes:
      *
@@ -133,7 +131,7 @@ public final class UndefinedDataValue extends DataValue
      * formal argument, or any valid formal argument name if itsFargID
      * is undefined.
      *
-     *                                              JRM -- 8/16/07
+     *                                               -- 8/16/07
      *
      * Changes:
      *
@@ -142,7 +140,7 @@ public final class UndefinedDataValue extends DataValue
      *      the requirement that undefined data values only be used to 
      *      replace untyped formal arguments is removed.
      *
-     *                                              JRM -- 12/12/08
+     *                                               -- 12/12/08
      */
     
     public void setItsValue(String value)
@@ -215,7 +213,7 @@ public final class UndefinedDataValue extends DataValue
      *
      * Returns a String representation of the DBValue for display.
      *
-     *                                  JRM -- 8/15/07
+     *                                   -- 8/15/07
      *
      * @return the string value.
      *
@@ -237,7 +235,7 @@ public final class UndefinedDataValue extends DataValue
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                      JRM -- 8/15/07
+     *                                       -- 8/15/07
      *
      * @return the string value.
      *
@@ -262,7 +260,7 @@ public final class UndefinedDataValue extends DataValue
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                           -- 3/22/08
      *
      * Changes:
      *
@@ -343,7 +341,7 @@ public final class UndefinedDataValue extends DataValue
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                           -- 8/16/07
      *
      * Changes:
      *
@@ -393,7 +391,7 @@ public final class UndefinedDataValue extends DataValue
      *
      * Throw a system error if the value is not a valid formal argument name.
      * 
-     *                                              JRM -- 070815
+     *                                               -- 070815
      *
      * Changes:
      *

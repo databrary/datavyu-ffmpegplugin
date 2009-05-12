@@ -22,9 +22,7 @@ import org.openshapa.util.HashUtils;
  * referred to as "floats" in the user interface, it seems to make more sense
  * to use the "FloatFormalArg" name.
  *
- *                                                      JRM -- 8/15/07
- *
- * @author mainzer
+ *                                                       -- 8/15/07
  */
 public class FloatFormalArg extends FormalArgument
 {
@@ -68,7 +66,7 @@ public class FloatFormalArg extends FormalArgument
      * and one that takes a reference to an instance of FloatFormalArg as its
      * parameter, and uses it to create a copy.
      *
-     *                                          JRM -- 2/11/07
+     *                                           -- 2/11/07
      *
      * Changes:
      *
@@ -163,7 +161,7 @@ public class FloatFormalArg extends FormalArgument
      *
      * Otherwise, set subRange to true, and set the new minVal and maxVal.
      *
-     *                                          JRM -- 2/5/07
+     *                                           -- 2/5/07
      *
      * Changes:
      *
@@ -208,7 +206,7 @@ public class FloatFormalArg extends FormalArgument
      *
      * Accessor routines used to obtain the current values of the subRange,
      * minVal, and maxVal fields.
-     *                                          JRM -- 2/11/07
+     *                                           -- 2/11/07
      *
      * Changes:
      *
@@ -326,7 +324,7 @@ public class FloatFormalArg extends FormalArgument
      * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                              -- 2/5/07
      *
      * Changes:
      *

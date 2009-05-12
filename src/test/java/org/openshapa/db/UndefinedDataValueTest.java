@@ -144,7 +144,7 @@ public class UndefinedDataValueTest extends DataValueTest {
      * Verify that the supplied instances of UndefinedDataValue are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

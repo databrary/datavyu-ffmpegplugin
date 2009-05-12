@@ -13,7 +13,7 @@ package org.openshapa.db;
  * Instances of PredicateVocabElement are used to store vocab data on
  * predicates, both system and user defined.
  *
- *                                          JRM -- 3/05/07
+ *                                           -- 3/05/07
  *
  * @author FGA
  */
@@ -29,11 +29,11 @@ public final class PredicateVocabElement extends VocabElement
      * Predicates always have names, so only one version of this constructor,
      * which sets the name of the new predicate vocab element.
      *
-     *                                              JRM -- 3/05/07
+     *                                               -- 3/05/07
      *
      * Changes:
      *
-     *    - Added copy constructor.                 JRM -- 4/30/07
+     *    - Added copy constructor.                  -- 4/30/07
      *
      */
 
@@ -118,7 +118,7 @@ public final class PredicateVocabElement extends VocabElement
      * list.  If the vocab element is to replace an existing vocab element,
      * its id must appear in the vocab list.
      *
-     *                                                  JRM -- 6/19/07
+     *                                                   -- 6/19/07
      *
      * Changes:
      *
@@ -288,7 +288,7 @@ public final class PredicateVocabElement extends VocabElement
      * Does some additional error checking and then calls the superclass
      * version of the method.
      *
-     *                                              JRM -- 3/04/07
+     *                                               -- 3/04/07
      *
      * Changes:
      *

@@ -36,10 +36,7 @@ package org.openshapa.db;
  *
  * This list isn't exhaustive -- add more as you think of them.
  *
- *                                              JRM -- 7/13/08
- *
- *
- * @author mainzer
+ *                                              -- 7/13/08
  */
 public class MacshapaDatabase extends Database
 {
@@ -73,7 +70,7 @@ public class MacshapaDatabase extends Database
      * Since this is a MacSHAPA database, also setup the extra structures
      * needed to store a MacSHAPA database.
      *
-     *                                              JRM -- 4/30/07
+     *                                              -- 4/30/07
      *
      * Changes:
      *
@@ -155,7 +152,7 @@ public class MacshapaDatabase extends Database
      * Several versions of this method, to accomodate different numbers of
      * parameters
      *
-     *                                              JRM -- 7/20/08
+     *                                              -- 7/20/08
      *
      * Changes:
      *
@@ -300,7 +297,7 @@ public class MacshapaDatabase extends Database
      * Several versions of this method, to accomodate different numbers of
      * parameters
      *
-     *                                              JRM -- 7/20/08
+     *                                              -- 7/20/08
      *
      * Changes:
      *
@@ -487,7 +484,7 @@ public class MacshapaDatabase extends Database
      * Several versions of this method, to accomodate different numbers of
      * parameters
      *
-     *                                              JRM -- 7/20/08
+     *                                              -- 7/20/08
      *
      * Changes:
      *
@@ -576,7 +573,7 @@ public class MacshapaDatabase extends Database
      * Several versions of this method, to accomodate different numbers of
      * parameters
      *
-     *                                              JRM -- 7/20/08
+     *                                              -- 7/20/08
      *
      * Changes:
      *
@@ -658,7 +655,7 @@ public class MacshapaDatabase extends Database
      *
      * Create the system predicates that exist in every MacSHAPA database.
      *
-     *                                              JRM -- 7/19/08
+     *                                              -- 7/19/08
      * Changes:
      *
      *    - None

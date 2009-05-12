@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * The vocab element for matrix column variables remains editiable.
  *
- *                                          -- JRM 3/03/07
+ *                                          --  3/03/07
  *
  * @author FGA
  */
@@ -99,11 +99,11 @@ public class MatrixVocabElement extends VocabElement
      * of the new matrix vocab element, and one which doesn't.  Note that
      * we check to verify that the name is a valid spreadsheet variable name.
      *
-     *                                              JRM -- 3/03/07
+     *                                               -- 3/03/07
      *
      * Changes:
      *
-     *    - Added copy constructor.                 JRM -- 4/30/07
+     *    - Added copy constructor.                  -- 4/30/07
      *
      */
 
@@ -399,7 +399,7 @@ public class MatrixVocabElement extends VocabElement
      * Do this as the superclass mthod will throw a system error if this is
      * a system MVE -- which it is unless this.type == MATRIX.
      *
-     *                                              JRM -- 3/04/07
+     *                                               -- 3/04/07
      *
      * Changes:
      *
@@ -474,14 +474,14 @@ public class MatrixVocabElement extends VocabElement
      * Make FormalArgument::appendFormalArg() accessible to
      * the outside world, but add some error checking.
      *
-     *                                          JRM -- 3/04/07
+     *                                           -- 3/04/07
      *
      * Changes:
      *
      *    - Modified function to append a copy of the newArg to the
      *      column predicate formal argument list.
      *
-     *                                          JRM -- 8/09/08
+     *                                           -- 8/09/08
      */
 
     public void appendFormalArg(FormalArgument newArg)
@@ -586,13 +586,13 @@ public class MatrixVocabElement extends VocabElement
      * Make FormalArgument::deleteFormalArg() accessible to
      * the outside world, but add some error checking.
      *
-     *                                          JRM -- 3/4/07
+     *                                           -- 3/4/07
      *
      * Changes:
      *
      *    - Updated to support maintenance of the column predicate
      *      formal argument list.
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      */
 
     public void deleteFormalArg(int n)
@@ -666,7 +666,7 @@ public class MatrixVocabElement extends VocabElement
      * Make FormalArgument::getFormalArg() accessible to
      * the outside world, but add some error checking.
      *
-     *                                          JRM -- 3/4/07
+     *                                           -- 3/4/07
      *
      * Changes:
      *
@@ -704,7 +704,7 @@ public class MatrixVocabElement extends VocabElement
      * Make VocabElement::getNumFormalArgs() public with some additional
      * error checking.
      *
-     *                                      JRM 3/04/07
+     *                                       3/04/07
      *
      * Changes:
      *
@@ -734,7 +734,7 @@ public class MatrixVocabElement extends VocabElement
      * Make VocabElement::insertFormalArg() public with some additional
      * error checking.
      *
-     *                                          JRM -- 3/04/07
+     *                                           -- 3/04/07
      *
      * Changes:
      *
@@ -858,7 +858,7 @@ public class MatrixVocabElement extends VocabElement
      * been set, and that the size and contents of the formal argument
      * list is congruent with the type.
      *
-     *                                                  JRM -- 6/19/07
+     *                                                   -- 6/19/07
      *
      * Changes:
      *
@@ -1055,7 +1055,7 @@ public class MatrixVocabElement extends VocabElement
       * formal arguments, if any.  This method should be called after the
       * MatrixVocabElement is assigned an ID and inserted into the vocab list.
       *
-      *                                         JRM -- 8/31/07
+      *                                          -- 8/31/07
       *
       * Changes:
       *
@@ -1103,7 +1103,7 @@ public class MatrixVocabElement extends VocabElement
      * Rewrite of the inherited method to deal with the peculiarities of
      * matrix vocab elements.
      *
-     *                                          JRM -- 3/04/07
+     *                                           -- 3/04/07
      *
      * Changes:
      *
@@ -1260,7 +1260,7 @@ public class MatrixVocabElement extends VocabElement
      * Append the supplied formal argument to the end of the column predicate
      * formal argument list.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1316,7 +1316,7 @@ public class MatrixVocabElement extends VocabElement
      * Note that the method presumes that this.db has been initialized prior
      * to the method's invocation.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1379,7 +1379,7 @@ public class MatrixVocabElement extends VocabElement
      * Verify that the column predicate formal argument list is valid.  Return
      * true if it is, and false otherwise.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1457,7 +1457,7 @@ public class MatrixVocabElement extends VocabElement
      * the column predicate implied by this MatrixVocabElement in a
      * format that displays the full status of the formal arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1511,7 +1511,7 @@ public class MatrixVocabElement extends VocabElement
      * column predicate implied by the MatrixVocabElement in the
      * format: (<ord>, <onset>, <offset>, <arg0>, <arg1>, ... <argn>).
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1564,7 +1564,7 @@ public class MatrixVocabElement extends VocabElement
      * supplied formal argument list is unique.  Return true if it is, and
      * false otherwise.
      *
-     *                                      JRM -- 8/9/08
+     *                                       -- 8/9/08
      *
      * Changes:
      *
@@ -1609,7 +1609,7 @@ public class MatrixVocabElement extends VocabElement
      *
      * Returns a copy of the n-th column predicate formal argument, or null
      * if there is no such argument.
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -1659,7 +1659,7 @@ public class MatrixVocabElement extends VocabElement
      *
      * Construct and return a vector containing a copy of the column predicate
      * formal argument list.
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -1697,7 +1697,7 @@ public class MatrixVocabElement extends VocabElement
      * argument list.  Throw a system error exception if there is no n-th
      * formal argument.
      *
-     *                                          JRM -- 8/09/08
+     *                                           -- 8/09/08
      *
      * Changes:
      *
@@ -1758,7 +1758,7 @@ public class MatrixVocabElement extends VocabElement
      *      argument that appears in the column predicate formal argument
      *      list.  Thus the caller must be careful not to alter it.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1817,7 +1817,7 @@ public class MatrixVocabElement extends VocabElement
      * Return the number of formal arguments in the column predicate implied
      * by the MatrixVocabElement.
      *
-     *                                      JRM 8/9/08
+     *                                       8/9/08
      *
      * Changes:
      *
@@ -1879,7 +1879,7 @@ public class MatrixVocabElement extends VocabElement
      * existing arguments with index greater than or equal to n have their
      * indicies increased by 1.
      *
-     *                                          JRM -- 8/9/08
+     *                                           -- 8/9/08
      *
      * Changes:
      *
@@ -1936,7 +1936,7 @@ public class MatrixVocabElement extends VocabElement
     } /* MatrixVocabElement::insertCPFormalArg() */
 
 
-// delete this eventually -- JRM
+// delete this eventually -- 
 //    /**
 //     * replaceCPFormalArg()
 //     *
@@ -1946,7 +1946,7 @@ public class MatrixVocabElement extends VocabElement
 //     * Throw a system error exception if there is no n-th formal column
 //     * predicate argument to begin with.
 //     *
-//     *                                          JRM -- 2/27/07
+//     *                                           -- 2/27/07
 //     *
 //     * Changes:
 //     *

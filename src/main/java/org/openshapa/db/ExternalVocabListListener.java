@@ -18,9 +18,7 @@ package org.openshapa.db;
  *
  * The methods specified in this interface will be called when appropriate.
  *
- *                                                  JRM -- 2/6/08
- *
- * @author mainzer
+ *                                                   -- 2/6/08
  */
 public interface ExternalVocabListListener
 {
@@ -37,7 +35,7 @@ public interface ExternalVocabListListener
      * The VEID parameter contains the ID assigned the vocab element that is
      * being deleted.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *
@@ -60,7 +58,7 @@ public interface ExternalVocabListListener
      * The VEID parameter contains the ID assigned the vocab element that is
      * being inserted.
      *
-     *                                          JRM -- 2/6/08
+     *                                           -- 2/6/08
      *
      * Changes:
      *

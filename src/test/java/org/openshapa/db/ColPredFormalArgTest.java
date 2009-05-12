@@ -40,7 +40,7 @@ public class ColPredFormalArgTest {
      * there are none particular to this class, so we just call the inherited
      * accessor test code.
      *
-     *                                      JRM -- 8/6/08
+     *                                       -- 8/6/08
      *
      * Changes:
      *
@@ -1167,7 +1167,7 @@ public class ColPredFormalArgTest {
      *
      * Verify that isValidValue() does the right thing.
      *
-     *                                          JRM -- 11/22/07
+     *                                           -- 11/22/07
      *
      * Changes:
      *
@@ -1781,7 +1781,7 @@ public class ColPredFormalArgTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 3/11/07
+     *               -- 3/11/07
      *
      * Changes:
      *

@@ -39,7 +39,7 @@ public class ColumnTest {
      * Verify that the accessors defined in this abstract class perform
      * as expected in the supplied instance of some subclass.
      *
-     *                                          JRM -- 1/25/08
+     *                                           -- 1/25/08
      *
      * Changes:
      *
@@ -413,7 +413,7 @@ public class ColumnTest {
      * contain no common references (other than db), and that they have the
      * same value.
      *
-     *                                              JRM -- 12/30/07
+     *                                               -- 12/30/07
      *
      * Changes:
      *
@@ -568,7 +568,7 @@ public class ColumnTest {
      * Verify that the supplied instance of Column has been correctly
      * initialized by a constructor.
      *
-     *                                              JRM -- 12/26/07
+     *                                               -- 12/26/07
      *
      * Changes:
      *

@@ -18,8 +18,6 @@ import java.util.TreeSet;
  *
  * Instances of this class are usef for formal arguments that have been
  * strongly typed to predicates.
- *
- * @author mainzer
  */
 public class PredFormalArg extends FormalArgument
 {
@@ -68,7 +66,7 @@ public class PredFormalArg extends FormalArgument
      * name as a parameters, and one that takes a reference to an instance of
      * PredFormalArg and uses it to create a copy.
      *
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -140,7 +138,7 @@ public class PredFormalArg extends FormalArgument
      * the approvedSet.  Similarly, if subrange is changed from true to false,
      * we discard the approved list by setting the approvedList field to null.
      *
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -191,7 +189,7 @@ public class PredFormalArg extends FormalArgument
      * The method throws a system error if subRange is false, if passed a null,
      * if passed an invalid nominal, or if the approved list already contains
      * the supplied nominal.
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -235,7 +233,7 @@ public class PredFormalArg extends FormalArgument
      * The method throws a system error if passed a null, if subRange is false,
      * or if the test string does not contain a valid nominal.
      *
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -271,7 +269,7 @@ public class PredFormalArg extends FormalArgument
      *
      * Construct and return a string representation of the approved set.
      *
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -327,7 +325,7 @@ public class PredFormalArg extends FormalArgument
      * The method throws a system error if subRange is false, if passed the
      * invalid ID, or if the approved list does not contain the supplied
      * predicate ID.
-     *                                          JRM -- 6/15/07
+     *                                           -- 6/15/07
      *
      * Changes:
      *
@@ -370,7 +368,7 @@ public class PredFormalArg extends FormalArgument
      *
      * The method throws a system error if subRange is false.
      *
-     *                                              JRM -- 6/15/07
+     *                                               -- 6/15/07
      *
      * Changes:
      *
@@ -477,7 +475,7 @@ public class PredFormalArg extends FormalArgument
      *
      * @return the string value.
      *
-     *                                      JRM -- 6/16/07
+     *                                       -- 6/16/07
      *
      * Changes:
      *
@@ -498,7 +496,7 @@ public class PredFormalArg extends FormalArgument
      * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 6/15/07
+     *                                              -- 6/15/07
      *
      * Changes:
      *

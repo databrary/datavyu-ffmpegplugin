@@ -18,10 +18,7 @@ import org.openshapa.util.Constants;
  * typed to quote string.  This class of formal argument will only appear in
  * matrix and predicate argument lists.
  *
- *                                                      JRM -- 2/13/07
- *
- *
- * @author mainzer
+ *                                                       -- 2/13/07
  */
 public class QuoteStringFormalArg extends FormalArgument
 {
@@ -56,7 +53,7 @@ public class QuoteStringFormalArg extends FormalArgument
      * a reference to an instance of QuoteStringFormalArg and uses it to create
      * a copy.
      *
-     *                                          JRM -- 2/13/07
+     *                                           -- 2/13/07
      *
      * Changes:
      *
@@ -108,7 +105,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      * Accessor routine used to obtain the current value of the subRange.
      *
-     *                                          JRM -- 2/13/07
+     *                                           -- 2/13/07
      *
      * Changes:
      *
@@ -206,7 +203,7 @@ public class QuoteStringFormalArg extends FormalArgument
      *
      * @return the string value.
      *
-     *                                      JRM -- 2/13/07
+     *                                       -- 2/13/07
      *
      * Changes:
      *
@@ -226,7 +223,7 @@ public class QuoteStringFormalArg extends FormalArgument
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                              -- 2/5/07
      *
      * Changes:
      *

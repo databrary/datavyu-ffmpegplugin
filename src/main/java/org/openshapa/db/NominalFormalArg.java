@@ -17,8 +17,6 @@ import org.openshapa.util.HashUtils;
  *
  * Intance of this class are used for formal arguments which have been strongly
  * typed to nominals.
- *
- * @author mainzer
  */
 
 public class NominalFormalArg extends FormalArgument
@@ -62,7 +60,7 @@ public class NominalFormalArg extends FormalArgument
      * name as a parameters, and one that takes a reference to an instance of
      * NominalFormalArg and uses it to create a copy.
      *
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -134,7 +132,7 @@ public class NominalFormalArg extends FormalArgument
      * the approvedSet.  Similarly, if subrange is changed from true to false,
      * we discard the approved list by setting the approvedList field to null.
      *
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -238,7 +236,7 @@ public class NominalFormalArg extends FormalArgument
      * The method throws a system error if subRange is false, if passed a null,
      * if passed an invalid nominal, or if the approved list already contains
      * the supplied nominal.
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -281,7 +279,7 @@ public class NominalFormalArg extends FormalArgument
      * The method throws a system error if passed a null, if subRange is false,
      * or if the test string does not contain a valid nominal.
      *
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -316,7 +314,7 @@ public class NominalFormalArg extends FormalArgument
      *
      * Construct and return a string representation of the approved set.
      *
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -370,7 +368,7 @@ public class NominalFormalArg extends FormalArgument
      * The method throws a system error if subRange is false, if passed a null,
      * if passed an invalid nominal, or if the approved list does not contain
      * the supplied nominal.
-     *                                          JRM -- 3/15/07
+     *                                          -- 3/15/07
      *
      * Changes:
      *
@@ -412,7 +410,7 @@ public class NominalFormalArg extends FormalArgument
      *
      * The method throws a system error if subRange is false.
      *
-     *                                              JRM -- 3/15/07
+     *                                              -- 3/15/07
      *
      * Changes:
      *
@@ -490,7 +488,7 @@ public class NominalFormalArg extends FormalArgument
      *
      * @return the string value.
      *
-     *                                      JRM -- 2/13/07
+     *                                      -- 2/13/07
      *
      * Changes:
      *
@@ -511,7 +509,7 @@ public class NominalFormalArg extends FormalArgument
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                             -- 2/5/07
      *
      * Changes:
      *

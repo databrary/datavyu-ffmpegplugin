@@ -25,7 +25,7 @@ import org.openshapa.util.HashUtils;
  * Each type of data value will have fields specific to its type, but 
  * their common fields and methods are defined here.
  *
- *                                              JRM -- 7/21/07  
+ *                                              -- 7/21/07  
  *
  * @author FGA
  */
@@ -96,7 +96,7 @@ public abstract class DataValue extends DBElement
      * a database as its parameter and just calls the super() constructor, 
      * and one that is used to create a copies of subclasses of DataValue.
      *
-     *                                              JRM -- 2/28/07  
+     *                                              -- 2/28/07  
      *
      * Changes:
      *
@@ -177,7 +177,7 @@ public abstract class DataValue extends DBElement
      *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                          JRM -- 3/22/08
+     *                                          -- 3/22/08
      *
      * Changes:
      *
@@ -203,7 +203,7 @@ public abstract class DataValue extends DBElement
      * The fa argument is a reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                          JRM -- 8/16/07
+     *                                          -- 8/16/07
      *
      * Changes:
      *
@@ -228,7 +228,7 @@ public abstract class DataValue extends DBElement
      *
      * Return the ID associated with the formal argument with which this 
      * DataValue is associated.
-     *                                              JRM -- 7/22/07
+     *                                              -- 7/22/07
      *
      * Changes:
      *
@@ -249,7 +249,7 @@ public abstract class DataValue extends DBElement
      * Note that there is no setItsFargType() method, as the itsFargType
      * field is set in passing by setItsFargID().
      *
-     *                                              JRM -- 7/23/07
+     *                                              -- 7/23/07
      *
      * Changes:
      *
@@ -268,7 +268,7 @@ public abstract class DataValue extends DBElement
      * setSubRange() method as this field is set in passing by setItsFargID(),
      * and can only be changed by a listener call.
      *
-     *                                              JRM -- 7/23/07
+     *                                              -- 7/23/07
      *
      * Changes:
      *
@@ -303,7 +303,7 @@ public abstract class DataValue extends DBElement
      * formal argument whose ID is stored in itsFargID.  However, we already
      * checked this when we set itsPredID, so no need to check it again here.
      * 
-     *                                              JRM -- 11/14/07
+     *                                              -- 11/14/07
      *
      * Changes:
      *
@@ -448,7 +448,7 @@ public abstract class DataValue extends DBElement
      * DataValue is associated.  In passing, verify that the target 
      * formal argument exists, and set itsFargType to match the type 
      * of the formal argument.
-     *                                              JRM -- 7/22/07
+     *                                              -- 7/22/07
      *
      * Changes:
      *
@@ -533,7 +533,7 @@ public abstract class DataValue extends DBElement
      * PredicateVocabElement contains the formal argument whose ID is 
      * stored in itsFargID.
      * 
-     *                                              JRM -- 11/14/07
+     *                                              -- 11/14/07
      *
      * Changes:
      *
@@ -645,7 +645,7 @@ public abstract class DataValue extends DBElement
      * Note that PredDataValue must override this method so that its predicate
      * value can insert itself in the index.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -685,7 +685,7 @@ public abstract class DataValue extends DBElement
      * Note that PredDataValue must override this method so that its predicate
      * value can remove itself in the index.
      *
-     *                                              JRM -- 2/19/08
+     *                                              -- 2/19/08
      *
      * Changes:
      *
@@ -720,7 +720,7 @@ public abstract class DataValue extends DBElement
      * Note that PredDataValue must override this method so as to pass an update
      * an update index for replacement message on to its Predicate.
      *
-     *                                          JRM -- 2/20/08
+     *                                          -- 2/20/08
      *
      * Changes:
      *

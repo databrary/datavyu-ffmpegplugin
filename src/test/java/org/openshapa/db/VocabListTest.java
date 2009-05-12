@@ -36,7 +36,7 @@ public class VocabListTest {
      * Construct a matrix vocab element with the supplied type and formal
      * arguments (if any).  Don't bother to catch system errors -- that will
      * be done at a higher level.
-     *                                          JRM - 5/10/07
+     *                                           - 5/10/07
      *
      * Changes:
      *
@@ -81,7 +81,7 @@ public class VocabListTest {
      * Construct a predicate vocab element with the supplied formal arguments
      * (if any).  Don't bother to catch system errors -- that will be done
      * at a higher level.
-     *                                          JRM - 5/10/07
+     *                                           - 5/10/07
      *
      * Changes:
      *
@@ -121,7 +121,7 @@ public class VocabListTest {
      *
      * @throws org.openshapa.db.SystemErrorException
      *
-     * @author JRM (original regression test - 2007/05/08).
+     * @author  (original regression test - 2007/05/08).
      */
     @Test (expected = SystemErrorException.class)
     public void Test1ArgConstructorFailure() throws SystemErrorException {
@@ -134,7 +134,7 @@ public class VocabListTest {
      * @throws org.openshapa.db.SystemErrorException if unable to
      * correctly create the vocablist.
      *
-     * @author JRM (original regression test - 2007/05/08).
+     * @author  (original regression test - 2007/05/08).
      */
     @Test
     public void Test1ArgConstructor() throws SystemErrorException {
@@ -152,7 +152,7 @@ public class VocabListTest {
      * @throws org.openshapa.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
      *
-     * @author JRM (original regression test - 2007/06/19).
+     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies1() throws SystemErrorException {
@@ -170,7 +170,7 @@ public class VocabListTest {
      * @throws org.openshapa.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
      *
-     * @author JRM (original regression test - 2007/06/19).
+     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies2()
@@ -227,7 +227,7 @@ public class VocabListTest {
      *
      * @throws org.openshapa.db.SystemErrorException
      *
-     * @author JRM (original regression test - 2007/06/19).
+     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies3()
@@ -346,7 +346,7 @@ public class VocabListTest {
      *
      * Run a battery of tests on vocab list management.
      *
-     *                                  JRM -- 5/8/07
+     *                                   -- 5/8/07
      *
      * Changes:
      *
@@ -2145,7 +2145,7 @@ public class VocabListTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 5/31/07
+     *               -- 5/31/07
      *
      * Changes:
      *
@@ -2678,7 +2678,7 @@ public class VocabListTest {
      * This is sort of stupid, but I can't get java to let me do the
      * type casting required to avoid this.
      *
-     *                                                  JRM -- 6/19/07
+     *                                                   -- 6/19/07
      *
      * Changes:
      *
@@ -2860,7 +2860,7 @@ public class VocabListTest {
      *
      * Return true if this holds, and false otherwise.
      *
-     *                                                  JRM -- 5/8/07
+     *                                                   -- 5/8/07
      *
      * Changes:
      *

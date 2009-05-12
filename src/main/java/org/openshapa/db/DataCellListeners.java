@@ -16,9 +16,7 @@ package org.openshapa.db;
  * de-registering internal and external listeners for changes in DataCells,
  * and notifying the registered listeners when changes occur.
  *
- *                                              JRM -- 2/7/08
- *
- * @author mainzer
+ *                                               -- 2/7/08
  */
 public class DataCellListeners extends Listeners
 {
@@ -141,7 +139,7 @@ public class DataCellListeners extends Listeners
      * DataCellListeners to manage listeners for all incarnations of a given
      * DataCell.
      *
-     *                                              JRM -- 2/6/08
+     *                                               -- 2/6/08
      *
      * Changes:
      *
@@ -193,7 +191,7 @@ public class DataCellListeners extends Listeners
      *
      * Update the itsCell field for a new incarnation of the target DataCell.
      *
-     *                                              JRM -- 2/6/08
+     *                                               -- 2/6/08
      *
      * Changes:
      *
@@ -245,7 +243,7 @@ public class DataCellListeners extends Listeners
      * Given references to the old and new versions of the target DataColumn,
      * make note of any changes that should be reported to the listeners.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -395,7 +393,7 @@ public class DataCellListeners extends Listeners
      *
      * Called when we know that at most a change in ord has occured.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -463,7 +461,7 @@ public class DataCellListeners extends Listeners
      * notifyListenersOfChanges(), call the listeners to advise them of the
      * changes, and then clear the fields used to note changes.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -573,7 +571,7 @@ public class DataCellListeners extends Listeners
      *
      * Advise any listeners of the deletion of the associated DataCell.
      *
-     *                                                  JRM -- 2/2/08
+     *                                                   -- 2/2/08
      *
      * Changes:
      *
@@ -633,7 +631,7 @@ public class DataCellListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -662,7 +660,7 @@ public class DataCellListeners extends Listeners
      *
      * Deregister an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -691,7 +689,7 @@ public class DataCellListeners extends Listeners
      *
      * Register an external listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *
@@ -720,7 +718,7 @@ public class DataCellListeners extends Listeners
      *
      * Register an internal listener.
      *
-     *                                              JRM -- 2/2/08
+     *                                               -- 2/2/08
      *
      * Changes:
      *

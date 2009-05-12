@@ -35,9 +35,8 @@ import org.openshapa.util.HashUtils;
  * to it, and thus the callback will look OK from this end.  However, I
  * suspect that the results will be undesireable.
  *
- *                                              JRM -- 2/2/08
+ *                                              -- 2/2/08
  *
- * @author mainzer
  */
 public class Listeners
 {
@@ -74,7 +73,7 @@ public class Listeners
      * copy constructor which takes another instance of Listeners as its
      * parameter, and returns a duplicate instance.
      *
-     *                                              JRM -- 2/2/08
+     *                                              -- 2/2/08
      *
      * Changes:
      *
@@ -128,7 +127,7 @@ public class Listeners
      * supplied reference is not null, and that it is not in the els -- throw
      * a system error if either test fails.
      *
-     *                                          JRM -- 2/2/08
+     *                                          -- 2/2/08
      *
      * Changes:
      *
@@ -162,7 +161,7 @@ public class Listeners
      * Delete the reference to an internal listener from els.  Verify that the
      * supplied reference exists in the els -- throw a system error if not.
      *
-     *                                          JRM -- 2/2/08
+     *                                          -- 2/2/08
      *
      * Changes:
      *
@@ -202,7 +201,7 @@ public class Listeners
      * ID exists in the database index, and that it does not exist in the
      * ils -- throw a system error if either test fails.
      *
-     *                                          JRM -- 2/2/08
+     *                                          -- 2/2/08
      *
      * Changes:
      *
@@ -241,7 +240,7 @@ public class Listeners
      * Delete the ID of an internal listener from ils.  Verify that the
      * supplied ID exists in the ils -- throw a system error if not.
      *
-     *                                          JRM -- 2/2/08
+     *                                          -- 2/2/08
      *
      * Changes:
      *

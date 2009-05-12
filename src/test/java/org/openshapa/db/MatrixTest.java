@@ -240,7 +240,7 @@ public class MatrixTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -1132,7 +1132,7 @@ public class MatrixTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -4632,7 +4632,7 @@ public class MatrixTest {
      *
      * Return 0 if the constructor fails as expected, and 1 if it does not.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -4708,7 +4708,7 @@ public class MatrixTest {
      *
      * Return the number of failures detected.
      *
-     *                                              JRM -- 5/24/08
+     *                                               -- 5/24/08
      *
      * Changes:
      *
@@ -4862,7 +4862,7 @@ public class MatrixTest {
      *
      * Run a battery of tests on the arg list management facilities.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -8028,7 +8028,7 @@ public class MatrixTest {
      * Run a battery of tests on the copy constructor for this
      * class, and on the instances returned.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -9770,7 +9770,7 @@ public class MatrixTest {
      * Run a battery of tests on the to string methods for this
      * class.
      *
-     *                                              JRM -- 10/29/07
+     *                                               -- 10/29/07
      *
      * Changes:
      *
@@ -10261,7 +10261,7 @@ public class MatrixTest {
      *
      * Verify that the specified replacement of an argument list
      * entry succeeds.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *
@@ -10506,7 +10506,7 @@ public class MatrixTest {
      *
      * Verify that the specified replacement of an argument list
      * entry fails.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *
@@ -10645,7 +10645,7 @@ public class MatrixTest {
      * Verify that the supplied instances of Matrix are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

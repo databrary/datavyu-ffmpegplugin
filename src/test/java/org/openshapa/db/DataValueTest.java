@@ -161,7 +161,7 @@ public abstract class DataValueTest extends DBElementTest {
      *    mve1 must be of type TEXT.  Otherwise, mve1 must be either of
      *    of type MATRIX or of type matching dv.
      *
-     *                                          JRM -- 11/14/07
+     *                                           -- 11/14/07
      *
      * Changes:
      *
@@ -395,7 +395,7 @@ public abstract class DataValueTest extends DBElementTest {
      * Verify that the supplied instance of DataValue has been correctly
      * initialized by a one argument constructor.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -510,7 +510,7 @@ public abstract class DataValueTest extends DBElementTest {
      * Verify that the supplied instance of DataValue has been correctly
      * initialized by a two or more argument constructor.
      *
-     *                                              JRM -- 11/13/07
+     *                                               -- 11/13/07
      *
      * Changes:
      *
@@ -629,7 +629,7 @@ public abstract class DataValueTest extends DBElementTest {
      *
      * Note that we do not compare the itsCell and itsCellID.
      *
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

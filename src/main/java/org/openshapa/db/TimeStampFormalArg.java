@@ -17,8 +17,6 @@ import org.openshapa.util.HashUtils;
  *
  * Intance of this class are used for formal arguments which have been strongly
  * typed to time stamps.
- *
- * @author mainzer
  */
 public class TimeStampFormalArg extends FormalArgument
 {
@@ -65,7 +63,7 @@ public class TimeStampFormalArg extends FormalArgument
      * and finally one that take an instance of TimeStampFormalArg as its only
      * parameter and returs a copy.
      *
-     *                                          JRM -- 2/12/07
+     *                                           -- 2/12/07
      *
      * Changes:
      *
@@ -176,7 +174,7 @@ public class TimeStampFormalArg extends FormalArgument
      *
      * Otherwise, set subRange to true, and set the new minVal and maxVal.
      *
-     *                                          JRM -- 2/5/07
+     *                                           -- 2/5/07
      *
      * Changes:
      *
@@ -243,7 +241,7 @@ public class TimeStampFormalArg extends FormalArgument
      *
      * Accessor routines used to obtain the current values of the subRange,
      * minVal, and maxVal fields.
-     *                                          JRM -- 2/5/07
+     *                                           -- 2/5/07
      *
      * Changes:
      *
@@ -390,7 +388,7 @@ public class TimeStampFormalArg extends FormalArgument
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             JRM -- 2/5/07
+     *                                              -- 2/5/07
      *
      * Changes:
      *

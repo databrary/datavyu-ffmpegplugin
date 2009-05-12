@@ -18,10 +18,7 @@ package org.openshapa.db;
  *
  * The methods specified in this interface will be called when appropriate.
  *
- *                                                  JRM -- 2/11/08
- *
- *
- * @author mainzer
+ *                                                  -- 2/11/08
  */
 public interface ExternalColumnListListener
 {
@@ -38,7 +35,7 @@ public interface ExternalColumnListListener
      * The colID parameter contains the ID assigned the column that is
      * being deleted.
      *
-     *                                          JRM -- 2/11/08
+     *                                          -- 2/11/08
      *
      * Changes:
      *
@@ -61,7 +58,7 @@ public interface ExternalColumnListListener
      * The colID parameter contains the ID assigned the column that is
      * being inserted.
      *
-     *                                          JRM -- 2/6/08
+     *                                          -- 2/6/08
      *
      * Changes:
      *

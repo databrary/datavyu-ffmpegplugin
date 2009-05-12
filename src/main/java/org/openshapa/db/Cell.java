@@ -16,7 +16,7 @@ import org.openshapa.util.HashUtils;
  * Abstract class for OpenSHAPA data and reference cells.  Data and reference
  * cells don't have all that much in common, so this class is a bit sparse.
  *
- *                                                  JRM -- 8/24/07j
+ *                                                   -- 8/24/07j
  *
  *
  * @author FGA
@@ -83,7 +83,7 @@ public abstract class Cell extends DBElement
      *  Observe that none of the constructor accept a column ID, as this is
      *  best handled by the subclasses.
      *
-     *                                              JRM -- 8/24/07
+     *                                               -- 8/24/07
      *
      * Changes:
      *
@@ -143,7 +143,7 @@ public abstract class Cell extends DBElement
      *
      * Return the current value of the itsColID field.
      *
-     *                                          JRM -- 8/29/07
+     *                                           -- 8/29/07
      *
      * Changes:
      *
@@ -163,7 +163,7 @@ public abstract class Cell extends DBElement
      *
      * Get and set the comment field.  Observe that a copy is made in both
      * cases.  In both cases,
-     *                                          JRM -- 8/24/07
+     *                                           -- 8/24/07
      *
      * Changes:
      *
@@ -203,7 +203,7 @@ public abstract class Cell extends DBElement
      *
      * Get and set the ord of the cell.
      *
-     *                      JRM -- 8/29/07
+     *                       -- 8/29/07
      *
      * Changes:
      *
@@ -239,7 +239,7 @@ public abstract class Cell extends DBElement
      *
      * Get and set the value of the selected field.
      *
-     *                              JRM -- 2/8/08
+     *                               -- 2/8/08
      *
      * Changes:
      *

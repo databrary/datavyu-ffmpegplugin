@@ -179,7 +179,7 @@ public class PredicateVocabElementTest {
      *
      * Run a battery of tests on the formal argument list management methods
      * for this class.
-     *                                          JRM -- 3/18/07
+     *                                           -- 3/18/07
      *
      * Changes:
      *
@@ -1298,7 +1298,7 @@ public class PredicateVocabElementTest {
      *
      * Test the isWellFormed method.
      *
-     *              JRM -- 6/19/07
+     *               -- 6/19/07
      *
      * Changes:
      *
@@ -1558,7 +1558,7 @@ public class PredicateVocabElementTest {
      *
      * Test the toString() and toDBString() methods.
      *
-     *              JRM -- 3/11/07
+     *               -- 3/11/07
      *
      * Changes:
      *

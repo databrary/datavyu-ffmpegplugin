@@ -40,7 +40,7 @@ public class MacshapaDatabaseTest {
      * test in that department.  However, this is also a good place to test
      * the API example in the context of a MacSHAPA database.
      *
-     *                                          JRM -- 11/18/08
+     *                                           -- 11/18/08
      *
      * Changes:
      *
@@ -83,7 +83,7 @@ public class MacshapaDatabaseTest {
      *
      * Main routine for testing the MacSHAPA database API examples.
      *
-     *                                          JRM 11/18/08
+     *                                           11/18/08
      *
      * Changes:
      *
@@ -202,7 +202,7 @@ public class MacshapaDatabaseTest {
      *
      * Return the number of failures.
      *
-     *                                              JRM -- 4/25/08
+     *                                               -- 4/25/08
      *
      * Changes:
      *

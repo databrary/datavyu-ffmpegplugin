@@ -213,7 +213,7 @@ public class PredicateTest {
      * Run a battery of tests on the one argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -443,7 +443,7 @@ public class PredicateTest {
      * Run a battery of tests on the two argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 10/15/07
+     *                                               -- 10/15/07
      *
      * Changes:
      *
@@ -950,7 +950,7 @@ public class PredicateTest {
      * Run a battery of tests on the three argument constructor for this
      * class, and on the instance returned.
      *
-     *                                              JRM -- 10/21/07
+     *                                               -- 10/21/07
      *
      * Changes:
      *
@@ -6819,7 +6819,7 @@ public class PredicateTest {
      * Run a battery of tests on the to string methods for this
      * class.
      *
-     *                                              JRM -- 10/29/07
+     *                                               -- 10/29/07
      *
      * Changes:
      *
@@ -7294,7 +7294,7 @@ public class PredicateTest {
      *
      * Verify that the specified replacement of an argument list
      * entry succeeds.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *
@@ -7539,7 +7539,7 @@ public class PredicateTest {
      *
      * Verify that the specified replacement of an argument list
      * entry fails.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *
@@ -7678,7 +7678,7 @@ public class PredicateTest {
      * Verify that the supplied instances of Predicate are distinct,
      * that they contain no common references (other than db), and that they
      * have the same value.
-     *                                              JRM -- 11/8/07
+     *                                               -- 11/8/07
      *
      * Changes:
      *

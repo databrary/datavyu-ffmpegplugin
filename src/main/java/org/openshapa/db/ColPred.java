@@ -22,9 +22,7 @@ import java.util.Vector;
  * are defined by implication when matrix vocab elements.  Thus instance of
  * this class are tightly bound to their host database and its vocab list.
  *
- *                                                  JRM -- 8/7/08
- *
- * @author mainzer
+ *                                                   -- 8/7/08
  */
 public class ColPred extends DBElement
         implements InternalMatrixVocabElementListener
@@ -113,7 +111,7 @@ public class ColPred extends DBElement
      * old version of the ColPred so we can touch it up for changes in
      * the pve.
      *
-     *                                              JRM -- 8/10/08
+     *                                               -- 8/10/08
      *
      * Changes:
      *
@@ -313,7 +311,7 @@ public class ColPred extends DBElement
      *
      * Return the current value of the cellID field.
      *
-     *                          JRM -- 8/10/08
+     *                           -- 8/10/08
      *
      * Changes:
      *
@@ -334,7 +332,7 @@ public class ColPred extends DBElement
      *
      * Return the current value of the mveID field.
      *
-     *                          JRM -- 8/10/08
+     *                           -- 8/10/08
      *
      * Changes:
      *
@@ -354,7 +352,7 @@ public class ColPred extends DBElement
      *
      * Return a copy of the current value of the mveName field.
      *
-     *                                      JRM -- 8/10/08
+     *                                       -- 8/10/08
      *
      * Changes:
      *
@@ -375,7 +373,7 @@ public class ColPred extends DBElement
      * Set the ID of the mve of which this instance of ColPred will contain a
      * value.  If requested, try to salvage the argument list (if any).
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -490,7 +488,7 @@ public class ColPred extends DBElement
      *
      * Return the current value of the varLen field.
      *
-     *                          JRM -- 8/10/08
+     *                           -- 8/10/08
      *
      * Changes:
      *
@@ -517,7 +515,7 @@ public class ColPred extends DBElement
      * Advise the host data cell that it contains a column predicate whose
      * associated mve definition has changed.
      *
-     *                                            JRM -- 8/8/08
+     *                                             -- 8/8/08
      *
      * Changes:
      *
@@ -624,7 +622,7 @@ public class ColPred extends DBElement
      * Advise the host data cell that it contains a column predicate whose
      * associated column and mve has been deleted.
      *
-     *                                  JRM -- 8/8/08
+     *                                   -- 8/8/08
      *
      * Changes:
      *
@@ -681,7 +679,7 @@ public class ColPred extends DBElement
      * Construct a string containing the values of the arguments in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                          JRM -- 8/23/07
+     *                                           -- 8/23/07
      *
      * Changes:
      *
@@ -739,7 +737,7 @@ public class ColPred extends DBElement
      *
      * Construct a string containing the values of the arguments in the
      * format: (value0, value1, ... value).
-     *                                          JRM -- 8/23/07
+     *                                           -- 8/23/07
      *
      * Changes:
      *
@@ -806,7 +804,7 @@ public class ColPred extends DBElement
      * as a listener with the mve, and pass the insert in index message down
      * to the argument list.
      *
-     *                                              JRM -- 8/8/08
+     *                                               -- 8/8/08
      *
      * Changes:
      *
@@ -852,7 +850,7 @@ public class ColPred extends DBElement
      * in the database associated with the instance of ColPred.  Return a
      * reference to same.  If there is no such MatrixVocabElement, throw
      * a system error.
-     *                                              JRM -- 8/20/07
+     *                                               -- 8/20/07
      *
      * Changes:
      *
@@ -905,7 +903,7 @@ public class ColPred extends DBElement
      * as a listener with the MVE, and pass the remove from index message down
      * to the argument list.
      *
-     *                                              JRM -- 8/8/08
+     *                                               -- 8/8/08
      *
      * Changes:
      *
@@ -1037,7 +1035,7 @@ public class ColPred extends DBElement
      * Throw a system error if any errors are detected.  Otherwise, return the
      * copy.
      *
-     *                                              JRM -- 8/8/08
+     *                                               -- 8/8/08
      *
      * Changes:
      *
@@ -1107,7 +1105,7 @@ public class ColPred extends DBElement
      *
      * Return the newly constructed argument list.
      *
-     *                                              JRM -- 8/8/08
+     *                                               -- 8/8/08
      *
      * Changes:
      *
@@ -1179,7 +1177,7 @@ public class ColPred extends DBElement
      * copy of that argument list.  Throw a system error if any errors are
      * detected.  Otherwise, return the copy.
      *
-     *                                              JRM -- 8/08/08
+     *                                               -- 8/08/08
      *
      * Changes:
      *
@@ -1585,7 +1583,7 @@ public class ColPred extends DBElement
      * This method should only be called if this instance of the column
      * predicate is the cannonical instance -- that is the instance listed
      * in the index.
-     *                                              JRM -- 8/8/08
+     *                                               -- 8/8/08
      *
      * Changes:
      *
@@ -1663,7 +1661,7 @@ public class ColPred extends DBElement
      * Return a reference to the n-th argument if it exists, or null if it
      * doesn't.
      *
-     *                                      JRM -- 8/23/07
+     *                                       -- 8/23/07
      */
 
     protected DataValue getArg(int n)
@@ -1725,7 +1723,7 @@ public class ColPred extends DBElement
      *
      * Return a reference to a copy of the n-th argument if it exists, or
      * null if it doesn't.
-     *                                      JRM -- 10/3/08
+     *                                       -- 10/3/08
      *
      * Changes:
      *
@@ -1760,7 +1758,7 @@ public class ColPred extends DBElement
      *
      * Return the number of arguments.  Return 0 if the mveID hasn't been
      * specified yet.
-     *                                      JRM -- 8/11/08
+     *                                       -- 8/11/08
      *
      * Changes:
      *
@@ -1807,7 +1805,7 @@ public class ColPred extends DBElement
      * This method should only be called if this instance of the column
      * predicate is the cannonical instance -- that is the instance listed
      * in the index.
-     *                                              JRM -- 8/11/08
+     *                                               -- 8/11/08
      *
      * Changes:
      *
@@ -1882,7 +1880,7 @@ public class ColPred extends DBElement
      * Replace the argument specified by n with the supplied datavalue.  Throw
      * a system error if any errors are detected.
      *
-     *                                              JRM -- 8/23/07
+     *                                               -- 8/23/07
      *
      * Changes:
      *
@@ -1983,7 +1981,7 @@ public class ColPred extends DBElement
      * update for matrix vocab element definition change message to any col pred
      * or pred data values that may appear in the argument list.
      *
-     *                                          JRM -- 8/11/08
+     *                                           -- 8/11/08
      *
      * Changes:
      *
@@ -2190,7 +2188,7 @@ public class ColPred extends DBElement
      * and pass the update for mve deletion message to any predicate or
      * column predicate data values that may appear in the argument list.
      *
-     *                                          JRM -- 8/10/08
+     *                                           -- 8/10/08
      *
      * Changes:
      *
@@ -2313,7 +2311,7 @@ public class ColPred extends DBElement
      * update for predicate vocab element definition change message to any
      * column predicate or predicate data values.
      *
-     *                                          JRM -- 8/11/08
+     *                                           -- 8/11/08
      *
      * Changes:
      *
@@ -2422,7 +2420,7 @@ public class ColPred extends DBElement
      * If the column predicate is defined, scan its argument list and
      * pass the update for pve deletion message to any predicate or column
      * predicate data values that may appear in the argument list.
-     *                                          JRM -- 8/08/08
+     *                                           -- 8/08/08
      *
      * Changes:
      *
@@ -2608,7 +2606,7 @@ public class ColPred extends DBElement
      *
      * Proceed as per the no structural change case.
      *
-     *                                      JRM -- 8/31/08
+     *                                       -- 8/31/08
      *
      * Changes:
      *
@@ -3132,7 +3130,7 @@ public class ColPred extends DBElement
      * to the supplied formal argument.  Throw a system error if it is not.
      * This method is a pure sanity checking method -- it should always pass.
      *
-     *                                              JRM -- 10/28/08
+     *                                               -- 10/28/08
      *
      * Changes:
      *
@@ -3555,7 +3553,7 @@ public class ColPred extends DBElement
      * if any DataValue or Predicate has not been inserted in the index, then
      * none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3651,7 +3649,7 @@ public class ColPred extends DBElement
      * it any DataValue or Column Predicate has not been inserted in the index,
      * then none of its descendant may have been inserted in the index either.
      *
-     *                                              JRM -- 2/19/08
+     *                                               -- 2/19/08
      *
      * Changes:
      *
@@ -3760,7 +3758,7 @@ public class ColPred extends DBElement
      * The method does nothing if all is as it should be, and throws a system
      * error if any problems are detected.
      *
-     *                                              JRM -- 10/28/08
+     *                                               -- 10/28/08
      *
      * Changes:
      *
@@ -4653,7 +4651,7 @@ public class ColPred extends DBElement
      *
      * Proceed as above.
      *
-     *                                              JRM -- 8/30/08
+     *                                               -- 8/30/08
      *
      * Changes:
      *
@@ -4981,7 +4979,7 @@ public class ColPred extends DBElement
      * Call the superclass version of the method, and then pass the clear id
      * message on to the argument list.
      *
-     *                                              JRM 2/19/08
+     *                                               2/19/08
      *
      * Changes:
      *
@@ -5026,7 +5024,7 @@ public class ColPred extends DBElement
      * Returns a reference to the newly constructed predicate if successful.
      * Throws a system error exception on failure.
      *
-     *                                              JRM -- 8/31/08
+     *                                               -- 8/31/08
      *
      * Changes:
      *

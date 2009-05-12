@@ -27,12 +27,12 @@ import org.openshapa.util.HashUtils;
  *      Also added the MIN_TICKS, MAX_TICKS, MIN_TPS, and MAX_TPS class
  *      constants.
  *
- *                                              JRM -- 2/12/07
+ *                                               -- 2/12/07
  *
  *    - Added override of equals() method.  Added comparison methods
  *      (gt(), ge(), lt(), le(), eq(), & ne()).  Added copy constructor.
  *
- *                                              JRM -- 3/13/07
+ *                                               -- 3/13/07
  *
  *    - Reworked the class again.  This time, I turned it into a proper
  *      primative class, so it is no longer a subclass of DataValue.  Also
@@ -41,14 +41,14 @@ import org.openshapa.util.HashUtils;
  *      Similarly, advising the TimeStamp of changes in the number of ticks
  *      per second is also the responsibility of the containing object.
  *
- *                                              JRM -- 8/18/07
+ *                                               -- 8/18/07
  *
  *    - Added the insane_lt() insane_gt() methods -- needed because the Compare
  *      interface specifies compareTo() without this exception, and insists
  *      that I do likewise in my implementation.  Bottom line -- must implement
  *      my own sort and bypass this crap.  But it will have to do for now.
  *
- *                                              JRM -- 1/22/08
+ *                                               -- 1/22/08
  */
 public class TimeStamp
 {
@@ -62,7 +62,7 @@ public class TimeStamp
    * it can be changed to any positive value.  However, if it is increased
    * beyond 1000, there will be implication for time stamp display in the GUI.
    *
-   *                                            JRM -- 2/12/07
+   *                                             -- 2/12/07
    */
   static final int MIN_TPS = 1;
   static final int MAX_TPS = 1000;
@@ -420,7 +420,7 @@ public class TimeStamp
      * (and all the other TimeStamp comparison mthods) throws a system error
      * if the tps fields of the instances to be compared are not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *
@@ -457,7 +457,7 @@ public class TimeStamp
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *
@@ -493,7 +493,7 @@ public class TimeStamp
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *
@@ -526,7 +526,7 @@ public class TimeStamp
      * Comparator.
      *
      *
-     *                                      JRM -- 1/22/08
+     *                                       -- 1/22/08
      *
      * Changes:
      *
@@ -553,7 +553,7 @@ public class TimeStamp
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *
@@ -589,7 +589,7 @@ public class TimeStamp
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *
@@ -622,7 +622,7 @@ public class TimeStamp
      * Comparator.
      *
      *
-     *                                      JRM -- 1/22/08
+     *                                       -- 1/22/08
      *
      * Changes:
      *
@@ -649,7 +649,7 @@ public class TimeStamp
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                      JRM -- 3/13/07
+     *                                       -- 3/13/07
      *
      * Changes:
      *

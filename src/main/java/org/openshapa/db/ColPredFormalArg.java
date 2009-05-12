@@ -18,8 +18,6 @@ package org.openshapa.db;
  * for subranging, and in the fact that instances of it must be replaces with
  * column predicates (the predicate implied by columns), instead of regular
  * predicates.
- *
- * @author mainzer
  */
 public class ColPredFormalArg extends FormalArgument
 {
@@ -33,7 +31,7 @@ public class ColPredFormalArg extends FormalArgument
      * name as a parameters, and one that takes a reference to an instance of
      * ColPredFormalArg and uses it to create a copy.
      *
-     *                                          JRM -- 8/6/08
+     *                                           -- 8/6/08
      *
      * Changes:
      *
@@ -79,7 +77,7 @@ public class ColPredFormalArg extends FormalArgument
      * Return an instance of ColPredDataValue initialized from salvage if
      * possible, and to the default for newly created instances of
      * PredDataValue otherwise.
-     *                                      JRM -- 8/6/08
+     *                                       -- 8/6/08
      *
      * Changes:
      *
@@ -117,7 +115,7 @@ public class ColPredFormalArg extends FormalArgument
      * Return an instance of ColPredDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
      *
-     *                                      JRM -- 8/6/08
+     *                                       -- 8/6/08
      *
      * Changes:
      *
@@ -143,7 +141,7 @@ public class ColPredFormalArg extends FormalArgument
      *
      * @return the string value.
      *
-     *                                      JRM -- 8/6/08
+     *                                       -- 8/6/08
      *
      * Changes:
      *
@@ -164,7 +162,7 @@ public class ColPredFormalArg extends FormalArgument
      * Boolean method that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                      JRM -- 8/6/08
+     *                                       -- 8/6/08
      *
      * Changes:
      *

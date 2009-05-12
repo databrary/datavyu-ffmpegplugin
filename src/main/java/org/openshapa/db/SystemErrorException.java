@@ -11,7 +11,7 @@
  * All system errors are un-recoverable.  We may want to put up a dialog informing
  * the user of the error and displaying the message.  However, we should exit after
  * the user dismisses the message.
- *                                                      JRM -- 1/24/07
+ *                                                       -- 1/24/07
  *
  * Created on January 24, 2007, 2:14 AM
  */
@@ -20,7 +20,6 @@ package org.openshapa.db;
 
 /**
  *
- * @author mainzer
  */
 public class SystemErrorException extends java.lang.Exception {
 
