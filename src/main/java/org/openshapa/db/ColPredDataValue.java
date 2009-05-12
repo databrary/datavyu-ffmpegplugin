@@ -1,12 +1,3 @@
-/*
- * ColColPredDataValue.java
- *
- * Created on August 10, 2008, 4:32 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -19,24 +10,18 @@ import org.openshapa.util.HashUtils;
  * Recall that a column predicate is the predicate implied by a
  * MatrixVocabElement.
  */
-public final class ColPredDataValue extends DataValue
-{
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * itsValue: Instance of ColPred containing a representation of the
-     *      current value assigned to the predicate.
-     *
-     * minVal & maxVal don't appear in PredDataValue as a subrange of
-     *      predicates is expressed as a set of allowed predicates.  Given the
-     *      potential size of this set, we don't keep a copy of it here --
-     *      referring directly to the associated formal argument when needed
-     *      instead.
-     */
+public final class ColPredDataValue extends DataValue {
 
-    /** ID of the represented predicate */
+    /** Instance of ColPred containing a representation of the current value
+     * assigned to the predicate. */
     protected ColPred itsValue = null;
+
+    /*
+     * minVal & maxVal don't appear in PredDataValue as a subrange of predicates
+     * is expressed as a set of allowed predicates.  Given the potential size of
+     * this set, we don't keep a copy of it here -- referring directly to the
+     * associated formal argument when needed instead.
+     */
 
 
     /*************************************************************************/
@@ -78,9 +63,15 @@ public final class ColPredDataValue extends DataValue
      *
      */
 
-    public ColPredDataValue(Database db)
-        throws SystemErrorException
-    {
+    /**
+     * Creates an empty ColPredDataValue.
+     *
+     * @param db The parent database for this datavalue.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to create the
+     * ColPredDataValue
+     */
+    public ColPredDataValue(Database db) throws SystemErrorException {
         super(db);
 
         this.setItsValue(null);

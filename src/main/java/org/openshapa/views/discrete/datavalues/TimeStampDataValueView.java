@@ -186,26 +186,6 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                     }
                     break;
 
-                case KeyEvent.VK_V:
-
-                    // Depending on platform, check appropriate modifier keys
-                    // and paste into timestamp.
-                    switch (OpenSHAPA.getPlatform()) {
-                        case MAC:
-                            if (e.isMetaDown()) {
-                                pasteTimeStamp();
-                                e.consume();
-                            }
-                            break;
-                        default:
-                            if (e.isControlDown()) {
-                                pasteTimeStamp();
-                                e.consume();
-                            }
-                            break;
-                    }
-                    break;
-
                 case KeyEvent.VK_DOWN:
                 case KeyEvent.VK_UP:
                     // Key stroke gets passed up a parent element to navigate
@@ -217,9 +197,10 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
         }
 
         /**
-         * Attempt to paste teh contents of the clipboard into this timestamp.
+         * Attempt to paste the contents of the clipboard into this timestamp.
          */
-        public final void pasteTimeStamp() {
+        @Override
+        public final void paste() {
             // Get the contents of the clipboard.
             Clipboard clipboard = Toolkit.getDefaultToolkit()
                                          .getSystemClipboard();
