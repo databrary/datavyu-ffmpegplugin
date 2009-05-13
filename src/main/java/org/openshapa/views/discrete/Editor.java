@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import java.awt.Dimension;
 import java.util.Vector;
 import javax.swing.JTextField;
 
@@ -36,6 +37,17 @@ public abstract class Editor extends JTextField {
         // Set visual appearance.
         setBorder(null);
         setOpaque(false);
+    }
+
+    /**
+     * @return The preferred size of the editor. This adds one because of a bug
+     * in the layout managers on the windows platform.
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension d = super.getPreferredSize();
+        d.setSize(d.getWidth() + 1, d.getHeight());
+        return d;
     }
 
     /**
