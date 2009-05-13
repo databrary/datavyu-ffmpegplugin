@@ -115,15 +115,10 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="nominalTypeButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="textTypeButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="textTypeButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="nominalTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="matrixTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="predicateTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -141,11 +136,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="textTypeButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="nominalTypeButton" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="textTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="integerTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -155,6 +146,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="floatTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="matrixTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="nominalTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
