@@ -10,7 +10,6 @@ package org.openshapa.db;
 /**
  * Default OpenSHAPA Database.  Implements expanded/new version of MacSHAPA ODBC
  * database functionality.
- * @author FGA
  */
 public class ODBCDatabase extends Database
 {

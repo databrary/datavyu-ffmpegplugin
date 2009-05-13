@@ -17,7 +17,6 @@ import org.uispec4j.interception.WindowHandler;
  * When an error occurs (such as a duplicate variable name),
  * the New Variable window just disappears rather than
  * allowing the user to fix the problem.
- * @author mmuthukrishna
  */
 public final class UIBug308Test extends UISpecTestCase {
 

@@ -2,7 +2,7 @@ package org.uispec4j;
 
 /**
  * Used to parse timestamp (onset, offset) for elements
- * @author mmuthukrishna
+ *
  */
 public class Timestamp {
 

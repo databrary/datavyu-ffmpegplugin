@@ -120,8 +120,6 @@ public class VocabListTest {
      * Tests a single argument constructor failure for this class.
      *
      * @throws org.openshapa.db.SystemErrorException
-     *
-     * @author  (original regression test - 2007/05/08).
      */
     @Test (expected = SystemErrorException.class)
     public void Test1ArgConstructorFailure() throws SystemErrorException {
@@ -133,8 +131,6 @@ public class VocabListTest {
      *
      * @throws org.openshapa.db.SystemErrorException if unable to
      * correctly create the vocablist.
-     *
-     * @author  (original regression test - 2007/05/08).
      */
     @Test
     public void Test1ArgConstructor() throws SystemErrorException {
@@ -151,8 +147,6 @@ public class VocabListTest {
      *
      * @throws org.openshapa.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
-     *
-     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies1() throws SystemErrorException {
@@ -169,8 +163,6 @@ public class VocabListTest {
      *
      * @throws org.openshapa.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
-     *
-     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies2()
@@ -226,8 +218,6 @@ public class VocabListTest {
      * getMatricies() & getPreds() again.  They should still return null.
      *
      * @throws org.openshapa.db.SystemErrorException
-     *
-     * @author  (original regression test - 2007/06/19).
      */
     @Test
     public void TestGetPredsAndMatricies3()

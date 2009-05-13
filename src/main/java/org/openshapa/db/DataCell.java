@@ -22,7 +22,6 @@ import org.openshapa.util.HashUtils;
  *
  *                                          -- 8/24/07
  * Regular cell definition
- * @author FGA
  */
 public class DataCell extends Cell // implements DatabaseChangeListener, DataValueChangeListener
 {

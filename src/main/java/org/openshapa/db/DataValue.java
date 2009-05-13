@@ -26,8 +26,6 @@ import org.openshapa.util.HashUtils;
  * their common fields and methods are defined here.
  *
  *                                              -- 7/21/07  
- *
- * @author FGA
  */
 public abstract class DataValue extends DBElement
 {

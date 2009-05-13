@@ -16,7 +16,6 @@ import org.uispec4j.utils.KeyUtils;
 
 /**
  *
- * @author mmuthukrishna
  */
 public class Cell extends AbstractUIComponent {
     /**

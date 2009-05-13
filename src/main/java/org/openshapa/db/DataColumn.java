@@ -18,8 +18,6 @@ import java.util.Vector;
  * predicate, and matrix columns (AKA spreadsheet variables) in the database.
  *
  *                                                  -- 8/29/07
- *
- * @author FGA
  */
 public class DataColumn extends Column
         implements InternalMatrixVocabElementListener

@@ -18,7 +18,6 @@ import org.uispec4j.utils.KeyUtils;
  * Bug 309 Test
  * The Ok button on dialogs should probably be defaulted
  * (ie. respond to Enter/Return key)
- * @author mmuthukrishna
  */
 public final class UIBug309Test extends UISpecTestCase {
 

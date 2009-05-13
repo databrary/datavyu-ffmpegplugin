@@ -21,7 +21,7 @@ import org.uispec4j.Window;
 
 /**
  * Test for the New Cells.
- * @author mmuthukrishna
+ *
  * @todo After bugs resolved, add more advanced cell tests involving
  * left/right caret movement
  */

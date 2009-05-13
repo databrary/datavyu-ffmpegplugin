@@ -32,8 +32,6 @@ import org.jdesktop.application.ResourceMap;
  * Changes:
  *
  *    - None.
- *
- * @author FGA
  */
 public abstract class Column
         extends DBElement

@@ -18,7 +18,6 @@ import org.openshapa.util.OpenHashtable;
 /**
  * Configuration loading module.
  * @deprecated Should use session storage in swing application framework.
- * @author FGA
  */
 public class Configuration extends DefaultHandler
 {

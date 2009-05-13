@@ -14,7 +14,6 @@ import junit.framework.Assert;
 
 /**
  *
- * @author mmuthukrishna
  */
 public class Column extends AbstractUIComponent {
     /**

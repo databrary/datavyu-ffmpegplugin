@@ -13,8 +13,6 @@ import org.openshapa.util.HashUtils;
 /**
  * This is the timestamp primitive class.
  *
- * @author FGA
- *
  * Changes:
  *
  *    - Changed the name of the class from Timestamp to TimeStamp and reworked
@@ -345,8 +343,6 @@ public class TimeStamp
 
    /**
     * Overwrites default toString method.
-    *
-    * --FGA 07/18/07
     *
     * Calls toHMSFString()
     * @see #toHMSFString()
@@ -679,8 +675,6 @@ public class TimeStamp
 /**
  * This internal class is used to hold the number formatting
  * classes used by all instances of timestamp.
- *
- * @author FGA
  */
 class NumberFormatter
 {

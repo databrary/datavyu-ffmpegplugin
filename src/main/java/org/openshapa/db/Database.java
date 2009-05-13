@@ -9,7 +9,6 @@ package org.openshapa.db;
 
 /**
  * Abstract database class
- * @author FGA
  */
 public abstract class Database
 {

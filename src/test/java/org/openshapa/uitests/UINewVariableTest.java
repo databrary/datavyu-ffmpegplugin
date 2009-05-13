@@ -16,7 +16,7 @@ import org.uispec4j.Window;
 
 /**
  * Test for the New Variable window.
- * @author mmuthukrishna
+ *
  */
 public final class UINewVariableTest extends UISpecTestCase {
 

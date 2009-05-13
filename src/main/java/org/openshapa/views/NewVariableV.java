@@ -1,6 +1,5 @@
 package org.openshapa.views;
 
-import org.openshapa.views.*;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;

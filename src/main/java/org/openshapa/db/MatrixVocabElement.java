@@ -28,8 +28,6 @@ import java.util.Vector;
  * The vocab element for matrix column variables remains editiable.
  *
  *                                          --  3/03/07
- *
- * @author FGA
  */
 
 public class MatrixVocabElement extends VocabElement

@@ -9,8 +9,6 @@ import org.openshapa.util.HashUtils;
  * Abstract class from which most classes in the database are descended.
  * This class exists to allow us to track the last user to modify the data
  * contained in the instance.
- *
- * @author FGA
  */
 public abstract class DBElement implements Cloneable {
 

@@ -16,7 +16,6 @@ import java.awt.*;
  * set in from a Configuration class.
  *
  * @deprecated Should use session storage in swing application framework.
- * @author FGA
  */
 public class UIConfiguration
 {

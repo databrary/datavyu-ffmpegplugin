@@ -12,7 +12,6 @@ import junit.framework.Assert;
 
 /**
  *
- * @author mmuthukrishna
  */
 public class Spreadsheet extends AbstractUIComponent {
     /**

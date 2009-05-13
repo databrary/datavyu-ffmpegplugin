@@ -14,8 +14,6 @@ package org.openshapa.db;
  * predicates, both system and user defined.
  *
  *                                           -- 3/05/07
- *
- * @author FGA
  */
 
 public final class PredicateVocabElement extends VocabElement

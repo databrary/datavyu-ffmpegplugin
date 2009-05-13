@@ -18,8 +18,6 @@ import java.util.Vector;
  * whose cells are mirrors of other cells in the database.
  *
  *                                               -- 8/30/07
- *
- * @author FGA
  */
 public class ReferenceColumn extends Column
 {

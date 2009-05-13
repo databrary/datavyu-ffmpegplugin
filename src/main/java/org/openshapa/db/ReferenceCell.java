@@ -12,8 +12,6 @@ import org.openshapa.util.HashUtils;
 
 /**
  * A reference cell
- *
- * @author FGA
  */
 public class ReferenceCell extends Cell
 {
