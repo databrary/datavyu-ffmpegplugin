@@ -6,50 +6,50 @@ package org.openshapa.util;
 public class Constants {
 
     /** The default number of ticks per second to use. */
-    public final static int TICKS_PER_SECOND = 1000;
+    public static final int TICKS_PER_SECOND = 1000;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED1 = 3;
+    public static final int SEED1 = 3;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED2 = 7;
+    public static final int SEED2 = 7;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED3 = 11;
+    public static final int SEED3 = 11;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED4 = 13;
+    public static final int SEED4 = 13;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED5 = 17;
+    public static final int SEED5 = 17;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED6 = 19;
-    
-    /** Seed value for generating hash codes. */
-    public final static int SEED7 = 23;
+    public static final int SEED6 = 19;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED8 = 29;
+    public static final int SEED7 = 23;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED9 = 31;
+    public static final int SEED8 = 29;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED10 = 37;
+    public static final int SEED9 = 31;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED11 = 41;
+    public static final int SEED10 = 37;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED12 = 43;
+    public static final int SEED11 = 41;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED13 = 47;
+    public static final int SEED12 = 43;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED14 = 53;
+    public static final int SEED13 = 47;
 
     /** Seed value for generating hash codes. */
-    public final static int SEED15 = 59;
+    public static final int SEED14 = 53;
+
+    /** Seed value for generating hash codes. */
+    public static final int SEED15 = 59;
 }
