@@ -105,7 +105,15 @@ public final class FloatDataValueView extends DataValueElementV {
                        && e.getKeyChar() == '.') {
                 // Shift the decimal point to the current caret position.
                 int factor = getCaretPosition() - getText().indexOf('.');
+                if (factor > 0) {
+                    factor--;
+                }
+
                 fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
+
+                // Work out the position of the caret (just after the '.' point.
+                setCaretPosition(fdv.toString().indexOf('.') + 1);
+
                 e.consume();
 
             // The backspace key removes digits from behind the caret.
