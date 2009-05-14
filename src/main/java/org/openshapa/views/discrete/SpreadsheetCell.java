@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
@@ -18,9 +19,12 @@ import org.openshapa.views.discrete.datavalues.MatrixV;
 import org.openshapa.views.discrete.datavalues.OffsetView;
 import org.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
@@ -131,7 +135,7 @@ implements ExternalDataCellListener, Selectable {
                                    new IntDataValue(cellDB),
                                    false);
         ord.setFocusable(false);
-        ord.setToolTipText(rMap.getString("ord.tooltip"));        
+        ord.setToolTipText(rMap.getString("ord.tooltip"));
         ord.setBorder(new EmptyBorder(0, 0, 0, ORD_SPACER));
         setOrdinal(dc.getOrd());
 
@@ -159,17 +163,21 @@ implements ExternalDataCellListener, Selectable {
         // Set the appearance of the spreadsheet cell.
         setBackground(Configuration.getInstance().getSSBackgroundColour());
         this.setBorder(NORMAL_BORDER);
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // Set the apperance of the top panel and add child elements (ord, onset
-        // and offset).
-        topPanel.setBackground(Configuration.getInstance()
-                                            .getSSBackgroundColour());
-        topPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 2));
-        add(topPanel, java.awt.BorderLayout.NORTH);
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        add(topPanel);
         topPanel.add(ord);
+        //Component strut1 = Box.createHorizontalStrut(5);
+        //topPanel.add(strut1);
+        Component glue = Box.createGlue();
+        topPanel.add(glue);
+        onset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         topPanel.add(onset);
+        Component strut2 = Box.createHorizontalStrut(5);
+        topPanel.add(strut2);
         topPanel.add(offset);
+        offset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.

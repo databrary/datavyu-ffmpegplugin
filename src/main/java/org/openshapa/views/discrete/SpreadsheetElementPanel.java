@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
+import org.openshapa.Configuration;
 
 /**
  * A JPanel which can be used for piecing together spreadsheet elements, it will
@@ -18,6 +19,7 @@ implements MouseListener, KeyListener {
      */
     public SpreadsheetElementPanel() {
         super();
+        this.setBackground(Configuration.getInstance().getSSBackgroundColour());
         this.addMouseListener(this);
         this.addKeyListener(this);
     }
