@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete;
 
-import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
@@ -26,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -37,8 +35,7 @@ import org.jdesktop.application.ResourceMap;
 public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {
 
-    private static final int ORD_SPACER = 20;
-
+    /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
 
     /** A panel for holding the header to the cell. */
@@ -136,7 +133,6 @@ implements ExternalDataCellListener, Selectable {
                                    false);
         ord.setFocusable(false);
         ord.setToolTipText(rMap.getString("ord.tooltip"));
-        ord.setBorder(new EmptyBorder(0, 0, 0, ORD_SPACER));
         setOrdinal(dc.getOrd());
 
         onset = new OnsetView(selection,
@@ -145,7 +141,6 @@ implements ExternalDataCellListener, Selectable {
                               true);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.setValue(dc.getOnset());
-        onset.setBorder(new EmptyBorder(0, TIME_SPACER, 0, 0));
 
         offset = new OffsetView(selection,
                                 dc,
@@ -153,7 +148,6 @@ implements ExternalDataCellListener, Selectable {
                                 true);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.setValue(dc.getOffset());
-        offset.setBorder(new EmptyBorder(0, TIME_SPACER, 0, 0));
 
         dataPanel = new MatrixV(selection, dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
@@ -168,13 +162,11 @@ implements ExternalDataCellListener, Selectable {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         add(topPanel);
         topPanel.add(ord);
-        //Component strut1 = Box.createHorizontalStrut(5);
-        //topPanel.add(strut1);
         Component glue = Box.createGlue();
         topPanel.add(glue);
         onset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         topPanel.add(onset);
-        Component strut2 = Box.createHorizontalStrut(5);
+        Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
         topPanel.add(strut2);
         topPanel.add(offset);
         offset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
