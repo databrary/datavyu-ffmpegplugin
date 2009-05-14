@@ -19,6 +19,7 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
 
         setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         setLayout(null);
+        this.setBackground(Color.LIGHT_GRAY);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
     }
 
