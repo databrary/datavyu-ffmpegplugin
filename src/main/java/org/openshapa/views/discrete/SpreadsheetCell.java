@@ -11,7 +11,7 @@ import org.openshapa.db.ReferenceCell;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.TimeStampDataValue;
-import org.openshapa.util.UIConfiguration;
+import org.openshapa.Configuration;
 import org.openshapa.views.discrete.datavalues.DataValueV;
 import org.openshapa.views.discrete.datavalues.IntDataValueView;
 import org.openshapa.views.discrete.datavalues.MatrixV;
@@ -152,18 +152,19 @@ implements ExternalDataCellListener, Selectable {
         offset.setBorder(new EmptyBorder(0, TIME_SPACER, 0, 0));
 
         dataPanel = new MatrixV(selection, dc, null);
-        dataPanel.setFont(UIConfiguration.spreadsheetDataFont);
+        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
 
 
         // Set the appearance of the spreadsheet cell.
-        setBackground(UIConfiguration.spreadsheetBackgroundColor);
+        setBackground(Configuration.getInstance().getSSBackgroundColour());
         this.setBorder(NORMAL_BORDER);
         setLayout(new java.awt.BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
-        topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+        topPanel.setBackground(Configuration.getInstance()
+                                            .getSSBackgroundColour());
         topPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 1, 2));
         add(topPanel, java.awt.BorderLayout.NORTH);
         topPanel.add(ord);
@@ -172,7 +173,8 @@ implements ExternalDataCellListener, Selectable {
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
-        dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
+        dataPanel.setBackground(Configuration.getInstance()
+                                             .getSSBackgroundColour());
         dataPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 2));
         add(dataPanel, java.awt.BorderLayout.WEST);
     }
@@ -290,13 +292,17 @@ implements ExternalDataCellListener, Selectable {
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
-            topPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
-            dataPanel.setBackground(UIConfiguration.spreadsheetSelectedColor);
-            setBackground(UIConfiguration.spreadsheetSelectedColor);
+            topPanel.setBackground(Configuration.getInstance()
+                                                .getSSSelectedColour());
+            dataPanel.setBackground(Configuration.getInstance()
+                                                 .getSSSelectedColour());
+            setBackground(Configuration.getInstance().getSSSelectedColour());
         } else {
-            topPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-            dataPanel.setBackground(UIConfiguration.spreadsheetBackgroundColor);
-            setBackground(UIConfiguration.spreadsheetBackgroundColor);
+            topPanel.setBackground(Configuration.getInstance()
+                                                .getSSBackgroundColour());
+            dataPanel.setBackground(Configuration.getInstance()
+                                                 .getSSBackgroundColour());
+            setBackground(Configuration.getInstance().getSSBackgroundColour());
         }
 
         repaint();

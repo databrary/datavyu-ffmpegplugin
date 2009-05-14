@@ -5,7 +5,7 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.Predicate;
 import org.openshapa.db.SystemErrorException;
-import org.openshapa.util.UIConfiguration;
+import org.openshapa.Configuration;
 import org.openshapa.views.discrete.Selector;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -119,7 +119,7 @@ public final class PredicateDataValueView extends DataValueV {
                 if (argViews.size() > 1) {
                     JLabel label = new JLabel("(");
                     label.setBorder(new EmptyBorder(0, 0, 0, 0));
-                    label.setFont(UIConfiguration.spreadsheetDataFont);
+                    label.setFont(Configuration.getInstance().getSSDataFont());
                     this.add(label);
                 }
 
@@ -135,7 +135,8 @@ public final class PredicateDataValueView extends DataValueV {
                     if (argViews.size() > 1 && i < (argViews.size() - 1)) {
                         JLabel label = new JLabel(",");
                         label.setBorder(new EmptyBorder(0, 0, 0, 5));
-                        label.setFont(UIConfiguration.spreadsheetDataFont);
+                        label.setFont(Configuration.getInstance()
+                                                   .getSSDataFont());
                         this.add(label);
                     }
                 }
@@ -145,7 +146,7 @@ public final class PredicateDataValueView extends DataValueV {
                 if (argViews.size() > 1) {
                     JLabel label = new JLabel(")");
                     label.setBorder(new EmptyBorder(0, 0, 0, 0));
-                    label.setFont(UIConfiguration.spreadsheetDataFont);
+                    label.setFont(Configuration.getInstance().getSSDataFont());
                     this.add(label);
                 }
 

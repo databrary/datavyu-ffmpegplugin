@@ -8,13 +8,13 @@ import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.Predicate;
 import org.openshapa.db.SystemErrorException;
-import org.openshapa.util.UIConfiguration;
 import org.openshapa.views.discrete.Selector;
 import org.openshapa.views.discrete.SpreadsheetElementPanel;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import org.apache.log4j.Logger;
+import org.openshapa.Configuration;
 
 /**
  * This abstract view is a representation of database DataValues, concrete views
@@ -215,8 +215,8 @@ implements MouseListener {
         setBorder(null);
         setOpaque(false);
 
-        setFont(UIConfiguration.spreadsheetDataFont);
-        setForeground(UIConfiguration.spreadsheetForegroundColor);
+        setFont(Configuration.getInstance().getSSDataFont());
+        setForeground(Configuration.getInstance().getSSForegroundColour());
     }
 
     /**

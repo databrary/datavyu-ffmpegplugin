@@ -1,12 +1,12 @@
 package org.openshapa.views.discrete;
 
-import org.openshapa.util.UIConfiguration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import org.openshapa.Configuration;
 
 /**
  * ColumnHeaderPanel displays the column variable name.
@@ -62,7 +62,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
         selected = sel;
         parentCol.setSelected(selected);
         if (selected) {
-            setBackground(UIConfiguration.spreadsheetSelectedColor);
+            setBackground(Configuration.getInstance().getSSSelectedColour());
         } else {
             setBackground(backColor);
         }

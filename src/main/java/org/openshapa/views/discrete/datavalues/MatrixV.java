@@ -3,13 +3,13 @@ package org.openshapa.views.discrete.datavalues;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
-import org.openshapa.util.UIConfiguration;
 import org.openshapa.views.discrete.Selector;
 import org.openshapa.views.discrete.SpreadsheetElementPanel;
 import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import org.apache.log4j.Logger;
+import org.openshapa.Configuration;
 
 /**
  * Label view of the Matrix (database cell) data.
@@ -101,7 +101,7 @@ public class MatrixV extends SpreadsheetElementPanel {
             if (argViews.size() > 1) {
                 JLabel label = new JLabel("(");
                 label.setBorder(new EmptyBorder(0, 0, 0, 0));
-                label.setFont(UIConfiguration.spreadsheetDataFont);
+                label.setFont(Configuration.getInstance().getSSDataFont());
                 this.add(label);
             }
 
@@ -117,7 +117,7 @@ public class MatrixV extends SpreadsheetElementPanel {
                 if (argViews.size() > 1 && i < (argViews.size() - 1)) {
                     JLabel label = new JLabel(",");
                     label.setBorder(new EmptyBorder(0, 0, 0, 5));
-                    label.setFont(UIConfiguration.spreadsheetDataFont);
+                    label.setFont(Configuration.getInstance().getSSDataFont());
                     this.add(label);
                 }
             }
@@ -127,7 +127,7 @@ public class MatrixV extends SpreadsheetElementPanel {
             if (argViews.size() > 1) {
                 JLabel label = new JLabel(")");
                 label.setBorder(new EmptyBorder(0, 0, 0, 0));
-                label.setFont(UIConfiguration.spreadsheetDataFont);
+                label.setFont(Configuration.getInstance().getSSDataFont());
                 this.add(label);
             }
 

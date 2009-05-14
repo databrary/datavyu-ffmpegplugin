@@ -1,5 +1,6 @@
 package org.openshapa;
 
+import java.awt.Color;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.db.Database;
 import org.openshapa.db.LogicErrorException;
