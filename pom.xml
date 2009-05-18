@@ -121,8 +121,8 @@
  
   <!-- Our continous integration server. -->
   <ciManagement>
-    <system>continuum</system>
-    <url>http://openshapa.org/dashboard/</url>
+    <system>hudson</system>
+    <url>http://openshapa.org/hudson/</url>
   </ciManagement>
 
   <!-- Our bugtracking. -->
@@ -141,7 +141,7 @@
   <distributionManagement>
     <site>
       <id>website</id>
-      <url>scp://localhost/var/www/openshapa/</url>
+      <url>scp://openshapa.org/var/www/openshapa/</url>
     </site>
   </distributionManagement>
 
