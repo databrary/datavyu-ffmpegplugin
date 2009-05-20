@@ -157,12 +157,13 @@ public class SpreadsheetPanel extends JPanel
         // set the database
         this.database = db;
 
+        /*
         // set Temporal Ordering on
         try {
             db.setTemporalOrdering(true);
         } catch (SystemErrorException e) {
             logger.error("setTemporalOrdering failed", e);
-        }
+        }*/
 
         // register as a columnListListener
         try {
