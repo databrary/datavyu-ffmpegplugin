@@ -52,7 +52,7 @@ public final class UINewCellTest extends UISpecTestCase {
     }
 
      /**
-     * Test creating a new INTEGER cell.
+     * Test creating a new NOMINAL cell.
      * @throws java.lang.Exception on any error
      */
     public void testNewNominalCell() throws Exception {
@@ -121,7 +121,7 @@ public final class UINewCellTest extends UISpecTestCase {
     }
 
     /**
-     * Test creating a new INTEGER cell.
+     * Test creating a new TEXT cell.
      * @throws java.lang.Exception on any error
      */
     public void testNewTextCell() throws Exception {
@@ -133,21 +133,10 @@ public final class UINewCellTest extends UISpecTestCase {
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
-        //advanced Input will be provided between testInput
-        Key [] [] advancedInput = {{Key.LEFT, Key.LEFT},
-        {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-        {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-        {Key.LEFT, Key.RIGHT}};
-
 
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = testInput;
-
-        String[] advancedExpectedOutput = {"Subject stands $10,432up",
-        "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
-        "Tote_that_aJeune fille celebrel",
-        "Jeune fille celebreIf x?7 then x? 2"};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -182,26 +171,8 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValueTextBox(0);
 
-            //c.enterEditorText(0, testInput[i]);
-//c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i+1]);
-            c.typeEditorKey(0, Key.A);
-            c.typeEditorKey(0, Key.B);
-            //c.pressEditorKey(0, Key.RIGHT);
-            c.pressEditorKey(0, Key.LEFT);
-            c.typeEditorKey(0, Key.C);
-System.err.println(t.getText());
-            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
-        }
-
-        for (int i = 0; i < numOfTests - 1; i++) {
-            //4. Test different advanced inputs as per specifications
-            Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
-            
-            //c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i+1]);
-
-            //System.err.println(t.getText());
-            //assertTrue(t.getText().equalsIgnoreCase(advancedExpectedOutput[i]));
+            c.enterEditorText(0, testInput[i]);
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
         //5. Check copy pasting
@@ -213,6 +184,74 @@ System.err.println(t.getText());
             t.setText("");
             t.pasteFromClipboard();
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+    }
+
+
+    /**
+     * Test creating a new TEXT cell with more advanced input.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewAdvancedTextCell() throws Exception {
+        String varName = "textVar";
+        String varType = "TEXT";
+        String varRadio = "text";
+
+        String[] testInput = {"Subject stands up", "$10,432",
+            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
+            "If x?7 then x? 2"};
+
+        //advanced Input will be provided between testInput
+        Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
+            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+            {Key.LEFT, Key.RIGHT}};
+
+
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = testInput;
+
+        String[] advancedExpectedOutput = {"Subject stands $10,432up",
+            "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
+            "Tote_that_aJeune fille celebrel",
+            "Jeune fille celebreIf x?7 then x? 2"};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        createNewVariable(varName, varType, varRadio);
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
+                window.getUIComponents(
+                Spreadsheet.class)[0].getAwtComponent())));
+
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == numOfTests);
+
+        for (int i = 0; i < numOfTests - 1; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+
+            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            assertTrue(t.getText().equalsIgnoreCase(advancedExpectedOutput[i]));
         }
     }
 
@@ -284,6 +323,69 @@ System.err.println(t.getText());
         }
     }
 
+/**
+     * Test creating a new FLOAT cell with advanced input.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewAdvancedFloatCell() throws Exception {
+        String varName = "floatVar";
+        String varType = "FLOAT";
+        String varRadio = "float";
+
+        String[] testInput = {"1a.9", "10-43.2",
+            "!289(", "178.&", "0~~~)",
+            "If x?7 then. x? 2"};
+
+        int numOfTests = testInput.length;
+
+         //advanced Input will be provided between testInput
+        Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
+            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+            {Key.LEFT, Key.RIGHT}};
+
+        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, 7.2};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variable
+        createNewVariable(varName, varType, varRadio);
+
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent())));
+
+        //2. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == numOfTests);
+
+        for (int i = 0; i < numOfTests-1; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+
+            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+
+            assertTrue(Double.parseDouble(t.getText()) ==
+                    (expectedTestOutput[i]));
+        }
+    }
+
     /**
      * Test creating a new INTEGER cell.
      * @throws java.lang.Exception on any error
@@ -294,7 +396,7 @@ System.err.println(t.getText());
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
-            "!289(", "178&", "~~~)",
+            "!28.9(", "178&", "~~~)",
             "If x?7 then x? 2"};
 
         int numOfTests = testInput.length;
@@ -339,7 +441,7 @@ System.err.println(t.getText());
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
-       //5. Check copy pasting
+               //5. Check copy pasting
         Clipboard c = null;
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
@@ -348,6 +450,68 @@ System.err.println(t.getText());
             t.setText("");
             t.pasteFromClipboard();
             //BugzID369: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+    }
+
+    /**
+     * Test creating a new INTEGER cell with advanced input.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewAdvancedIntegerCell() throws Exception {
+        String varName = "intVar";
+        String varType = "INTEGER";
+        String varRadio = "integer";
+
+        String[] testInput = {"1a9", "10-432",
+            "!289(", "178&", "If x?7. then x? 2", "178&"};
+
+        int numOfTests = testInput.length;
+
+
+         //advanced Input will be provided between testInput
+        Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
+            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+            {Key.LEFT, Key.RIGHT}};
+
+        String[] expectedTestOutput = {"-4321019", "-43289210", "21788", "772",
+        "72178"};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variable
+        createNewVariable(varName, varType, varRadio);
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent())));
+
+        //2. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == numOfTests);
+
+        for (int i = 0; i < numOfTests-1; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+
+            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
 
