@@ -25,6 +25,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
+import org.openshapa.db.SystemErrorException;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -156,14 +157,22 @@ implements KeyEventDispatcher {
      * Set the SheetLayoutType for the spreadsheet.
      */
     private void setSheetLayout() {
-        SheetLayoutType type = SheetLayoutType.Ordinal;
-        if (weakTemporalOrderMenuItem.isSelected()) {
-            type = SheetLayoutType.WeakTemporal;
-        } else if (strongTemporalOrderMenuItem.isSelected()) {
-            type = SheetLayoutType.StrongTemporal;
-        }
+        try {
+            SheetLayoutType type = SheetLayoutType.Ordinal;
+            OpenSHAPA.getDatabase().setTemporalOrdering(false);
 
-        new SetSheetLayoutC(type);
+            if (weakTemporalOrderMenuItem.isSelected()) {
+                type = SheetLayoutType.WeakTemporal;
+                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+            } else if (strongTemporalOrderMenuItem.isSelected()) {
+                type = SheetLayoutType.StrongTemporal;
+                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+            }
+
+            new SetSheetLayoutC(type);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to perform temporal ordering", e);
+        }
     }
 
     /** This method is called from within the constructor to

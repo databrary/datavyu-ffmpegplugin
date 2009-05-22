@@ -4,7 +4,6 @@
  * Created on December 14, 2006, 7:15 PM
  *
  */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -20,8 +19,8 @@ import java.util.Vector;
  *                                                  -- 8/29/07
  */
 public class DataColumn extends Column
-        implements InternalMatrixVocabElementListener
-{
+        implements InternalMatrixVocabElementListener {
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
@@ -48,26 +47,20 @@ public class DataColumn extends Column
      *      the DataColumn, which will become the cannonical at the end of
      *      the cascade.
      */
-
     /** ID of associated matrix VE */
     private long itsMveID = DBIndex.INVALID_ID;
-
     /** Type of associated matrix VE */
     private MatrixVocabElement.MatrixType itsMveType =
             MatrixVocabElement.MatrixType.UNDEFINED;
-
     /** Vector of DataCells for Column */
     private Vector<DataCell> itsCells = null;
-
     /** Whether arg list is variable length */
     private boolean varLen = false;
-
     /**
      * reference to instance of DataColumnListeners used to maintain lists of
      * listeners, and notify them as appropriate.
      */
     protected DataColumnListeners listeners = null;
-
     /**
      * Reference to a modified version of the cannonical version of the
      * DataColumn.  Any such version will be created during a cascade, and
@@ -90,7 +83,7 @@ public class DataColumn extends Column
 
         return hash;
     }
-    
+
     /**
      * Compares this DataColumn against another.
      *
@@ -111,22 +104,15 @@ public class DataColumn extends Column
         // Must be this class to be here
         DataColumn dc = (DataColumn) obj;
 
-        return super.equals(obj)
-            && itsMveID == dc.itsMveID
-            && itsMveType == dc.itsMveType
-            && itsCells == null ? dc.itsCells == null
-                                : itsCells.equals(dc.itsCells)
-            && varLen == dc.varLen
-            && listeners == null ? dc.listeners == null
-                                 : dc.listeners.equals(listeners)
-            && pending == null ? dc.pending == null
-                               : dc.pending.equals(pending);
+        return super.equals(obj) && itsMveID == dc.itsMveID && itsMveType == dc.itsMveType && itsCells == null ? dc.itsCells == null
+                : itsCells.equals(dc.itsCells) && varLen == dc.varLen && listeners == null ? dc.listeners == null
+                : dc.listeners.equals(listeners) && pending == null ? dc.pending == null
+                : dc.pending.equals(pending);
     }
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-
     /**
      * DataColumn()
      *
@@ -156,40 +142,35 @@ public class DataColumn extends Column
      *    - None.
      *
      */
-
     public DataColumn(Database db,
-                      String name,
-                      MatrixVocabElement.MatrixType type)
-        throws SystemErrorException, LogicErrorException
-    {
+            String name,
+            MatrixVocabElement.MatrixType type)
+            throws SystemErrorException, LogicErrorException {
         super(db);
 
         final String mName = "DataColumn::DataColumn(db, name, type): ";
 
         this.setName(name);
 
-        if ( ( type == MatrixVocabElement.MatrixType.FLOAT ) ||
-             ( type == MatrixVocabElement.MatrixType.INTEGER ) ||
-             ( type == MatrixVocabElement.MatrixType.MATRIX ) ||
-             ( type == MatrixVocabElement.MatrixType.NOMINAL ) ||
-             ( type == MatrixVocabElement.MatrixType.PREDICATE ) ||
-             ( type == MatrixVocabElement.MatrixType.TEXT ) )
-        {
+        if ((type == MatrixVocabElement.MatrixType.FLOAT) ||
+                (type == MatrixVocabElement.MatrixType.INTEGER) ||
+                (type == MatrixVocabElement.MatrixType.MATRIX) ||
+                (type == MatrixVocabElement.MatrixType.NOMINAL) ||
+                (type == MatrixVocabElement.MatrixType.PREDICATE) ||
+                (type == MatrixVocabElement.MatrixType.TEXT)) {
             this.itsMveType = type;
-        }
-        else
-        {
+        } else {
             throw new SystemErrorException(mName + "invalid type");
         }
     } /* DataColumn::DataColumn(db, name, type) */
 
+
     public DataColumn(Database db,
-                      String name,
-                      boolean hidden,
-                      boolean readOnly,
-                      long mveID)
-        throws SystemErrorException
-    {
+            String name,
+            boolean hidden,
+            boolean readOnly,
+            long mveID)
+            throws SystemErrorException {
         super(db);
 
         final String mName =
@@ -198,18 +179,15 @@ public class DataColumn extends Column
 
         mve = this.lookupMatrixVE(mveID);
 
-        if ( name == null )
-        {
+        if (name == null) {
             throw new SystemErrorException(mName + "name null on entry.");
         }
 
-        if ( name.compareTo(mve.getName()) != 0 )
-        {
+        if (name.compareTo(mve.getName()) != 0) {
             throw new SystemErrorException(mName + "name doesn't match mve");
         }
 
-        if ( db.cl.inColumnList(name) )
-        {
+        if (db.cl.inColumnList(name)) {
             throw new SystemErrorException(mName +
                     "name already appears in column list");
         }
@@ -228,10 +206,10 @@ public class DataColumn extends Column
 
     } /* DataColumn::DataColumn(db, name, hidden, readOnly, mveID) */
 
+
     public DataColumn(DataColumn dc)
-        throws SystemErrorException
-    {
-        super((Column)dc);
+            throws SystemErrorException {
+        super((Column) dc);
 
         // TODO: add sanity checking??
         this.itsCells = null;
@@ -240,6 +218,7 @@ public class DataColumn extends Column
         this.varLen = dc.varLen;
 
     } /* DataColumn::DataColumn(dc) */
+
 
     /**
      * Creates a new copy of the object.
@@ -265,7 +244,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-
     /**
      * getItsCells() & setItsCells()
      *
@@ -282,25 +260,20 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
-    protected Vector<DataCell> getItsCells()
-    {
+    protected Vector<DataCell> getItsCells() {
 
         return this.itsCells;
 
     } /* DataColumn::getItsCells() */
 
-    protected void setItsCells(Vector<DataCell> cells)
-    {
+
+    protected void setItsCells(Vector<DataCell> cells) {
 
         this.itsCells = cells;
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             this.numCells = 0;
-        }
-        else
-        {
+        } else {
             this.numCells = this.itsCells.size();
         }
 
@@ -321,45 +294,37 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
-    public long getItsMveID()
-    {
+    public long getItsMveID() {
 
         return this.itsMveID;
 
     } /* DataColumn::getItsMveID() */
 
+
     protected void setItsMveID(long mveID)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::setItsMveID(): ";
         MatrixVocabElement mve;
 
-        if ( this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED )
-        {
+        if (this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED) {
             throw new SystemErrorException(mName +
                     "this.itsMveType undefined on entry.");
         }
 
-        if ( itsMveID != DBIndex.INVALID_ID )
-        {
+        if (itsMveID != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName + "itsMveID already set");
-        }
-        else if ( mveID == DBIndex.INVALID_ID )
-        {
+        } else if (mveID == DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
         mve = this.lookupMatrixVE(mveID);
 
-        if ( mve.getItsColID() != DBIndex.INVALID_ID )
-        {
+        if (mve.getItsColID() != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName +
                     "target mve already assigned to a column");
         }
 
-        if ( mve.getType() != this.itsMveType )
-        {
+        if (mve.getType() != this.itsMveType) {
             throw new SystemErrorException(mName +
                     "target mve type doesn't match this.itsMveType");
         }
@@ -383,9 +348,7 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
-    public MatrixVocabElement.MatrixType getItsMveType()
-    {
+    public MatrixVocabElement.MatrixType getItsMveType() {
 
         return this.itsMveType;
 
@@ -403,9 +366,7 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
-    public boolean getVarLen()
-    {
+    public boolean getVarLen() {
 
         return this.varLen;
 
@@ -415,7 +376,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
-
     /**
      * constructItsCells()
      *
@@ -429,16 +389,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void constructItsCells()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::constructItsCells(): ";
 
-        if ( this.itsCells != null )
-        {
+        if (this.itsCells != null) {
             throw new SystemErrorException(mName +
-                                           "itsCells already allocated?");
+                    "itsCells already allocated?");
         }
 
         // TODO: add more sanity checks?
@@ -466,35 +423,30 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void deregister()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::deregister(): ";
         DBElement dbe = null;
         MatrixVocabElement mve;
 
-        if ( this.itsMveID == DBIndex.INVALID_ID )
-        {
+        if (this.itsMveID == DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName +
-                                           "this.itsMveID is invalid");
+                    "this.itsMveID is invalid");
         }
 
         dbe = this.getDB().idx.getElement(this.itsMveID);
 
-        if ( dbe == null )
-        {
+        if (dbe == null) {
             throw new SystemErrorException(mName +
                     "this.itsMveID has no referent");
         }
 
-        if ( ! ( dbe instanceof MatrixVocabElement ) )
-        {
+        if (!(dbe instanceof MatrixVocabElement)) {
             throw new SystemErrorException(mName +
                     "this.itsMveID does not refer to a MatrixVocabElement");
         }
 
-        mve = (MatrixVocabElement)dbe;
+        mve = (MatrixVocabElement) dbe;
 
         mve.deregisterInternalListener(this.getID());
 
@@ -519,35 +471,30 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void register()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::register(): ";
         DBElement dbe = null;
         MatrixVocabElement mve;
 
-        if ( this.itsMveID == DBIndex.INVALID_ID )
-        {
+        if (this.itsMveID == DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName +
-                                           "this.itsMveID is invalid");
+                    "this.itsMveID is invalid");
         }
 
         dbe = this.getDB().idx.getElement(this.itsMveID);
 
-        if ( dbe == null )
-        {
+        if (dbe == null) {
             throw new SystemErrorException(mName +
                     "this.itsMveID has no referent");
         }
 
-        if ( ! ( dbe instanceof MatrixVocabElement ) )
-        {
+        if (!(dbe instanceof MatrixVocabElement)) {
             throw new SystemErrorException(mName +
                     "this.itsMveID does not refer to a MatrixVocabElement");
         }
 
-        mve = (MatrixVocabElement)dbe;
+        mve = (MatrixVocabElement) dbe;
 
         mve.registerInternalListener(this.getID());
 
@@ -556,7 +503,7 @@ public class DataColumn extends Column
     } /* DataColumn::register() */
 
 
-   /**
+    /**
      * toDBString()
      *
      * Returns a String representation of the DataColumn for comparison
@@ -571,27 +518,21 @@ public class DataColumn extends Column
      *    - None.
      *
      */
-
-    public String toDBString()
-    {
+    public String toDBString() {
         String s;
 
-        try
-        {
+        try {
             s = "(DataColumn (name " + this.name +
-                ") (id " + this.getID() +
-                ") (hidden " + this.hidden +
-                ") (readOnly " + this.readOnly +
-                ") (itsMveID " + this.itsMveID +
-                ") (itsMveType " + this.itsMveType +
-                ") (varLen " + this.varLen +
-                ") (numCells " + this.numCells + ") " +
-                this.itsCellsToDBString() +  "))";
-        }
-
-        catch (SystemErrorException e)
-        {
-             s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+                    ") (id " + this.getID() +
+                    ") (hidden " + this.hidden +
+                    ") (readOnly " + this.readOnly +
+                    ") (itsMveID " + this.itsMveID +
+                    ") (itsMveType " + this.itsMveType +
+                    ") (varLen " + this.varLen +
+                    ") (numCells " + this.numCells + ") " +
+                    this.itsCellsToDBString() + "))";
+        } catch (SystemErrorException e) {
+            s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
 
         return s;
@@ -611,18 +552,13 @@ public class DataColumn extends Column
      *    - None.
      *
      */
-    public String toString()
-    {
+    public String toString() {
         String s;
 
-        try
-        {
-            s = "(" + this.getName()  + ", " + this.itsCellsToString() + ")";
-        }
-
-        catch (SystemErrorException e)
-        {
-             s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+        try {
+            s = "(" + this.getName() + ", " + this.itsCellsToString() + ")";
+        } catch (SystemErrorException e) {
+            s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
         }
 
         return (s);
@@ -633,7 +569,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /************************* Cascade Management: ***************************/
     /*************************************************************************/
-
     /**
      * addPending()
      *
@@ -647,53 +582,43 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void addPending(Cell c)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::addPending(c): ";
 
-        if ( c == null )
-        {
+        if (c == null) {
             throw new SystemErrorException(mName + "c null on entry");
         }
 
-        if ( c.getItsColID() != this.getID() )
-        {
+        if (c.getItsColID() != this.getID()) {
             throw new SystemErrorException(mName + "col ID mismatch");
         }
 
-        if ( ! ( c instanceof DataCell ) )
-        {
+        if (!(c instanceof DataCell)) {
             throw new SystemErrorException(mName + "c not a DataCell");
         }
 
 
-        if ( ! this.cascadeInProgress )
-        {
+        if (!this.cascadeInProgress) {
             throw new SystemErrorException(mName +
                     "call to addPending() when cascade not in progress.");
         }
 
-        if ( this.getDB() != c.getDB() )
-        {
+        if (this.getDB() != c.getDB()) {
             throw new SystemErrorException(mName + "db mismatch.");
         }
 
-        if ( this.getCell(c.getOrd()) != c )
-        {
+        if (this.getCell(c.getOrd()) != c) {
             throw new SystemErrorException(mName +
                     "c not the cannonical instance(1).");
         }
 
-        if ( this.getDB().idx.getElement(c.getID()) != c )
-        {
+        if (this.getDB().idx.getElement(c.getID()) != c) {
             throw new SystemErrorException(mName +
                     "c not the cannonical instance(2).");
         }
 
-        if ( ((DataCell)c).listeners == null )
-        {
+        if (((DataCell) c).listeners == null) {
             throw new SystemErrorException(mName +
                     "c not the cannonical instance(3).");
         }
@@ -720,63 +645,52 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void cascadeReplaceCell(DataCell oldCell,
-                                      DataCell newCell)
-        throws SystemErrorException
-    {
+            DataCell newCell)
+            throws SystemErrorException {
         final String mName = "DataColumn::cascadeReplaceCell(): ";
         int ord;
         int i;
 
-        if ( ! this.cascadeInProgress )
-        {
+        if (!this.cascadeInProgress) {
             throw new SystemErrorException(mName +
-                                           "cascadeInProgress is false?!?!?");
+                    "cascadeInProgress is false?!?!?");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
-        if ( ( oldCell == null ) || ( newCell == null ) )
-        {
+        if ((oldCell == null) || (newCell == null)) {
             throw new SystemErrorException(mName +
-                                           "oldCell or newCell null on entry");
+                    "oldCell or newCell null on entry");
         }
 
-        if ( ( oldCell.getDB() != this.getDB() ) ||
-             ( newCell.getDB() != this.getDB() ) )
-        {
+        if ((oldCell.getDB() != this.getDB()) ||
+                (newCell.getDB() != this.getDB())) {
             throw new SystemErrorException(mName + "db mismatch");
         }
 
-        if ( oldCell.getID() != newCell.getID() )
-        {
+        if (oldCell.getID() != newCell.getID()) {
             throw new SystemErrorException(mName + "cell id mismatch");
         }
 
-        if ( this.getDB().idx.getElement(oldCell.getID()) != oldCell )
-        {
+        if (this.getDB().idx.getElement(oldCell.getID()) != oldCell) {
             throw new SystemErrorException(mName + "oldCell not cannonical(1)");
         }
 
-        if ( oldCell.getListeners() == null )
-        {
+        if (oldCell.getListeners() == null) {
             throw new SystemErrorException(mName + "oldCell not cannonical(2)");
         }
 
         ord = newCell.getOrd();
-        if ( this.itsCells.get(ord - 1) != oldCell )
-        {
+        if (this.itsCells.get(ord - 1) != oldCell) {
             throw new SystemErrorException(mName +
-                                           "oldCell not at newCell.getOrd().");
+                    "oldCell not at newCell.getOrd().");
         }
 
-        if ( ! this.validCell(newCell, false) )
-        {
+        if (!this.validCell(newCell, false)) {
             throw new SystemErrorException(mName + "invalid cell");
         }
 
@@ -787,21 +701,18 @@ public class DataColumn extends Column
         oldCell.setListeners(null);
 
         /* replace the old incarnation with the new */
-        if ( oldCell != this.itsCells.set(ord - 1, newCell) )
-        {
+        if (oldCell != this.itsCells.set(ord - 1, newCell)) {
             throw new SystemErrorException(mName +
-                                           "unexpected return from set()");
+                    "unexpected return from set()");
         }
 
         // verify ord of new cell
-        if ( itsCells.get(newCell.getOrd() - 1) != newCell )
-        {
+        if (itsCells.get(newCell.getOrd() - 1) != newCell) {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
 
-        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
-        {
+        if ((this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) ||
+                (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE)) {
             oldCell.deregisterPreds();
         }
 
@@ -815,9 +726,8 @@ public class DataColumn extends Column
         newCell.noteChange(oldCell, newCell);
         newCell.notifyListenersOfChange();
 
-        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
-        {
+        if ((this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) ||
+                (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE)) {
             newCell.registerPreds();
         }
 
@@ -850,43 +760,35 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     public void endCascade(Database db)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::endCascade(): ";
 
-        if ( this.getDB() != db )
-        {
+        if (this.getDB() != db) {
             throw new SystemErrorException(mName + "db mismatch.");
         }
 
-        if ( ! this.cascadeInProgress )
-        {
+        if (!this.cascadeInProgress) {
             throw new SystemErrorException(mName +
-                "call to endCascade() when this.cascadeInProgress is false?!?");
+                    "call to endCascade() when this.cascadeInProgress is false?!?");
         }
 
-        if ( this.pendingSet == null )
-        {
+        if (this.pendingSet == null) {
             throw new SystemErrorException(mName + "this.pendingSet is null?!?");
         }
 
         /* If temporal ordering, sort cells by onset, and assign new ords
          * as necessary.
          */
-        if ( this.getDB().temporalOrdering )
-        {
+        if (this.getDB().temporalOrdering) {
             this.sortItsCells();
         }
 
-        for ( Cell c : this.pendingSet )
-        {
-            ((DataCell)c).exitCascade();
+        for (Cell c : this.pendingSet) {
+            ((DataCell) c).exitCascade();
         }
 
-        if ( this.pending != null )
-        {
+        if (this.pending != null) {
             this.getDB().cl.replaceDataColumn(this.pending, true);
 
             this.pending = null;
@@ -902,7 +804,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /*********************** Listener Manipulation: **************************/
     /*************************************************************************/
-
     /**
      * deregisterExternalChangeListener()
      *
@@ -917,16 +818,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void deregisterExternalListener(ExternalDataColumnListener el)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::deregisterExternalListener()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-                "Attempt to add external listener to non-cannonical version.");
+                    "Attempt to add external listener to non-cannonical version.");
         }
 
         this.listeners.deregisterExternalListener(el);
@@ -950,16 +848,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void deregisterInternalListener(long id)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::deregisterInternalListener()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-                "Attempt to add internal listener to non-cannonical version.");
+                    "Attempt to add internal listener to non-cannonical version.");
         }
 
         this.listeners.deregisterInternalListener(id);
@@ -980,9 +875,7 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
-    protected DataColumnListeners getListeners()
-    {
+    protected DataColumnListeners getListeners() {
 
         return this.listeners;
 
@@ -1003,17 +896,14 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void noteChange(DataColumn oldDC,
-                              DataColumn newDC)
-        throws SystemErrorException
-    {
+            DataColumn newDC)
+            throws SystemErrorException {
         final String mName = "DataColumn::noteChange()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-                "Attempt to note changes on non-cannonical version.");
+                    "Attempt to note changes on non-cannonical version.");
         }
 
         this.listeners.noteChange(oldDC, newDC);
@@ -1037,16 +927,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void notifyListenersOfChange()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::notifyListenersOfChange()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-            "Attempt to notify listeners of change on non-cannonical version.");
+                    "Attempt to notify listeners of change on non-cannonical version.");
         }
 
         this.listeners.notifyListenersOfChange();
@@ -1070,14 +957,11 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void notifyListenersOfDeletion()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::notifyListenersOfDeletion()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
                     "Attempt to notify listeners of deletion on " +
                     "non-cannonical version.");
@@ -1104,16 +988,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void registerExternalListener(ExternalDataColumnListener el)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::registerExternalListener()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-            "Attempt to register external listener to non-cannonical version.");
+                    "Attempt to register external listener to non-cannonical version.");
         }
 
         this.listeners.registerExternalListener(el);
@@ -1137,16 +1018,13 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void registerInternalChangeListener(long id)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::registerInternalChangeListener()";
 
-        if ( this.listeners == null )
-        {
+        if (this.listeners == null) {
             throw new SystemErrorException(mName +
-            "Attempt to register internal listener to non-cannonical version.");
+                    "Attempt to register internal listener to non-cannonical version.");
         }
 
         this.listeners.registerInternalListener(id);
@@ -1176,27 +1054,20 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void setListeners(DataColumnListeners listeners)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataCell::setListeners()";
 
-        if ( this.listeners == null )
-        {
-            if ( listeners == null )
-            {
+        if (this.listeners == null) {
+            if (listeners == null) {
                 throw new SystemErrorException(mName +
                         ": this.listeners is already null");
             }
 
             this.listeners = listeners;
             this.listeners.updateItsCol(this);
-        }
-        else
-        {
-            if ( listeners != null )
-            {
+        } else {
+            if (listeners != null) {
                 throw new SystemErrorException(mName +
                         ": this.listeners is already non-null.");
             }
@@ -1212,7 +1083,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /***************************** Methods: **********************************/
     /*************************************************************************/
-
     /**
      * constructInitMatrixVE(DataColumn dc)
      *
@@ -1237,33 +1107,27 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected MatrixVocabElement constructInitMatrixVE()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::constructInitMatrixVE(): ";
         FormalArgument fa = null;
         MatrixVocabElement mve = null;
 
-        if ( this.getID() != DBIndex.INVALID_ID )
-        {
+        if (this.getID() != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName + "dc.id != INVALID_ID");
         }
 
-        if ( this.getItsMveID() != DBIndex.INVALID_ID )
-        {
+        if (this.getItsMveID() != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName + "dc.itsMveID != INVALID_ID");
         }
 
-        if ( this.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED )
-        {
+        if (this.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED) {
             throw new SystemErrorException(mName + "dc.itsMveType == UNDEFINED");
         }
 
-        if ( ( ! ( this.getDB().IsValidSVarName(this.getName()) ) ) ||
-             ( this.getDB().vl.inVocabList(this.getName()) ) ||
-             ( this.getDB().cl.inColumnList(this.getName()) ) )
-        {
+        if ((!(this.getDB().IsValidSVarName(this.getName()))) ||
+                (this.getDB().vl.inVocabList(this.getName())) ||
+                (this.getDB().cl.inColumnList(this.getName()))) {
             throw new SystemErrorException(mName +
                     "Column name invalid or in use");
         }
@@ -1276,32 +1140,19 @@ public class DataColumn extends Column
          * the type of the DataColumn.
          */
 
-        if ( this.itsMveType == MatrixVocabElement.MatrixType.FLOAT )
-        {
+        if (this.itsMveType == MatrixVocabElement.MatrixType.FLOAT) {
             fa = new FloatFormalArg(this.getDB());
-        }
-        else if ( this.itsMveType == MatrixVocabElement.MatrixType.INTEGER )
-        {
+        } else if (this.itsMveType == MatrixVocabElement.MatrixType.INTEGER) {
             fa = new IntFormalArg(this.getDB());
-        }
-        else if ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX )
-        {
+        } else if (this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
             fa = new UnTypedFormalArg(this.getDB());
-        }
-        else if ( this.itsMveType == MatrixVocabElement.MatrixType.NOMINAL )
-        {
+        } else if (this.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
             fa = new NominalFormalArg(this.getDB());
-        }
-        else if ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE )
-        {
+        } else if (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE) {
             fa = new PredFormalArg(this.getDB());
-        }
-        else if ( this.itsMveType == MatrixVocabElement.MatrixType.TEXT )
-        {
+        } else if (this.itsMveType == MatrixVocabElement.MatrixType.TEXT) {
             fa = new TextStringFormalArg(this.getDB());
-        }
-        else
-        {
+        } else {
             throw new SystemErrorException(mName + "Unknown matrixType?!?!");
         }
 
@@ -1320,6 +1171,7 @@ public class DataColumn extends Column
 
     } /* DataColumn::constructInitMatrixVE() */
 
+
     /**
      * lookupMatrixVE()
      *
@@ -1332,33 +1184,28 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     private MatrixVocabElement lookupMatrixVE(long mveID)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::lookupMatrixVE(mveID): ";
         DBElement dbe;
         MatrixVocabElement mve;
 
-        if ( mveID == DBIndex.INVALID_ID )
-        {
+        if (mveID == DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
         dbe = this.getDB().idx.getElement(mveID);
 
-        if ( dbe == null )
-        {
+        if (dbe == null) {
             throw new SystemErrorException(mName + "mveID has no referent");
         }
 
-        if ( ! ( dbe instanceof MatrixVocabElement ) )
-        {
+        if (!(dbe instanceof MatrixVocabElement)) {
             throw new SystemErrorException(mName +
                     "mveID doesn't refer to a matrix vocab element");
         }
 
-        mve = (MatrixVocabElement)dbe;
+        mve = (MatrixVocabElement) dbe;
 
         return mve;
 
@@ -1378,32 +1225,25 @@ public class DataColumn extends Column
      *    - None.
      *
      */
-
     protected String itsCellsToDBString()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::itsCellsToDBString(): ";
         int i = 0;
         String s;
 
-        if ( ( this.itsCells == null ) ||
-             ( this.numCells == 0 ) )
-        {
+        if ((this.itsCells == null) ||
+                (this.numCells == 0)) {
             s = "(itsCells ())";
-        }
-        else
-        {
+        } else {
             this.numCells = this.itsCells.size();
 
-            if ( this.numCells <= 0 )
-            {
+            if (this.numCells <= 0) {
                 throw new SystemErrorException(mName + "numCells <= 0");
             }
 
             s = new String("(itsCells (");
 
-            while ( i < (this.numCells - 1) )
-            {
+            while (i < (this.numCells - 1)) {
                 s += this.getCell(i + 1).toDBString() + ", ";
                 i++;
             }
@@ -1430,32 +1270,25 @@ public class DataColumn extends Column
      *    - None.
      *
      */
-
     protected String itsCellsToString()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::itsCellsToString(): ";
         int i = 0;
         String s;
 
-        if ( ( this.itsCells == null ) ||
-             ( this.numCells == 0 ) )
-        {
+        if ((this.itsCells == null) ||
+                (this.numCells == 0)) {
             s = "()";
-        }
-        else
-        {
+        } else {
             this.numCells = this.itsCells.size();
 
-            if ( this.numCells <= 0 )
-            {
+            if (this.numCells <= 0) {
                 throw new SystemErrorException(mName + "numCells <= 0");
             }
 
             s = new String("(");
 
-            while ( i < (numCells - 1) )
-            {
+            while (i < (numCells - 1)) {
                 s += this.getCell(i + 1).toString() + ", ";
                 i++;
             }
@@ -1473,7 +1306,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /************************* Cells Management: *****************************/
     /*************************************************************************/
-
     /**
      * appendCell()
      *
@@ -1491,21 +1323,17 @@ public class DataColumn extends Column
      *
      *                                          -- 2/10/08
      */
-
     protected void appendCell(DataCell newCell)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::appendCell(): ";
         DataCellListeners nl = null;
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
-        if ( ! this.validCell(newCell, true) )
-        {
+        if (!this.validCell(newCell, true)) {
             throw new SystemErrorException(mName + "invalid cell");
         }
 
@@ -1520,8 +1348,7 @@ public class DataColumn extends Column
         this.numCells = this.itsCells.size();
         newCell.setOrd(this.numCells);
 
-        if ( itsCells.elementAt(newCell.getOrd() - 1) != newCell )
-        {
+        if (itsCells.elementAt(newCell.getOrd() - 1) != newCell) {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
 
@@ -1534,9 +1361,8 @@ public class DataColumn extends Column
 
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
 
-        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
-        {
+        if ((this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) ||
+                (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE)) {
             newCell.registerPreds();
         }
 
@@ -1560,30 +1386,25 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected DataCell getCell(int ord)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::getCell(): ";
         DataCell retVal = null;
 
-        if ( ( ord < 1 ) || ( ord > this.numCells ) )
-        {
+        if ((ord < 1) || (ord > this.numCells)) {
             throw new SystemErrorException(mName + "ord out of range");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
         retVal = this.itsCells.get(ord - 1);
 
-        if ( retVal.getOrd() != ord )
-        {
+        if (retVal.getOrd() != ord) {
             throw new SystemErrorException(mName + "unexpected ord: " +
-                                           retVal.getOrd() + " (" + ord + ")");
+                    retVal.getOrd() + " (" + ord + ")");
         }
 
         return retVal;
@@ -1602,10 +1423,8 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected DataCell getCellCopy(int ord)
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
 
         return new DataCell(this.getCell(ord));
 
@@ -1629,30 +1448,25 @@ public class DataColumn extends Column
      *      changes.
      *                                              -- 2/10/08
      */
-
     protected void insertCell(DataCell newCell,
-                              int ord)
-       throws SystemErrorException
-    {
+            int ord)
+            throws SystemErrorException {
         final String mName = "DataColumn::insertCell(): ";
         int i;
         DataCell dc = null;
         DataCellListeners nl = null;
 
-        if ( ( ord < 1 ) || ( ord > this.numCells + 1) )
-        {
+        if ((ord < 1) || (ord > this.numCells + 1)) {
             throw new SystemErrorException(mName + "ord out of range");
         }
 
-        if ( ! this.validCell(newCell, true) )
-        {
+        if (!this.validCell(newCell, true)) {
             throw new SystemErrorException(mName + "invalid cell");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
         newCell.validateNewCell();
@@ -1670,8 +1484,7 @@ public class DataColumn extends Column
         this.numCells = this.itsCells.size();
 
         // verify ord of new cell
-        if ( itsCells.get(newCell.getOrd() - 1) != newCell )
-        {
+        if (itsCells.get(newCell.getOrd() - 1) != newCell) {
             throw new SystemErrorException(mName + "bad ord for newCell?!?");
         }
 
@@ -1680,24 +1493,20 @@ public class DataColumn extends Column
 
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
 
-        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
-             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
-        {
+        if ((this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) ||
+                (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE)) {
             newCell.registerPreds();
         }
 
         // Update ords for insertion
-        for ( i = ord; i < this.numCells; i++ )
-        {
+        for (i = ord; i < this.numCells; i++) {
             dc = itsCells.elementAt(i);
 
-            if ( dc == newCell )
-            {
+            if (dc == newCell) {
                 throw new SystemErrorException(mName + "scan hit new cell?!?");
             }
 
-            if ( dc.cascadeGetOrd() != i )
-            {
+            if (dc.cascadeGetOrd() != i) {
                 throw new SystemErrorException(mName + "unexpected old ord" + i);
             }
 
@@ -1736,37 +1545,31 @@ public class DataColumn extends Column
      *      calls to mark the beginning and end of any resulting cascade of
      *      changes.
      */
-
     protected DataCell removeCell(int targetOrd,
-                                  long targetID)
-        throws SystemErrorException
-    {
+            long targetID)
+            throws SystemErrorException {
         final String mName = "DataColumn::removeCell(): ";
         int i;
         DataCell dc = null;
         DataCell retVal = null;
 
 
-        if ( ( targetOrd < 1 ) || ( targetOrd > this.numCells ) )
-        {
+        if ((targetOrd < 1) || (targetOrd > this.numCells)) {
             throw new SystemErrorException(mName + "targetOrd out of range");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
         dc = itsCells.elementAt(targetOrd - 1);
 
-        if ( dc == null )
-        {
+        if (dc == null) {
             throw new SystemErrorException(mName + "can't get target cell");
         }
 
-        if ( dc.getID() != targetID )
-        {
+        if (dc.getID() != targetID) {
             throw new SystemErrorException(mName + "target ID mismatch");
         }
 
@@ -1779,8 +1582,7 @@ public class DataColumn extends Column
 
         dc.removeValFromIndex();
 
-        if ( dc != this.itsCells.remove(targetOrd -1) )
-        {
+        if (dc != this.itsCells.remove(targetOrd - 1)) {
             throw new SystemErrorException(mName + "remove failed?!?!");
         }
 
@@ -1788,17 +1590,14 @@ public class DataColumn extends Column
 
         this.numCells = this.itsCells.size();
 
-        for ( i = targetOrd - 1; i < this.numCells; i++)
-        {
+        for (i = targetOrd - 1; i < this.numCells; i++) {
             dc = this.itsCells.get(i);
 
-            if ( dc == null )
-            {
+            if (dc == null) {
                 throw new SystemErrorException(mName + "can't get cell" + i);
             }
 
-            if ( dc.getOrd() != i + 2 )
-            {
+            if (dc.getOrd() != i + 2) {
                 throw new SystemErrorException(mName + "unexpected cell ord " +
                         dc.getOrd() + "(" + (i + 2) + " expected)");
             }
@@ -1837,40 +1636,32 @@ public class DataColumn extends Column
      *      exception if we try to replace the same cell twice in the same
      *      cascade.
      */
-
     protected DataCell replaceCell(DataCell newCell,
-                                   int targetOrd)
-        throws SystemErrorException
-    {
+            int targetOrd)
+            throws SystemErrorException {
         final String mName = "DataColumn::replaceCell(): ";
         int i;
         DataCell oldCell = null;
         DataCell retVal = null;
 
-        if ( ( targetOrd < 1 ) || ( targetOrd > this.numCells ) )
-        {
+        if ((targetOrd < 1) || (targetOrd > this.numCells)) {
             throw new SystemErrorException(mName + "targetOrd out of range");
         }
 
-        if ( ! this.validCell(newCell, false) )
-        {
+        if (!this.validCell(newCell, false)) {
             throw new SystemErrorException(mName + "invalid cell");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName +
-                                           "itsCells not initialized?!?");
+                    "itsCells not initialized?!?");
         }
 
         oldCell = this.itsCells.get(targetOrd - 1);
 
-        if ( oldCell == null )
-        {
+        if (oldCell == null) {
             throw new SystemErrorException(mName + "can't get old cell.");
-        }
-        else if ( this.getDB().idx.getElement(oldCell.getID()) != oldCell )
-        {
+        } else if (this.getDB().idx.getElement(oldCell.getID()) != oldCell) {
             throw new SystemErrorException(mName + "oldCell not in index?!?");
         }
 
@@ -1888,8 +1679,7 @@ public class DataColumn extends Column
 
         retVal = oldCell;
 
-        if ( oldCell.getListeners() != null )
-        {
+        if (oldCell.getListeners() != null) {
             throw new SystemErrorException(mName +
                     "replacement didn't complete!?!");
         }
@@ -1915,45 +1705,36 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     // TODO: re-write this method with sanity checking.
-
     protected void sortCells()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::sortCells(): ";
         int i;
-        class dc_onset_comp implements java.util.Comparator<DataCell>
-        {
-            public int compare(DataCell dc1, DataCell dc2)
-            {
+        class dc_onset_comp implements java.util.Comparator<DataCell> {
+
+            public int compare(DataCell dc1, DataCell dc2) {
                 int result = 0;
 
-                if ( dc1.onset.insane_gt(dc2.onset) )
-                {
+                if (dc1.onset.insane_gt(dc2.onset)) {
                     result = 1;
-                }
-                else if ( dc1.onset.insane_lt(dc2.onset) )
-                {
+                } else if (dc1.onset.insane_lt(dc2.onset)) {
                     result = -1;
                 }
 
                 return result;
             }
-        };
+        }
+        ;
         dc_onset_comp comp = new dc_onset_comp();
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName + "itsCells null on entry");
         }
 
-        if ( this.numCells > 0 )
-        {
+        if (this.numCells > 0) {
             java.util.Collections.sort(this.itsCells, comp);
 
-            for ( i = 0; i < this.numCells; i++ )
-            {
+            for (i = 0; i < this.numCells; i++) {
                 this.itsCells.get(i).setOrd(i + 1);
             }
         }
@@ -1980,40 +1761,29 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     protected void sortItsCells()
-        throws SystemErrorException
-    {
+            throws SystemErrorException {
         final String mName = "DataColumn::sortItsCells(): ";
         int i;
-        class cascade_dc_onset_comp implements java.util.Comparator<DataCell>
-        {
-            public int compare(DataCell dc1, DataCell dc2)
-            {
+        class cascade_dc_onset_comp implements java.util.Comparator<DataCell> {
+
+            public int compare(DataCell dc1, DataCell dc2) {
                 int result = 0;
                 boolean threwSystemErrorException = false;
                 String systemErrorExceptionString = null;
 
-                try
-                {
-                    if ( dc1.cascadeGetOnset().insane_gt(dc2.cascadeGetOnset()) )
-                    {
+                try {
+                    if (dc1.cascadeGetOnset().insane_gt(dc2.cascadeGetOnset())) {
                         result = 1;
-                    }
-                    else if (dc1.cascadeGetOnset().insane_lt(dc2.cascadeGetOnset()))
-                    {
+                    } else if (dc1.cascadeGetOnset().insane_lt(dc2.cascadeGetOnset())) {
                         result = -1;
                     }
-                }
-
-                catch (SystemErrorException e)
-                {
+                } catch (SystemErrorException e) {
                     threwSystemErrorException = true;
                     systemErrorExceptionString = e.getMessage();
                 }
 
-                if ( threwSystemErrorException )
-                {
+                if (threwSystemErrorException) {
                     System.out.printf(
                             "%s: Caught SystemErrorException \"%s\".\n",
                             mName, systemErrorExceptionString);
@@ -2024,32 +1794,28 @@ public class DataColumn extends Column
 
                 return result;
             }
-        };
+        }
+        ;
 
         cascade_dc_onset_comp comp = new cascade_dc_onset_comp();
 
-        if ( ! this.cascadeInProgress )
-        {
+        if (!this.cascadeInProgress) {
             throw new SystemErrorException(mName + "cascade not in progress?!");
         }
 
-        if ( this.itsCells == null )
-        {
+        if (this.itsCells == null) {
             throw new SystemErrorException(mName + "itsCells null on entry");
         }
 
-        if ( this.numCells > 0 )
-        {
+        if (this.numCells > 0) {
             int oldOrd;
             DataCell c;
             java.util.Collections.sort(this.itsCells, comp);
 
-            for ( i = 0; i < this.numCells; i++ )
-            {
+            for (i = 0; i < this.numCells; i++) {
                 c = this.itsCells.get(i);
 
-                if ( c.cascadeGetOrd() != i + 1 )
-                {
+                if (c.cascadeGetOrd() != i + 1) {
                     c.cascadeSetOrd(i + 1);
                 }
             }
@@ -2071,40 +1837,32 @@ public class DataColumn extends Column
      *    - Added the newCell parameter that allows us to skip the cell id
      *      check on new cells that haven't been added to the index yet.
      */
-
     private boolean validCell(DataCell cell,
-                              boolean newCell)
-        throws SystemErrorException
-    {
+            boolean newCell)
+            throws SystemErrorException {
         final String mName = "DataColumn::validCell(): ";
 
-        if ( cell == null )
-        {
+        if (cell == null) {
             throw new SystemErrorException(mName + "cell null on entry.");
         }
 
-        if ( cell.getDB() != this.getDB() )
-        {
+        if (cell.getDB() != this.getDB()) {
             return false;
         }
 
-        if ( cell.getItsMveID() != this.itsMveID )
-        {
+        if (cell.getItsMveID() != this.itsMveID) {
             return false;
         }
 
-        if ( cell.getItsColID() != this.getID() )
-        {
+        if (cell.getItsColID() != this.getID()) {
             return false;
         }
 
-        if ( cell.getItsMveType() != this.itsMveType )
-        {
+        if (cell.getItsMveType() != this.itsMveType) {
             throw new SystemErrorException(mName + "type mismatch");
         }
 
-        if ( ( ! newCell ) && ( cell.getID() == DBIndex.INVALID_ID ) )
-        {
+        if ((!newCell) && (cell.getID() == DBIndex.INVALID_ID)) {
             throw new SystemErrorException(mName + "cell has invalid ID");
         }
 
@@ -2119,7 +1877,6 @@ public class DataColumn extends Column
     /*************************************************************************/
     /********************* MVE Change Management: ****************************/
     /*************************************************************************/
-
     /**
      * MVEChanged()
      *
@@ -2139,86 +1896,74 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     public void MVEChanged(Database db,
-                           long MVEID,
-                           boolean nameChanged,
-                           String oldName,
-                           String newName,
-                           boolean varLenChanged,
-                           boolean oldVarLen,
-                           boolean newVarLen,
-                           boolean fargListChanged,
-                           long[] n2o,
-                           long[] o2n,
-                           boolean[] fargNameChanged,
-                           boolean[] fargSubRangeChanged,
-                           boolean[] fargRangeChanged,
-                           boolean[] fargDeleted,
-                           boolean[] fargInserted,
-                           java.util.Vector<FormalArgument> oldFargList,
-                           java.util.Vector<FormalArgument> newFargList,
-                           long[] cpn2o,
-                           long[] cpo2n,
-                           boolean[] cpFargNameChanged,
-                           boolean[] cpFargSubRangeChanged,
-                           boolean[] cpFargRangeChanged,
-                           boolean[] cpFargDeleted,
-                           boolean[] cpFargInserted,
-                           java.util.Vector<FormalArgument> oldCPFargList,
-                           java.util.Vector<FormalArgument> newCPFargList)
-        throws SystemErrorException
-    {
+            long MVEID,
+            boolean nameChanged,
+            String oldName,
+            String newName,
+            boolean varLenChanged,
+            boolean oldVarLen,
+            boolean newVarLen,
+            boolean fargListChanged,
+            long[] n2o,
+            long[] o2n,
+            boolean[] fargNameChanged,
+            boolean[] fargSubRangeChanged,
+            boolean[] fargRangeChanged,
+            boolean[] fargDeleted,
+            boolean[] fargInserted,
+            java.util.Vector<FormalArgument> oldFargList,
+            java.util.Vector<FormalArgument> newFargList,
+            long[] cpn2o,
+            long[] cpo2n,
+            boolean[] cpFargNameChanged,
+            boolean[] cpFargSubRangeChanged,
+            boolean[] cpFargRangeChanged,
+            boolean[] cpFargDeleted,
+            boolean[] cpFargInserted,
+            java.util.Vector<FormalArgument> oldCPFargList,
+            java.util.Vector<FormalArgument> newCPFargList)
+            throws SystemErrorException {
         final String mName = "DataColumn::MVEChanged(): ";
 
-        if ( this.getDB() != db )
-        {
+        if (this.getDB() != db) {
             throw new SystemErrorException(mName + "db mismatch.");
         }
 
-        if ( this.itsMveID != MVEID )
-        {
+        if (this.itsMveID != MVEID) {
             throw new SystemErrorException(mName + "mveID mismatch.");
         }
 
-        if ( ! this.cascadeInProgress )
-        {
+        if (!this.cascadeInProgress) {
             throw new SystemErrorException(mName +
-                                           "cascade not in progress?!?.");
+                    "cascade not in progress?!?.");
         }
 
-        if ( this.pending != null )
-        {
+        if (this.pending != null) {
             throw new SystemErrorException(mName +
                     "this.pending not null on entry?!?!");
         }
 
-        if ( ( nameChanged ) || ( varLenChanged ) )
-        {
+        if ((nameChanged) || (varLenChanged)) {
             this.pending = new DataColumn(this);
 
-            if ( nameChanged )
-            {
-                if ( this.name.compareTo(oldName) != 0 )
-                {
+            if (nameChanged) {
+                if (this.name.compareTo(oldName) != 0) {
                     throw new SystemErrorException(mName +
-                                                   "oldName != this.name");
+                            "oldName != this.name");
                 }
 
-                if ( ! ( this.getDB().IsValidSVarName(newName) ) )
-                {
+                if (!(this.getDB().IsValidSVarName(newName))) {
                     throw new SystemErrorException(mName +
                             "newName not a valid svar name");
                 }
 
-                if ( ! this.getDB().vl.inVocabList(newName) )
-                {
+                if (!this.getDB().vl.inVocabList(newName)) {
                     throw new SystemErrorException(mName +
                             "newName not in v?!?");
                 }
 
-                if ( db.cl.inColumnList(newName) )
-                {
+                if (db.cl.inColumnList(newName)) {
                     throw new SystemErrorException(mName +
                             "newName already appears in column list");
                 }
@@ -2230,39 +1975,35 @@ public class DataColumn extends Column
                 this.pending.name = new String(newName);
             }
 
-            if ( varLenChanged )
-            {
-                if ( this.varLen != oldVarLen )
-                {
+            if (varLenChanged) {
+                if (this.varLen != oldVarLen) {
                     throw new SystemErrorException(mName +
-                                                   "oldVarLen != this.varLen");
+                            "oldVarLen != this.varLen");
                 }
                 this.pending.varLen = newVarLen;
             }
         }
 
-        if ( fargListChanged )
-        {
-            for ( Cell c : this.itsCells )
-            {
-                ((DataCell)c).cascadeUpdateForFargListChange(n2o,
-                                                             o2n,
-                                                             fargNameChanged,
-                                                             fargSubRangeChanged,
-                                                             fargRangeChanged,
-                                                             fargDeleted,
-                                                             fargInserted,
-                                                             oldFargList,
-                                                             newFargList,
-                                                             cpn2o,
-                                                             cpo2n,
-                                                             cpFargNameChanged,
-                                                             cpFargSubRangeChanged,
-                                                             cpFargRangeChanged,
-                                                             cpFargDeleted,
-                                                             cpFargInserted,
-                                                             oldCPFargList,
-                                                             newCPFargList);
+        if (fargListChanged) {
+            for (Cell c : this.itsCells) {
+                ((DataCell) c).cascadeUpdateForFargListChange(n2o,
+                        o2n,
+                        fargNameChanged,
+                        fargSubRangeChanged,
+                        fargRangeChanged,
+                        fargDeleted,
+                        fargInserted,
+                        oldFargList,
+                        newFargList,
+                        cpn2o,
+                        cpo2n,
+                        cpFargNameChanged,
+                        cpFargSubRangeChanged,
+                        cpFargRangeChanged,
+                        cpFargDeleted,
+                        cpFargInserted,
+                        oldCPFargList,
+                        newCPFargList);
             }
         }
 
@@ -2287,24 +2028,20 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-
     public void MVEDeleted(Database db,
-                           long MVEID)
-        throws SystemErrorException
-    {
+            long MVEID)
+            throws SystemErrorException {
         final String mName = "DataColumn::MVEDeleted(): ";
 
         throw new SystemErrorException(mName + "should be un-reachable");
 
     } /* DataColumn::VEDeleted() */
 
-
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
 
     /* None */
-
 //  /**
 //   * Sets the type of cells in this column
 //   * @param type the type of cells
@@ -2318,5 +2055,4 @@ public class DataColumn extends Column
 //      ((ColumnChangeListener)this.changeListeners.elementAt(i)).ColumnDefChanged(this);
 //    }
 //} //End of setType() method
-
 } //End of DataColumn class definition

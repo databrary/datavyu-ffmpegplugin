@@ -166,7 +166,7 @@
     </repository>
   </repositories>
 
-  <!-- use an optimized build for releases. -->
+  <!-- Use an optimized build for releases. -->
   <profiles>
     <profile>
       <id>release</id>
