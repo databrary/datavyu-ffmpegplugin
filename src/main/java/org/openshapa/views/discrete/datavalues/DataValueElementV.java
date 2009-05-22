@@ -242,7 +242,7 @@ public abstract class DataValueElementV extends DataValueV {
 
             // Only select all if the data value view is a placeholder.
             DataValue d = getModel();
-            if (d != null && d.isEmpty()) {
+            if ((d != null && d.isEmpty()) || getAlwaysSelectAll()) {
                 this.selectAll();
             }
         }

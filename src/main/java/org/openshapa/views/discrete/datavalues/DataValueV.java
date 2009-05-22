@@ -47,6 +47,9 @@ implements MouseListener {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueV.class);
 
+    /** Flag for always selecting the entire contents of the editor. */
+    private boolean alwaysSelectAll;
+
     /**
      * Constructor.
      */
@@ -57,6 +60,7 @@ implements MouseListener {
         parentCell = null;
         mIndex = 0;
         model = value;
+        alwaysSelectAll = false;
 
         initDataValueView();
     }
@@ -82,6 +86,7 @@ implements MouseListener {
             parentCell = dataCell;
             mIndex = matrixIndex;
             model = matrix.getArgCopy(mIndex);
+            alwaysSelectAll = false;
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue View: ", ex);
         }
@@ -115,6 +120,7 @@ implements MouseListener {
 
             Predicate p = predicate.getItsValue();
             model = p.getArgCopy(pIndex);
+            alwaysSelectAll = false;
         } catch (SystemErrorException ex) {
             logger.error("Unable to create DataValue view: ", ex);
         }
@@ -136,6 +142,7 @@ implements MouseListener {
         parentCell = dataCell;
         mIndex = -1;
         model = dataValue;
+        alwaysSelectAll = false;
 
         initDataValueView();
     }
@@ -292,6 +299,25 @@ implements MouseListener {
         }
         return t;
     }
+
+    /**
+     * Sets the ability to always select all of the text in an editor when it
+     * gains focus.
+     *
+     * @param selectAll Should we always selectAll when an editor gains focus.
+     */
+    public void setAlwaysSelectAll(final boolean selectAll) {
+        alwaysSelectAll = selectAll;
+    }
+
+    /**
+     * @return Is this datavalue view being always selected when the editor for
+     * it gains focus?
+     */
+    public boolean getAlwaysSelectAll() {
+        return alwaysSelectAll;
+    }
+
 
     /**
      * The action to invoke when the mouse enters this component.

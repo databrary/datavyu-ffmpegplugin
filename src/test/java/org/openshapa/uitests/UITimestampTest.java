@@ -53,8 +53,8 @@ public final class UITimestampTest extends UISpecTestCase {
      * Test editing the onset and offset timestamps.
      * @throws java.lang.Exception on any error
      */
-    public void testTimestampEditing() throws Exception {        
-        TextBox onset, offset;        
+    public void testTimestampEditing() throws Exception {
+        TextBox onset, offset;
 
         String[] testInput = {"123456789", "6789", "a13", "12:34:56:789",
         "4.43", "127893999", "12:78:93:999"};
