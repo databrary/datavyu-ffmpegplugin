@@ -8,6 +8,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
+import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
@@ -132,9 +133,21 @@ public final class UINewCellTest extends UISpecTestCase {
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
+        //advanced Input will be provided between testInput
+        Key [] [] advancedInput = {{Key.LEFT, Key.LEFT},
+        {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+        {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+        {Key.LEFT, Key.RIGHT}};
+
+
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = testInput;
+
+        String[] advancedExpectedOutput = {"Subject stands $10,432up",
+        "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
+        "Tote_that_aJeune fille celebrel",
+        "Jeune fille celebreIf x?7 then x? 2"};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -169,9 +182,26 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValueTextBox(0);
 
-            c.enterEditorText(0, testInput[i]);
+            //c.enterEditorText(0, testInput[i]);
+//c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i+1]);
+            c.typeEditorKey(0, Key.A);
+            c.typeEditorKey(0, Key.B);
+            //c.pressEditorKey(0, Key.RIGHT);
+            c.pressEditorKey(0, Key.LEFT);
+            c.typeEditorKey(0, Key.C);
+System.err.println(t.getText());
+            //assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+        }
 
-            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+        for (int i = 0; i < numOfTests - 1; i++) {
+            //4. Test different advanced inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+            
+            //c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i+1]);
+
+            //System.err.println(t.getText());
+            //assertTrue(t.getText().equalsIgnoreCase(advancedExpectedOutput[i]));
         }
 
         //5. Check copy pasting
@@ -196,7 +226,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "float";
 
         String[] testInput = {"1a.9", "10-43.2",
-            "!289(", "178.&", "~~~)",
+            "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2"};
 
         int numOfTests = testInput.length;
@@ -238,7 +268,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterEditorText(0, testInput[i]);
 
-            //BugzID382: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+            assertTrue(Double.parseDouble(t.getText()) ==
+                    (expectedTestOutput[i]));
         }
 
        //5. Check copy pasting

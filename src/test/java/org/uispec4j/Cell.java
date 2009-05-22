@@ -130,23 +130,39 @@ public class Cell extends AbstractUIComponent {
 
    public final void enterEditorText(int part, String s) {
         for (int i = 0; i < s.length(); i++) {
-            pressEditorKey(VALUE, part, new Key(s.charAt(i)));
+            typeEditorKey(VALUE, part, new Key(s.charAt(i)));
+        }
+    }
+
+   public final void enterEditorText(int part, String s1, Key [] keys, String s2) {
+       for (int i = 0; i < s1.length(); i++) {
+            typeEditorKey(VALUE, part, new Key(s1.charAt(i)));
+        }
+       for (int i = 0; i < keys.length; i++) {
+            if (keys[i].getChar() != null) {
+                typeEditorKey(VALUE, part, keys[i]);
+            } else {
+                pressEditorKey(VALUE, part, keys[i]);
+            }
+        }
+       for (int i = 0; i < s2.length(); i++) {
+            typeEditorKey(VALUE, part, new Key(s2.charAt(i)));
         }
     }
 
    public final void enterOnsetText(String s) {
         for (int i = 0; i < s.length(); i++) {
-            pressEditorKey(ONSET, 0, new Key(s.charAt(i)));
+            typeEditorKey(ONSET, 0, new Key(s.charAt(i)));
         }
     }
 
    public final void enterOffsetText(String s) {
         for (int i = 0; i < s.length(); i++) {
-            pressEditorKey(OFFSET, 0, new Key(s.charAt(i)));
+            typeEditorKey(OFFSET, 0, new Key(s.charAt(i)));
         }
     }
 
-    public final void pressEditorKey(int component, int i, Key k) {
+    public final void typeEditorKey(int component, int i, Key k) {
         DataValueEditor e;
         switch(component) {
             case VALUE: e = getEditor(i); break;
@@ -159,10 +175,34 @@ public class Cell extends AbstractUIComponent {
         KeyUtils.typeKey(e, k);
     }
 
+    public final void typeEditorKey(int component, Key k) {
+        typeEditorKey(component, 0, k);
+    }
+
+    public final void pressEditorKey(int component, int i, Key k) {
+        DataValueEditor e;
+        switch (component) {
+            case VALUE:
+                e = getEditor(i);
+                break;
+            case ONSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
+                break;
+            case OFFSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
+                break;
+            default:
+                e = getEditor(i);
+        }
+
+        e.focusGained(null);
+        KeyUtils.pressKey(e, k);
+    }
+
     public final void pressEditorKey(int component, Key k) {
         pressEditorKey(component, 0, k);
     }
-
+    
     public final TextBox getValueTextBox(int part) {
         DataValueElementV view = getView(part);
 
