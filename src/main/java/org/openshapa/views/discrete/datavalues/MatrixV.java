@@ -85,8 +85,10 @@ public class MatrixV extends SpreadsheetElementPanel {
             if (m != null && getComponentCount() == 0) {
                 // For each of the matrix arguments, build a view representation
                 for (int i = 0; i < m.getNumArgs(); i++) {
-                    argViews.add(DataValueViewFactory.build(sheetSelection,
-                                                            parentCell, m, i));
+                    DataValueV v = DataValueViewFactory.build(sheetSelection,
+                                                              parentCell, m, i);
+                    v.setAlwaysSelectAll(true);
+                    argViews.add(v);
                 }
             }
         } catch (SystemErrorException e) {

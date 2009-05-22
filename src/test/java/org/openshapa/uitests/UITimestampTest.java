@@ -132,7 +132,6 @@ public final class UITimestampTest extends UISpecTestCase {
             "13:19:33:999", "12:34:00:000", "12:34:56:000"};
 
         Vector<Cell> c = createNewCells(numOfTests);
-
         Clipboard clip = null;
         for (int i = 0; i < numOfTests; i++) {
             onset = c.elementAt(i).getOnset();
@@ -142,11 +141,12 @@ public final class UITimestampTest extends UISpecTestCase {
             // Paste doesn't seem to request focus correctly.
             onset.pasteFromClipboard();
             offset.pasteFromClipboard();
+
             assertTrue(onset.getText().equalsIgnoreCase(
                     expectedTestOutput[i]));
             assertTrue(offset.getText().equalsIgnoreCase(
                     expectedTestOutput[i]));
-        }
+       }
     }
 
     /**

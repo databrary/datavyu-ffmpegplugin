@@ -12,12 +12,11 @@ import org.openshapa.views.discrete.datavalues.OffsetView;
 import org.openshapa.views.discrete.datavalues.OnsetView;
 import org.uispec4j.utils.KeyUtils;
 
-
-
 /**
  *
  */
 public class Cell extends AbstractUIComponent {
+
     /**
      * UISpec4J convention to declare type.
      */
@@ -26,12 +25,9 @@ public class Cell extends AbstractUIComponent {
      * UISpec4J convention to declare associated class.
      */
     public static final Class[] SWING_CLASSES = {SpreadsheetCell.class};
-
     public static final int VALUE = 0;
     public static final int ONSET = 1;
     public static final int OFFSET = 2;
-
-
     /**
      * Since this is an Adaptor class, this is the class being adapted.
      */
@@ -78,7 +74,7 @@ public class Cell extends AbstractUIComponent {
         return new Timestamp(this.getOffset().getText());
     }
 
-     /**
+    /**
      * Returns TextBox of Onset so that components are easily accessible.
      * @return TextBox onset
      */
@@ -113,7 +109,7 @@ public class Cell extends AbstractUIComponent {
         if (v instanceof DataValueElementV) {
             return (DataValueElementV) v;
 
-        // Can't build DataValueElementV predicate or matrix.
+            // Can't build DataValueElementV predicate or matrix.
         } else {
             return null;
         }
@@ -128,54 +124,85 @@ public class Cell extends AbstractUIComponent {
         }
     }
 
-   public final void enterEditorText(int part, String s) {
+    public final void enterEditorText(int part, String s) {
+        requestEditorFocus(VALUE, part);
         for (int i = 0; i < s.length(); i++) {
             typeEditorKey(VALUE, part, new Key(s.charAt(i)));
         }
     }
 
-   public final void enterEditorText(int part, String s1, Key [] keys, String s2) {
-       for (int i = 0; i < s1.length(); i++) {
+    public final void enterEditorText(int part, String s1, Key[] keys, String s2) {
+        requestEditorFocus(VALUE, part);
+        for (int i = 0; i < s1.length(); i++) {
             typeEditorKey(VALUE, part, new Key(s1.charAt(i)));
         }
-       for (int i = 0; i < keys.length; i++) {
+
+        for (int i = 0; i < keys.length; i++) {
             if (keys[i].getChar() != null) {
                 typeEditorKey(VALUE, part, keys[i]);
             } else {
                 pressEditorKey(VALUE, part, keys[i]);
             }
         }
-       for (int i = 0; i < s2.length(); i++) {
+        for (int i = 0; i < s2.length(); i++) {
             typeEditorKey(VALUE, part, new Key(s2.charAt(i)));
         }
     }
 
-   public final void enterOnsetText(String s) {
+    public final void enterOnsetText(String s) {
+        requestEditorFocus(ONSET, 0);
         for (int i = 0; i < s.length(); i++) {
             typeEditorKey(ONSET, 0, new Key(s.charAt(i)));
         }
     }
 
-   public final void enterOffsetText(String s) {
+    public final void enterOffsetText(String s) {
+        requestEditorFocus(OFFSET, 0);
         for (int i = 0; i < s.length(); i++) {
             typeEditorKey(OFFSET, 0, new Key(s.charAt(i)));
         }
     }
 
-    public final void typeEditorKey(int component, int i, Key k) {
+    public final void requestEditorFocus(int component, int i) {
         DataValueEditor e;
-        switch(component) {
-            case VALUE: e = getEditor(i); break;
-            case ONSET: e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor(); break;
-            case OFFSET: e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor(); break;
-            default: e = getEditor(i);
+        switch (component) {
+            case VALUE:
+                e = getEditor(i);
+                break;
+            case ONSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
+                break;
+            case OFFSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
+                break;
+            default:
+                e = getEditor(i);
         }
 
         e.focusGained(null);
+    }
+
+    public final void typeEditorKey(int component, int i, Key k) {
+        DataValueEditor e;
+        switch (component) {
+            case VALUE:
+                e = getEditor(i);
+                break;
+            case ONSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
+                break;
+            case OFFSET:
+                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
+                break;
+            default:
+                e = getEditor(i);
+        }
+
         KeyUtils.typeKey(e, k);
     }
 
     public final void typeEditorKey(int component, Key k) {
+        requestEditorFocus(component, 0);
         typeEditorKey(component, 0, k);
     }
 
@@ -195,7 +222,6 @@ public class Cell extends AbstractUIComponent {
                 e = getEditor(i);
         }
 
-        e.focusGained(null);
         KeyUtils.pressKey(e, k);
     }
 
