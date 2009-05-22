@@ -76,26 +76,33 @@ public final class UITimestampTest extends UISpecTestCase {
             assertTrue(c.elementAt(i).getOnset().getText().equals(expectedTestOutput[i]));
             assertTrue(c.elementAt(i).getOffset().getText().equals(expectedTestOutput[i]));
         }
+    }
 
-        //5. Check copy pasting
+    public void testTimestampPasting() throws Exception {
+        TextBox onset, offset;
+
+        String[] testInput = {"123456789", "6789", "a13", "12:34:56:789",
+        "4.43", "127893999", "12:78:93:999"};
+
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
+        "00:00:00:000", "12:34:56:789", "00:00:00:000", "13:19:33:999",
+        "13:19:33:999"};
+
+        Vector <Cell> c = createNewCells(numOfTests);
+
         Clipboard clip = null;
-        c = createNewCells(numOfTests);
-        for (int i = 1; i < numOfTests + 1; i++) {
-            int j = i % numOfTests;
-
-            String[] expectedPasteOutput = {"12:34:56:789", "68:29:00:000",
-                "00:00:00:000", "12:34:56:789", "00:00:00:000", "13:19:33:999",
-                "13:19:33:999"};
-
-            TextBox tOnset = c.elementAt(i - 1).getOnset();
-            TextBox tOffset = c.elementAt(i - 1).getOffset();
-            clip.putText(testInput[j]);
+        for (int i = 0; i < numOfTests; i++) {
+            onset = c.elementAt(i).getOnset();
+            offset = c.elementAt(i).getOffset();
+            clip.putText(testInput[i]);
 
             // Paste doesn't seem to request focus correctly.
-            tOnset.pasteFromClipboard();
-            tOffset.pasteFromClipboard();
-            //assertTrue(tOnset.getText().equalsIgnoreCase(expectedPasteOutput[j]));
-            //assertTrue(tOffset.getText().equalsIgnoreCase(expectedPasteOutput[j]));
+            onset.pasteFromClipboard();
+            offset.pasteFromClipboard();
+            assertTrue(onset.getText().equalsIgnoreCase(expectedTestOutput[i]));
+            assertTrue(offset.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
 
