@@ -265,15 +265,19 @@ public abstract class DataValueElementV extends DataValueV {
          * them through to all listeners, and then if they are not consumed pass
          * it onto the parent of this component.
          *
-         * @param ke They keyboard event that was dispatched to this component.
+         * @param k They keyboard event that was dispatched to this component.
          */
         @Override
-        public void processKeyEvent(final KeyEvent ke) {
-            super.processKeyEvent(ke);
+        public void processKeyEvent(final KeyEvent k) {
+            if (!k.isConsumed() && k.getID() == KeyEvent.KEY_PRESSED) {
+                this.keyPressed(k);
+            } else if (!k.isConsumed() && k.getID() == KeyEvent.KEY_TYPED) {
+                this.keyTyped(k);
+            }
 
-            if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-                || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-                getValueParent().dispatchEvent(ke);
+            if (!k.isConsumed() || k.getKeyCode() == KeyEvent.VK_UP
+                || k.getKeyCode() == KeyEvent.VK_DOWN) {
+                getValueParent().dispatchEvent(k);
             }
         }
 
@@ -292,7 +296,6 @@ public abstract class DataValueElementV extends DataValueV {
          * @param e The KeyEvent that triggered this action.
          */
         public void keyPressed(final KeyEvent e) {
-
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_BACK_SPACE:
                 case KeyEvent.VK_DELETE:
@@ -300,17 +303,19 @@ public abstract class DataValueElementV extends DataValueV {
                     e.consume();
                     break;
 
+                // Handle left key, move caret position one space to the left.
                 case KeyEvent.VK_LEFT:
-                case KeyEvent.VK_RIGHT:
-                    // If the underlying datavalue is null - we disable the left
-                    // and right arrow keys. So prevent users from being able to
-                    // 'edit' the placeholder title.
-                    if (getModel() == null || getModel().isEmpty()) {
-                        e.consume();
-                    }
+                    int c = Math.max(0, this.getCaretPosition() - 1);
+                    this.setCaretPosition(c);
+                    e.consume();
+                    break;
 
-                    // Move caret left and right (underlying text field handles
-                    // this).
+                // Handle right key, move caret position one space to the right.
+                case KeyEvent.VK_RIGHT:
+                    c = Math.min(this.getText().length(),
+                                 this.getCaretPosition() + 1);
+                    this.setCaretPosition(c);
+                    e.consume();
                     break;
 
                 case KeyEvent.VK_DOWN:
