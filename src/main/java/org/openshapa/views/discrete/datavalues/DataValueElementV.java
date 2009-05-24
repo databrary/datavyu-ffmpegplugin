@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.MouseListener;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataValue;
 import org.openshapa.db.Matrix;
@@ -215,7 +216,7 @@ public abstract class DataValueElementV extends DataValueV {
      * The editor for the int data value.
      */
     public abstract class DataValueEditor extends Editor
-    implements FocusListener, KeyListener {
+    implements FocusListener, KeyListener, MouseListener {
 
         /**
          * Default constructor.
@@ -224,6 +225,46 @@ public abstract class DataValueElementV extends DataValueV {
             super();
             this.addFocusListener(this);
             this.addKeyListener(this);
+            this.addMouseListener(this);
+        }
+
+        public void mouseExited(final MouseEvent e) {
+            // Ignore mouse exit event.
+        }
+
+        public void mouseEntered(final MouseEvent e) {
+            // Ignore mouse enter event.
+        }
+
+        public void mouseReleased(final MouseEvent e) {
+            // Ignore mouse release event.
+        }
+
+        public void mousePressed(final MouseEvent e) {
+            // Ignore mouse pressed event.
+        }
+
+        public void mouseClicked(final MouseEvent e) {
+            DataValue d = getModel();
+
+            if ((d != null && d.isEmpty())) {
+                this.selectAll();
+            }
+        }
+
+        /**
+         * Restores the caret position to the last stored position. Use
+         * storeCaretPosition() before calling this method.
+         */
+        @Override
+        public void restoreCaretPosition() {
+            DataValue d = getModel();
+
+            if ((d != null && d.isEmpty())) {
+                this.selectAll();
+            } else {
+                super.restoreCaretPosition();
+            }
         }
 
         /**

@@ -129,6 +129,8 @@ public final class FloatDataValueView extends DataValueElementV {
                     Double newD = buildValue(this.getText());
                     if (newD != null) {
                         fdv.setItsValue(newD);
+                    } else {
+                        fdv.clearValue();
                     }
                     e.consume();
                 }
@@ -146,6 +148,8 @@ public final class FloatDataValueView extends DataValueElementV {
                     Double newD = buildValue(this.getText());
                     if (newD != null) {
                         fdv.setItsValue(newD);
+                    } else {
+                        fdv.clearValue();
                     }
                     e.consume();
                 }

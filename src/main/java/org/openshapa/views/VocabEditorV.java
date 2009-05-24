@@ -20,6 +20,7 @@ import org.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
 import java.util.Vector;
