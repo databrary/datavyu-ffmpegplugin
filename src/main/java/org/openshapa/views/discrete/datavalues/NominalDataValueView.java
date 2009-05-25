@@ -264,13 +264,12 @@ public final class NominalDataValueView extends DataValueElementV {
 
             } else {
                 e.consume();
-            }
-
-            updateDatabase();
+            }            
 
             // Push the character changes into the database.
             try {
                 ndv.setItsValue(this.getText());
+                updateDatabase();
             } catch (SystemErrorException se) {
                 logger.error("Unable to edit text string", se);
             }

@@ -121,6 +121,7 @@ public final class TextStringDataValueView extends DataValueElementV {
             // Push the character changes into the database.
             try {
                 tsdv.setItsValue(this.getText());
+                updateDatabase();
             } catch (SystemErrorException se) {
                 logger.error("Unable to edit text string", se);
             }
