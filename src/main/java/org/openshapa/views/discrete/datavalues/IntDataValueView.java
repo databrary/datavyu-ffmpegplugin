@@ -91,6 +91,9 @@ public final class IntDataValueView extends DataValueElementV {
      */
     class IntEditor extends DataValueElementV.DataValueEditor {
 
+        /** The maxium length of a integer value. */
+        private static final int MAX_INT_LENGTH = 19;
+
         /**
          * The action to invoke when a key is typed.
          *
@@ -126,9 +129,11 @@ public final class IntDataValueView extends DataValueElementV {
 
                     // Allow the provision of a 'null' value - that will permit
                     // users to transition the cell contents to a '<val>' state.
-                    Integer newI = buildValue(this.getText());
-                    if (newI != null) {
-                        idv.setItsValue(newI);
+                    Long newL = buildValue(this.getText());
+                    if (newL != null) {
+                        idv.setItsValue(newL);
+                    } else {
+                        idv.clearValue();
                     }
                     e.consume();
                 }
@@ -143,9 +148,11 @@ public final class IntDataValueView extends DataValueElementV {
 
                     // Allow the provision of a 'null' value - that will permit
                     // users to transition the cell contents to a '<val>' state.
-                    Integer newI = buildValue(this.getText());
-                    if (newI != null) {
-                        idv.setItsValue(newI);
+                    Long newL = buildValue(this.getText());
+                    if (newL != null) {
+                        idv.setItsValue(newL);
+                    } else {
+                        idv.clearValue();
                     }
                     e.consume();
                 }
@@ -153,10 +160,13 @@ public final class IntDataValueView extends DataValueElementV {
             // Key stoke is number - insert number at current caret position.
             } else if (Character.isDigit(e.getKeyChar())) {
                 this.removeSelectedText();
-                StringBuffer currentValue = new StringBuffer(getText());
-                currentValue.insert(getCaretPosition(), e.getKeyChar());
-                advanceCaret(); // Advance caret over the top of the new char.
-                idv.setItsValue(buildValue(currentValue.toString()));
+
+                if (getText().length() < MAX_INT_LENGTH) {
+                    StringBuffer currentValue = new StringBuffer(getText());
+                    currentValue.insert(getCaretPosition(), e.getKeyChar());
+                    advanceCaret(); // Advance caret past new char.
+                    idv.setItsValue(buildValue(currentValue.toString()));
+                }
                 e.consume();
 
             // Every other key stroke is ignored by the float editor.
@@ -172,13 +182,18 @@ public final class IntDataValueView extends DataValueElementV {
          *
          * @param textField The String that you want to create an Integer from.
          *
-         * @return An Integer value that can be used setting the database.
+         * @return An Integer value that can be used setting the database, if
+         * unable to create an integer value, null is returned.
          */
-        public Integer buildValue(final String textField) {
+        public Long buildValue(final String textField) {
+
+            // User has removed everything - return a null value.
             if (textField == null || textField.equals("")) {
                 return null;
+
+            // User has _something_ attempt to build a value from it.
             } else {
-                return new Integer(textField);
+                return new Long(textField);
             }
         }
     }

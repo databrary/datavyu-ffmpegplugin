@@ -104,7 +104,7 @@ public abstract class Editor extends JTextField {
      * Restores the caret position to the last stored position. Use
      * storeCaretPosition() before calling this method.
      */
-    public final void restoreCaretPosition() {
+    public void restoreCaretPosition() {
         oldCaretPosition = Math.min(oldCaretPosition, getText().length());
         setCaretPosition(oldCaretPosition);
         advanceCaret = false;   // reset the advance caret flag - only applies

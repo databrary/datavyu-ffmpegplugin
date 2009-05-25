@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete.datavalues;
 
-import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.NominalDataValue;
@@ -107,72 +106,6 @@ public final class NominalDataValueView extends DataValueElementV {
     class NominalEditor extends DataValueElementV.DataValueEditor {
 
         /**
-         * The action to invoke when a key is pressed.
-         *
-         * @param e The key event that triggered this action.
-         */
-        @Override
-        public void keyPressed(final KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    // Ignore - handled when the key is typed.
-                    e.consume();
-                    break;
-
-                case KeyEvent.VK_LEFT:
-                    if (getModel().isEmpty()) {
-                        e.consume();
-                        break;
-                    }
-
-                    // If the character two steps to the left is a preserved
-                    // character we need to skip one before passing the key
-                    // event down to skip again (effectively skipping the
-                    // preserved character).
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.max(0, getCaretPosition() - 2);
-
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.max(0,
-                                                      getCaretPosition() - 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_RIGHT:
-                    // Can't use arrow keys on an empty
-                    if (getModel().isEmpty()) {
-                        e.consume();
-                        break;
-                    }
-
-                    // If the character to the right is a preserved character,
-                    // we need to skip one before passing the key event down to
-                    // skip again (effectively skipping the preserved character)
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.min(getText().length() - 1,
-                                         getCaretPosition() + 1);
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.min(getText().length() - 1,
-                                                      getCaretPosition() + 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_DOWN:
-                case KeyEvent.VK_UP:
-                    // Key stroke gets passed up a parent element to navigate
-                    // cells up and down.
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /**
          * Pastes contents of the clipboard into the nominal data value view.
          */
         @Override
@@ -266,11 +199,10 @@ public final class NominalDataValueView extends DataValueElementV {
                 e.consume();
             }
 
-            updateDatabase();
-
             // Push the character changes into the database.
             try {
                 ndv.setItsValue(this.getText());
+                updateDatabase();
             } catch (SystemErrorException se) {
                 logger.error("Unable to edit text string", se);
             }

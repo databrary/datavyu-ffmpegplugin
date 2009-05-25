@@ -20,6 +20,7 @@ import org.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
 import java.util.Vector;
@@ -480,12 +481,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
         applyButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
+        spacer = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/VocabEditorV"); // NOI18N
         setTitle(bundle.getString("window.title")); // NOI18N
         setName("Form"); // NOI18N
-        setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(VocabEditorV.class, this);
@@ -568,18 +569,21 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(deleteButton, gridBagConstraints);
 
+        currentVocabList.setMinimumSize(new java.awt.Dimension(500, 23));
         currentVocabList.setName("currentVocabList"); // NOI18N
-        currentVocabList.setPreferredSize(new java.awt.Dimension(4, 400));
+        currentVocabList.setPreferredSize(new java.awt.Dimension(500, 400));
 
         jPanel1.setToolTipText(bundle.getString("vocablist.tooltip")); // NOI18N
+        jPanel1.setMinimumSize(new java.awt.Dimension(500, 0));
         jPanel1.setName("jPanel1"); // NOI18N
+        jPanel1.setPreferredSize(new java.awt.Dimension(500, 0));
         jPanel1.setLayout(new java.awt.GridLayout(1, 1));
         currentVocabList.setViewportView(jPanel1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridwidth = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -629,6 +633,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         getContentPane().add(closeButton, gridBagConstraints);
+
+        spacer.setName("spacer"); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        getContentPane().add(spacer, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -698,6 +708,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private javax.swing.JButton moveArgRightButton;
     private javax.swing.JButton okButton;
     private javax.swing.JButton revertButton;
+    private javax.swing.JPanel spacer;
     private javax.swing.JCheckBox varyArgCheckBox;
     // End of variables declaration//GEN-END:variables
 }

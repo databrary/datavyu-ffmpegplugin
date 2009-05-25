@@ -68,16 +68,6 @@ public final class UndefinedDataValueView extends DataValueElementV {
     class UndefinedEditor extends DataValueElementV.DataValueEditor {
 
         /**
-         * The action to invoke when a key is released.
-         *
-         * @param e The KeyEvent that triggered this action.
-         */
-        @Override
-        public void keyReleased(final KeyEvent e) {
-            // Ignore key release.
-        }
-
-        /**
          * The action to invoke when a key is typed.
          *
          * @param e The KeyEvent that triggered this action.
