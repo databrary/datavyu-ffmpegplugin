@@ -127,21 +127,47 @@ public abstract class DataValueElementV extends DataValueV {
      */
     protected abstract Editor buildEditor();
 
+    /**
+     * Sets the value of this view, i.e. the DataValue that this view will
+     * represent.
+     *
+     * @param dataCell The parent dataCell for the DataValue that this view
+     * represents.
+     * @param predicate The parent predicate for the datavalue that this view
+     * represents.
+     * @param predicateIndex The index of the data value in the above predicate
+     * that this view represents.
+     * @param matrix The parent matrix for the data value that this view
+     * represents.
+     * @param matrixIndex The index of the data value we wish to have this view
+     * represent within the parent matrix.
+     */
     @Override
-    public void setValue(final DataCell dataCell,
-                         final PredDataValue predicate,
-                         final int predicateIndex,
-                         final Matrix matrix,
-                         final int matrixIndex) {
+    public final void setValue(final DataCell dataCell,
+                               final PredDataValue predicate,
+                               final int predicateIndex,
+                               final Matrix matrix,
+                               final int matrixIndex) {
         super.setValue(dataCell, predicate,
                        predicateIndex, matrix, matrixIndex);
         this.elementEditor.restoreCaretPosition();
     }
 
+    /**
+     * Sets the value of this view, i.e. the DataValue that this view will
+     * represent.
+     *
+     * @param dataCell The parent dataCell for the DataValue that this view
+     * represents.
+     * @param matrix The parent matrix for the DataValue that this view
+     * represents.
+     * @param matrixIndex The index of the dataValue we wish to have this view
+     * represent within the parent matrix.
+     */
     @Override
-    public void setValue(final DataCell dataCell,
-                         final Matrix matrix,
-                         final int matrixIndex) {
+    public final void setValue(final DataCell dataCell,
+                               final Matrix matrix,
+                               final int matrixIndex) {
         super.setValue(dataCell, matrix, matrixIndex);
         this.elementEditor.restoreCaretPosition();
     }
@@ -152,8 +178,11 @@ public abstract class DataValueElementV extends DataValueV {
         super.updateDatabase();
     }
 
+    /**
+     * @return The contents of the editor as a string.
+     */
     @Override
-    public String toString() {
+    public final String toString() {
         return this.elementEditor.getText();
     }
 
@@ -228,23 +257,48 @@ public abstract class DataValueElementV extends DataValueV {
             this.addMouseListener(this);
         }
 
-        public void mouseExited(final MouseEvent e) {
+        /**
+         * Action for when a mouse exited event is generated.
+         *
+         * @param e The event that triggered this action.
+         */
+        public final void mouseExited(final MouseEvent e) {
             // Ignore mouse exit event.
         }
 
-        public void mouseEntered(final MouseEvent e) {
+        /**
+         * Action for when a mouse entered event is generated.
+         *
+         * @param e The event that triggered this action.
+         */
+        public final void mouseEntered(final MouseEvent e) {
             // Ignore mouse enter event.
         }
 
-        public void mouseReleased(final MouseEvent e) {
+        /**
+         * Action for when a mouse release event is generated.
+         *
+         * @param e The event that triggered this action.
+         */
+        public final void mouseReleased(final MouseEvent e) {
             // Ignore mouse release event.
         }
 
-        public void mousePressed(final MouseEvent e) {
+        /**
+         * Action for when a mouse pressed event is generated.
+         *
+         * @param e The event that triggered this action.
+         */
+        public final void mousePressed(final MouseEvent e) {
             // Ignore mouse pressed event.
         }
 
-        public void mouseClicked(final MouseEvent e) {
+        /**
+         * Action for when a mouse clicked event is generated.
+         *
+         * @param e The event that triggered this action.
+         */
+        public final void mouseClicked(final MouseEvent e) {
             DataValue d = getModel();
 
             if ((d != null && d.isEmpty())) {
@@ -257,7 +311,7 @@ public abstract class DataValueElementV extends DataValueV {
          * storeCaretPosition() before calling this method.
          */
         @Override
-        public void restoreCaretPosition() {
+        public final void restoreCaretPosition() {
             DataValue d = getModel();
 
             if ((d != null && d.isEmpty())) {
@@ -272,7 +326,7 @@ public abstract class DataValueElementV extends DataValueV {
          *
          * @param fe The Focus Event that triggered this action.
          */
-        public void focusGained(final FocusEvent fe) {
+        public final void focusGained(final FocusEvent fe) {
             // BugzID:320 Deselect Cells before selecting cell contents.
             Selector s = getSelector();
 
@@ -293,7 +347,7 @@ public abstract class DataValueElementV extends DataValueV {
          *
          * @param fe The FocusEvent that triggered this action.
          */
-        public void focusLost(final FocusEvent fe) {
+        public final void focusLost(final FocusEvent fe) {
             if (this.getText() == null || this.getText().equals("")) {
 
                 getModel().clearValue();
@@ -309,7 +363,7 @@ public abstract class DataValueElementV extends DataValueV {
          * @param k They keyboard event that was dispatched to this component.
          */
         @Override
-        public void processKeyEvent(final KeyEvent k) {
+        public final void processKeyEvent(final KeyEvent k) {
             if (!k.isConsumed() && k.getID() == KeyEvent.KEY_PRESSED) {
                 this.keyPressed(k);
             } else if (!k.isConsumed() && k.getID() == KeyEvent.KEY_TYPED) {
@@ -327,7 +381,7 @@ public abstract class DataValueElementV extends DataValueV {
          *
          * @param e The KeyEvent that triggered this action.
          */
-        public void keyReleased(final KeyEvent e) {
+        public final void keyReleased(final KeyEvent e) {
             // Ignore key release.
         }
 
@@ -336,7 +390,7 @@ public abstract class DataValueElementV extends DataValueV {
          *
          * @param e The KeyEvent that triggered this action.
          */
-        public void keyPressed(final KeyEvent e) {
+        public final void keyPressed(final KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_BACK_SPACE:
                 case KeyEvent.VK_DELETE:
@@ -344,18 +398,54 @@ public abstract class DataValueElementV extends DataValueV {
                     e.consume();
                     break;
 
-                // Handle left key, move caret position one space to the left.
                 case KeyEvent.VK_LEFT:
-                    int c = Math.max(0, this.getCaretPosition() - 1);
-                    this.setCaretPosition(c);
-                    e.consume();
+                    // If we have no preserved characters - moving to the left
+                    // is simple - go ahead and move the caret.
+                    if (getPreservedChars().size() == 0) {
+                        int c = Math.max(0, this.getCaretPosition() - 1);
+                        this.setCaretPosition(c);
+                        e.consume();
+                        break;
+                    }
+
+                    // If the character two steps to the left is a preserved
+                    // character we need to skip one before passing the key
+                    // event down to skip again (effectively skipping the
+                    // preserved character).
+                    for (int i = 0; i < getPreservedChars().size(); i++) {
+                        int c = Math.max(0, getCaretPosition() - 2);
+
+                        if (getText().charAt(c) == getPreservedChars().get(i)) {
+                            setCaretPosition(Math.max(0,
+                                                      getCaretPosition() - 1));
+                            break;
+                        }
+                    }
                     break;
 
-                // Handle right key, move caret position one space to the right.
                 case KeyEvent.VK_RIGHT:
-                    c = Math.min(this.getText().length(),
-                                 this.getCaretPosition() + 1);
-                    this.setCaretPosition(c);
+                    // If we have no preserved characters - moving to the right
+                    // is simple - go ahead and move the caret.
+                    if (getPreservedChars().size() == 0) {
+                        int c = Math.min(this.getText().length(),
+                                         this.getCaretPosition() + 1);
+                        this.setCaretPosition(c);
+                        e.consume();
+                        break;
+                    }
+
+                    // If the character to the right is a preserved character,
+                    // we need to skip one before passing the key event down to
+                    // skip again (effectively skipping the preserved character)
+                    int c = Math.min(getText().length() - 1,
+                                     getCaretPosition() + 1);
+                    for (int i = 0; i < getPreservedChars().size(); i++) {
+                        if (getText().charAt(c) == getPreservedChars().get(i)) {
+                            setCaretPosition(Math.min(getText().length() - 1,
+                                                      getCaretPosition() + 1));
+                            break;
+                        }
+                    }
                     e.consume();
                     break;
 

@@ -142,61 +142,6 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
     class TimeStampEditor extends DataValueElementV.DataValueEditor {
 
         /**
-         * The action to invoke when a key is pressed.
-         *
-         * @param e The key event that triggered this action.
-         */
-        @Override
-        public void keyPressed(final KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    // Ignore - handled when the key is typed.
-                    e.consume();
-                    break;
-
-                case KeyEvent.VK_LEFT:
-                    // If the character two steps to the left is a preserved
-                    // character we need to skip one before passing the key
-                    // event down to skip again (effectively skipping the
-                    // preserved character).
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.max(0, getCaretPosition() - 2);
-
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.max(0,
-                                                      getCaretPosition() - 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_RIGHT:
-                    // If the character to the right is a preserved character,
-                    // we need to skip one before passing the key event down to
-                    // skip again (effectively skipping the preserved character)
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.min(getText().length() - 1,
-                                         getCaretPosition() + 1);
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.min(getText().length() - 1,
-                                                      getCaretPosition() + 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_DOWN:
-                case KeyEvent.VK_UP:
-                    // Key stroke gets passed up a parent element to navigate
-                    // cells up and down.
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /**
          * Attempt to paste the contents of the clipboard into this timestamp.
          */
         @Override
@@ -219,7 +164,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                                       .getTransferData(DataFlavor.stringFlavor);
 
                 // Validate clipboard contents - if it is invalid, don't attempt
-                // to paste it into the timestamp.
+                // to paste it into the timestamp. 1234 1234
                 boolean reject = true;
                 for (int i = 0; i < text.length(); i++) {
                     if (Character.isDigit(text.charAt(i))) {
