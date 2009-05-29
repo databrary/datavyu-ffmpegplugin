@@ -399,54 +399,53 @@ public abstract class DataValueElementV extends DataValueV {
                     break;
 
                 case KeyEvent.VK_LEFT:
-                    // If we have no preserved characters - moving to the left
-                    // is simple - go ahead and move the caret.
-                    if (getPreservedChars().size() == 0) {
-                        int c = Math.max(0, this.getCaretPosition() - 1);
-                        this.setCaretPosition(c);
-                        e.consume();
-                        break;
-                    }
+                    // Move caret to the left.
+                    int c = Math.max(0, this.getCaretPosition() - 1);
+                    this.setCaretPosition(c);
+                    e.consume();
 
-                    // If the character two steps to the left is a preserved
-                    // character we need to skip one before passing the key
-                    // event down to skip again (effectively skipping the
-                    // preserved character).
+                    /*
+                    // If after the move, we have a character to the left is
+                    // preserved character we need to skip one before passing
+                    // the key event down to skip again (effectively skipping
+                    // the preserved character).
+                    int b = Math.max(0, getCaretPosition());
+                    c = Math.max(0, getCaretPosition() - 1);
                     for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.max(0, getCaretPosition() - 2);
-
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
+                        if (getText().charAt(b) == getPreservedChars().get(i)
+                         || getText().charAt(c) == getPreservedChars().get(i)) {
                             setCaretPosition(Math.max(0,
                                                       getCaretPosition() - 1));
                             break;
                         }
-                    }
+                    }*/
                     break;
 
                 case KeyEvent.VK_RIGHT:
-                    // If we have no preserved characters - moving to the right
-                    // is simple - go ahead and move the caret.
-                    if (getPreservedChars().size() == 0) {
-                        int c = Math.min(this.getText().length(),
-                                         this.getCaretPosition() + 1);
-                        this.setCaretPosition(c);
-                        e.consume();
-                        break;
-                    }
+                    // Move caret to the right.
+                    c = Math.min(this.getText().length(),
+                                 this.getCaretPosition() + 1);
+                    this.setCaretPosition(c);
+                    e.consume();
 
-                    // If the character to the right is a preserved character,
-                    // we need to skip one before passing the key event down to
-                    // skip again (effectively skipping the preserved character)
-                    int c = Math.min(getText().length() - 1,
-                                     getCaretPosition() + 1);
+                    /*
+                    // If after the move, we have a character to the right that
+                    // is a preserved character, we need to skip one before
+                    // passing the key event down to skip again (effectively
+                    // skipping the preserved character)
+                    b = Math.min(getText().length() - 1,
+                                 getCaretPosition());
+                    //c = Math.min(getText().length() - 1,
+                    //             getCaretPosition() + 1);
                     for (int i = 0; i < getPreservedChars().size(); i++) {
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
+                        if (getText().charAt(b) == getPreservedChars().get(i)
+                         || getText().charAt(c) == getPreservedChars().get(i)) {
                             setCaretPosition(Math.min(getText().length() - 1,
                                                       getCaretPosition() + 1));
                             break;
                         }
                     }
-                    e.consume();
+                    e.consume();*/
                     break;
 
                 case KeyEvent.VK_DOWN:

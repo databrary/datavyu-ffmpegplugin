@@ -366,7 +366,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         assertTrue(cells.size() == numOfTests);
 
-        for (int i = 0; i < numOfTests-1; i++) {
+        for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
             assertTrue((cells.elementAt(i).getOnsetTime().toString())
                     .equals("00:00:00:000"));
@@ -379,10 +379,11 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValueTextBox(0);
 
-            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            c.enterEditorText(0, testInput[i],
+                              advancedInput[i], testInput[i + 1]);
 
-            assertTrue(Double.parseDouble(t.getText()) ==
-                    (expectedTestOutput[i]));
+            assertTrue(Double.parseDouble(t.getText())
+                       == (expectedTestOutput[i]));
         }
     }
 
