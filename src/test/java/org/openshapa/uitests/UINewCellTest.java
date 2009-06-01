@@ -494,6 +494,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
             assertTrue(Double.parseDouble(t.getText())
                     == expectedTestOutput[i]);
+
         }
     }
 
