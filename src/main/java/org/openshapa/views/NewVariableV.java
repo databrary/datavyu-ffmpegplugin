@@ -7,6 +7,7 @@ import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.SystemErrorException;
 import org.apache.log4j.Logger;
+import org.openshapa.db.Column;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -205,6 +206,8 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         try {
+            Column.isValidColumnName(OpenSHAPA.getDatabase(),
+                                     this.getVariableName());
             DataColumn dc = new DataColumn(model,
                                            this.getVariableName(),
                                            this.getVariableType());

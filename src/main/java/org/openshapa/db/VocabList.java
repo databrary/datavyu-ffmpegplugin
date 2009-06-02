@@ -288,10 +288,35 @@ public class VocabList
 
     } /* VocabElement::addInternalChangeListener() */
 
+    /**
+     * Validates a vocab element - ensuring that it can be added to the vocab
+     * list.
+     *
+     * @param list The list of vocab elements to check.
+     * @param names The list of vocab element names to check.
+     * @param ve The vocab element to check.
+     *
+     * @return True if the vocab element is valid and can be inserted into the
+     * vocab list.
+     *
+     * @throws org.openshapa.db.LogicErrorException If the vocab element is
+     * invalid.
+     */
+    public static boolean isValidElement(final VocabList list,
+                                         final VocabElement ve)
+    throws LogicErrorException {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(VocabList.class);
 
-    /*************************************************************************/
-    /****************************** Methods: *********************************/
-    /*************************************************************************/
+        if (list.vl.containsReference(ve)
+            || list.nameMap.containsKey(ve.name)) {
+            throw new LogicErrorException(rMap.getString("Error.veExists",
+                                                         ve.getName()));
+        }
+
+        return true;
+    }
 
     /**
      * addElement()
@@ -319,11 +344,7 @@ public class VocabList
      *      VocabElementListeners and using it to set the ve's initial listeners.
      */
 
-    protected void addElement(VocabElement ve)
-    throws SystemErrorException, LogicErrorException {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(VocabList.class);
+    protected void addElement(VocabElement ve) throws SystemErrorException {
 
         final String mName = "VocabList::addElement(ve): ";
         VocabElementListeners nl = null;
@@ -335,10 +356,13 @@ public class VocabList
         } else if (ve.getID() != DBIndex.INVALID_ID) {
             throw new SystemErrorException(mName +
                                            "ve.getID() != INVALID_ID");
-        } else if (this.vl.containsReference(ve)
-                   || this.nameMap.containsKey(ve.name)) {
-            throw new LogicErrorException(rMap.getString("Error.veExists",
-                                                         ve.getName()));
+        }
+
+        try {
+            // Throws exception if element is bad.
+            VocabList.isValidElement(this, ve);
+        } catch (LogicErrorException e) {
+            throw new SystemErrorException("VocabList.addElement: bad ve", e);
         }
 
         this.db.cascadeStart();

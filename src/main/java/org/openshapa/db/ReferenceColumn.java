@@ -64,10 +64,8 @@ public class ReferenceColumn extends Column
      *
      */
 
-    public ReferenceColumn(Database db,
-                           String name)
-        throws SystemErrorException, LogicErrorException
-    {
+    public ReferenceColumn(Database db, String name)
+    throws SystemErrorException {
         super(db);
 
         final String mName = "ReferenceColumn::ReferenceColumn(db, name): ";
@@ -77,11 +75,10 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::ReferenceColumn(db, name, type) */
 
     public ReferenceColumn(Database db,
-                      String name,
-                      boolean hidden,
-                      boolean readOnly)
-        throws SystemErrorException, LogicErrorException
-    {
+                           String name,
+                           boolean hidden,
+                           boolean readOnly)
+    throws SystemErrorException {
         super(db, name, hidden, readOnly);
 
     } /* ReferenceColumn::ReferenceColumn(db, name, hidden, readOnly) */

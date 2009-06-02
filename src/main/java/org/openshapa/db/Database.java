@@ -426,6 +426,12 @@ public abstract class Database
 
     } /* Database::getTemporalOrdering() */
 
+    /**
+     * @return The vocab list used for this database.
+     */
+    public VocabList getVocabList() {
+        return this.vl;
+    }
 
     /**
      * getTicks()
@@ -1299,8 +1305,7 @@ public abstract class Database
      *    - None.
      */
 
-    public long addColumn(Column col)
-    throws SystemErrorException, LogicErrorException {
+    public long addColumn(Column col) throws SystemErrorException {
         final String mName = "Database::addColumn(col): ";
         long newColID = DBIndex.INVALID_ID;
 
@@ -1363,9 +1368,7 @@ public abstract class Database
      *    - None.
      */
 
-    private long addDataColumn(DataColumn dc)
-        throws SystemErrorException, LogicErrorException
-    {
+    private long addDataColumn(DataColumn dc) throws SystemErrorException {
         final String mName = "Database::addDataColumn(dc): ";
         long colID = DBIndex.INVALID_ID;
         long mveID = DBIndex.INVALID_ID;
@@ -2674,7 +2677,7 @@ public abstract class Database
      */
 
     private long addMatrixVE(MatrixVocabElement mve)
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         final String mName = "Database::addMatrixVE(mve): ";
         MatrixVocabElement local_mve = null;
 
@@ -2939,7 +2942,7 @@ public abstract class Database
      * the vocab element to the database.
      */
     public long addVocabElement(final VocabElement ve)
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         try {
             // Throw an error if the vocab element is null.
             if (ve == null) {
@@ -2974,7 +2977,7 @@ public abstract class Database
      */
 
     public long addPredVE(PredicateVocabElement pve)
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         final String mName = "Database::addPredVE(pve): ";
         PredicateVocabElement local_pve = null;
 

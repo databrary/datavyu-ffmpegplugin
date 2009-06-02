@@ -186,8 +186,6 @@ implements KeyEventDispatcher {
             db.setTicks(Constants.TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
-        } catch (LogicErrorException le) {
-            logger.error("Unable to create MacSHAPADatabase", le);
         } catch (IOException e) {
             logger.error("Unable to create scripting output streams", e);
         }

@@ -145,7 +145,7 @@ public class DataColumn extends Column
     public DataColumn(Database db,
             String name,
             MatrixVocabElement.MatrixType type)
-            throws SystemErrorException, LogicErrorException {
+            throws SystemErrorException {
         super(db);
 
         final String mName = "DataColumn::DataColumn(db, name, type): ";

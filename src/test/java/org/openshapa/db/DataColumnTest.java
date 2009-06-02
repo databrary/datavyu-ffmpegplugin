@@ -70,7 +70,7 @@ public final class DataColumnTest {
      * performed before each test case.
      */
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         f_mve0 = new MatrixVocabElement(db, "f_col0");
         f_mve0.setType(MatrixVocabElement.MatrixType.FLOAT);
@@ -198,24 +198,21 @@ public final class DataColumnTest {
      */
     @Test
     public void test3ArgConstructor()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         Database db0 = new ODBCDatabase();
 
         DataColumn f_col = new DataColumn(db0, "f_col",
-                                          MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
         DataColumn i_col = new DataColumn(db0, "i_col",
-                                          MatrixVocabElement.MatrixType
-                                                            .INTEGER);
+                MatrixVocabElement.MatrixType.INTEGER);
         DataColumn m_col = new DataColumn(db0, "m_col",
-                                          MatrixVocabElement.MatrixType.MATRIX);
+                MatrixVocabElement.MatrixType.MATRIX);
         DataColumn n_col = new DataColumn(db0, "n_col",
-                                          MatrixVocabElement.MatrixType
-                                                            .NOMINAL);
+                MatrixVocabElement.MatrixType.NOMINAL);
         DataColumn p_col = new DataColumn(db0, "p_col",
-                                          MatrixVocabElement.MatrixType
-                                                            .PREDICATE);
+                MatrixVocabElement.MatrixType.PREDICATE);
         DataColumn t_col = new DataColumn(db0, "t_col",
-                                          MatrixVocabElement.MatrixType.TEXT);
+                MatrixVocabElement.MatrixType.TEXT);
 
         assertTrue(db0 != null);
         assertTrue(f_col != null);
@@ -225,8 +222,7 @@ public final class DataColumnTest {
         assertTrue(f_col.numCells == 0);
         assertTrue(f_col.name.equals("f_col"));
         assertTrue(f_col.getItsCells() == null);
-        assertTrue(f_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .FLOAT);
+        assertTrue(f_col.getItsMveType() == MatrixVocabElement.MatrixType.FLOAT);
 
         assertTrue(i_col != null);
         assertTrue(i_col.getDB() == db0);
@@ -235,8 +231,7 @@ public final class DataColumnTest {
         assertTrue(i_col.numCells == 0);
         assertTrue(i_col.name.equals("i_col"));
         assertTrue(i_col.getItsCells() == null);
-        assertTrue(i_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .INTEGER);
+        assertTrue(i_col.getItsMveType() == MatrixVocabElement.MatrixType.INTEGER);
 
         assertTrue(m_col != null);
         assertTrue(m_col.getDB() == db0);
@@ -245,8 +240,7 @@ public final class DataColumnTest {
         assertTrue(m_col.numCells == 0);
         assertTrue(m_col.name.equals("m_col"));
         assertTrue(m_col.getItsCells() == null);
-        assertTrue(m_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .MATRIX);
+        assertTrue(m_col.getItsMveType() == MatrixVocabElement.MatrixType.MATRIX);
 
         assertTrue(n_col != null);
         assertTrue(n_col.getDB() == db0);
@@ -255,8 +249,7 @@ public final class DataColumnTest {
         assertTrue(n_col.numCells == 0);
         assertTrue(n_col.name.equals("n_col"));
         assertTrue(n_col.getItsCells() == null);
-        assertTrue(n_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .NOMINAL);
+        assertTrue(n_col.getItsMveType() == MatrixVocabElement.MatrixType.NOMINAL);
 
         assertTrue(p_col != null);
         assertTrue(p_col.getDB() == db0);
@@ -265,8 +258,7 @@ public final class DataColumnTest {
         assertTrue(p_col.numCells == 0);
         assertTrue(p_col.name.equals("p_col"));
         assertTrue(p_col.getItsCells() == null);
-        assertTrue(p_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .PREDICATE);
+        assertTrue(p_col.getItsMveType() == MatrixVocabElement.MatrixType.PREDICATE);
 
         assertTrue(t_col != null);
         assertTrue(t_col.getDB() == db0);
@@ -275,35 +267,30 @@ public final class DataColumnTest {
         assertTrue(t_col.numCells == 0);
         assertTrue(t_col.name.equals("t_col"));
         assertTrue(t_col.getItsCells() == null);
-        assertTrue(t_col.getItsMveType() == MatrixVocabElement.MatrixType
-                                                              .TEXT);
+        assertTrue(t_col.getItsMveType() == MatrixVocabElement.MatrixType.TEXT);
     }
 
-    @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure0()
-    throws SystemErrorException, LogicErrorException {
+    @Test(expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure0() throws SystemErrorException {
         dc = new DataColumn(null, "f_col",
-                            MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = LogicErrorException.class)
-    public void test3ArgConstructorFailure1()
-    throws SystemErrorException, LogicErrorException {
+    @Test(expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure1() throws SystemErrorException {
         dc = new DataColumn(db, "", MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = LogicErrorException.class)
-    public void test3ArgConstructorFailure2()
-    throws SystemErrorException, LogicErrorException {
+    @Test(expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure2() throws SystemErrorException {
         dc = new DataColumn(db, " invalid ",
-                            MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = LogicErrorException.class)
-    public void test3ArgConstructorFailure3()
-    throws SystemErrorException, LogicErrorException {
+    @Test(expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure3() throws SystemErrorException {
         DataColumn fc = new DataColumn(db, "f_col",
-                                       MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
         long fc_ID = db.addColumn(fc);
         fc = db.getDataColumn(fc_ID);
         long f_mveID = fc.getItsMveID();
@@ -312,11 +299,10 @@ public final class DataColumnTest {
         dc = new DataColumn(db, "f_col", MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test (expected = SystemErrorException.class)
-    public void test3ArgConstructorFailure4()
-    throws SystemErrorException, LogicErrorException {
+    @Test(expected = SystemErrorException.class)
+    public void test3ArgConstructorFailure4() throws SystemErrorException {
         dc = new DataColumn(db, "valid",
-                            MatrixVocabElement.MatrixType.UNDEFINED);
+                MatrixVocabElement.MatrixType.UNDEFINED);
     }
 
     @Test
@@ -333,8 +319,7 @@ public final class DataColumnTest {
         assertTrue(f_col0.getDB() == db);
         assertTrue(f_col0.getItsCells() == null);
         assertTrue(f_col0.getItsMveID() == f_mve0ID);
-        assertTrue(f_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .FLOAT);
+        assertTrue(f_col0.getItsMveType() == MatrixVocabElement.MatrixType.FLOAT);
         assertTrue(f_col0.getVarLen() == f_mve0.getVarLen());
 
         assertTrue(f_mve1 != null);
@@ -347,8 +332,7 @@ public final class DataColumnTest {
         assertTrue(f_col1.getDB() == db);
         assertTrue(f_col1.getItsCells() == null);
         assertTrue(f_col1.getItsMveID() == f_mve1ID);
-        assertTrue(f_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .FLOAT);
+        assertTrue(f_col1.getItsMveType() == MatrixVocabElement.MatrixType.FLOAT);
         assertTrue(f_col1.getVarLen() == f_mve1.getVarLen());
 
         assertTrue(f_mve2 != null);
@@ -356,7 +340,7 @@ public final class DataColumnTest {
 
         assertTrue(i_mve0 != null);
         assertTrue(i_mve0ID != DBIndex.INVALID_ID);
-        assertTrue(i_col0 != null );
+        assertTrue(i_col0 != null);
         assertTrue(i_col0.hidden == false);
         assertTrue(i_col0.readOnly == true);
         assertTrue(i_col0.numCells == 0);
@@ -364,8 +348,7 @@ public final class DataColumnTest {
         assertTrue(i_col0.getDB() == db);
         assertTrue(i_col0.getItsCells() == null);
         assertTrue(i_col0.getItsMveID() == i_mve0ID);
-        assertTrue(i_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .INTEGER);
+        assertTrue(i_col0.getItsMveType() == MatrixVocabElement.MatrixType.INTEGER);
         assertTrue(i_col0.getVarLen() == i_mve0.getVarLen());
 
         assertTrue(i_mve1 != null);
@@ -378,8 +361,7 @@ public final class DataColumnTest {
         assertTrue(i_col1.getDB() == db);
         assertTrue(i_col1.getItsCells() == null);
         assertTrue(i_col1.getItsMveID() == i_mve1ID);
-        assertTrue(i_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .INTEGER);
+        assertTrue(i_col1.getItsMveType() == MatrixVocabElement.MatrixType.INTEGER);
         assertTrue(i_col1.getVarLen() == i_mve1.getVarLen());
 
         assertTrue(m_mve0 != null);
@@ -392,8 +374,7 @@ public final class DataColumnTest {
         assertTrue(m_col0.getDB() == db);
         assertTrue(m_col0.getItsCells() == null);
         assertTrue(m_col0.getItsMveID() == m_mve0ID);
-        assertTrue(m_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .MATRIX);
+        assertTrue(m_col0.getItsMveType() == MatrixVocabElement.MatrixType.MATRIX);
         assertTrue(m_col0.getVarLen() == m_mve0.getVarLen());
 
         assertTrue(m_mve1 != null);
@@ -406,8 +387,7 @@ public final class DataColumnTest {
         assertTrue(m_col1.getDB() == db);
         assertTrue(m_col1.getItsCells() == null);
         assertTrue(m_col1.getItsMveID() == m_mve1ID);
-        assertTrue(m_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .MATRIX);
+        assertTrue(m_col1.getItsMveType() == MatrixVocabElement.MatrixType.MATRIX);
         assertTrue(m_col1.getVarLen() == m_mve1.getVarLen());
 
         assertTrue(n_mve0 != null);
@@ -420,8 +400,7 @@ public final class DataColumnTest {
         assertTrue(n_col0.getDB() == db);
         assertTrue(n_col0.getItsCells() == null);
         assertTrue(n_col0.getItsMveID() == n_mve0ID);
-        assertTrue(n_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .NOMINAL);
+        assertTrue(n_col0.getItsMveType() == MatrixVocabElement.MatrixType.NOMINAL);
         assertTrue(n_col0.getVarLen() == n_mve0.getVarLen());
 
         assertTrue(n_mve1 != null);
@@ -434,8 +413,7 @@ public final class DataColumnTest {
         assertTrue(n_col1.getDB() == db);
         assertTrue(n_col1.getItsCells() == null);
         assertTrue(n_col1.getItsMveID() == n_mve1ID);
-        assertTrue(n_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .NOMINAL);
+        assertTrue(n_col1.getItsMveType() == MatrixVocabElement.MatrixType.NOMINAL);
         assertTrue(n_col1.getVarLen() == n_mve1.getVarLen());
 
         assertTrue(p_mve0 != null);
@@ -448,8 +426,7 @@ public final class DataColumnTest {
         assertTrue(p_col0.getDB() == db);
         assertTrue(p_col0.getItsCells() == null);
         assertTrue(p_col0.getItsMveID() == p_mve0ID);
-        assertTrue(p_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .PREDICATE);
+        assertTrue(p_col0.getItsMveType() == MatrixVocabElement.MatrixType.PREDICATE);
         assertTrue(p_col0.getVarLen() == p_mve0.getVarLen());
 
         assertTrue(p_mve1 != null);
@@ -462,8 +439,7 @@ public final class DataColumnTest {
         assertTrue(p_col1.getDB() == db);
         assertTrue(p_col1.getItsCells() == null);
         assertTrue(p_col1.getItsMveID() == p_mve1ID);
-        assertTrue(p_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .PREDICATE);
+        assertTrue(p_col1.getItsMveType() == MatrixVocabElement.MatrixType.PREDICATE);
         assertTrue(p_col1.getVarLen() == p_mve1.getVarLen());
 
         assertTrue(t_mve0 != null);
@@ -476,8 +452,7 @@ public final class DataColumnTest {
         assertTrue(t_col0.getDB() == db);
         assertTrue(t_col0.getItsCells() == null);
         assertTrue(t_col0.getItsMveID() == t_mve0ID);
-        assertTrue(t_col0.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .TEXT);
+        assertTrue(t_col0.getItsMveType() == MatrixVocabElement.MatrixType.TEXT);
         assertTrue(t_col0.getVarLen() == t_mve0.getVarLen());
 
         assertTrue(t_mve1 != null);
@@ -490,51 +465,49 @@ public final class DataColumnTest {
         assertTrue(t_col1.getDB() == db);
         assertTrue(t_col1.getItsCells() == null);
         assertTrue(t_col1.getItsMveID() == t_mve1ID);
-        assertTrue(t_col1.getItsMveType() == MatrixVocabElement.MatrixType
-                                                               .TEXT);
+        assertTrue(t_col1.getItsMveType() == MatrixVocabElement.MatrixType.TEXT);
         assertTrue(t_col1.getVarLen() == t_mve1.getVarLen());
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure0() throws SystemErrorException {
         dc = new DataColumn(null, "f_col2", false, true, f_mve2ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure1() throws SystemErrorException {
         dc = new DataColumn(db, null, false, true, f_mve2ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure2() throws SystemErrorException {
         dc = new DataColumn(db, "", false, true, f_mve2ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure3() throws SystemErrorException {
         dc = new DataColumn(db, " invalid ", false, true, f_mve2ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure4() throws SystemErrorException {
         dc = new DataColumn(db, "f_col3", false, true, f_mve2ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure5() throws SystemErrorException {
         dc = new DataColumn(db, "f_col2", false, true, DBIndex.INVALID_ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test(expected = SystemErrorException.class)
     public void test5ArgConstructorFailure6() throws SystemErrorException {
         dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
     }
 
-    public void testAccessors()
-    throws SystemErrorException, LogicErrorException {
+    public void testAccessors() throws SystemErrorException {
         // Build the first data cell.
         DataColumn f_col = new DataColumn(db, "f_col",
-                                          MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
         long f_col0ID = db.addColumn(f_col);
         f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
         f_mve0ID = f_col0.getItsMveID();
@@ -551,8 +524,8 @@ public final class DataColumnTest {
         f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
 
         DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
-                                        f_mve0.getID(),
-                                        f_onset0, f_offset0, f_matrix0);
+                f_mve0.getID(),
+                f_onset0, f_offset0, f_matrix0);
 
         // Build the second data cell.
         TimeStamp f_onset1 = new TimeStamp(db.getTicks(), 180);
@@ -562,8 +535,8 @@ public final class DataColumnTest {
         f_arg_list1.add(arg);
         Matrix f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
         DataCell f_cell1 = new DataCell(db, "f_cell1", f_col0ID,
-                                        f_mve0.getID(),
-                                        f_onset1, f_offset1, f_matrix1);
+                f_mve0.getID(),
+                f_onset1, f_offset1, f_matrix1);
 
         // Build the third data cell
         TimeStamp f_onset2 = new TimeStamp(db.getTicks(), 300);
@@ -573,8 +546,8 @@ public final class DataColumnTest {
         f_arg_list2.add(arg);
         Matrix f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
         DataCell f_cell2 = new DataCell(db, "f_cell2", f_col0ID,
-                                        f_mve0.getID(),
-                                        f_onset2, f_offset2, f_matrix2);
+                f_mve0.getID(),
+                f_onset2, f_offset2, f_matrix2);
 
         f_col0.appendCell(f_cell2);
         f_col0.appendCell(f_cell1);
@@ -605,8 +578,7 @@ public final class DataColumnTest {
     public void testAccessorFailure1() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol0",
-                                               MatrixVocabElement.MatrixType
-                                                                 .FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
             newCol.setItsMveID(DBIndex.INVALID_ID);
             fail("Accessor should have thrown SystemErrorException.");
         } catch (Exception e) {
@@ -617,8 +589,7 @@ public final class DataColumnTest {
     public void testAccessorFailure2() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol1",
-                                               MatrixVocabElement.MatrixType
-                                                                 .FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
 
             i_mve1 = new MatrixVocabElement(db, "newCol1");
             i_mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
@@ -637,8 +608,7 @@ public final class DataColumnTest {
     public void testAccessorFailure3() {
         try {
             DataColumn newCol = new DataColumn(db, "newCol2",
-                                               MatrixVocabElement.MatrixType
-                                                                 .FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
 
             long f_col0ID = db.addColumn(newCol);
             f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
@@ -656,8 +626,8 @@ public final class DataColumnTest {
             f_mve0 = db.getMatrixVE(f_col0.getItsMveID());
 
             DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID,
-                                            f_mve0.getID(),
-                                            f_onset0, f_offset0, f_matrix0);
+                    f_mve0.getID(),
+                    f_onset0, f_offset0, f_matrix0);
             newCol.setItsMveID(f_cell0.getID());
 
             fail("Accessor should have thrown SystemErrorException.");
@@ -666,10 +636,9 @@ public final class DataColumnTest {
         }
     }
 
-    public void testToStringMethods()
-    throws SystemErrorException, LogicErrorException {
+    public void testToStringMethods() throws SystemErrorException {
         f_col0 = new DataColumn(db, "f_col",
-                                MatrixVocabElement.MatrixType.FLOAT);
+                MatrixVocabElement.MatrixType.FLOAT);
         long f_col0ID = db.addColumn(f_col0);
         f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
         f_mve0ID = f_col0.getItsMveID();
@@ -683,7 +652,7 @@ public final class DataColumnTest {
         f_arg_list0.add(arg);
         Matrix f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
         DataCell f_cell0 = new DataCell(db, "f_cell0", f_col0ID, f_mve0ID,
-                                        f_onset0, f_offset0, f_matrix0);
+                f_onset0, f_offset0, f_matrix0);
 
         TimeStamp f_onset1 = new TimeStamp(db.getTicks(), 180);
         TimeStamp f_offset1 = new TimeStamp(db.getTicks(), 240);
@@ -693,7 +662,7 @@ public final class DataColumnTest {
         f_arg_list1.add(arg);
         Matrix f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
         DataCell f_cell1 = new DataCell(db, "f_cell1", f_col0ID, f_mve0ID,
-                                        f_onset1, f_offset1, f_matrix1);
+                f_onset1, f_offset1, f_matrix1);
 
         TimeStamp f_onset2 = new TimeStamp(db.getTicks(), 300);
         TimeStamp f_offset2 = new TimeStamp(db.getTicks(), 360);
@@ -703,7 +672,7 @@ public final class DataColumnTest {
         f_arg_list2.add(arg);
         Matrix f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
         DataCell f_cell2 = new DataCell(db, "f_cell2", f_col0ID, f_mve0ID,
-                                        f_onset2, f_offset2, f_matrix2);
+                f_onset2, f_offset2, f_matrix2);
 
         TimeStamp f_onset3 = new TimeStamp(db.getTicks(), 420);
         TimeStamp f_offset3 = new TimeStamp(db.getTicks(), 480);
@@ -713,7 +682,7 @@ public final class DataColumnTest {
         f_arg_list3.add(arg);
         Matrix f_matrix3 = new Matrix(db, f_mve0ID, f_arg_list3);
         DataCell f_cell3 = new DataCell(db, "f_cell3", f_col0ID, f_mve0ID,
-                                        f_onset3, f_offset3, f_matrix3);
+                f_onset3, f_offset3, f_matrix3);
 
         TimeStamp f_onset4 = new TimeStamp(db.getTicks(), 540);
         TimeStamp f_offset4 = new TimeStamp(db.getTicks(), 600);
@@ -723,7 +692,7 @@ public final class DataColumnTest {
         f_arg_list4.add(arg);
         Matrix f_matrix4 = new Matrix(db, f_mve0ID, f_arg_list4);
         DataCell f_cell4 = new DataCell(db, "f_cell4", f_col0ID, f_mve0ID,
-                                        f_onset4, f_offset4, f_matrix4);
+                f_onset4, f_offset4, f_matrix4);
 
         TimeStamp f_onset5 = new TimeStamp(db.getTicks(), 660);
         TimeStamp f_offset5 = new TimeStamp(db.getTicks(), 720);
@@ -733,7 +702,7 @@ public final class DataColumnTest {
         f_arg_list5.add(arg);
         Matrix f_matrix5 = new Matrix(db, f_mve0ID, f_arg_list5);
         DataCell f_cell5 = new DataCell(db, "f_cell5", f_col0ID, f_mve0ID,
-                                        f_onset5, f_offset5, f_matrix5);
+                f_onset5, f_offset5, f_matrix5);
 
         TimeStamp f_onset6 = new TimeStamp(db.getTicks(), 780);
         TimeStamp f_offset6 = new TimeStamp(db.getTicks(), 840);
@@ -743,7 +712,7 @@ public final class DataColumnTest {
         f_arg_list6.add(arg);
         Matrix f_matrix6 = new Matrix(db, f_mve0ID, f_arg_list6);
         DataCell f_cell6 = new DataCell(db, "f_cell6", f_col0ID, f_mve0ID,
-                                       f_onset6, f_offset6, f_matrix6);
+                f_onset6, f_offset6, f_matrix6);
 
         TimeStamp f_onset7 = new TimeStamp(db.getTicks(), 900);
         TimeStamp f_offset7 = new TimeStamp(db.getTicks(), 960);
@@ -753,7 +722,7 @@ public final class DataColumnTest {
         f_arg_list7.add(arg);
         Matrix f_matrix7 = new Matrix(db, f_mve0ID, f_arg_list7);
         DataCell f_cell7 = new DataCell(db, "f_cell7", f_col0ID, f_mve0ID,
-                                        f_onset7, f_offset7, f_matrix7);
+                f_onset7, f_offset7, f_matrix7);
 
         TimeStamp f_onset8 = new TimeStamp(db.getTicks(), 900);
         TimeStamp f_offset8 = new TimeStamp(db.getTicks(), 960);
@@ -763,7 +732,7 @@ public final class DataColumnTest {
         f_arg_list8.add(arg);
         Matrix f_matrix8 = new Matrix(db, f_mve0ID, f_arg_list8);
         DataCell f_cell8 = new DataCell(db, "f_cell8", f_col0ID, f_mve0ID,
-                                        f_onset8, f_offset8, f_matrix8);
+                f_onset8, f_offset8, f_matrix8);
 
         f_col0.appendCell(f_cell0);
         f_col0.appendCell(f_cell1);
@@ -846,7 +815,6 @@ public final class DataColumnTest {
      *
      *
      *************************************************************************/
-
     /**
      * TestCellManagement()
      *
@@ -863,10 +831,9 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestCellManagement()
-    throws SystemErrorException, LogicErrorException {
+    public void TestCellManagement() throws SystemErrorException {
         String testBanner =
-            "Testing cell management methods for class DataColumn             ";
+                "Testing cell management methods for class DataColumn             ";
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String systemErrorExceptionString = null;
@@ -965,8 +932,7 @@ public final class DataColumnTest {
 
         outStream.print(testBanner);
 
-        if ( verbose )
-        {
+        if (verbose) {
             outStream.print("\n");
         }
 
@@ -978,55 +944,54 @@ public final class DataColumnTest {
          * we insert the columns in the database, we use db.cl.getColumn()
          * to get a reference to the actual column in the database.
          */
-        try
-        {
+        try {
             db = new ODBCDatabase();
 
 
             f_col0 = new DataColumn(db, "f_col0",
-                                    MatrixVocabElement.MatrixType.FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
             f_col0ID = db.addColumn(f_col0);
-            f_col0 = (DataColumn)db.cl.getColumn(f_col0ID);
+            f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
             f_mve0ID = f_col0.getItsMveID();
             f_mve0 = db.getMatrixVE(f_mve0ID);
 
 
             i_col0 = new DataColumn(db, "i_col0",
-                                    MatrixVocabElement.MatrixType.INTEGER);
+                    MatrixVocabElement.MatrixType.INTEGER);
             i_col0ID = db.addColumn(i_col0);
-            i_col0 = (DataColumn)db.cl.getColumn(i_col0ID);
+            i_col0 = (DataColumn) db.cl.getColumn(i_col0ID);
             i_mve0ID = i_col0.getItsMveID();
             i_mve0 = db.getMatrixVE(i_mve0ID);
 
 
             m_col0 = new DataColumn(db, "m_col0",
-                                    MatrixVocabElement.MatrixType.MATRIX);
+                    MatrixVocabElement.MatrixType.MATRIX);
             m_col0ID = db.addColumn(m_col0);
-            m_col0 = (DataColumn)db.cl.getColumn(m_col0ID);
+            m_col0 = (DataColumn) db.cl.getColumn(m_col0ID);
             m_mve0ID = m_col0.getItsMveID();
             m_mve0 = db.getMatrixVE(m_mve0ID);
 
 
             n_col0 = new DataColumn(db, "n_col0",
-                                    MatrixVocabElement.MatrixType.NOMINAL);
+                    MatrixVocabElement.MatrixType.NOMINAL);
             n_col0ID = db.addColumn(n_col0);
-            n_col0 = (DataColumn)db.cl.getColumn(n_col0ID);
+            n_col0 = (DataColumn) db.cl.getColumn(n_col0ID);
             n_mve0ID = n_col0.getItsMveID();
             n_mve0 = db.getMatrixVE(n_mve0ID);
 
 
             p_col0 = new DataColumn(db, "p_col0",
-                                    MatrixVocabElement.MatrixType.PREDICATE);
+                    MatrixVocabElement.MatrixType.PREDICATE);
             p_col0ID = db.addColumn(p_col0);
-            p_col0 = (DataColumn)db.cl.getColumn(p_col0ID);
+            p_col0 = (DataColumn) db.cl.getColumn(p_col0ID);
             p_mve0ID = p_col0.getItsMveID();
             p_mve0 = db.getMatrixVE(p_mve0ID);
 
 
             t_col0 = new DataColumn(db, "t_col0",
-                                    MatrixVocabElement.MatrixType.TEXT);
+                    MatrixVocabElement.MatrixType.TEXT);
             t_col0ID = db.addColumn(t_col0);
-            t_col0 = (DataColumn)db.cl.getColumn(t_col0ID);
+            t_col0 = (DataColumn) db.cl.getColumn(t_col0ID);
             t_mve0ID = t_col0.getItsMveID();
             t_mve0 = db.getMatrixVE(t_mve0ID);
 
@@ -1039,7 +1004,7 @@ public final class DataColumnTest {
             f_arg_list0.add(arg);
             f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
             f_cell0 = new DataCell(db, "f_cell0", f_col0ID, f_mve0ID,
-                                       f_onset0, f_offset0, f_matrix0);
+                    f_onset0, f_offset0, f_matrix0);
 
             f_onset1 = new TimeStamp(db.getTicks(), 180);
             f_offset1 = new TimeStamp(db.getTicks(), 240);
@@ -1049,7 +1014,7 @@ public final class DataColumnTest {
             f_arg_list1.add(arg);
             f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
             f_cell1 = new DataCell(db, "f_cell1", f_col0ID, f_mve0ID,
-                                       f_onset1, f_offset1, f_matrix1);
+                    f_onset1, f_offset1, f_matrix1);
 
             f_onset2 = new TimeStamp(db.getTicks(), 300);
             f_offset2 = new TimeStamp(db.getTicks(), 360);
@@ -1059,7 +1024,7 @@ public final class DataColumnTest {
             f_arg_list2.add(arg);
             f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
             f_cell2 = new DataCell(db, "f_cell2", f_col0ID, f_mve0ID,
-                                       f_onset2, f_offset2, f_matrix2);
+                    f_onset2, f_offset2, f_matrix2);
 
             f_onset3 = new TimeStamp(db.getTicks(), 420);
             f_offset3 = new TimeStamp(db.getTicks(), 480);
@@ -1069,7 +1034,7 @@ public final class DataColumnTest {
             f_arg_list3.add(arg);
             f_matrix3 = new Matrix(db, f_mve0ID, f_arg_list3);
             f_cell3 = new DataCell(db, "f_cell3", f_col0ID, f_mve0ID,
-                                       f_onset3, f_offset3, f_matrix3);
+                    f_onset3, f_offset3, f_matrix3);
 
             f_onset4 = new TimeStamp(db.getTicks(), 540);
             f_offset4 = new TimeStamp(db.getTicks(), 600);
@@ -1079,7 +1044,7 @@ public final class DataColumnTest {
             f_arg_list4.add(arg);
             f_matrix4 = new Matrix(db, f_mve0ID, f_arg_list4);
             f_cell4 = new DataCell(db, "f_cell4", f_col0ID, f_mve0ID,
-                                       f_onset4, f_offset4, f_matrix4);
+                    f_onset4, f_offset4, f_matrix4);
 
             f_onset5 = new TimeStamp(db.getTicks(), 660);
             f_offset5 = new TimeStamp(db.getTicks(), 720);
@@ -1089,7 +1054,7 @@ public final class DataColumnTest {
             f_arg_list5.add(arg);
             f_matrix5 = new Matrix(db, f_mve0ID, f_arg_list5);
             f_cell5 = new DataCell(db, "f_cell5", f_col0ID, f_mve0ID,
-                                       f_onset5, f_offset5, f_matrix5);
+                    f_onset5, f_offset5, f_matrix5);
 
             f_onset6 = new TimeStamp(db.getTicks(), 780);
             f_offset6 = new TimeStamp(db.getTicks(), 840);
@@ -1099,7 +1064,7 @@ public final class DataColumnTest {
             f_arg_list6.add(arg);
             f_matrix6 = new Matrix(db, f_mve0ID, f_arg_list6);
             f_cell6 = new DataCell(db, "f_cell6", f_col0ID, f_mve0ID,
-                                       f_onset6, f_offset6, f_matrix6);
+                    f_onset6, f_offset6, f_matrix6);
 
             f_onset7 = new TimeStamp(db.getTicks(), 900);
             f_offset7 = new TimeStamp(db.getTicks(), 960);
@@ -1109,7 +1074,7 @@ public final class DataColumnTest {
             f_arg_list7.add(arg);
             f_matrix7 = new Matrix(db, f_mve0ID, f_arg_list7);
             f_cell7 = new DataCell(db, "f_cell7", f_col0ID, f_mve0ID,
-                                       f_onset7, f_offset7, f_matrix7);
+                    f_onset7, f_offset7, f_matrix7);
 
             f_onset8 = new TimeStamp(db.getTicks(), 900);
             f_offset8 = new TimeStamp(db.getTicks(), 960);
@@ -1119,7 +1084,7 @@ public final class DataColumnTest {
             f_arg_list8.add(arg);
             f_matrix8 = new Matrix(db, f_mve0ID, f_arg_list8);
             f_cell8 = new DataCell(db, "f_cell8", f_col0ID, f_mve0ID,
-                                       f_onset8, f_offset8, f_matrix8);
+                    f_onset8, f_offset8, f_matrix8);
 
             i_cell0 = new DataCell(db, "i_cell0", i_col0ID, i_mve0ID);
             m_cell0 = new DataCell(db, "m_cell0", m_col0ID, m_mve0ID);
@@ -1128,230 +1093,202 @@ public final class DataColumnTest {
             t_cell0 = new DataCell(db, "t_cell0", t_col0ID, t_mve0ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( f_col0ID == DBIndex.INVALID_ID ) ||
-             ( f_mve0ID == DBIndex.INVALID_ID ) ||
-             ( f_col0 == null ) ||
-             ( f_mve0 == null ) ||
-             ( i_col0ID == DBIndex.INVALID_ID ) ||
-             ( i_mve0ID == DBIndex.INVALID_ID ) ||
-             ( i_col0 == null ) ||
-             ( i_mve0 == null ) ||
-             ( m_col0ID == DBIndex.INVALID_ID ) ||
-             ( m_mve0ID == DBIndex.INVALID_ID ) ||
-             ( m_col0 == null ) ||
-             ( m_mve0 == null ) ||
-             ( n_col0ID == DBIndex.INVALID_ID ) ||
-             ( n_mve0ID == DBIndex.INVALID_ID ) ||
-             ( n_col0 == null ) ||
-             ( n_mve0 == null ) ||
-             ( p_col0ID == DBIndex.INVALID_ID ) ||
-             ( p_mve0ID == DBIndex.INVALID_ID ) ||
-             ( p_col0 == null ) ||
-             ( p_mve0 == null ) ||
-             ( t_col0ID == DBIndex.INVALID_ID ) ||
-             ( t_mve0ID == DBIndex.INVALID_ID ) ||
-             ( t_col0 == null ) ||
-             ( t_mve0 == null ) ||
-             ( f_onset0 == null ) ||
-             ( f_offset0 == null ) ||
-             ( f_cell0 == null ) ||
-             ( f_onset1 == null ) ||
-             ( f_offset1 == null ) ||
-             ( f_cell1 == null ) ||
-             ( f_onset2 == null ) ||
-             ( f_offset2 == null ) ||
-             ( f_cell2 == null ) ||
-             ( f_onset3 == null ) ||
-             ( f_offset3 == null ) ||
-             ( f_cell3 == null ) ||
-             ( f_onset4 == null ) ||
-             ( f_offset4 == null ) ||
-             ( f_cell4 == null ) ||
-             ( f_onset5 == null ) ||
-             ( f_offset5 == null ) ||
-             ( f_cell5 == null ) ||
-             ( f_onset6 == null ) ||
-             ( f_offset6 == null ) ||
-             ( f_cell6 == null ) ||
-             ( f_onset7 == null ) ||
-             ( f_offset7 == null ) ||
-             ( f_cell7 == null ) ||
-             ( i_cell0 == null ) ||
-             ( m_cell0 == null ) ||
-             ( n_cell0 == null ) ||
-             ( p_cell0 == null ) ||
-             ( t_cell0 == null ) ||
-             ( ! completed ) ||
-             ( threwSystemErrorException ) )
-        {
+        if ((db == null) ||
+                (f_col0ID == DBIndex.INVALID_ID) ||
+                (f_mve0ID == DBIndex.INVALID_ID) ||
+                (f_col0 == null) ||
+                (f_mve0 == null) ||
+                (i_col0ID == DBIndex.INVALID_ID) ||
+                (i_mve0ID == DBIndex.INVALID_ID) ||
+                (i_col0 == null) ||
+                (i_mve0 == null) ||
+                (m_col0ID == DBIndex.INVALID_ID) ||
+                (m_mve0ID == DBIndex.INVALID_ID) ||
+                (m_col0 == null) ||
+                (m_mve0 == null) ||
+                (n_col0ID == DBIndex.INVALID_ID) ||
+                (n_mve0ID == DBIndex.INVALID_ID) ||
+                (n_col0 == null) ||
+                (n_mve0 == null) ||
+                (p_col0ID == DBIndex.INVALID_ID) ||
+                (p_mve0ID == DBIndex.INVALID_ID) ||
+                (p_col0 == null) ||
+                (p_mve0 == null) ||
+                (t_col0ID == DBIndex.INVALID_ID) ||
+                (t_mve0ID == DBIndex.INVALID_ID) ||
+                (t_col0 == null) ||
+                (t_mve0 == null) ||
+                (f_onset0 == null) ||
+                (f_offset0 == null) ||
+                (f_cell0 == null) ||
+                (f_onset1 == null) ||
+                (f_offset1 == null) ||
+                (f_cell1 == null) ||
+                (f_onset2 == null) ||
+                (f_offset2 == null) ||
+                (f_cell2 == null) ||
+                (f_onset3 == null) ||
+                (f_offset3 == null) ||
+                (f_cell3 == null) ||
+                (f_onset4 == null) ||
+                (f_offset4 == null) ||
+                (f_cell4 == null) ||
+                (f_onset5 == null) ||
+                (f_offset5 == null) ||
+                (f_cell5 == null) ||
+                (f_onset6 == null) ||
+                (f_offset6 == null) ||
+                (f_cell6 == null) ||
+                (f_onset7 == null) ||
+                (f_offset7 == null) ||
+                (f_cell7 == null) ||
+                (i_cell0 == null) ||
+                (m_cell0 == null) ||
+                (n_cell0 == null) ||
+                (p_cell0 == null) ||
+                (t_cell0 == null) ||
+                (!completed) ||
+                (threwSystemErrorException)) {
             failures++;
 
-            if ( verbose )
-            {
-                if ( db == null )
-                {
+            if (verbose) {
+                if (db == null) {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( ( f_col0ID == DBIndex.INVALID_ID ) ||
-                     ( f_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( f_col0 == null ) ||
-                     ( f_mve0 == null ) )
-                {
+                if ((f_col0ID == DBIndex.INVALID_ID) ||
+                        (f_mve0ID == DBIndex.INVALID_ID) ||
+                        (f_col0 == null) ||
+                        (f_mve0 == null)) {
                     outStream.printf("f_col0 alloc failed.  f_col0ID = %d, " +
                             "f_mve0ID = %d\n", f_col0ID, f_mve0ID);
                 }
 
-                if ( ( i_col0ID == DBIndex.INVALID_ID ) ||
-                     ( i_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( i_col0 == null ) ||
-                     ( i_mve0 == null ) )
-                {
+                if ((i_col0ID == DBIndex.INVALID_ID) ||
+                        (i_mve0ID == DBIndex.INVALID_ID) ||
+                        (i_col0 == null) ||
+                        (i_mve0 == null)) {
                     outStream.printf("i_col0 alloc failed.  i_col0ID = %d, " +
                             "f_mve0ID = %d\n", i_col0ID, i_mve0ID);
                 }
 
-                if ( ( m_col0ID == DBIndex.INVALID_ID ) ||
-                     ( m_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( m_col0 == null ) ||
-                     ( m_mve0 == null ) )
-                {
+                if ((m_col0ID == DBIndex.INVALID_ID) ||
+                        (m_mve0ID == DBIndex.INVALID_ID) ||
+                        (m_col0 == null) ||
+                        (m_mve0 == null)) {
                     outStream.printf("m_col0 alloc failed.  m_col0ID = %d, " +
                             "f_mve0ID = %d\n", m_col0ID, m_mve0ID);
                 }
 
-                if ( ( n_col0ID == DBIndex.INVALID_ID ) ||
-                     ( n_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( n_col0 == null ) ||
-                     ( n_mve0 == null ) )
-                {
+                if ((n_col0ID == DBIndex.INVALID_ID) ||
+                        (n_mve0ID == DBIndex.INVALID_ID) ||
+                        (n_col0 == null) ||
+                        (n_mve0 == null)) {
                     outStream.printf("n_col0 alloc failed.  n_col0ID = %d, " +
                             "f_mve0ID = %d\n", n_col0ID, n_mve0ID);
                 }
 
-                if ( ( p_col0ID == DBIndex.INVALID_ID ) ||
-                     ( p_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( p_col0 == null ) ||
-                     ( p_mve0 == null ) )
-                {
+                if ((p_col0ID == DBIndex.INVALID_ID) ||
+                        (p_mve0ID == DBIndex.INVALID_ID) ||
+                        (p_col0 == null) ||
+                        (p_mve0 == null)) {
                     outStream.printf("p_col0 alloc failed.  p_col0ID = %d, " +
                             "f_mve0ID = %d\n", p_col0ID, p_mve0ID);
                 }
 
-                if ( ( t_col0ID == DBIndex.INVALID_ID ) ||
-                     ( t_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( t_col0 == null ) ||
-                     ( t_mve0 == null ) )
-                {
+                if ((t_col0ID == DBIndex.INVALID_ID) ||
+                        (t_mve0ID == DBIndex.INVALID_ID) ||
+                        (t_col0 == null) ||
+                        (t_mve0 == null)) {
                     outStream.printf("t_col0 alloc failed.  t_col0ID = %d, " +
                             "f_mve0ID = %d\n", t_col0ID, t_mve0ID);
                 }
 
-                if ( ( f_onset0 == null ) ||
-                     ( f_offset0 == null ) ||
-                     ( f_cell0 == null ) )
-                {
+                if ((f_onset0 == null) ||
+                        (f_offset0 == null) ||
+                        (f_cell0 == null)) {
                     outStream.printf("f_cell0 alloc failed.\n");
                 }
 
-                if ( ( f_onset1 == null ) ||
-                     ( f_offset1 == null ) ||
-                     ( f_cell1 == null ) )
-                {
+                if ((f_onset1 == null) ||
+                        (f_offset1 == null) ||
+                        (f_cell1 == null)) {
                     outStream.printf("f_cell1 alloc failed.\n");
                 }
 
-                if ( ( f_onset2 == null ) ||
-                     ( f_offset2 == null ) ||
-                     ( f_cell2 == null ) )
-                {
+                if ((f_onset2 == null) ||
+                        (f_offset2 == null) ||
+                        (f_cell2 == null)) {
                     outStream.printf("f_cell2 alloc failed.\n");
                 }
 
-                if ( ( f_onset3 == null ) ||
-                     ( f_offset3 == null ) ||
-                     ( f_cell3 == null ) )
-                {
+                if ((f_onset3 == null) ||
+                        (f_offset3 == null) ||
+                        (f_cell3 == null)) {
                     outStream.printf("f_cell3 alloc failed.\n");
                 }
 
-                if ( ( f_onset4 == null ) ||
-                     ( f_offset4 == null ) ||
-                     ( f_cell4 == null ) )
-                {
+                if ((f_onset4 == null) ||
+                        (f_offset4 == null) ||
+                        (f_cell4 == null)) {
                     outStream.printf("f_cell4 alloc failed.\n");
                 }
 
-                if ( ( f_onset5 == null ) ||
-                     ( f_offset5 == null ) ||
-                     ( f_cell5 == null ) )
-                {
+                if ((f_onset5 == null) ||
+                        (f_offset5 == null) ||
+                        (f_cell5 == null)) {
                     outStream.printf("f_cell5 alloc failed.\n");
                 }
 
-                if ( ( f_onset6 == null ) ||
-                     ( f_offset6 == null ) ||
-                     ( f_cell6 == null ) )
-                {
+                if ((f_onset6 == null) ||
+                        (f_offset6 == null) ||
+                        (f_cell6 == null)) {
                     outStream.printf("f_cell6 alloc failed.\n");
                 }
 
-                if ( ( f_onset7 == null ) ||
-                     ( f_offset7 == null ) ||
-                     ( f_cell7 == null ) )
-                {
+                if ((f_onset7 == null) ||
+                        (f_offset7 == null) ||
+                        (f_cell7 == null)) {
                     outStream.printf("f_cell7 alloc failed.\n");
                 }
 
-                if ( i_cell0 == null )
-                {
+                if (i_cell0 == null) {
                     outStream.printf("i_cell0 alloc failed.\n");
                 }
 
-                if ( m_cell0 == null )
-                {
+                if (m_cell0 == null) {
                     outStream.printf("m_cell0 alloc failed.\n");
                 }
 
-                if ( n_cell0 == null )
-                {
+                if (n_cell0 == null) {
                     outStream.printf("n_cell0 alloc failed.\n");
                 }
 
-                if ( p_cell0 == null )
-                {
+                if (p_cell0 == null) {
                     outStream.printf("p_cell0 alloc failed.\n");
                 }
 
-                if ( t_cell0 == null )
-                {
+                if (t_cell0 == null) {
                     outStream.printf("t_cell0 alloc failed.\n");
                 }
 
-                if ( ! completed )
-                {
+                if (!completed) {
                     outStream.printf("test setup failed to complete.\n");
                 }
 
-                if ( threwSystemErrorException )
-                {
+                if (threwSystemErrorException) {
                     outStream.printf("test setup threw " +
-                                      "system error exception: \"%s\".\n",
-                                      systemErrorExceptionString);
+                            "system error exception: \"%s\".\n",
+                            systemErrorExceptionString);
                 }
             }
-        }
-        else {
+        } else {
             try {
                 Object f_col0itsCells = PrivateAccessor.getField(f_col0, "itsCells");
                 Object i_col0itsCells = PrivateAccessor.getField(i_col0, "itsCells");
@@ -1360,19 +1297,17 @@ public final class DataColumnTest {
                 Object p_col0itsCells = PrivateAccessor.getField(p_col0, "itsCells");
                 Object t_col0itsCells = PrivateAccessor.getField(t_col0, "itsCells");
 
-                if ( ( f_col0itsCells == null ) ||
-                      ( i_col0itsCells == null ) ||
-                      ( m_col0itsCells == null ) ||
-                      ( n_col0itsCells == null ) ||
-                      ( p_col0itsCells == null ) ||
-                      ( t_col0itsCells == null ) )
-                {
+                if ((f_col0itsCells == null) ||
+                        (i_col0itsCells == null) ||
+                        (m_col0itsCells == null) ||
+                        (n_col0itsCells == null) ||
+                        (p_col0itsCells == null) ||
+                        (t_col0itsCells == null)) {
                     failures++;
 
-                    if ( verbose )
-                    {
+                    if (verbose) {
                         outStream.printf(
-                            "one or more column itsCells fields not initialized.\n");
+                                "one or more column itsCells fields not initialized.\n");
                     }
                 }
             } catch (Throwable th) {
@@ -1382,207 +1317,179 @@ public final class DataColumnTest {
         }
 
         /* test append cell */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String expectedString =
                     "((1, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(3, 00:00:01:000, 00:00:02:000, (0.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
+                    "(3, 00:00:01:000, 00:00:02:000, (0.000000)))";
             String expectedDBString =
                     "(itsCells " +
-                        "((DataCell (id 43) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:05:000)) " +
-                            "(offset (60,00:00:06:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 44) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 43) " +
-                                            "(itsValue 2.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 45) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 2) " +
-                            "(onset (60,00:00:03:000)) " +
-                            "(offset (60,00:00:04:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 46) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 45) " +
-                                            "(itsValue 1.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 47) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 3) " +
-                            "(onset (60,00:00:01:000)) " +
-                            "(offset (60,00:00:02:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 48) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 47) " +
-                                            "(itsValue 0.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0))))))))))";
+                    "((DataCell (id 43) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:05:000)) " +
+                    "(offset (60,00:00:06:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 44) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 43) " +
+                    "(itsValue 2.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell (id 45) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 2) " +
+                    "(onset (60,00:00:03:000)) " +
+                    "(offset (60,00:00:04:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 46) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 45) " +
+                    "(itsValue 1.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell (id 47) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 3) " +
+                    "(onset (60,00:00:01:000)) " +
+                    "(offset (60,00:00:02:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 48) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 47) " +
+                    "(itsValue 0.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0))))))))))";
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.appendCell(f_cell2_c = new DataCell(f_cell2));
                 f_col0.appendCell(f_cell1_c = new DataCell(f_cell1));
                 f_col0.appendCell(f_cell0_c = new DataCell(f_cell0));
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 3 ) ||
-                 ( expectedString.compareTo(f_col0.itsCellsToString()) != 0 ) ||
-                 ( expectedDBString.compareTo(
-                        f_col0.itsCellsToDBString()) != 0 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 3) ||
+                    (expectedString.compareTo(f_col0.itsCellsToString()) != 0) ||
+                    (expectedDBString.compareTo(
+                    f_col0.itsCellsToDBString()) != 0) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 3 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 3) {
                         outStream.printf("f_col0 = %d (3 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString.compareTo(f_col0.itsCellsToString())
-                         != 0 )
-                    {
+                    if (expectedString.compareTo(f_col0.itsCellsToString()) != 0) {
                         outStream.printf(
                                 "Unexpected f_col0.itsCellsToString(1): \"%s\"\n",
                                 f_col0.itsCellsToString());
                     }
 
-                    if ( expectedDBString.compareTo(f_col0.itsCellsToDBString())
-                         != 0 )
-                    {
+                    if (expectedDBString.compareTo(f_col0.itsCellsToDBString()) != 0) {
                         outStream.printf(
                                 "Unexpected f_col0.itsCellsToDBString(1): \"%s\"\n",
                                 f_col0.itsCellsToDBString());
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "appendCell() test failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("appendCell() test threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
         }
 
         /* remove the existing cells in preparation for the next test */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String expectedString = "()";
             String expectedDBString = "(itsCells ())";
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.removeCell(3, f_cell0_c.getID());
                 f_col0.removeCell(2, f_cell1_c.getID());
                 f_col0.removeCell(1, f_cell2_c.getID());
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 0 ) ||
-                 ( expectedString.compareTo(f_col0.itsCellsToString()) != 0 ) ||
-                 ( expectedDBString.compareTo(
-                        f_col0.itsCellsToDBString()) != 0 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 0) ||
+                    (expectedString.compareTo(f_col0.itsCellsToString()) != 0) ||
+                    (expectedDBString.compareTo(
+                    f_col0.itsCellsToDBString()) != 0) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 0 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 0) {
                         outStream.printf("f_col0numCells = %d (0 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString.compareTo(f_col0.itsCellsToString())
-                         != 0 )
-                    {
+                    if (expectedString.compareTo(f_col0.itsCellsToString()) != 0) {
                         outStream.printf(
-                            "Unexpected f_col0.itsCellsToString(2): \"%s\"\n",
-                            f_col0.itsCellsToString());
+                                "Unexpected f_col0.itsCellsToString(2): \"%s\"\n",
+                                f_col0.itsCellsToString());
                     }
 
-                    if ( expectedDBString.compareTo(f_col0.itsCellsToDBString())
-                         != 0 )
-                    {
+                    if (expectedDBString.compareTo(f_col0.itsCellsToDBString()) != 0) {
                         outStream.printf(
-                            "Unexpected f_col0.itsCellsToDBString(2): \"%s\"\n",
-                            f_col0.itsCellsToDBString());
+                                "Unexpected f_col0.itsCellsToDBString(2): \"%s\"\n",
+                                f_col0.itsCellsToDBString());
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "removeCell() test 1 failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("removeCell() test 1 threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
@@ -1590,155 +1497,141 @@ public final class DataColumnTest {
 
 
         /* test insert cell */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String expectedString =
                     "((1, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                     "(2, 00:00:07:000, 00:00:08:000, (3.000000)), " +
-                     "(3, 00:00:13:000, 00:00:14:000, (6.000000)), " +
-                     "(4, 00:00:11:000, 00:00:12:000, (5.000000)))";
+                    "(2, 00:00:07:000, 00:00:08:000, (3.000000)), " +
+                    "(3, 00:00:13:000, 00:00:14:000, (6.000000)), " +
+                    "(4, 00:00:11:000, 00:00:12:000, (5.000000)))";
             String expectedDBString =
                     "(itsCells " +
-                        "((DataCell (id 51) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:09:000)) " +
-                            "(offset (60,00:00:10:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 52) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 51) " +
-                                            "(itsValue 4.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 49) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 2) " +
-                            "(onset (60,00:00:07:000)) " +
-                            "(offset (60,00:00:08:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 50) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 49) " +
-                                            "(itsValue 3.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 55) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 3) " +
-                            "(onset (60,00:00:13:000)) " +
-                            "(offset (60,00:00:14:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 56) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 55) " +
-                                            "(itsValue 6.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell (id 53) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 4) " +
-                            "(onset (60,00:00:11:000)) " +
-                            "(offset (60,00:00:12:000)) " +
-                            "(val " +
-                                "(Matrix (mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue (id 54) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 53) " +
-                                            "(itsValue 5.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0))))))))))";
+                    "((DataCell (id 51) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:09:000)) " +
+                    "(offset (60,00:00:10:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 52) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 51) " +
+                    "(itsValue 4.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell (id 49) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 2) " +
+                    "(onset (60,00:00:07:000)) " +
+                    "(offset (60,00:00:08:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 50) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 49) " +
+                    "(itsValue 3.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell (id 55) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 3) " +
+                    "(onset (60,00:00:13:000)) " +
+                    "(offset (60,00:00:14:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 56) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 55) " +
+                    "(itsValue 6.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell (id 53) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 4) " +
+                    "(onset (60,00:00:11:000)) " +
+                    "(offset (60,00:00:12:000)) " +
+                    "(val " +
+                    "(Matrix (mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue (id 54) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 53) " +
+                    "(itsValue 5.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0))))))))))";
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.insertCell(f_cell3_c = new DataCell(f_cell3), 1);
                 f_col0.insertCell(f_cell4_c = new DataCell(f_cell4), 1);
                 f_col0.insertCell(f_cell5_c = new DataCell(f_cell5), 3);
                 f_col0.insertCell(f_cell6_c = new DataCell(f_cell6), 3);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 4 ) ||
-                 ( expectedString.compareTo(f_col0.itsCellsToString()) != 0 ) ||
-                 ( expectedDBString.compareTo(
-                        f_col0.itsCellsToDBString()) != 0 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 4) ||
+                    (expectedString.compareTo(f_col0.itsCellsToString()) != 0) ||
+                    (expectedDBString.compareTo(
+                    f_col0.itsCellsToDBString()) != 0) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 4 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 4) {
                         outStream.printf("f_col0 = %d (4 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString.compareTo(f_col0.itsCellsToString())
-                         != 0 )
-                    {
+                    if (expectedString.compareTo(f_col0.itsCellsToString()) != 0) {
                         outStream.printf(
-                            "Unexpected f_col0.itsCellsToString(3): \"%s\"\n",
-                            f_col0.itsCellsToString());
+                                "Unexpected f_col0.itsCellsToString(3): \"%s\"\n",
+                                f_col0.itsCellsToString());
                     }
 
-                    if ( expectedDBString.compareTo(f_col0.itsCellsToDBString())
-                         != 0 )
-                    {
+                    if (expectedDBString.compareTo(f_col0.itsCellsToDBString()) != 0) {
                         outStream.printf(
-                            "Unexpected f_col0.itsCellsToDBString(3): \"%s\"\n",
-                            f_col0.itsCellsToDBString());
+                                "Unexpected f_col0.itsCellsToDBString(3): \"%s\"\n",
+                                f_col0.itsCellsToDBString());
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "insertCell() test failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("insertCell() test threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
@@ -1746,8 +1639,7 @@ public final class DataColumnTest {
 
 
         /* remove cells again -- test removeCell() more fully in passing */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String testString0 = null;
             String testString1 = null;
             String testString2 = null;
@@ -1755,16 +1647,16 @@ public final class DataColumnTest {
             String testString4 = null;
             String expectedString0 =
                     "((1, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                     "(2, 00:00:07:000, 00:00:08:000, (3.000000)), " +
-                     "(3, 00:00:13:000, 00:00:14:000, (6.000000)), " +
-                     "(4, 00:00:11:000, 00:00:12:000, (5.000000)))";
+                    "(2, 00:00:07:000, 00:00:08:000, (3.000000)), " +
+                    "(3, 00:00:13:000, 00:00:14:000, (6.000000)), " +
+                    "(4, 00:00:11:000, 00:00:12:000, (5.000000)))";
             String expectedString1 =
                     "((1, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                     "(2, 00:00:13:000, 00:00:14:000, (6.000000)), " +
-                     "(3, 00:00:11:000, 00:00:12:000, (5.000000)))";
+                    "(2, 00:00:13:000, 00:00:14:000, (6.000000)), " +
+                    "(3, 00:00:11:000, 00:00:12:000, (5.000000)))";
             String expectedString2 =
                     "((1, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                     "(2, 00:00:13:000, 00:00:14:000, (6.000000)))";
+                    "(2, 00:00:13:000, 00:00:14:000, (6.000000)))";
             String expectedString3 =
                     "((1, 00:00:13:000, 00:00:14:000, (6.000000)))";
             String expectedString4 = "()";
@@ -1772,8 +1664,7 @@ public final class DataColumnTest {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testString0 = f_col0.itsCellsToString();
                 f_col0.removeCell(2, f_cell3_c.getID());
                 testString1 = f_col0.itsCellsToString();
@@ -1785,74 +1676,61 @@ public final class DataColumnTest {
                 testString4 = f_col0.itsCellsToString();
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 0 ) ||
-                 ( expectedString0.compareTo(testString0) != 0 ) ||
-                 ( expectedString1.compareTo(testString1) != 0 ) ||
-                 ( expectedString2.compareTo(testString2) != 0 ) ||
-                 ( expectedString3.compareTo(testString3) != 0 ) ||
-                 ( expectedString4.compareTo(testString4) != 0 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 0) ||
+                    (expectedString0.compareTo(testString0) != 0) ||
+                    (expectedString1.compareTo(testString1) != 0) ||
+                    (expectedString2.compareTo(testString2) != 0) ||
+                    (expectedString3.compareTo(testString3) != 0) ||
+                    (expectedString4.compareTo(testString4) != 0) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 0 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 0) {
                         outStream.printf("f_col0 = %d (0 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString0.compareTo(testString0) != 0 )
-                    {
+                    if (expectedString0.compareTo(testString0) != 0) {
                         outStream.printf("Unexpected testString0: \"%s\"\n",
-                            testString0);
+                                testString0);
                     }
 
-                    if ( expectedString1.compareTo(testString1) != 0 )
-                    {
+                    if (expectedString1.compareTo(testString1) != 0) {
                         outStream.printf("Unexpected testString1: \"%s\"\n",
-                            testString1);
+                                testString1);
                     }
 
-                    if ( expectedString2.compareTo(testString2) != 0 )
-                    {
+                    if (expectedString2.compareTo(testString2) != 0) {
                         outStream.printf("Unexpected testString2: \"%s\"\n",
-                            testString2);
+                                testString2);
                     }
 
-                    if ( expectedString3.compareTo(testString3) != 0 )
-                    {
+                    if (expectedString3.compareTo(testString3) != 0) {
                         outStream.printf("Unexpected testString3: \"%s\"\n",
-                            testString3);
+                                testString3);
                     }
 
-                    if ( expectedString4.compareTo(testString4) != 0 )
-                    {
+                    if (expectedString4.compareTo(testString4) != 0) {
                         outStream.printf("Unexpected testString4: \"%s\"\n",
-                            testString4);
+                                testString4);
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "removeCell() test 2 failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("removeCell() test 2 threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
@@ -1861,8 +1739,7 @@ public final class DataColumnTest {
         /* next, test the replaceCell() and getCellCopy() methods. Deal with
          * the singleton cell case first...
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String testString0 = "";
             String testString1 = "";
             String testString2 = "";
@@ -1883,88 +1760,74 @@ public final class DataColumnTest {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testString0 = f_col0.itsCellsToString();
                 f_col0.appendCell(f_cell0_c = new DataCell(f_cell0));
                 testString1 = f_col0.itsCellsToString();
                 expected_old_cell = f_col0.getCell(1);
                 f_cell0a = f_col0.getCellCopy(1);
                 m = f_cell0a.getVal();
-                ((FloatDataValue)(m.getArg(0))).setItsValue(10.0);
+                ((FloatDataValue) (m.getArg(0))).setItsValue(10.0);
                 f_cell0a.setVal(m);
                 old_cell = f_col0.replaceCell(f_cell0a, 1);
                 testString2 = f_col0.itsCellsToString();
                 testString3 = old_cell.toString();
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 1 ) ||
-                 ( expectedString0.compareTo(testString0) != 0 ) ||
-                 ( expectedString1.compareTo(testString1) != 0 ) ||
-                 ( expectedString2.compareTo(testString2) != 0 ) ||
-                 ( expectedString3.compareTo(testString3) != 0 ) ||
-                 ( old_cell != expected_old_cell ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 1) ||
+                    (expectedString0.compareTo(testString0) != 0) ||
+                    (expectedString1.compareTo(testString1) != 0) ||
+                    (expectedString2.compareTo(testString2) != 0) ||
+                    (expectedString3.compareTo(testString3) != 0) ||
+                    (old_cell != expected_old_cell) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 1 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 1) {
                         outStream.printf("f_col0 = %d (1 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString0.compareTo(testString0) != 0 )
-                    {
+                    if (expectedString0.compareTo(testString0) != 0) {
                         outStream.printf("Unexpected testString0: \"%s\"\n",
-                            testString0);
+                                testString0);
                     }
 
-                    if ( expectedString1.compareTo(testString1) != 0 )
-                    {
+                    if (expectedString1.compareTo(testString1) != 0) {
                         outStream.printf("Unexpected testString1: \"%s\"\n",
-                            testString1);
+                                testString1);
                     }
 
-                    if ( expectedString2.compareTo(testString2) != 0 )
-                    {
+                    if (expectedString2.compareTo(testString2) != 0) {
                         outStream.printf("Unexpected testString2: \"%s\"\n",
-                            testString2);
+                                testString2);
                     }
 
-                    if ( expectedString3.compareTo(testString3) != 0 )
-                    {
+                    if (expectedString3.compareTo(testString3) != 0) {
                         outStream.printf("Unexpected testString3: \"%s\"\n",
-                            testString3);
+                                testString3);
                     }
 
-                    if ( old_cell != expected_old_cell )
-                    {
+                    if (old_cell != expected_old_cell) {
                         outStream.printf("old_cell != expected_old_cell\n");
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "replaceCell() test 1 failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("replaceCell() test 1 threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
@@ -1972,8 +1835,7 @@ public final class DataColumnTest {
 
         /* ...and then with multiple entries.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String testString0 = null;
             String testString1 = null;
             String testString2 = null;
@@ -1986,24 +1848,24 @@ public final class DataColumnTest {
                     "((1, 00:00:01:000, 00:00:02:000, (10.000000)))";
             String expectedString1 =
                     "((1, 00:00:01:000, 00:00:02:000, (10.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (2.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (2.000000)))";
             String expectedString2 =
                     "((1, 00:00:01:000, 00:00:02:000, (10.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
             String expectedString3 =
                     "(3, 00:00:05:000, 00:00:06:000, (2.000000))";
             String expectedString4 =
                     "((1, 00:00:01:000, 00:00:02:000, (10.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (40.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (40.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
             String expectedString5 =
                     "(2, 00:00:03:000, 00:00:04:000, (1.000000))";
             String expectedString6 =
                     "((1, 00:00:01:000, 00:00:02:000, (50.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (40.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (40.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (30.000000)))";
             String expectedString7 =
                     "(1, 00:00:01:000, 00:00:02:000, (10.000000))";
             DataCell cell = null;
@@ -2018,8 +1880,7 @@ public final class DataColumnTest {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testString0 = f_col0.itsCellsToString();
                 f_col0.appendCell(f_cell1_c = new DataCell(f_cell1));
                 f_col0.appendCell(f_cell2_c = new DataCell(f_cell2));
@@ -2028,7 +1889,7 @@ public final class DataColumnTest {
                 expected_old_cell0 = f_col0.getCell(3);
                 cell = f_col0.getCellCopy(3);
                 m = cell.getVal();
-                ((FloatDataValue)(m.getArg(0))).setItsValue(30.0);
+                ((FloatDataValue) (m.getArg(0))).setItsValue(30.0);
                 cell.setVal(m);
                 old_cell0 = f_col0.replaceCell(cell, 3);
                 testString2 = f_col0.itsCellsToString();
@@ -2037,7 +1898,7 @@ public final class DataColumnTest {
                 expected_old_cell1 = f_col0.getCell(2);
                 cell = f_col0.getCellCopy(2);
                 m = cell.getVal();
-                ((FloatDataValue)(m.getArg(0))).setItsValue(40.0);
+                ((FloatDataValue) (m.getArg(0))).setItsValue(40.0);
                 cell.setVal(m);
                 old_cell1 = f_col0.replaceCell(cell, 2);
                 testString4 = f_col0.itsCellsToString();
@@ -2046,7 +1907,7 @@ public final class DataColumnTest {
                 expected_old_cell2 = f_col0.getCell(1);
                 cell = f_col0.getCellCopy(1);
                 m = cell.getVal();
-                ((FloatDataValue)(m.getArg(0))).setItsValue(50.0);
+                ((FloatDataValue) (m.getArg(0))).setItsValue(50.0);
                 cell.setVal(m);
                 old_cell2 = f_col0.replaceCell(cell, 1);
                 testString6 = f_col0.itsCellsToString();
@@ -2058,122 +1919,102 @@ public final class DataColumnTest {
                 f_col0.removeCell(1, f_cell0_c.getID());
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 0 ) ||
-                 ( expectedString0.compareTo(testString0) != 0 ) ||
-                 ( expectedString1.compareTo(testString1) != 0 ) ||
-                 ( expectedString2.compareTo(testString2) != 0 ) ||
-                 ( expectedString3.compareTo(testString3) != 0 ) ||
-                 ( expectedString4.compareTo(testString4) != 0 ) ||
-                 ( expectedString5.compareTo(testString5) != 0 ) ||
-                 ( expectedString6.compareTo(testString6) != 0 ) ||
-                 ( expectedString7.compareTo(testString7) != 0 ) ||
-                 ( old_cell0 != expected_old_cell0 ) ||
-                 ( old_cell1 != expected_old_cell1 ) ||
-                 ( old_cell2 != expected_old_cell2 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 0) ||
+                    (expectedString0.compareTo(testString0) != 0) ||
+                    (expectedString1.compareTo(testString1) != 0) ||
+                    (expectedString2.compareTo(testString2) != 0) ||
+                    (expectedString3.compareTo(testString3) != 0) ||
+                    (expectedString4.compareTo(testString4) != 0) ||
+                    (expectedString5.compareTo(testString5) != 0) ||
+                    (expectedString6.compareTo(testString6) != 0) ||
+                    (expectedString7.compareTo(testString7) != 0) ||
+                    (old_cell0 != expected_old_cell0) ||
+                    (old_cell1 != expected_old_cell1) ||
+                    (old_cell2 != expected_old_cell2) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 0 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 0) {
                         outStream.printf("f_col0.numCells = %d (0 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString0.compareTo(testString0) != 0 )
-                    {
+                    if (expectedString0.compareTo(testString0) != 0) {
                         outStream.printf("Unexpected testString0: \"%s\"\n",
-                            testString0);
+                                testString0);
                     }
 
-                    if ( expectedString1.compareTo(testString1) != 0 )
-                    {
+                    if (expectedString1.compareTo(testString1) != 0) {
                         outStream.printf("Unexpected testString1: \"%s\"\n",
-                            testString1);
+                                testString1);
                     }
 
-                    if ( expectedString2.compareTo(testString2) != 0 )
-                    {
+                    if (expectedString2.compareTo(testString2) != 0) {
                         outStream.printf("Unexpected testString2: \"%s\"\n",
-                            testString2);
+                                testString2);
                     }
 
-                    if ( expectedString3.compareTo(testString3) != 0 )
-                    {
+                    if (expectedString3.compareTo(testString3) != 0) {
                         outStream.printf("Unexpected testString3: \"%s\"\n",
-                            testString3);
+                                testString3);
                     }
 
-                    if ( expectedString4.compareTo(testString4) != 0 )
-                    {
+                    if (expectedString4.compareTo(testString4) != 0) {
                         outStream.printf("Unexpected testString4: \"%s\"\n",
-                            testString4);
+                                testString4);
                     }
 
-                    if ( expectedString5.compareTo(testString5) != 0 )
-                    {
+                    if (expectedString5.compareTo(testString5) != 0) {
                         outStream.printf("Unexpected testString5: \"%s\"\n",
-                            testString5);
+                                testString5);
                     }
 
-                    if ( expectedString6.compareTo(testString6) != 0 )
-                    {
+                    if (expectedString6.compareTo(testString6) != 0) {
                         outStream.printf("Unexpected testString6: \"%s\"\n",
-                            testString6);
+                                testString6);
                     }
 
-                    if ( expectedString7.compareTo(testString7) != 0 )
-                    {
+                    if (expectedString7.compareTo(testString7) != 0) {
                         outStream.printf("Unexpected testString7: \"%s\"\n",
-                            testString7);
+                                testString7);
                     }
 
-                    if ( old_cell0 != expected_old_cell0 )
-                    {
+                    if (old_cell0 != expected_old_cell0) {
                         outStream.printf("old_cell0 != expected_old_cell0\n");
                     }
 
-                    if ( old_cell1 != expected_old_cell1 )
-                    {
+                    if (old_cell1 != expected_old_cell1) {
                         outStream.printf("old_cell1 != expected_old_cell1\n");
                     }
 
-                    if ( old_cell2 != expected_old_cell2 )
-                    {
+                    if (old_cell2 != expected_old_cell2) {
                         outStream.printf("old_cell2 != expected_old_cell2\n");
                     }
 
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "replaceCell() test 2 failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("replaceCell() test 2 threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
         }
 
         /* finally, test sortCells */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String testString0 = null;
             String testString1 = null;
             String testString2 = null;
@@ -2188,42 +2029,41 @@ public final class DataColumnTest {
                     "((1, 00:00:15:000, 00:00:16:000, (7.000000)))";
             String expectedString2 =
                     "((1, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(2, 00:00:15:000, 00:00:16:000, (7.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (2.000000)))";
+                    "(2, 00:00:15:000, 00:00:16:000, (7.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (2.000000)))";
             String expectedString3 =
                     "((1, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(3, 00:00:15:000, 00:00:16:000, (7.000000)))";
+                    "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(3, 00:00:15:000, 00:00:16:000, (7.000000)))";
             String expectedString4 =
                     "((1, 00:00:15:000, 00:00:16:000, (8.000000)), " +
-                     "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(3, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(4, 00:00:15:000, 00:00:16:000, (7.000000)))";
+                    "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(4, 00:00:15:000, 00:00:16:000, (7.000000)))";
             String expectedString5 =
                     "((1, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(3, 00:00:15:000, 00:00:16:000, (8.000000)), " +
-                     "(4, 00:00:15:000, 00:00:16:000, (7.000000)))";
+                    "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(3, 00:00:15:000, 00:00:16:000, (8.000000)), " +
+                    "(4, 00:00:15:000, 00:00:16:000, (7.000000)))";
             String expectedString6 =
                     "((1, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(3, 00:00:15:000, 00:00:16:000, (8.000000)), " +
-                     "(4, 00:00:15:000, 00:00:16:000, (7.000000)), " +
-                     "(5, 00:00:07:000, 00:00:08:000, (3.000000)), " +
-                     "(6, 00:00:09:000, 00:00:10:000, (4.000000)))";
+                    "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(3, 00:00:15:000, 00:00:16:000, (8.000000)), " +
+                    "(4, 00:00:15:000, 00:00:16:000, (7.000000)), " +
+                    "(5, 00:00:07:000, 00:00:08:000, (3.000000)), " +
+                    "(6, 00:00:09:000, 00:00:10:000, (4.000000)))";
             String expectedString7 =
                     "((1, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                     "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                     "(3, 00:00:07:000, 00:00:08:000, (3.000000)), " +
-                     "(4, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                     "(5, 00:00:15:000, 00:00:16:000, (8.000000)), " +
-                     "(6, 00:00:15:000, 00:00:16:000, (7.000000)))";
+                    "(2, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(3, 00:00:07:000, 00:00:08:000, (3.000000)), " +
+                    "(4, 00:00:09:000, 00:00:10:000, (4.000000)), " +
+                    "(5, 00:00:15:000, 00:00:16:000, (8.000000)), " +
+                    "(6, 00:00:15:000, 00:00:16:000, (7.000000)))";
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 /* do a sort on an empty column to make sure there are
                  * no problems.
                  */
@@ -2264,95 +2104,79 @@ public final class DataColumnTest {
                 testString7 = f_col0.itsCellsToString();
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0.numCells != 6 ) ||
-                 ( expectedString0.compareTo(testString0) != 0 ) ||
-                 ( expectedString1.compareTo(testString1) != 0 ) ||
-                 ( expectedString2.compareTo(testString2) != 0 ) ||
-                 ( expectedString3.compareTo(testString3) != 0 ) ||
-                 ( expectedString4.compareTo(testString4) != 0 ) ||
-                 ( expectedString5.compareTo(testString5) != 0 ) ||
-                 ( expectedString6.compareTo(testString6) != 0 ) ||
-                 ( expectedString7.compareTo(testString7) != 0 ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0.numCells != 6) ||
+                    (expectedString0.compareTo(testString0) != 0) ||
+                    (expectedString1.compareTo(testString1) != 0) ||
+                    (expectedString2.compareTo(testString2) != 0) ||
+                    (expectedString3.compareTo(testString3) != 0) ||
+                    (expectedString4.compareTo(testString4) != 0) ||
+                    (expectedString5.compareTo(testString5) != 0) ||
+                    (expectedString6.compareTo(testString6) != 0) ||
+                    (expectedString7.compareTo(testString7) != 0) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0.numCells != 6 )
-                    {
+                if (verbose) {
+                    if (f_col0.numCells != 6) {
                         outStream.printf("f_col0 = %d (6 expected).\n",
-                                         f_col0.numCells);
+                                f_col0.numCells);
                     }
 
-                    if ( expectedString0.compareTo(testString0) != 0 )
-                    {
+                    if (expectedString0.compareTo(testString0) != 0) {
                         outStream.printf("Unexpected testString0: \"%s\"\n",
-                            testString0);
+                                testString0);
                     }
 
-                    if ( expectedString1.compareTo(testString1) != 0 )
-                    {
+                    if (expectedString1.compareTo(testString1) != 0) {
                         outStream.printf("Unexpected testString1: \"%s\"\n",
-                            testString1);
+                                testString1);
                     }
 
-                    if ( expectedString2.compareTo(testString2) != 0 )
-                    {
+                    if (expectedString2.compareTo(testString2) != 0) {
                         outStream.printf("Unexpected testString2: \"%s\"\n",
-                            testString2);
+                                testString2);
                     }
 
-                    if ( expectedString3.compareTo(testString3) != 0 )
-                    {
+                    if (expectedString3.compareTo(testString3) != 0) {
                         outStream.printf("Unexpected testString3: \"%s\"\n",
-                            testString3);
+                                testString3);
                     }
 
-                    if ( expectedString4.compareTo(testString4) != 0 )
-                    {
+                    if (expectedString4.compareTo(testString4) != 0) {
                         outStream.printf("Unexpected testString4: \"%s\"\n",
-                            testString4);
+                                testString4);
                     }
 
-                    if ( expectedString5.compareTo(testString5) != 0 )
-                    {
+                    if (expectedString5.compareTo(testString5) != 0) {
                         outStream.printf("Unexpected testString5: \"%s\"\n",
-                            testString5);
+                                testString5);
                     }
 
-                    if ( expectedString6.compareTo(testString6) != 0 )
-                    {
+                    if (expectedString6.compareTo(testString6) != 0) {
                         outStream.printf("Unexpected testString6: \"%s\"\n",
-                            testString6);
+                                testString6);
                     }
 
-                    if ( expectedString7.compareTo(testString7) != 0 )
-                    {
+                    if (expectedString7.compareTo(testString7) != 0) {
                         outStream.printf("Unexpected testString7: \"%s\"\n",
-                            testString7);
+                                testString7);
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "sortCells() test failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("sortCells() test 2 threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
             }
@@ -2363,40 +2187,31 @@ public final class DataColumnTest {
         /* Now verify that the cell management methods fail on invalid input */
 
         /* verify appendCell fails on null */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.appendCell(null);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("appendCell(null) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("appendCell(null) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2413,40 +2228,31 @@ public final class DataColumnTest {
          * after verifying the cells itsColID and itsMveID fields match those
          * of the target column.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.appendCell(i_cell0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("appendCell(i_cell0) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("appendCell(i_cell0) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2455,40 +2261,31 @@ public final class DataColumnTest {
         }
 
         /* verify insertCell fails on null */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.insertCell(null, 1);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("insertCell(null, 1) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("insertCell(null, 1) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2497,40 +2294,31 @@ public final class DataColumnTest {
         }
 
         /* verify insertCell fails on a cell configured for a different column */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.insertCell(i_cell0, 1);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("insertCell(i_cell0, 1) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("insertCell(i_cell0, 1) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2539,40 +2327,31 @@ public final class DataColumnTest {
         }
 
         /* verify insertCell fails on a non-positive ord */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.insertCell(f_cell3, 0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("insertCell(f_cell3, 0) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("insertCell(f_cell3, 0) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2583,42 +2362,33 @@ public final class DataColumnTest {
         /* verify insertCell fails on a ord  that is larger than the number
          * of cells in column plus 1.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             int bogus_ord;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 bogus_ord = f_col0.getNumCells() + 2;
                 f_col0.insertCell(f_cell3, bogus_ord);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("insertCell(f_cell3, bogus_ord) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf(
                                 "insertCell(f_cell3, bogus_ord) failed to " +
                                 "throw a system error exception.\n");
@@ -2628,46 +2398,36 @@ public final class DataColumnTest {
         }
 
         /* verify that getCell fails on a non-positive ord */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testCell = f_col0.getCell(0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf("getCell(0) returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("getCell(0) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("getCell(0) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2678,49 +2438,39 @@ public final class DataColumnTest {
         /* verify that getCell fails on a ord greater than the number of
          * cells in the column.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             int bogus_ord;
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 bogus_ord = f_col0.getNumCells() + 1;
                 testCell = f_col0.getCell(bogus_ord);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf(
                                 "getCell(bogus_ord) returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("getCell(bogus_ord) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("getCell(bogus_ord) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2729,46 +2479,36 @@ public final class DataColumnTest {
         }
 
         /* verify that getCellCopy fails on a non-positive ord */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testCell = f_col0.getCellCopy(0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf("getCellCopy(0) returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("getCellCopy(0) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("getCellCopy(0) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2779,49 +2519,39 @@ public final class DataColumnTest {
         /* verify that getCellCopy fails on a ord greater than the number of
          * cells in the column.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             int bogus_ord;
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 bogus_ord = f_col0.getNumCells() + 1;
                 testCell = f_col0.getCellCopy(bogus_ord);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf(
                                 "getCellCopy(bogus_ord) returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("getCellCopy(bogus_ord) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("getCellCopy(bogus_ord) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -2830,48 +2560,38 @@ public final class DataColumnTest {
         }
 
         /* verify that removeCell fails on a non-positive ord */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 testCell = f_col0.removeCell(0, f_cell0.getID());
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf("removeCell(0, f_cell0.getID()) " +
                                 "returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf(
                                 "removeCell(0, f_cell0.getID()) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf(
                                 "removeCell(0, f_cell0.getID()) failed to " +
                                 "throw a system error exception.\n");
@@ -2883,52 +2603,42 @@ public final class DataColumnTest {
         /* verify that removeCell fails on a ord greater than the number of
          * cells in the column.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             int bogus_ord;
             DataCell testCell = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 bogus_ord = f_col0.getNumCells() + 1;
                 testCell = f_col0.removeCell(bogus_ord, f_cell0.getID());
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf(
                                 "removeCell(bogus_ord, f_cell0.getID()) " +
                                 "returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf(
                                 "removeCell(bogus_ord, f_cell0.getID()) " +
                                 "completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf(
                                 "removeCell(bogus_ord, f_cell0.getID()) " +
                                 "failed to throw a system error exception.\n");
@@ -2939,8 +2649,7 @@ public final class DataColumnTest {
 
         /* verify that removeCell fails on a bogus cell ID.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             long bogusID;
             DataCell targetCell = null;
             DataCell testCell = null;
@@ -2948,42 +2657,33 @@ public final class DataColumnTest {
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 targetCell = f_col0.getCell(1);
                 bogusID = targetCell.getID() + 1;
                 testCell = f_col0.removeCell(1, bogusID);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( testCell != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((testCell != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( testCell != null )
-                    {
+                if (verbose) {
+                    if (testCell != null) {
                         outStream.printf(
                                 "removeCell(1, bogusID) returned non null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("removeCell(1, bogusID) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("removeCell(1, bogusID) " +
                                 "failed to throw a system error exception.\n");
                     }
@@ -2992,40 +2692,31 @@ public final class DataColumnTest {
         }
 
         /* verify replaceCell fails on a non-positive ord */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.replaceCell(f_cell6, 0);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("replaceCell(f_cell6, 0) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("replaceCell(f_cell6, 0) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -3036,43 +2727,34 @@ public final class DataColumnTest {
         /* verify replaceCell fails on greater than the number of
          * cells in the column.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             int bogus_ord;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 bogus_ord = f_col0.getNumCells() + 1;
                 f_col0.replaceCell(f_cell6, bogus_ord);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf(
                                 "replaceCell(f_cell6, bogus_ord) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf(
                                 "replaceCell(f_cell6, bogus_ord) failed to " +
                                 "throw a system error exception.\n");
@@ -3083,40 +2765,31 @@ public final class DataColumnTest {
 
         /* verify replaceCell fails on null new cell.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.replaceCell(null, 1);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("replaceCell(null, 1) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("replaceCell(null, 1) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -3126,41 +2799,32 @@ public final class DataColumnTest {
 
         /* verify replaceCell fails on col/cell mismatch.
          */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0.replaceCell(i_cell0, 1);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf(
                                 "replaceCell(i_cell0, 1) completed.\n");
                     }
 
-                    if ( ! threwSystemErrorException )
-                    {
+                    if (!threwSystemErrorException) {
                         outStream.printf("replaceCell(i_cell0, 1) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -3168,32 +2832,24 @@ public final class DataColumnTest {
             }
         }
 
-        if ( failures > 0 )
-        {
+        if (failures > 0) {
             pass = false;
 
-            if ( verbose )
-            {
+            if (verbose) {
                 outStream.printf("%d failures.\n", failures);
             }
-        }
-        else if ( verbose )
-        {
+        } else if (verbose) {
             outStream.print("All tests passed.\n");
         }
 
-        if ( verbose )
-        {
+        if (verbose) {
             /* print the banner again. */
             outStream.print(testBanner);
         }
 
-        if ( pass )
-        {
+        if (pass) {
             outStream.print(passBanner);
-        }
-        else
-        {
+        } else {
             outStream.print(failBanner);
         }
 
@@ -3215,10 +2871,9 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestCopyConstructor()
-    throws SystemErrorException, LogicErrorException {
+    public void TestCopyConstructor() throws SystemErrorException {
         String testBanner =
-            "Testing copy argument constructor for class DataColumn           ";
+                "Testing copy argument constructor for class DataColumn           ";
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String systemErrorExceptionString = null;
@@ -3298,8 +2953,7 @@ public final class DataColumnTest {
 
         outStream.print(testBanner);
 
-        if ( verbose )
-        {
+        if (verbose) {
             outStream.print("\n");
         }
 
@@ -3313,13 +2967,12 @@ public final class DataColumnTest {
          * not be copied.  We will test this at the Database level, where
          * we will be constructing sets of cells for the columns already.
          */
-        try
-        {
+        try {
             db = new ODBCDatabase();
 
 
             f_col0 = new DataColumn(db, "f_col0",
-                                    MatrixVocabElement.MatrixType.FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
 
             f_mve1 = new MatrixVocabElement(db, "f_col1");
             f_mve1.setType(MatrixVocabElement.MatrixType.FLOAT);
@@ -3339,7 +2992,7 @@ public final class DataColumnTest {
 
 
             i_col0 = new DataColumn(db, "i_col0",
-                                    MatrixVocabElement.MatrixType.INTEGER);
+                    MatrixVocabElement.MatrixType.INTEGER);
 
             i_mve1 = new MatrixVocabElement(db, "i_col1");
             i_mve1.setType(MatrixVocabElement.MatrixType.INTEGER);
@@ -3359,7 +3012,7 @@ public final class DataColumnTest {
 
 
             m_col0 = new DataColumn(db, "m_col0",
-                                    MatrixVocabElement.MatrixType.MATRIX);
+                    MatrixVocabElement.MatrixType.MATRIX);
 
             m_mve1 = new MatrixVocabElement(db, "m_col1");
             m_mve1.setType(MatrixVocabElement.MatrixType.MATRIX);
@@ -3380,7 +3033,7 @@ public final class DataColumnTest {
 
 
             n_col0 = new DataColumn(db, "n_col0",
-                                    MatrixVocabElement.MatrixType.NOMINAL);
+                    MatrixVocabElement.MatrixType.NOMINAL);
 
             n_mve1 = new MatrixVocabElement(db, "n_col1");
             n_mve1.setType(MatrixVocabElement.MatrixType.NOMINAL);
@@ -3400,7 +3053,7 @@ public final class DataColumnTest {
 
 
             p_col0 = new DataColumn(db, "p_col0",
-                                    MatrixVocabElement.MatrixType.PREDICATE);
+                    MatrixVocabElement.MatrixType.PREDICATE);
 
             p_mve1 = new MatrixVocabElement(db, "p_col1");
             p_mve1.setType(MatrixVocabElement.MatrixType.PREDICATE);
@@ -3420,7 +3073,7 @@ public final class DataColumnTest {
 
 
             t_col0 = new DataColumn(db, "t_col0",
-                                    MatrixVocabElement.MatrixType.TEXT);
+                    MatrixVocabElement.MatrixType.TEXT);
 
             t_mve1 = new MatrixVocabElement(db, "t_col1");
             t_mve1.setType(MatrixVocabElement.MatrixType.TEXT);
@@ -3439,213 +3092,185 @@ public final class DataColumnTest {
             t_col2 = new DataColumn(db, "t_col2", false, true, t_mve2ID);
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( f_col0 == null ) ||
-             ( f_mve1 == null ) ||
-             ( f_mve1ID == DBIndex.INVALID_ID ) ||
-             ( f_col1 == null ) ||
-             ( f_mve2 == null ) ||
-             ( f_mve2ID == DBIndex.INVALID_ID ) ||
-             ( f_col2 == null ) ||
-             ( f_mve2ID == DBIndex.INVALID_ID ) ||
-             ( i_col0 == null ) ||
-             ( i_mve1 == null ) ||
-             ( i_mve1ID == DBIndex.INVALID_ID ) ||
-             ( i_col1 == null ) ||
-             ( i_mve2 == null ) ||
-             ( i_mve2ID == DBIndex.INVALID_ID ) ||
-             ( i_col2 == null ) ||
-             ( m_col0 == null ) ||
-             ( m_mve1 == null ) ||
-             ( m_mve1ID == DBIndex.INVALID_ID ) ||
-             ( m_col1 == null ) ||
-             ( m_mve2 == null ) ||
-             ( m_mve2ID == DBIndex.INVALID_ID ) ||
-             ( m_col2 == null ) ||
-             ( n_col0 == null ) ||
-             ( n_mve1 == null ) ||
-             ( n_mve1ID == DBIndex.INVALID_ID ) ||
-             ( n_col1 == null ) ||
-             ( n_mve2 == null ) ||
-             ( n_mve2ID == DBIndex.INVALID_ID ) ||
-             ( n_col2 == null ) ||
-             ( p_col0 == null ) ||
-             ( p_mve1 == null ) ||
-             ( p_mve1ID == DBIndex.INVALID_ID ) ||
-             ( p_col1 == null ) ||
-             ( p_mve2 == null ) ||
-             ( p_mve2ID == DBIndex.INVALID_ID ) ||
-             ( p_col2 == null ) ||
-             ( t_col0 == null ) ||
-             ( t_mve1 == null ) ||
-             ( t_mve1ID == DBIndex.INVALID_ID ) ||
-             ( t_col1 == null ) ||
-             ( t_mve2 == null ) ||
-             ( t_mve2ID == DBIndex.INVALID_ID ) ||
-             ( t_col2 == null ) ||
-             ( ! completed ) ||
-             ( threwSystemErrorException ) )
-        {
+        if ((db == null) ||
+                (f_col0 == null) ||
+                (f_mve1 == null) ||
+                (f_mve1ID == DBIndex.INVALID_ID) ||
+                (f_col1 == null) ||
+                (f_mve2 == null) ||
+                (f_mve2ID == DBIndex.INVALID_ID) ||
+                (f_col2 == null) ||
+                (f_mve2ID == DBIndex.INVALID_ID) ||
+                (i_col0 == null) ||
+                (i_mve1 == null) ||
+                (i_mve1ID == DBIndex.INVALID_ID) ||
+                (i_col1 == null) ||
+                (i_mve2 == null) ||
+                (i_mve2ID == DBIndex.INVALID_ID) ||
+                (i_col2 == null) ||
+                (m_col0 == null) ||
+                (m_mve1 == null) ||
+                (m_mve1ID == DBIndex.INVALID_ID) ||
+                (m_col1 == null) ||
+                (m_mve2 == null) ||
+                (m_mve2ID == DBIndex.INVALID_ID) ||
+                (m_col2 == null) ||
+                (n_col0 == null) ||
+                (n_mve1 == null) ||
+                (n_mve1ID == DBIndex.INVALID_ID) ||
+                (n_col1 == null) ||
+                (n_mve2 == null) ||
+                (n_mve2ID == DBIndex.INVALID_ID) ||
+                (n_col2 == null) ||
+                (p_col0 == null) ||
+                (p_mve1 == null) ||
+                (p_mve1ID == DBIndex.INVALID_ID) ||
+                (p_col1 == null) ||
+                (p_mve2 == null) ||
+                (p_mve2ID == DBIndex.INVALID_ID) ||
+                (p_col2 == null) ||
+                (t_col0 == null) ||
+                (t_mve1 == null) ||
+                (t_mve1ID == DBIndex.INVALID_ID) ||
+                (t_col1 == null) ||
+                (t_mve2 == null) ||
+                (t_mve2ID == DBIndex.INVALID_ID) ||
+                (t_col2 == null) ||
+                (!completed) ||
+                (threwSystemErrorException)) {
             failures++;
 
-            if ( verbose )
-            {
-                if ( db == null )
-                {
+            if (verbose) {
+                if (db == null) {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( f_col0 == null )
-                {
+                if (f_col0 == null) {
                     outStream.print("f_col0 allocation failed.\n");
                 }
 
-                if ( ( f_mve1 == null ) ||
-                     ( f_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( f_col1 == null ) )
-                {
+                if ((f_mve1 == null) ||
+                        (f_mve1ID == DBIndex.INVALID_ID) ||
+                        (f_col1 == null)) {
                     outStream.print("f_col1 allocation failed.\n");
                 }
 
-                if ( ( f_mve2 == null ) ||
-                     ( f_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( f_col2 == null ) )
-                {
+                if ((f_mve2 == null) ||
+                        (f_mve2ID == DBIndex.INVALID_ID) ||
+                        (f_col2 == null)) {
                     outStream.print("f_col2 allocation failed.\n");
                 }
 
 
-                if ( i_col0 == null )
-                {
+                if (i_col0 == null) {
                     outStream.print("i_col0 allocation failed.\n");
                 }
 
-                if ( ( i_mve1 == null ) ||
-                     ( i_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( i_col1 == null ) )
-                {
+                if ((i_mve1 == null) ||
+                        (i_mve1ID == DBIndex.INVALID_ID) ||
+                        (i_col1 == null)) {
                     outStream.print("i_col1 allocation failed.\n");
                 }
 
-                if ( ( i_mve2 == null ) ||
-                     ( i_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( i_col2 == null ) )
-                {
+                if ((i_mve2 == null) ||
+                        (i_mve2ID == DBIndex.INVALID_ID) ||
+                        (i_col2 == null)) {
                     outStream.print("i_col2 allocation failed.\n");
                 }
 
 
-                if ( m_col0 == null )
-                {
+                if (m_col0 == null) {
                     outStream.print("m_col0 allocation failed.\n");
                 }
 
-                if ( ( m_mve1 == null ) ||
-                     ( m_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( m_col1 == null ) )
-                {
+                if ((m_mve1 == null) ||
+                        (m_mve1ID == DBIndex.INVALID_ID) ||
+                        (m_col1 == null)) {
                     outStream.print("m_col1 allocation failed.\n");
                 }
 
-                if ( ( m_mve2 == null ) ||
-                     ( m_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( m_col2 == null ) )
-                {
+                if ((m_mve2 == null) ||
+                        (m_mve2ID == DBIndex.INVALID_ID) ||
+                        (m_col2 == null)) {
                     outStream.print("m_col2 allocation failed.\n");
                 }
 
 
-                if ( n_col0 == null )
-                {
+                if (n_col0 == null) {
                     outStream.print("n_col0 allocation failed.\n");
                 }
 
-                if ( ( n_mve1 == null ) ||
-                     ( n_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( n_col1 == null ) )
-                {
+                if ((n_mve1 == null) ||
+                        (n_mve1ID == DBIndex.INVALID_ID) ||
+                        (n_col1 == null)) {
                     outStream.print("n_col1 allocation failed.\n");
                 }
 
-                if ( ( n_mve2 == null ) ||
-                     ( n_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( n_col2 == null ) )
-                {
+                if ((n_mve2 == null) ||
+                        (n_mve2ID == DBIndex.INVALID_ID) ||
+                        (n_col2 == null)) {
                     outStream.print("n_col2 allocation failed.\n");
                 }
 
 
-                if ( p_col0 == null )
-                {
+                if (p_col0 == null) {
                     outStream.print("p_col0 allocation failed.\n");
                 }
 
-                if ( ( p_mve1 == null ) ||
-                     ( p_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( p_col1 == null ) )
-                {
+                if ((p_mve1 == null) ||
+                        (p_mve1ID == DBIndex.INVALID_ID) ||
+                        (p_col1 == null)) {
                     outStream.print("p_col1 allocation failed.\n");
                 }
 
-                if ( ( p_mve2 == null ) ||
-                     ( p_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( p_col2 == null ) )
-                {
+                if ((p_mve2 == null) ||
+                        (p_mve2ID == DBIndex.INVALID_ID) ||
+                        (p_col2 == null)) {
                     outStream.print("p_col2 allocation failed.\n");
                 }
 
 
-                if ( t_col0 == null )
-                {
+                if (t_col0 == null) {
                     outStream.print("t_col0 allocation failed.\n");
                 }
 
-                if ( ( t_mve1 == null ) ||
-                     ( t_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( t_col1 == null ) )
-                {
+                if ((t_mve1 == null) ||
+                        (t_mve1ID == DBIndex.INVALID_ID) ||
+                        (t_col1 == null)) {
                     outStream.print("t_col1 allocation failed.\n");
                 }
 
-                if ( ( t_mve2 == null ) ||
-                     ( t_mve2ID == DBIndex.INVALID_ID ) ||
-                     ( t_col2 == null ) )
-                {
+                if ((t_mve2 == null) ||
+                        (t_mve2ID == DBIndex.INVALID_ID) ||
+                        (t_col2 == null)) {
                     outStream.print("t_col2 allocation failed.\n");
                 }
 
-                if ( ! completed )
-                {
+                if (!completed) {
                     outStream.printf(
                             "test setup failed to complete.\n");
                 }
 
-                if ( threwSystemErrorException )
-                {
+                if (threwSystemErrorException) {
                     outStream.printf("test setup threw " +
-                                      "system error exception: \"%s\".\n",
-                                      systemErrorExceptionString);
+                            "system error exception: \"%s\".\n",
+                            systemErrorExceptionString);
                 }
             }
         }
 
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
+            try {
                 f_col0_copy = new DataColumn(f_col0);
                 f_col1_copy = new DataColumn(f_col1);
                 f_col2_copy = new DataColumn(f_col2);
@@ -3671,145 +3296,118 @@ public final class DataColumnTest {
                 t_col2_copy = new DataColumn(t_col2);
 
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( f_col0_copy == null ) ||
-                 ( f_col1_copy == null ) ||
-                 ( f_col2_copy == null ) ||
-                 ( i_col0_copy == null ) ||
-                 ( i_col1_copy == null ) ||
-                 ( i_col2_copy == null ) ||
-                 ( m_col0_copy == null ) ||
-                 ( m_col1_copy == null ) ||
-                 ( m_col2_copy == null ) ||
-                 ( n_col0_copy == null ) ||
-                 ( n_col1_copy == null ) ||
-                 ( n_col2_copy == null ) ||
-                 ( p_col0_copy == null ) ||
-                 ( p_col1_copy == null ) ||
-                 ( p_col2_copy == null ) ||
-                 ( t_col0_copy == null ) ||
-                 ( t_col1_copy == null ) ||
-                 ( t_col2_copy == null ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
+            if ((f_col0_copy == null) ||
+                    (f_col1_copy == null) ||
+                    (f_col2_copy == null) ||
+                    (i_col0_copy == null) ||
+                    (i_col1_copy == null) ||
+                    (i_col2_copy == null) ||
+                    (m_col0_copy == null) ||
+                    (m_col1_copy == null) ||
+                    (m_col2_copy == null) ||
+                    (n_col0_copy == null) ||
+                    (n_col1_copy == null) ||
+                    (n_col2_copy == null) ||
+                    (p_col0_copy == null) ||
+                    (p_col1_copy == null) ||
+                    (p_col2_copy == null) ||
+                    (t_col0_copy == null) ||
+                    (t_col1_copy == null) ||
+                    (t_col2_copy == null) ||
+                    (!completed) ||
+                    (threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( f_col0_copy == null )
-                    {
+                if (verbose) {
+                    if (f_col0_copy == null) {
                         outStream.print("f_col0_copy allocation failed.\n");
                     }
 
-                    if ( f_col1_copy == null )
-                    {
+                    if (f_col1_copy == null) {
                         outStream.print("f_col1_copy allocation failed.\n");
                     }
 
-                    if ( f_col1_copy == null )
-                    {
+                    if (f_col1_copy == null) {
                         outStream.print("f_col2_copy allocation failed.\n");
                     }
 
-                    if ( i_col0_copy == null )
-                    {
+                    if (i_col0_copy == null) {
                         outStream.print("i_col0_copy allocation failed.\n");
                     }
 
-                    if ( i_col1_copy == null )
-                    {
+                    if (i_col1_copy == null) {
                         outStream.print("i_col1_copy allocation failed.\n");
                     }
 
-                    if ( i_col1_copy == null )
-                    {
+                    if (i_col1_copy == null) {
                         outStream.print("i_col2_copy allocation failed.\n");
                     }
 
-                    if ( m_col0_copy == null )
-                    {
+                    if (m_col0_copy == null) {
                         outStream.print("m_col0_copy allocation failed.\n");
                     }
 
-                    if ( m_col1_copy == null )
-                    {
+                    if (m_col1_copy == null) {
                         outStream.print("m_col1_copy allocation failed.\n");
                     }
 
-                    if ( m_col1_copy == null )
-                    {
+                    if (m_col1_copy == null) {
                         outStream.print("m_col2_copy allocation failed.\n");
                     }
 
-                    if ( n_col0_copy == null )
-                    {
+                    if (n_col0_copy == null) {
                         outStream.print("n_col0_copy allocation failed.\n");
                     }
 
-                    if ( n_col1_copy == null )
-                    {
+                    if (n_col1_copy == null) {
                         outStream.print("n_col1_copy allocation failed.\n");
                     }
 
-                    if ( n_col1_copy == null )
-                    {
+                    if (n_col1_copy == null) {
                         outStream.print("n_col2_copy allocation failed.\n");
                     }
 
-                    if ( p_col0_copy == null )
-                    {
+                    if (p_col0_copy == null) {
                         outStream.print("p_col0_copy allocation failed.\n");
                     }
 
-                    if ( p_col1_copy == null )
-                    {
+                    if (p_col1_copy == null) {
                         outStream.print("p_col1_copy allocation failed.\n");
                     }
 
-                    if ( p_col1_copy == null )
-                    {
+                    if (p_col1_copy == null) {
                         outStream.print("p_col2_copy allocation failed.\n");
                     }
 
-                    if ( t_col0_copy == null )
-                    {
+                    if (t_col0_copy == null) {
                         outStream.print("t_col0_copy allocation failed.\n");
                     }
 
-                    if ( t_col1_copy == null )
-                    {
+                    if (t_col1_copy == null) {
                         outStream.print("t_col1_copy allocation failed.\n");
                     }
 
-                    if ( t_col1_copy == null )
-                    {
+                    if (t_col1_copy == null) {
                         outStream.print("t_col2_copy allocation failed.\n");
                     }
 
-                    if ( ! completed )
-                    {
+                    if (!completed) {
                         outStream.printf(
                                 "copy constructor test failed to complete.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("copy constructor test threw a " +
-                                         "system error exception: \"%s\".\n",
-                                         systemErrorExceptionString);
+                                "system error exception: \"%s\".\n",
+                                systemErrorExceptionString);
                     }
                 }
-            }
-            else
-            {
+            } else {
                 failures += VerifyDataColumnCopy(f_col0, f_col0_copy,
                         outStream, verbose, "f_col0", "f_col0_copy");
 
@@ -3874,46 +3472,36 @@ public final class DataColumnTest {
         /* Now verify that the constructor fails on invalid input */
 
         /* verify that it fails on null */
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             dc = null;
             completed = false;
             threwSystemErrorException = false;
             systemErrorExceptionString = null;
 
-            try
-            {
-                dc= new DataColumn(null);
+            try {
+                dc = new DataColumn(null);
                 completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
+            } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
             }
 
-            if ( ( dc != null ) ||
-                 ( completed ) ||
-                 ( ! threwSystemErrorException ) )
-            {
+            if ((dc != null) ||
+                    (completed) ||
+                    (!threwSystemErrorException)) {
                 failures++;
 
-                if ( verbose )
-                {
-                    if ( dc != null )
-                    {
+                if (verbose) {
+                    if (dc != null) {
                         outStream.printf(
                                 "new DataColumn(null) returned non-null.\n");
                     }
 
-                    if ( completed )
-                    {
+                    if (completed) {
                         outStream.printf("new DataColumn(null) completed.\n");
                     }
 
-                    if ( threwSystemErrorException )
-                    {
+                    if (threwSystemErrorException) {
                         outStream.printf("new DataColumn(null) failed to " +
                                 "throw a system error exception.\n");
                     }
@@ -3921,32 +3509,24 @@ public final class DataColumnTest {
             }
         }
 
-        if ( failures > 0 )
-        {
+        if (failures > 0) {
             pass = false;
 
-            if ( verbose )
-            {
+            if (verbose) {
                 outStream.printf("%d failures.\n", failures);
             }
-        }
-        else if ( verbose )
-        {
+        } else if (verbose) {
             outStream.print("All tests passed.\n");
         }
 
-        if ( verbose )
-        {
+        if (verbose) {
             /* print the banner again. */
             outStream.print(testBanner);
         }
 
-        if ( pass )
-        {
+        if (pass) {
             outStream.print(passBanner);
-        }
-        else
-        {
+        } else {
             outStream.print(failBanner);
         }
 
@@ -3967,10 +3547,9 @@ public final class DataColumnTest {
      *    - None.
      */
     @Test
-    public void TestToStringMethods()
-    throws SystemErrorException, LogicErrorException {
+    public void TestToStringMethods() throws SystemErrorException {
         String testBanner =
-            "Testing toString() & toDBString()                                ";
+                "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";
         String failBanner = "FAILED\n";
         String systemErrorExceptionString = null;
@@ -4078,8 +3657,7 @@ public final class DataColumnTest {
 
         outStream.print(testBanner);
 
-        if ( verbose )
-        {
+        if (verbose) {
             outStream.print("\n");
         }
 
@@ -4091,31 +3669,30 @@ public final class DataColumnTest {
          * we insert the columns in the database, we use db.cl.getColumn()
          * to get a reference to the actual column in the database.
          */
-        try
-        {
+        try {
             db = new ODBCDatabase();
 
 
             f_col0 = new DataColumn(db, "f_col0",
-                                    MatrixVocabElement.MatrixType.FLOAT);
+                    MatrixVocabElement.MatrixType.FLOAT);
             f_col0ID = db.addColumn(f_col0);
-            f_col0 = (DataColumn)db.cl.getColumn(f_col0ID);
+            f_col0 = (DataColumn) db.cl.getColumn(f_col0ID);
             f_mve0ID = f_col0.getItsMveID();
             f_mve0 = db.getMatrixVE(f_mve0ID);
 
 
             i_col0 = new DataColumn(db, "i_col0",
-                                    MatrixVocabElement.MatrixType.INTEGER);
+                    MatrixVocabElement.MatrixType.INTEGER);
             i_col0ID = db.addColumn(i_col0);
-            i_col0 = (DataColumn)db.cl.getColumn(i_col0ID);
+            i_col0 = (DataColumn) db.cl.getColumn(i_col0ID);
             i_mve0ID = i_col0.getItsMveID();
             i_mve0 = db.getMatrixVE(i_mve0ID);
 
 
             m_col0 = new DataColumn(db, "m_col0",
-                                    MatrixVocabElement.MatrixType.MATRIX);
+                    MatrixVocabElement.MatrixType.MATRIX);
             m_col0ID = db.addColumn(m_col0);
-            m_col0 = (DataColumn)db.cl.getColumn(m_col0ID);
+            m_col0 = (DataColumn) db.cl.getColumn(m_col0ID);
             m_mve0ID = m_col0.getItsMveID();
             m_mve0 = db.getMatrixVE(m_mve0ID);
 
@@ -4133,25 +3710,25 @@ public final class DataColumnTest {
 
 
             n_col0 = new DataColumn(db, "n_col0",
-                                    MatrixVocabElement.MatrixType.NOMINAL);
+                    MatrixVocabElement.MatrixType.NOMINAL);
             n_col0ID = db.addColumn(n_col0);
-            n_col0 = (DataColumn)db.cl.getColumn(n_col0ID);
+            n_col0 = (DataColumn) db.cl.getColumn(n_col0ID);
             n_mve0ID = n_col0.getItsMveID();
             n_mve0 = db.getMatrixVE(n_mve0ID);
 
 
             p_col0 = new DataColumn(db, "p_col0",
-                                    MatrixVocabElement.MatrixType.PREDICATE);
+                    MatrixVocabElement.MatrixType.PREDICATE);
             p_col0ID = db.addColumn(p_col0);
-            p_col0 = (DataColumn)db.cl.getColumn(p_col0ID);
+            p_col0 = (DataColumn) db.cl.getColumn(p_col0ID);
             p_mve0ID = p_col0.getItsMveID();
             p_mve0 = db.getMatrixVE(p_mve0ID);
 
 
             t_col0 = new DataColumn(db, "t_col0",
-                                    MatrixVocabElement.MatrixType.TEXT);
+                    MatrixVocabElement.MatrixType.TEXT);
             t_col0ID = db.addColumn(t_col0);
-            t_col0 = (DataColumn)db.cl.getColumn(t_col0ID);
+            t_col0 = (DataColumn) db.cl.getColumn(t_col0ID);
             t_mve0ID = t_col0.getItsMveID();
             t_mve0 = db.getMatrixVE(t_mve0ID);
 
@@ -4164,7 +3741,7 @@ public final class DataColumnTest {
             f_arg_list0.add(arg);
             f_matrix0 = new Matrix(db, f_mve0ID, f_arg_list0);
             f_cell0 = new DataCell(db, "f_cell0", f_col0ID, f_mve0ID,
-                                       f_onset0, f_offset0, f_matrix0);
+                    f_onset0, f_offset0, f_matrix0);
 
             f_onset1 = new TimeStamp(db.getTicks(), 180);
             f_offset1 = new TimeStamp(db.getTicks(), 240);
@@ -4174,7 +3751,7 @@ public final class DataColumnTest {
             f_arg_list1.add(arg);
             f_matrix1 = new Matrix(db, f_mve0ID, f_arg_list1);
             f_cell1 = new DataCell(db, "f_cell1", f_col0ID, f_mve0ID,
-                                       f_onset1, f_offset1, f_matrix1);
+                    f_onset1, f_offset1, f_matrix1);
 
             f_onset2 = new TimeStamp(db.getTicks(), 300);
             f_offset2 = new TimeStamp(db.getTicks(), 360);
@@ -4184,7 +3761,7 @@ public final class DataColumnTest {
             f_arg_list2.add(arg);
             f_matrix2 = new Matrix(db, f_mve0ID, f_arg_list2);
             f_cell2 = new DataCell(db, "f_cell2", f_col0ID, f_mve0ID,
-                                       f_onset2, f_offset2, f_matrix2);
+                    f_onset2, f_offset2, f_matrix2);
 
             f_onset3 = new TimeStamp(db.getTicks(), 420);
             f_offset3 = new TimeStamp(db.getTicks(), 480);
@@ -4194,7 +3771,7 @@ public final class DataColumnTest {
             f_arg_list3.add(arg);
             f_matrix3 = new Matrix(db, f_mve0ID, f_arg_list3);
             f_cell3 = new DataCell(db, "f_cell3", f_col0ID, f_mve0ID,
-                                       f_onset3, f_offset3, f_matrix3);
+                    f_onset3, f_offset3, f_matrix3);
 
             f_onset4 = new TimeStamp(db.getTicks(), 540);
             f_offset4 = new TimeStamp(db.getTicks(), 600);
@@ -4204,7 +3781,7 @@ public final class DataColumnTest {
             f_arg_list4.add(arg);
             f_matrix4 = new Matrix(db, f_mve0ID, f_arg_list4);
             f_cell4 = new DataCell(db, "f_cell4", f_col0ID, f_mve0ID,
-                                       f_onset4, f_offset4, f_matrix4);
+                    f_onset4, f_offset4, f_matrix4);
 
             f_onset5 = new TimeStamp(db.getTicks(), 660);
             f_offset5 = new TimeStamp(db.getTicks(), 720);
@@ -4214,7 +3791,7 @@ public final class DataColumnTest {
             f_arg_list5.add(arg);
             f_matrix5 = new Matrix(db, f_mve0ID, f_arg_list5);
             f_cell5 = new DataCell(db, "f_cell5", f_col0ID, f_mve0ID,
-                                       f_onset5, f_offset5, f_matrix5);
+                    f_onset5, f_offset5, f_matrix5);
 
             f_onset6 = new TimeStamp(db.getTicks(), 780);
             f_offset6 = new TimeStamp(db.getTicks(), 840);
@@ -4224,7 +3801,7 @@ public final class DataColumnTest {
             f_arg_list6.add(arg);
             f_matrix6 = new Matrix(db, f_mve0ID, f_arg_list6);
             f_cell6 = new DataCell(db, "f_cell6", f_col0ID, f_mve0ID,
-                                       f_onset6, f_offset6, f_matrix6);
+                    f_onset6, f_offset6, f_matrix6);
 
             f_onset7 = new TimeStamp(db.getTicks(), 900);
             f_offset7 = new TimeStamp(db.getTicks(), 960);
@@ -4234,7 +3811,7 @@ public final class DataColumnTest {
             f_arg_list7.add(arg);
             f_matrix7 = new Matrix(db, f_mve0ID, f_arg_list7);
             f_cell7 = new DataCell(db, "f_cell7", f_col0ID, f_mve0ID,
-                                       f_onset7, f_offset7, f_matrix7);
+                    f_onset7, f_offset7, f_matrix7);
 
             f_onset8 = new TimeStamp(db.getTicks(), 900);
             f_offset8 = new TimeStamp(db.getTicks(), 960);
@@ -4244,7 +3821,7 @@ public final class DataColumnTest {
             f_arg_list8.add(arg);
             f_matrix8 = new Matrix(db, f_mve0ID, f_arg_list8);
             f_cell8 = new DataCell(db, "f_cell8", f_col0ID, f_mve0ID,
-                                       f_onset8, f_offset8, f_matrix8);
+                    f_onset8, f_offset8, f_matrix8);
 
             i_cell0 = new DataCell(db, "i_cell0", i_col0ID, i_mve0ID);
             m_cell0 = new DataCell(db, "m_cell0", m_col0ID, m_mve0ID);
@@ -4269,314 +3846,276 @@ public final class DataColumnTest {
             t_col0.appendCell(t_cell0_c = new DataCell(t_cell0));
 
             completed = true;
-        }
-
-        catch (SystemErrorException e)
-        {
+        } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
         }
 
-        if ( ( db == null ) ||
-             ( f_col0ID == DBIndex.INVALID_ID ) ||
-             ( f_mve0ID == DBIndex.INVALID_ID ) ||
-             ( f_col0 == null ) ||
-             ( f_mve0 == null ) ||
-             ( i_col0ID == DBIndex.INVALID_ID ) ||
-             ( i_mve0ID == DBIndex.INVALID_ID ) ||
-             ( i_col0 == null ) ||
-             ( i_mve0 == null ) ||
-             ( m_col0ID == DBIndex.INVALID_ID ) ||
-             ( m_mve0ID == DBIndex.INVALID_ID ) ||
-             ( m_col0 == null ) ||
-             ( m_mve0 == null ) ||
-             ( m_col1ID == DBIndex.INVALID_ID ) ||
-             ( m_mve1ID == DBIndex.INVALID_ID ) ||
-             ( m_col1 == null ) ||
-             ( m_mve1 == null ) ||
-             ( n_col0ID == DBIndex.INVALID_ID ) ||
-             ( n_mve0ID == DBIndex.INVALID_ID ) ||
-             ( n_col0 == null ) ||
-             ( n_mve0 == null ) ||
-             ( p_col0ID == DBIndex.INVALID_ID ) ||
-             ( p_mve0ID == DBIndex.INVALID_ID ) ||
-             ( p_col0 == null ) ||
-             ( p_mve0 == null ) ||
-             ( t_col0ID == DBIndex.INVALID_ID ) ||
-             ( t_mve0ID == DBIndex.INVALID_ID ) ||
-             ( t_col0 == null ) ||
-             ( t_mve0 == null ) ||
-             ( f_onset0 == null ) ||
-             ( f_offset0 == null ) ||
-             ( f_cell0 == null ) ||
-             ( f_onset1 == null ) ||
-             ( f_offset1 == null ) ||
-             ( f_cell1 == null ) ||
-             ( f_onset2 == null ) ||
-             ( f_offset2 == null ) ||
-             ( f_cell2 == null ) ||
-             ( f_onset3 == null ) ||
-             ( f_offset3 == null ) ||
-             ( f_cell3 == null ) ||
-             ( f_onset4 == null ) ||
-             ( f_offset4 == null ) ||
-             ( f_cell4 == null ) ||
-             ( f_onset5 == null ) ||
-             ( f_offset5 == null ) ||
-             ( f_cell5 == null ) ||
-             ( f_onset6 == null ) ||
-             ( f_offset6 == null ) ||
-             ( f_cell6 == null ) ||
-             ( f_onset7 == null ) ||
-             ( f_offset7 == null ) ||
-             ( f_cell7 == null ) ||
-             ( f_onset8 == null ) ||
-             ( f_offset8 == null ) ||
-             ( f_cell8 == null ) ||
-             ( i_cell0 == null ) ||
-             ( m_cell0 == null ) ||
-             ( n_cell0 == null ) ||
-             ( p_cell0 == null ) ||
-             ( t_cell0 == null ) ||
-             ( f_col0.getNumCells() != 9 ) ||
-             ( i_col0.getNumCells() != 1 ) ||
-             ( m_col0.getNumCells() != 1 ) ||
-             ( m_col1.getNumCells() != 0 ) ||
-             ( n_col0.getNumCells() != 1 ) ||
-             ( p_col0.getNumCells() != 1 ) ||
-             ( t_col0.getNumCells() != 1 ) ||
-             ( ! completed ) ||
-             ( threwSystemErrorException ) )
-        {
+        if ((db == null) ||
+                (f_col0ID == DBIndex.INVALID_ID) ||
+                (f_mve0ID == DBIndex.INVALID_ID) ||
+                (f_col0 == null) ||
+                (f_mve0 == null) ||
+                (i_col0ID == DBIndex.INVALID_ID) ||
+                (i_mve0ID == DBIndex.INVALID_ID) ||
+                (i_col0 == null) ||
+                (i_mve0 == null) ||
+                (m_col0ID == DBIndex.INVALID_ID) ||
+                (m_mve0ID == DBIndex.INVALID_ID) ||
+                (m_col0 == null) ||
+                (m_mve0 == null) ||
+                (m_col1ID == DBIndex.INVALID_ID) ||
+                (m_mve1ID == DBIndex.INVALID_ID) ||
+                (m_col1 == null) ||
+                (m_mve1 == null) ||
+                (n_col0ID == DBIndex.INVALID_ID) ||
+                (n_mve0ID == DBIndex.INVALID_ID) ||
+                (n_col0 == null) ||
+                (n_mve0 == null) ||
+                (p_col0ID == DBIndex.INVALID_ID) ||
+                (p_mve0ID == DBIndex.INVALID_ID) ||
+                (p_col0 == null) ||
+                (p_mve0 == null) ||
+                (t_col0ID == DBIndex.INVALID_ID) ||
+                (t_mve0ID == DBIndex.INVALID_ID) ||
+                (t_col0 == null) ||
+                (t_mve0 == null) ||
+                (f_onset0 == null) ||
+                (f_offset0 == null) ||
+                (f_cell0 == null) ||
+                (f_onset1 == null) ||
+                (f_offset1 == null) ||
+                (f_cell1 == null) ||
+                (f_onset2 == null) ||
+                (f_offset2 == null) ||
+                (f_cell2 == null) ||
+                (f_onset3 == null) ||
+                (f_offset3 == null) ||
+                (f_cell3 == null) ||
+                (f_onset4 == null) ||
+                (f_offset4 == null) ||
+                (f_cell4 == null) ||
+                (f_onset5 == null) ||
+                (f_offset5 == null) ||
+                (f_cell5 == null) ||
+                (f_onset6 == null) ||
+                (f_offset6 == null) ||
+                (f_cell6 == null) ||
+                (f_onset7 == null) ||
+                (f_offset7 == null) ||
+                (f_cell7 == null) ||
+                (f_onset8 == null) ||
+                (f_offset8 == null) ||
+                (f_cell8 == null) ||
+                (i_cell0 == null) ||
+                (m_cell0 == null) ||
+                (n_cell0 == null) ||
+                (p_cell0 == null) ||
+                (t_cell0 == null) ||
+                (f_col0.getNumCells() != 9) ||
+                (i_col0.getNumCells() != 1) ||
+                (m_col0.getNumCells() != 1) ||
+                (m_col1.getNumCells() != 0) ||
+                (n_col0.getNumCells() != 1) ||
+                (p_col0.getNumCells() != 1) ||
+                (t_col0.getNumCells() != 1) ||
+                (!completed) ||
+                (threwSystemErrorException)) {
             failures++;
 
-            if ( verbose )
-            {
-                if ( db == null )
-                {
+            if (verbose) {
+                if (db == null) {
                     outStream.print(
                             "new ODBCDatabase() returned null.\n");
                 }
 
-                if ( ( f_col0ID == DBIndex.INVALID_ID ) ||
-                     ( f_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( f_col0 == null ) ||
-                     ( f_mve0 == null ) )
-                {
+                if ((f_col0ID == DBIndex.INVALID_ID) ||
+                        (f_mve0ID == DBIndex.INVALID_ID) ||
+                        (f_col0 == null) ||
+                        (f_mve0 == null)) {
                     outStream.printf("f_col0 alloc failed.  f_col0ID = %d, " +
                             "f_mve0ID = %d\n", f_col0ID, f_mve0ID);
                 }
 
-                if ( ( i_col0ID == DBIndex.INVALID_ID ) ||
-                     ( i_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( i_col0 == null ) ||
-                     ( i_mve0 == null ) )
-                {
+                if ((i_col0ID == DBIndex.INVALID_ID) ||
+                        (i_mve0ID == DBIndex.INVALID_ID) ||
+                        (i_col0 == null) ||
+                        (i_mve0 == null)) {
                     outStream.printf("i_col0 alloc failed.  i_col0ID = %d, " +
                             "i_mve0ID = %d\n", i_col0ID, i_mve0ID);
                 }
 
-                if ( ( m_col0ID == DBIndex.INVALID_ID ) ||
-                     ( m_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( m_col0 == null ) ||
-                     ( m_mve0 == null ) )
-                {
+                if ((m_col0ID == DBIndex.INVALID_ID) ||
+                        (m_mve0ID == DBIndex.INVALID_ID) ||
+                        (m_col0 == null) ||
+                        (m_mve0 == null)) {
                     outStream.printf("m_col0 alloc failed.  m_col0ID = %d, " +
                             "m_mve0ID = %d\n", m_col0ID, m_mve0ID);
                 }
 
-                if ( ( m_col1ID == DBIndex.INVALID_ID ) ||
-                     ( m_mve1ID == DBIndex.INVALID_ID ) ||
-                     ( m_col1 == null ) ||
-                     ( m_mve1 == null ) )
-                {
+                if ((m_col1ID == DBIndex.INVALID_ID) ||
+                        (m_mve1ID == DBIndex.INVALID_ID) ||
+                        (m_col1 == null) ||
+                        (m_mve1 == null)) {
                     outStream.printf("m_col1 alloc failed.  m_col1ID = %d, " +
                             "m_mve1ID = %d\n", m_col1ID, m_mve1ID);
                 }
 
-                if ( ( n_col0ID == DBIndex.INVALID_ID ) ||
-                     ( n_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( n_col0 == null ) ||
-                     ( n_mve0 == null ) )
-                {
+                if ((n_col0ID == DBIndex.INVALID_ID) ||
+                        (n_mve0ID == DBIndex.INVALID_ID) ||
+                        (n_col0 == null) ||
+                        (n_mve0 == null)) {
                     outStream.printf("n_col0 alloc failed.  n_col0ID = %d, " +
                             "n_mve0ID = %d\n", n_col0ID, n_mve0ID);
                 }
 
-                if ( ( p_col0ID == DBIndex.INVALID_ID ) ||
-                     ( p_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( p_col0 == null ) ||
-                     ( p_mve0 == null ) )
-                {
+                if ((p_col0ID == DBIndex.INVALID_ID) ||
+                        (p_mve0ID == DBIndex.INVALID_ID) ||
+                        (p_col0 == null) ||
+                        (p_mve0 == null)) {
                     outStream.printf("p_col0 alloc failed.  p_col0ID = %d, " +
                             "p_mve0ID = %d\n", p_col0ID, p_mve0ID);
                 }
 
-                if ( ( t_col0ID == DBIndex.INVALID_ID ) ||
-                     ( t_mve0ID == DBIndex.INVALID_ID ) ||
-                     ( t_col0 == null ) ||
-                     ( t_mve0 == null ) )
-                {
+                if ((t_col0ID == DBIndex.INVALID_ID) ||
+                        (t_mve0ID == DBIndex.INVALID_ID) ||
+                        (t_col0 == null) ||
+                        (t_mve0 == null)) {
                     outStream.printf("t_col0 alloc failed.  t_col0ID = %d, " +
                             "t_mve0ID = %d\n", t_col0ID, t_mve0ID);
                 }
 
-                if ( ( f_onset0 == null ) ||
-                     ( f_offset0 == null ) ||
-                     ( f_cell0 == null ) )
-                {
+                if ((f_onset0 == null) ||
+                        (f_offset0 == null) ||
+                        (f_cell0 == null)) {
                     outStream.printf("f_cell0 alloc failed.\n");
                 }
 
-                if ( ( f_onset1 == null ) ||
-                     ( f_offset1 == null ) ||
-                     ( f_cell1 == null ) )
-                {
+                if ((f_onset1 == null) ||
+                        (f_offset1 == null) ||
+                        (f_cell1 == null)) {
                     outStream.printf("f_cell1 alloc failed.\n");
                 }
 
-                if ( ( f_onset2 == null ) ||
-                     ( f_offset2 == null ) ||
-                     ( f_cell2 == null ) )
-                {
+                if ((f_onset2 == null) ||
+                        (f_offset2 == null) ||
+                        (f_cell2 == null)) {
                     outStream.printf("f_cell2 alloc failed.\n");
                 }
 
-                if ( ( f_onset3 == null ) ||
-                     ( f_offset3 == null ) ||
-                     ( f_cell3 == null ) )
-                {
+                if ((f_onset3 == null) ||
+                        (f_offset3 == null) ||
+                        (f_cell3 == null)) {
                     outStream.printf("f_cell3 alloc failed.\n");
                 }
 
-                if ( ( f_onset4 == null ) ||
-                     ( f_offset4 == null ) ||
-                     ( f_cell4 == null ) )
-                {
+                if ((f_onset4 == null) ||
+                        (f_offset4 == null) ||
+                        (f_cell4 == null)) {
                     outStream.printf("f_cell4 alloc failed.\n");
                 }
 
-                if ( ( f_onset5 == null ) ||
-                     ( f_offset5 == null ) ||
-                     ( f_cell5 == null ) )
-                {
+                if ((f_onset5 == null) ||
+                        (f_offset5 == null) ||
+                        (f_cell5 == null)) {
                     outStream.printf("f_cell5 alloc failed.\n");
                 }
 
-                if ( ( f_onset6 == null ) ||
-                     ( f_offset6 == null ) ||
-                     ( f_cell6 == null ) )
-                {
+                if ((f_onset6 == null) ||
+                        (f_offset6 == null) ||
+                        (f_cell6 == null)) {
                     outStream.printf("f_cell6 alloc failed.\n");
                 }
 
-                if ( ( f_onset7 == null ) ||
-                     ( f_offset7 == null ) ||
-                     ( f_cell7 == null ) )
-                {
+                if ((f_onset7 == null) ||
+                        (f_offset7 == null) ||
+                        (f_cell7 == null)) {
                     outStream.printf("f_cell7 alloc failed.\n");
                 }
 
-                if ( ( f_onset8 == null ) ||
-                     ( f_offset8 == null ) ||
-                     ( f_cell8 == null ) )
-                {
+                if ((f_onset8 == null) ||
+                        (f_offset8 == null) ||
+                        (f_cell8 == null)) {
                     outStream.printf("f_cell8 alloc failed.\n");
                 }
 
-                if ( i_cell0 == null )
-                {
+                if (i_cell0 == null) {
                     outStream.printf("i_cell0 alloc failed.\n");
                 }
 
-                if ( m_cell0 == null )
-                {
+                if (m_cell0 == null) {
                     outStream.printf("m_cell0 alloc failed.\n");
                 }
 
-                if ( n_cell0 == null )
-                {
+                if (n_cell0 == null) {
                     outStream.printf("n_cell0 alloc failed.\n");
                 }
 
-                if ( p_cell0 == null )
-                {
+                if (p_cell0 == null) {
                     outStream.printf("p_cell0 alloc failed.\n");
                 }
 
-                if ( t_cell0 == null )
-                {
+                if (t_cell0 == null) {
                     outStream.printf("t_cell0 alloc failed.\n");
                 }
 
-                if ( ! completed )
-                {
+                if (!completed) {
                     outStream.printf("test setup failed to complete.\n");
                 }
 
-                if ( f_col0.getNumCells() != 9 )
-                {
+                if (f_col0.getNumCells() != 9) {
                     outStream.printf(
                             "f_col0.getNumCells() = %d (9 expected).\n",
                             f_col0.getNumCells());
                 }
 
-                if ( i_col0.getNumCells() != 1 )
-                {
+                if (i_col0.getNumCells() != 1) {
                     outStream.printf(
                             "i_col0.getNumCells() = %d (1 expected).\n",
                             i_col0.getNumCells());
                 }
 
-                if ( m_col0.getNumCells() != 1 )
-                {
+                if (m_col0.getNumCells() != 1) {
                     outStream.printf(
                             "m_col0.getNumCells() = %d (1 expected).\n",
                             m_col0.getNumCells());
                 }
 
-                if ( m_col1.getNumCells() != 0 )
-                {
+                if (m_col1.getNumCells() != 0) {
                     outStream.printf(
                             "m_col1.getNumCells() = %d (0 expected).\n",
                             m_col1.getNumCells());
                 }
 
-                if ( n_col0.getNumCells() != 1 )
-                {
+                if (n_col0.getNumCells() != 1) {
                     outStream.printf(
                             "n_col0.getNumCells() = %d (1 expected).\n",
                             n_col0.getNumCells());
                 }
 
-                if ( p_col0.getNumCells() != 1 )
-                {
+                if (p_col0.getNumCells() != 1) {
                     outStream.printf(
                             "p_col0.getNumCells() = %d (1 expected).\n",
                             p_col0.getNumCells());
                 }
 
-                if ( t_col0.getNumCells() != 1 )
-                {
+                if (t_col0.getNumCells() != 1) {
                     outStream.printf(
                             "t_col0.getNumCells() = %d (1 expected).\n",
                             t_col0.getNumCells());
                 }
 
-                if ( ! completed )
-                {
+                if (!completed) {
                     outStream.printf("test setup failed to complete.\n");
                 }
 
-                if ( threwSystemErrorException )
-                {
+                if (threwSystemErrorException) {
                     outStream.printf("test setup threw " +
-                                      "system error exception: \"%s\".\n",
-                                      systemErrorExceptionString);
+                            "system error exception: \"%s\".\n",
+                            systemErrorExceptionString);
                 }
             }
-        }
-        else {
+        } else {
             try {
                 Object f_col0itsCells = PrivateAccessor.getField(f_col0, "itsCells");
                 Object i_col0itsCells = PrivateAccessor.getField(i_col0, "itsCells");
@@ -4586,20 +4125,18 @@ public final class DataColumnTest {
                 Object p_col0itsCells = PrivateAccessor.getField(p_col0, "itsCells");
                 Object t_col0itsCells = PrivateAccessor.getField(t_col0, "itsCells");
 
-                if ( ( f_col0itsCells == null ) ||
-                      ( i_col0itsCells == null ) ||
-                      ( m_col0itsCells == null ) ||
-                      ( m_col1itsCells == null ) ||
-                      ( n_col0itsCells == null ) ||
-                      ( p_col0itsCells == null ) ||
-                      ( t_col0itsCells == null ) )
-                {
+                if ((f_col0itsCells == null) ||
+                        (i_col0itsCells == null) ||
+                        (m_col0itsCells == null) ||
+                        (m_col1itsCells == null) ||
+                        (n_col0itsCells == null) ||
+                        (p_col0itsCells == null) ||
+                        (t_col0itsCells == null)) {
                     failures++;
 
-                    if ( verbose )
-                    {
+                    if (verbose) {
                         outStream.printf(
-                            "one or more column itsCells fields not initialized.\n");
+                                "one or more column itsCells fields not initialized.\n");
                     }
                 }
             } catch (Throwable th) {
@@ -4608,8 +4145,7 @@ public final class DataColumnTest {
             }
         }
 
-        if ( failures == 0 )
-        {
+        if (failures == 0) {
             String f_col0_string = null;
             String f_col0_DBstring = null;
             String i_col0_string = null;
@@ -4625,17 +4161,17 @@ public final class DataColumnTest {
             String t_col0_string = null;
             String t_col0_DBstring = null;
             String expected_f_col0_string =
-                "(f_col0, ((1, 00:00:01:000, 00:00:02:000, (0.000000)), " +
-                          "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
-                          "(3, 00:00:05:000, 00:00:06:000, (2.000000)), " +
-                          "(4, 00:00:07:000, 00:00:08:000, (3.000000)), " +
-                          "(5, 00:00:09:000, 00:00:10:000, (4.000000)), " +
-                          "(6, 00:00:11:000, 00:00:12:000, (5.000000)), " +
-                          "(7, 00:00:13:000, 00:00:14:000, (6.000000)), " +
-                          "(8, 00:00:15:000, 00:00:16:000, (7.000000)), " +
-                          "(9, 00:00:15:000, 00:00:16:000, (8.000000))))";
+                    "(f_col0, ((1, 00:00:01:000, 00:00:02:000, (0.000000)), " +
+                    "(2, 00:00:03:000, 00:00:04:000, (1.000000)), " +
+                    "(3, 00:00:05:000, 00:00:06:000, (2.000000)), " +
+                    "(4, 00:00:07:000, 00:00:08:000, (3.000000)), " +
+                    "(5, 00:00:09:000, 00:00:10:000, (4.000000)), " +
+                    "(6, 00:00:11:000, 00:00:12:000, (5.000000)), " +
+                    "(7, 00:00:13:000, 00:00:14:000, (6.000000)), " +
+                    "(8, 00:00:15:000, 00:00:16:000, (7.000000)), " +
+                    "(9, 00:00:15:000, 00:00:16:000, (8.000000))))";
             String expected_f_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name f_col0) " +
                     "(id 7) " +
                     "(hidden false) " +
@@ -4645,208 +4181,208 @@ public final class DataColumnTest {
                     "(varLen false) " +
                     "(numCells 9) " +
                     "(itsCells " +
-                        "((DataCell " +
-                            "(id 50) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:01:000)) " +
-                            "(offset (60,00:00:02:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 51) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 50) " +
-                                            "(itsValue 0.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 52) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 2) " +
-                            "(onset (60,00:00:03:000)) " +
-                            "(offset (60,00:00:04:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 53) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 52) " +
-                                            "(itsValue 1.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 54) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 3) " +
-                            "(onset (60,00:00:05:000)) " +
-                            "(offset (60,00:00:06:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 55) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 54) " +
-                                            "(itsValue 2.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 56) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 4) " +
-                            "(onset (60,00:00:07:000)) " +
-                            "(offset (60,00:00:08:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 57) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 56) " +
-                                            "(itsValue 3.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 58) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 5) " +
-                            "(onset (60,00:00:09:000)) " +
-                            "(offset (60,00:00:10:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 59) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 58) " +
-                                            "(itsValue 4.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 60) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 6) " +
-                            "(onset (60,00:00:11:000)) " +
-                            "(offset (60,00:00:12:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 61) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 60) " +
-                                            "(itsValue 5.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 62) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 7) " +
-                            "(onset (60,00:00:13:000)) " +
-                            "(offset (60,00:00:14:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 63) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 62) " +
-                                            "(itsValue 6.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 64) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 8) " +
-                            "(onset (60,00:00:15:000)) " +
-                            "(offset (60,00:00:16:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 65) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 64) " +
-                                            "(itsValue 7.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0)))))))), " +
-                        "(DataCell " +
-                            "(id 66) " +
-                            "(itsColID 7) " +
-                            "(itsMveID 1) " +
-                            "(itsMveType FLOAT) " +
-                            "(ord 9) " +
-                            "(onset (60,00:00:15:000)) " +
-                            "(offset (60,00:00:16:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 1) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((FloatDataValue " +
-                                            "(id 67) " +
-                                            "(itsFargID 2) " +
-                                            "(itsFargType FLOAT) " +
-                                            "(itsCellID 66) " +
-                                            "(itsValue 8.0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0.0) " +
-                                            "(maxVal 0.0))))))))))))";
+                    "((DataCell " +
+                    "(id 50) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:01:000)) " +
+                    "(offset (60,00:00:02:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 51) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 50) " +
+                    "(itsValue 0.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 52) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 2) " +
+                    "(onset (60,00:00:03:000)) " +
+                    "(offset (60,00:00:04:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 53) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 52) " +
+                    "(itsValue 1.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 54) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 3) " +
+                    "(onset (60,00:00:05:000)) " +
+                    "(offset (60,00:00:06:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 55) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 54) " +
+                    "(itsValue 2.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 56) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 4) " +
+                    "(onset (60,00:00:07:000)) " +
+                    "(offset (60,00:00:08:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 57) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 56) " +
+                    "(itsValue 3.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 58) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 5) " +
+                    "(onset (60,00:00:09:000)) " +
+                    "(offset (60,00:00:10:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 59) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 58) " +
+                    "(itsValue 4.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 60) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 6) " +
+                    "(onset (60,00:00:11:000)) " +
+                    "(offset (60,00:00:12:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 61) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 60) " +
+                    "(itsValue 5.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 62) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 7) " +
+                    "(onset (60,00:00:13:000)) " +
+                    "(offset (60,00:00:14:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 63) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 62) " +
+                    "(itsValue 6.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 64) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 8) " +
+                    "(onset (60,00:00:15:000)) " +
+                    "(offset (60,00:00:16:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 65) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 64) " +
+                    "(itsValue 7.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0)))))))), " +
+                    "(DataCell " +
+                    "(id 66) " +
+                    "(itsColID 7) " +
+                    "(itsMveID 1) " +
+                    "(itsMveType FLOAT) " +
+                    "(ord 9) " +
+                    "(onset (60,00:00:15:000)) " +
+                    "(offset (60,00:00:16:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 1) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((FloatDataValue " +
+                    "(id 67) " +
+                    "(itsFargID 2) " +
+                    "(itsFargType FLOAT) " +
+                    "(itsCellID 66) " +
+                    "(itsValue 8.0) " +
+                    "(subRange false) " +
+                    "(minVal 0.0) " +
+                    "(maxVal 0.0))))))))))))";
             String expected_i_col0_string =
-                "(i_col0, ((1, 00:00:00:000, 00:00:00:000, (0))))";
+                    "(i_col0, ((1, 00:00:00:000, 00:00:00:000, (0))))";
             String expected_i_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name i_col0) " +
                     "(id 14) " +
                     "(hidden false) " +
@@ -4856,32 +4392,32 @@ public final class DataColumnTest {
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
-                        "((DataCell " +
-                            "(id 68) " +
-                            "(itsColID 14) " +
-                            "(itsMveID 8) " +
-                            "(itsMveType INTEGER) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:00:000)) " +
-                            "(offset (60,00:00:00:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 8) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((IntDataValue " +
-                                            "(id 69) " +
-                                            "(itsFargID 9) " +
-                                            "(itsFargType INTEGER) " +
-                                            "(itsCellID 68) " +
-                                            "(itsValue 0) " +
-                                            "(subRange false) " +
-                                            "(minVal 0) " +
-                                            "(maxVal 0))))))))))))";
+                    "((DataCell " +
+                    "(id 68) " +
+                    "(itsColID 14) " +
+                    "(itsMveID 8) " +
+                    "(itsMveType INTEGER) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:00:000)) " +
+                    "(offset (60,00:00:00:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 8) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((IntDataValue " +
+                    "(id 69) " +
+                    "(itsFargID 9) " +
+                    "(itsFargType INTEGER) " +
+                    "(itsCellID 68) " +
+                    "(itsValue 0) " +
+                    "(subRange false) " +
+                    "(minVal 0) " +
+                    "(maxVal 0))))))))))))";
             String expected_m_col0_string =
-                "(m_col0, ((1, 00:00:00:000, 00:00:00:000, (<val>))))";
+                    "(m_col0, ((1, 00:00:00:000, 00:00:00:000, (<val>))))";
             String expected_m_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name m_col0) " +
                     "(id 21) " +
                     "(hidden false) " +
@@ -4891,30 +4427,30 @@ public final class DataColumnTest {
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
-                        "((DataCell " +
-                            "(id 70) " +
-                            "(itsColID 21) " +
-                            "(itsMveID 15) " +
-                            "(itsMveType MATRIX) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:00:000)) " +
-                            "(offset (60,00:00:00:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 15) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((UndefinedDataValue " +
-                                            "(id 71) " +
-                                            "(itsFargID 16) " +
-                                            "(itsFargType UNTYPED) " +
-                                            "(itsCellID 70) " +
-                                            "(itsValue <val>) " +
-                                            "(subRange false))))))))))))";
+                    "((DataCell " +
+                    "(id 70) " +
+                    "(itsColID 21) " +
+                    "(itsMveID 15) " +
+                    "(itsMveType MATRIX) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:00:000)) " +
+                    "(offset (60,00:00:00:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 15) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((UndefinedDataValue " +
+                    "(id 71) " +
+                    "(itsFargID 16) " +
+                    "(itsFargType UNTYPED) " +
+                    "(itsCellID 70) " +
+                    "(itsValue <val>) " +
+                    "(subRange false))))))))))))";
             String expected_m_col1_string =
-                "(m_col1, ())";
+                    "(m_col1, ())";
             String expected_m_col1_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name m_col1) " +
                     "(id 28) " +
                     "(hidden true) " +
@@ -4925,9 +4461,9 @@ public final class DataColumnTest {
                     "(numCells 0) " +
                     "(itsCells ())))";
             String expected_n_col0_string =
-                "(n_col0, ((1, 00:00:00:000, 00:00:00:000, ())))";
+                    "(n_col0, ((1, 00:00:00:000, 00:00:00:000, ())))";
             String expected_n_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name n_col0) " +
                     "(id 35) " +
                     "(hidden false) " +
@@ -4937,30 +4473,30 @@ public final class DataColumnTest {
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
-                        "((DataCell " +
-                            "(id 72) " +
-                            "(itsColID 35) " +
-                            "(itsMveID 29) " +
-                            "(itsMveType NOMINAL) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:00:000)) " +
-                            "(offset (60,00:00:00:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 29) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((NominalDataValue " +
-                                            "(id 73) " +
-                                            "(itsFargID 30) " +
-                                            "(itsFargType NOMINAL) " +
-                                            "(itsCellID 72) " +
-                                            "(itsValue <null>) " +
-                                            "(subRange false))))))))))))";
+                    "((DataCell " +
+                    "(id 72) " +
+                    "(itsColID 35) " +
+                    "(itsMveID 29) " +
+                    "(itsMveType NOMINAL) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:00:000)) " +
+                    "(offset (60,00:00:00:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 29) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((NominalDataValue " +
+                    "(id 73) " +
+                    "(itsFargID 30) " +
+                    "(itsFargType NOMINAL) " +
+                    "(itsCellID 72) " +
+                    "(itsValue <null>) " +
+                    "(subRange false))))))))))))";
             String expected_p_col0_string =
-                "(p_col0, ((1, 00:00:00:000, 00:00:00:000, (()))))";
+                    "(p_col0, ((1, 00:00:00:000, 00:00:00:000, (()))))";
             String expected_p_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name p_col0) " +
                     "(id 42) " +
                     "(hidden false) " +
@@ -4970,30 +4506,30 @@ public final class DataColumnTest {
                     "(varLen false) " +
                     "(numCells 1) " +
                     "(itsCells " +
-                        "((DataCell " +
-                            "(id 74) " +
-                            "(itsColID 42) " +
-                            "(itsMveID 36) " +
-                            "(itsMveType PREDICATE) " +
-                            "(ord 1) " +
-                            "(onset (60,00:00:00:000)) " +
-                            "(offset (60,00:00:00:000)) " +
-                            "(val " +
-                                "(Matrix " +
-                                    "(mveID 36) " +
-                                    "(varLen false) " +
-                                    "(argList " +
-                                        "((PredDataValue " +
-                                            "(id 75) " +
-                                            "(itsFargID 37) " +
-                                            "(itsFargType PREDICATE) " +
-                                            "(itsCellID 74) " +
-                                            "(itsValue ()) " +
-                                            "(subRange false))))))))))))";
+                    "((DataCell " +
+                    "(id 74) " +
+                    "(itsColID 42) " +
+                    "(itsMveID 36) " +
+                    "(itsMveType PREDICATE) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:00:000)) " +
+                    "(offset (60,00:00:00:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 36) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((PredDataValue " +
+                    "(id 75) " +
+                    "(itsFargID 37) " +
+                    "(itsFargType PREDICATE) " +
+                    "(itsCellID 74) " +
+                    "(itsValue ()) " +
+                    "(subRange false))))))))))))";
             String expected_t_col0_string =
-                "(t_col0, ((1, 00:00:00:000, 00:00:00:000, ())))";
+                    "(t_col0, ((1, 00:00:00:000, 00:00:00:000, ())))";
             String expected_t_col0_DBstring =
-                "(DataColumn " +
+                    "(DataColumn " +
                     "(name t_col0) " +
                     "(id 49) " +
                     "(hidden false) " +
@@ -5004,25 +4540,25 @@ public final class DataColumnTest {
                     "(numCells 1) " +
                     "(itsCells " +
                     "((DataCell " +
-                        "(id 77) " +
-                        "(itsColID 49) " +
-                        "(itsMveID 43) " +
-                        "(itsMveType TEXT) " +
-                        "(ord 1) " +
-                        "(onset (60,00:00:00:000)) " +
-                        "(offset (60,00:00:00:000)) " +
-                        "(val " +
-                            "(Matrix " +
-                                "(mveID 43) " +
-                                "(varLen false) " +
-                                "(argList " +
-                                    "((TextStringDataValue " +
-                                        "(id 78) " +
-                                        "(itsFargID 44) " +
-                                        "(itsFargType TEXT) " +
-                                        "(itsCellID 77) " +
-                                        "(itsValue <null>) " +
-                                        "(subRange false))))))))))))";
+                    "(id 77) " +
+                    "(itsColID 49) " +
+                    "(itsMveID 43) " +
+                    "(itsMveType TEXT) " +
+                    "(ord 1) " +
+                    "(onset (60,00:00:00:000)) " +
+                    "(offset (60,00:00:00:000)) " +
+                    "(val " +
+                    "(Matrix " +
+                    "(mveID 43) " +
+                    "(varLen false) " +
+                    "(argList " +
+                    "((TextStringDataValue " +
+                    "(id 78) " +
+                    "(itsFargID 44) " +
+                    "(itsFargType TEXT) " +
+                    "(itsCellID 77) " +
+                    "(itsValue <null>) " +
+                    "(subRange false))))))))))))";
 
             f_col0_string = f_col0.toString();
             f_col0_DBstring = f_col0.toDBString();
@@ -5045,199 +4581,164 @@ public final class DataColumnTest {
             t_col0_string = t_col0.toString();
             t_col0_DBstring = t_col0.toDBString();
 
-            if ( expected_f_col0_string.compareTo(f_col0_string) != 0 )
-            {
+            if (expected_f_col0_string.compareTo(f_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected f_col0.toString(): \"%s\".\n",
-                                     f_col0.toString());
+                            f_col0.toString());
                 }
             }
 
-            if ( expected_f_col0_DBstring.compareTo(f_col0_DBstring) != 0 )
-            {
+            if (expected_f_col0_DBstring.compareTo(f_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected f_col0.toDBString(): \"%s\".\n",
-                                     f_col0.toDBString());
+                            f_col0.toDBString());
                 }
             }
 
 
-            if ( expected_i_col0_string.compareTo(i_col0_string) != 0 )
-            {
+            if (expected_i_col0_string.compareTo(i_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected i_col0.toString(): \"%s\".\n",
-                                     i_col0.toString());
+                            i_col0.toString());
                 }
             }
 
-            if ( expected_i_col0_DBstring.compareTo(i_col0_DBstring) != 0 )
-            {
+            if (expected_i_col0_DBstring.compareTo(i_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected i_col0.toDBString(): \"%s\".\n",
-                                     i_col0.toDBString());
+                            i_col0.toDBString());
                 }
             }
 
 
-            if ( expected_m_col0_string.compareTo(m_col0_string) != 0 )
-            {
+            if (expected_m_col0_string.compareTo(m_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected m_col0.toString(): \"%s\".\n",
-                                     m_col0.toString());
+                            m_col0.toString());
                 }
             }
 
-            if ( expected_m_col0_DBstring.compareTo(m_col0_DBstring) != 0 )
-            {
+            if (expected_m_col0_DBstring.compareTo(m_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected m_col0.toDBString(): \"%s\".\n",
-                                     m_col0.toDBString());
+                            m_col0.toDBString());
                 }
             }
 
 
-            if ( expected_m_col1_string.compareTo(m_col1_string) != 0 )
-            {
+            if (expected_m_col1_string.compareTo(m_col1_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected m_col1.toString(): \"%s\".\n",
-                                     m_col1.toString());
+                            m_col1.toString());
                 }
             }
 
-            if ( expected_m_col1_DBstring.compareTo(m_col1_DBstring) != 0 )
-            {
+            if (expected_m_col1_DBstring.compareTo(m_col1_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected m_col1.toDBString(): \"%s\".\n",
-                                     m_col1.toDBString());
+                            m_col1.toDBString());
                 }
             }
 
 
-            if ( expected_n_col0_string.compareTo(n_col0_string) != 0 )
-            {
+            if (expected_n_col0_string.compareTo(n_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected n_col0.toString(): \"%s\".\n",
-                                     n_col0.toString());
+                            n_col0.toString());
                 }
             }
 
-            if ( expected_n_col0_DBstring.compareTo(n_col0_DBstring) != 0 )
-            {
+            if (expected_n_col0_DBstring.compareTo(n_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected n_col0.toDBString(): \"%s\".\n",
-                                     n_col0.toDBString());
+                            n_col0.toDBString());
                 }
             }
 
 
-            if ( expected_p_col0_string.compareTo(p_col0_string) != 0 )
-            {
+            if (expected_p_col0_string.compareTo(p_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected p_col0.toString(): \"%s\".\n",
-                                     p_col0.toString());
+                            p_col0.toString());
                 }
             }
 
-            if ( expected_p_col0_DBstring.compareTo(p_col0_DBstring) != 0 )
-            {
+            if (expected_p_col0_DBstring.compareTo(p_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected p_col0.toDBString(): \"%s\".\n",
-                                     p_col0.toDBString());
+                            p_col0.toDBString());
                 }
             }
 
 
-            if ( expected_t_col0_string.compareTo(t_col0_string) != 0 )
-            {
+            if (expected_t_col0_string.compareTo(t_col0_string) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected t_col0.toString(): \"%s\".\n",
-                                     t_col0.toString());
+                            t_col0.toString());
                 }
             }
 
-            if ( expected_t_col0_DBstring.compareTo(t_col0_DBstring) != 0 )
-            {
+            if (expected_t_col0_DBstring.compareTo(t_col0_DBstring) != 0) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("Unexpected t_col0.toDBString(): \"%s\".\n",
-                                     t_col0.toDBString());
+                            t_col0.toDBString());
                 }
             }
         }
 
-        if ( failures > 0 )
-        {
+        if (failures > 0) {
             pass = false;
 
-            if ( verbose )
-            {
+            if (verbose) {
                 outStream.printf("%d failures.\n", failures);
             }
-        }
-        else if ( verbose )
-        {
+        } else if (verbose) {
             outStream.print("All tests passed.\n");
         }
 
-        if ( verbose )
-        {
+        if (verbose) {
             /* print the banner again. */
             outStream.print(testBanner);
         }
 
-        if ( pass )
-        {
+        if (pass) {
             outStream.print(passBanner);
-        }
-        else
-        {
+        } else {
             outStream.print(failBanner);
         }
 
         assertTrue(pass);
 
     } /* DataCell::TestToStringMethods() */
+
 
     /**
      * VerifyDataColumnCopy()
@@ -5255,41 +4756,33 @@ public final class DataColumnTest {
      *
      *    - None
      */
-
     public static int VerifyDataColumnCopy(DataColumn base,
-                                           DataColumn copy,
-                                           java.io.PrintStream outStream,
-                                           boolean verbose,
-                                           String baseDesc,
-                                           String copyDesc)
-    {
+            DataColumn copy,
+            java.io.PrintStream outStream,
+            boolean verbose,
+            String baseDesc,
+            String copyDesc) {
         int failures = 0;
 
-        if ( base == null )
-        {
+        if (base == null) {
             failures++;
             outStream.printf("VerifyDataColumnCopy: %s null on entry.\n",
-                             baseDesc);
-        }
-        else if ( copy == null )
-        {
+                    baseDesc);
+        } else if (copy == null) {
             failures++;
             outStream.printf("VerifyDataColumnCopy: %s null on entry.\n",
-                             copyDesc);
-        }
-        else if ( base == copy )
-        {
+                    copyDesc);
+        } else if (base == copy) {
             failures++;
 
-            if ( verbose )
-            {
+            if (verbose) {
                 outStream.printf("%s == %s.\n", baseDesc, copyDesc);
             }
         }
 
-        failures += ColumnTest.VerifyColumnCopy((Column)base, (Column)copy,
-                                            outStream, verbose,
-                                            baseDesc, copyDesc);
+        failures += ColumnTest.VerifyColumnCopy((Column) base, (Column) copy,
+                outStream, verbose,
+                baseDesc, copyDesc);
 
         try {
             Object copyitsCells = PrivateAccessor.getField(copy, "itsCells");
@@ -5300,49 +4793,41 @@ public final class DataColumnTest {
             Object basevarLen = PrivateAccessor.getField(base, "varLen");
             Object copyvarLen = PrivateAccessor.getField(copy, "varLen");
 
-            if ( copyitsCells != null )
-            {
+            if (copyitsCells != null) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("%s.itsCells != null.\n", copyDesc);
                 }
             }
 
-            if ( !baseitsMveID.equals(copyitsMveID) )
-            {
+            if (!baseitsMveID.equals(copyitsMveID)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("%s.itsMveID == %s != %s.itsMveID == %s.\n",
-                                     baseDesc, baseitsMveID,
-                                     copyDesc, copyitsMveID);
+                            baseDesc, baseitsMveID,
+                            copyDesc, copyitsMveID);
                 }
             }
 
-            if ( !baseitsMveType.equals(copyitsMveType) )
-            {
+            if (!baseitsMveType.equals(copyitsMveType)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("%s.itsMveType == %s != %s.itsMveType == %s.\n",
-                                     baseDesc, baseitsMveType.toString(),
-                                     copyDesc, copyitsMveType.toString());
+                            baseDesc, baseitsMveType.toString(),
+                            copyDesc, copyitsMveType.toString());
                 }
             }
 
-            if ( !basevarLen.equals(copyvarLen) )
-            {
+            if (!basevarLen.equals(copyvarLen)) {
                 failures++;
 
-                if ( verbose )
-                {
+                if (verbose) {
                     outStream.printf("%s.varLen == %s != %s.itsMveID == %s.\n",
-                                     baseDesc, basevarLen,
-                                     copyDesc, copyvarLen);
+                            baseDesc, basevarLen,
+                            copyDesc, copyvarLen);
                 }
             }
         } catch (Throwable th) {

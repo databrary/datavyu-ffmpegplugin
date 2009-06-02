@@ -20,7 +20,6 @@ import org.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
 import java.util.Vector;
@@ -30,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.db.VocabList;
 
 /**
  * A view for editing the database vocab.
@@ -311,6 +311,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
                     VocabElement ve = vev.getModel();
                     if (ve.getID() == DBIndex.INVALID_ID) {
+                        VocabList.isValidElement(db.getVocabList(), ve);
                         long id = db.addVocabElement(ve);
                         vev.setModel(db.getVocabElement(id));
 

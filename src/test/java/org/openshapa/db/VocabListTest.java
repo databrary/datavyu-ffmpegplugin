@@ -166,7 +166,7 @@ public class VocabListTest {
      */
     @Test
     public void TestGetPredsAndMatricies2()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         UnTypedFormalArg foxtrot = new UnTypedFormalArg(odb, "<foxtrot>");
         UnTypedFormalArg golf = new UnTypedFormalArg(odb, "<golf>");
         UnTypedFormalArg hotel = new UnTypedFormalArg(odb, "<hotel>");
@@ -221,7 +221,7 @@ public class VocabListTest {
      */
     @Test
     public void TestGetPredsAndMatricies3()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         UnTypedFormalArg india = new UnTypedFormalArg(odb, "<india>");
         UnTypedFormalArg juno = new UnTypedFormalArg(odb, "<juno>");
         UnTypedFormalArg oscar = new UnTypedFormalArg(odb, "<oscar>");
@@ -729,9 +729,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||
@@ -945,9 +942,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( inVL0 != false ) || ( inVL1 != true ) ||
@@ -1329,9 +1323,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -1407,9 +1398,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -1490,9 +1478,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -1604,9 +1589,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -1677,9 +1659,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( methodReturned ) ||
@@ -2027,7 +2006,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestReplaceVocabElementFailure05()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
                                                      null, null, null);
         p6.setID(1);
@@ -2041,7 +2020,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestReplaceVocabElementFailure04()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         Database other = new ODBCDatabase();
         PredicateVocabElement p6 = ConstructTestPred(other, "p6", null,
                                                      null, null, null);
@@ -2054,7 +2033,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestReplaceVocabElementFailure03()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
                                                      null, null, null);
         odb.vl.replaceVocabElement(p6);
@@ -2066,7 +2045,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestReplaceVocabElementFailure02()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         odb.vl.replaceVocabElement(null);
     }
 
@@ -2075,7 +2054,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestReplaceVocabElementFailure01()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
                                                      null, null, null);
         odb.vl.addElement(p6);
@@ -2089,7 +2068,7 @@ public class VocabListTest {
      */
     @Test (expected=SystemErrorException.class)
     public void TestVLManagement1()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null, null,
                                                      null, null);
         FloatFormalArg mike = new FloatFormalArg(odb, "<mike>");
@@ -2108,11 +2087,10 @@ public class VocabListTest {
      * argument of a different subclass. This should throw a system error.
      *
      * @throws SystemErrorException Expected exception.
-     * @throws LogicErrorException
      */
     @Test (expected=SystemErrorException.class)
     public void TestVLManagement0()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
 
         VocabList vl = this.odb.vl;
         UnTypedFormalArg oscar = new UnTypedFormalArg(odb, "<oscar>");
@@ -2499,9 +2477,6 @@ public class VocabListTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! completed ) ||

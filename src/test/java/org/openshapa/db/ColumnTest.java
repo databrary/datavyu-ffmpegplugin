@@ -55,8 +55,7 @@ public class ColumnTest {
                                     int initNumCells,
                                     java.io.PrintStream outStream,
                                     boolean verbose)
-        throws SystemErrorException, LogicErrorException
-    {
+    throws SystemErrorException {
         final String mName = "Column::TestAccessors()";
         String systemErrorExceptionString = null;
         boolean completed = false;

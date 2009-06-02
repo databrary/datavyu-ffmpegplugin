@@ -1950,7 +1950,7 @@ public class macshapa_odb_reader
      **********************************************************************/
 
     protected macshapa_odb_reader()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         super();
 
         this.db = new MacshapaDatabase();
@@ -8765,11 +8765,7 @@ public class macshapa_odb_reader
             
             new_pve.setVarLen(variable_length);
 
-            try {
-                this.db.addPredVE(new_pve);
-            } catch (LogicErrorException le) {
-                throw new SystemErrorException("Unable to add pred ve.");
-            }
+            this.db.addPredVE(new_pve);
 	}
 
 	return;
@@ -11819,11 +11815,7 @@ public class macshapa_odb_reader
                  * before we insert it -- thus must be careful not
                  * to corrupt it.
                  */
-                try {
-                    this.db.vl.addElement(mve);
-                } catch (LogicErrorException le) {
-                    throw new SystemErrorException("mve add failed.");
-                }
+                this.db.vl.addElement(mve);
         
                 mve_id = mve.getID();
         
@@ -15628,11 +15620,7 @@ public class macshapa_odb_reader
              * before we insert it -- thus must be careful not
              * to corrupt it.
              */
-            try {
-                this.db.vl.addElement(query_mve);
-            } catch (LogicErrorException le) {
-                throw new SystemErrorException("Unable to add new mve.");
-            }
+            this.db.vl.addElement(query_mve);
 
             query_mve_ID = query_mve.getID();
         
