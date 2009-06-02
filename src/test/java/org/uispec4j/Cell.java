@@ -2,7 +2,8 @@ package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.datavalues.DataValueElementV;
-import org.openshapa.views.discrete.datavalues.DataValueElementV.DataValueEditor;
+import org.openshapa.views.discrete.datavalues.DataValueElementV.
+        DataValueEditor;
 import org.openshapa.views.discrete.datavalues.DataValueV;
 import java.awt.Component;
 import java.util.Vector;
@@ -100,22 +101,32 @@ public class Cell extends AbstractUIComponent {
      * it is not easy to hide this implementation.
      * @return Vector<DataValueView> value as a vector of DataValueView
      */
-    public final Vector<DataValueV> getValue() {
+    public final Vector <DataValueV> getValue() {
         return ssCell.getDataValueV().getChildren();
     }
 
-    public final DataValueElementV getView(int part) {
+    /**
+     * returns the DataValueElement View.
+     * @param part int section of the value
+     * @return DataValueElementV DataValueElement View
+     */
+    public final DataValueElementV getView(final int part) {
         DataValueV v = getValue().elementAt(part);
         if (v instanceof DataValueElementV) {
             return (DataValueElementV) v;
 
-            // Can't build DataValueElementV predicate or matrix.
+        // Can't build DataValueElementV predicate or matrix.
         } else {
             return null;
         }
     }
 
-    public final DataValueEditor getEditor(int part) {
+     /**
+     * returns the DataValueEditor for the cell value.
+     * @param part int section of the value
+     * @return DataValueEditor of the value of the cell
+     */
+    public final DataValueEditor getEditor(final int part) {
         DataValueElementV v = getView(part);
         if (v != null) {
             return (DataValueEditor) v.getEditor();
@@ -124,112 +135,145 @@ public class Cell extends AbstractUIComponent {
         }
     }
 
-    public final void enterEditorText(int part, String s) {
+     /**
+     * types text into the cell value.
+     * @param part int section of the value
+     * @param s String to type
+     */
+    public final void enterEditorText(final int part, final String s) {
         requestEditorFocus(VALUE, part);
-        for (int i = 0; i < s.length(); i++) {
-            typeEditorKey(VALUE, part, new Key(s.charAt(i)));
-        }
+
+        KeyUtils.enterString(getEditorByType(VALUE, part), s);
     }
 
-    public final void enterEditorText(int part, String s1, Key[] keys, String s2) {
+     /**
+     * types text into the cell value.
+     * @param part int section of the value
+     * @param s1 String to type first
+     * @param keys Keys to type next
+     * @param s2 String to add at the end
+     */
+    public final void enterEditorText(final int part, final String s1,
+            final Key[] keys, final String s2) {
         requestEditorFocus(VALUE, part);
-        for (int i = 0; i < s1.length(); i++) {
-            typeEditorKey(VALUE, part, new Key(s1.charAt(i)));
-        }
 
-        for (int i = 0; i < keys.length; i++) {
-            if (keys[i].getChar() != null) {
-                typeEditorKey(VALUE, part, keys[i]);
-            } else {
-                pressEditorKey(VALUE, part, keys[i]);
-            }
-        }
-        for (int i = 0; i < s2.length(); i++) {
-            typeEditorKey(VALUE, part, new Key(s2.charAt(i)));
-        }
+        KeyUtils.enterString(getEditorByType(VALUE, part), s1);
+        KeyUtils.enterKeys(getEditorByType(VALUE, part), keys);
+        KeyUtils.enterString(getEditorByType(VALUE, part), s2);
     }
 
-    public final void enterOnsetText(String s) {
-        requestEditorFocus(ONSET, 0);
-        for (int i = 0; i < s.length(); i++) {
-            typeEditorKey(ONSET, 0, new Key(s.charAt(i)));
-        }
+     /**
+     * types text into the onset timestamp.
+     * @param s String to type
+     */
+    public final void enterOnsetText(final String s) {
+        requestEditorFocus(ONSET);
+        KeyUtils.enterString(getEditorByType(ONSET, 0), s);
     }
 
-    public final void enterOffsetText(String s) {
-        requestEditorFocus(OFFSET, 0);
-        for (int i = 0; i < s.length(); i++) {
-            typeEditorKey(OFFSET, 0, new Key(s.charAt(i)));
-        }
+     /**
+     * types text into the offset timestamp.
+     * @param s String to type
+     */
+    public final void enterOffsetText(final String s) {
+        requestEditorFocus(OFFSET);
+        KeyUtils.enterString(getEditorByType(OFFSET, 0), s);
     }
 
-    public final void requestEditorFocus(int component, int i) {
+    /**
+     * sets the focus to a particular component of cell.
+     * @param component to gain focus
+     * @param i Int of value part, if value
+     */
+    public final void requestEditorFocus(final int component, final int i) {
         DataValueEditor e;
-        switch (component) {
-            case VALUE:
-                e = getEditor(i);
-                break;
-            case ONSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
-                break;
-            case OFFSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
-                break;
-            default:
-                e = getEditor(i);
-        }
-
+        e = getEditorByType(component, i);
         e.focusGained(null);
     }
 
-    public final void typeEditorKey(int component, int i, Key k) {
+    /**
+     * sets the focus to a particular component of cell.
+     * @param component to gain focus
+     */
+    public final void requestEditorFocus(final int component) {
         DataValueEditor e;
-        switch (component) {
-            case VALUE:
-                e = getEditor(i);
-                break;
-            case ONSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
-                break;
-            case OFFSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
-                break;
-            default:
-                e = getEditor(i);
-        }
+        e = getEditorByType(component, 0);
+        e.focusGained(null);
+    }
 
+    /**
+     * type a single key into a particular component in the cell.
+     * @param component to type into
+     * @param i section of value, if value
+     * @param k Key to type
+     */
+    public final void typeEditorKey(final int component, final int i,
+            final Key k) {
+        DataValueEditor e;
+        e = getEditorByType(component, i);
         KeyUtils.typeKey(e, k);
     }
 
-    public final void typeEditorKey(int component, Key k) {
+    /**
+     * returns the DataValueEditor of the component of the cell.
+     * @param type cell component type
+     * @param i int of value section if value
+     * @return DataValueEditor of particular component of cell
+     */
+    public final DataValueEditor getEditorByType(final int type, final int i) {
+        DataValueEditor e;
+        switch (type) {
+            case VALUE:
+                return getEditor(i);
+            case ONSET:
+                return (DataValueEditor) ((DataValueElementV) ssCell.
+                        getOnset()).getEditor();
+            case OFFSET:
+                return (DataValueEditor) ((DataValueElementV) ssCell.
+                        getOffset()).getEditor();
+            default:
+                return getEditor(i);
+        }
+    }
+
+     /**
+     * type a single key into a particular component in the cell.
+     * @param component to type into
+     * @param k Key to type
+     */
+    public final void typeEditorKey(final int component, final Key k) {
         requestEditorFocus(component, 0);
         typeEditorKey(component, 0, k);
     }
 
-    public final void pressEditorKey(int component, int i, Key k) {
+     /**
+     * presses a single key into a particular component in the cell.
+     * @param component to type into
+     * @param i section of value, if value
+     * @param k Key to type
+     */
+    public final void pressEditorKey(final int component, final int i,
+            final Key k) {
         DataValueEditor e;
-        switch (component) {
-            case VALUE:
-                e = getEditor(i);
-                break;
-            case ONSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOnset()).getEditor();
-                break;
-            case OFFSET:
-                e = (DataValueEditor) ((DataValueElementV) ssCell.getOffset()).getEditor();
-                break;
-            default:
-                e = getEditor(i);
-        }
-
+        e = getEditorByType(component, i);
         KeyUtils.pressKey(e, k);
     }
 
-    public final void pressEditorKey(int component, Key k) {
+     /**
+     * presses a single key into a particular component in the cell.
+     * @param component to type into
+     * @param k Key to type
+     */
+    public final void pressEditorKey(final int component, final Key k) {
         pressEditorKey(component, 0, k);
     }
 
-    public final TextBox getValueTextBox(int part) {
+    /**
+     * returns a Textbox for the value component of a cell.
+     * @param part section of the value of which to turn the Textbox
+     * @return Textbox of section of the value component
+     */
+    public final TextBox getValueTextBox(final int part) {
         DataValueElementV view = getView(part);
 
         if (view != null) {

@@ -105,7 +105,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterEditorText(0, testInput[i]);
 
-            //BugzID379: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
         //5. Check copy pasting
@@ -117,6 +117,76 @@ public final class UINewCellTest extends UISpecTestCase {
             t.setText("");
             t.pasteFromClipboard();
             //BugzID383: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+    }
+
+     /**
+     * Test creating a new NOMINAL cell with more advanced input.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewAdvancedNominalCell() throws Exception {
+        String varName = "nomVar";
+        String varType = "NOMINAL";
+        String varRadio = "nominal";
+
+        String[] testInput = {"Subject stands )up", "$10,432",
+            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
+            "If x>7 then x|2"};
+
+        //advanced Input will be provided between testInput
+        Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
+            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+            {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                     Key.BACKSPACE, }};
+
+
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = {"Subject stands $10432up",
+        "$1043Hand me the manual!2", "Hand me the manuaTote_that_balel",
+        "Tote_that_aJeune fille celebrel", "If x7 then x2"};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        createNewVariable(varName, varType, varRadio);
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
+                window.getUIComponents(
+                Spreadsheet.class)[0].getAwtComponent())));
+
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        assertTrue(cells.size() == numOfTests);
+
+        for (int i = 0; i < numOfTests - 1; i++) {
+            assertTrue(cells.elementAt(i).getOrd() == i + 1);
+            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+                    .equals("00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+                    .equals("<val>"));
+
+            //4. Test different inputs as per specifications
+            Cell c = cells.elementAt(i);
+            TextBox t = c.getValueTextBox(0);
+
+            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
 
@@ -174,6 +244,43 @@ public final class UINewCellTest extends UISpecTestCase {
             c.enterEditorText(0, testInput[i]);
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
+    }
+
+    /**
+     * Test creating a new TEXT cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNewTextPasting() throws Exception {
+        String varName = "textVar";
+        String varType = "TEXT";
+        String varRadio = "text";
+
+        String[] testInput = {"Subject stands up", "$10,432",
+            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
+            "If x?7 then x? 2"};
+
+
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = testInput;
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        createNewVariable(varName, varType, varRadio);
+
+        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent())));
+
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
         //5. Check copy pasting
         Clipboard c = null;
@@ -307,8 +414,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterEditorText(0, testInput[i]);
 
-            assertTrue(Double.parseDouble(t.getText()) ==
-                    (expectedTestOutput[i]));
+            assertTrue(Double.parseDouble(t.getText())
+                    == (expectedTestOutput[i]));
         }
 
        //5. Check copy pasting
@@ -334,17 +441,20 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2"};
+            "If x?7 then.- x? 2",  /*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
          //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-            {Key.LEFT, Key.RIGHT}};
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
+                Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
+                Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, 7.2};
+        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, -27,
+        -27};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -379,11 +489,12 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValueTextBox(0);
 
-            c.enterEditorText(0, testInput[i],
-                              advancedInput[i], testInput[i + 1]);
+            c.enterEditorText(0, testInput[i], advancedInput[i],
+                    testInput[i + 1]);
 
             assertTrue(Double.parseDouble(t.getText())
-                       == (expectedTestOutput[i]));
+                    == expectedTestOutput[i]);
+
         }
     }
 
@@ -464,7 +575,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
-            "!289(", "178&", "If x?7. then x? 2", "178&"};
+            "!289(", "178&", "If x?7. then x? 2", "17-8&", /*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
@@ -472,11 +583,13 @@ public final class UINewCellTest extends UISpecTestCase {
          //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-            {Key.LEFT, Key.RIGHT}};
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
+                Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE},
+            {Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT}};
 
         String[] expectedTestOutput = {"-4321019", "-43289210", "21788", "772",
-        "72178"};
+        "-817", "-817"};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -497,7 +610,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         assertTrue(cells.size() == numOfTests);
 
-        for (int i = 0; i < numOfTests-1; i++) {
+        for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
             assertTrue((cells.elementAt(i).getOnsetTime().toString())
                     .equals("00:00:00:000"));
@@ -510,7 +623,8 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValueTextBox(0);
 
-            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            c.enterEditorText(0, testInput[i], advancedInput[i],
+                    testInput[i + 1]);
 
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
