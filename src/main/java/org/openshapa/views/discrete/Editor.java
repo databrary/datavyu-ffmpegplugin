@@ -168,22 +168,24 @@ public abstract class Editor extends JTextField {
             // Check behind the caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret back one spot
             // and leave the preserved character untouched.
+            int carPosMinusOne = Math.max(0, getCaretPosition() - 1);
             for (int i = 0; i < preservedChars.size(); i++) {
-                if (getText().charAt(getCaretPosition() - 1)
+                if (getText().charAt(carPosMinusOne)
                     == preservedChars.get(i)) {
-                    setCaretPosition(getCaretPosition() - 1);
+                    setCaretPosition(carPosMinusOne);
+                    carPosMinusOne = Math.max(0, getCaretPosition() - 1);
                     break;
                 }
             }
 
             // Delete previous character.
             StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.deleteCharAt(getCaretPosition() - 1);
+            currentValue.deleteCharAt(carPosMinusOne);
             if (!isDeletingChar) {
-                currentValue.insert(getCaretPosition() - 1, replaceChar);
+                currentValue.insert(carPosMinusOne, replaceChar);
             }
 
-            int cPosition = getCaretPosition() - 1;
+            int cPosition = carPosMinusOne;
             this.setText(currentValue.toString());
             setCaretPosition(cPosition);
         }

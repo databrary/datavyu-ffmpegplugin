@@ -434,8 +434,6 @@ public final class UINewCellTest extends UISpecTestCase {
      * Test creating a new FLOAT cell with advanced input.
      * @throws java.lang.Exception on any error
      */
-    //Note: A minor change has been made to the last test input since this test was broken.
-    //If you think the test should pass and it doesn't, check this.
     public void testNewAdvancedFloatCell() throws Exception {
         String varName = "floatVar";
         String varType = "FLOAT";
@@ -443,18 +441,20 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2"};
+            "If x?7 then.- x? 2",  /*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
          //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
-        {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
             {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
-                     Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                             Key.BACKSPACE, Key.BACKSPACE}};
+                Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
+                Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, 7.2};
+        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, -27,
+        -27};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -575,7 +575,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
-            "!289(", "178&", "If x?7. then x? 2", "178&"};
+            "!289(", "178&", "If x?7. then x? 2", "17-8&", /*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
@@ -584,11 +584,12 @@ public final class UINewCellTest extends UISpecTestCase {
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
             {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
-                     Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                             Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE}};
+                Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE},
+            {Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT}};
 
         String[] expectedTestOutput = {"-4321019", "-43289210", "21788", "772",
-        "178"};
+        "-817", "-817"};
 
         // Retrieve the components
         Window window = getMainWindow();
