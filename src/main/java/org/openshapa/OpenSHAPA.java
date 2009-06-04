@@ -1,6 +1,5 @@
 package org.openshapa;
 
-import java.awt.Color;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.db.Database;
 import org.openshapa.db.LogicErrorException;
@@ -28,6 +27,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.controllers.OpenDatabaseC;
 
 /**
  * The main class of the application.
@@ -168,7 +168,7 @@ implements KeyEventDispatcher {
     protected void startup() {
         try {
             // Initalise DB
-            db = new MacshapaDatabase();
+            db = new MacshapaDatabase();            
 
             // Initalise last created values
             lastCreatedCellID = 0;
@@ -190,6 +190,7 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
+        new OpenDatabaseC("/Users/cfreeman/NICTA/DATA/Old_databases/mcgill-hell.csv");
         show(new OpenSHAPAView(this));
     }
 
