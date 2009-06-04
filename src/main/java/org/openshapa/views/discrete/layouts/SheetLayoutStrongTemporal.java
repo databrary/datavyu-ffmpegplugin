@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 /**
  * SheetLayoutStrongTemporal implements the strong temporal style layout of
  * SpreadsheetCells in the spreadsheet.
+ *
  * TODO: Work out the interface to allow user to set the scale. Current
  * approach just checks the range of cells in seconds and tries to fit it
  * to somewhere between 1000 and 5000 pixels of scrolling on screen.
@@ -143,6 +144,7 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
             prevvPos = intvPos;
             prevvHeight = intvHeight;
         }
-        col.setBottomBound(vPos.intValue() + vHeight.intValue()+ 3);
+        col.setBottomBound(vPos.intValue() + vHeight.intValue()
+                           + Constants.BOTTOM_MARGIN);
     }
 }

@@ -6,10 +6,8 @@ import org.openshapa.db.Database;
 import org.openshapa.db.ExternalCascadeListener;
 import org.openshapa.db.ExternalDataColumnListener;
 import org.openshapa.db.SystemErrorException;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Vector;
-import javax.swing.Box;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 
@@ -49,9 +47,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** Default column height. */
     private static final int DEFAULT_HEADER_HEIGHT = 16;
-
-    /** filler box for use when there are no datacells. */
-    private Component filler;
 
     /**
      * Private class for recording the changes reported by the listener
@@ -134,15 +129,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      */
     private void buildDataPanelCells(final DataColumn dbColumn) {
         try {
-            int numCells = dbColumn.getNumCells();
-
-            // hold onto a filler box for when there are no datacells
-            filler = Box.createRigidArea(new Dimension(getWidth(), 0));
-            if (numCells == 0) {
-               datapanel.add(filler);
-            }
             // traverse and build the cells
-            for (int j = 1; j <= numCells; j++) {
+            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
                                     .getCell(dbColumn.getID(), j);
 
@@ -153,6 +141,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 // and add it to our reference list
                 cells.add(sc);
             }
+
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
         }
@@ -270,10 +259,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             if (cell.getCellID() == cellID) {
                 cells.remove(cell);
                 datapanel.remove(cell);
-                if (cells.size() == 0) {
-                    // add in filler to keep column width
-                    datapanel.add(filler);
-                }
                 break;
             }
         }
@@ -296,7 +281,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             }
             newCell.setWidth(getWidth() - 1);
             datapanel.add(newCell);
-            datapanel.remove(filler);
             newCell.requestFocusInWindow();
         } catch (SystemErrorException e) {
             logger.error("Problem inserting a new SpreadsheetCell", e);

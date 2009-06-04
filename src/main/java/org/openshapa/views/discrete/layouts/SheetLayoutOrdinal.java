@@ -4,6 +4,7 @@ import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.awt.Dimension;
 import java.util.Vector;
+import org.openshapa.util.Constants;
 
 /**
  * SheetLayoutOrdinal implements the ordinal style layout of SpreadsheetCells
@@ -39,6 +40,6 @@ public class SheetLayoutOrdinal extends SheetLayout {
             cell.setBounds(0, vPos, col.getWidth() - 1, dim.height + 1);
             vPos += dim.height;
         }
-        col.setBottomBound(vPos + 1);
+        col.setBottomBound(vPos + Constants.BOTTOM_MARGIN);
     }
 }
