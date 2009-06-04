@@ -21,27 +21,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class TimeStampDataValueView extends DataValueElementV {
 
-    /** Conversion factor for converting hours to ticks. */
-    private static final long HH_TO_TICKS = 3600000;
-
-    /** Array index for hourse. */
-    private static final int HH = 0;
-
-    /** Array index for minutes.  */
-    private static final int MM = 1;
-
-    /** Array index for seconds. */
-    private static final int SS = 2;
-
-    /** Array index for milliseconds. */
-    private static final int MMM = 3;
-
-    /** Conversion factor for converting minutes to ticks. */
-    private static final long MM_TO_TICKS = 60000;
-
-    /** Conversion factor for converting seconds to ticks. */
-    private static final int SS_TO_TICKS = 1000;
-
     /** Logger for this class. */
     private static Logger logger = Logger
                                    .getLogger(TimeStampDataValueView.class);
@@ -223,7 +202,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         // to benefit from 'smart' edits.
                         v.deleteCharAt(getCaretPosition());
                         v.insert(getCaretPosition(), text.charAt(i));
-                        ts = buildValue(v.toString());
+                        ts = new TimeStamp(v.toString());
 
                         // If we have got no more room in the timestamp - stop
                         // copying values.
@@ -266,7 +245,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                     // Can't delete empty time stamp data value.
                     if (!tdv.isEmpty()) {
                         this.removeBehindCaret();
-                        tdv.setItsValue(buildValue(getText()));
+                        tdv.setItsValue(new TimeStamp(getText()));
                         e.consume();
                     }
 
@@ -299,7 +278,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         }
 
                         advanceCaret();
-                        tdv.setItsValue(buildValue(getText()));
+                        tdv.setItsValue(new TimeStamp(getText()));
                         e.consume();
                     }
 
@@ -310,7 +289,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                     currentValue.deleteCharAt(getCaretPosition());
                     currentValue.insert(getCaretPosition(), e.getKeyChar());
                     advanceCaret();
-                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    tdv.setItsValue(new TimeStamp(currentValue.toString()));
                     e.consume();
 
                 // Every other key stroke is ignored by the float editor.
@@ -326,31 +305,6 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                 restoreCaretPosition();
             } catch (SystemErrorException se) {
                 logger.error("Unable to update TimeStampDataValue", se);
-            }
-        }
-
-        /**
-         * Builds a new Double value from a string.
-         *
-         * @param textField The String that you want to create a Double from.
-         *
-         * @return A Double value that can be used setting the database.
-         */
-        public final TimeStamp buildValue(final String textField) {
-            try {
-                long ticks = 0;
-
-                String[] timeChunks = textField.split(":");
-
-                ticks += (new Long(timeChunks[HH]) * HH_TO_TICKS);
-                ticks += (new Long(timeChunks[MM]) * MM_TO_TICKS);
-                ticks += (new Long(timeChunks[SS]) * SS_TO_TICKS);
-                ticks += (new Long(timeChunks[MMM]));
-
-                return new TimeStamp(SS_TO_TICKS, ticks);
-            } catch (SystemErrorException e) {
-                logger.error("Unable to build TimeStamp value", e);
-                return null;
             }
         }
     }
