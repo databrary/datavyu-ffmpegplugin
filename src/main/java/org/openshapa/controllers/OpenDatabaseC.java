@@ -100,7 +100,16 @@ public class OpenDatabaseC {
 
             // Create the data value from the last token in the line
             TextStringDataValue tsdv = new TextStringDataValue(dc.getDB());
-            tsdv.setItsValue(tokens[2]);
+
+            String text = new String("");
+            for (int i = 2; i < tokens.length; i++) {
+                text = text.concat(tokens[i]);
+
+                if (i < (tokens.length - 1)) {
+                    text = text.concat(",");
+                }
+            }
+            tsdv.setItsValue(text);
 
             // Insert the datavalue in the cell.
             long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
@@ -189,6 +198,7 @@ public class OpenDatabaseC {
             // the vocab, and create it if it doesn't exist. Otherwise we just
             // plow ahead and add the predicate to the database.
             } else {
+                int a = 5;
                 /*
                 // Create the data value from the last token in the line
                 NominalDataValue ndv = new NominalDataValue(dc.getDB());

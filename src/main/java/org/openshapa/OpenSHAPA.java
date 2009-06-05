@@ -190,7 +190,7 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        new OpenDatabaseC("/Users/cfreeman/NICTA/DATA/Old_databases/mcgill-hell.csv");
+        new OpenDatabaseC("/Users/cfreeman/NICTA/DATA/Old_databases/mcgill-hell-b.csv");
         show(new OpenSHAPAView(this));
     }
 
