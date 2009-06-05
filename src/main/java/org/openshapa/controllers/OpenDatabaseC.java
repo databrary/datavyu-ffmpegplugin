@@ -11,13 +11,19 @@ import org.openshapa.db.Column;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;
+import org.openshapa.db.FloatFormalArg;
+import org.openshapa.db.FormalArgument;
+import org.openshapa.db.IntFormalArg;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.NominalDataValue;
+import org.openshapa.db.NominalFormalArg;
+import org.openshapa.db.QuoteStringFormalArg;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
+import org.openshapa.db.UnTypedFormalArg;
 
 /**
  * Controller for opening a database from disk.
@@ -222,32 +228,75 @@ public class OpenDatabaseC {
         return line;
     }
 
+    private String parseMatrixVariable(BufferedReader csvFile,
+                                       DataColumn dc)
+    throws IOException, SystemErrorException {
+        String line = csvFile.readLine();
+        while (line != null && Character.isDigit(line.charAt(0))) {
+
+            // Get the next line in the file for reading.
+            line = csvFile.readLine();
+        }
+
+        return line;
+    }
+
     private String parseVariable(BufferedReader csvFile,
                                  String line,
                                  Database db)
     throws IOException, SystemErrorException, LogicErrorException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
-        tokens[0] = tokens[0].trim();
-        tokens[1] = tokens[1].substring(0, tokens[1].indexOf(")"));
+        String varName = tokens[0].trim();
+        String varType = tokens[1].substring(0, tokens[1].indexOf(")"));
 
         // Create variable to put cells within.
-        Column.isValidColumnName(OpenSHAPA.getDatabase(),
-                                 tokens[0]);
-        DataColumn dc = new DataColumn(db, tokens[0], getVarType(tokens[1]));
+        Column.isValidColumnName(db, varName);
+        DataColumn dc = new DataColumn(db, varName, getVarType(varType));
         long colId = db.addColumn(dc);
         dc = db.getDataColumn(colId);
 
         // Read text variable.
-        if (getVarType(tokens[1]) == MatrixVocabElement.MatrixType.TEXT) {
+        if (getVarType(varType) == MatrixVocabElement.MatrixType.TEXT) {
             return parseTextVariable(csvFile, dc);
 
         // Read nominal variable.
-        } else if (getVarType(tokens[1])
+        } else if (getVarType(varType)
                    == MatrixVocabElement.MatrixType.NOMINAL) {
             return parseNominalVariable(csvFile, dc);
 
-        } else if (getVarType(tokens[1])
+        } else if (getVarType(varType)
+                   == MatrixVocabElement.MatrixType.MATRIX) {
+            // Build vocab for matrix.
+            String[] vocabString = tokens[1].split("-");
+            String[] vocabElems = vocabString[1].split(",");
+            MatrixVocabElement mve = db.getMatrixVE(varName);
+            // delete default formal argument in column
+            mve.deleteFormalArg(0);
+
+            for (int i = 0; i < vocabElems.length; i++) {
+                FormalArgument fa;
+                String[] vocabElement = vocabElems[i].split("\\|");
+
+                if (vocabElement[1].equalsIgnoreCase("text")) {
+                    fa = new QuoteStringFormalArg(db, "<" + vocabElement[0] + ">");
+                } else if (vocabElement[1].equalsIgnoreCase("nominal")) {
+                    fa = new NominalFormalArg(db, "<" + vocabElement[0] + ">");
+                } else if (vocabElement[1].equalsIgnoreCase("integer")) {
+                    fa = new IntFormalArg(db, "<" + vocabElement[0] + ">");
+                } else if (vocabElement[1].equalsIgnoreCase("float")) {
+                    fa = new FloatFormalArg(db, "<" + vocabElement[0] + ">");
+                } else {
+                    fa = new UnTypedFormalArg(db, "<" + vocabElement[0] + ">");
+                }
+
+                mve.appendFormalArg(fa);
+            }
+
+            db.replaceMatrixVE(mve);
+            return parseMatrixVariable(csvFile, dc);
+
+        } else if (getVarType(varType)
                    == MatrixVocabElement.MatrixType.PREDICATE) {
             return parsePredicateVariable(csvFile, dc);
         }
@@ -264,6 +313,9 @@ public class OpenDatabaseC {
 
         } else if (type.equalsIgnoreCase("predicate")) {
             return MatrixVocabElement.MatrixType.PREDICATE;
+
+        } else if (type.equalsIgnoreCase("matrix")) {
+            return MatrixVocabElement.MatrixType.MATRIX;
 
         }
 
