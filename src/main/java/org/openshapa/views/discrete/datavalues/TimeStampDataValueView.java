@@ -5,7 +5,6 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.TimeStampDataValue;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.views.discrete.Editor;
 import org.openshapa.views.discrete.Selector;

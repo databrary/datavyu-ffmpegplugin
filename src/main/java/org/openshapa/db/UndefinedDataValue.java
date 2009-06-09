@@ -141,18 +141,16 @@ public final class UndefinedDataValue extends DataValue
      *      replace untyped formal arguments is removed.
      *
      *                                               -- 12/12/08
+     *
+     *    - Able to set values of undefined datavalues to things other than
+     *      valid formal arguments.
+     *                                               -- 2009/06/09
      */
     
     public void setItsValue(String value)
         throws SystemErrorException
     {
         final String mName = "UndefinedDataValue::setItsValue(): ";
-        
-        if ( ! ( getDB().IsValidFargName(value) ) )
-        {
-            throw new SystemErrorException(mName +
-                    "value isn't a valid formal argument name");
-        }
         
         if ( this.itsFargID != DBIndex.INVALID_ID )
         {

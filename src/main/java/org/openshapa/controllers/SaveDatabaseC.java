@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Vector;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
+import org.openshapa.db.FormalArgument;
+import org.openshapa.db.MatrixVocabElement;
 
 /**
  * Controller for saving the database to disk.
@@ -47,8 +49,28 @@ public final class SaveDatabaseC {
             Vector<DataColumn> cols = db.getDataColumns();
             for (int i = 0; i < cols.size(); i++) {
                 DataColumn dc = cols.get(i);
+                boolean isMatrix = false;
 
                 out.write(dc.getName());
+
+                // If we have more than one formal argument - need to dump its
+                // formal arguments
+                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+                if (mve.getNumFormalArgs() > 1) {
+                    isMatrix = true;
+                    out.write(" (matrix)-");
+                    for (int j = 0; j < mve.getNumFormalArgs(); j++) {
+                        FormalArgument fa = mve.getFormalArg(j);
+                        String name = fa.getFargName()
+                                   .substring(1, fa.getFargName().length() - 1);
+                        out.write(name + "|" + fa.getFargType().toString());
+
+                        if (j < mve.getNumFormalArgs() - 1) {
+                            out.write(",");
+                        }
+                    }
+                }
+
                 out.newLine();
                 for (int j = 1; j <= dc.getNumCells(); j++) {
                     DataCell c = (DataCell) dc.getDB().getCell(dc.getID(), j);
@@ -57,7 +79,9 @@ public final class SaveDatabaseC {
                     out.write(c.getOffset().toString());
                     out.write(",");
                     String value = c.getVal().toString();
-                    value = value.substring(1, value.length() - 1);
+                    if (!isMatrix) {
+                        value = value.substring(1, value.length() - 1);
+                    }
                     out.write(value);
                     out.newLine();
                 }

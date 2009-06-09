@@ -196,6 +196,10 @@ public final class IntDataValue extends DataValue
 
     } /* IntDataValue::setItsValue() */
 
+    public void setItsValue(final String value) {
+        this.setItsValue(new Long(value));
+    }
+
     /**
      * @return true if the value equals the default value
      */

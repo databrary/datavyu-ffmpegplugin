@@ -5,25 +5,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.Column;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
+import org.openshapa.db.DataValue;
 import org.openshapa.db.Database;
+import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.FloatFormalArg;
 import org.openshapa.db.FormalArgument;
+import org.openshapa.db.IntDataValue;
 import org.openshapa.db.IntFormalArg;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.NominalDataValue;
 import org.openshapa.db.NominalFormalArg;
+import org.openshapa.db.QuoteStringDataValue;
 import org.openshapa.db.QuoteStringFormalArg;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.UnTypedFormalArg;
+import org.openshapa.db.UndefinedDataValue;
 
 /**
  * Controller for opening a database from disk.
@@ -32,6 +38,13 @@ public class OpenDatabaseC {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenDatabaseC.class);
+
+    private static int DATA_ONSET = 0;
+
+    private static int DATA_OFFSET = 1;
+
+    /** The start of the data arguments. */
+    private static int DATA_INDEX = 2;
 
     /**
      * Constructor.
@@ -101,14 +114,14 @@ public class OpenDatabaseC {
                                          dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[0]));
-            cell.setOffset(new TimeStamp(tokens[1]));
+            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
+            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
 
             // Create the data value from the last token in the line
             TextStringDataValue tsdv = new TextStringDataValue(dc.getDB());
 
             String text = new String("");
-            for (int i = 2; i < tokens.length; i++) {
+            for (int i = DATA_INDEX; i < tokens.length; i++) {
                 text = text.concat(tokens[i]);
 
                 if (i < (tokens.length - 1)) {
@@ -152,13 +165,13 @@ public class OpenDatabaseC {
                                          dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[0]));
-            cell.setOffset(new TimeStamp(tokens[1]));
+            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
+            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
 
             // Create the data value from the last token in the line
             NominalDataValue ndv = new NominalDataValue(dc.getDB());
             //TextStringDataValue tsdv = new TextStringDataValue(dc.getDB());
-            ndv.setItsValue(tokens[2]);
+            ndv.setItsValue(tokens[DATA_INDEX]);
 
             // Insert the datavalue in the cell.
             long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
@@ -192,11 +205,11 @@ public class OpenDatabaseC {
                                          dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[0]));
-            cell.setOffset(new TimeStamp(tokens[1]));
+            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
+            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
 
             // Empty predicate - just add the empty data cell.
-            if (tokens[2].equals("()")) {
+            if (tokens[DATA_INDEX].equals("()")) {
                 // Add the populated cell to the database.
                 dc.getDB().appendCell(cell);
 
@@ -204,22 +217,8 @@ public class OpenDatabaseC {
             // the vocab, and create it if it doesn't exist. Otherwise we just
             // plow ahead and add the predicate to the database.
             } else {
-                int a = 5;
-                /*
-                // Create the data value from the last token in the line
-                NominalDataValue ndv = new NominalDataValue(dc.getDB());
-                //TextStringDataValue tsdv = new TextStringDataValue(dc.getDB());
-                ndv.setItsValue(tokens[2]);
-
-                // Insert the datavalue in the cell.
-                long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
-                Matrix m = Matrix.Construct(dc.getDB(), mveId, ndv);
-                cell.setVal(m);
-
-                dc.getDB().appendCell(cell);
-                 */
+                // Still need to parse predicate variables.
             }
-
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -229,10 +228,81 @@ public class OpenDatabaseC {
     }
 
     private String parseMatrixVariable(BufferedReader csvFile,
-                                       DataColumn dc)
+                                       DataColumn dc,
+                                       MatrixVocabElement mve)
     throws IOException, SystemErrorException {
         String line = csvFile.readLine();
         while (line != null && Character.isDigit(line.charAt(0))) {
+            // Split the line into tokens using a comma delimiter.
+            String[] tokens = line.split(",");
+
+            // Create the data cell from line in the CSV file.
+            DataCell cell = new DataCell(dc.getDB(),
+                                         dc.getID(),
+                                         dc.getItsMveID());
+
+            // Set the onset and offset from tokens in the line.
+            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
+            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
+
+            // Strip the brackets from the first and last argument.
+            tokens[DATA_INDEX] = tokens[DATA_INDEX]
+                                 .substring(1, tokens[DATA_INDEX].length());
+
+            int end = tokens.length - 1;
+            tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
+
+            Vector<DataValue> arguments = new Vector<DataValue>();
+            for (int i = 0; i < mve.getNumFormalArgs(); i++) {
+                FormalArgument ma = mve.getFormalArg(i);
+                boolean emptyArg = false;
+                if (tokens[i + 2].charAt(0) == '<') {
+                    emptyArg = true;
+                }
+
+                switch(ma.getFargType()) {
+                    case TEXT:
+                        QuoteStringDataValue qsdv = new QuoteStringDataValue(dc.getDB());                        
+                        if (!emptyArg) {
+                            qsdv.setItsValue(tokens[i + 2]);
+                        }
+                        arguments.add(qsdv);
+                        break;
+                    case NOMINAL:
+                        NominalDataValue ndv = new NominalDataValue(dc.getDB());
+                        if (!emptyArg) {
+                            ndv.setItsValue(tokens[i + 2]);
+                        }
+                        arguments.add(ndv);
+                        break;
+                    case INTEGER:
+                        IntDataValue idv = new IntDataValue(dc.getDB());                        
+                        if (!emptyArg) {
+                            idv.setItsValue(tokens[i + 2]);
+                        }
+                        arguments.add(idv);
+                        break;
+                    case FLOAT:
+                        FloatDataValue fdv = new FloatDataValue(dc.getDB());                        
+                        if (!emptyArg) {
+                            fdv.setItsValue(tokens[i + 2]);
+                        }
+                        arguments.add(fdv);
+                        break;
+                    default:
+                        UndefinedDataValue udv = new UndefinedDataValue(dc.getDB());                        
+                        if (!emptyArg) {
+                            udv.setItsValue(tokens[i + 2]);
+                        }
+                        arguments.add(udv);
+                        break;
+                }                
+            }
+            Matrix m = new Matrix(dc.getDB(), mve.getID(), arguments);
+            cell.setVal(m);
+
+            // Add the populated cell to the database.
+            dc.getDB().appendCell(cell);
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -294,7 +364,8 @@ public class OpenDatabaseC {
             }
 
             db.replaceMatrixVE(mve);
-            return parseMatrixVariable(csvFile, dc);
+            mve = db.getMatrixVE(varName);
+            return parseMatrixVariable(csvFile, dc, mve);
 
         } else if (getVarType(varType)
                    == MatrixVocabElement.MatrixType.PREDICATE) {

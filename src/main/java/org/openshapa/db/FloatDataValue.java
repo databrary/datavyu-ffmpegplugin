@@ -191,6 +191,10 @@ public final class FloatDataValue extends DataValue {
 
     } /* FloatDataValue::setItsValue() */
 
+    public void setItsValue(final String value) {
+        this.setItsValue(new Double(value));
+    }
+
     /**
      * @return true if the value equals the default value
      */
