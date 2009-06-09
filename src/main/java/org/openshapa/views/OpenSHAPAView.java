@@ -25,6 +25,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
+import org.openshapa.controllers.OpenDatabaseC;
 import org.openshapa.db.SystemErrorException;
 
 /**
@@ -88,6 +89,20 @@ implements KeyEventDispatcher {
         FileFilter ff = jd.getFileFilter();
         if (result == JFileChooser.APPROVE_OPTION) {
             new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+        }
+    }
+
+    /**
+     * Action for loading a database from a file.
+     */
+    @Action
+    public void open() {
+        JFileChooser jd = new JFileChooser();
+        jd.addChoosableFileFilter(new CSVFilter());
+        int result = jd.showOpenDialog(this.getComponent());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            new OpenDatabaseC(jd.getSelectedFile());
         }
     }
 
@@ -187,8 +202,9 @@ implements KeyEventDispatcher {
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        javax.swing.JMenuItem openMenuItem = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem newMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -243,14 +259,19 @@ implements KeyEventDispatcher {
         fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
-        openMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
-        openMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
+        openMenuItem.setAction(actionMap.get("open")); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
+        openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
         openMenuItem.setName("openMenuItem"); // NOI18N
         fileMenu.add(openMenuItem);
 
-        jMenuItem5.setAction(actionMap.get("saveAs")); // NOI18N
-        jMenuItem5.setName("jMenuItem5"); // NOI18N
-        fileMenu.add(jMenuItem5);
+        newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
+        newMenuItem.setName("newMenuItem"); // NOI18N
+        fileMenu.add(newMenuItem);
+
+        saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
+        saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
+        fileMenu.add(saveAsMenuItem);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
         fileMenu.add(fileMenuSeparator);
@@ -503,12 +524,6 @@ implements KeyEventDispatcher {
         new RunScriptC(evt.getActionCommand());
     }
 
-    /**
-     * The action to poplate the recently ran scripts menu with scripts that
-     * have been, well... Recently ran.
-     *
-     * @param evt The event that triggered this action.
-     */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
@@ -521,7 +536,6 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -529,10 +543,12 @@ implements KeyEventDispatcher {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
+    private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;

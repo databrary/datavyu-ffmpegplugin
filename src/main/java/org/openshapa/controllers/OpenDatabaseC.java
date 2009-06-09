@@ -39,8 +39,10 @@ public class OpenDatabaseC {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenDatabaseC.class);
 
+    /** The index of the ONSET timestamp in the CSV line. */
     private static int DATA_ONSET = 0;
 
+    /** The index of the OFFSET timestampe in the CSV line. */
     private static int DATA_OFFSET = 1;
 
     /** The start of the data arguments. */
@@ -52,15 +54,14 @@ public class OpenDatabaseC {
      * @param sourceFile The source file to use when opening a database from
      * disk.
      */
-    public OpenDatabaseC(final String sourceFile) {
+    public OpenDatabaseC(final File sourceFile) {
         this.loadCSV(sourceFile);
     }
 
-    private void loadCSV(final String sourceFile) {
+    private void loadCSV(final File sFile) {
         try {
             Database db = OpenSHAPA.getDatabase();
-            File file = new File(sourceFile);
-            BufferedReader csvFile = new BufferedReader(new FileReader(file));
+            BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.
             String line = csvFile.readLine();

@@ -27,7 +27,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
-import org.openshapa.controllers.OpenDatabaseC;
 
 /**
  * The main class of the application.
@@ -189,9 +188,7 @@ implements KeyEventDispatcher {
         } catch (IOException e) {
             logger.error("Unable to create scripting output streams", e);
         }
-        
-        new OpenDatabaseC("/Users/cfreeman/NICTA/DATA/Old_databases/nasa-hell_out.csv");
-        //new OpenDatabaseC("C:\\NICTA\\Data\\old_databases\\nasa-hell.csv");
+
         show(new OpenSHAPAView(this));
     }
 

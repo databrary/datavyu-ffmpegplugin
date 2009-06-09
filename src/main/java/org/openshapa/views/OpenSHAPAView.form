@@ -59,22 +59,32 @@
             <MenuItem class="javax.swing.JMenuItem" name="openMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="open" methodName="open"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/openshapa/views/resources/OpenSHAPAView.properties" key="file_open.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="openMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="newMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="showNewDatabaseForm" methodName="showNewDatabaseForm"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="newMenuItem.text"/>
-                <Property name="name" type="java.lang.String" value="openMenuItem" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="newMenuItem" noResource="true"/>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
               </AuxValues>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem5">
+            <MenuItem class="javax.swing.JMenuItem" name="saveAsMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="saveAs" methodName="saveAs"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="jMenuItem5" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="saveAsMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="fileMenuSeparator">
