@@ -14,6 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
+import org.openshapa.db.MatrixVocabElement.MatrixType;
 
 /**
  * Controller for saving the database to disk.
@@ -51,14 +52,13 @@ public final class SaveDatabaseC {
                 DataColumn dc = cols.get(i);
                 boolean isMatrix = false;
 
-                out.write(dc.getName());
+                out.write(dc.getName() + " (" + dc.getItsMveType() + ")");
 
-                // If we have more than one formal argument - need to dump its
-                // formal arguments
+                // If we a matrix type - we need to dump the formal args.
                 MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
-                if (mve.getNumFormalArgs() > 1) {
+                if (dc.getItsMveType() == MatrixType.MATRIX) {
                     isMatrix = true;
-                    out.write(" (matrix)-");
+                    out.write("-");
                     for (int j = 0; j < mve.getNumFormalArgs(); j++) {
                         FormalArgument fa = mve.getFormalArg(j);
                         String name = fa.getFargName()
@@ -68,7 +68,7 @@ public final class SaveDatabaseC {
                         if (j < mve.getNumFormalArgs() - 1) {
                             out.write(",");
                         }
-                    }
+                    }                
                 }
 
                 out.newLine();

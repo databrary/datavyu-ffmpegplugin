@@ -140,7 +140,8 @@ public final class NewVariableV extends OpenSHAPADialog {
                 .addContainerGap())
         );
 
-        okButton.setLabel(bundle.getString("okButton.text")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariableV.class);
+        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {

@@ -26,7 +26,10 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
 import org.openshapa.controllers.OpenDatabaseC;
+import org.openshapa.db.Database;
+import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
+import org.openshapa.util.Constants;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -102,6 +105,19 @@ implements KeyEventDispatcher {
         int result = jd.showOpenDialog(this.getComponent());
 
         if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                Database newDB = new MacshapaDatabase();
+                OpenSHAPA.setDatabase(newDB);
+                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                           .getMainView();
+                s.showSpreadsheet();
+                // TODO- BugzID:79 This needs to move above showSpreadsheet,
+                // when setTicks is fully implemented.
+                newDB.setTicks(Constants.TICKS_PER_SECOND);
+            } catch (SystemErrorException se) {
+                logger.error("Unable to create new database on open", se);
+            }
+
             new OpenDatabaseC(jd.getSelectedFile());
         }
     }
