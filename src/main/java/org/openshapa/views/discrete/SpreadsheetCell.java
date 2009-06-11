@@ -1,29 +1,29 @@
 package org.openshapa.views.discrete;
 
+import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Database;
 import org.openshapa.db.ExternalDataCellListener;
-import org.openshapa.db.IntDataValue;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.ReferenceCell;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.TimeStampDataValue;
 import org.openshapa.Configuration;
-import org.openshapa.views.discrete.datavalues.DataValueV;
-import org.openshapa.views.discrete.datavalues.IntDataValueView;
-import org.openshapa.views.discrete.datavalues.MatrixV;
+import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.OffsetView;
 import org.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
@@ -35,6 +35,9 @@ import org.jdesktop.application.ResourceMap;
 public class SpreadsheetCell extends SpreadsheetElementPanel
 implements ExternalDataCellListener, Selectable {
 
+    /** The panel that displays the cell. */
+    private SpreadsheetElementPanel cellPanel;
+
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
 
@@ -42,10 +45,10 @@ implements ExternalDataCellListener, Selectable {
     private SpreadsheetElementPanel topPanel;
 
     /** A panel for holding the value of the cell. */
-    private MatrixV dataPanel;
+    private MatrixRootView dataPanel;
 
     /** The Ordinal display component. */
-    private DataValueV ord;
+    private JLabel ord;
 
     /** The Onset display component. */
     private OnsetView onset;
@@ -68,22 +71,40 @@ implements ExternalDataCellListener, Selectable {
     /** The parent selection that could include this cell. */
     private Selector selection;
 
+    /** Component that sets the width of the cell. */
+    private Filler stretcher;
+
+    /** strut creates the gap between this cell and the previous cell. */
+    private Filler strut;
+
+    /** The Y location of the visible portion of the cell requested by
+     * the active SheetLayout. */
+    private int layoutPreferredY;
+
+    /** The height of the visible portion of the cell requested by
+     * the active SheetLayout. */
+    private int layoutPreferredHeight;
+
     /** Onset has been processed and layout position calculated. */
     private boolean onsetProcessed = false;
 
     /** Border to use for normal cell. No extra information to show. */
     public static final Border NORMAL_BORDER =
         BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK),
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
                 BorderFactory.createEmptyBorder(0, 3, 1, 2));
+
+    /** Border to use for normal cell if there is no strut (abuts prev cell). */
+    public static final Border STRUT_BORDER =
+        BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK);
 
     /** Border to use if cell overlaps with another. */
     public static final Border OVERLAP_BORDER =
         BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK),
+                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
                     BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLUE)),
-                BorderFactory.createEmptyBorder(0, 3, 0, 2));
+                BorderFactory.createEmptyBorder(0, 3, 1, 2));
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetCell.class);
@@ -125,14 +146,19 @@ implements ExternalDataCellListener, Selectable {
 
         db.registerDataCellListener(dc.getID(), this);
 
+        cellPanel = new SpreadsheetElementPanel();
+        strut = new Filler(new Dimension(0,30), new Dimension(0,30), 
+			  new Dimension(Short.MAX_VALUE, 30));
+
+        this.setLayout(new BorderLayout());
+        this.add(strut, BorderLayout.NORTH);
+        this.add(cellPanel, BorderLayout.CENTER);
+
         // Build components used for the spreadsheet cell.
         topPanel = new SpreadsheetElementPanel();
-        ord = new IntDataValueView(selection,
-                                   dc,
-                                   new IntDataValue(cellDB),
-                                   false);
-        ord.setFocusable(false);
-        ord.setToolTipText(rMap.getString("ord.tooltip"));
+        ord = new JLabel();
+        ord.setToolTipText(rMap.getString("ord.tooltip"));        
+
         setOrdinal(dc.getOrd());
 
         onset = new OnsetView(selection,
@@ -149,34 +175,38 @@ implements ExternalDataCellListener, Selectable {
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.setValue(dc.getOffset());
 
-        dataPanel = new MatrixV(selection, dc, null);
+        dataPanel = new MatrixRootView(selection, dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
 
-
         // Set the appearance of the spreadsheet cell.
-        setBackground(Configuration.getInstance().getSSBackgroundColour());
-        this.setBorder(NORMAL_BORDER);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        cellPanel.setBorder(NORMAL_BORDER);
+        cellPanel.setLayout(new BorderLayout());
 
+        // Set the apperance of the top panel and add child elements (ord, onset
+        // and offset).
+        topPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        add(topPanel);
+        cellPanel.add(topPanel, BorderLayout.NORTH);
         topPanel.add(ord);
+        Component strut1 = Box.createHorizontalStrut(TIME_SPACER);
+        topPanel.add(strut1);
         Component glue = Box.createGlue();
         topPanel.add(glue);
-        onset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         topPanel.add(onset);
         Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
-        topPanel.add(strut2);
+       topPanel.add(strut2);
         topPanel.add(offset);
-        offset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
         dataPanel.setBackground(Configuration.getInstance()
                                              .getSSBackgroundColour());
-        dataPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 2));
-        add(dataPanel, java.awt.BorderLayout.WEST);
+        cellPanel.add(dataPanel, BorderLayout.CENTER);
+        Dimension d = new Dimension(229, 0);
+        stretcher = new Filler(d, d, d);
+        cellPanel.add(stretcher, BorderLayout.SOUTH);
     }
 
     /**
@@ -187,14 +217,14 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
-     * @return onset as String
+     * @return onset view
      */
     public OnsetView getOnset() {
         return onset;
     }
 
     /**
-     * @return offset as String
+     * @return offset view
      */
     public OffsetView getOffset() {
         return offset;
@@ -206,10 +236,8 @@ implements ExternalDataCellListener, Selectable {
      * @param ord The new ordinal value to use with this cell.
      * @deprecated The underlying IntDataValue should be altered, not the view.
      */
-    private void setOrdinal(int ord) {
-        ((IntDataValue)this.ord.getModel()).setItsValue(ord);
-        this.ord.updateStrings();
-        this.validate();
+    private void setOrdinal(Integer ordInt) {
+        ord.setText(ordInt.toString());
     }
 
     /**
@@ -233,19 +261,102 @@ implements ExternalDataCellListener, Selectable {
     /**
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
-    public IntDataValue getOrdinal() {
-        return ((IntDataValue) this.ord.getModel());
+    public long getOrdinal() {
+        return dc.getOrd();
     }
 
     /**
-     * Set the size of the SpreadsheetCell.
-     * @param width New width of the SpreadsheetCell.
-     * @param height New height of the SpreadsheetCell.
+     * Allow a layout to set a preferred y location for the cell.
+     * Set to 0 if layout wants default behaviour. (e.g. Ordinal layout)
+     * @param y Preferred Y location for the visible portion of the cell.
+     */
+    public final void setLayoutPreferredY(final int y) {
+        layoutPreferredY = y;
+        setOnsetvGap(0);
+    }
+
+    /**
+     * Allow a layout to set a preferred y location for the cell.
+     * @param y Preferred Y location for the visible portion of the cell.
+     * @param prev SpreadsheetCell previous to this cell.
+     */
+    public final void setLayoutPreferredY(final int y, SpreadsheetCell prev) {
+        layoutPreferredY = y;
+        int strutHeight = y;
+        if (prev != null) {
+            strutHeight -= (prev.getLayoutPreferredY() + prev.getLayoutPreferredHeight());
+        }
+        setOnsetvGap(strutHeight);
+    }
+
+    /**
+     * @return The active layouts preferred Y location for the visible portion
+     * of this cell.
+     */
+    public final int getLayoutPreferredY() {
+        return layoutPreferredY;
+    }
+
+    /**
+     * @return The active layouts preferred height for the visible portion of
+     * this cell.
+     */
+    public final int getLayoutPreferredHeight() {
+        return layoutPreferredHeight;
+    }
+
+    /**
+     * Set a preferred height for the visible portion of the cell.
+     */
+    public final void setLayoutPreferredHeight(final int height) {
+        layoutPreferredHeight = height;
+    }
+
+    /**
+     * @return the calculated preferred height for the SpreadsheetCell
+     * not including the strut component.
+     */
+    public final int getPreferredHeight() {
+        Dimension mysize = super.getPreferredSize();
+        int myheight = mysize.height;
+        myheight -= strut.getHeight();
+        return myheight;
+    }
+
+    /**
+     * Override Maximum size to return the preferred size or the active layouts
+     * preferred height, whichever is greater.
+     * @return the maximum size of the cell.
      */
     @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        dataPanel.setSize(width, dataPanel.getHeight());
+    public final Dimension getMaximumSize() {
+        Dimension mysize = super.getPreferredSize();
+        if (mysize != null && mysize.height <
+                                  (layoutPreferredHeight + strut.getHeight())) {
+            mysize = new Dimension(mysize.width,
+                                   (layoutPreferredHeight + strut.getHeight()));
+        }
+        return mysize;
+    }
+
+    /**
+     * Override Preferred size to return the maximum size (which takes into
+     * account the super.preferred size. See getMaximumSize.
+     * @return the preferred size of the cell.
+     */
+    @Override
+    public final Dimension getPreferredSize() {
+        return getMaximumSize();
+    }
+
+    /**
+     * Override Minimum size to return the maximum size (which takes into
+     * account the super.preferred size. See getMaximumSize.
+     * @return the minimum size of the cell.
+     */
+    @Override
+    public final Dimension getMinimumSize() {
+        return getMaximumSize();
     }
 
     /**
@@ -253,15 +364,8 @@ implements ExternalDataCellListener, Selectable {
      * @param width New width of the SpreadsheetCell.
      */
     public void setWidth(int width) {
-        this.setSize(width, this.getHeight());
-    }
-
-    /**
-     * Set the height of the SpreadsheetCell.
-     * @param height New height of the SpreadsheetCell.
-     */
-    public void setHeight(int height) {
-        this.setSize(this.getWidth(), height);
+        Dimension d = new Dimension(width, 0);
+        stretcher.changeShape(d, d, d);
     }
 
     /**
@@ -296,13 +400,27 @@ implements ExternalDataCellListener, Selectable {
                                                 .getSSSelectedColour());
             dataPanel.setBackground(Configuration.getInstance()
                                                  .getSSSelectedColour());
-            setBackground(Configuration.getInstance().getSSSelectedColour());
+            cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
+
+//            System.out.println(this);
+//            System.out.print("MaximumHeight = ");
+//            System.out.println(getMaximumHeight());
+//            System.out.print("MaximumSize = ");
+//            System.out.println(getMaximumSize());
+//            System.out.print("PreferredSize = ");
+//            System.out.println(getPreferredSize());
+//            System.out.print("MinimumSize = ");
+//            System.out.println(getMinimumSize());
+//            System.out.print("Strut = ");
+//            System.out.println(strut);
+//            System.out.print("CellPanel = ");
+//            System.out.println(cellPanel);
         } else {
             topPanel.setBackground(Configuration.getInstance()
                                                 .getSSBackgroundColour());
             dataPanel.setBackground(Configuration.getInstance()
                                                  .getSSBackgroundColour());
-            setBackground(Configuration.getInstance().getSSBackgroundColour());
+            cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         }
 
         repaint();
@@ -373,11 +491,19 @@ implements ExternalDataCellListener, Selectable {
         // TODO- Figure out how to work with cells that are deleted.
     }
 
+    /**
+     * Action to perform on a mouseClick.
+     */
     @Override
     public void mouseClicked(MouseEvent me) {
-        selection.addToSelection(me, this);
-        requestFocusInWindow();
-        me.consume();
+        // The cell includes a strut component that keeps it a set distance
+        // from the previous cell in the column. A click in that area should
+        // not cause a selection
+        if (me.getPoint().y > cellPanel.getY()) {
+            selection.addToSelection(me, this);
+            requestFocusInWindow();
+            me.consume();
+        }
     }
 
     /**
@@ -391,8 +517,7 @@ implements ExternalDataCellListener, Selectable {
     }
 
     /**
-     * Request to focus this matrix view label, focus will be set to the first
-     * element in the formal argument list.
+     * Request to focus this cell.
      */
     @Override
     public void requestFocus() {
@@ -414,6 +539,9 @@ implements ExternalDataCellListener, Selectable {
      */
     public void setOnsetProcessed(boolean onsetProcessed) {
         this.onsetProcessed = onsetProcessed;
+        if (!onsetProcessed) {
+            setStrutHeight(0);
+        }
     }
 
     /**
@@ -421,15 +549,53 @@ implements ExternalDataCellListener, Selectable {
      * onsetProcessed flag also. Used in the temporal layout algorithm.
      * @param vPos The vertical location in pixels for this cell.
      */
+    @Deprecated
     public void setOnsetvPos(int vPos) {
         setLocation(getX(), vPos);
         setOnsetProcessed(true);
     }
 
     /**
-     * @return The data value view used for this spreadsheet cell.
+     * Set the vertical location for the SpreadsheetCell. Sets the
+     * onsetProcessed flag also. Used in the temporal layout algorithm.
+     * @param vPos The vertical location in pixels for this cell.
      */
-    public final MatrixV getDataValueV() {
+    public void setOnsetvGap(int vGap) {
+        setStrutHeight(vGap);
+        setOnsetProcessed(true);
+    }
+
+    /**
+     * Set the strut height for the SpreadsheetCell.
+     */
+    private void setStrutHeight(int height) {
+        if (height == 0) {
+            strut.setBorder(null);
+        } else {
+            strut.setBorder(STRUT_BORDER);
+        }
+        strut.changeShape(new Dimension(0, height),
+                            new Dimension(0, height),
+                            new Dimension(Short.MAX_VALUE, height));
+        this.validate();
+    }
+
+    /**
+     * Set the border of the cell.
+     * @param overlap true if the cell overlaps with the following cell.
+     */
+    public void setOverlapBorder(boolean overlap) {
+        if (overlap) {
+            cellPanel.setBorder(OVERLAP_BORDER);
+        } else {
+            cellPanel.setBorder(NORMAL_BORDER);
+        }
+    }
+
+    /**
+     * @return The MatrixRootView of this cell.
+     */
+    public final MatrixRootView getDataView() {
         return dataPanel;
     }
 }

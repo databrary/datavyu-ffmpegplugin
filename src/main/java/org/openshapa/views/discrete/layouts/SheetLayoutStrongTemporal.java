@@ -5,6 +5,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
+import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,6 +43,11 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      * Recalculate positions of all the cells in the spreadsheet.
      */
     public final void relayoutCells() {
+//        for (SpreadsheetColumn col : getColumns()) {
+//            JComponent datapanel = col.getDataPanel();
+//            datapanel.setLayout(null);
+//        }
+
         try {
             long[] minmax = {Long.MAX_VALUE, Long.valueOf(0)};
             for (SpreadsheetColumn col : getColumns()) {
@@ -134,9 +140,9 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
                     // we have overlap - modify size and border
                     prevCell.setBounds(0, prevvPos, col.getWidth() - 1,
                                                        intvPos - prevvPos + 1);
-                    prevCell.setBorder(SpreadsheetCell.OVERLAP_BORDER);
+                    prevCell.setOverlapBorder(true);
                 } else {
-                    prevCell.setBorder(SpreadsheetCell.NORMAL_BORDER);
+                    prevCell.setOverlapBorder(false);
                 }
             }
             cell.setBounds(0, intvPos, col.getWidth() - 1, intvHeight + 1);

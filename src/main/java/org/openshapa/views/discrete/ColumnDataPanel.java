@@ -5,22 +5,61 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
+import javax.swing.Box.Filler;
+import javax.swing.BoxLayout;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
 public class ColumnDataPanel extends SpreadsheetElementPanel {
 
+    private int columnWidth;
+
+    /** Provides a glue feature which fills from the bottom of the column.
+     */
+//    private Component stretcher;
+
     /**
      * Creates a new ColumnDataPanel.
      */
-    public ColumnDataPanel() {
+    public ColumnDataPanel(final int width) {
         super();
+        columnWidth = width;
 
-        setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        setLayout(null);
-        this.setBackground(Color.LIGHT_GRAY);
+//        stretcher = new Filler(new Dimension(0, 0), new Dimension(0, 0),
+//			  new Dimension(0, Short.MAX_VALUE));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
+//        this.add(stretcher, -1);
+    }
+
+//    public Component add(Component comp) {
+//        super.add(comp, this.getComponentCount() - 1);
+//        return comp;
+//    }
+
+    /**
+     * Set the width of the SpreadsheetCell.
+     * @param width New width of the SpreadsheetCell.
+     */
+    public void setWidth(int width) {
+        columnWidth = width;
+    }
+
+    @Override
+    public final Dimension getMaximumSize() {
+        return new Dimension(columnWidth, Short.MAX_VALUE);
+    }
+
+    @Override
+    public final Dimension getMinimumSize() {
+        return new Dimension(columnWidth, 0);
+    }
+
+    @Override
+    public final Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        return new Dimension(columnWidth, size.height);
     }
 
     /**

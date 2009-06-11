@@ -114,7 +114,15 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(MouseEvent me) {
+        if (me.getClickCount() == 1) {
         selection.addToSelection(me, this);
         parentCol.requestFocus();
+        } else if (me.getClickCount() == 2) {
+            if (this.getWidth() - me.getX() < 40) {
+                parentCol.setWidth(parentCol.getWidth() + 20);
+            } else if (me.getX() < 40) {
+                parentCol.setWidth(parentCol.getWidth() - 20);
+            }
+        }
     }
 }

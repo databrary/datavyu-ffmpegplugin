@@ -221,7 +221,7 @@ public class SpreadsheetPanel extends JPanel
      */
     public final void relayoutCells() {
         sheetLayout.relayoutCells();
-        mainView.revalidate();
+        this.validate();
     }
 
     /**

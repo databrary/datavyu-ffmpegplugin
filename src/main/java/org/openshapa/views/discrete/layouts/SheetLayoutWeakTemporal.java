@@ -181,6 +181,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * Recalculate positions of all the cells in the spreadsheet.
      */
     public final void relayoutCells() {
+        for (SpreadsheetColumn col : getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                cell.setOnsetvGap(0);
+                cell.setLayoutPreferredHeight(0);
+            }
+        }
+
         try {
             doUpdateTemporalWeak();
         } catch (SystemErrorException e) {
@@ -265,7 +272,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (ColumnTemporalInfo colInfo : info.onsets) {
             SpreadsheetCell prev = colInfo.getPrevCell();
             if (prev != null) {
-                nextVPos = prev.getY() + prev.getHeight();
+                nextVPos = prev.getLayoutPreferredY()
+                                            + prev.getLayoutPreferredHeight();
+
                 if (prev.getOffsetTicks()
                         < colInfo.getCurrCell().getOnsetTicks() - 1) {
                     nextVPos += GAP;
@@ -287,7 +296,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (ColumnTemporalInfo colInfo : info.onsets) {
             SpreadsheetCell curr = colInfo.getCurrCell();
             if (curr != null) {
-                curr.setOnsetvPos(info.vPos);
+                // Set the vpos of the currentcell by setting the strut height
+                // between it and the previous cell
+                SpreadsheetCell prev = colInfo.getPrevCell();
+                curr.setLayoutPreferredY(info.vPos, prev);
             }
         }
     }
@@ -305,7 +317,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (ColumnTemporalInfo colInfo : info.offsets) {
             SpreadsheetCell curr = colInfo.getCurrCell();
             if (curr != null) {
-                nextVPos = curr.getY() + curr.getPreferredSize().height;
+                nextVPos = curr.getLayoutPreferredY()
+                                                    + curr.getPreferredHeight();
                 if (nextVPos > vPos) {
                     vPos = nextVPos;
                 }
@@ -324,7 +337,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (ColumnTemporalInfo colInfo : info.offsets) {
             SpreadsheetCell curr = colInfo.getCurrCell();
             if (curr != null) {
-                curr.setHeight(info.vPos - curr.getY() + 1);
+                curr.setLayoutPreferredHeight(info.vPos
+                                                - curr.getLayoutPreferredY());
+
                 oldOffset = colInfo.getVirtOffset();
                 colInfo.loadVarCellTemporal();
 
@@ -338,7 +353,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 // does not start with the first cell in each column.
                 curr = colInfo.getCurrCell();
                 if (curr != null && curr.getOnsetTicks() == oldOffset) {
-                    curr.setOnsetvPos(info.vPos);
+                    curr.setLayoutPreferredY(info.vPos);
                 }
             }
         }
@@ -412,7 +427,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
 
         // Set bottom bounds
-        AdjustBounds(info.vPos);
+//        AdjustBounds(info.vPos);
 
         // Clean things up.
         info.reset();

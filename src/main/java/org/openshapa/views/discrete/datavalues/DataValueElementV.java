@@ -244,13 +244,13 @@ public abstract class DataValueElementV extends DataValueV {
     /**
      * The editor for the int data value.
      */
-    public abstract class DataValueEditor extends Editor
+    public abstract class DataValueEditorInner extends Editor
     implements FocusListener, KeyListener, MouseListener {
 
         /**
          * Default constructor.
          */
-        public DataValueEditor() {
+        public DataValueEditorInner() {
             super();
             this.addFocusListener(this);
             this.addKeyListener(this);
