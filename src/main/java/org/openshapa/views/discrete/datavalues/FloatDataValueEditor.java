@@ -21,9 +21,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public FloatDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                final DataCell cell,
+                                final Matrix matrix,
+                                final int matrixIndex) {
         super(ta, cell, matrix, matrixIndex);
     }
 
@@ -38,11 +38,11 @@ public final class FloatDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public FloatDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final PredDataValue p,
-                            final int pi,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                final DataCell cell,
+                                final PredDataValue p,
+                                final int pi,
+                                final Matrix matrix,
+                                final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
     }
 
@@ -61,7 +61,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
 
-                int pos = getCaretPositionLocal();
+                int pos = getCaretPosition();
                 String t = getText();
                 if (t.startsWith("-")) {
                     // take off the '-'
@@ -82,7 +82,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '.') {
 
-                int pos = getCaretPositionLocal();
+                int pos = getCaretPosition();
                 String t = getText();
                 int dotPos = t.indexOf('.');
                 if (dotPos >= 0) {
@@ -112,7 +112,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
     @Override
     public void updateModelValue() {
         FloatDataValue dv = (FloatDataValue) getModel();
-        dv.setItsValue(buildValue(getText()));
+        dv.setItsValue(getText());
     }
 
     /**
@@ -124,25 +124,10 @@ public final class FloatDataValueEditor extends DataValueEditor {
         boolean res = true;
         // could call a subRange test for this dataval
         try {
-            Double test = buildValue(getText());
-            String ans = test.toString();
+            Double.valueOf(getText());
         } catch (NumberFormatException e) {
             res = false;
         }
         return res;
-    }
-
-    /**
-     * Builds a new value from a string.
-     * @param textField The string that you want to create the value from.
-     * @return A value that can be set into the database.
-     */
-    public Double buildValue(final String textField) {
-        if (textField == null || textField.equals("")
-                || textField.equals(getNullArg())) {
-            return null;
-        } else {
-            return new Double(textField);
-        }
     }
 }

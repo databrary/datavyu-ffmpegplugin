@@ -18,6 +18,7 @@ import org.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -116,9 +117,8 @@ implements ExternalDataCellListener, Selectable {
      * @param selector Selector to register the cell with.
      * @throws SystemErrorException if trouble with db calls
      */
-    public SpreadsheetCell(final Database cellDB,
-                           final Cell cell,
-                           final Selector selector)
+    public SpreadsheetCell(final Database cellDB, final Cell cell,
+                                                        final Selector selector)
     throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
@@ -147,8 +147,8 @@ implements ExternalDataCellListener, Selectable {
         db.registerDataCellListener(dc.getID(), this);
 
         cellPanel = new SpreadsheetElementPanel();
-        strut = new Filler(new Dimension(0,30), new Dimension(0,30), 
-			  new Dimension(Short.MAX_VALUE, 30));
+        strut = new Filler(new Dimension(0,0), new Dimension(0,0),
+                                            new Dimension(Short.MAX_VALUE, 0));
 
         this.setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
@@ -157,7 +157,7 @@ implements ExternalDataCellListener, Selectable {
         // Build components used for the spreadsheet cell.
         topPanel = new SpreadsheetElementPanel();
         ord = new JLabel();
-        ord.setToolTipText(rMap.getString("ord.tooltip"));        
+        ord.setToolTipText(rMap.getString("ord.tooltip"));
 
         setOrdinal(dc.getOrd());
 
@@ -180,13 +180,16 @@ implements ExternalDataCellListener, Selectable {
         dataPanel.setMatrix(dc.getVal());
 
         // Set the appearance of the spreadsheet cell.
-        cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        cellPanel.setBackground(Configuration.getInstance()
+                                                      .getSSBackgroundColour());
         cellPanel.setBorder(NORMAL_BORDER);
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
-        topPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        topPanel.setBackground(Configuration.getInstance()
+                                                      .getSSBackgroundColour());
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         cellPanel.add(topPanel, BorderLayout.NORTH);
         topPanel.add(ord);
@@ -194,10 +197,12 @@ implements ExternalDataCellListener, Selectable {
         topPanel.add(strut1);
         Component glue = Box.createGlue();
         topPanel.add(glue);
+        onset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         topPanel.add(onset);
         Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
        topPanel.add(strut2);
         topPanel.add(offset);
+        offset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
@@ -284,7 +289,8 @@ implements ExternalDataCellListener, Selectable {
         layoutPreferredY = y;
         int strutHeight = y;
         if (prev != null) {
-            strutHeight -= (prev.getLayoutPreferredY() + prev.getLayoutPreferredHeight());
+            strutHeight -= (prev.getLayoutPreferredY()
+                                            + prev.getLayoutPreferredHeight());
         }
         setOnsetvGap(strutHeight);
     }
@@ -400,27 +406,15 @@ implements ExternalDataCellListener, Selectable {
                                                 .getSSSelectedColour());
             dataPanel.setBackground(Configuration.getInstance()
                                                  .getSSSelectedColour());
-            cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
-
-//            System.out.println(this);
-//            System.out.print("MaximumHeight = ");
-//            System.out.println(getMaximumHeight());
-//            System.out.print("MaximumSize = ");
-//            System.out.println(getMaximumSize());
-//            System.out.print("PreferredSize = ");
-//            System.out.println(getPreferredSize());
-//            System.out.print("MinimumSize = ");
-//            System.out.println(getMinimumSize());
-//            System.out.print("Strut = ");
-//            System.out.println(strut);
-//            System.out.print("CellPanel = ");
-//            System.out.println(cellPanel);
+            cellPanel.setBackground(Configuration.getInstance()
+                                                 .getSSSelectedColour());
         } else {
             topPanel.setBackground(Configuration.getInstance()
                                                 .getSSBackgroundColour());
             dataPanel.setBackground(Configuration.getInstance()
                                                  .getSSBackgroundColour());
-            cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+            cellPanel.setBackground(Configuration.getInstance()
+                                                 .getSSBackgroundColour());
         }
 
         repaint();
@@ -542,17 +536,6 @@ implements ExternalDataCellListener, Selectable {
         if (!onsetProcessed) {
             setStrutHeight(0);
         }
-    }
-
-    /**
-     * Set the vertical location for the SpreadsheetCell. Sets the
-     * onsetProcessed flag also. Used in the temporal layout algorithm.
-     * @param vPos The vertical location in pixels for this cell.
-     */
-    @Deprecated
-    public void setOnsetvPos(int vPos) {
-        setLocation(getX(), vPos);
-        setOnsetProcessed(true);
     }
 
     /**

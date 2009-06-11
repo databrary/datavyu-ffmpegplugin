@@ -12,9 +12,11 @@ import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.datavalues.NoEditor;
 
 /**
- * Keeps track of the current editor inside the JTextComponent
+ * Keeps track of the current editor inside the JTextComponent.
+ * Editors and FixedTexts are held in a vector that creates the overall
+ * text displayed by the JTextComponent.
  */
-public class EditorTracker
+public final class EditorTracker
 implements FocusListener, KeyListener, MouseListener {
 
     /** The JTextComponent that contains the EditorComponents. */
@@ -24,7 +26,7 @@ implements FocusListener, KeyListener, MouseListener {
     private Vector<EditorComponent> editors;
 
     /** Current EditorComponent. */
-    private EditorComponent currentEditor = noEditor;
+    private EditorComponent currentEditor = NO_EDITOR;
 
     /** Number of characters before of the current editor. */
     private int preCharCount;
@@ -36,17 +38,21 @@ implements FocusListener, KeyListener, MouseListener {
     private boolean mouseDown = false;
 
     /** NoEditor used when there is no sensible current editor. */
-    private static final EditorComponent noEditor = new NoEditor();
-    
+    private static final EditorComponent NO_EDITOR = new NoEditor();
+
     /** Track the key up and down to avoid problem with key repeat. */
     private boolean gotKeyUp = true;
 
+    /** How many clicks make up a triple click. */
+    private static final int TRIPLE_CLICK_COUNT = 3;
+
     /**
-     * Constructor
+     * Constructor.
      * @param ta JTextComponent containing the editors to track.
      * @param eds Vector of the EditorComponents.
      */
-    public EditorTracker(JTextComponent ta, Vector<EditorComponent> eds) {
+    public EditorTracker(final JTextComponent ta,
+                                            final Vector<EditorComponent> eds) {
         textArea = ta;
         editors = eds;
     }
@@ -55,7 +61,7 @@ implements FocusListener, KeyListener, MouseListener {
      * Set the currentEditor.
      * @param newEd The new editor to set as the current.
      */
-    private void setEditor(EditorComponent newEd) {
+    private void setEditor(final EditorComponent newEd) {
         setEditor(newEd, 0, Integer.MAX_VALUE);
     }
 
@@ -65,7 +71,8 @@ implements FocusListener, KeyListener, MouseListener {
      * @param start Start character location to select.
      * @param end End character location to select.
      */
-    private void setEditor(EditorComponent newEd, int start, int end) {
+    private void setEditor(final EditorComponent newEd,
+                                              final int start, final int end) {
         // Tell currentEditor to store its value back in the database
         currentEditor.focusLost(null);
 
@@ -75,7 +82,7 @@ implements FocusListener, KeyListener, MouseListener {
         boolean foundEd = false;
         preCharCount = 0;
         postCharCount = 0;
-        if (newEd != noEditor) {
+        if (newEd != NO_EDITOR) {
             for (EditorComponent ed : editors) {
                 if (ed == newEd) {
                     foundEd = true;
@@ -96,12 +103,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param charPos Character position to search for
      * @return The editor closest to the character position.
      */
-    private EditorComponent findEditor(int charPos) {
+    private EditorComponent findEditor(final int charPos) {
         // iterate over the editors and decide which one should get focus
         // based on a click at the charPos
         int preCount = 0;
         boolean foundCount = false;
-        EditorComponent foundEd = noEditor;
+        EditorComponent foundEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
             preCount += ed.getText().length();
             if (ed.isEditable()) {
@@ -118,24 +125,24 @@ implements FocusListener, KeyListener, MouseListener {
     }
 
     /**
-     * Set the current editor to the first editor.
+     * @return the first editor if found or NO_EDITOR
      */
-    public void firstEditor() {
-        EditorComponent foundEd = noEditor;
+    public EditorComponent firstEditor() {
+        EditorComponent foundEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
             if (ed.isEditable()) {
                 foundEd = ed;
                 break;
             }
         }
-        setEditor(foundEd);
+        return foundEd;
     }
 
     /**
-     * Set the current editor to the editor after the current editor.
+     * @return the next editor to the currentEditor if found or NO_EDITOR.
      */
-    public void nextEditor() {
-        EditorComponent foundEd = noEditor;
+    public EditorComponent nextEditor() {
+        EditorComponent foundEd = NO_EDITOR;
         boolean currFound = false;
         for (EditorComponent ed : editors) {
             if (ed == currentEditor) {
@@ -145,14 +152,14 @@ implements FocusListener, KeyListener, MouseListener {
                 break;
             }
         }
-        setEditor(foundEd);
+        return foundEd;
     }
 
     /**
-     * Set the current editor to the editor before the current editor.
+     * @return the previous editor to the currentEditor if found or NO_EDITOR.
      */
-    public void prevEditor() {
-        EditorComponent prevEd = noEditor;
+    public EditorComponent prevEditor() {
+        EditorComponent prevEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
             if (ed == currentEditor) {
                 break;
@@ -161,20 +168,20 @@ implements FocusListener, KeyListener, MouseListener {
                 prevEd = ed;
             }
         }
-        setEditor(prevEd);
+        return prevEd;
     }
 
     /**
-     * Set the current editor to the last editor.
+     * @return the last editor if found or NO_EDITOR.
      */
-    public void lastEditor() {
-        EditorComponent prevEd = noEditor;
+    public EditorComponent lastEditor() {
+        EditorComponent prevEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
             if (ed.isEditable()) {
                 prevEd = ed;
             }
         }
-        setEditor(prevEd);
+        return prevEd;
     }
 
     /**
@@ -184,8 +191,7 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void focusGained(final FocusEvent fe) {
         if (!mouseDown) {
-            EditorComponent ed = findEditor(0);
-            this.setEditor(ed, 0, 0);
+            setEditor(findEditor(0), 0, 0);
         }
     }
 
@@ -196,7 +202,7 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void focusLost(final FocusEvent fe) {
         currentEditor.focusLost(fe);
-        currentEditor = noEditor;
+        currentEditor = NO_EDITOR;
     }
 
     /**
@@ -225,14 +231,13 @@ implements FocusListener, KeyListener, MouseListener {
      * @param e The KeyEvent that triggered this action.
      */
     public void keyPressed(final KeyEvent e) {
-
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_BACK_SPACE:
                 if (!gotKeyUp) {
                     resetEditorText();
                 }
-                if (currentEditor.getCaretPositionLocal() == 0) {
+                if (currentEditor.getCaretPosition() == 0) {
                     e.consume();
                 }
                 break;
@@ -241,35 +246,51 @@ implements FocusListener, KeyListener, MouseListener {
                 if (!gotKeyUp) {
                     resetEditorText();
                 }
-                if (currentEditor.getCaretPositionLocal()
+                if (currentEditor.getCaretPosition()
                         == currentEditor.getText().length()
-                    && currentEditor.getSelectionStartLocal()
-                        == currentEditor.getSelectionEndLocal()) {
+                    && currentEditor.getSelectionStart()
+                        == currentEditor.getSelectionEnd()) {
                     e.consume();
                 }
                 break;
 
             case KeyEvent.VK_LEFT:
-                if (currentEditor.getCaretPositionLocal() == 0) {
-                    prevEditor();
-                    if (currentEditor == noEditor) {
+                if ((currentEditor.getCaretPosition() == 0)
+                        || (currentEditor.getSelectionEnd()
+                            - currentEditor.getSelectionStart()
+                            == currentEditor.getText().length())) {
+                    setEditor(prevEditor(), Integer.MAX_VALUE,
+                                                            Integer.MAX_VALUE);
+                    if (currentEditor == NO_EDITOR) {
                         // should jump to the cell above if there is one
-                        firstEditor(); // hack for now recycles to first
+                        // for now leaves caret at start of first editor
+                        setEditor(firstEditor(), 0, 0);
                     }
                     e.consume();
                 }
                 break;
 
             case KeyEvent.VK_RIGHT:
-                if (currentEditor.getCaretPositionLocal()
+                if (currentEditor.getCaretPosition()
                         == currentEditor.getText().length()) {
-                    nextEditor();
-                    if (currentEditor == noEditor) {
+                    setEditor(nextEditor(), 0, 0);
+                    if (currentEditor == NO_EDITOR) {
                         // should jump to the cell below if there is one
-                        lastEditor(); // hack for now recycles to last
+                        setEditor(lastEditor(), Integer.MAX_VALUE,
+                                                            Integer.MAX_VALUE);
                     }
                     e.consume();
                 }
+                break;
+
+            case KeyEvent.VK_HOME:
+                setEditor(firstEditor(), 0, 0);
+                e.consume();
+                break;
+
+            case KeyEvent.VK_END:
+                setEditor(lastEditor(), Integer.MAX_VALUE, Integer.MAX_VALUE);
+                e.consume();
                 break;
 
             case KeyEvent.VK_ENTER:
@@ -282,32 +303,37 @@ implements FocusListener, KeyListener, MouseListener {
                 break;
             case KeyEvent.VK_TAB:
                 if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
-                    prevEditor();
-                    if (currentEditor == noEditor) {
-                        lastEditor();
+                    setEditor(prevEditor());
+                    if (currentEditor == NO_EDITOR) {
+                        setEditor(lastEditor());
                     }
                 } else {
-                    nextEditor();
-                    if (currentEditor == noEditor) {
-                        firstEditor();
+                    setEditor(nextEditor());
+                    if (currentEditor == NO_EDITOR) {
+                        setEditor(firstEditor());
                     }
                 }
                 e.consume();
+                break;
+
+            default:
                 break;
         }
 
         if (!e.isConsumed()) {
             currentEditor.keyPressed(e);
         }
-	gotKeyUp = false;
+        gotKeyUp = false;
     }
 
     /**
      * Calculate the currentEditor's text and call it's resetText method.
      */
     public void resetEditorText() {
-        int newLength = textArea.getText().length() - (preCharCount + postCharCount);
-        currentEditor.resetText(textArea.getText().substring(preCharCount, preCharCount + newLength));
+        int newLength = textArea.getText().length()
+                                            - (preCharCount + postCharCount);
+        currentEditor.resetText(textArea.getText()
+                            .substring(preCharCount, preCharCount + newLength));
     }
 
 
@@ -316,7 +342,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mousePressed(final MouseEvent me) {
+    public void mousePressed(final MouseEvent me) {
         mouseDown = true;
     }
 
@@ -325,7 +351,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mouseReleased(final MouseEvent me) {
+    public void mouseReleased(final MouseEvent me) {
         mouseDown = false;
         int start = textArea.getCaret().getMark();
         int end = textArea.getCaret().getDot();
@@ -338,8 +364,8 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mouseClicked(final MouseEvent me) {
-        if (me.getClickCount() == 3) {
+    public void mouseClicked(final MouseEvent me) {
+        if (me.getClickCount() == TRIPLE_CLICK_COUNT) {
             // Triple click selects all text (feature of JTextArea).
             // detect and override behaviour
             currentEditor.selectAll();
@@ -351,7 +377,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mouseEntered(final MouseEvent me) {
+    public void mouseEntered(final MouseEvent me) {
         // Currently we do nothing with the mouse entered event.
     }
 
@@ -360,7 +386,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mouseExited(final MouseEvent me) {
+    public void mouseExited(final MouseEvent me) {
         // Currently we do nothing with the mouse exited event.
     }
 }

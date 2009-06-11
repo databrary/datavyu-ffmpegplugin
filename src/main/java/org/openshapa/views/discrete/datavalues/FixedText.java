@@ -3,7 +3,6 @@ package org.openshapa.views.discrete.datavalues;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -14,11 +13,12 @@ import org.openshapa.views.discrete.EditorComponent;
  */
 public class FixedText extends EditorComponent {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(FixedText.class);
-
     /**
      * Constructor.
+     *
+     * @param ta The Parent JTextComponent that this FixedText editor is nested
+     * within.
+     * @param text The inital text to use for this Fixedtext component.
      */
     public FixedText(JTextComponent ta, String text) {
         super(ta, text);

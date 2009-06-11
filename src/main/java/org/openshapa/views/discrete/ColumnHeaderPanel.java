@@ -12,7 +12,8 @@ import org.openshapa.Configuration;
  * ColumnHeaderPanel displays the column variable name.
  * Public for use by UISpec4J
  */
-public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListener {
+public class ColumnHeaderPanel extends JLabel
+implements Selectable, MouseListener {
 
     /** Selected state. */
     private boolean selected = false;
@@ -58,7 +59,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
     /** set the selected state.
      * @param sel selected state.
      */
-    public void setSelected(final boolean sel) {
+    public final void setSelected(final boolean sel) {
         selected = sel;
         parentCol.setSelected(selected);
         if (selected) {
@@ -72,7 +73,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
     /**
      * @return selected state.
      */
-    public boolean isSelected() {
+    public final boolean isSelected() {
         return selected;
     }
 
@@ -81,7 +82,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseEntered(MouseEvent me) {
+    public void mouseEntered(final MouseEvent me) {
     }
 
     /**
@@ -89,7 +90,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseExited(MouseEvent me) {
+    public void mouseExited(final MouseEvent me) {
     }
 
     /**
@@ -97,7 +98,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mousePressed(MouseEvent me) {
+    public void mousePressed(final MouseEvent me) {
     }
 
     /**
@@ -105,7 +106,7 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseReleased(MouseEvent me) {
+    public void mouseReleased(final MouseEvent me) {
     }
 
     /**
@@ -113,16 +114,8 @@ public class ColumnHeaderPanel extends JLabel implements Selectable, MouseListen
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseClicked(MouseEvent me) {
-        if (me.getClickCount() == 1) {
+    public final void mouseClicked(final MouseEvent me) {
         selection.addToSelection(me, this);
         parentCol.requestFocus();
-        } else if (me.getClickCount() == 2) {
-            if (this.getWidth() - me.getX() < 40) {
-                parentCol.setWidth(parentCol.getWidth() + 20);
-            } else if (me.getX() < 40) {
-                parentCol.setWidth(parentCol.getWidth() - 20);
-            }
-        }
     }
 }

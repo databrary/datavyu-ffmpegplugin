@@ -151,7 +151,7 @@ public final class Configuration {
     private static Configuration instance = null;
 
     /** The default font to be used by OpenSHAPA. */
-    private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 10);
+    private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 14);
 
     /** The default spreadsheet background colour. */
     private static final Color DEFAULT_BACKGROUND = Color.WHITE;

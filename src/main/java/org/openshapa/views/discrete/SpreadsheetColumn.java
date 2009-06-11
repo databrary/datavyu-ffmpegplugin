@@ -115,8 +115,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                             + "  (" + dbColumn.getItsMveType() + ")", selector);
 
             datapanel = new ColumnDataPanel(width);
-//            datapanel.setPreferredSize(new Dimension(getWidth(),
-//                                                            Integer.MAX_VALUE));
             buildDataPanelCells(dbColumn);
 
         } catch (SystemErrorException e) {
@@ -131,8 +129,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      */
     private void buildDataPanelCells(final DataColumn dbColumn) {
         try {
-            int numCells = dbColumn.getNumCells();
-
             // traverse and build the cells
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
@@ -160,10 +156,10 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
-     * @param width Column width to set in pixels.
+     * @param colWidth Column width to set in pixels.
      */
-    public void setWidth(int width) {
-        this.width = width;
+    public void setWidth(final int colWidth) {
+        width = colWidth;
         Dimension dim = getHeaderSize();
         headerpanel.setMinimumSize(dim);
         headerpanel.setPreferredSize(dim);
@@ -306,7 +302,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 cells.add(newCell);
                 datapanel.add(newCell);
             }
-            newCell.requestFocusInWindow();
+            newCell.requestFocus();
         } catch (SystemErrorException e) {
             logger.error("Problem inserting a new SpreadsheetCell", e);
         }
@@ -396,8 +392,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     public void setBottomBound(final int bottom) {
         datapanel.setPreferredSize(
                     new Dimension(this.getWidth(), bottom));
-//        datapanel.setPreferredSize(
-//                    new Dimension(datapanel.getPreferredSize().width, bottom));
     }
 
     /**

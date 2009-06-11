@@ -10,6 +10,7 @@ import org.openshapa.views.discrete.Selector;
 import java.util.Vector;
 import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -119,6 +120,12 @@ public class MatrixRootView extends JTextArea implements FocusListener {
         if (sheetSelection != null) {
             sheetSelection.deselectAll();
             sheetSelection.deselectOthers();
+        }
+
+        if (parentCell != null) {
+            // method names don't reflect usage
+            OpenSHAPA.setLastCreatedColId(parentCell.getItsColID());
+            OpenSHAPA.setLastCreatedCellId(parentCell.getID());
         }
     }
 

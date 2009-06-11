@@ -51,14 +51,12 @@ public abstract class DataValueEditor extends EditorComponent {
     private static Logger logger = Logger.getLogger(DataValueEditor.class);
 
     /**
-     * Function that must be provided by subclasses of this class.
-     * Update the model to reflect the value represented by the 
-     * editor's text representation.
+     * Update the model to reflect the value represented by the editor's text
+     * representation.
      */
     public abstract void updateModelValue();
 
     /**
-     * Function that must be provided by subclasses of this class.
      * Sanity check the current text of the editor and return a boolean.
      * @return true if the text is an okay representation for this DataValue.
      */
@@ -74,9 +72,9 @@ public abstract class DataValueEditor extends EditorComponent {
      * that this view is to represent.
      */
     public DataValueEditor(final JTextComponent tc,
-                      final DataCell cell,
-                      final Matrix matrix,
-                      final int matrixIndex) {
+                           final DataCell cell,
+                           final Matrix matrix,
+                           final int matrixIndex) {
         super(tc);
         init(cell, null, 0, matrix, matrixIndex);
     }
@@ -84,7 +82,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Constructor.
      *
-     * @param tc JTextComponent this editor works with.
+     * @param ta The parent JTextComponent that this editor is nested within.
      * @param cell The Parent cell that holds the matrix.
      * @param predicate The parent predicate.
      * @param predicateIndex The index of the data value within the above
@@ -94,11 +92,11 @@ public abstract class DataValueEditor extends EditorComponent {
      * that this view is to represent.
      */
     public DataValueEditor(final JTextComponent ta,
-                      final DataCell cell,
-                      final PredDataValue predicate,
-                      final int predicateIndex,
-                      final Matrix matrix,
-                      final int matrixIndex) {
+                           final DataCell cell,
+                           final PredDataValue predicate,
+                           final int predicateIndex,
+                           final Matrix matrix,
+                           final int matrixIndex) {
         super(ta);
         init(cell, predicate, predicateIndex, matrix, matrixIndex);
     }
@@ -149,7 +147,7 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param cell The Parent cell that holds the matrix.
      * @param matrix The parent matrix that holds the DataValue.
      */
-    public void resetValue(final DataCell cell, final Matrix matrix) {
+    public final void resetValue(final DataCell cell, final Matrix matrix) {
         try {
             parentMatrix = matrix;
             parentCell = cell;
@@ -192,7 +190,8 @@ public abstract class DataValueEditor extends EditorComponent {
         try {
             if (parentMatrix != null) {
                 long mveid = parentMatrix.getMveID();
-                MatrixVocabElement mve = parentMatrix.getDB().getMatrixVE(mveid);
+                MatrixVocabElement mve = parentMatrix.getDB()
+                                                     .getMatrixVE(mveid);
                 FormalArgument fa = mve.getFormalArg(mIndex);
                 t = fa.toString();
             }
@@ -225,13 +224,13 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param e KeyEvent
      */
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(final KeyEvent e) {
         prevText = getText();
-        prevCaret = getCaretPositionLocal();
+        prevCaret = getCaretPosition();
         checkNullArgKeyTyped(e);
         if (!e.isConsumed()) {
             if (isNullArg()) {
-                setText("");
+                resetText("");
             }
         }
     }
@@ -241,7 +240,7 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param e KeyEvent
      */
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(final KeyEvent e) {
         if (getText().length() == 0) {
             argIsNull = true;
             setText(getNullArg());
@@ -263,28 +262,29 @@ public abstract class DataValueEditor extends EditorComponent {
      * if the editor is already effectively a null arg.
      * @param e KeyEvent
      */
-    public void checkNullArgKeyTyped(KeyEvent e) {
-        // goal is to decide if we are currently a "null" arg
-        // or about to become one (delete/backspace key hit).
-
+    public final void checkNullArgKeyTyped(final KeyEvent e) {
         // if we are a null arg already
         // consume chars that do not make sense
-        // delete, backspace, arrow keys and tab
-        int loc = e.getKeyLocation();
-        char ch = e.getKeyChar();
-        // found this next code on the web - something about
-        // not being able to fully consume backspace.  They get around it
-        // by using finds in paramString but this seems hacky
-        // - need to review and refactor one day
-        String paramS = e.paramString();
-        if ((loc == KeyEvent.KEY_LOCATION_UNKNOWN && ch == '\u0008')
-            || (loc == KeyEvent.KEY_LOCATION_UNKNOWN && ch == '\u007F')
-            || (paramS.indexOf("Backspace") != -1)
-            || (paramS.indexOf("Delete") != -1)
-            || (paramS.indexOf("Tab") != -1)) {
-            // The getKeyCode function always returns VK_UNDEFINED for
-            // keyTyped events, so backspace is not fully consumed.
-            if (isNullArg()) {
+        // backspace, enter, tab and delete
+        if (isNullArg()) {
+            boolean consumeIfNull = false;
+            int type = e.getID();
+            int loc = e.getKeyLocation();
+            char ch = e.getKeyChar();
+            int code = e.getKeyCode();
+            if (type == KeyEvent.KEY_TYPED) {
+                consumeIfNull = ((ch == '\b')
+                                || (ch == '\t')
+                                || (ch == '\n')
+                                || (ch == '\u007f'));
+            } else {
+                consumeIfNull = ((code == KeyEvent.VK_BACK_SPACE)
+                                || (code == KeyEvent.VK_TAB)
+                                || ((code == KeyEvent.VK_ENTER
+                                        && loc != KeyEvent.KEY_LOCATION_NUMPAD))
+                                || (code == KeyEvent.VK_DELETE));
+            }
+            if (consumeIfNull) {
                 e.consume();
             }
         }
@@ -293,7 +293,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * @return true if the editor is currently displaying a "null" arg.
      */
-    public boolean isNullArg() {
+    public final boolean isNullArg() {
         return argIsNull;
     }
 
@@ -307,7 +307,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Update the database with the model value.
      */
-    public void updateDatabase() {
+    public final void updateDatabase() {
         // update the model.
         if (isNullArg()) {
             updateModelNull();
@@ -337,7 +337,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Update the model to reflect a null value.
      */
-    public void updateModelNull() {
+    public final void updateModelNull() {
         DataValue dv = (DataValue) getModel();
         dv.clearValue();
     }
@@ -348,12 +348,11 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param endClick End character of the selection.
      */
     @Override
-    public void select(int startClick, int endClick) {
+    public final void select(final int startClick, final int endClick) {
         if (!isNullArg()) {
             super.select(startClick, endClick);
         } else {
             super.select(0, Integer.MAX_VALUE);
         }
     }
-
 }

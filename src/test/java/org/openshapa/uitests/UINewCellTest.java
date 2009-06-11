@@ -144,7 +144,6 @@ public final class UINewCellTest extends UISpecTestCase {
                      Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
                      Key.BACKSPACE, }};
 
-
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"Subject stands $10432up",

@@ -118,6 +118,22 @@ public final class CreateNewCellC {
                 }
             }
 
+            // try lastCreatedCellID
+            if (!newcelladded) {
+                if (OpenSHAPA.getLastCreatedCellId() != 0) {
+                    DataCell dc = (DataCell) model
+                                     .getCell(OpenSHAPA.getLastCreatedCellId());
+                    DataCell cell = new DataCell(model,
+                                                 dc.getItsColID(),
+                                                 dc.getItsMveID());
+                    cell.setOnset(dc.getOnset());
+                    cell.setOffset(dc.getOffset());
+                    OpenSHAPA.setLastCreatedCellId(model
+                                           .insertdCell(cell, dc.getOrd() + 1));
+                    OpenSHAPA.setLastCreatedColId(cell.getItsColID());
+                    newcelladded = true;
+                }
+            }
             // last try lastColCreated
             if (!newcelladded) {
                 if (OpenSHAPA.getLastCreatedColId() == 0) {

@@ -5,7 +5,6 @@ import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 import org.apache.log4j.Logger;
-import org.openshapa.util.Constants;
 
 /**
  * SheetLayoutWeakTemporal - implements the weak temporal ordering style
@@ -360,17 +359,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     }
 
     /**
-     * Set the bottom bounds of the columns.
-     * @param bottom Pixels to set the bottom bound of the column to.
-     * @throws SystemErrorException if a problem occurs.
-     */
-    private void AdjustBounds(int bottom) throws SystemErrorException {
-        for (SpreadsheetColumn col : getColumns()) {
-            col.setBottomBound(bottom + Constants.BOTTOM_MARGIN);
-        }
-    }
-
-    /**
      * Update the positions of the cells in weak temporal layout.
      * @throws SystemErrorException if a problem occurs.
      */
@@ -425,9 +413,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 break; // leave the loop
             }
         }
-
-        // Set bottom bounds
-//        AdjustBounds(info.vPos);
 
         // Clean things up.
         info.reset();

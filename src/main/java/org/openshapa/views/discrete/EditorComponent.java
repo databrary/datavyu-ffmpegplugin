@@ -13,7 +13,7 @@ import javax.swing.text.JTextComponent;
 public abstract class EditorComponent {
 
     /** JTextComponent containing this EditorComponent. */
-    private JTextComponent textComp;
+    private JTextComponent parentComp;
 
     /** Character position in the JTextComponent where this editor begins. */
     private int startPos;
@@ -50,7 +50,7 @@ public abstract class EditorComponent {
       * @param fe FocusEvent details.
     */
     public abstract void focusLost(final FocusEvent fe);
-    
+
     /**
      * Default Constructor.
      */
@@ -58,16 +58,16 @@ public abstract class EditorComponent {
         startPos = 0;
         editorText = "";
         editable = false;
-        textComp = null;
+        parentComp = null;
     }
 
     /**
      * Constructor.
      * @param tc JTextComponent this editor works with.
      */
-    public EditorComponent(JTextComponent tc) {
+    public EditorComponent(final JTextComponent tc) {
         this();
-        textComp = tc;
+        parentComp = tc;
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class EditorComponent {
      * @param tc JTextComponent this editor works with.
      * @param text text to initialise the editor to.
      */
-    public EditorComponent(JTextComponent tc, String text) {
+    public EditorComponent(final JTextComponent tc, final String text) {
         this(tc);
         editorText = text;
     }
@@ -138,7 +138,7 @@ public abstract class EditorComponent {
     public final void setText(final String text) {
         int prevlength = editorText.length();
         editorText = text;
-        int localPos = getCaretPositionLocal();
+        int localPos = getCaretPosition();
         replaceRange(text, startPos, startPos + prevlength);
         setCaretPosition(localPos);
     }
@@ -149,17 +149,18 @@ public abstract class EditorComponent {
      * @param start start position of the new text.
      * @param end length of the segment being replaced.
      */
-    private void replaceRange(String text, int start, int end) {
-        String fullText = textComp.getText();
-        textComp.setText(fullText.substring(0, start) + text
+    private void replaceRange(final String text, final int start,
+                                                                final int end) {
+        String fullText = parentComp.getText();
+        parentComp.setText(fullText.substring(0, start) + text
                                                     + fullText.substring(end));
     }
 
     /**
      * @return the caret location within the text segment as a local value.
      */
-    public int getCaretPositionLocal() {
-        int pos = Math.max(0, textComp.getCaretPosition() - startPos);
+    public int getCaretPosition() {
+        int pos = Math.max(0, parentComp.getCaretPosition() - startPos);
         pos = Math.min(pos, editorText.length());
         return pos;
     }
@@ -167,8 +168,8 @@ public abstract class EditorComponent {
     /**
      * @return the selection start within the segment as a local value.
      */
-    public int getSelectionStartLocal() {
-        int pos = Math.max(0, textComp.getSelectionStart() - startPos);
+    public int getSelectionStart() {
+        int pos = Math.max(0, parentComp.getSelectionStart() - startPos);
         pos = Math.min(pos, editorText.length());
         return pos;
     }
@@ -176,26 +177,28 @@ public abstract class EditorComponent {
     /**
      * @return the selection end within the segment as a local value.
      */
-    public int getSelectionEndLocal() {
-        int pos = Math.max(0, textComp.getSelectionEnd() - startPos);
+    public int getSelectionEnd() {
+        int pos = Math.max(0, parentComp.getSelectionEnd() - startPos);
         pos = Math.min(pos, editorText.length());
         return pos;
     }
 
     /**
-     * Set the caret position of the JTextComponent given a local value.
+     * Set the caret position of the parentComponent given a local value to
+     * set within the editor.
+     * @param localPos Position of caret relative to the start of this editor.
      */
     public void setCaretPosition(final int localPos) {
         int pos = Math.max(0, localPos);
         pos = Math.min(pos, editorText.length());
-        textComp.setCaretPosition(startPos + pos);
+        parentComp.setCaretPosition(startPos + pos);
     }
 
     /**
      * Select all of this segments text in the JTextComponent.
      */
     public void selectAll() {
-        textComp.select(startPos, startPos + editorText.length());
+        parentComp.select(startPos, startPos + editorText.length());
     }
 
     /**
@@ -209,10 +212,7 @@ public abstract class EditorComponent {
         start = Math.min(startPos + editorText.length(), start);
         int end = Math.max(startPos, endClick);
         end = Math.min(startPos + editorText.length(), end);
-        if (start < end) {
-            textComp.select(start, end);
-        } else {
-            textComp.select(end, start);
-        }
+        parentComp.setCaretPosition(start);
+        parentComp.moveCaretPosition(end);
     }
 }

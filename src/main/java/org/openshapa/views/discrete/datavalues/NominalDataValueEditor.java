@@ -4,6 +4,7 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 import org.openshapa.db.NominalDataValue;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.SystemErrorException;
@@ -14,7 +15,11 @@ import org.openshapa.db.SystemErrorException;
 public final class NominalDataValueEditor extends DataValueEditor {
 
     /** String holding the reserved characters. */
-    final static String NOMINAL_RESERVED_CHARS = ")(<>|,;";
+    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;";
+
+    /** The logger for this class. */
+    private static Logger logger = Logger
+                                   .getLogger(NominalDataValueEditor.class);
 
     /**
      * Constructor.
@@ -25,9 +30,9 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public NominalDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                  final DataCell cell,
+                                  final Matrix matrix,
+                                  final int matrixIndex) {
         super(ta, cell, matrix, matrixIndex);
     }
 
@@ -42,11 +47,11 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public NominalDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final PredDataValue p,
-                            final int pi,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                  final DataCell cell,
+                                  final PredDataValue p,
+                                  final int pi,
+                                  final Matrix matrix,
+                                  final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
     }
 
@@ -71,7 +76,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * @param aChar Character to test
      * @return true if the character is a reserved character.
      */
-    public boolean isReserved(char aChar) {
+    public boolean isReserved(final char aChar) {
         return (NOMINAL_RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 
@@ -85,7 +90,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
         try {
             dv.setItsValue(getText());
         } catch (SystemErrorException e) {
-            // logger
+            logger.error("Unable to edit nominal value", e);
         }
     }
 

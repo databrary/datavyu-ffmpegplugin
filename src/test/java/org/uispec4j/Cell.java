@@ -8,7 +8,6 @@ import java.awt.Component;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import junit.framework.Assert;
-import org.junit.runners.Parameterized.Parameters;
 import org.openshapa.views.discrete.Editor;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.OffsetView;
@@ -38,20 +37,36 @@ public class Cell extends AbstractUIComponent {
 
     private MatrixRootView matrixRV;
 
+    /**
+     * Inner class for Cell to track changes to the MatrixRootView TextBox
+     * and adjust the caret location accordingly.
+     */
     private class DocListener implements DocumentListener {
 
-        //    Gives notification that there was an insert into the document.
-        // The range given by the DocumentEvent bounds the freshly inserted region.
+        /**
+         * Gives notification that there was an insert into the document.
+         * The range given by the DocumentEvent bounds the freshly inserted
+         * region.
+         * @param e DocumentEvent
+         */
         public void insertUpdate(DocumentEvent e) {
            setCaretPosition(matrixRV.getCaretPosition() + e.getLength());
         }
 
-//            Gives notification that a portion of the document has been removed.
-        // The range is given in terms of what the view last saw (that is, before updating sticky positions).
+        /**
+         * Gives notification that a portion of the document has been removed.
+         * The range is given in terms of what the view last saw (that is,
+         * before updating sticky positions).
+         * @param e DocumentEvent
+         */
         public void removeUpdate(DocumentEvent e) {
            setCaretPosition(matrixRV.getCaretPosition() - e.getLength());
         }
 
+        /**
+         * Not used currently.
+         * @param e DocumentEvent
+         */
         public void changedUpdate(DocumentEvent e) {
         }
     }
@@ -127,32 +142,6 @@ public class Cell extends AbstractUIComponent {
         return matrixRV;
     }
 
-    /**
-     * returns the value, which is a Vector of DataValueView.
-     * This is a matrix, which may change in the future, but right now,
-     * it is not easy to hide this implementation.
-     * @return Vector<DataValueView> value as a vector of DataValueView
-     */
-//    public final Vector<EditorComponent> getEditors() {
-//        return getMatrixRootView().getChildren();
-//    }
-
-     /**
-     * returns the DataValueEditorInner for the cell value.
-     * @param part int section of the value
-     * @return DataValueEditorInner of the value of the cell
-     */
-//    public final DataValueEditor getEditor(final int part) {
-//        EditorComponent v = getEditors().elementAt(part);
-//        if (v instanceof DataValueEditor) {
-//            return (DataValueEditor) v;
-//
-//        } else {
-//            // Not a DataValueEditor
-//            return null;
-//        }
-//    }
-
      /**
      * types text into the cell value.
      * @param part int section of the value
@@ -223,10 +212,14 @@ public class Cell extends AbstractUIComponent {
             } else if (k == Key.BACKSPACE) {
                 caret -= 1;
             } else if (k == Key.DELETE) {
+                caret += 0;
             } else {
                 caret += 1;
             }
-            setCaretPosition(caret);
+            // if there is a selection we do not need to update the caret.
+            if (matrixRV.getCaret().getDot() == matrixRV.getCaret().getMark()) {
+                setCaretPosition(caret);
+            }
         }
     }
 
@@ -355,11 +348,13 @@ public class Cell extends AbstractUIComponent {
      * @return Textbox of section of the value component
      */
     public final TextBox getValueTextBox(final int part) {
-        // hack for now - part is ignored
-
         // this returns a TextBox for the whole MatrixRootView of the Cell
         // (an extended JTextArea now)
 
+        // Currently returns the whole MatrixRootView where one day (soon)
+        // we would want to be able to enter text into other editor components
+        // in a matrix or predicate for instance.
+        // The current tests all operate on single editors.
 
         return new TextBox(this.getMatrixRootView());
     }

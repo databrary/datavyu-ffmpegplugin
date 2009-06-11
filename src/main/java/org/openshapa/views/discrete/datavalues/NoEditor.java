@@ -51,7 +51,7 @@ public final class NoEditor extends EditorComponent {
      * NoEditor overrides to stub behaviour.
      */
     @Override
-    public int getCaretPositionLocal() {
+    public int getCaretPosition() {
         return 0;
     }
 
