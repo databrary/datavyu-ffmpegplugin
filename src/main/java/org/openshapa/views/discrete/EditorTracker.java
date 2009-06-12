@@ -304,7 +304,11 @@ implements FocusListener, KeyListener, MouseListener {
                 }
                 break;
             case KeyEvent.VK_TAB:
-                if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
+                if (currentEditor.getSelectionEnd()
+                            - currentEditor.getSelectionStart()
+                            != currentEditor.getText().length()) {
+                    currentEditor.selectAll();
+                } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
                     setEditor(prevEditor());
                     if (currentEditor == NO_EDITOR) {
                         setEditor(lastEditor());
