@@ -2,9 +2,8 @@ package org.openshapa.views.discrete.layouts;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import java.awt.Dimension;
 import java.util.Vector;
-import org.openshapa.util.Constants;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * SheetLayoutOrdinal implements the ordinal style layout of SpreadsheetCells
@@ -18,6 +17,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
      */
     public SheetLayoutOrdinal(final Vector<SpreadsheetColumn> cols) {
         setColumns(cols);
+        for (SpreadsheetColumn col : cols) {
+            col.resetLayoutManager(SheetLayoutType.Ordinal);
+        }
     }
 
     /**
@@ -34,12 +36,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
      * @param col SpreadsheetColumn to use.
      */
     private void layoutColumnCells(final SpreadsheetColumn col) {
-        int vPos = 0;
         for (SpreadsheetCell cell : col.getCells()) {
-            Dimension dim = cell.getPreferredSize();
-            cell.setBounds(0, vPos, col.getWidth() - 1, dim.height + 1);
-            vPos += dim.height;
+            cell.setOnsetvGap(0);
+            cell.setLayoutPreferredHeight(0);
         }
-        col.setBottomBound(vPos + Constants.BOTTOM_MARGIN);
     }
 }

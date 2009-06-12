@@ -104,7 +104,6 @@ public final class UINewCellTest extends UISpecTestCase {
             TextBox t = c.getValueTextBox(0);
 
             c.enterEditorText(0, testInput[i]);
-
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
@@ -144,7 +143,6 @@ public final class UINewCellTest extends UISpecTestCase {
                      Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
                      Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
                      Key.BACKSPACE, }};
-
 
         int numOfTests = testInput.length;
 
@@ -453,7 +451,7 @@ public final class UINewCellTest extends UISpecTestCase {
                 Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
                 Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 70, -27,
+        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 708, -27,
         -27};
 
         // Retrieve the components

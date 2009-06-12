@@ -53,7 +53,32 @@ public final class CreateNewCellC {
      * @param milliseconds The number of milliseconds since the origin of the
      * spreadsheet to create a new cell from.
      */
-    public final void createNewCell(final long milliseconds) {
+    public void createNewCell(final long milliseconds) {
+        /*
+         * Concept of operation: Creating a new cell.
+         *
+         * Situation 1: Spreadsheet has one or more selected columns
+         *  For each selected column do
+         *      Create a new cell with the supplied onset and insert into db.
+         *
+         * Situation 2: Spreadsheet has one or more selected cells
+         *  For each selected cell do
+         *      Create a new cell with the selected cell onset and offset and
+         *      insert into the db.
+         *
+         * Situation 3: User has set focus on a particular cell in the
+         *      spreadsheet - the caret is or has been in one of the editable
+         *      parts of a spreadsheet cell.
+         *  First check this request has not come from the video controller.
+         *  For the focussed cell do
+         *      Create a new cell with the focussed cell onset and offset and
+         *      insert into the db.
+         *
+         * Situation 4: Request has come from the video controller and there
+         *      is no currently selected column.
+         *  Create a new cell in the same column as the last created cell or
+         *  the last focussed cell.
+         */
         try {
             long onset = milliseconds;
             // if not coming from video controller (milliseconds < 0) allow
@@ -64,7 +89,7 @@ public final class CreateNewCellC {
             }
 
             boolean newcelladded = false;
-            // try for selected columns
+            // check for Situation 1: one or more selected columns
             for (DataColumn col : view.getSelectedCols()) {
                 MatrixVocabElement mve = model.getMatrixVE(col.getItsMveID());
                 DataCell cell = new DataCell(col.getDB(),
@@ -86,9 +111,8 @@ public final class CreateNewCellC {
             }
 
             if (!newcelladded) {
-                // next try for selected cells
-                Iterator <DataCell> itCells = view.getSelectedCells()
-                                                  .iterator();
+                // else check for Situation 2: one or more selected cells
+                Iterator<DataCell> itCells = view.getSelectedCells().iterator();
 
                 while (itCells.hasNext()) {
                     // reget the selected cell from the database using its id
@@ -118,8 +142,28 @@ public final class CreateNewCellC {
                 }
             }
 
-            // last try lastColCreated
+            if (!newcelladded && multiadd) {
+                // else check for Situation 3: User is or was editing an
+                // existing cell and has requested a new cell
+                if (OpenSHAPA.getLastCreatedCellId() != 0) {
+                    DataCell dc = (DataCell) model
+                                     .getCell(OpenSHAPA.getLastCreatedCellId());
+                    DataCell cell = new DataCell(model,
+                                                 dc.getItsColID(),
+                                                 dc.getItsMveID());
+                    cell.setOnset(dc.getOnset());
+                    cell.setOffset(dc.getOffset());
+                    OpenSHAPA.setLastCreatedCellId(model
+                                           .insertdCell(cell, dc.getOrd() + 1));
+                    OpenSHAPA.setLastCreatedColId(cell.getItsColID());
+                    newcelladded = true;
+                }
+            }
+
             if (!newcelladded) {
+                // else go with Situation 4: Video controller requested
+                // - create in the same column as the last created cell or
+                // the last focussed cell.
                 if (OpenSHAPA.getLastCreatedColId() == 0) {
                     OpenSHAPA.setLastCreatedColId(model.getDataColumns()
                                                        .get(0)

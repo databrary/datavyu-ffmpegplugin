@@ -3,12 +3,13 @@ package org.uispec4j;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.datavalues.DataValueElementV;
 import org.openshapa.views.discrete.datavalues.DataValueElementV.
-        DataValueEditor;
-import org.openshapa.views.discrete.datavalues.DataValueV;
+        DataValueEditorInner;
 import java.awt.Component;
-import java.util.Vector;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import junit.framework.Assert;
 import org.openshapa.views.discrete.Editor;
+import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.OffsetView;
 import org.openshapa.views.discrete.datavalues.OnsetView;
 import org.uispec4j.utils.KeyUtils;
@@ -34,13 +35,50 @@ public class Cell extends AbstractUIComponent {
      */
     private SpreadsheetCell ssCell;
 
+    private MatrixRootView matrixRV;
+
+    /**
+     * Inner class for Cell to track changes to the MatrixRootView TextBox
+     * and adjust the caret location accordingly.
+     */
+    private class DocListener implements DocumentListener {
+
+        /**
+         * Gives notification that there was an insert into the document.
+         * The range given by the DocumentEvent bounds the freshly inserted
+         * region.
+         * @param e DocumentEvent
+         */
+        public void insertUpdate(DocumentEvent e) {
+           setCaretPosition(matrixRV.getCaretPosition() + e.getLength());
+        }
+
+        /**
+         * Gives notification that a portion of the document has been removed.
+         * The range is given in terms of what the view last saw (that is,
+         * before updating sticky positions).
+         * @param e DocumentEvent
+         */
+        public void removeUpdate(DocumentEvent e) {
+           setCaretPosition(matrixRV.getCaretPosition() - e.getLength());
+        }
+
+        /**
+         * Not used currently.
+         * @param e DocumentEvent
+         */
+        public void changedUpdate(DocumentEvent e) {
+        }
+    }
     /**
      * Spreadsheet constructor.
      * @param SpreadsheetCell actual SpreadsheetCell class being adapted
      */
     public Cell(final SpreadsheetCell spreadsheetCell) {
         Assert.assertNotNull(spreadsheetCell);
-        this.ssCell = spreadsheetCell;
+        ssCell = spreadsheetCell;
+        matrixRV = ssCell.getDataView();
+        matrixRV.getDocument().addDocumentListener(new DocListener());
     }
 
     public Component getAwtComponent() {
@@ -56,7 +94,7 @@ public class Cell extends AbstractUIComponent {
      * @return long ordinal column identifier
      */
     public final long getOrd() {
-        return ssCell.getOrdinal().getItsValue();
+        return ssCell.getOrdinal();
     }
 
     /**
@@ -96,43 +134,12 @@ public class Cell extends AbstractUIComponent {
     }
 
     /**
-     * returns the value, which is a Vector of DataValueView.
      * This is a matrix, which may change in the future, but right now,
      * it is not easy to hide this implementation.
-     * @return Vector<DataValueView> value as a vector of DataValueView
+     * @return MatrixRootView of the cell
      */
-    public final Vector <DataValueV> getValue() {
-        return ssCell.getDataValueV().getChildren();
-    }
-
-    /**
-     * returns the DataValueElement View.
-     * @param part int section of the value
-     * @return DataValueElementV DataValueElement View
-     */
-    public final DataValueElementV getView(final int part) {
-        DataValueV v = getValue().elementAt(part);
-        if (v instanceof DataValueElementV) {
-            return (DataValueElementV) v;
-
-        // Can't build DataValueElementV predicate or matrix.
-        } else {
-            return null;
-        }
-    }
-
-     /**
-     * returns the DataValueEditor for the cell value.
-     * @param part int section of the value
-     * @return DataValueEditor of the value of the cell
-     */
-    public final DataValueEditor getEditor(final int part) {
-        DataValueElementV v = getView(part);
-        if (v != null) {
-            return (DataValueEditor) v.getEditor();
-        } else {
-            return null;
-        }
+    public final MatrixRootView getMatrixRootView() {
+        return matrixRV;
     }
 
      /**
@@ -141,9 +148,17 @@ public class Cell extends AbstractUIComponent {
      * @param s String to type
      */
     public final void enterEditorText(final int part, final String s) {
-        requestEditorFocus(VALUE, part);
+        requestEditorFocus(VALUE);
+        enterEditorTextNoFocus(part, s);
+    }
 
-        KeyUtils.enterString(getEditorByType(VALUE, part), s);
+    private void enterEditorTextNoFocus(final int part, final String s) {
+        for (int i = 0; i < s.length(); i++) {
+            Key k = new Key(s.charAt(i));
+            KeyUtils.pressKey(matrixRV, k);
+            KeyUtils.typeKey(matrixRV, k);
+            KeyUtils.releaseKey(matrixRV, k);
+        }
     }
 
      /**
@@ -155,11 +170,63 @@ public class Cell extends AbstractUIComponent {
      */
     public final void enterEditorText(final int part, final String s1,
             final Key[] keys, final String s2) {
-        requestEditorFocus(VALUE, part);
+        requestEditorFocus(VALUE);
+        enterEditorTextNoFocus(part, s1, keys, s2);
+    }
 
-        KeyUtils.enterString(getEditorByType(VALUE, part), s1);
-        KeyUtils.enterKeys(getEditorByType(VALUE, part), keys);
-        KeyUtils.enterString(getEditorByType(VALUE, part), s2);
+    private final void enterEditorTextNoFocus(final int part, final String s1,
+            final Key[] keys, final String s2) {
+        enterEditorTextNoFocus(0, s1);
+        enterEditorKeysNoFocus(0, keys);
+        enterEditorTextNoFocus(0, s2);
+    }
+
+     /**
+     * types text into the cell value.
+     * @param part int section of the value
+     * @param s1 String to type first
+     * @param keys Keys to type next
+     * @param s2 String to add at the end
+     */
+    public final void enterEditorKeys(final int part, final Key[] keys) {
+        requestEditorFocus(VALUE);
+        enterEditorKeysNoFocus(part, keys);
+    }
+
+    private void enterEditorKeysNoFocus(final int part, final Key[] keys) {
+        for (Key k : keys) {
+            int caret = matrixRV.getCaretPosition();
+            if (k.getChar() != null) {
+                KeyUtils.pressKey(matrixRV, k);
+                KeyUtils.typeKey(matrixRV, k);
+                KeyUtils.releaseKey(matrixRV, k);
+            } else {
+                KeyUtils.pressKey(matrixRV, k);
+                KeyUtils.releaseKey(matrixRV, k);
+            }
+
+            if (k == Key.LEFT) {
+                caret -= 1;
+            } else if (k == Key.RIGHT) {
+                caret += 1;
+            } else if (k == Key.BACKSPACE) {
+                caret -= 1;
+            } else if (k == Key.DELETE) {
+                caret += 0;
+            } else {
+                caret += 1;
+            }
+            // if there is a selection we do not need to update the caret.
+            if (matrixRV.getCaret().getDot() == matrixRV.getCaret().getMark()) {
+                setCaretPosition(caret);
+            }
+        }
+    }
+
+    private void setCaretPosition(int pos) {
+        int caretPos = Math.max(pos, 0);
+        caretPos = Math.min(caretPos, matrixRV.getText().length());
+        matrixRV.setCaretPosition(caretPos);
     }
 
      /**
@@ -168,7 +235,7 @@ public class Cell extends AbstractUIComponent {
      */
     public final void enterOnsetText(final String s) {
         requestEditorFocus(ONSET);
-        KeyUtils.enterString(getEditorByType(ONSET, 0), s);
+        KeyUtils.enterString(getDVEditorByType(ONSET, 0), s);
     }
 
      /**
@@ -177,7 +244,7 @@ public class Cell extends AbstractUIComponent {
      */
     public final void enterOffsetText(final String s) {
         requestEditorFocus(OFFSET);
-        KeyUtils.enterString(getEditorByType(OFFSET, 0), s);
+        KeyUtils.enterString(getDVEditorByType(OFFSET, 0), s);
     }
 
     /**
@@ -185,20 +252,22 @@ public class Cell extends AbstractUIComponent {
      * @param component to gain focus
      * @param i Int of value part, if value
      */
-    public final void requestEditorFocus(final int component, final int i) {
-        DataValueEditor e;
-        e = getEditorByType(component, i);
-        e.focusGained(null);
-    }
-
-    /**
-     * sets the focus to a particular component of cell.
-     * @param component to gain focus
-     */
     public final void requestEditorFocus(final int component) {
-        DataValueEditor e;
-        e = getEditorByType(component, 0);
-        e.focusGained(null);
+        DataValueEditorInner e;
+        switch (component) {
+            case VALUE:
+                matrixRV.focusGained(null);
+                matrixRV.getEdTracker().focusGained(null);
+                break;
+            case ONSET:
+		e = (DataValueEditorInner) ssCell.getOnset().getEditor();
+                e.focusGained(null);
+                break;
+            case OFFSET:
+		e = (DataValueEditorInner) ssCell.getOffset().getEditor();
+                e.focusGained(null);
+                break;
+        }
     }
 
     /**
@@ -207,80 +276,86 @@ public class Cell extends AbstractUIComponent {
      * @param i section of value, if value
      * @param k Key to type
      */
-    public final void typeEditorKey(final int component, final int i,
-            final Key k) {
-        DataValueEditor e;
-        e = getEditorByType(component, i);
-        KeyUtils.typeKey(e, k);
+    public final void typeEditorKey(final int component, final Key k) {
+        DataValueEditorInner e;
+        switch (component) {
+            case VALUE:
+                KeyUtils.typeKey(this.getMatrixRootView(), k);
+                break;
+            case ONSET:
+				e = (DataValueEditorInner) ssCell.getOnset().getEditor();
+                KeyUtils.typeKey(e, k);
+                break;
+            case OFFSET:
+				e = (DataValueEditorInner) ssCell.getOffset().getEditor();
+                KeyUtils.typeKey(e, k);
+                break;
+        }
     }
 
     /**
-     * returns the DataValueEditor of the component of the cell.
+     * returns the DataValueEditorInner of the component of the cell.
      * @param type cell component type
      * @param i int of value section if value
-     * @return DataValueEditor of particular component of cell
+     * @return DataValueEditorInner of particular component of cell
      */
-    public final DataValueEditor getEditorByType(final int type, final int i) {
-        DataValueEditor e;
+    public final DataValueEditorInner getDVEditorByType(final int type, final int i) {
         switch (type) {
-            case VALUE:
-                return getEditor(i);
             case ONSET:
-                return (DataValueEditor) ((DataValueElementV) ssCell.
+                return (DataValueEditorInner) ((DataValueElementV) ssCell.
                         getOnset()).getEditor();
             case OFFSET:
-                return (DataValueEditor) ((DataValueElementV) ssCell.
+                return (DataValueEditorInner) ((DataValueElementV) ssCell.
                         getOffset()).getEditor();
             default:
-                return getEditor(i);
+                return null;
+        }
+    }
+    
+    public final Component getMREditorByType(final int type, final int i) {
+        switch (type) {
+            case VALUE:
+                return this.getMatrixRootView();
+            default:
+                return null;
+        }
+
+    }
+
+     /**
+     * presses a single key into a particular component in the cell.
+     * @param component to type into
+     * @param i section of value, if value
+     * @param k Key to type
+     */
+    public final void pressEditorKey(final int component, final Key k) {
+        switch (component) {
+            case VALUE:
+                KeyUtils.pressKey(this.getMatrixRootView(), k);
+                break;
+            case ONSET:
+                KeyUtils.pressKey((DataValueEditorInner) ssCell.getOnset().getEditor(), k);
+                break;
+            case OFFSET:
+                KeyUtils.pressKey((DataValueEditorInner) ssCell.getOffset().getEditor(), k);
+                break;
         }
     }
 
      /**
-     * type a single key into a particular component in the cell.
-     * @param component to type into
-     * @param k Key to type
-     */
-    public final void typeEditorKey(final int component, final Key k) {
-        requestEditorFocus(component, 0);
-        typeEditorKey(component, 0, k);
-    }
-
-     /**
-     * presses a single key into a particular component in the cell.
-     * @param component to type into
-     * @param i section of value, if value
-     * @param k Key to type
-     */
-    public final void pressEditorKey(final int component, final int i,
-            final Key k) {
-        DataValueEditor e;
-        e = getEditorByType(component, i);
-        KeyUtils.pressKey(e, k);
-    }
-
-     /**
-     * presses a single key into a particular component in the cell.
-     * @param component to type into
-     * @param k Key to type
-     */
-    public final void pressEditorKey(final int component, final Key k) {
-        pressEditorKey(component, 0, k);
-    }
-
-    /**
      * returns a Textbox for the value component of a cell.
      * @param part section of the value of which to turn the Textbox
      * @return Textbox of section of the value component
      */
     public final TextBox getValueTextBox(final int part) {
-        DataValueElementV view = getView(part);
+        // this returns a TextBox for the whole MatrixRootView of the Cell
+        // (an extended JTextArea now)
 
-        if (view != null) {
-            return new TextBox(view.getEditor());
+        // Currently returns the whole MatrixRootView where one day (soon)
+        // we would want to be able to enter text into other editor components
+        // in a matrix or predicate for instance.
+        // The current tests all operate on single editors.
 
-        } else {
-            return null;
-        }
+        return new TextBox(this.getMatrixRootView());
     }
 }

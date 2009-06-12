@@ -43,8 +43,17 @@ implements KeyEventDispatcher {
      * with regard to the KeyEvent; false  otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
-        if (evt.getID() != KeyEvent.KEY_PRESSED
-            || evt.getKeyLocation() != KeyEvent.KEY_LOCATION_NUMPAD) {
+        if (evt.getID() == KeyEvent.KEY_PRESSED
+            && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
+            numKeyDown = true;
+        } else if (numKeyDown && evt.getID() == KeyEvent.KEY_TYPED) {
+            return true;
+        }
+        if (evt.getID() == KeyEvent.KEY_RELEASED
+            && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
+            numKeyDown = false;
+        }
+        if (!numKeyDown) {
             return false;
         }
 
@@ -89,6 +98,9 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_NUMPAD0:
                 qtVideoController.createNewCellAction();
+                break;
+            case KeyEvent.VK_DECIMAL:
+                qtVideoController.setNewCellStopTime();
                 break;
             case KeyEvent.VK_ENTER:
                 //this.createNewCell();
@@ -376,4 +388,7 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
+
+    /** Tracks if a NumPad key has been pressed. */
+    private boolean numKeyDown = false;
 }

@@ -19,7 +19,6 @@ implements MouseListener, KeyListener {
      */
     public SpreadsheetElementPanel() {
         super();
-        this.setBackground(Configuration.getInstance().getSSBackgroundColour());
         this.addMouseListener(this);
         this.addKeyListener(this);
     }

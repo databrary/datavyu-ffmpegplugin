@@ -6,6 +6,7 @@ import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 import org.apache.log4j.Logger;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * SheetLayoutStrongTemporal implements the strong temporal style layout of
@@ -36,6 +37,9 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      */
     public SheetLayoutStrongTemporal(final Vector<SpreadsheetColumn> cols) {
         setColumns(cols);
+        for (SpreadsheetColumn col : cols) {
+            col.resetLayoutManager(SheetLayoutType.StrongTemporal);
+        }
     }
 
     /**
@@ -134,11 +138,13 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
                     // we have overlap - modify size and border
                     prevCell.setBounds(0, prevvPos, col.getWidth() - 1,
                                                        intvPos - prevvPos + 1);
-                    prevCell.setBorder(SpreadsheetCell.OVERLAP_BORDER);
+                    prevCell.setOverlapBorder(true);
                 } else {
-                    prevCell.setBorder(SpreadsheetCell.NORMAL_BORDER);
+                    prevCell.setOverlapBorder(false);
                 }
             }
+            // add a border to the top of the cell
+            cell.setOnsetvGap(1);
             cell.setBounds(0, intvPos, col.getWidth() - 1, intvHeight + 1);
             prevCell = cell;
             prevvPos = intvPos;

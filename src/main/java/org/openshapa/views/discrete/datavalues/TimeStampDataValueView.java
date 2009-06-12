@@ -117,7 +117,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
     /**
      * Editor to use for the time stamp data value.
      */
-    class TimeStampEditor extends DataValueElementV.DataValueEditor {
+    class TimeStampEditor extends DataValueElementV.DataValueEditorInner {
 
         /**
          * Attempt to paste the contents of the clipboard into this timestamp.
