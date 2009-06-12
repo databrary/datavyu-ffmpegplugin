@@ -97,7 +97,13 @@ implements MovieDrawingComplete {
             visualMedia = visualTrack.getMedia();
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
+            // Set the size of the window to be the same as the incoming video.
+            this.setBounds(this.getX(), this.getY(),
+                           movie.getBox().getWidth(),
+                           movie.getBox().getHeight());
             this.pack();
+            //this.invalidate();
+            this.setVisible(true);
 
             setName(this.getClass().getSimpleName() + videoFile.getName());
         } catch (QTException e) {
@@ -145,6 +151,7 @@ implements MovieDrawingComplete {
      */
     public void jogBack() {
         try {
+            this.setVisible(true);
             this.jog(-1);
         } catch (QTException e) {
             logger.error("Unable to jogBack", e);
@@ -157,6 +164,7 @@ implements MovieDrawingComplete {
     public void stop() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.stop();
             }
@@ -170,6 +178,7 @@ implements MovieDrawingComplete {
      */
     public void jogForward() {
         try {
+            this.setVisible(true);
             this.jog(1);
         } catch (QTException e) {
             logger.error("Unable to jogForward", e);
@@ -183,6 +192,7 @@ implements MovieDrawingComplete {
     public void shuttleBack() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 if (shuttleSpeed == 0.0f) {
                     shuttleSpeed = 1.0f / RWIND_SPEED;
                 } else {
@@ -201,6 +211,7 @@ implements MovieDrawingComplete {
     public void pause() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.stop();
             }
@@ -217,6 +228,7 @@ implements MovieDrawingComplete {
     public void shuttleForward() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 if (shuttleSpeed == 0.0f) {
                     shuttleSpeed = 1.0f / FFORWARD_SPEED;
                 } else {
@@ -235,6 +247,7 @@ implements MovieDrawingComplete {
     public void rewind() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.setRate(RWIND_SPEED);
             }
@@ -249,6 +262,7 @@ implements MovieDrawingComplete {
     public void play() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.setRate(NORMAL_SPEED);
             }
@@ -263,6 +277,7 @@ implements MovieDrawingComplete {
     public void forward() {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.setRate(FFORWARD_SPEED);
             }
@@ -319,6 +334,7 @@ implements MovieDrawingComplete {
     public void find(final long milliseconds) {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.stop();
 
@@ -343,6 +359,7 @@ implements MovieDrawingComplete {
     public void goBack(final long milliseconds) {
         try {
             if (movie != null) {
+                this.setVisible(true);
                 shuttleSpeed = 0.0f;
                 movie.stop();
 
@@ -378,6 +395,7 @@ implements MovieDrawingComplete {
      */
     private void jog(final int offset) throws QTException {
         if (movie != null) {
+            this.setVisible(true);
             shuttleSpeed = 0.0f;
             movie.stop();
 
