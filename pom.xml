@@ -73,6 +73,16 @@
       </roles>
       <timezone>-5</timezone>
     </developer>
+
+    <developer>
+      <id>Jesse</id>
+      <name>Jesse Lingeman</name>
+      <email>jml654@_no_spam_nyu.edu</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
   </developers>
 
   <contributors>
@@ -85,12 +95,6 @@
     <contributor>
       <name>John Franchak</name>
       <email>franchak@_no_spam_gmail.com</email>
-      <timezone>-5</timezone>
-    </contributor>
-
-    <contributor>
-      <name>Jesse Lingeman</name>
-      <email>jml654@_no_spam_nyu.edu</email>
       <timezone>-5</timezone>
     </contributor>
 
