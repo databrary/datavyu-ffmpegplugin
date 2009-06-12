@@ -284,11 +284,13 @@ implements FocusListener, KeyListener, MouseListener {
                 break;
 
             case KeyEvent.VK_HOME:
+            case KeyEvent.VK_PAGE_UP:
                 setEditor(firstEditor(), 0, 0);
                 e.consume();
                 break;
 
             case KeyEvent.VK_END:
+            case KeyEvent.VK_PAGE_DOWN:
                 setEditor(lastEditor(), Integer.MAX_VALUE, Integer.MAX_VALUE);
                 e.consume();
                 break;

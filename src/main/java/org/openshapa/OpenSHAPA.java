@@ -90,6 +90,9 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD0:
                 qtVideoController.createNewCellAction();
                 break;
+            case KeyEvent.VK_PERIOD:
+                qtVideoController.setNewCellStopTime();
+                break;
             case KeyEvent.VK_ENTER:
                 //this.createNewCell();
                 new CreateNewCellC();

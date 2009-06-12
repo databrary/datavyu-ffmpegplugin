@@ -134,8 +134,7 @@ public class MatrixRootView extends JTextArea implements FocusListener {
      * @param fe The FocusEvent that triggered this action.
      */
     public void focusLost(final FocusEvent fe) {
-        // deselect any text
-        this.select(0, 0);
+        // do nothing
     }
 
     /**

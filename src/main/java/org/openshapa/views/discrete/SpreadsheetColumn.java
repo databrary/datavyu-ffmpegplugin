@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.util.Vector;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -386,12 +387,23 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
+     * resetLayout changes the layout manager depending on the SheetLayoutType.
+     * @param type SheetLayoutType
+     */
+    public void resetLayoutManager(final SheetLayoutType type) {
+        datapanel.resetLayoutManager(type);
+    }
+
+    /**
      * Set the preferred size of the column.
      * @param bottom Number of pixels to set.
      */
     public void setBottomBound(final int bottom) {
-        datapanel.setPreferredSize(
-                    new Dimension(this.getWidth(), bottom));
+        if (bottom < 0) {
+            datapanel.setPreferredSize(null);
+        } else {
+            datapanel.setPreferredSize(new Dimension(this.getWidth(), bottom));
+        }
     }
 
     /**

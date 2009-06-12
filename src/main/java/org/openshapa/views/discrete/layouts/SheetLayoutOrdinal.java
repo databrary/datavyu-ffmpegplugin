@@ -3,6 +3,7 @@ package org.openshapa.views.discrete.layouts;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * SheetLayoutOrdinal implements the ordinal style layout of SpreadsheetCells
@@ -16,6 +17,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
      */
     public SheetLayoutOrdinal(final Vector<SpreadsheetColumn> cols) {
         setColumns(cols);
+        for (SpreadsheetColumn col : cols) {
+            col.resetLayoutManager(SheetLayoutType.Ordinal);
+        }
     }
 
     /**

@@ -3,11 +3,13 @@ package org.openshapa.views.discrete;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import org.openshapa.util.Constants;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
@@ -20,6 +22,9 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
     /** Provides a strut to leave a gap at the bottom of the panel. */
     private Component bottomStrut;
 
+    /** Layout type for Ordinal and Weak Temporal Ordering. */
+    private LayoutManager boxLayout;
+
     /**
      * Creates a new ColumnDataPanel.
      * @param width Width of the column.
@@ -30,9 +35,23 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
 
         Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);
         bottomStrut = new Filler(d, d, d);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        boxLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
+        setLayout(boxLayout);
         setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
         this.add(bottomStrut, -1);
+    }
+
+    /**
+     * resetLayout changes the layout manager depending on the SheetLayoutType.
+     * @param type SheetLayoutType
+     */
+    public final void resetLayoutManager(final SheetLayoutType type) {
+        if (type != SheetLayoutType.StrongTemporal) {
+            setLayout(boxLayout);
+            this.setPreferredSize(null);
+        } else {
+            setLayout(null);
+        }
     }
 
     /**
@@ -44,7 +63,7 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
      */
     @Override
     public final Component add(final Component comp) {
-        super.add(comp, this.getComponentCount() - 1);
+        super.add(comp, getComponentCount() - 1);
         return comp;
     }
 
@@ -92,14 +111,13 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
     @Override
     public final void keyReleased(final KeyEvent ke) {
         Component[] components = this.getComponents();
-        for (int i = 0; i < this.getComponentCount(); i++) {
+        int numCells = getComponentCount() - 1;
+        for (int i = 0; i < numCells; i++) {
             if (components[i].isFocusOwner()) {
                 if (ke.getKeyCode() == KeyEvent.VK_UP && i > 0) {
                     components[i - 1].requestFocus();
                 }
-
-                if (ke.getKeyCode() == KeyEvent.VK_DOWN
-                                        && (i + 1) < this.getComponentCount()) {
+                if (ke.getKeyCode() == KeyEvent.VK_DOWN && (i + 1) < numCells) {
                     components[i + 1].requestFocus();
                 }
             }

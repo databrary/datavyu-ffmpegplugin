@@ -5,6 +5,7 @@ import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
 import org.apache.log4j.Logger;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * SheetLayoutWeakTemporal - implements the weak temporal ordering style
@@ -174,6 +175,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     public SheetLayoutWeakTemporal(final Vector<SpreadsheetColumn> cols) {
         setColumns(cols);
         colsInfo = new Vector<ColumnTemporalInfo>();
+        for (SpreadsheetColumn col : cols) {
+            col.resetLayoutManager(SheetLayoutType.WeakTemporal);
+        }
     }
 
     /**
