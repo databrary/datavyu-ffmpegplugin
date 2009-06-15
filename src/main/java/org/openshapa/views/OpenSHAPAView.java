@@ -278,7 +278,7 @@ implements KeyEventDispatcher {
         openMenuItem.setAction(actionMap.get("open")); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
         openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
-        openMenuItem.setName("openMenuItem"); // NOI18N
+        openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
         fileMenu.add(openMenuItem);
 
         newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
