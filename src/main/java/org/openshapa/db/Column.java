@@ -416,7 +416,14 @@ public abstract class Column
         }
 
         if (d.vl.inVocabList(name)) {
-            throw new LogicErrorException(rMap.getString("Error.exists", name));
+            VocabElement e = d.getVocabElement(name);
+            if (e.getSystem()) {
+                throw new LogicErrorException(rMap.getString("Error.system",
+                                                             name));
+            } else {
+                throw new LogicErrorException(rMap.getString("Error.exists",
+                                                             name));
+            }
         }
 
         if (d.cl.inColumnList(name)) {
