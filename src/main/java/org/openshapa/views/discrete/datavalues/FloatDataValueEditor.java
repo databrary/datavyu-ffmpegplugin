@@ -4,6 +4,7 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.PredDataValue;
 
@@ -11,6 +12,9 @@ import org.openshapa.db.PredDataValue;
  * This class is the character editor of a FloatDataValue.
  */
 public final class FloatDataValueEditor extends DataValueEditor {
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(FloatDataValueEditor.class);
 
     /**
      * Constructor.
@@ -82,22 +86,37 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '.') {
 
-                int pos = getCaretPosition();
-                String t = getText();
-                int dotPos = t.indexOf('.');
-                if (dotPos >= 0) {
-                    // take out the '.'
-                    if (dotPos == 0) {
-                        t = t.substring(1);
-                    } else if (dotPos > 0) {
-                        t = t.substring(0, dotPos) + t.substring(dotPos + 1);
+                if (!this.isNullArg()) {
+                    String t = getText();
+                    String newt = "";
+                    int start = getSelectionStart();
+                    int end = getSelectionEnd();
+                    int dotPos = t.indexOf('.');
+                    if (dotPos < 0) {
+                        newt = t.substring(0, start) + "." + t.substring(end);
+                    } else if (dotPos < start) {
+                        newt = t.substring(0, dotPos)
+                          + t.substring(dotPos + 1, start)
+                          + "." + t.substring(end);
+                    } else if (dotPos < end) {
+                        newt = t.substring(0, start) + "." + t.substring(end);
+                    } else {
+                        // dotPos > end
+                        newt = t.substring(0, start) + "."
+                               + t.substring(end, dotPos)
+                               + t.substring(dotPos + 1);
                     }
-                    setText(t);
-                    if (dotPos < pos) {
-                        pos--;
+                    if (dotPos < 0 || start < dotPos) {
+                        start++;
                     }
-                    setCaretPosition(pos);
+                    setText(newt);
+                    setCaretPosition(start);
+                } else {
+                    // Arg is null case
+                    setText("0.");
+                    setCaretPosition(2);
                 }
+                e.consume();
             } else if (!Character.isDigit(e.getKeyChar())) {
                 // Every other key stroke is ignored by the int editor.
                 e.consume();
@@ -111,8 +130,11 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     @Override
     public void updateModelValue() {
+        System.out.println("updatemodelvalue");
         FloatDataValue dv = (FloatDataValue) getModel();
         dv.setItsValue(getText());
+        // special case for float - reget the text from the db if losing focus
+        setText(dv.toString());
     }
 
     /**

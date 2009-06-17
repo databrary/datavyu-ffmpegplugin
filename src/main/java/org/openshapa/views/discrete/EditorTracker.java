@@ -237,7 +237,9 @@ implements FocusListener, KeyListener, MouseListener {
                 if (!gotKeyUp) {
                     resetEditorText();
                 }
-                if (currentEditor.getCaretPosition() == 0) {
+                if (currentEditor.getCaretPosition() == 0
+                    && currentEditor.getSelectionStart()
+                        == currentEditor.getSelectionEnd()) {
                     e.consume();
                 }
                 break;
