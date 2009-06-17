@@ -489,7 +489,7 @@ implements ExternalDataCellListener, Selectable {
      * Action to perform on a mouseClick.
      */
     @Override
-    public void mouseClicked(MouseEvent me) {
+    public void mousePressed(MouseEvent me) {
         // The cell includes a strut component that keeps it a set distance
         // from the previous cell in the column. A click in that area should
         // not cause a selection

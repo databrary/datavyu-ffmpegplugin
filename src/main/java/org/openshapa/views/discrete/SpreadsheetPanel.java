@@ -49,7 +49,6 @@ public class SpreadsheetPanel extends JPanel
         this.add(jScrollPane3, BorderLayout.CENTER);
         jScrollPane3.setViewportView(mainView);
         jScrollPane3.setColumnHeaderView(headerView);
-
         colSelector = new Selector(this);
         cellSelector = new Selector(this);
         colSelector.addOther(cellSelector);

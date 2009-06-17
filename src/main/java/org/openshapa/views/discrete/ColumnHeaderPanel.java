@@ -99,6 +99,8 @@ implements Selectable, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
+        selection.addToSelection(me, this);
+        parentCol.requestFocus();
     }
 
     /**
@@ -115,7 +117,6 @@ implements Selectable, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public final void mouseClicked(final MouseEvent me) {
-        selection.addToSelection(me, this);
-        parentCol.requestFocus();
+
     }
 }
