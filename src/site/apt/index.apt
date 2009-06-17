@@ -36,7 +36,7 @@ Documentation
 
   For information on how to install and use OpenSHAPA and best practices to help
   you get the most out of your research data, see the
-  {{{http://openshapa.org/fogbugz/default.php?W19}OpenSHAPA User Guide}}.
+  {{{https://openshapa.org/fogbugz/default.php?W19}OpenSHAPA User Guide}}.
 
 
 Contribute
@@ -50,10 +50,10 @@ Contribute
 
     * <<Test:>> Live dangerously by grabbing the latest
       {{{http://openshapa.org/download/}development snapshot}} and
-      {{{http://openshapa.org/fogbugz/default.php?W48}reporting
+      {{{https://openshapa.org/fogbugz/default.php?W48}reporting
       any issues}} you find.
 
     * <<Document:>> Did it take you a while to figure something out, or was
       existing documentation out of date or wrong? Help others stand on your
-      shoulders by {{{http://openshapa.org/fogbugz/default.php?W49}improving
+      shoulders by {{{https://openshapa.org/fogbugz/default.php?W49}improving
       documentation}}.
