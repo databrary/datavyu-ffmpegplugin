@@ -307,7 +307,7 @@ implements FocusListener, KeyListener, MouseListener {
                 if (currentEditor.getSelectionEnd()
                             - currentEditor.getSelectionStart()
                             != currentEditor.getText().length()) {
-                    currentEditor.selectAll();
+                    setEditor(currentEditor);
                 } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
                     setEditor(prevEditor());
                     if (currentEditor == NO_EDITOR) {
