@@ -16,6 +16,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Font;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -30,6 +31,7 @@ import org.openshapa.db.Database;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
+import org.openshapa.Configuration;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -234,6 +236,11 @@ implements KeyEventDispatcher {
         jSeparator3 = new javax.swing.JSeparator();
         weakTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
         strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
+        zoomMenu = new javax.swing.JMenu();
+        zoomInMenuItem = new javax.swing.JMenuItem();
+        zoomOutMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JSeparator();
+        resetZoomMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
@@ -354,6 +361,40 @@ implements KeyEventDispatcher {
             }
         });
         jMenu3.add(strongTemporalOrderMenuItem);
+
+        zoomMenu.setName("zoomMenu"); // NOI18N
+
+        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_EQUALS, java.awt.event.InputEvent.META_MASK));
+        zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
+        zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomInMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(zoomInMenuItem);
+
+        zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.META_MASK));
+        zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
+        zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomOutMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(zoomOutMenuItem);
+
+        jSeparator5.setName("jSeparator5"); // NOI18N
+        zoomMenu.add(jSeparator5);
+
+        resetZoomMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.META_MASK));
+        resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
+        resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetZoomMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(resetZoomMenuItem);
+
+        jMenu3.add(zoomMenu);
 
         menuBar.add(jMenu3);
 
@@ -511,6 +552,61 @@ implements KeyEventDispatcher {
     }//GEN-LAST:event_populateFavourites
 
     /**
+     * Defines actions for  new menu items for zooming.
+     * "Zooming" is really just changing
+     * the font size for variables in the spreadsheet view.
+     * 
+     * @param evt The event that triggered this action.
+     */
+    private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
+        changeFontSize(4);
+    }//GEN-LAST:event_zoomInMenuItemActionPerformed
+
+    private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
+        changeFontSize(-4);
+    }//GEN-LAST:event_zoomOutMenuItemActionPerformed
+
+    private void resetZoomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetZoomMenuItemActionPerformed
+        int defaultSize = 14;
+        
+        Configuration config = Configuration.getInstance();
+        Font f = config.getSSDataFont();
+
+        changeFontSize(defaultSize - f.getSize());
+    }//GEN-LAST:event_resetZoomMenuItemActionPerformed
+
+
+    /**
+     * Changes the font size by adding sizeDif to the current size.  Then it
+     * creates and revalidates a new panel to show the font update.
+     *
+     * This will not make the font smaller than smallestSize.
+     *
+     * @param sizeDif The number to add to the current font size.
+     */
+    private void changeFontSize(int sizeDif) {
+        int smallestSize = 6;
+
+        Configuration config = Configuration.getInstance();
+        Font f = config.getSSDataFont();
+        int size = f.getSize();
+        size = size + sizeDif;
+
+        if(size < smallestSize)
+        {
+            size = smallestSize;
+        }
+
+        Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
+
+        config.setSSDataFont(biggerFont);
+
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
+        this.getComponent().revalidate();
+    }
+
+    /**
      * Creates a new menu item for running a named script.
      *
      * @param text The text to display for the menu item for the supplied
@@ -556,18 +652,23 @@ implements KeyEventDispatcher {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem recentScriptsHeader;
+    private javax.swing.JMenuItem resetZoomMenuItem;
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
+    private javax.swing.JMenuItem zoomInMenuItem;
+    private javax.swing.JMenu zoomMenu;
+    private javax.swing.JMenuItem zoomOutMenuItem;
     // End of variables declaration//GEN-END:variables
 
     /** Logger for this class. */
