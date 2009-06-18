@@ -168,6 +168,7 @@ implements KeyEventDispatcher {
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
         this.getComponent().revalidate();
+        this.getComponent().resetKeyboardActions();
     }
 
     /**
@@ -554,7 +555,7 @@ implements KeyEventDispatcher {
     /**
      * Defines actions for  new menu items for zooming.
      * "Zooming" is really just changing
-     * the font size for variables in the spreadsheet view.
+     * the font size for variable in the spreadsheet view.
      * 
      * @param evt The event that triggered this action.
      */
@@ -585,7 +586,8 @@ implements KeyEventDispatcher {
      * @param sizeDif The number to add to the current font size.
      */
     private void changeFontSize(int sizeDif) {
-        int smallestSize = 6;
+        int smallestSize = 8;
+        int maxSize = 36;
 
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
@@ -593,17 +595,21 @@ implements KeyEventDispatcher {
         size = size + sizeDif;
 
         if(size < smallestSize)
-        {
             size = smallestSize;
-        }
+        else if(size > maxSize)
+            size = maxSize;
 
         Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
 
         config.setSSDataFont(biggerFont);
 
+        //Create and redraw fresh window pane so all of the fonts are new again.
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
         this.getComponent().revalidate();
+        this.getComponent().resetKeyboardActions();
+
+
     }
 
     /**
