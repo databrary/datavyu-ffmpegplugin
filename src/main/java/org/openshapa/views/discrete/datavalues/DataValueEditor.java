@@ -225,14 +225,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        prevText = getText();
-        prevCaret = getCaretPosition();
         checkNullArgKeyTyped(e);
-        if (!e.isConsumed()) {
-            if (isNullArg()) {
-                resetText("");
-            }
-        }
     }
 
     /**

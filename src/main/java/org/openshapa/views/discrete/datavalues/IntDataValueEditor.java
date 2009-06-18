@@ -79,7 +79,7 @@ public final class IntDataValueEditor extends DataValueEditor {
                 e.consume();
 
             } else if (!Character.isDigit(e.getKeyChar())) {
-                // Every other key stroke is ignored by the int editor.
+                // all other non-digit keys are ignored by the editor.
                 e.consume();
             }
         }
@@ -93,6 +93,11 @@ public final class IntDataValueEditor extends DataValueEditor {
     public void updateModelValue() {
         IntDataValue idv = (IntDataValue) getModel();
         idv.setItsValue(getText());
+        // special case for numeric - reget the text from the db if losing focus
+        // incase the user types characters that will not cause a change in the
+        // numeric data value - no notification of a change will be sent by db
+        // so we need to do this
+        setText(idv.toString());
     }
 
     /**

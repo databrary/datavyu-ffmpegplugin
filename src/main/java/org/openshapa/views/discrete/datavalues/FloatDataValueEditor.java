@@ -86,39 +86,39 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '.') {
 
-                if (!this.isNullArg()) {
-                    String t = getText();
-                    String newt = "";
-                    int start = getSelectionStart();
-                    int end = getSelectionEnd();
-                    int dotPos = t.indexOf('.');
-                    if (dotPos < 0) {
-                        newt = t.substring(0, start) + "." + t.substring(end);
-                    } else if (dotPos < start) {
-                        newt = t.substring(0, dotPos)
-                          + t.substring(dotPos + 1, start)
-                          + "." + t.substring(end);
-                    } else if (dotPos < end) {
-                        newt = t.substring(0, start) + "." + t.substring(end);
-                    } else {
-                        // dotPos > end
-                        newt = t.substring(0, start) + "."
-                               + t.substring(end, dotPos)
-                               + t.substring(dotPos + 1);
-                    }
-                    if (dotPos < 0 || start < dotPos) {
-                        start++;
-                    }
-                    setText(newt);
-                    setCaretPosition(start);
+                String t = getText();
+                String newt = "";
+                int start = getSelectionStart();
+                int end = getSelectionEnd();
+                int dotPos = t.indexOf('.');
+                if (dotPos < 0) {
+                    newt = t.substring(0, start) + "." + t.substring(end);
+                } else if (dotPos < start) {
+                    newt = t.substring(0, dotPos)
+                      + t.substring(dotPos + 1, start)
+                      + "." + t.substring(end);
+                } else if (dotPos < end) {
+                    newt = t.substring(0, start) + "." + t.substring(end);
                 } else {
-                    // Arg is null case
-                    setText("0.");
-                    setCaretPosition(2);
+                    // dotPos > end
+                    newt = t.substring(0, start) + "."
+                           + t.substring(end, dotPos)
+                           + t.substring(dotPos + 1);
                 }
+                if (dotPos < 0 || start < dotPos) {
+                    start++;
+                }
+                if (newt.equals(".")) {
+                    // special case user replaces all text with a decimal
+                    newt = "0.";
+                    start = 2;
+                }
+                setText(newt);
+                setCaretPosition(start);
                 e.consume();
+
             } else if (!Character.isDigit(e.getKeyChar())) {
-                // Every other key stroke is ignored by the int editor.
+                // all other non-digit keys are ignored by the editor.
                 e.consume();
             }
         }
@@ -130,10 +130,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     @Override
     public void updateModelValue() {
-        System.out.println("updatemodelvalue");
         FloatDataValue dv = (FloatDataValue) getModel();
         dv.setItsValue(getText());
-        // special case for float - reget the text from the db if losing focus
+        // special case for numeric - reget the text from the db if losing focus
+        // incase the user types characters that will not cause a change in the
+        // numeric data value - no notification of a change will be sent by db
+        // so we need to do this
         setText(dv.toString());
     }
 
