@@ -74,6 +74,7 @@ implements KeyEventDispatcher {
                 qtVideoController.forwardAction();
                 break;
             case KeyEvent.VK_SUBTRACT:
+                // Check to see if meta is held down.  If so, zoom out.
                 if(modifiers == KeyEvent.META_MASK)
                 {
                    view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
@@ -84,6 +85,7 @@ implements KeyEventDispatcher {
                 }
                 break;
             case KeyEvent.VK_ADD:
+                // Check to see if meta is held down.  If so, zoom in.
                 if(modifiers == KeyEvent.META_MASK)
                 {
                    view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
@@ -215,7 +217,7 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        //show(new OpenSHAPAView(this));
+        // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
     }

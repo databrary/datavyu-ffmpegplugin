@@ -42,15 +42,6 @@ import org.openshapa.Configuration;
 public final class OpenSHAPAView extends FrameView
 implements KeyEventDispatcher {
 
-
-    //Variable for the amount to raise the font size by when zooming.
-    public static final int ZOOM_INTERVAL = 4;
-    public static final int ZOOM_DEFAULT_SIZE = 14;
-
-    //Variables to set the maximum zoom and minimum zoom.
-    static final int ZOOM_MAX_SIZE = 42;
-    static final int ZOOM_MIN_SIZE = 8;
-
     /**
      * Constructor.
      *
@@ -684,6 +675,14 @@ implements KeyEventDispatcher {
     private javax.swing.JMenu zoomMenu;
     private javax.swing.JMenuItem zoomOutMenuItem;
     // End of variables declaration//GEN-END:variables
+
+    //Variable for the amount to raise the font size by when zooming.
+    public static final int ZOOM_INTERVAL = 4;
+    public static final int ZOOM_DEFAULT_SIZE = 14;
+
+    //Variables to set the maximum zoom and minimum zoom.
+    static final int ZOOM_MAX_SIZE = 42;
+    static final int ZOOM_MIN_SIZE = 8;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
