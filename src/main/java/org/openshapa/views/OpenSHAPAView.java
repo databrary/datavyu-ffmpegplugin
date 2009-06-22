@@ -557,20 +557,25 @@ implements KeyEventDispatcher {
     }//GEN-LAST:event_populateFavourites
 
     /**
-     * Defines actions for  new menu items for zooming.
-     * "Zooming" is really just changing
-     * the font size for variable in the spreadsheet view.
-     * 
+     * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
      * @param evt The event that triggered this action.
      */
     private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
         changeFontSize(ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomInMenuItemActionPerformed
 
+    /**
+     * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
+     * @param evt
+     */
     private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
         changeFontSize(-ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomOutMenuItemActionPerformed
 
+    /**
+     * Function to reset the zoom level to the default size.
+     * @param evt The event that triggered this action.
+     */
     private void resetZoomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetZoomMenuItemActionPerformed
 
         Configuration config = Configuration.getInstance();
