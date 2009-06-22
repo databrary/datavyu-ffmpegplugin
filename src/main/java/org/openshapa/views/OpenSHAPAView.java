@@ -42,6 +42,15 @@ import org.openshapa.Configuration;
 public final class OpenSHAPAView extends FrameView
 implements KeyEventDispatcher {
 
+
+    //Variable for the amount to raise the font size by when zooming.
+    public static final int ZOOM_INTERVAL = 4;
+    public static final int ZOOM_DEFAULT_SIZE = 14;
+
+    //Variables to set the maximum zoom and minimum zoom.
+    static final int ZOOM_MAX_SIZE = 42;
+    static final int ZOOM_MIN_SIZE = 8;
+
     /**
      * Constructor.
      *
@@ -58,6 +67,10 @@ implements KeyEventDispatcher {
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
+    }
+
+    public OpenSHAPAView getOpenSHAPAView(){
+        return this;
     }
 
     /**
@@ -560,22 +573,20 @@ implements KeyEventDispatcher {
      * @param evt The event that triggered this action.
      */
     private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
-        changeFontSize(4);
+        changeFontSize(ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomInMenuItemActionPerformed
 
     private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
-        changeFontSize(-4);
+        changeFontSize(-ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomOutMenuItemActionPerformed
 
     private void resetZoomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetZoomMenuItemActionPerformed
-        int defaultSize = 14;
-        
+
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
 
-        changeFontSize(defaultSize - f.getSize());
+        changeFontSize(ZOOM_DEFAULT_SIZE - f.getSize());
     }//GEN-LAST:event_resetZoomMenuItemActionPerformed
-
 
     /**
      * Changes the font size by adding sizeDif to the current size.  Then it
@@ -585,19 +596,16 @@ implements KeyEventDispatcher {
      *
      * @param sizeDif The number to add to the current font size.
      */
-    private void changeFontSize(int sizeDif) {
-        int smallestSize = 8;
-        int maxSize = 36;
-
+    public void changeFontSize(int sizeDif) {
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
         int size = f.getSize();
         size = size + sizeDif;
 
-        if(size < smallestSize)
-            size = smallestSize;
-        else if(size > maxSize)
-            size = maxSize;
+        if(size < ZOOM_MIN_SIZE)
+            size = ZOOM_MIN_SIZE;
+        else if(size > ZOOM_MAX_SIZE)
+            size = ZOOM_MAX_SIZE;
 
         Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
 

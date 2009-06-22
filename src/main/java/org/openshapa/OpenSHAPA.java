@@ -58,6 +58,8 @@ implements KeyEventDispatcher {
         }
 
         boolean result = true;
+        int modifiers = evt.getModifiers();
+
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_ASTERISK:
                 qtVideoController.setCellOffsetAction();
@@ -71,10 +73,25 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD9:
                 qtVideoController.forwardAction();
                 break;
-/*            case KeyEvent.VK_MINUS:
-                qtVideoController.goBackAction();
+            case KeyEvent.VK_SUBTRACT:
+                if(modifiers == KeyEvent.META_MASK)
+                {
+                   view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
+                }
+                else
+                {
+                    qtVideoController.goBackAction();
+                }
                 break;
- */
+            case KeyEvent.VK_ADD:
+                if(modifiers == KeyEvent.META_MASK)
+                {
+                   view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
+                }
+                else{
+                    qtVideoController.findAction();
+                }
+                break;
             case KeyEvent.VK_NUMPAD4:
                 qtVideoController.shuttleBackAction();
                 break;
@@ -83,9 +100,6 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_NUMPAD6:
                 qtVideoController.shuttleForwardAction();
-                break;
-            case KeyEvent.VK_PLUS:
-                qtVideoController.findAction();
                 break;
             case KeyEvent.VK_NUMPAD1:
                 qtVideoController.jogBackAction();
@@ -201,7 +215,9 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        show(new OpenSHAPAView(this));
+        //show(new OpenSHAPAView(this));
+        view = new OpenSHAPAView(this);
+        show(view);
     }
 
     /**
@@ -389,6 +405,14 @@ implements KeyEventDispatcher {
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
 
+    private OpenSHAPAView openShapaView;
+
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
+
+    /** Constant variable for the OpenSHAPA main panel.  This is so we
+     * can send keyboard shortcuts to it while the QTController is in focus.
+     * It actually get initialized in startup().
+     */
+    private OpenSHAPAView view;
 }
