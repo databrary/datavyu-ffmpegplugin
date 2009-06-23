@@ -1,49 +1,31 @@
-/*
- * VocabListListeners.java
- *
- * Created on February 7, 2008, 1:20 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
-import org.openshapa.util.Constants;
-
 /**
- * Class VocabListListeners
- *
- * Instances of this class are used to manage the mechanics registering and
+ * A VocabListListeners is used to manage the mechanics registering and
  * de-registering internal and external listeners for changes in the vocab
  * list, and sending notifications.
  *
- *                                               -- 2/2/08
+ * @date 2008/02/02
  */
 public class VocabListListeners extends Listeners
 {
     /** The VocabList with which VocabListListeners is associated with. */
     private VocabList itsVL = null;
 
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * VocabListListeners
-     *
-     * For now at least, only one constructor.  The Vocab List listeners
-     * class is very simple, so all the construtor does is call the super and
-     * then set itsVL.
-     *
-     *                                               -- 2/6/08
+     * Constructor
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param db The database that this VocabListListener is listening too.
+     * @param vl The VocabList that this VocabListListener is listening too for
+     * changes.
+     *
+     * @date 2008/06/02
      */
-
     public VocabListListeners(Database db,
                               VocabList vl)
         throws SystemErrorException
@@ -61,33 +43,25 @@ public class VocabListListeners extends Listeners
 
         return;
 
-    } /* VocabListListeners::VocabListListeners(db, vl) */
-
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
-    /*** none ***/
-
-
-    /*************************************************************************/
-    /************************** Change Logging: ******************************/
-    /*************************************************************************/
+    }
 
     /**
-     * notifyListenersOfVEDeletion()
-     *
-     * Advise the listeners of the deletion of a VocabElement of the specified
+     * Advises the listeners of the deletion of a VocabElement of the specified
      * id from the vocab list.
      *
-     *                                                   -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param VEID The ID of the vocab element that we are notifying listeners
+     * of its removal.
+     *
+     * @throws SystemErrorException If unable to notify all listeners of the
+     * vocab element removal.
+     *
+     * @date 2008/02/02
      */
-
     protected void notifyListenersOfVEDeletion(long VEID)
         throws SystemErrorException
     {
@@ -113,22 +87,25 @@ public class VocabListListeners extends Listeners
 
         return;
 
-    } /* VocabListListeners::notifyListenersOfVEDeletion() */
-
+    }
 
     /**
-     * notifyListenersOfInsertion()
-     *
-     * Advise the listeners of the inserion of a VocabElement of the specified
+     * Advises the listeners of the inserion of a VocabElement of the specified
      * id into the vocab list.
      *
-     *                                                   -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param VEID The ID of the vocab element that we are notifying listeners
+     * of insertion.
+     *
+     * @throws SystemErrorException If unable to notify all listeners of the
+     * vocab element insertion.
+     *
+     * @date 2008/02/02
      */
-
     protected void notifyListenersOfVEInsertion(long VEID)
         throws SystemErrorException
     {
@@ -154,25 +131,22 @@ public class VocabListListeners extends Listeners
 
         return;
 
-    } /* VocabListListeners::notifyListenersOfInsertion() */
-
-
-    /*************************************************************************/
-    /*********************** Listener Management: ****************************/
-    /*************************************************************************/
+    }
 
     /**
-     * deregisterExternalListener()
-     *
      * Deregister an external listener.
      *
-     *                                               -- 2/2/08
+     * @param el The extenral listener to deregister from the list of listeners.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to deregister the listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void deregisterExternalListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
@@ -187,22 +161,24 @@ public class VocabListListeners extends Listeners
 
         return;
 
-    } /* VocabListListeners::deregisterExternalListener() */
-
+    }
 
     /**
-     * deregisterInternalListener()
-     *
      * Deregister an internal listener.  Internal listeners not implemented
-     * at present, so just throw a SystemErrorException.
-     *
-     *                                               -- 2/2/08
+     * at present, so this just throws a SystemErrorException.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param ID The id of the internal listener.
+     *
+     * @throws SystemErrorException Always - internal listeners are not
+     * implemented
+     *
+     * @date 2008/02/02
      */
-
     protected void deregisterInternalListener(long ID)
         throws SystemErrorException
     {
@@ -210,24 +186,22 @@ public class VocabListListeners extends Listeners
 
         throw new SystemErrorException(mName +
                 ": Internal listeners not supported.");
-
-        // return; /* commented out to keep the compiler happy */
-
-    } /* VocabListListeners::deregisterInternalListener() */
-
+    }
 
     /**
-     * registerExternalListener()
-     *
      * Register an external listener.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The external listener to register with the VocabListListeners.
+     *
+     * @throws SystemErrorException If unable to register external listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void registerExternalListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
@@ -248,22 +222,21 @@ public class VocabListListeners extends Listeners
 
         return;
 
-    } /* VocabListListeners::registerExternalListener() */
-
+    }
 
     /**
-     * registerInternalListener()
-     *
      * Register an internal listener.  Internal listeners not implemented
      * at present, so just throw a SystemErrorException.
      *
-     *                                               -- 2/2/08
+     * @param ID The id of the internal listener to register.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @date 2008/02/02
      */
-
     protected void registerInternalListener(long ID)
         throws SystemErrorException
     {
@@ -271,8 +244,5 @@ public class VocabListListeners extends Listeners
 
         throw new SystemErrorException(mName +
                 ": Internal listeners not supported.");
-
-        // return; /* commented out to keep the compiler happy */
-
-    } /* VocabListListeners::registerExternalListener() */
-} /* class VocabListListeners */
+    }
+}
