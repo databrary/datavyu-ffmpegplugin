@@ -43,6 +43,40 @@ implements KeyEventDispatcher {
      * with regard to the KeyEvent; false  otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
+        /**
+         * This switch is for hot keys that are on the main section of
+         * the keyboard.
+         */
+        int modifiers = evt.getModifiers();
+        if (evt.getID() == KeyEvent.KEY_PRESSED
+                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+            switch (evt.getKeyCode()) {
+                /**
+                 * This case is because VK_PLUS is not linked to a key on the
+                 * English keyboard.  So the GUI is bound to VK_PLUS and
+                 * VK_SUBTACT.  VK_SUBTRACT is on the numpad, but this is
+                 * short-circuited above.
+                 * The cases return true to let the KeyboardManager know
+                 * that there is nothing left to be done with these keys.
+                 */
+                case KeyEvent.VK_EQUALS:
+                    if (modifiers == KeyEvent.META_MASK) {
+                        view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
+                    }
+                    return true;
+                case KeyEvent.VK_MINUS:
+                    if (modifiers == KeyEvent.META_MASK) {
+                        view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
+                    }
+                    return true;
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * The following cases handle numpad keystrokes.
+         */
         if (evt.getID() == KeyEvent.KEY_PRESSED
             && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
             numKeyDown = true;
@@ -58,6 +92,7 @@ implements KeyEventDispatcher {
         }
 
         boolean result = true;
+
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_ASTERISK:
                 qtVideoController.setCellOffsetAction();
@@ -71,10 +106,6 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD9:
                 qtVideoController.forwardAction();
                 break;
-/*            case KeyEvent.VK_MINUS:
-                qtVideoController.goBackAction();
-                break;
- */
             case KeyEvent.VK_NUMPAD4:
                 qtVideoController.shuttleBackAction();
                 break;
@@ -83,9 +114,6 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_NUMPAD6:
                 qtVideoController.shuttleForwardAction();
-                break;
-            case KeyEvent.VK_PLUS:
-                qtVideoController.findAction();
                 break;
             case KeyEvent.VK_NUMPAD1:
                 qtVideoController.jogBackAction();
@@ -101,6 +129,12 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_DECIMAL:
                 qtVideoController.setNewCellStopTime();
+                break;
+            case KeyEvent.VK_SUBTRACT:
+                    qtVideoController.goBackAction();
+                break;
+            case KeyEvent.VK_ADD:
+                    qtVideoController.findAction();
                 break;
             case KeyEvent.VK_ENTER:
                 //this.createNewCell();
@@ -152,13 +186,11 @@ implements KeyEventDispatcher {
         JOptionPane.showMessageDialog(mainFrame,
                                       e.getMessage(),
                                       rMap.getString("WarningDialog.title"),
-                                      JOptionPane.WARNING_MESSAGE);        
+                                      JOptionPane.WARNING_MESSAGE);
     }
 
     /**
      * Show a fatal error dialog to the user.
-     *
-     * @param e The SystemErrorException that caused this problem.
      */
     public void showErrorDialog() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
@@ -177,9 +209,9 @@ implements KeyEventDispatcher {
      */
     @Override
     protected void startup() {
-        try {            
+        try {
             // Initalise DB
-            db = new MacshapaDatabase();            
+            db = new MacshapaDatabase();
 
             // Initalise last created values
             lastCreatedCellID = 0;
@@ -201,7 +233,9 @@ implements KeyEventDispatcher {
             logger.error("Unable to create scripting output streams", e);
         }
 
-        show(new OpenSHAPAView(this));
+        // Make view the new view so we can keep track of it for hotkeys.
+        view = new OpenSHAPAView(this);
+        show(view);
     }
 
     /**
@@ -391,4 +425,10 @@ implements KeyEventDispatcher {
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
+
+    /** Constant variable for the OpenSHAPA main panel.  This is so we
+     * can send keyboard shortcuts to it while the QTController is in focus.
+     * It actually get initialized in startup().
+     */
+    private OpenSHAPAView view;
 }
