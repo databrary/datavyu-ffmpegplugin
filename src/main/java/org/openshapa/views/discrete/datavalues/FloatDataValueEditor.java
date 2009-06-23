@@ -7,6 +7,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.PredDataValue;
+import org.openshapa.db.SystemErrorException;
 
 /**
  * This class is the character editor of a FloatDataValue.
@@ -55,97 +56,123 @@ public final class FloatDataValueEditor extends DataValueEditor {
      * @param e The KeyEvent that triggered this action.
      */
     @Override
-    public void keyTyped(final KeyEvent e) {
-        super.keyTyped(e);
+    public void keyPressed(final KeyEvent e) {
+        super.keyPressed(e);
 
         if (!e.isConsumed()) {
-
-            // '-' key toggles the state of a negative / positive number.
-            if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
-                || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
-                && e.getKeyChar() == '-') {
-
-                String t = getText();
-                String newt = "";
-                int start = getSelectionStart();
-                int end = getSelectionEnd();
-                if (t.startsWith("-")) {
-                    // take off the '-'
-                    // check start and end aren't 0
-                    start = Math.max(start, 1);
-                    end = Math.max(end, 1);
-                    newt = t.substring(1, start) + t.substring(end);
-                    start = 0;
-                } else {
-                    // add the '-'
-                    newt = "-" + t.substring(0, start) + t.substring(end);
-                    start = 1;
-                }
-                if (newt.equals("-")) {
-                    // special case user replaces all text with a '-'
-                    newt = "-.0";
-                    start = 1;
-                }
-                setText(newt);
-                setCaretPosition(start);
-                e.consume();
-
-            } else if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
-                || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
-                && e.getKeyChar() == '.') {
-
-                String t = getText();
-                String newt = "";
-                int start = getSelectionStart();
-                int end = getSelectionEnd();
-                int dotPos = t.indexOf('.');
-                if (dotPos < 0) {
-                    newt = t.substring(0, start) + "." + t.substring(end);
-                } else if (dotPos < start) {
-                    newt = t.substring(0, dotPos)
-                      + t.substring(dotPos + 1, start)
-                      + "." + t.substring(end);
-                } else if (dotPos < end) {
-                    newt = t.substring(0, start) + "." + t.substring(end);
-                } else {
-                    // dotPos > end
-                    newt = t.substring(0, start) + "."
-                           + t.substring(end, dotPos)
-                           + t.substring(dotPos + 1);
-                }
-                if (dotPos < 0 || start <= dotPos) {
-                    start++;
-                }
-                if (newt.equals(".")) {
-                    // special case user replaces all text with a decimal
-                    newt = "0.";
-                    start = 2;
-                }
-                setText(newt);
-                setCaretPosition(start);
-                e.consume();
-
-            } else if (!Character.isDigit(e.getKeyChar())) {
-                // all other non-digit keys are ignored by the editor.
-                e.consume();
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_BACK_SPACE:
+                case KeyEvent.VK_DELETE:
+                    // Ignore - handled when the key is typed.
+                    e.consume();
+                    break;
+                default:
+                    break;
             }
         }
     }
 
     /**
-     * The action to invoke when a key is released.
+     * The action to invoke when a key is typed.
      * @param e The KeyEvent that triggered this action.
      */
     @Override
-    public void keyReleased(final KeyEvent e) {
-        // special case for float value - not allowed to delete the decimal
-        String t = getText();
-        int caret = getCaretPosition();
-        if (!isNullArg() && t.length() > 0 && t.indexOf('.') < 0) {
-            t = t.substring(0, caret) + "." + t.substring(caret);
-            setText(t);
+    public void keyTyped(final KeyEvent e) {
+        super.keyTyped(e);
+
+        if (e.isConsumed()) {
+            return;
         }
-        super.keyReleased(e);
+
+        char ch = e.getKeyChar();
+        if (Character.isDigit(ch) || ch == '.' || ch == '-'
+                                  || ch == '\u007F' || ch == '\u0008') {
+
+            String t = getText();
+            String newStr = "";
+            int selStart = getSelectionStart();
+            int selEnd = getSelectionEnd();
+            int caret = 0;
+
+            if (ch == '-') {
+                // '-' key toggles the state of a negative / positive number.
+                if (t.startsWith("-")) {
+                    // take off the '-'
+                    // check start and end aren't 0
+                    selStart = Math.max(selStart, 1);
+                    selEnd = Math.max(selEnd, 1);
+                    newStr = t.substring(1, selStart) + t.substring(selEnd);
+                    caret = 0;
+                } else {
+                    // add the '-'
+                    newStr = "-" + t.substring(0, selStart)
+                                                        + t.substring(selEnd);
+                    caret = 1;
+                }
+
+            } else if (Character.isDigit(ch) || ch == '.' || ch == '\u007F'
+                    || ch == '\u0008') {
+
+                if (ch == '\u0008' && selStart == selEnd) {
+                    selStart = Math.max(selStart - 1, 0);
+                } else if (ch == '\u007F' && selStart == selEnd) {
+                    selEnd = Math.min(selEnd + 1, t.length());
+                }
+                String addStr = "";
+                if (ch != '\u0008' && ch != '\u007F') {
+                    addStr += ch;
+                }
+                newStr = t.substring(0, selStart) + addStr
+                                                          + t.substring(selEnd);
+                caret = selStart + addStr.length();
+
+                if (newStr.length() > 0) {
+                    int dotPos = newStr.indexOf('.');
+                    if (dotPos < 0) {
+                        // no decimal, put one back
+                        newStr = newStr.substring(0, caret) + "."
+                                                      + newStr.substring(caret);
+                        if (ch == '\u007F') {
+                            caret++;
+                        }
+                    } else {
+                        int secDotPos = newStr.indexOf('.', dotPos + 1);
+                        if (secDotPos >= 0) {
+                            // two decimals - must have just added one
+                            if (dotPos == selStart) {
+                                dotPos = secDotPos;
+                            } else {
+                                // modify our caret position
+                                caret--;
+                            }
+                            // remove the other decimal
+                            newStr = newStr.substring(0, dotPos)
+                                    + newStr.substring(dotPos + 1);
+                        }
+                    }
+                }
+            }
+
+            if (newStr.length() > 0 && !allowedOddFloat(newStr)) {
+                // rework the value so it is a good looking double.
+                FloatDataValue fdv = (FloatDataValue) getModel();
+                try {
+                    fdv = new FloatDataValue((FloatDataValue) getModel());
+                    fdv.setItsValue(newStr);
+                    newStr = fdv.toString();
+                    if (t.equals("-.") || t.equals(".")) {
+                        caret++;
+                    }
+                } catch (SystemErrorException exx) {
+                    logger.error("Problem setting Float value.", exx);
+                } catch (NumberFormatException ex) {
+                    logger.error("Problem with Float format.", ex);
+                }
+            }
+            setText(newStr);
+            setCaretPosition(caret);
+        }
+        e.consume();
     }
 
     /**
@@ -155,7 +182,11 @@ public final class FloatDataValueEditor extends DataValueEditor {
     @Override
     public void updateModelValue() {
         FloatDataValue dv = (FloatDataValue) getModel();
-        dv.setItsValue(getText());
+        String str = getText();
+        if (allowedOddFloat(str)) {
+            str = "0.0";
+        }
+        dv.setItsValue(str);
         // special case for numeric - reget the text from the db if losing focus
         // incase the user types characters that will not cause a change in the
         // numeric data value - no notification of a change will be sent by db
@@ -171,13 +202,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
     public boolean sanityCheck() {
         boolean res = true;
         // could call a subRange test for this dataval
-        if (getText().equals(".")) {
-            // special case where user has managed to delete all text but the
-            // decimal - Set to "0."
-            int caret = getCaretPosition();
-            setText("0.");
-            setCaretPosition(caret + 1);
-        } else {
+        if (!allowedOddFloat(getText())) {
             try {
                 Double.valueOf(getText());
             } catch (NumberFormatException e) {
@@ -185,5 +210,16 @@ public final class FloatDataValueEditor extends DataValueEditor {
             }
         }
         return res;
+    }
+
+    /**
+     * Check if the string supplied is one allowed while typing in a float.
+     * For when typing in the first characters '-' and '.'.
+     * @param str the string to check
+     * @return true if we allow this string to represent a float even
+     * though it would not pass a conversion operation.
+     */
+    private boolean allowedOddFloat(final String str) {
+        return (str.equals(".") || str.equals("-") || str.equals("-."));
     }
 }
