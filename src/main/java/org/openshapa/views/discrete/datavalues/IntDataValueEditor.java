@@ -61,21 +61,24 @@ public final class IntDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
 
-                int pos = getCaretPosition();
                 String t = getText();
+                String newt = "";
+                int start = getSelectionStart();
+                int end = getSelectionEnd();
                 if (t.startsWith("-")) {
                     // take off the '-'
-                    setText(t.substring(1));
-                    pos = 0;
-                    // alternate handling pos--;
+                    // check start and end aren't 0
+                    start = Math.max(start, 1);
+                    end = Math.max(end, 1);
+                    newt = t.substring(1, start) + t.substring(end);
+                    start = 0;
                 } else {
                     // add the '-'
-                    setText("-" + t);
-                    pos = 1;
-                    // alternate handling pos++;
+                    newt = "-" + t.substring(0, start) + t.substring(end);
+                    start = 1;
                 }
-                setCaretPosition(pos);
-
+                setText(newt);
+                setCaretPosition(start);
                 e.consume();
 
             } else if (!Character.isDigit(e.getKeyChar())) {
@@ -108,10 +111,17 @@ public final class IntDataValueEditor extends DataValueEditor {
     public boolean sanityCheck() {
         boolean res = true;
         // could call a subRange test for this dataval
-        try {
-            Integer.valueOf(getText());
-        } catch (NumberFormatException e) {
-            res = false;
+        if (getText().equals("-")) {
+            // special case where user has managed to delete all text but the
+            // '-' - Set to "-0"
+            setText("-0");
+            setCaretPosition(2);
+        } else {
+            try {
+                Integer.valueOf(getText());
+            } catch (NumberFormatException e) {
+                res = false;
+            }
         }
         return res;
     }

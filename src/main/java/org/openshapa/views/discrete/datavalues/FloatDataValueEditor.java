@@ -65,21 +65,29 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
 
-                int pos = getCaretPosition();
                 String t = getText();
+                String newt = "";
+                int start = getSelectionStart();
+                int end = getSelectionEnd();
                 if (t.startsWith("-")) {
                     // take off the '-'
-                    setText(t.substring(1));
-                    pos = 0;
-                    // alternate handling pos--;
+                    // check start and end aren't 0
+                    start = Math.max(start, 1);
+                    end = Math.max(end, 1);
+                    newt = t.substring(1, start) + t.substring(end);
+                    start = 0;
                 } else {
                     // add the '-'
-                    setText("-" + t);
-                    pos = 1;
-                    // alternate handling pos++;
+                    newt = "-" + t.substring(0, start) + t.substring(end);
+                    start = 1;
                 }
-                setCaretPosition(pos);
-
+                if (newt.equals("-")) {
+                    // special case user replaces all text with a '-'
+                    newt = "-.0";
+                    start = 1;
+                }
+                setText(newt);
+                setCaretPosition(start);
                 e.consume();
 
             } else if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
@@ -105,7 +113,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                            + t.substring(end, dotPos)
                            + t.substring(dotPos + 1);
                 }
-                if (dotPos < 0 || start < dotPos) {
+                if (dotPos < 0 || start <= dotPos) {
                     start++;
                 }
                 if (newt.equals(".")) {
@@ -122,6 +130,22 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 e.consume();
             }
         }
+    }
+
+    /**
+     * The action to invoke when a key is released.
+     * @param e The KeyEvent that triggered this action.
+     */
+    @Override
+    public void keyReleased(final KeyEvent e) {
+        // special case for float value - not allowed to delete the decimal
+        String t = getText();
+        int caret = getCaretPosition();
+        if (!isNullArg() && t.length() > 0 && t.indexOf('.') < 0) {
+            t = t.substring(0, caret) + "." + t.substring(caret);
+            setText(t);
+        }
+        super.keyReleased(e);
     }
 
     /**
@@ -147,10 +171,18 @@ public final class FloatDataValueEditor extends DataValueEditor {
     public boolean sanityCheck() {
         boolean res = true;
         // could call a subRange test for this dataval
-        try {
-            Double.valueOf(getText());
-        } catch (NumberFormatException e) {
-            res = false;
+        if (getText().equals(".")) {
+            // special case where user has managed to delete all text but the
+            // decimal - Set to "0."
+            int caret = getCaretPosition();
+            setText("0.");
+            setCaretPosition(caret + 1);
+        } else {
+            try {
+                Double.valueOf(getText());
+            } catch (NumberFormatException e) {
+                res = false;
+            }
         }
         return res;
     }
