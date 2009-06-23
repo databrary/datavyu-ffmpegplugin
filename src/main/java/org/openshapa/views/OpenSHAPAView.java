@@ -17,6 +17,7 @@ import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -369,7 +370,7 @@ implements KeyEventDispatcher {
 
         zoomMenu.setName("zoomMenu"); // NOI18N
 
-        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_EQUALS, java.awt.event.InputEvent.META_MASK));
+        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.META_MASK));
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
         zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -556,12 +557,12 @@ implements KeyEventDispatcher {
         }
     }//GEN-LAST:event_populateFavourites
 
-    /**
+    /**=
      * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
      * @param evt The event that triggered this action.
      */
     private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
-        changeFontSize(ZOOM_INTERVAL);
+            changeFontSize(ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomInMenuItemActionPerformed
 
     /**
@@ -569,7 +570,7 @@ implements KeyEventDispatcher {
      * @param evt
      */
     private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
-        changeFontSize(-ZOOM_INTERVAL);
+            changeFontSize(-ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomOutMenuItemActionPerformed
 
     /**

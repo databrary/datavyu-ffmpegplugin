@@ -43,6 +43,40 @@ implements KeyEventDispatcher {
      * with regard to the KeyEvent; false  otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
+        /**
+         * This switch is for hot keys that are on the main section of
+         * the keyboard.
+         */
+        int modifiers = evt.getModifiers();
+        if (evt.getID() == KeyEvent.KEY_PRESSED
+                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+            switch (evt.getKeyCode()) {
+                /**
+                 * This case is because VK_PLUS is not linked to a key on the
+                 * English keyboard.  So the GUI is bound to VK_PLUS and
+                 * VK_SUBTACT.  VK_SUBTRACT is on the numpad, but this is
+                 * short-circuited above.
+                 * The cases return true to let the KeyboardManager know
+                 * that there is nothing left to be done with these keys.
+                 */
+                case KeyEvent.VK_EQUALS:
+                    if (modifiers == KeyEvent.META_MASK) {
+                        view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
+                    }
+                    return true;
+                case KeyEvent.VK_MINUS:
+                    if (modifiers == KeyEvent.META_MASK) {
+                        view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
+                    }
+                    return true;
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * The following cases handle numpad keystrokes.
+         */
         if (evt.getID() == KeyEvent.KEY_PRESSED
             && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
             numKeyDown = true;
@@ -58,7 +92,6 @@ implements KeyEventDispatcher {
         }
 
         boolean result = true;
-        int modifiers = evt.getModifiers();
 
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_ASTERISK:
@@ -72,27 +105,6 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_NUMPAD9:
                 qtVideoController.forwardAction();
-                break;
-            case KeyEvent.VK_SUBTRACT:
-                // Check to see if meta is held down.  If so, zoom out.
-                if(modifiers == KeyEvent.META_MASK)
-                {
-                   view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
-                }
-                else
-                {
-                    qtVideoController.goBackAction();
-                }
-                break;
-            case KeyEvent.VK_ADD:
-                // Check to see if meta is held down.  If so, zoom in.
-                if(modifiers == KeyEvent.META_MASK)
-                {
-                   view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
-                }
-                else{
-                    qtVideoController.findAction();
-                }
                 break;
             case KeyEvent.VK_NUMPAD4:
                 qtVideoController.shuttleBackAction();
@@ -117,6 +129,12 @@ implements KeyEventDispatcher {
                 break;
             case KeyEvent.VK_DECIMAL:
                 qtVideoController.setNewCellStopTime();
+                break;
+            case KeyEvent.VK_SUBTRACT:
+                    qtVideoController.goBackAction();
+                break;
+            case KeyEvent.VK_ADD:
+                    qtVideoController.findAction();
                 break;
             case KeyEvent.VK_ENTER:
                 //this.createNewCell();
