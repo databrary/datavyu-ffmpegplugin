@@ -186,13 +186,11 @@ implements KeyEventDispatcher {
         JOptionPane.showMessageDialog(mainFrame,
                                       e.getMessage(),
                                       rMap.getString("WarningDialog.title"),
-                                      JOptionPane.WARNING_MESSAGE);        
+                                      JOptionPane.WARNING_MESSAGE);
     }
 
     /**
      * Show a fatal error dialog to the user.
-     *
-     * @param e The SystemErrorException that caused this problem.
      */
     public void showErrorDialog() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
@@ -211,9 +209,9 @@ implements KeyEventDispatcher {
      */
     @Override
     protected void startup() {
-        try {            
+        try {
             // Initalise DB
-            db = new MacshapaDatabase();            
+            db = new MacshapaDatabase();
 
             // Initalise last created values
             lastCreatedCellID = 0;
@@ -424,8 +422,6 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
-
-    private OpenSHAPAView openShapaView;
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;

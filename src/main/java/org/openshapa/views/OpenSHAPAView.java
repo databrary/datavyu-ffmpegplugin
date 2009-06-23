@@ -17,7 +17,6 @@ import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -530,7 +529,7 @@ implements KeyEventDispatcher {
         // Favourite script list starts after the 'favScripts' menu item - which
         // is just a stub for a starting point. Search for the favScripts as the
         // starting point for deleting existing scripts from the menu.
-        Component list[] = scriptMenu.getMenuComponents();
+        Component[] list = scriptMenu.getMenuComponents();
         int start = 0;
         for (Component c : list) {
             start++;
@@ -599,10 +598,11 @@ implements KeyEventDispatcher {
         int size = f.getSize();
         size = size + sizeDif;
 
-        if(size < ZOOM_MIN_SIZE)
+        if (size < ZOOM_MIN_SIZE) {
             size = ZOOM_MIN_SIZE;
-        else if(size > ZOOM_MAX_SIZE)
+        } else if (size > ZOOM_MAX_SIZE) {
             size = ZOOM_MAX_SIZE;
+        }
 
         Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
 
