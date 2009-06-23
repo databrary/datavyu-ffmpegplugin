@@ -4,7 +4,6 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.PredDataValue;
 
@@ -12,9 +11,6 @@ import org.openshapa.db.PredDataValue;
  * This class is the character editor of a FloatDataValue.
  */
 public final class FloatDataValueEditor extends DataValueEditor {
-
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(FloatDataValueEditor.class);
 
     /**
      * Constructor.
@@ -87,9 +83,10 @@ public final class FloatDataValueEditor extends DataValueEditor {
         //  For some of the tests with ch
         // '\u007F' = Delete character
         // '\u0008' = Backspace character
+
+        // consume characters that we do not use.
         if (!Character.isDigit(ch) && ch != '.' && ch != '-'
                                   && ch != '\u007F' && ch != '\u0008') {
-            // character is not one we use for a float editor.
             e.consume();
             return;
         }
@@ -98,6 +95,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
         String t = getText();
         // the new text that will be set from this keystroke
         String newStr = "";
+        // current selection start and end (start can equal end)
         int selStart = getSelectionStart();
         int selEnd = getSelectionEnd();
         // the new position of the caret
@@ -123,16 +121,18 @@ public final class FloatDataValueEditor extends DataValueEditor {
         } else if (Character.isDigit(ch) || ch == '.' || ch == '\u007F'
                 || ch == '\u0008') {
 
-            if (ch == '\u0008' && selStart == selEnd) {
                 // if its a backspace and there is no selection,
                 // create a selection of one char to the left
+            if (ch == '\u0008' && selStart == selEnd) {
                 selStart = Math.max(selStart - 1, 0);
-            } else if (ch == '\u007F' && selStart == selEnd) {
+
                 // if it is a delete and there is no selection,
                 // create a selection of one char to the right.
+            } else if (ch == '\u007F' && selStart == selEnd) {
                 selEnd = Math.min(selEnd + 1, t.length());
             }
-            // the char to be added.  Backspace and Delete do not add any char.
+
+            // Add the char just typed.  Backspace and Delete do not add any.
             String addStr = "";
             if (ch != '\u0008' && ch != '\u007F') {
                 addStr += ch;
@@ -150,27 +150,25 @@ public final class FloatDataValueEditor extends DataValueEditor {
         }
 
         // the new string is not empty
-        // now check that the decimal is still okay (might have been deleted)
+        // check the decimal is still okay (might have been deleted)
         int dotPos = newStr.indexOf('.');
+        // if no decimal found, put one back at the caret
         if (dotPos < 0) {
-            // no decimal now, put one back at the caret
             newStr = newStr.substring(0, caret) + "." + newStr.substring(caret);
 
+            // special case if delete key, move caret to other side of decimal.
             if (ch == '\u007F') {
-                // special case if delete key was hit, move caret one more.
                 caret++;
             }
+
+        // else if user typed a '.', check incase we now have two decimals
         } else if (ch == '.') {
-            // found a decimal and user typed '.', check incase we now have two
             int secDotPos = newStr.indexOf('.', dotPos + 1);
+            // if we have two decimals we must have just added one.
+            // Keep the one where the original selection started.
             if (secDotPos >= 0) {
-                // two decimals - must have just added one.  Decide which
-                // one needs to be deleted
                 if (dotPos == selStart) {
                     dotPos = secDotPos;
-                } else {
-                    // modify our caret position
-                    caret--;
                 }
                 // remove the decimal we don't want
                 newStr = newStr.substring(0, dotPos)
@@ -178,23 +176,11 @@ public final class FloatDataValueEditor extends DataValueEditor {
             }
         }
 
-        // rework the value so it is a good looking double.
+        // before we reformat the value, record the position of the decimal.
+        dotPos = newStr.indexOf('.');
+
+        // reformat the value to a correct double.
         if (!allowedSpecial(newStr)) {
-
-            // some special cases where caret location needs modification
-            if ((t.equals("-.") && selStart == 2)
-                            || (t.equals(".") && selStart == 1)) {
-                // cases need caret incremented.
-                caret++;
-            } else if (ch != '-') {
-                if ((t.startsWith("0.") && selStart == 1)
-                                || (t.startsWith("-0.") && selStart == 2)) {
-                    // case where we change from zero to a number
-                    // in front of the decimal - needs caret decremented.
-                    caret--;
-                }
-            }
-
             // set the datavalue and retrieve the string version of it
             FloatDataValue fdv = (FloatDataValue) getModel();
             try {
@@ -206,11 +192,19 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 newStr = t;
                 caret = selStart;
             }
-            // catch the case where rebuild of float may have moved the decimal
+        }
+
+        // recalculate the caret incase the decimal moved in the reformat
+        // if user typed a '.', caret is always one beyond.
             if (ch == '.') {
                 caret = newStr.indexOf('.') + 1;
+
+        // else nudge the caret by any change in position of the decimal.
+        } else {
+            caret += (newStr.indexOf('.') - dotPos);
             }
-        }
+
+        // set the new text and caret location
         setText(newStr);
         setCaretPosition(caret);
         e.consume();

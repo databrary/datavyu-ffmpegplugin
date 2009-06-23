@@ -63,8 +63,9 @@ public final class IntDataValueEditor extends DataValueEditor {
         }
 
         char ch = e.getKeyChar();
+
+        // consume characters that we do not use.
         if (!Character.isDigit(ch) && ch != '-') {
-            // character is not one we use for a float editor.
             e.consume();
             return;
         }
@@ -73,6 +74,7 @@ public final class IntDataValueEditor extends DataValueEditor {
         String t = getText();
         // the new text that will be set from this keystroke
         String newStr = "";
+        // current selection start and end (start can equal end)
         int selStart = getSelectionStart();
         int selEnd = getSelectionEnd();
         // the new position of the caret
@@ -107,8 +109,8 @@ public final class IntDataValueEditor extends DataValueEditor {
             return;
         }
 
+        // reformat the value.
         if (!allowedSpecial(newStr)) {
-            // rework the value so it is a good looking integer.
             // set the datavalue and retrieve the string version of it
             IntDataValue idv = (IntDataValue) getModel();
             try {
@@ -121,6 +123,8 @@ public final class IntDataValueEditor extends DataValueEditor {
                 caret = selStart;
             }
         }
+
+        // set the new text and caret location
         setText(newStr);
         setCaretPosition(caret);
         e.consume();
