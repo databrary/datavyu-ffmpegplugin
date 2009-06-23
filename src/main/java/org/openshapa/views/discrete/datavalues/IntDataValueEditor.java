@@ -4,6 +4,7 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 import org.openshapa.db.IntDataValue;
 import org.openshapa.db.PredDataValue;
 
@@ -11,6 +12,9 @@ import org.openshapa.db.PredDataValue;
  * This class is the character editor of a IntDataValue.
  */
 public final class IntDataValueEditor extends DataValueEditor {
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(IntDataValueEditor.class);
 
     /**
      * Constructor.
@@ -54,38 +58,72 @@ public final class IntDataValueEditor extends DataValueEditor {
     public void keyTyped(final KeyEvent e) {
         super.keyTyped(e);
 
-        if (!e.isConsumed()) {
+        if (e.isConsumed()) {
+            return;
+        }
 
-            // '-' key toggles the state of a negative / positive number.
-            if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
-                || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
-                && e.getKeyChar() == '-') {
+        char ch = e.getKeyChar();
+        if (!Character.isDigit(ch) && ch != '-') {
+            // character is not one we use for a float editor.
+            e.consume();
+            return;
+        }
 
-                String t = getText();
-                String newt = "";
-                int start = getSelectionStart();
-                int end = getSelectionEnd();
-                if (t.startsWith("-")) {
-                    // take off the '-'
-                    // check start and end aren't 0
-                    start = Math.max(start, 1);
-                    end = Math.max(end, 1);
-                    newt = t.substring(1, start) + t.substring(end);
-                    start = 0;
-                } else {
-                    // add the '-'
-                    newt = "-" + t.substring(0, start) + t.substring(end);
-                    start = 1;
-                }
-                setText(newt);
-                setCaretPosition(start);
-                e.consume();
+        // Current text in the editor
+        String t = getText();
+        // the new text that will be set from this keystroke
+        String newStr = "";
+        int selStart = getSelectionStart();
+        int selEnd = getSelectionEnd();
+        // the new position of the caret
+        int caret = 0;
 
-            } else if (!Character.isDigit(e.getKeyChar())) {
-                // all other non-digit keys are ignored by the editor.
-                e.consume();
+        // '-' key toggles the state of a negative / positive number.
+        // ignores the current selection and resets the caret
+        if (ch == '-') {
+            if (isNullArg()) {
+                newStr = "-";
+                caret = 1;
+            } else if (t.startsWith("-")) {
+                // remove the '-'
+                newStr = t.substring(1);
+                caret = 0;
+            } else {
+                // add the '-'
+                newStr = "-" + t;
+                caret = 1;
+            }
+
+        // else handle digits
+        } else if (Character.isDigit(e.getKeyChar())) {
+            newStr = t.substring(0, selStart) + ch + t.substring(selEnd);
+            caret = selStart + 1;
+        }
+
+        // check if the new string is now a "null" value.
+        if (newStr.length() == 0) {
+            setText(newStr);
+            e.consume();
+            return;
+        }
+
+        if (!allowedSpecial(newStr)) {
+            // rework the value so it is a good looking integer.
+            // set the datavalue and retrieve the string version of it
+            IntDataValue idv = (IntDataValue) getModel();
+            try {
+                idv.setItsValue(newStr);
+                newStr = idv.toString();
+            } catch (NumberFormatException ex) {
+                // whatever was typed is not allowed as a new integer.
+                // restore to previous text and caret
+                newStr = t;
+                caret = selStart;
             }
         }
+        setText(newStr);
+        setCaretPosition(caret);
+        e.consume();
     }
 
     /**
@@ -95,7 +133,11 @@ public final class IntDataValueEditor extends DataValueEditor {
     @Override
     public void updateModelValue() {
         IntDataValue idv = (IntDataValue) getModel();
-        idv.setItsValue(getText());
+        String str = getText();
+        if (allowedSpecial(str)) {
+            str = "0";
+        }
+        idv.setItsValue(str);
         // special case for numeric - reget the text from the db if losing focus
         // incase the user types characters that will not cause a change in the
         // numeric data value - no notification of a change will be sent by db
@@ -111,18 +153,25 @@ public final class IntDataValueEditor extends DataValueEditor {
     public boolean sanityCheck() {
         boolean res = true;
         // could call a subRange test for this dataval
-        if (getText().equals("-")) {
-            // special case where user has managed to delete all text but the
-            // '-' - Set to "-0"
-            setText("-0");
-            setCaretPosition(2);
-        } else {
+        if (!allowedSpecial(getText())) {
+            IntDataValue idv = (IntDataValue) getModel();
             try {
-                Integer.valueOf(getText());
-            } catch (NumberFormatException e) {
+                idv.setItsValue(getText());
+            } catch (NumberFormatException ex) {
                 res = false;
             }
         }
         return res;
+    }
+
+    /**
+     * Check if the string supplied is one allowed while typing in an integer.
+     * For when typing in the first characters '-'.
+     * @param str the string to check
+     * @return true if we allow this string to represent an integer even
+     * though it would not pass a conversion operation.
+     */
+    private boolean allowedSpecial(final String str) {
+        return (str.equals("-"));
     }
 }
