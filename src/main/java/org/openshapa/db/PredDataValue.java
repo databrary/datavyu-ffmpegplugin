@@ -299,6 +299,11 @@ public final class PredDataValue extends DataValue
              ( value.getPveID() == DBIndex.INVALID_ID ) )
         {
             this.itsValue = new Predicate(this.getDB());
+			// problem making a null predicate to be used in a real datacell
+			// needs to keep the cellID
+            if (value != null) {
+                this.itsValue.setCellID(value.getCellID());
+            }
         }
         else if ( this.subRange )
         {

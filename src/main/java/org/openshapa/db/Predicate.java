@@ -305,6 +305,16 @@ public class Predicate extends DBElement
 
     } /* Predicate::getCellID() */
 
+    /**
+     * Set the cellID for this Predicate.  CellID = ID of the datacell it
+     * belongs to.
+     * Stephen created for short term - needs discussion.
+     * @param id the id to set
+     */
+    public void setCellID(long id)
+    {
+        this.cellID = id;
+    }
 
     /**
      *
@@ -2525,7 +2535,7 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "oldPred.id is invalid.");
         }
 
-
+        // Question - when was this.cellID supposed to be set = DCID ?
         if ( this.cellID != DCID )
         {
             throw new SystemErrorException(mName + "DCID mismatch.");

@@ -41,6 +41,9 @@ public abstract class DataValueEditor extends EditorComponent {
     /** Is the data value now null? */
     private boolean argIsNull;
 
+    /** Text when editor gained focus (became current editor). */
+    private String textOnFocus;
+
     /** Previous text during edits. */
     private String prevText;
 
@@ -147,7 +150,7 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param cell The Parent cell that holds the matrix.
      * @param matrix The parent matrix that holds the DataValue.
      */
-    public final void resetValue(final DataCell cell, final Matrix matrix) {
+    public void resetValue(final DataCell cell, final Matrix matrix) {
         try {
             parentMatrix = matrix;
             parentCell = cell;
@@ -202,12 +205,22 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
+     * focusSet is the signal that this editor has become "current".
+    */
+    @Override
+    public void focusSet() {
+        textOnFocus = getText();
+    }
+
+    /**
      * Action to take when focus is lost for this editor.
      * @param fe Focus Event
      */
     @Override
     public void focusLost(final FocusEvent fe) {
-        updateDatabase();
+        if (!getText().equals(textOnFocus)) {
+            updateDatabase();
+        }
     }
 
     /**
@@ -302,7 +315,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Update the database with the model value.
      */
-    public final void updateDatabase() {
+    public void updateDatabase() {
         // update the model.
         if (isNullArg()) {
             updateModelNull();

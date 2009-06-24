@@ -216,24 +216,32 @@ public class DataValueEditorFactory {
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
 
         PredDataValue pdv = (PredDataValue) m.getArgCopy(index);
-        Predicate pred = pdv.getItsValue();
+        int numPredArgs = pdv.getItsValue().getNumArgs();
 
-        eds.add(new PredicateNameEditor(ta, c, m, index));
-
+        // build any Predicate Args first
         if (m != null) {
             eds.add(new FixedText(ta, "("));
 
             // For each of the predicate arguments, build a view representation
-            for (int pi = 0; pi < pred.getNumArgs(); pi++) {
+            for (int pi = 0; pi < numPredArgs; pi++) {
                 eds.addAll(buildPredArg(ta, c, pdv, pi, m, index));
-                if (pred.getNumArgs() > 1 && pi < (pred.getNumArgs() - 1)) {
+                if (numPredArgs > 1 && pi < (numPredArgs - 1)) {
                     eds.add(new FixedText(ta, ","));
                 }
             }
-            if (pred.getNumArgs() > 1) {
+            if (numPredArgs > 1) {
                 eds.add(new FixedText(ta, ")"));
             }
         }
+
+        // make the PredicateNameEditor and pass it a vector of its args
+        PredicateNameEditor pne = new PredicateNameEditor(ta, c, m, index, eds);
+
+        // make a new vector copy of the args to return
+        eds = (Vector<EditorComponent>) eds.clone();
+        // insert the predicate name at the front
+        eds.add(0, pne);
+
         return eds;
     }
 

@@ -192,6 +192,12 @@ public class CascadeListeners extends Listeners
 
                 il = (InternalCascadeListener)dbe;
 
+                // Should discuss with others
+                // For whatever reason if it throws inside here
+                // example - DCID mismatch when replacing a predicate
+                // we do not get to decrement refcount below so from that
+                // point on this code is not entered.
+                // refCount never comes back to 1
                 il.endCascade(this.db);
             }
 
