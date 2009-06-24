@@ -1,12 +1,3 @@
-/*
- * VocabList.java
- *
- * Created on March 25, 2007, 7:25 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.OpenSHAPA;
@@ -27,31 +18,9 @@ import org.openshapa.util.OpenHashtable;
  * Note that while the VocabList is quite similar to the DBIndex class, it
  * isn't close enough to be a subclass.
  *
- *                                           -- 4/30/07
+ * @date 2007/04/30
  */
-public class VocabList
-{
-
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-
-    /**
-     *
-     * db:  Reference to the instance of Database of which this vocab list
-     *      is part.
-     *
-     * vl:  Hashtable containg references to all instances of VocabElement that
-     *      constitute the vocab list.
-     *
-     * nameMap: Hashmap mapping vocab element names to vocab element ID.
-     *      This mapping is used both to allow lookups by vocab element name,
-     *      and to determine if a vocab element name is in use.
-     *
-     * listeners: Instance of VocabListListeners use to maintain lists of
-     *      listeners for VocabList insertions and deletions, and issue
-     *      notifications as appropriate.
-     */
+public class VocabList {
 
     /** Reference to the Database of which this instance is part */
     protected Database db = null;
@@ -65,27 +34,25 @@ public class VocabList
 
     /**
      * instance of VocabListListeners used to maintain lists of listeners,
-     *  and notify them as appropriate.
+     * and notify them as appropriate.
      */
     protected VocabListListeners listeners = null;
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * VocabList()
-     *
      * Constructor for the VocabList class.
-     *                                              -- 4/30/07
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param db The parent database, of which this vocab list belongs.
+     *
+     * @throws SystemErrorException If unable to create vocab list.
+     *
+     * @date 2007/04/30
      */
-    protected VocabList(Database db)
-         throws SystemErrorException
-    {
+    protected VocabList(Database db) throws SystemErrorException {
         super();
 
         final String mName = "VocabList::VocabList(db): ";
@@ -100,27 +67,19 @@ public class VocabList
 
         return;
 
-    } /* VocabList::VocabList(db) */
-
-
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
+    }
 
     /**
-     * toString() -- overrride
-     *
-     * Returns a String representation of the contents of the vocab list.<br>
-     *
-     * <i>This function is intended for debugging purposses.</i>
-     *
-     * @return the string value.
+     * @return A String representation of the contents of the vocab list.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
-     *
+     * @date 2007/04/30
      */
+    @Override
     public String toString()
     {
         boolean first = true;
@@ -147,28 +106,23 @@ public class VocabList
 
         return s;
 
-    } /* VocabList::toDBString() */
-
-
-    /*************************************************************************/
-    /********************* Listener Manipulation: ****************************/
-    /*************************************************************************/
+    }
 
     /**
-     * deregisterExternalChangeListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the deregister external change listeners message on to
-     * the instance of VocabListListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * Deregisters the supplied external vocab listener.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The External vocab list listener to deregister.
+     *
+     * @throws SystemErrorException If unable to deregister the external vocab
+     * listener.
+     *
+     * @date 2008/02/05
      */
-
     protected void deregisterExternalChangeListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
@@ -183,27 +137,24 @@ public class VocabList
 
         return;
 
-    } /* VocabElement::deregisterExternalChangeListener() */
-
+    }
 
     /**
-     * deregisterInternalChangeListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the deregister internal change listeners message on to
-     * the instance of VocabElementListeners pointed to by this.listeners.
-     *
-     * Note that internal listeners are not supported at present, but the
-     * error will be caught at a lower level.
-     *
-     *                                           -- 2/5/08
+     * Deregisters the supplied insternal change listener.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param id The id of hte internal change listener to deregister.
+     *
+     * @throws SystemErrorException If unable to deregister the internal vocab
+     * listener. At present internal listeners are not implemented, and this
+     * method always throws an exception.
+     *
+     * @date 2008/02/05
      */
-
     protected void deregisterInternalChangeListener(long id)
         throws SystemErrorException
     {
@@ -219,24 +170,22 @@ public class VocabList
 
         return;
 
-    } /* VocabElement::deregisterInternalChangeListener() */
-
+    }
 
     /**
-     * registerExternalListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the register external change listeners message on to the
-     * instance of VocabListListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * Registers an externallistener to listen to changes to this vocab list.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The External listener to register with this vocab list.
+     *
+     * @throws SystemErrorException If unable to register external listener.
+     *
+     * @date 2008/02/05
      */
-
     protected void registerExternalListener(ExternalVocabListListener el)
         throws SystemErrorException
     {
@@ -251,27 +200,25 @@ public class VocabList
 
         return;
 
-    } /* VocabElement::registerExternalListener() */
-
+    }
 
     /**
-     * registerInternalChangeListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the register internal change listeners message on to the
-     * instance of VocabElementListeners pointed to by this.listeners.
-     *
-     * Note that internal listeners are not supported at present, however the
-     * error will be caught at a lower level.
-     *
-     *                                           -- 2/5/08
+     * Registers an internal change listener with this vocab list.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param id The id of the internal listener to register with this vocab
+     * list.
+     *
+     * @throws SystemErrorException If unable to register the internal listener,
+     * at the moment this is not implemented and this method always throws an
+     * exception.
+     *
+     * @date 2008/05/02
      */
-
     protected void registerInternalChangeListener(long id)
         throws SystemErrorException
     {
@@ -286,7 +233,7 @@ public class VocabList
 
         return;
 
-    } /* VocabElement::addInternalChangeListener() */
+    }
 
     /**
      * Validates a vocab element - ensuring that it can be added to the vocab
@@ -319,31 +266,35 @@ public class VocabList
     }
 
     /**
-     * addElement()
-     *
-     * Insert the vocab element and all the associated formal arguments into
-     * the index, an insert the vocab element in the vocab list.
-     *
-     *                                                  -- 4/23/07
+     * Inserts the vocab element and all the associated formal arguments into
+     * the index, and inserts the vocab element into the vocab list.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     Added code to create and assign an instance of VocabElementListeners
+     *     to the newly inserted vocab element.  Also added call to notify
+     *     vocab list change listeners of the insertion.  Finally, inserted
+     *     calls to mark the start and finish of the potential cascade of
+     *     changes. --2008/02/05
+     *   </li>
+     *   <li>
+     *     Modified code to create an instance of MatrixVocabElementListeners
+     *     if the supplied vocab element is a mve, and to use that instance
+     *     when setting the mve's initial listeners.
      *
-     *    - Added code to create and assign an instance of VocabElementListeners
-     *      to the newly inserted vocab element.  Also added call to notify
-     *      vocab list change listeners of the insertion.  Finally, inserted
-     *      calls to mark the start and finish of the potential cascade of
-     *      changes.
+     *     In all other cases, we proceed as before -- creating an instance of
+     *     VocabElementListeners and using it to set the ve's initial listeners.
+     *   </li>
+     * </ul>
      *
-     *                                                   -- 2/5/08
+     * @param ve The vocab element to add to the vocab list.
      *
-     *    - Modified code to create an instance of MatrixVocabElementListeners
-     *      if the supplied vocab element is a mve, and to use that instance
-     *      when setting the mve's initial listeners.
+     * @throws System ErrorException if unable to add the vocab element to the
+     * vocab list.
      *
-     *      In all other cases, we proceed as before -- creating an instance of
-     *      VocabElementListeners and using it to set the ve's initial listeners.
+     * @date 2007/04/23
      */
-
     protected void addElement(VocabElement ve) throws SystemErrorException {
 
         final String mName = "VocabList::addElement(ve): ";
@@ -394,28 +345,32 @@ public class VocabList
 
         return;
 
-    } /* VocavList::addElement(ve) */
+    }
 
     /**
-     * addFargListToIndex()
-     *
-     * Add the formal argument list of the supplied vocab element to the
+     * Adds the formal argument list of the supplied vocab element to the
      * database index.
-     *                                              -- 4/30/07
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     Modified method to avoid calling getNumFormalArgs() on matrix ve's
+     *     that haven't had their type declared yet. --2007/06/15
+     *   </li>
+     *   <li>
+     *     Modified method to assign IDs to column predicate formal arguments
+     *     in instances of MatrixVocabElement. --2008/08/31
+     *   </li>
+     * </ul>
      *
-     *    - Modified method to avoid calling getNumFormalArgs() on matrix ve's
-     *      that haven't had their type declared yet.
+     * @param ve The vocab element, whose formal arguments you wish to add to
+     * the database index.
      *
-     *                                               -- 6/15/07
+     * @throws SystemErrorException If unable to add the formal arguments of the
+     * vocab element into the index.
      *
-     *    - Modified method to assign IDs to column predicate formal arguments
-     *      in instances of MatrixVocabElement.
-     *
-     *                                               -- 8/31/08
+     * @date 2007/04/30
      */
-
     private void addFargListToIndex(VocabElement ve)
         throws SystemErrorException
     {
@@ -477,22 +432,22 @@ public class VocabList
             }
         }
 
-    } /* VocabList::addFargListToIndex() */
-
+    }
 
     /**
-     * getMatricies
-     *
-     * Construct and return a vector containing copies of all non-system
-     * matricies of MatrixType.MATRIX in the vocab list.  If the vocab list
-     * contains no such matricies, return null.
-     *                                                   -- 6/19/07
+     * @return A vector containing copies of all non-system matricies of
+     * MatrixType.MATRIX in the vocab list. If the vocab list contains no such
+     * matricies, return null.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - none.
+     * @throws SystemErrorException If unable to build a vector of matricies.
+     *
+     * @date 2007/06/19
      */
-
     protected java.util.Vector<MatrixVocabElement> getMatricies()
         throws SystemErrorException
     {
@@ -520,22 +475,22 @@ public class VocabList
 
         return matricies;
 
-    } /* VocabList::getMatricies() */
-
+    }
 
     /**
-     * getPreds
-     *
-     * Construct and return a vector containing copies of all non-system
-     * predicates in the vocab list.  If the vocab list contains no non-system
-     * predicates, it returns an empty vector.
-     *                                                   -- 6/19/07
+     * @return a vector containing copies of all non-system predicates in the
+     * vocab list.  If the vocab list contains no non-system predicates, it
+     * returns an empty vector.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to build a vector of predicates.
+     *
+     * @date 2007/06/19
      */
-
     protected java.util.Vector<PredicateVocabElement> getPreds()
         throws SystemErrorException
     {
@@ -563,21 +518,23 @@ public class VocabList
 
         return preds;
 
-    } /* VocabList::getPreds() */
-
+    }
 
     /**
-     * getVocabElement(targetID)
-     *
-     * Get the instance of VocabElement corresponding with the supplied id.
-     *
-     *                                                  -- 4/30/07
+     * Gets the VocabElement corresponding to the supplied id.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *   - None.
+     * @param targetID The id of the VocabElement you wish to fetch from the
+     * VocabList.
+     *
+     * @throws SystemErrorException If unable to get the desired vocab element.
+     *
+     * @date 2007/04/30
      */
-
     protected VocabElement getVocabElement(long targetID)
        throws SystemErrorException
     {
@@ -598,21 +555,22 @@ public class VocabList
 
         return ve;
 
-    } /* VocabList::getVocabElement(targetID) */
-
+    }
 
     /**
-     * getVocabElement(targetName)
-     *
-     * Get the instance of VocabElement corresponding with the supplied name.
-     *
-     *                                                   -- 6/3/07
+     * Gets the VocabElement corresponding to the supplied name.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param targetName The name of the desired vocab element.
+     *
+     * @throws SystemErrorException If unable to get the desired vocab element.
+     *
+     * @date 2007/06/03
      */
-
     protected VocabElement getVocabElement(String targetName)
         throws SystemErrorException
     {
@@ -655,23 +613,26 @@ public class VocabList
 
         return ve;
 
-    } /* VocabList::getVocabElement(targetName) */
+    }
 
-
-    /* TODO: Test this method */
     /**
-     * getMatrixVocabElement(targetID)
-     *
-     * Get the instance of MatrixVocabElement corresponding with the supplied
-     * id. Throw a system error if no such mve exists.
-     *
-     *                                                  -- 8/30/07
+     * Gets the MatrixVocabElement corresponding with the supplied id.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *   - None.
+     * @param targetID The ID of the matrixVocabElement you wish to fetch from
+     * the vocab list.
+     *
+     * @throws SystemErrorException If unable to get desired matrix vocab
+     * element.
+     *
+     * @date 2007/08/30
+     *
+     * TODO: Test this method.
      */
-
     protected MatrixVocabElement getMatrixVocabElement(long targetID)
        throws SystemErrorException
     {
@@ -698,23 +659,24 @@ public class VocabList
 
         return (MatrixVocabElement)ve;
 
-    } /* VocabList::getMatrixVocabElement(targetID) */
+    }
 
-
-    /* TODO: Test this method */
     /**
-     * getMatrixVocabElement(targetName)
-     *
-     * Get the instance of PredicateVocabElement corresponding with the
-     * supplied name.  Throw a system error exception.
-     *
-     *                                                   -- 8/30/07
-     *
+     * Gets the MatrixVocabElement corresponding with the supplied name.
+     * TODO: Test this method
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param targetName The name of the MatrixVocabElement you wish to retrieve
+     * from the VocabList.
+     *
+     * @throws SystemErrorException If unable to get the desired
+     * MatrixVocabElement.
+     *
+     * @date 2007/08/30
      */
-
     protected MatrixVocabElement getMatrixVocabElement(String targetName)
         throws SystemErrorException
     {
@@ -763,23 +725,23 @@ public class VocabList
 
         return (MatrixVocabElement)ve;
 
-    } /* VocabList::getMatrixVocabElement(targetName) */
+    }
 
-
-    /* TODO: Test this method */
     /**
-     * getPredicateVocabElement(targetID)
-     *
-     * Get the instance of PredVocabElement corresponding with the supplied
-     * id. Throw a system error if no such pve exists.
-     *
-     *                                                  -- 8/30/07
-     *
+     * Get the PredVocabElement corresponding with the supplied id.
+     * TODO: Test this method
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *   - None.
+     * @param targetID The ID of the desired predicate vocab element.
+     *
+     * @throws SystemErrorException If unable to get the desired predicate vocab
+     * element.
+     *
+     * @date 2007/08/30
      */
-
     protected PredicateVocabElement getPredicateVocabElement(long targetID)
        throws SystemErrorException
     {
@@ -806,23 +768,24 @@ public class VocabList
 
         return (PredicateVocabElement)ve;
 
-    } /* VocabList::getPredicateVocabElement(targetID) */
+    }
 
-
-    /* TODO: Test this method */
     /**
-     * getPredicateVocabElement(targetName)
-     *
-     * Get the instance of PredicateVocabElement corresponding with the
-     * supplied name.  Throw a system error if there is no such element.
-     *
-     *                                                   -- 6/3/07
-     *
+     * Get the PredicateVocabElement corresponding with the supplied name.
+     * TODO: Test this method
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param targetName The name of the desired predicate vocab element to
+     * fetch from the vocab list.
+     *
+     * @throws SystemErrorException If unable to get the desired predicate vocab
+     * element.
+     *
+     * @date 2007/06/03
      */
-
     protected PredicateVocabElement getPredicateVocabElement(String targetName)
         throws SystemErrorException
     {
@@ -871,23 +834,25 @@ public class VocabList
 
         return (PredicateVocabElement)ve;
 
-    } /* VocabList::getPredicateVocabElement(targetName) */
-
+    }
 
     /**
-     * inVocabList(targetID)
-     *
-     * Return true if the vocab list contains an entry matching the
-     * provided id.
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param targetID The id of the vocab element that we are querying.
+     *
+     * @return true if the vocab list contains an entry matching the provided
+     * id.
+     *
+     * @throws SystemErrorException If unable to determine if the targetID is an
+     * element inside the vocab list.
+     *
+     * @date 2007/06/03
      */
-
-    protected boolean inVocabList(long targetID)
-       throws SystemErrorException
-    {
+    protected boolean inVocabList(long targetID) throws SystemErrorException {
         final String mName = "VocabList::inVocabList(targetID): ";
         boolean inVL = false;
 
@@ -902,25 +867,24 @@ public class VocabList
 
         return inVL;
 
-    } /* VocabList::inVocabList(targetID) */
-
+    }
 
     /**
-     * inVocabList()
-     *
-     * Return true if the supplied predicate of variable name currently appears
-     * in the vocab list, and false otherwise.
-     *
-     *                                               -- 6/3/07
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return true if the vocab list contains an entry matching the provided
+     * variable name, and false otherwise.
+     *
+     * @throws SystemErrorException If unable to determine if the targetName is
+     * the name of a vocab list element.
+     *
+     * @date 2007/06/03
      */
-
     protected boolean inVocabList(String targetName)
-        throws SystemErrorException
-    {
+    throws SystemErrorException {
         final String mName = "VocabList::inVocabList(targetName): ";
         boolean inUse = false;
 
@@ -944,20 +908,23 @@ public class VocabList
 
         return inUse;
 
-    } /* VocabList::inVocabList(targetName) */
-
+    }
 
     /**
-     * matrixInVocabList(targetID)
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     * Return true if the vocab list contains a matrix vocab entry matching the
+     * @param targetID The element ID to use when checking to see if a matrix
+     * is in the vocab list.
+     *
+     * @return true if the vocab list contains a matrix vocab entry matching the
      * provided id.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If unable to determine if the targetID
+     * belongs to a matrix vocab element in the vocab list.
      */
-
     protected boolean matrixInVocabList(long targetID)
        throws SystemErrorException
     {
@@ -985,20 +952,23 @@ public class VocabList
 
         return inVL;
 
-    } /* VocabList::matrixInVocabList(targetID) */
-
+    }
 
     /**
-     * matrixInVocabList(targetName)
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     * Return true if the vocab list contains a matrix vocab entry matching the
+     * @param targetName The variable name to use when looking for a matching
+     * matrix vocab element in the vocab list.
+     *
+     * @return true if the vocab list contains a matrix vocab entry matching the
      * provided id.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If unable to determine if the targetName
+     * belongs to a matrix vocab element in the vocab list.
      */
-
     protected boolean matrixInVocabList(String targetName)
        throws SystemErrorException
     {
@@ -1043,20 +1013,23 @@ public class VocabList
 
         return inVL;
 
-    } /* VocabList::matrixInVocabList(targetName) */
-
+    }
 
     /**
-     * predInVocabList(targetID)
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     * Return true if the vocab list contains a predicate vocab entry matching
+     * @param targetID The ID to use when looking for a predicate vocab element
+     * in the vocab list.
+     *
+     * @return true if the vocab list contains a predicate vocab entry matching
      * the provided id.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException When unable to determine if the supplied
+     * targetID belongs to a predicate vocab element in the vocab list.
      */
-
     protected boolean predInVocabList(long targetID)
        throws SystemErrorException
     {
@@ -1084,20 +1057,23 @@ public class VocabList
 
         return inVL;
 
-    } /* VocabList::predInVocabList(targetID) */
-
+    }
 
     /**
-     * predInVocabList(targetName)
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     * Return true if the vocab list contains a predicate vocab entry matching
+     * @param targetName The variable name to use when looking for a matching
+     * predicate vocab element in the vocab list.
+     *
+     * @return true if the vocab list contains a predicate vocab entry matching
      * the provided id.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If unable to determine if the supplied
+     * variable name belongs to a predicate vocab element in the vocab list.
      */
-
     protected boolean predInVocabList(String targetName)
        throws SystemErrorException
     {
@@ -1142,35 +1118,37 @@ public class VocabList
 
         return inVL;
 
-    } /* VocabList::predInVocabList(targetName) */
-
+    }
 
     /**
-     * removeVocabElement()
-     *
-     * Remove the instance of VocabElement with the specified id from the
-     * vocab list.  Similarly, remove the VocabElement and all its associated
-     * formal parameters from the index.
-     *
-     *                                                  -- 4/30/07
+     * Removes a VocabElement with the specified id from the vocab list.
+     * Similarly, remove the VocabElement and all its associated formal
+     * parameters from the database index.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     Added code to notify listeners of deletion, and to remove the
+     *     instance of VocabElementListeners from the target VocabElement
+     *     before the actual deletion.  Also added code to send a vocab
+     *     element deleted message to any vocab list change listeners.
+     *     Finally, added calls to mark the beginning and end of any
+     *     resulting cascade of changes. -- 2008/02/05
+     *   </li>
+     *   <li>
+     *     Added code to delete column predicate formal arguments from
+     *     the index in the case of MatrixVocabElement. -- 2008/08/31
+     *   </li>
+     * </ul>
      *
-     *    - Added code to notify listeners of deletion, and to remove the
-     *      instance of VocabElementListeners from the target VocabElement
-     *      before the actual deletion.  Also added code to send a vocab
-     *      element deleted message to any vocab list change listeners.
-     *      Finally, added calls to mark the beginning and end of any
-     *      resulting cascade of changes.
+     * @param targetID The ID of the vocab element that you wish to remove from
+     * the vocab list.
      *
-     *                                                   -- 2/5/08
+     * @throws SystemErrorException If unable to remove the specified vocab
+     * element from the vocab list (and database).
      *
-     *    - Added code to delete column predicate formal arguments from
-     *      the index in the case of MatrixVocabElement.
-     *
-     *                                                   -- 8/31/08
+     * @date 2007/04/30
      */
-
     protected void removeVocabElement(long targetID)
        throws SystemErrorException
     {
@@ -1295,17 +1273,13 @@ public class VocabList
         this.db.cascadeEnd();
 
         return;
-
-    } /* VocabList::removeVocabElement(targetID) */
-
+    }
 
     /**
-     * replaceVocabElement()
-     *
      * Search the index for an instance of DBElement with the same id as that
      * of the supplied instance.
      *
-     * Scan the foraml argument lists of the two VocabElements and remove from
+     * Scan the formal argument lists of the two VocabElements and remove from
      * the index all deleted formal arguments, add all new formal arguments,
      * and replace all the remaining arguments with their new representation.
      *
@@ -1320,25 +1294,32 @@ public class VocabList
      *      Similarly, don't try to recycle the IDs of formal arguments if you
      *      change the type.  Just leave the ID set it INVALID_ID.
      *
-     *                                                  -- 5/1/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     Added code to transfer the listeners from the old incarnation of
+     *     the vocab element to the new, and to notify listeners of the
+     *     changes.  Also added calls to mark the beginning and end of any
+     *     resulting cascade of changes. --2008/02/05
+     *   </li>
+     *   <li>
+     *     Modified method to deal with the column predicate argument list
+     *     of the MatrixVacabElement. --2008/08/31
+     *   </li>
+     *   <li>
+     *     Removed the check getNumFormalArguments less than 0,
+     *     getNumFormalArguments wraps Vector.size() - which never returns a
+     *     value less than zero.
+     *   </li>
+     * </ul>
      *
-     *    - Added code to transfer the listeners from the old incarnation of
-     *      the vocab element to the new, and to notify listeners of the
-     *      changes.  Also added calls to mark the beginning and end of any
-     *      resulting cascade of changes.
-     *                                                   -- 2/5/08
+     * @param ve The VocabElement to use as a replacement in the VocabList
      *
-     *    - Modified method to deal with the column predicate argument list
-     *      of the MatrixVacabElement.
-     *                                                   -- 8/31/08
+     * @throws SystemErrorException If unable to replace vocab element in the
+     * vocab list.
      *
-     *    - Removed the check getNumFormalArguments less than 0,
-     *      getNumFormalArguments wraps Vector.size() - which never returns a
-     *      value less than zero.
+     * @date 2007/05/01
      */
-
     protected void replaceVocabElement(VocabElement ve)
        throws SystemErrorException
     {
@@ -1926,18 +1907,13 @@ public class VocabList
     } /* VocabList::replaceVocabElement(ve) */
 
     /**
-     * toDBString()
-     *
-     * Returns a String representation of the contents of the vocabList.<br>
-     *
-     * <i>This function is intended for debugging purposses.</i>
-     *
-     * @return the string value.
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
-     *
+     * @return A String representation (in a format that can be stored in a
+     * database file) of the contents of the vocab list.     
      */
     public String toDBString()
     {
