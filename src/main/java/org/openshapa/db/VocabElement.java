@@ -1,12 +1,3 @@
-/*
- * VocabElement.java
- *
- * Created on February 13, 2007, 2:01 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -14,98 +5,79 @@ import org.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
- * Class VocabElement
- *
- * Abstract class for vocabulary elements.
- *
- * This class contains functionality that is common to matrix and predicate
- * vocabulary elements.
+ * This abstract class contains functionality that is common to matrix and
+ * predicate vocabulary elements.
  */
-public abstract class VocabElement extends DBElement
-{
+public abstract class VocabElement extends DBElement {
 
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
     /**
-     * name:  String containing the name of the vocab element.
+     * String containing the name of the vocab element.
      *
-     *      For matricies, this will be the name of the column variable which
-     *      defines them.
-     *
-     *      For predicates, this will be the predicate name.
-     *
-     * system:  Boolean field indicating whether this vocab element is directly
-     *      visible to and editable by the user.
-     *
-     *      Examples of vocab elements that are visible to the user include
-     *      user defined matrix variables and user defined predicates.
-     *
-     *      Examples of vocab elements that are not directly visible to the
-     *      user include system defined predicates, and single element matricies
-     *      used to implement integer, float, nominal, and text column
-     *      variables.
-     *
-     * varLen:  Boolean field used to indicate whether the vocab element's
-     *      vocab list is variable length. System maticies will always be fixed
-     *      length, but system predicates may be variable length.
-     *
-     * fArgList: Vector containing the formal argument list of the vocabulary
-     *      element.  Once a vocab element has been fully constructed, this
-     *      list must contain at least one argument.
-     *
-     * listeners: Instance of VocabElementListeners containing references to
-     *      internal and external objects that must be notified when the
-     *      vocabulary element is modified.
+     * For matricies, this will be the name of the column variable which defines
+     * them. For predicates, this will be the predicate name.
      */
-
     protected String name = "";
 
-    /** whether this is a system vocab element that is not editable by the user */
+    /**
+     * Boolean field indicating whether this vocab element is directly visible
+     * to and editable by the user.
+     *
+     * Examples of vocab elements that are visible to the user include user
+     * defined matrix variables and user defined predicates.
+     *
+     * Examples of vocab elements that are not directly visible to the user
+     * include system defined predicates, and single element matricies used to
+     * implement integer, float, nominal, and text column variables.
+     */
     protected boolean system = false;
 
-    /** Whether the argument list is variable length */
+    /**
+     * Boolean field used to indicate whether the vocab element's vocab list is
+     * variable length. System maticies will always be fixed length, but system
+     * predicates may be variable length.
+     */
     protected boolean varLen = false;
 
-    /** formal argument list */
+    /**
+     * Vector containing the formal argument list of the vocabulary element.
+     * Once a vocab element has been fully constructed, this list must contain
+     * at least one argument.
+     */
     protected Vector<FormalArgument> fArgList =
             new Vector<FormalArgument>();
 
     /**
-     * reference to instance of VocabElementListeners used to maintain lists of
-     *  listeners, and notify them as appropriate.
+     * Instance of VocabElementListeners containing references to internal and
+     * external objects that must be notified when the vocabulary element is
+     * modified.
      */
     protected VocabElementListeners listeners = null;
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
+     * Constructor.
      *
-     * VocabElement()
+     * @param db The database that this vocab element belongs too.
      *
-     * Constructor for instances of VocabElement.
+     * @throws SystemErrorException If unable to create the Vocab Element.
      *
-     * Two versions of this constructor -- one which sets the name of the
-     * of the new vocab element, and one which doesn't.
-     *
-     * Note that the version that sets the name does only limited error
-     * checking -- full error checking is the responsibility of the subclass.
-     *
-     *                                               -- 2/14/07
-     *
-     * Changes:
-     *
-     *    - Added a copy constructor.                -- 4/30/07
+     * @date 2007/04/30
      */
-
     public VocabElement(Database db)
         throws SystemErrorException
     {
         super(db);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param db The database that this vocab element belongs too.
+     * @param name The name of the vocab element.
+     *
+     * @throws SystemErrorException If unable to create the Vocab Element.
+     *
+     * @date 2007/04/30
+     */
     public VocabElement(Database db,
                         String name)
         throws SystemErrorException
@@ -122,8 +94,17 @@ public abstract class VocabElement extends DBElement
 
         this.name = (new String(name));
 
-    } /* VocabElement(db, name) */
+    }
 
+    /**
+     * Copy Constructor.
+     *
+     * @param ve The vocab element to create a copy of.
+     *
+     * @throws SystemErrorException If unable to create the Vocab Element.
+     *
+     * @date 2007/04/30
+     */
     public VocabElement(VocabElement ve)
         throws SystemErrorException
     {
@@ -210,57 +191,66 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::VocabElement(ve) */
-
-
-    /*************************************************************************/
-    /******************* Abstract Method Declarations: ***********************/
-    /*************************************************************************/
+    }
 
     /**
-     * isWellFormed()
-     *
      * Subclasses must define this method, which must return true if the
      * given VocabElement is in form suitable for insertion in the vocab list,
      * and false if it isn't.
-     *                                               -- 6/19/07
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param newVE True if the vocab element is new (about to be inserted into
+     * the vocab list), false otherwise.
      *
+     * @return True if the vocab element is well formed, false otherwise.
+     *
+     * @throws SystemErrorException If unable to determine if the vocab element
+     * is well formed.
+     *
+     * @date 2007/06/19
      */
-
     abstract public boolean isWellFormed(boolean newVE)
         throws SystemErrorException;
 
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
     /**
+     * Gets the name of the vocab element.
      * getName() & setName()
      *
-     * Accessor methods for the name field.  Note that we only do minimal
-     * error checking, as that is responsibility of the subclass.
-     *
-     *                                           -- 2/14/07
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return A copy of the name of the vocab element.
      *
+     * @date 2007/02/14
      */
-
     public String getName()
     {
 
         return (new String(this.name));
 
-    } /* getName() */
+    }
 
-
+    /**
+     * Sets the name of the vocab element.
+     *
+     * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
+     *
+     * @param name The new name to use for the vocab element.
+     *
+     * @throws SystemErrorException If unable to set the name of the vocab
+     * element.
+     *
+     * @date 2007/02/14
+     */
     protected void setName(String name)
         throws SystemErrorException
     {
@@ -280,29 +270,33 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::setName() */
-
+    }
 
     /**
-     * getSystem() & setSystem()
-     *
-     * Accessor methods for the system field.  Note that the system field
-     * is initialized to false, and can only be set to true.  Once it is set
-     * to true, the vocab element cannot be modified.
-     *
-     *                                                -- 2/14/07
+     * Gets the system vocab element state.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return If the vocab element is a system element or not.
      *
+     * @date 2007/02/14
      */
-
     public boolean getSystem()
     {
         return system;
     }
 
+    /**
+     * Sets this vocab element to be a System vocab element.
+     *
+     * @throws SystemErrorException If unable to set the vocab element to be a
+     * system vocab element.
+     *
+     * @date 2007/02/14
+     */
     public void setSystem()
         throws SystemErrorException
     {
@@ -321,27 +315,30 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* FormalArgument::setSystem() */
-
+    }
 
     /**
-     * getVarLen() & setVarLen()
+     * @return True if the Vocab Element has a varying number of formal
+     * arguments.
      *
-     * Accessor methods for the varLen field.
-     *
-     *                                       -- 2/14/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/02/14
      */
-
     public boolean getVarLen()
     {
         return varLen;
     }
 
+    /**
+     * Sets if this vocab element has variable arguments or not.
+     *
+     * @param varLen True if you want this vocab element to varying arguments,
+     * false otherwise.
+     *
+     * @throws SystemErrorException If unable to set the vocab element to have
+     * variable arguments or not.
+     *
+     * @date 2007/02/14
+     */
     public void setVarLen(boolean varLen)
         throws SystemErrorException
     {
@@ -356,25 +353,19 @@ public abstract class VocabElement extends DBElement
         this.varLen = varLen;
         return;
 
-    } /* FormalArgument::setVarLen() */
-
-
-    /*************************************************************************/
-    /******************** Argument List Manipulation: ************************/
-    /*************************************************************************/
+    }
 
     /**
-     * appendFormalArg()
-     *
      * Append the supplied formal argument to the end of the formal argument
      * list.
      *
-     *                                           -- 2/27/07
+     * @param newArg The formal argument to append to the list of formal
+     * arguments used for this VocabElement.
      *
-     * Changes:
+     * @throws SystemErrorException When unable to add the argument to the list
+     * of formal arguments.
      *
-     *    - None.
-     *
+     * @date 2007/02/27
      */
     public void appendFormalArg(FormalArgument newArg)
     throws SystemErrorException {
@@ -410,25 +401,30 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::appendFormalArg() */
-
+    }
 
     /**
-     * copyFormalArg()
-     *
-     * Returns a copy of the n-th formal argument, or null if there
-     * is no such argument.
-     *                                           -- 2/27/07
+     * Returns a copy of the n-th formal argument, or null if there is no such
+     * argument.
      *
      * Changes:
-     *
-     *   - Added code setting the itsVocabElement field of the copy to null,
+     * <ul>
+     *   <li>
+     *     Added code setting the itsVocabElement field of the copy to null,
      *     and simillarly setting the itsVocabElementID field to the
-     *     INVALID_ID.
-     *                                           -- 6/15/07
+     *     INVALID_ID. --2007/06/15
+     *   </li>
+     * </ul>
      *
+     * @param n The index of the formal argument to return a copy of.
+     *
+     * @return A copy of the n-th formal argument, or null if no such argument
+     * exists.
+     *
+     * @throws SystemErrorException The
+     *
+     * @date 2007/02/27
      */
-
     protected FormalArgument copyFormalArg(int n)
         throws SystemErrorException
     {
@@ -463,21 +459,24 @@ public abstract class VocabElement extends DBElement
 
         return fArgCopy;
 
-    } /* VocabElement::copyFormalArg() */
-
+    }
 
     /**
-     * copyFormalArgList()
-     *
      * Construct and return a vector containing a copy of the formal argument
      * list.
-     *                                           -- 2/2/08
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return A copy of the formal argument list used for this vocab element.
+     *
+     * @throws SystemErrorException When unable to copy the list of formal
+     * arguments.
+     *
+     * @date 2008/02/02
      */
-
     protected java.util.Vector<FormalArgument> copyFormalArgList()
         throws SystemErrorException
     {
@@ -499,7 +498,7 @@ public abstract class VocabElement extends DBElement
 
         return copy;
 
-    } /* VocabElement::copyFormalArgList() */
+    }
 
     /**
      * Finds the index of the supplied formal argument.
@@ -519,19 +518,19 @@ public abstract class VocabElement extends DBElement
     }
 
     /**
-     * deleteFormalArg()
-     *
-     * Delete the n-th formal argument from the formal argument list.  Throw a
-     * system error exception if there is no n-th formal argument.
-     *
-     *                                           -- 2/27/07
+     * Delete the n-th formal argument from the formal argument list.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param n The nth formal argument to delete from the vocab element.
      *
+     * @throws SystemErrorException If no n-th formal argument exists.
+     *
+     * @date 2007/02/27
      */
-
     public void deleteFormalArg(int n)
         throws SystemErrorException
     {
@@ -571,23 +570,23 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::deleteFormalArg() */
-
+    }
 
     /**
-     * fArgListToDBString()
-     *
      * Construct a string containing the names of the formal arguments in a
      * format that displays the full status of the formal arguments and
      * facilitates debugging.
-     *                                           -- 2/27/07
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return A database string representation of the formal arguments of this
+     * vocab element.
      *
+     * @date 2007/02/27
      */
-
     protected String fArgListToDBString()
         throws SystemErrorException
     {
@@ -618,22 +617,22 @@ public abstract class VocabElement extends DBElement
 
         return s;
 
-    } /* VocabElement::fArgListToDBString() */
-
+    }
 
     /**
-     * fArgListToString()
-     *
      * Construct a string containing the names of the formal arguments in the
      * format: (<arg0>, <arg1>, ... <argn>).
-     *                                           -- 2/27/07
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return A string representation of the formal arguments in this vocab
+     * element.
      *
+     * @date 2007/02/27
      */
-
     protected String fArgListToString()
         throws SystemErrorException
     {
@@ -664,22 +663,23 @@ public abstract class VocabElement extends DBElement
 
         return s;
 
-    } /* VocabElement::fArgListToString() */
-
+    }
 
     /**
-     * fArgNameIsUnique()
-     *
      * Scan the formal argument list, and test to see if the supplied formal
      * argument list is unique.  Return true if it is, and false otherwise.
      *
-     *                                       -- 3/18/07
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param fArgName The name of the formal argument to see if it is unique.
+     *
+     * @return True if the formal argument is unique, false otherwise.
+     *
+     * @date 2007/03/18
      */
-
     public boolean fArgNameIsUnique(String fArgName)
         throws SystemErrorException
     {
@@ -706,23 +706,29 @@ public abstract class VocabElement extends DBElement
 
         return unique;
 
-    } /* VocabElement::fArgNameIsUnique() */
-
+    }
 
     /**
-     * getFormalArg()
-     *
      * Returns a copy of the n-th formal argument, or null if there
      * is no such argument.
-     *                                           -- 2/27/07
      *
      * Changes:
-     *
-     *   - Modified the method to simply return the formal argument.  This
+     * <ul>
+     *   <li>
+     *     Modified the method to simply return the formal argument.  This
      *     change is due to a decision to handle vocab  changes at the
-     *     level of vocab elements
-     *                                           -- 4/30/07
+     *     level of vocab elements -- 2007/04/30
+     *   </li>
+     * </ul>
      *
+     * @param n The n-th formal argument to get a copy of.
+     *
+     * @return A copy of the n-th formal argument.
+     *
+     * @throws SystemErrorException If unable to create a copy of the n-th
+     * formal argument.
+     *
+     * @date 2007/02/27
      */
     public FormalArgument getFormalArg(int n)
         throws SystemErrorException
@@ -767,21 +773,21 @@ public abstract class VocabElement extends DBElement
 
         return fArg;
 
-    } /* VocabElement::getFormalArg() */
-
+    }
 
     /**
-     * getNumFormalArgs()
-     *
-     * Return the number of formal arguments.
-     *
-     *                                       3/03/07
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @return the number of formal arguments.
+     *
+     * @throws SystemErrorException If unable to get the number of formal
+     * arguments use in this vocab element.
+     *
+     * @date 2007/03/03
      */
-
     public int getNumFormalArgs()
         throws SystemErrorException
     {
@@ -795,25 +801,27 @@ public abstract class VocabElement extends DBElement
 
         return fArgList.size();
 
-    } /* VocabElement::getNumFormalArgs() */
-
+    }
 
     /**
-     * insertFormalArg()
-     *
      * Insert the supplied formal argument in the n-th position in the formal
      * argument list.  If n is not zero, there must be at least n-1 formal
      * arguments in the list to begin with.  Any existing arguments with
-     * index greater than or equal to n have their indicies increased by 1.
-     *
-     *                                           -- 2/27/07
+     * index greater than or equal to n have their indicies increased by 1.     
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param newArg The new formal argument to push into the n-th position.
+     * @param n The position of the formal argument to insert.
      *
+     * @throws SystemErrorException If unable to insert the formal argument into
+     * the Vocab Element.
+     *
+     * @date 2007/02/27
      */
-
     public void insertFormalArg(FormalArgument newArg, int n)
     throws SystemErrorException
     {
@@ -859,23 +867,23 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::insertFormalArg() */
-
+    }
 
      /**
-      * propagateID()
-      *
       * Propagate the id assigned to the VocabElement to all current formal
       * arguments, if any.  This method should be called after the VocabElement
       * is assigned an ID and inserted into the vocab list.
       *
-      *                                          -- 6/17/07
-      *
       * Changes:
+      * <ul>
+      *   <li>None.</li>
+      * </ul>
       *
-      *   - None.
+      * @throws SystemErrorException If unable to propgate the ID to the current
+      * formal arguments.
+      *
+      * @date 2007/06/17
       */
-
     public void propagateID()
         throws SystemErrorException
     {
@@ -906,26 +914,26 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::propagateID() */
-
+    }
 
     /**
-     * replaceFormalArg()
-     *
      * If the n-th formal argument exists, replace it with the supplied
      * formal argument.
      *
-     * Throw a system error exception if there is no n-th formal argument
-     * to begin with.
-     *
-     *                                           -- 2/27/07
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param newArg The new formal argument to use when replacing an existing
+     * formal argument.
+     * @param n The index of the formal argument to be replaced.
      *
+     * @throws SystemErrorException If there is no n-th formal argument to begin
+     * with.
+     *
+     * @date 2007/02/27
      */
-
     public void replaceFormalArg(FormalArgument newArg, int n)
     throws SystemErrorException {
         deleteFormalArg(n);
@@ -934,26 +942,25 @@ public abstract class VocabElement extends DBElement
         return;
     }
 
-
-    /*************************************************************************/
-    /************************ Listener Manipulation: *************************/
-    /*************************************************************************/
-
     /**
-     * deregisterExternalListener()
-     *
-     * If this.listeners is null, thow a system error exception.
+     * Deregisters the supplied external vocab element listener.
      *
      * Otherwise, pass the deregister external change listeners message on to
      * the instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                           -- 2/5/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The ExternalVocabElementListener to deregister with this vocab
+     * element.
+     *
+     * @throws SystemErrorException When unable to deregister the supplied vocab
+     * element listener.
+     *
+     * @date 2007/02/05
      */
-
     protected void deregisterExternalListener(ExternalVocabElementListener el)
         throws SystemErrorException
     {
@@ -969,24 +976,26 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::deregisterExternalListener() */
-
+    }
 
     /**
-     * deregisterInternalListener()
-     *
-     * If this.listeners is null, thow a system error exception.
+     * Deregisters an internal vocab element listener.
      *
      * Otherwise, pass the deregister internal change listeners message on to
      * the instance of VocabElementListeners pointed to by this.listeners.
      *
-     *                                           -- 2/5/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param id The id of the internal vocab element listener to deregister.
+     *
+     * @throws SystemErrorException  When unable to degregister the supplied
+     * internal vocab element listener.
+     *
+     * @date 2008/02/05
      */
-
     protected void deregisterInternalListener(long id)
         throws SystemErrorException
     {
@@ -1002,44 +1011,37 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::deregisterInternalListener() */
-
+    }
 
     /**
-     * getListeners()
+     * @return the corrent value of this.listeners.
      *
-     * Return the corrent value of this.listeners.
-     *
-     *                                           -- 2/5/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/02/05
      */
-
     protected VocabElementListeners getListeners()
     {
 
         return this.listeners;
 
-    } /* VocabElement::getListeners() */
-
+    }
 
     /**
-     * noteChange()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
      * Otherwise, pass a note changes message on to the instance of
      * VocabElementListeners pointed to by this.listeners.
      *
-     *                                           -- 2/5/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param oldVE The old vocab element that we are comparing for changes.
+     * @param newVE The new vocab element that we are comparing for changes.
+     *
+     * @throws SystemErrorException If unable to note the changes between the
+     * two supplied vocab elements.
+     *
+     * @date 2008/02/05
      */
-
     protected void noteChange(VocabElement oldVE,
                               VocabElement newVE)
         throws SystemErrorException
@@ -1056,24 +1058,22 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::noteChange() */
-
+    }
 
     /**
-     * notifyListenersOfChange()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the notify listeners of changes message on to the
-     * instance of VocabElementListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * This method notifies all listeners to this VocabElement of all changes
+     * made to this vocabElement.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException if unable to notify listeners of changes to
+     * the vocab element.
+     *
+     * @date 2008/02/05
      */
-
     protected void notifyListenersOfChange()
         throws SystemErrorException
     {
@@ -1089,24 +1089,21 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::notifyListenersOfChange() */
-
+    }
 
     /**
-     * notifyListenersOfDeletion()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the notify listeners of deletion message on to the
-     * instance of VocabElementListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * Notify all listeners of deletion message on to the instance of
+     * VocabElementListeners pointed to by this.listeners.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to notify listeners of deletion.
+     *
+     * @date 2008/02/05
      */
-
     protected void notifyListenersOfDeletion()
         throws SystemErrorException
     {
@@ -1122,25 +1119,23 @@ public abstract class VocabElement extends DBElement
         this.listeners.notifyListenersOfDeletion();
 
         return;
-
-    } /* VocabElement::notifyListenersOfDeletion() */
-
+    }
 
     /**
-     * registerExternalListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the register external change listeners message on to the
-     * instance of VocabElementListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * Registers a new external listener with this VocabElement.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The next external listener to register with this Vocab Element.
+     *
+     * @throws SystemErrorException If unable to register an external listener
+     * with this VocabElement.
+     *
+     * @date 2008/02/05
      */
-
     protected void registerExternalListener(ExternalVocabElementListener el)
         throws SystemErrorException
     {
@@ -1155,25 +1150,24 @@ public abstract class VocabElement extends DBElement
         this.listeners.registerExternalListener(el);
 
         return;
-
-    } /* VocabElement::registerExternalListener() */
-
+    }
 
     /**
-     * registerInternalListener()
-     *
-     * If this.listeners is null, thow a system error exception.
-     *
-     * Otherwise, pass the register internal change listeners message on to the
-     * instance of VocabElementListeners pointed to by this.listeners.
-     *
-     *                                           -- 2/5/08
+     * Registers a new internal listener with this VocabElement.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param id The Id of the internal listener to register with this
+     * VocabElement.
+     *
+     * @throws SystemErrorException If unable to register an internal listener
+     * with this VocabElement.
+     *
+     * @date 2008/02/05
      */
-
     protected void registerInternalListener(long id)
         throws SystemErrorException
     {
@@ -1189,12 +1183,9 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::registerInternalListener() */
-
+    }
 
     /**
-     * setListeners()
-     *
      * Set the listeners field.  Setting this.listeners to a non-null value
      * signifies that this instance of VocabElement is the cannonical current
      * incarnation of the vocab element.  Setting it back to null indicates
@@ -1204,15 +1195,18 @@ public abstract class VocabElement extends DBElement
      * of VocabElementListeners that is associated with this vocab element.  If
      * this.listeners is not null, the only permissiable new value is null.
      *
-     * In all other cases, throw a system error exception.
-     *
-     *                                           -- 2/5/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param listeners The new list of listeners to use with this VocabElement.
+     *
+     * @throws SystemErrorException If unable to set the listeners to use for
+     * this VocabElement.
+     *
+     * @date 2008/02/05
      */
-
     protected void setListeners(VocabElementListeners listeners)
         throws SystemErrorException
     {
@@ -1242,7 +1236,7 @@ public abstract class VocabElement extends DBElement
 
         return;
 
-    } /* VocabElement::setListeners() */
+    }
 
     /**
      * @return A hash value for this object.
