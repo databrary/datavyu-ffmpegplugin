@@ -111,7 +111,7 @@ implements FocusListener, KeyListener, MouseListener {
     }
 
     /**
-     * Adds editors to the tracker.
+     * Adds editors to the tracker on the end of the vector.
      * @param eds The editors to add.
      */
     public void addEditors(final Vector<EditorComponent> eds) {

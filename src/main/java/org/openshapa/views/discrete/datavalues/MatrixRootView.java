@@ -112,13 +112,6 @@ public class MatrixRootView extends JTextArea implements FocusListener {
     }
 
     /**
-     * @return The vector of editors for this MatrixRootView.
-     */
-    public final Vector<EditorComponent> getEditors() {
-        return editors;
-    }
-
-    /**
      * The action to invoke if the focus is gained by this MatrixRootView.
      * @param fe The Focus Event that triggered this action.
      */

@@ -150,7 +150,7 @@ public abstract class DataValueEditor extends EditorComponent {
      * @param cell The Parent cell that holds the matrix.
      * @param matrix The parent matrix that holds the DataValue.
      */
-    public void resetValue(final DataCell cell, final Matrix matrix) {
+    public final void resetValue(final DataCell cell, final Matrix matrix) {
         try {
             parentMatrix = matrix;
             parentCell = cell;
@@ -306,16 +306,9 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
-     * @return The model that this data value view represents.
-     */
-    public final DataValue getModel() {
-        return this.model;
-    }
-
-    /**
      * Update the database with the model value.
      */
-    public void updateDatabase() {
+    public final void updateDatabase() {
         // update the model.
         if (isNullArg()) {
             updateModelNull();
@@ -363,4 +356,41 @@ public abstract class DataValueEditor extends EditorComponent {
             super.select(0, Integer.MAX_VALUE);
         }
     }
+
+    /**
+     * Set the model data value.
+     * @param dv The datavalue to set.
+     */
+    public final void setModel(final DataValue dv) {
+        model = dv;
+    }
+
+    /**
+     * @return The model that this data value view represents.
+     */
+    public final DataValue getModel() {
+        return this.model;
+    }
+
+    /**
+     * @return The datacell this datavlue is in.
+     */
+    public final DataCell getCell() {
+        return this.parentCell;
+    }
+
+    /**
+     * @return The matrix this datavalue is in.
+     */
+    public final Matrix getMatrix() {
+        return this.parentMatrix;
+    }
+
+    /**
+     * @return The index within the matrix where this datavalue exists.
+     */
+    public final int getmIndex() {
+        return this.mIndex;
+    }
+
 }

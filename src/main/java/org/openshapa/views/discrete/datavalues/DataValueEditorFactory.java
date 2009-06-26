@@ -213,13 +213,43 @@ public class DataValueEditorFactory {
                                                 DataCell c, Matrix m, int index)
     throws SystemErrorException {
 
+        Vector<EditorComponent> args = buildPredicateArgs(ta, c, m, index);
+
+        // make the PredicateNameEditor and pass it a vector of its args
+        PredicateNameEditor pn = new PredicateNameEditor(ta, c, m, index, args);
+
+        Vector<EditorComponent> eds = new Vector<EditorComponent>();
+        // insert the predicate name at the front
+        eds.add(pn);
+        eds.addAll(args);
+
+        return eds;
+    }
+
+    /**
+     * Creates a vector of editor components that represent the args in
+     * a predicate in a matrix.
+     *
+     * @param ta The parent JTextComponent the editor is in.
+     * @param c The parent data cell this editor resides within.
+     * @param m The matrix in the data cell.
+     * @param i The index of the predicate within the matrix.
+     *
+     * @return A vector of editor components to represent the predicate.
+     */
+    public static Vector<EditorComponent> buildPredicateArgs(JTextComponent ta,
+                                                DataCell c, Matrix m, int index)
+    throws SystemErrorException {
+
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
 
         PredDataValue pdv = (PredDataValue) m.getArgCopy(index);
-        int numPredArgs = pdv.getItsValue().getNumArgs();
+        int numPredArgs = 0;
+        if (!pdv.isEmpty()) {
+            numPredArgs = pdv.getItsValue().getNumArgs();
+        }
 
-        // build any Predicate Args first
-        if (m != null) {
+        if (m != null && numPredArgs > 0) {
             eds.add(new FixedText(ta, "("));
 
             // For each of the predicate arguments, build a view representation
@@ -229,19 +259,8 @@ public class DataValueEditorFactory {
                     eds.add(new FixedText(ta, ","));
                 }
             }
-            if (numPredArgs > 1) {
-                eds.add(new FixedText(ta, ")"));
-            }
+            eds.add(new FixedText(ta, ")"));
         }
-
-        // make the PredicateNameEditor and pass it a vector of its args
-        PredicateNameEditor pne = new PredicateNameEditor(ta, c, m, index, eds);
-
-        // make a new vector copy of the args to return
-        eds = (Vector<EditorComponent>) eds.clone();
-        // insert the predicate name at the front
-        eds.add(0, pne);
-
         return eds;
     }
 
@@ -399,7 +418,7 @@ public class DataValueEditorFactory {
     }
 
     /**
-     * Reset the value of an Editor component. 
+     * Reset the value of an Editor component.
      * @param ed The editor component.
      * @param c The parent data cell.
      * @param m The matrix.
