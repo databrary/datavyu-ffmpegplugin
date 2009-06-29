@@ -95,10 +95,11 @@ public final class PredicateNameEditor extends DataValueEditor {
 
     /**
      * focusSet is the signal that this editor has become "current".
-    */
+     * @param fe Focus Event
+     */
     @Override
-    public void focusSet() {
-        super.focusSet();
+    public void focusGained(final FocusEvent fe) {
+        super.focusGained(fe);
         searchText = getText();
         editing = true;
     }

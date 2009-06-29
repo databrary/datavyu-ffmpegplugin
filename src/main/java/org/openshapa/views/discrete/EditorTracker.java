@@ -82,7 +82,7 @@ implements FocusListener, KeyListener, MouseListener {
         // now calculate the pre and post char counts
         calculatePrePostCounts();
 
-        currentEditor.focusSet();
+        currentEditor.focusGained(null);
 
         currentEditor.select(start, end);
     }

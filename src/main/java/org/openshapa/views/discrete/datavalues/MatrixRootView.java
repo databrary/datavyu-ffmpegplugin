@@ -17,7 +17,7 @@ import org.openshapa.views.discrete.EditorTracker;
 /**
  * JTextArea view of the Matrix (database cell) data.
 */
-public class MatrixRootView extends JTextArea implements FocusListener {
+public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /** The selection (used for cells) for the parent spreadsheet. */
     private Selector sheetSelection;
@@ -75,7 +75,7 @@ public class MatrixRootView extends JTextArea implements FocusListener {
      * Sets the matrix that this MatrixRootView will represent.
      * @param m The Matrix to display.
      */
-    public final void setMatrix(final Matrix m) {
+    public void setMatrix(final Matrix m) {
         try {
             if (editors.size() == 0) {
                 editors.addAll(DataValueEditorFactory.
@@ -107,7 +107,7 @@ public class MatrixRootView extends JTextArea implements FocusListener {
      * Used in the UISpec4j tests.
      * @return The editor tracker for this MatrixRootView.
      */
-    public final EditorTracker getEdTracker() {
+    public EditorTracker getEdTracker() {
         return edTracker;
     }
 
@@ -122,8 +122,11 @@ public class MatrixRootView extends JTextArea implements FocusListener {
             sheetSelection.deselectOthers();
         }
 
+        // We need to remember which cell should be duplicated if the user
+        // presses the enter key or selects New Cell from the menu.
         if (parentCell != null) {
-            // method names don't reflect usage
+            // method names don't reflect usage - we didn't really create this
+            // cell just now.
             OpenSHAPA.setLastCreatedColId(parentCell.getItsColID());
             OpenSHAPA.setLastCreatedCellId(parentCell.getID());
         }

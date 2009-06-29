@@ -206,9 +206,10 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * focusSet is the signal that this editor has become "current".
-    */
+     * @param fe Focus Event
+     */
     @Override
-    public void focusSet() {
+    public void focusGained(final FocusEvent fe) {
         textOnFocus = getText();
     }
 

@@ -41,9 +41,10 @@ public final class NoEditor extends EditorComponent {
 
     /**
      * Subclass overrides to handle focusSet state.
+     * @param fe FocusEvent details.
      */
     @Override
-    public void focusSet() {
+    public void focusGained(final FocusEvent fe) {
     }
 
     /**
