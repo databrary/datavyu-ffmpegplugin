@@ -132,15 +132,15 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         try {
         // traverse and build the cells
         for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                    DataCell dc = (DataCell) dbColumn.getDB()
-                                        .getCell(dbColumn.getID(), j);
+                DataCell dc = (DataCell) dbColumn.getDB()
+                                    .getCell(dbColumn.getID(), j);
 
-                    SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
-                                                spreadsheetPanel.getCellSelector());
-                    // add cell to the JPanel
-                    datapanel.add(sc);
-                    // and add it to our reference list
-                    cells.add(sc);
+                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
+                                            spreadsheetPanel.getCellSelector());
+                // add cell to the JPanel
+                datapanel.add(sc);
+                // and add it to our reference list
+                cells.add(sc);
             }
 
             } catch (SystemErrorException e) {

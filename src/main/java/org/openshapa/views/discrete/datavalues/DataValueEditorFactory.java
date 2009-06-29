@@ -84,8 +84,6 @@ public class DataValueEditorFactory {
             eds.add(buildFloat(ta, c, m, i));
         } else if (dv.getClass() == IntDataValue.class) {
             eds.add(buildInt(ta, c, m, i));
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
             eds.add(buildTextString(ta, c, m, i));
         } else if (dv.getClass() == NominalDataValue.class) {
@@ -290,15 +288,10 @@ public class DataValueEditorFactory {
             eds.add(buildFloat(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == IntDataValue.class) {
             eds.add(buildInt(ta, c, p, pi, m, mi));
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
             eds.add(buildTextString(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == NominalDataValue.class) {
             eds.add(buildNominal(ta, c, p, pi, m, mi));
-            // No nesting of predicates yet
-//        } else if (dv.getClass() == PredDataValue.class) {
-//            return buildPredicate(ta, c, p, pi, m, mi);
         } else if (dv.getClass() == QuoteStringDataValue.class) {
             eds.addAll(buildQuoteString(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == UndefinedDataValue.class) {
@@ -428,8 +421,6 @@ public class DataValueEditorFactory {
             ((FloatDataValueEditor) ed).resetValue(c, m);
         } else if (ed.getClass() == IntDataValueEditor.class) {
             ((IntDataValueEditor) ed).resetValue(c, m);
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (ed.getClass() == TextStringDataValueEditor.class) {
             ((TextStringDataValueEditor) ed).resetValue(c, m);
         } else if (ed.getClass() == NominalDataValueEditor.class) {
