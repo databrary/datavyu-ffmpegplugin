@@ -51,7 +51,7 @@ public class DataValueEditorFactory {
             for (int i = 0; i < m.getNumArgs(); i++) {
                 eds.addAll(buildMatrixArg(ta, c, m, i));
                 if (m.getNumArgs() > 1 && i < (m.getNumArgs() - 1)) {
-                    eds.add(new FixedText(ta, ","));
+                    eds.add(new FixedText(ta, ", "));
                 }
             }
             if (m.getNumArgs() > 1) {
@@ -254,7 +254,7 @@ public class DataValueEditorFactory {
             for (int pi = 0; pi < numPredArgs; pi++) {
                 eds.addAll(buildPredArg(ta, c, pdv, pi, m, index));
                 if (numPredArgs > 1 && pi < (numPredArgs - 1)) {
-                    eds.add(new FixedText(ta, ","));
+                    eds.add(new FixedText(ta, ", "));
                 }
             }
             eds.add(new FixedText(ta, ")"));

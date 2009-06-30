@@ -130,8 +130,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      */
     private void buildDataPanelCells(final DataColumn dbColumn) {
         try {
-        // traverse and build the cells
-        for (int j = 1; j <= dbColumn.getNumCells(); j++) {
+            // traverse and build the cells
+            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
                                     .getCell(dbColumn.getID(), j);
 
@@ -142,11 +142,9 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 // and add it to our reference list
                 cells.add(sc);
             }
-
-            } catch (SystemErrorException e) {
-               logger.error("Failed to populate Spreadsheet.", e);
-            }
-
+        } catch (SystemErrorException e) {
+           logger.error("Failed to populate Spreadsheet.", e);
+        }
     }
 
     /**
