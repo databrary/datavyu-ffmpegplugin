@@ -1,5 +1,10 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
@@ -15,7 +20,11 @@ import org.openshapa.db.SystemErrorException;
 public final class NominalDataValueEditor extends DataValueEditor {
 
     /** String holding the reserved characters. */
-    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;";
+    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n";
+
+    /** The reserved replacement is a character that replaces reserved
+     *  characters pasted into nominal views. */
+    private static final Character RESERVED_REPLACEMENT = '_';
 
     /** The logger for this class. */
     private static Logger logger = Logger
@@ -103,5 +112,43 @@ public final class NominalDataValueEditor extends DataValueEditor {
         boolean res = true;
         // could call a subRange test for this dataval
         return res;
+    }
+
+    /**
+     * Sanitize the text in the clipboard.
+     * @return true if it is okay to call the JTextComponent's paste command.
+     */
+    @Override
+    public boolean prePasteCheck() {
+        // Get the contents of the clipboard.
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clipboard.getContents(null);
+        boolean hasText = (contents != null)
+                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+
+        // No valid text in clipboard. Bail.
+        if (!hasText) {
+            return false;
+        }
+
+        // Valid text in clipboard
+        try {
+            // Get the text
+            String text = (String) contents
+                                  .getTransferData(DataFlavor.stringFlavor);
+
+            // Replace reserved characters with a suitable replacement.
+            for (Character reservedCh : NOMINAL_RESERVED_CHARS.toCharArray()) {
+                text = text.replace(reservedCh, RESERVED_REPLACEMENT);
+            }
+
+            // Put the modified text back into the clipboard
+            Transferable transferableText = new StringSelection(text);
+            clipboard.setContents(transferableText, null);
+        } catch (Exception ex) {
+            logger.error("Unable to get clipboard contents", ex);
+            return false;
+        }
+        return true;
     }
 }

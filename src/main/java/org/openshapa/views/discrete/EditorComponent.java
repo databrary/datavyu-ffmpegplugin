@@ -221,4 +221,14 @@ public abstract class EditorComponent {
         parentComp.setCaretPosition(start);
         parentComp.moveCaretPosition(end);
     }
+
+    /**
+     * Sanitize the text in the clipboard. Subclasses that check for
+     * reserved chars override this method.
+     * @return true if it is okay to call the JTextComponent's paste command.
+     */
+    public boolean prePasteCheck() {
+        // default version assumes it is okay
+        return true;
+    }
 }

@@ -429,4 +429,12 @@ implements FocusListener, KeyListener, MouseListener {
     public void mouseExited(final MouseEvent me) {
         // Currently we do nothing with the mouse exited event.
     }
+
+    /**
+     * Call the currentEditor to sanitize the text in the clipboard.
+     * @return true if it is okay to call the JTextComponent's paste command.
+     */
+    public boolean prePasteCheck() {
+        return currentEditor.prePasteCheck();
+    }
 }
