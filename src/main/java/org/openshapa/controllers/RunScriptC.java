@@ -12,11 +12,15 @@ import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 
 /**
