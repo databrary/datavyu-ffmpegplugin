@@ -41,6 +41,9 @@ public abstract class DataValueEditor extends EditorComponent {
     /** Is the data value now null? */
     private boolean argIsNull;
 
+    /** Text when editor gained focus (became current editor). */
+    private String textOnFocus;
+
     /** Previous text during edits. */
     private String prevText;
 
@@ -202,12 +205,23 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
+     * focusSet is the signal that this editor has become "current".
+     * @param fe Focus Event
+     */
+    @Override
+    public void focusGained(final FocusEvent fe) {
+        textOnFocus = getText();
+    }
+
+    /**
      * Action to take when focus is lost for this editor.
      * @param fe Focus Event
      */
     @Override
     public void focusLost(final FocusEvent fe) {
-        updateDatabase();
+        if (!getText().equals(textOnFocus)) {
+            updateDatabase();
+        }
     }
 
     /**
@@ -293,13 +307,6 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
-     * @return The model that this data value view represents.
-     */
-    public final DataValue getModel() {
-        return this.model;
-    }
-
-    /**
      * Update the database with the model value.
      */
     public final void updateDatabase() {
@@ -350,4 +357,41 @@ public abstract class DataValueEditor extends EditorComponent {
             super.select(0, Integer.MAX_VALUE);
         }
     }
+
+    /**
+     * Set the model data value.
+     * @param dv The datavalue to set.
+     */
+    public final void setModel(final DataValue dv) {
+        model = dv;
+    }
+
+    /**
+     * @return The model that this data value view represents.
+     */
+    public final DataValue getModel() {
+        return this.model;
+    }
+
+    /**
+     * @return The datacell this datavlue is in.
+     */
+    public final DataCell getCell() {
+        return this.parentCell;
+    }
+
+    /**
+     * @return The matrix this datavalue is in.
+     */
+    public final Matrix getMatrix() {
+        return this.parentMatrix;
+    }
+
+    /**
+     * @return The index within the matrix where this datavalue exists.
+     */
+    public final int getmIndex() {
+        return this.mIndex;
+    }
+
 }

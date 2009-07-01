@@ -51,7 +51,7 @@ public class DataValueEditorFactory {
             for (int i = 0; i < m.getNumArgs(); i++) {
                 eds.addAll(buildMatrixArg(ta, c, m, i));
                 if (m.getNumArgs() > 1 && i < (m.getNumArgs() - 1)) {
-                    eds.add(new FixedText(ta, ","));
+                    eds.add(new FixedText(ta, ", "));
                 }
             }
             if (m.getNumArgs() > 1) {
@@ -84,8 +84,6 @@ public class DataValueEditorFactory {
             eds.add(buildFloat(ta, c, m, i));
         } else if (dv.getClass() == IntDataValue.class) {
             eds.add(buildInt(ta, c, m, i));
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
             eds.add(buildTextString(ta, c, m, i));
         } else if (dv.getClass() == NominalDataValue.class) {
@@ -213,26 +211,53 @@ public class DataValueEditorFactory {
                                                 DataCell c, Matrix m, int index)
     throws SystemErrorException {
 
+        Vector<EditorComponent> args = buildPredicateArgs(ta, c, m, index);
+
+        // make the PredicateNameEditor and pass it a vector of its args
+        PredicateNameEditor pn = new PredicateNameEditor(ta, c, m, index, args);
+
+        Vector<EditorComponent> eds = new Vector<EditorComponent>();
+        // insert the predicate name at the front
+        eds.add(pn);
+        eds.addAll(args);
+
+        return eds;
+    }
+
+    /**
+     * Creates a vector of editor components that represent the args in
+     * a predicate in a matrix.
+     *
+     * @param ta The parent JTextComponent the editor is in.
+     * @param c The parent data cell this editor resides within.
+     * @param m The matrix in the data cell.
+     * @param i The index of the predicate within the matrix.
+     *
+     * @return A vector of editor components to represent the predicate.
+     */
+    public static Vector<EditorComponent> buildPredicateArgs(JTextComponent ta,
+                                                DataCell c, Matrix m, int index)
+    throws SystemErrorException {
+
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
 
         PredDataValue pdv = (PredDataValue) m.getArgCopy(index);
-        Predicate pred = pdv.getItsValue();
+        int numPredArgs = 0;
+        if (!pdv.isEmpty()) {
+            numPredArgs = pdv.getItsValue().getNumArgs();
+        }
 
-        eds.add(new PredicateNameEditor(ta, c, m, index));
-
-        if (m != null) {
+        if (m != null && numPredArgs > 0) {
             eds.add(new FixedText(ta, "("));
 
             // For each of the predicate arguments, build a view representation
-            for (int pi = 0; pi < pred.getNumArgs(); pi++) {
+            for (int pi = 0; pi < numPredArgs; pi++) {
                 eds.addAll(buildPredArg(ta, c, pdv, pi, m, index));
-                if (pred.getNumArgs() > 1 && pi < (pred.getNumArgs() - 1)) {
-                    eds.add(new FixedText(ta, ","));
+                if (numPredArgs > 1 && pi < (numPredArgs - 1)) {
+                    eds.add(new FixedText(ta, ", "));
                 }
             }
-            if (pred.getNumArgs() > 1) {
-                eds.add(new FixedText(ta, ")"));
-            }
+            eds.add(new FixedText(ta, ")"));
         }
         return eds;
     }
@@ -263,15 +288,10 @@ public class DataValueEditorFactory {
             eds.add(buildFloat(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == IntDataValue.class) {
             eds.add(buildInt(ta, c, p, pi, m, mi));
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (dv.getClass() == TextStringDataValue.class) {
             eds.add(buildTextString(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == NominalDataValue.class) {
             eds.add(buildNominal(ta, c, p, pi, m, mi));
-            // No nesting of predicates yet
-//        } else if (dv.getClass() == PredDataValue.class) {
-//            return buildPredicate(ta, c, p, pi, m, mi);
         } else if (dv.getClass() == QuoteStringDataValue.class) {
             eds.addAll(buildQuoteString(ta, c, p, pi, m, mi));
         } else if (dv.getClass() == UndefinedDataValue.class) {
@@ -391,7 +411,7 @@ public class DataValueEditorFactory {
     }
 
     /**
-     * Reset the value of an Editor component. 
+     * Reset the value of an Editor component.
      * @param ed The editor component.
      * @param c The parent data cell.
      * @param m The matrix.
@@ -401,8 +421,6 @@ public class DataValueEditorFactory {
             ((FloatDataValueEditor) ed).resetValue(c, m);
         } else if (ed.getClass() == IntDataValueEditor.class) {
             ((IntDataValueEditor) ed).resetValue(c, m);
-//        } else if (dv.getClass() == TimeStampDataValue.class) {
-//            return new TimeStampValueView(s, c, m, i, true);
         } else if (ed.getClass() == TextStringDataValueEditor.class) {
             ((TextStringDataValueEditor) ed).resetValue(c, m);
         } else if (ed.getClass() == NominalDataValueEditor.class) {

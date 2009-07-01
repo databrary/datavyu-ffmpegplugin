@@ -78,24 +78,56 @@ implements FocusListener, KeyListener, MouseListener {
 
         // change currentEditor
         currentEditor = newEd;
+
         // now calculate the pre and post char counts
+        calculatePrePostCounts();
+
+        currentEditor.focusGained(null);
+
+        currentEditor.select(start, end);
+    }
+
+    /**
+     * Calculate the preCharCount and postCharCount values.
+     */
+    private void calculatePrePostCounts() {
         boolean foundEd = false;
         preCharCount = 0;
         postCharCount = 0;
-        if (newEd != NO_EDITOR) {
+        if (currentEditor != NO_EDITOR) {
             for (EditorComponent ed : editors) {
-                if (ed == newEd) {
+                if (ed == currentEditor) {
                     foundEd = true;
                 }
                 if (!foundEd) {
                     preCharCount += ed.getText().length();
-                } else if (ed != newEd) {
+                } else if (ed != currentEditor) {
                     postCharCount += ed.getText().length();
                 }
             }
         }
+        // Update the currentEditor with the new start position.
         currentEditor.setStartPos(preCharCount);
-        currentEditor.select(start, end);
+    }
+
+    /**
+     * Adds editors to the tracker on the end of the vector.
+     * @param eds The editors to add.
+     */
+    public void addEditors(final Vector<EditorComponent> eds) {
+        if (editors.addAll(eds)) {
+            calculatePrePostCounts();
+        }
+    }
+
+    /**
+     * Removes editors from the tracker.
+     * @param eds The editors to remove.
+     */
+    public void removeEditors(final Vector<EditorComponent> eds) {
+        if (editors.removeAll(eds)) {
+            calculatePrePostCounts();
+        }
     }
 
     /**

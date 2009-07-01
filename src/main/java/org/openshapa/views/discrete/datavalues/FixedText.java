@@ -53,6 +53,14 @@ public class FixedText extends EditorComponent {
      * @param fe FocusEvent details.
      */
     @Override
+    public void focusGained(final FocusEvent fe) {
+    }
+
+    /**
+     * Never called (unless you want to).
+     * @param fe FocusEvent details.
+     */
+    @Override
     public void focusLost(final FocusEvent fe) {
     }
 }

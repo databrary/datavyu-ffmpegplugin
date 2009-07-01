@@ -46,9 +46,15 @@ public abstract class EditorComponent {
     public abstract void keyReleased(final KeyEvent e);
 
     /**
+     * Subclass overrides to handle focusSet state.
+     * @param fe FocusEvent details.
+     */
+    public abstract void focusGained(final FocusEvent fe);
+
+    /**
      * Subclass overrides to handle focusLost events.
-      * @param fe FocusEvent details.
-    */
+     * @param fe FocusEvent details.
+     */
     public abstract void focusLost(final FocusEvent fe);
 
     /**

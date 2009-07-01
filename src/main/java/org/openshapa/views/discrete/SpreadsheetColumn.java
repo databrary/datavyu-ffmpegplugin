@@ -142,11 +142,9 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 // and add it to our reference list
                 cells.add(sc);
             }
-
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
         }
-
     }
 
     /**
