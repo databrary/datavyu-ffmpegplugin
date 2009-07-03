@@ -15,15 +15,14 @@ import org.openshapa.db.QuoteStringFormalArg;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.UnTypedFormalArg;
 import org.openshapa.db.VocabElement;
-import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgumentV;
-import org.openshapa.views.discrete.datavalues.vocabelements.MatrixVEV;
-import org.openshapa.views.discrete.datavalues.vocabelements.PredicateVEV;
+import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
 import java.util.Vector;
-import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -46,7 +45,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private VocabElementV selectedVocabElement;
 
     /** The currently selected formal argument. */
-    private FormalArgumentV selectedArgument;
+    private FormalArgEditor selectedArgument;
 
     /** Index of the currently selected formal argument within the element. */
     private int selectedArgumentI;
@@ -58,7 +57,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private Vector<VocabElementV> veViewsToDeleteCompletely;
 
     /** Vertical frame for holding the current listing of Vocab elements. */
-    private Box verticalFrame;
+    private JPanel verticalFrame;
 
     /**
      * Constructor.
@@ -80,29 +79,36 @@ public final class VocabEditorV extends OpenSHAPADialog {
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
         veViewsToDeleteCompletely = new Vector<VocabElementV>();
-        verticalFrame = Box.createVerticalBox();
+        verticalFrame = new JPanel();
+        verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
         try {
-            Vector<PredicateVocabElement> predVEs = db.getPredVEs();
-            for (PredicateVocabElement pve : predVEs) {
-                VocabElementV predicateV = new PredicateVEV(pve, this);
-                verticalFrame.add(predicateV);
-                veViews.add(predicateV);
-            }
-
             Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
-            for (MatrixVocabElement mve : matVEs) {
-                VocabElementV matrixV = new MatrixVEV(mve, this);
+            for (int i = matVEs.size() - 1; i >= 0; i--) {
+                MatrixVocabElement mve = matVEs.elementAt(i);
+                VocabElementV matrixV = new VocabElementV(mve, this);
                 verticalFrame.add(matrixV);
                 veViews.add(matrixV);
             }
 
+            Vector<PredicateVocabElement> predVEs = db.getPredVEs();
+            for (int i = predVEs.size() - 1; i >= 0; i--) {
+                PredicateVocabElement pve = predVEs.elementAt(i);
+                VocabElementV predicateV = new VocabElementV(pve, this);
+                verticalFrame.add(predicateV);
+                veViews.add(predicateV);
+            }
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
         }
 
         // Add a pad cell to fill out the bottom of the vertical frame.
-        verticalFrame.add(new JPanel());
-        jPanel1.add(verticalFrame, BorderLayout.NORTH);
+//        verticalFrame.add(new JPanel());
+        JPanel holdPanel = new JPanel();
+        holdPanel.setBackground(Color.white);
+        holdPanel.setLayout(new BorderLayout());
+        holdPanel.add(verticalFrame, BorderLayout.NORTH);
+        currentVocabList.setViewportView(holdPanel);
+//        jPanel1.add(verticalFrame, BorderLayout.NORTH);
         updateDialogState();
         this.getRootPane().setDefaultButton(okButton);
     }
@@ -115,13 +121,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db,
                                                                   "predicate");
-            PredicateVEV pvev = new PredicateVEV(pve, this);
-            pvev.setHasChanged(true);
-            verticalFrame.add(pvev, (verticalFrame.getComponentCount() - 1));
-            verticalFrame.validate();
-            veViews.add(pvev);
-            pvev.getNameComponent().requestFocus();
-
+            addVocabElement(pve);
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
         }
@@ -137,18 +137,22 @@ public final class VocabEditorV extends OpenSHAPADialog {
         try {
             MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
             mve.setType(MatrixType.MATRIX);
-            MatrixVEV mvev = new MatrixVEV(mve, this);
-            mvev.setHasChanged(true);
-            verticalFrame.add(mvev, (verticalFrame.getComponentCount() - 1));
-            verticalFrame.validate();
-            veViews.add(mvev);
-            mvev.getNameComponent().requestFocus();
-
+            addVocabElement(mve);
         } catch (SystemErrorException e) {
-            logger.error("Unable to create predicate vocab element", e);
+            logger.error("Unable to create matrix vocab element", e);
         }
 
         updateDialogState();
+    }
+
+    public void addVocabElement(VocabElement ve) {
+        VocabElementV vev = new VocabElementV(ve, this);
+        vev.setHasChanged(true);
+        verticalFrame.add(vev);
+        verticalFrame.validate();
+        veViews.add(vev);
+        // vev.getNameComponent().requestFocus();
+
     }
 
     /**
@@ -218,8 +222,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
             temp.rebuildContents();
 
             // Select the contents of the newly created formal argument.
-            FormalArgumentV faV = temp.getArgumentView(fa);
-            faV.requestFocus();
+            FormalArgEditor faV = temp.getArgumentView(fa);
+//            faV.requestFocus();
 
             updateDialogState();
 
@@ -477,7 +481,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         varyArgCheckBox = new javax.swing.JCheckBox();
         deleteButton = new javax.swing.JButton();
         currentVocabList = new javax.swing.JScrollPane();
-        jPanel1 = new javax.swing.JPanel();
         revertButton = new javax.swing.JButton();
         applyButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
@@ -570,17 +573,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(deleteButton, gridBagConstraints);
 
-        currentVocabList.setMinimumSize(new java.awt.Dimension(500, 23));
         currentVocabList.setName("currentVocabList"); // NOI18N
-        currentVocabList.setPreferredSize(new java.awt.Dimension(500, 400));
-
-        jPanel1.setToolTipText(bundle.getString("vocablist.tooltip")); // NOI18N
-        jPanel1.setMinimumSize(new java.awt.Dimension(500, 0));
-        jPanel1.setName("jPanel1"); // NOI18N
-        jPanel1.setPreferredSize(new java.awt.Dimension(500, 0));
-        jPanel1.setLayout(new java.awt.GridLayout(1, 1));
-        currentVocabList.setViewportView(jPanel1);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -671,7 +664,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     newArg = new FloatFormalArg(db, oldArg.getFargName());
                 }
 
-                //VocabElement ve = selectedVocabElement.getVocabElement();
+                if (oldArg.getFargType().equals(newArg.getFargType())) {
+                    return;
+                }
+
                 selectedVocabElement.getModel()
                                     .replaceFormalArg(newArg,
                                                   selectedArgument.getArgPos());
@@ -684,8 +680,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 temp.rebuildContents();
 
                 // Select the contents of the newly created formal argument.
-                FormalArgumentV faV = temp.getArgumentView(newArg);
-                faV.requestFocus();
+                FormalArgEditor faV = temp.getArgumentView(newArg);
+                temp.requestArgFocus(faV);
 
                 updateDialogState();
 
@@ -704,7 +700,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private javax.swing.JButton closeButton;
     private javax.swing.JScrollPane currentVocabList;
     private javax.swing.JButton deleteButton;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JButton moveArgLeftButton;
     private javax.swing.JButton moveArgRightButton;
     private javax.swing.JButton okButton;

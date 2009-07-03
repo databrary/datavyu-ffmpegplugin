@@ -1,30 +1,31 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.FormalArgument;
-import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.VocabElement;
 import org.openshapa.views.VocabEditorV;
-import org.openshapa.views.discrete.Editor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.net.URL;
-import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.Configuration;
+import org.openshapa.db.MatrixVocabElement;
+import org.openshapa.views.discrete.EditorComponent;
 
 /**
  * A view for a vocab element.
  */
-public abstract class VocabElementV extends JPanel
-implements KeyListener {
+public class VocabElementV extends JPanel {
+//implements KeyListener {
 
     /** The width of icon to use in the vocab element view. */
     private static final int VE_WIDTH = 22;
@@ -45,8 +46,8 @@ implements KeyListener {
     /** The label to use for if this vocab element is marked for removal. */
     private JLabel deleteIcon;
 
-    /** The field containing the name of the vocab element. */
-    private Editor veNameField;
+    /** The rootView of the VocabElement. */
+    private VocabElementRootView veRootView;
 
     /** The icon to use for if this vocab element has changed or not. */
     private ImageIcon deltaImageIcon;
@@ -60,16 +61,19 @@ implements KeyListener {
     /** The underlying model that this vocab element view represents. */
     private VocabElement veModel;
 
-    /** The collection of argument views. */
-    private Vector<FormalArgumentV> argViews;
-
     /** The parent editor for this vocab element view. */
     private VocabEditorV parentEditor;
+
+    /** Border adds a line across and a bit of space between */
+    private static Border LINE_BORDER =
+        BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY),
+                BorderFactory.createEmptyBorder(3, 0, 3, 0));
 
     /** The error logger for this class. */
     private static Logger logger = Logger.getLogger(VocabElementV.class);
 
-    protected VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
+    public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(VocabElementV.class);
@@ -80,7 +84,6 @@ implements KeyListener {
         deleteVE = false;
         veModel = vocabElement;
         parentEditor = vev;
-        argViews = new Vector<FormalArgumentV>();
 
         deltaIcon = new JLabel();
         deltaIcon.setMaximumSize(ICON_SIZE);
@@ -94,24 +97,45 @@ implements KeyListener {
         typeIcon.setPreferredSize(ICON_SIZE);
         typeIcon.setToolTipText(rMap.getString("type.tooltip"));
 
+        URL typeIconURL;
+        if (veModel.getClass() == MatrixVocabElement.class) {
+            typeIconURL = getClass().getResource("/icons/m_16.png");
+        } else {
+            typeIconURL = getClass().getResource("/icons/p_16.png");
+        }
+        ImageIcon typeImageIcon = new ImageIcon(typeIconURL);
+        this.setTypeIcon(typeImageIcon);
+
         deleteIcon = new JLabel();
         deleteIcon.setMaximumSize(ICON_SIZE);
         deleteIcon.setMinimumSize(ICON_SIZE);
         deleteIcon.setPreferredSize(ICON_SIZE);
 
-        veNameField = new VocabElementNameV(vev);
-        veNameField.setBorder(null);
-        veNameField.addKeyListener(this);
-        veNameField.setToolTipText(rMap.getString("name.tooltip"));
+        veRootView = new VocabElementRootView(vocabElement, this);
+        veRootView.setFont(Configuration.getInstance().getSSDataFont());
 
-        this.setBackground(Color.WHITE);
-        FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        JPanel leftPanel = new JPanel();
+        FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        leftPanel.setLayout(flayout);
+        leftPanel.add(deltaIcon);
+        leftPanel.add(deleteIcon);
+        leftPanel.add(typeIcon);
+        leftPanel.setBackground(Color.WHITE);
+
+        BorderLayout layout = new BorderLayout();
         this.setLayout(layout);
-        this.setMaximumSize(new Dimension(50000, VE_HEIGHT));
+        this.add(leftPanel, BorderLayout.WEST);
+        this.add(veRootView, BorderLayout.CENTER);
+        this.setBackground(Color.WHITE);
+        this.setBorder(LINE_BORDER);
 
         this.rebuildContents();
     }
 
+    public final VocabEditorV getParentDialog() {
+        return parentEditor;
+    }
+    
     /**
      * Replaces the model used for this vocab element view.
      *
@@ -135,71 +159,16 @@ implements KeyListener {
      * Updates the display of the vocab element view by rebuilding its contents.
      */
     public final void rebuildContents() {
-        this.removeAll();
-        this.add(deltaIcon);
-        this.add(deleteIcon);
-        this.add(typeIcon);
         this.parentEditor.updateDialogState();
 
-        boolean hasFocus = veNameField.hasFocus();
-        veNameField.storeCaretPosition();
-        veNameField.setText(veModel.getName());
-
-        FormalArgument focusedArg = null;
-
-        this.add(veNameField);
-
-        this.add(new JLabel("("));
-
-        try {
-            for (int i = 0; i < argViews.size(); i++) {
-                FormalArgumentV view = argViews.get(0);
-                if (view.hasFocus()) {
-                    focusedArg = view.getModel();
-                }
-
-                argViews.remove(0);
-            }
-
-            for (int i = 0; i < veModel.getNumFormalArgs(); i++) {
-
-                if (i > 0) {
-                    this.add(new JLabel(", "));
-                }
-
-                this.add(new JLabel("<"));
-
-                FormalArgumentV fargV = new FormalArgumentV(
-                                veModel.getFormalArg(i), i, this, parentEditor);
-                this.argViews.add(fargV);
-                this.add(fargV);
-                this.add(new JLabel(">"));
-            }
-
-            if (veModel.getVarLen()) {
-                if (veModel.getNumFormalArgs() > 0) {
-                    this.add(new JLabel(", "));
-                }
-
-                this.add(new JLabel("..."));
-            }
-        } catch (SystemErrorException e) {
-            logger.error("unable to rebuild contents.", e);
-        }
-
-        this.add(new JLabel(")"));
-
-        // Redraw the component (to clear anything underlying).
-        repaint();
-        validate();
+        veRootView.setVocabElement(veModel, this);
 
         // Maintain focus after draw.
-        if (hasFocus && focusedArg == null) {
-            veNameField.requestFocus();
-        } else if (focusedArg != null) {
-            getArgumentView(focusedArg).requestFocus();
-        }
-
+//        if (hasFocus && focusedArg == null) {
+//            veNameField.requestFocus();
+//        } else if (focusedArg != null) {
+//            getArgumentView(focusedArg).requestFocus();
+//        }
     }
 
     /**
@@ -234,13 +203,15 @@ implements KeyListener {
      * @return The view for the supplied formal argument if it exists, null
      * otherwise.
      */
-    public final FormalArgumentV getArgumentView(final FormalArgument fa) {
-        for (FormalArgumentV view : argViews) {
-            if (view.getModel().equals(fa)) {
-                return view;
+    public final FormalArgEditor getArgumentView(final FormalArgument fa) {
+        for (EditorComponent ed : veRootView.getEditors()) {
+            if (ed.getClass() == FormalArgEditor.class) {
+                FormalArgEditor fArgEd = (FormalArgEditor) ed;
+                if (fArgEd.getModel().equals(fa)) {
+                    return fArgEd;
+                }
             }
         }
-
         return null;
     }
 
@@ -254,34 +225,13 @@ implements KeyListener {
     /**
      * @return The component for the name of the vocab element.
      */
-    public final Editor getNameComponent() {
-        return this.veNameField;
-    }
-
-    /**
-     * The action to invoke when the user presses a key.
-     *
-     * @param e The event that triggered this action.
-     */
-    public final void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_BACK_SPACE:
-            case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
-                e.consume();
-                break;
-            default:
-                break;
+    public final VENameEditor getNameComponent() {
+        for (EditorComponent ed : veRootView.getEditors()) {
+            if (ed.getClass() == VENameEditor.class) {
+                return (VENameEditor) ed;
+            }
         }
-    }
-
-    /**
-     * The action to invoke when the user releases a key.
-     *
-     * @param e The event that triggered this action.
-     */
-    public final void keyReleased(final KeyEvent e) {
-        // Ignore key release
+        return null ;
     }
 
     /**
@@ -289,33 +239,32 @@ implements KeyListener {
      */
     @Override
     public final boolean hasFocus() {
-        if (this.veNameField.hasFocus()) {
-            return true;
-        } else {
-            for (FormalArgumentV view : argViews) {
-                if (view.hasFocus()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return veRootView.hasFocus();
     }
 
     /**
      * @return The view of the formal argument that has focus, null if no formal
      * argument view in this vocab element has focus.
      */
-    public final FormalArgumentV getArgWithFocus() {
-        for (FormalArgumentV view : argViews) {
-            if (view.hasFocus()) {
-                return view;
+    public final FormalArgEditor getArgWithFocus() {
+        for (EditorComponent ed : veRootView.getEditors()) {
+            if (ed.getClass() == FormalArgEditor.class) {
+                FormalArgEditor fArgEd = (FormalArgEditor) ed;
+                if (fArgEd.hasFocus()) {
+                    return fArgEd;
+                }
             }
         }
-
         return null;
     }
 
+    /**
+     * @param argEd The arg editor to set focus on.
+     */
+    public final void requestArgFocus(FormalArgEditor argEd) {
+        veRootView.getEdTracker().setEditor(argEd);
+    }
+    
     /**
      * Sets the deleted flag for this vocab element.
      *
