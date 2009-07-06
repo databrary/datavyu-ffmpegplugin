@@ -1,0 +1,49 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( ; offer values to all attributes that are above limits
+00009                                   (VERSION> 9999) ; no maximum version number
+00010                                   (NAME> "tttttttttttt") ; no effective maximum name
+00011                                   (MAX-ERRORS> 999999999)
+00012                                   (MAX-WARNINGS> 999999999999)
+
+      WARNING  25 (Line 11:47): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING   6 (Line 12:49): Integer value out of range.  Coerced value to nearest legal value.
+
+00013                                   (DEBUG-LEVEL> 99999999999999)  ; max debug level is 3 for now
+
+      WARNING  27 (Line 12:49): The warning limit in the MAX-WARNINGS> attribute is too large.  Warning limit forced to largest legal value.
+
+
+      WARNING   6 (Line 13:48): Integer value out of range.  Coerced value to nearest legal value.
+
+00014                                 )
+00015                        ) 
+00016                        (USER> 1) 
+
+
+Current Header Settings:
+db.name = "tttttttttttt"
+odb file format version = 9999
+warning limit = 99
+error limit = 10
+debug level = 3
+
+00017                        (QUERY> 2)
+
+      WARNING  22 (Line 16:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+00018                        (SYSTEM> 3)
+
+      WARNING  22 (Line 17:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+00019                     ) 
+00020  )

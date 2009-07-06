@@ -1,0 +1,53 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( ; give excess values for all entries
+00009                                   (VERSION> 2 1 1.1 "a string" (|a symbol in a list|) setf ()) 
+00010                                   (NAME> "macshapa.db" ' macshapa-db )
+
+      WARNING  16 (Line 9:93): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> VERSION> attribute.
+
+00011                                   (DEBUG-LEVEL> 2 ( 2 <<FLOAT>>)) 
+
+      WARNING  16 (Line 10:69): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> NAME> attribute.
+
+00012                                   (MAX-ERRORS> 20 90 () ((())) NONE-SUCH> () 3.14159)
+
+      WARNING  16 (Line 11:64): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> DEBUG-LEVEL> attribute.
+
+
+      WARNING  25 (Line 12:47): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00013                                   (MAX-WARNINGS> 50 () 88 ; Unexpected EOF ())
+
+      WARNING  16 (Line 12:84): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> MAX-ERRORS> attribute.
+
+00014  ;                               )
+00015  ;                      ) 
+00016  ;                      (USER> 1) 
+00017  ;                      (QUERY> 2)
+00018  ;                      (SYSTEM> 3)
+00019  ;                   ) 
+00020  ;)
+
+      ERROR  4 (Line 20:0): Encountered end of file unexpectedly.
+        EOF encountered in an alist entry with excess values.
+
+Unable to continue parse -- Aborting...
+
+
+Current Header Settings:
+db.name = "macshapa.db"
+odb file format version = 2
+warning limit = 50
+error limit = 10
+debug level = 2
+

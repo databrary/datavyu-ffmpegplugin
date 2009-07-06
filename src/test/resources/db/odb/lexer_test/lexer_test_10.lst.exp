@@ -1,0 +1,56 @@
+00001  ; MacSHAPA Open Database
+00002  ; 
+00003  ; This is a duplicate of lexer_test_02.txt, save with '\n' substituted for 
+00004  ; '\r' throughout the file.  The purpose of the substitution is to verify that
+00005  ; the Openshapa MacshapaODBReader class doesn't care whether new lines are marked
+00006  ; with '\r' or '\n'.
+00007  ; 
+00008  ; This database starts to get rough with the lexer.  The general idea is to 
+00009  ; generate all the errors and warnings that the lexer is capable of flagging.
+00010  ;
+00011  ; Needless to say, this is not a legal database, and will cause even more
+00012  ; fireworks if fed to the parser instead of just the lexer.
+00013  ;
+00014  ; This file deals only with errors that can be generated with booleans and 
+00015  ; a-list tag names.
+00016  ;
+00017  ; This shouldn't generate an error, but it should generate an unknown a-list tag token:
+00018  
+00019          NONE-SUCH>
+((code = 8(ALIST_LABEL_TOK)) (aux = 35(UNKNOWN_ALIST_LABEL)) (val = 0.0) (str = NONE-SUCH>) (line_number = 19) (line_index = 9))
+
+00020  
+00021  ; Now a mis-spelled boolean - this should generate a fatal error
+00022  
+00023  		TRU
+
+      ERROR  6 (Line 23:3): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+
+Unable to continue parse -- Aborting...
+((code = 0(ERROR_TOK)) (aux = 0) (val = 0.0) (str = TRU) (line_number = 23) (line_index = 3))
+
+forcing modbr.abort_scan back to false...
+
+00024  
+00025  ; and now an unexpected end of file error:
+00026  ;
+00027  ; True in MacSHAPA but not in OpenSHAPA -- the class used to read the input file 
+00028  ; in MacshapaODBReader (java.io.BufferedReader) strips the new line character 
+00029  ; (be it \r or \n) from each line as it reads it.  That causes us to recognize the
+00030  ; end of file one character later than we used to -- hence we can no longer get 
+00031  ; an unexpected eof error in this context.  Instead we get an unrecognizable
+00032  ; token error.
+00033  
+00034  	AN-UNEXPECTED-EOF
+
+      ERROR  6 (Line 34:2): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+
+Unable to continue parse -- Aborting...
+((code = 0(ERROR_TOK)) (aux = 0) (val = 0.0) (str = AN-UNEXPECTED-EOF) (line_number = 34) (line_index = 2))
+
+forcing modbr.abort_scan back to false...
+
+((code = 13(EOF_TOK)) (aux = 0) (val = 0.0) (str = ) (line_number = 34) (line_index = 0))
+

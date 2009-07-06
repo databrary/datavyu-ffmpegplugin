@@ -432,7 +432,51 @@ public final class ColPredDataValue extends DataValue {
                     ") (subRange " + this.subRange + "))");
         }
 
-    }
+    } /* ColPredDataValue::toDBString() */
+
+
+    /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB file style definition of itsValue to the
+     * supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will an instantiation of <pred_cell_value>
+     * (as defined in the grammar defining the MacSHAPA ODB file format).
+     *
+     *                                              JRM -- 1/30/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "ColPredDataValue::toMODBFile()";
+        char ch;
+        StringBuilder tmp = new StringBuilder("");
+        int i;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( this.itsValue == null )
+        {
+            output.printf("() ", tmp.toString());
+        }
+        else
+        {
+            this.itsValue.toMODBFile(output);
+        }
+
+        return;
+
+    } /* ColPredDataValue::toMODBFile() */
 
 
     /**

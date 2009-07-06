@@ -362,6 +362,66 @@ public final class NominalDataValue extends DataValue {
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB file style definition of itsValue to the
+     * supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will (depending on the subclass) be one
+     * instantiation of either <nominal_cell_value>, or <nominal> (as defined
+     * in the grammar defining the MacSHAPA ODB file format) depending on
+     * context.
+     *
+     *                                              JRM -- 1/18/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "NominalDataValue::toMODBFile()";
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( ( this.itsValue != null ) && ( this.itsValue.length() > 0 ) )
+        {
+            output.printf("|%s| ", this.itsValue);
+        }
+        else
+        {
+            // in the context of a MacSHAPA ODB file, this case should only
+            // occur if the nominal data value is a value for a nominal
+            // formal argument.  Further, since all martix and predicate
+            // formal arguments are untyped in MacSHAPA, it follows that
+            // this.itsPredID must be invalid, itsCellID and itsFargID must
+            // be valid, and itsFargType must be NOMINAL.  Hence the following
+            // sanity check.
+
+            if ( ( this.itsPredID != DBIndex.INVALID_ID ) ||
+                 ( this.itsCellID == DBIndex.INVALID_ID ) ||
+                 ( this.itsFargID == DBIndex.INVALID_ID ) ||
+                 ( this.itsFargType != FormalArgument.FArgType.NOMINAL ) )
+            {
+                throw new SystemErrorException(mName + "An undefined nominal " +
+                        "should be impossible in this context.");
+            }
+
+            output.printf("|<val>| ");
+        }
+
+        return;
+
+    } /* NominalDataValue::toMODBFile() */
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.

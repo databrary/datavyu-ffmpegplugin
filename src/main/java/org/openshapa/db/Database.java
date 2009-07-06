@@ -139,6 +139,7 @@ public abstract class Database
     public abstract float getVersion();
 
 
+
 //    /*** Database element management ***/
 //
 //    /**
@@ -2081,6 +2082,29 @@ public abstract class Database
 
     } /* Database::replaceColumn(newCol) */
 
+
+    /**
+     * toMODBFile_includeDataColumnInUserSection()
+     *
+     * Some types of databases construct columns that are not directly created
+     * by the user, and store them in the column list.  This method exists to
+     * allow these databases to prevent such columns from appearing in the
+     * user section of a MacSHAPA ODB file.
+     *
+     * Such database should override this method.
+     *
+     *                                           -- 7/5/09
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected boolean toMODBFile_includeDataColumnInUserSection(DataColumn dc)
+    {
+
+        return(true);
+
+    } /* toMODBFile_includeDataColumnInUserSection() */
 
     /*************************************************************************/
     /************************ Listener Management ****************************/

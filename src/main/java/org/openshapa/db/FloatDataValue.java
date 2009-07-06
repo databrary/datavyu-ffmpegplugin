@@ -270,6 +270,43 @@ public final class FloatDataValue extends DataValue {
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB file style definition of itsValuet to the
+     * supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will (depending on the subclass) be one
+     * instantiation of either <float_cell_value>, or <float> (as defined in
+     * the grammar defining the MacSHAPA ODB file format) depending on
+     * context.
+     *
+     *                                              JRM -- 1/18/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "FloatDataValue::toMODBFile()";
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        output.printf("%f ", this.itsValue);
+
+        return;
+
+    } /* FloatDataValue::toMODBFile() */
+
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.

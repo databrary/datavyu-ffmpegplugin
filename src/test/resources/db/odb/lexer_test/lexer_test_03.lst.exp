@@ -1,0 +1,131 @@
+00001  ; MacSHAPA Open Database
+00002  ; 
+00003  ; This database starts to get rough with the lexer.  The general idea is to 
+00004  ; generate all the errors and warnings that the lexer is capable of flagging.
+00005  ;
+00006  ; Needless to say, this is not a legal database, and will cause even more
+00007  ; fireworks if fed to the parser instead of just the lexer.
+00008  ;
+00009  ; This file deals only with errors that can be generated with numeric tokens.
+00010  ;
+00011  ; This integer has too many digits:
+00012  
+00013          10000000000000000000000000000000000000000000000
+
+      WARNING   6 (Line 13:9): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 13:9): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 4(INT_TOK)) (aux = 0) (val = 2.147483647E9) (str = 2147483647) (line_number = 13) (line_index = 9))
+
+forcing modbr.abort_scan back to false...
+
+00014  
+00015  ; and this is a negative integer with the same problem
+00016  
+00017  		-100000000000000000000000000000000000000000000000
+
+      WARNING   6 (Line 17:3): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 17:3): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 4(INT_TOK)) (aux = 0) (val = -2.147483648E9) (str = -2147483648) (line_number = 17) (line_index = 3))
+
+forcing modbr.abort_scan back to false...
+
+00018  
+00019  ; This numeric token doesn't contain any digits:
+00020  
+00021  -.
+
+      ERROR  5 (Line 21:1): Ill formed numerical constant.
+
+Unable to continue parse -- Aborting...
+((code = 0(ERROR_TOK)) (aux = 0) (val = 0.0) (str = -.) (line_number = 21) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+00022  
+00023  ; This floating point value is too large (in terms of absolute value):
+00024  
+00025  -1000000000000000000000000000000000000000000000000000000000000000000.
+
+      WARNING   7 (Line 25:1): Absolute value of floating point value too large.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 25:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 5(FLOAT_TOK)) (aux = 0) (val = -4.40282E38) (str = -440282000000000000000000000000000000000.000000) (line_number = 25) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+00026  
+00027  ; This floating point value is too small:
+00028  
+00029  0.000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+      WARNING   8 (Line 29:1): Discarded one or more least significant digits from fractional part of floating point value.
+
+
+      ERROR  0 (Line 29:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 5(FLOAT_TOK)) (aux = 0) (val = 0.0) (str = 0.000000) (line_number = 29) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+00030  
+00031  ; This floating point value is both too large and contains too small a fraction
+00032  
+00033  100000000000000000000000000000000000000000000000000000000000000000000.00000000000000000000000000000000000000000000000000000001
+
+      WARNING   7 (Line 33:1): Absolute value of floating point value too large.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 33:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   8 (Line 33:1): Discarded one or more least significant digits from fractional part of floating point value.
+
+
+      ERROR  0 (Line 33:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 5(FLOAT_TOK)) (aux = 0) (val = 4.40282E38) (str = 440282000000000000000000000000000000000.000000) (line_number = 33) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+00034  
+00035  ; This is an example of the lexer being a bit too kind about accepting numbers.
+00036  ; This will be lexed as two floating point numbers;
+00037  
+00038  	1.1.1
+((code = 5(FLOAT_TOK)) (aux = 0) (val = 1.1) (str = 1.1) (line_number = 38) (line_index = 2))
+
+((code = 5(FLOAT_TOK)) (aux = 0) (val = 0.1) (str = .1) (line_number = 38) (line_index = 5))
+
+00039  
+00040  ; Finally, and end of file in a numeric token.  The lexer doesn't care about this,
+00041  ; so it shouldn't generate an error
+00042  
+00043  
+00044  9999999999
+
+      WARNING   6 (Line 44:1): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 44:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+((code = 4(INT_TOK)) (aux = 0) (val = 2.147483647E9) (str = 2147483647) (line_number = 44) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+((code = 13(EOF_TOK)) (aux = 0) (val = 0.0) (str = ) (line_number = 44) (line_index = 0))
+

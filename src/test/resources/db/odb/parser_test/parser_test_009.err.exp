@@ -1,0 +1,7 @@
+
+      ERROR 10 (Line 7:3): "setf" expected.  Unable to recover from error by examining context.
+        A database file must start with "( setf macshapa-db '( ... ".
+
+
+Unable to continue parse -- Will continue lexer scan.
+

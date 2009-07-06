@@ -253,6 +253,45 @@ public final class UndefinedDataValue extends DataValue
                 ") (itsValue " + new String(this.itsValue) +
                 ") (subRange " + this.subRange + "))");
     }
+
+
+    /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB file style definition of itsValue to the
+     * supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will an instantiation of <formal_arg>
+     * (as defined in the grammar defining the MacSHAPA ODB file format).
+     *
+     *                                              JRM -- 1/24/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "UndefinedDataValue::toMODBFile()";
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( this.itsValue == null )
+        {
+            throw new SystemErrorException(mName + "itsValue is null");
+        }
+
+        output.printf("|%s| ", this.itsValue);
+
+        return;
+
+    } /* UndefinedDataValue::toMODBFile() */
     
     
     /** 

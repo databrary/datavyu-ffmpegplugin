@@ -1,0 +1,10 @@
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      ERROR 13 (Line 10:24): Encountered a-list entry prior to one or more of its required predicessors in its a-list.
+        HEADER> or USER> a-list entry(s) missing from the database body a-list?
+
+Unable to continue parse -- Will continue lexer scan.
+

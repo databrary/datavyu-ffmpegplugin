@@ -1,0 +1,18 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  32 (Line 24:24): Encountered a predicate definition that appears to be missing its a-list.  The definition will be ignored.
+
+
+      WARNING  33 (Line 25:24): Type mis-match in the second item in a predicate definition.  This item must be an attribute list describing the predicate.
+        The predicate definition will be discarded.
+
+
+      WARNING  34 (Line 29:13): Encountered excess values in a predicate definition.  The excess values were discarded.
+
+
+      ERROR  4 (Line 41:0): Encountered end of file unexpectedly.
+        EOF in a predicate definition.
+
+Unable to continue parse -- Aborting...

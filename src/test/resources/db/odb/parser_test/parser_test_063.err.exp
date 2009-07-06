@@ -1,0 +1,51 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  29 (Line 32:62): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        VARIABLE-LENGTH> entry missing from predicate definition?  VARIABLE-LENGTH> forced to false.
+
+
+      WARNING  29 (Line 35:54): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        FORMAL-ARG-LIST> entry missing from predicate definition?  Will use the arg list "(|<val>|)".
+
+
+      WARNING  29 (Line 38:28): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        VARIABLE-LENGTH> entry missing from predicate definition?  VARIABLE-LENGTH> forced to false.
+
+
+      WARNING  29 (Line 38:28): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        FORMAL-ARG-LIST> entry missing from predicate definition?  Will use the arg list "(|<val>|)".
+
+
+      WARNING  32 (Line 41:24): Encountered a predicate definition that appears to be missing its a-list.  The definition will be ignored.
+
+
+      WARNING  37 (Line 44:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  37 (Line 47:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  38 (Line 53:89): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition.  New definition ignored.
+
+      WARNING  38 (Line 56:97): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition.  New definition ignored.
+
+      WARNING  38 (Line 59:100): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition -- formal argument name mismatch.  New definition ignored.
+
+      WARNING  22 (Line 62:46): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry must be a (possibly empty) list of spreadsheet variable declarations.
+
+
+      WARNING  22 (Line 63:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+
+      WARNING  22 (Line 66:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

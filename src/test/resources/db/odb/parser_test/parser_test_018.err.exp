@@ -1,0 +1,14 @@
+
+      WARNING  29 (Line 16:23): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        The missing entry == the HEADER> VERSION> entry.  Format version forced to 1.
+
+
+      WARNING  16 (Line 19:20): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> section.
+
+
+      ERROR 14 (Line 20:0): Encountered a-list with one or more required entries missing.
+        Required entry(s) missing from the database body a-list.
+
+Unable to continue parse -- Will continue lexer scan.
+

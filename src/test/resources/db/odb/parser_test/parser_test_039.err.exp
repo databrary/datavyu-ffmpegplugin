@@ -1,0 +1,11 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  14 (Line 29:5): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The USER> section appears not to have a value.
+
+
+      WARNING  22 (Line 30:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

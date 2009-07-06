@@ -1419,5 +1419,164 @@ public class ColumnList
 
     } /* ColumnList::toDBString() */
 
+
+    /**
+     * toMODBFile_colDecs()
+     *
+     * Write declarations of all non system data columns to the supplied file
+     * in MacSHAPA ODB file format.  The output of this method is the
+     * <s_var_dec_list> in the grammar defining the MacSHAPA ODB file
+     * format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * data column, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_colDecs(java.io.PrintStream output,
+                                      String newLine,
+                                      String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "VocabList::toMODBFile_colDecs()";
+        String colIndent;
+        Column col;
+        DataColumn dc;
+        java.util.Enumeration<Column> entries;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        output.printf("%s(%s", indent, newLine);
+
+        colIndent = indent + "  ";
+
+        entries = this.cl.elements();
+
+        while ( entries.hasMoreElements() )
+        {
+            col = entries.nextElement();
+
+            if ( col instanceof DataColumn )
+            {
+                dc = (DataColumn)col;
+
+                if ( this.db.toMODBFile_includeDataColumnInUserSection(dc) )
+                {
+                    dc.toMODBFile_colDec(output, newLine, colIndent);
+                }
+            }
+        }
+
+
+        output.printf("%s)%s", indent, newLine);
+
+        return;
+
+    } /* ColumnList::toMODBFile_colDecs() */
+
+
+    /**
+     * toMODBFile_colDefs()
+     *
+     * Write definitions of all non system data columns to the supplied file
+     * in MacSHAPA ODB file format.  The output of this method is the
+     * <s_var_def_list> in the grammar defining the MacSHAPA ODB file
+     * format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * data column, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_colDefs(java.io.PrintStream output,
+                                      String newLine,
+                                      String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "VocabList::toMODBFile_colDefs()";
+        String colIndent;
+        MatrixVocabElement mve;
+        Column col;
+        DataColumn dc;
+        java.util.Enumeration<Column> entries;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        output.printf("%s(%s", indent, newLine);
+
+        colIndent = indent + "  ";
+
+        entries = this.cl.elements();
+
+        while ( entries.hasMoreElements() )
+        {
+            col = entries.nextElement();
+
+            if ( col instanceof DataColumn )
+            {
+                dc = (DataColumn)col;
+
+                mve = dc.lookupMatrixVE(dc.getItsMveID());
+
+                if ( ! mve.getSystem() )
+                {
+                    dc.toMODBFile_colDef(output, newLine, colIndent);
+                }
+            }
+        }
+
+
+        output.printf("%s)%s", indent, newLine);
+
+        return;
+
+    } /* ColumnList::toMODBFile_colDefs() */
+
 } /* class ColumnList */
 

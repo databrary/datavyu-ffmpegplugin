@@ -1,0 +1,20 @@
+
+      WARNING  25 (Line 11:47): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING   6 (Line 12:49): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      WARNING  27 (Line 12:49): The warning limit in the MAX-WARNINGS> attribute is too large.  Warning limit forced to largest legal value.
+
+
+      WARNING   6 (Line 13:48): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      WARNING  22 (Line 16:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  22 (Line 17:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

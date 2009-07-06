@@ -945,6 +945,82 @@ public class Predicate extends DBElement
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB style definition of the predicate and its
+     * arguments to the supplied file in MacSHAPA ODB file format.  The output
+     * of this method is an instantiation of <pred_value> or <pred_cell_value>
+     * (as defined in the grammar defining the MacSHAPA ODB file format).
+     *
+     *                                              JRM -- 1/30/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "Predicate::toMODBFile()";
+        int i = 0;
+        int numArgs;
+        FormalArgument farg;
+        DataValue arg;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( this.pveID == DBIndex.INVALID_ID )
+        {
+            output.printf("() ");
+        }
+        else
+        {
+            if ( ( this.predName == null ) ||
+                 ( this.predName.length() == 0 ) )
+            {
+                /* predicate name undefined or of zero length!! */
+                throw new SystemErrorException(mName + "predName undefined");
+            }
+
+            if ( this.argList == null )
+            {
+                /* argList hasn't been instantiated yet -- scream and die */
+                throw new SystemErrorException(mName + "argList unitialized?!?!");
+            }
+
+            numArgs = this.argList.size();
+
+            if ( numArgs <= 0 )
+            {
+                throw new SystemErrorException(mName + "numArgs <= 0");
+            }
+
+            output.printf("( |%s| ", this.predName);
+
+            while ( i < (numArgs - 1) )
+            {
+                arg = this.getArg(i);
+
+                arg.toMODBFile(output);
+
+                i++;
+            }
+
+            output.printf(") ");
+
+        }
+
+        return;
+
+    } /* Predicate::toMODBFile() */
+
+
+    /**
      * toString()
      *
      * Returns a String representation of the Predicate for display.

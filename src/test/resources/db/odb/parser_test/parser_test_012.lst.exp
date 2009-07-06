@@ -1,0 +1,20 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf 9 9 macshapa-db '( 
+
+      ERROR 11 (Line 7:8): "macshapa-db" expected.  Unable to recover from error by examining context.
+        A database file must start with "( setf macshapa-db '( ... ".
+
+
+Unable to continue parse -- Will continue lexer scan.
+
+00008                        (HEADER> 1.1) 
+00009                        (USER> "a string") 
+00010                        (QUERY> |<a_formal_argument>|) 
+00011                        (SYSTEM> |a_predicate_name|) 
+00012                    ) 
+00013  )

@@ -1,0 +1,21 @@
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      WARNING  22 (Line 9:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  22 (Line 10:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+
+      WARNING  18 (Line 12:24): Encountered unknown or unexpected alist entry.  Entry will be read and discarded.
+        The entry is located in the database body a-list.
+
+
+      ERROR  4 (Line 14:0): Encountered end of file unexpectedly.
+        EOF encountered in an unknown or unexpected a-list entry.
+
+Unable to continue parse -- Aborting...

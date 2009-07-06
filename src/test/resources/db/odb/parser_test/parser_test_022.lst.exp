@@ -1,0 +1,36 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( ; ommit values to all attributes
+00009                                   (VERSION> ) 
+00010                                   (NAME> )
+
+      WARNING  14 (Line 9:44): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The HEADER> VERSION> attribute appears not to contain a value.  Version # forced to 1.
+00011                                   (DEBUG-LEVEL> ) 
+
+      WARNING  14 (Line 10:41): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The HEADER> NAME> attribute appears not to contain a value.  The attribute will be ignored.
+00012                                   (MAX-ERRORS> )
+
+      WARNING  14 (Line 11:48): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The HEADER> DEBUG-LEVEL> attribute appears not to contain a value.  Debug level forced to 0.
+00013                                   (MAX-WARNINGS> )
+
+      WARNING  14 (Line 12:47): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The HEADER> MAX-ERRORS> attribute appears not to contain a value.  Errors limit forced to 1.
+
+00014                                 )
+00015                        ) 
+
+      WARNING  14 (Line 13:49): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        The HEADER> MAX-WARNINGS> attribute appears not to contain a value.  Warnings limit forced to 1.
+
+
+      ERROR  0 (Line 13:49): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...

@@ -1,0 +1,5 @@
+
+      ERROR  4 (Line 20:0): Encountered end of file unexpectedly.
+        EOF in HEADER> VERSION> attribute.
+
+Unable to continue parse -- Aborting...

@@ -1,0 +1,49 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "parser_test.db" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 2 )
+        ( MAX_ERRORS> 10 )
+        ( MAX-WARNINGS> 50 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+            ( _really_not_a_pred_name_ ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( not_a_pred_name ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( pred_7 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<val>| ) ) )
+            ( pred_6 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<val>| ) ) )
+            ( pred_5 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
+            ( pred_4 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
+            ( pred_3 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( pred_2 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
+            ( pred_1 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            (
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+      )
+    )
+  )
+)

@@ -1953,6 +1953,82 @@ public class VocabList
 
     } /* VocabList::toDBString() */
 
+
+    /**
+     * toMODBFile_predDefs()
+     *
+     * Write all non system predicates to the supplied file in MacSHAPA ODB
+     * file format.  The output of this method is the <pred_def_list> in the
+     * grammar defining the MacSHAPA ODB file format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * predicate, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_predDefs(java.io.PrintStream output,
+                                       String newLine,
+                                       String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "VocabList::toMODBFile_predDefs()";
+        String pveIndent;
+        VocabElement ve;
+        PredicateVocabElement pve;
+        java.util.Enumeration<VocabElement> entries;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        output.printf("%s(%s", indent, newLine);
+
+        entries = this.vl.elements();
+
+        pveIndent = indent + "  ";
+
+        while ( entries.hasMoreElements() )
+        {
+            ve = entries.nextElement();
+
+            if ( ve instanceof PredicateVocabElement )
+            {
+                pve = (PredicateVocabElement)ve;
+
+                if ( ! pve.getSystem() )
+                {
+                    pve.toMODBFile(output, newLine, pveIndent);
+                }
+            }
+        }
+
+        output.printf("%s)%s", indent, newLine);
+
+        return;
+
+    } /* VocabList::toMODBFile_predDefs() */
+    
     /**
      * @return A hashcode for the object.
      */

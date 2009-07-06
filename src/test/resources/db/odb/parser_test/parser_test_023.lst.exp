@@ -1,0 +1,34 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( ; give list values for all entries
+00009                                   (VERSION> ()) 
+
+      WARNING  22 (Line 9:44): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> VERSION> attribute must be a positive integer.  Version # forced to 1.
+00010                                   (DEBUG-LEVEL> (setf)) 
+
+      WARNING  22 (Line 10:48): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> DEBUG-LEVEL> attribute must be a non-negative integer.  Debug level forced to 0.
+00011                                   (NAME> (1))
+
+      WARNING  22 (Line 11:41): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> NAME> attribute must be a quoted string.  The attribute will be ignored.
+00012                                   (MAX-ERRORS> (2.2))
+
+      WARNING  22 (Line 12:47): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> MAX-ERRORS> attribute must be a positive integer.  Errors limit forced to 1.
+
+00013                                   (MAX-WARNINGS> (""))
+
+      WARNING  22 (Line 13:49): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> MAX-WARNINGS> attribute must be a positive integer.  Warnings limit forced to 1.
+
+
+      ERROR  0 (Line 13:49): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...

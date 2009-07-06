@@ -1,0 +1,25 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( 
+00009                                   (VERSION> 2  ) 
+00010                                   (NAME>  ; unexpected EOF )
+00011  ;                                 (DEBUG-LEVEL> 2 ) 
+00012  ;                                 (MAX-ERRORS> 20 )
+00013  ;                                 (MAX-WARNINGS> 50 )
+00014  ;                               )
+00015  ;                      ) 
+00016  ;                      (USER> 1) 
+00017  ;                      (QUERY> 2)
+00018  ;                      (SYSTEM> 3)
+00019  ;                   ) 
+00020  ;)
+
+      ERROR  4 (Line 20:0): Encountered end of file unexpectedly.
+        EOF in the HEADER> NAME> attribute.
+
+Unable to continue parse -- Aborting...

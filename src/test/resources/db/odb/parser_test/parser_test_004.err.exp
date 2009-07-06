@@ -1,0 +1,20 @@
+
+      WARNING  11 (Line 7:4): "setf" expected.  "setf" inserted to allow continued parse.
+        A database file must start with "( setf macshapa-db '( ... ".
+
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      WARNING  22 (Line 9:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  22 (Line 10:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+
+      ERROR  4 (Line 13:0): Encountered end of file unexpectedly.
+        EOF occurred the database body a-list.
+Unable to continue parse -- Aborting...

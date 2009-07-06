@@ -159,6 +159,32 @@ public abstract class DataValue extends DBElement
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB style definition of the DataValue
+     * to the supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will (depending on the subclass) be one
+     * instantiation of either <float_cell_value>, <integer_cell_value>,
+     * <matrix_cell_value>, <nominal_cell_value>, <pred_cell_value>,
+     * <text_cell_value>, <quote_string>, <nominal>, <pred_value>,
+	 * <integer>, <float>, <time_stamp>, or <formal_arg> (as defined in
+     * the grammar defining the MacSHAPA ODB file format) depending on
+     * context.
+     *
+     *                                              JRM -- 1/17/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected abstract void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException;
+
+
+    /**
      * toDBString()
      *
      * Returns a database String representation of the DBValue for comparison 

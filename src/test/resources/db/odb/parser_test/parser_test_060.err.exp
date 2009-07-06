@@ -1,0 +1,31 @@
+
+      WARNING   9 (Line 13:11): Left parentheses expected.  Left parenthesis inserted to allow continued parse.
+        The opening left parenthesis of the HEADER> a-list appears to be missing.
+
+
+      WARNING  25 (Line 18:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING   9 (Line 26:11): Left parentheses expected.  Left parenthesis inserted to allow continued parse.
+        The opening left parenthesis of the USER> a-list appears to be missing.
+
+
+      WARNING   9 (Line 30:15): Left parentheses expected.  Left parenthesis inserted to allow continued parse.
+        The opening left parenthesis of the predicate definitions list appears to be missing.
+
+
+      WARNING   9 (Line 34:19): Left parentheses expected.  Left parenthesis inserted to allow continued parse.
+        The opening left parenthesis of a predicate definition a-list appears to be missing.
+
+
+      WARNING  22 (Line 43:46): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry must be a (possibly empty) list of spreadsheet variable declarations.
+
+
+      WARNING  22 (Line 44:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+
+      WARNING  22 (Line 47:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

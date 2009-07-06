@@ -1,0 +1,33 @@
+; MacSHAPA Open Database
+;
+; This is a duplicate of lexer_test_05.txt, save with '\n' substituted for 
+; '\r' throughout the file.  The purpose of the substitution is to verify that
+; the Openshapa MacshapaODBReader class doesn't care whether new lines are marked
+; with '\r' or '\n'.
+; 
+; This database starts to get rough with the lexer.  The general idea is to 
+; generate all the errors and warnings that the lexer is capable of flagging.
+;
+; Needless to say, this is not a legal database, and will cause even more
+; fireworks if fed to the parser instead of just the lexer.
+;
+; This file deals only with errors that can be generated with reserved word tokens.
+;
+; This reserved word doesn't exist
+
+ none-such
+ 
+; and this one contains an illegal character
+
+ none-Such
+
+; finally, this one has an unexpected end of file
+;
+; True in MacSHAPA but not in OpenSHAPA -- the class used to read the input file 
+; in MacshapaODBReader (java.io.BufferedReader) strips the new line character 
+; (be it \r or \n) from each line as it reads it.  That causes us to recognize the
+; end of file one character later than we used to -- hence we can no longer get 
+; an unexpected eof error in this context.  Instead we get another unrecognized 
+; token error.
+
+unxepected-eof

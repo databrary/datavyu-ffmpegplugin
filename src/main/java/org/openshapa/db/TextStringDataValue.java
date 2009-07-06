@@ -292,6 +292,66 @@ public final class TextStringDataValue extends DataValue
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB file style definition of itsValue to the
+     * supplied file in MacSHAPA ODB file format.
+     *
+     * The output of this method will an instantiation of <text_quote_string>
+     * (as defined in the grammar defining the MacSHAPA ODB file format).
+     *
+     *                                              JRM -- 1/18/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "TextStringDataValue::toMODBFile()";
+        char ch;
+        StringBuilder tmp = new StringBuilder("");
+        int i;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( ( this.itsValue != null ) && ( this.itsValue.length() > 0 ) )
+        {
+            for ( i = 0; i < this.itsValue.length(); i++ )
+            {
+                ch = this.itsValue.charAt(i);
+
+                if ( ( ch < 0 ) || ( ch > 0x7F ) || ( ch == '\b') )
+                {
+                    // string contains a character that can't appear in a
+                    // text string.
+                    throw new SystemErrorException(mName +
+                            "itsValue contains an illegal character.");
+                }
+                else if ( ( ch == '\'' ) || ( ch == '\"' ) || ( ch == '\\' ) )
+                {
+                    // the next character must be escaped.
+                    tmp.append('\\');
+                }
+
+                tmp.append(ch);
+            }
+        }
+
+        output.printf("\"%s\" ", tmp.toString());
+
+        return;
+
+    } /* TextStringDataValue::toMODBFile() */
+
+
+    /**
      * updateForFargChange()
      *
      * Update for a change in the formal argument name, and/or subrange.

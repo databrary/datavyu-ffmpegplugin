@@ -1,0 +1,21 @@
+
+      ERROR  6 (Line 13:2): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+Unable to continue parse -- Aborting...
+
+      ERROR  6 (Line 17:2): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+Unable to continue parse -- Aborting...
+
+      ERROR  6 (Line 17:7): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+
+Unable to continue parse -- Aborting...
+
+      ERROR  6 (Line 17:8): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+Unable to continue parse -- Aborting...
+
+      ERROR  6 (Line 28:1): Encountered unrecognizable token in the input stream.
+        Perhaps an unescaped symbol?
+Unable to continue parse -- Aborting...

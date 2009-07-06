@@ -1,0 +1,53 @@
+
+      WARNING   6 (Line 18:9): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 18:9): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   6 (Line 22:3): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 22:3): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      ERROR  5 (Line 26:1): Ill formed numerical constant.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   7 (Line 30:1): Absolute value of floating point value too large.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 30:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   8 (Line 34:1): Discarded one or more least significant digits from fractional part of floating point value.
+
+
+      ERROR  0 (Line 34:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   7 (Line 38:1): Absolute value of floating point value too large.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 38:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   8 (Line 38:1): Discarded one or more least significant digits from fractional part of floating point value.
+
+
+      ERROR  0 (Line 38:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...
+
+      WARNING   6 (Line 49:1): Integer value out of range.  Coerced value to nearest legal value.
+
+
+      ERROR  0 (Line 49:1): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...

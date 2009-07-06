@@ -646,6 +646,96 @@ public class Matrix implements Cloneable {
     } /* Matrix::toDBString() */
 
 
+
+    /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB style definition of the matrix and its contests
+     * to the supplied file in MacSHAPA ODB file format.  The output of this
+     * method is one instantiation of the <s_var_cell_value_attribute> (as
+     * defined in the grammar defining the MacSHAPA ODB file format) for each
+     * entry in the matrix.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * data column, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(MatrixVocabElement mve,
+                              java.io.PrintStream output,
+                              String newLine,
+                              String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "matrix::toMODBFile()";
+        int i = 0;
+        int numArgs;
+        FormalArgument farg;
+        DataValue arg;
+
+        if ( ( mve == null ) ||
+             ( mve.getID() != this.mveID ) )
+        {
+            throw new SystemErrorException(mName + "bad mve on entry");
+        }
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        if ( argList == null )
+        {
+            /* argList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "argList unitialized?!?!");
+        }
+
+        numArgs = this.argList.size();
+
+        if ( numArgs <= 0 )
+        {
+            throw new SystemErrorException(mName + "numArgs <= 0");
+        }
+
+        while ( i < (numArgs - 1) )
+        {
+            farg = mve.getFormalArg(i);
+            arg = this.getArg(i);
+
+            output.printf("( |%s| ", farg.getFargName());
+
+            arg.toMODBFile(output);
+
+            output.printf(") ");
+
+            i++;
+        }
+
+        return;
+
+    } /* Matrix::toMODBFile() */
+
+
     /**
      * toString()
      *

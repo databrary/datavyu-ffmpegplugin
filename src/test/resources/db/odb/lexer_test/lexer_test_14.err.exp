@@ -1,0 +1,13 @@
+
+      WARNING   4 (Line 18:1): Illegal escape sequence detected in a string.  Sequence replaced with a '_'.
+        The sequence was: \]
+
+
+      WARNING   5 (Line 22:1): Illegal character detected in a string.  Character replaced with a '_'.
+        The illegal character was:  (HEX 0x08)
+
+
+      ERROR  4 (Line 26:1): Encountered end of file unexpectedly.
+        EOF was encountered in a string.  Unterminated string?
+
+Unable to continue parse -- Aborting...

@@ -1,0 +1,35 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> <<FLOAT>>) 
+00009                        (USER> "a string") 
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+00010                        (QUERY> |a nominal|) 
+
+      WARNING  22 (Line 9:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+00011                        (SYSTEM> |a_predicate_name|) 
+
+      WARNING  22 (Line 10:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+00012                        (NONE-SUCH> 1 2 (1 2); eof in the middle of an unknown or unexpected a-list entry.
+
+      WARNING  18 (Line 12:24): Encountered unknown or unexpected alist entry.  Entry will be read and discarded.
+        The entry is located in the database body a-list.
+
+00013  ;                  ) 
+00014  ; )
+
+      ERROR  4 (Line 14:0): Encountered end of file unexpectedly.
+        EOF encountered in an unknown or unexpected a-list entry.
+
+Unable to continue parse -- Aborting...

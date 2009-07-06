@@ -1,0 +1,12 @@
+
+      WARNING  22 (Line 7:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      WARNING  22 (Line 7:41): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  22 (Line 7:52): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

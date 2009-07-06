@@ -1,0 +1,33 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( ; offer values to all attributes that are below limits
+00009                                   (VERSION> 0)
+00010                                   (DEBUG-LEVEL> -1) 
+
+      WARNING  21 (Line 9:44): The database format version number must be a positive integer.  Version number forced to 1.
+
+00011                                   (NAME> "")
+
+      WARNING  28 (Line 10:48): The debug level in the DEBUG-LEVEL> attribute must be non-negative.  Debug level forced to 0.
+
+00012                                   (MAX-ERRORS> 0)
+
+      WARNING  23 (Line 11:41): Encountered an empty quote string where a non-empty quote string is required.
+        The string provided in the HEADER> NAME> attribute is empty.  The attribute will be ignored.
+00013                                   (MAX-WARNINGS> 0)
+
+      WARNING  24 (Line 12:47): The error limit in the MAX-ERRORS> attribute must be positive.  Error limit forced to 1.
+
+00014                                 )
+
+      WARNING  26 (Line 13:49): The warning limit in the MAX-WARNINGS> attribute must be positive.  Warning limit forced to 1.
+
+
+      ERROR  0 (Line 13:49): Warning limit exceeded - load aborted.
+
+Unable to continue parse -- Aborting...

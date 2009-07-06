@@ -1,0 +1,31 @@
+
+      WARNING  16 (Line 9:93): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> VERSION> attribute.
+
+
+      WARNING  16 (Line 10:69): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> NAME> attribute.
+
+
+      WARNING  16 (Line 11:64): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> DEBUG-LEVEL> attribute.
+
+
+      WARNING  25 (Line 12:47): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  16 (Line 12:84): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> MAX-ERRORS> attribute.
+
+
+      WARNING  16 (Line 13:60): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the HEADER> MAX-WARNINGS> attribute.
+
+
+      WARNING  22 (Line 16:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  22 (Line 17:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

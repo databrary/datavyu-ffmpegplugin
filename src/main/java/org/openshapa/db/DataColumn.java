@@ -24,7 +24,14 @@ public class DataColumn extends Column
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
-    /*
+    /* macshapaColWidth: The width of the column used to display this data
+     *      column in MacSHAPA.
+     *
+     *      This field is never used in OpenSHAPA.  It exists purely to allow
+     *      use to store the column width associated with a data column in a
+     *      MacSHAPA ODB database for later use should we have to write the
+     *      database back out in MacSHAPA ODB format.
+     *
      * itsMveID:   Long containing the ID of the matrix vocab element
      *      that defines the format of the cell.  Note that the
      *
@@ -47,15 +54,23 @@ public class DataColumn extends Column
      *      the DataColumn, which will become the cannonical at the end of
      *      the cascade.
      */
+
+    /** Width of the column in a MacSHAPA spreadsheet */
+    protected int macshapaColWidth = MacshapaDatabase.DEFAULT_COLUMN_WIDTH;
+
     /** ID of associated matrix VE */
     private long itsMveID = DBIndex.INVALID_ID;
+
     /** Type of associated matrix VE */
     private MatrixVocabElement.MatrixType itsMveType =
             MatrixVocabElement.MatrixType.UNDEFINED;
+
     /** Vector of DataCells for Column */
     private Vector<DataCell> itsCells = null;
+
     /** Whether arg list is variable length */
     private boolean varLen = false;
+
     /**
      * reference to instance of DataColumnListeners used to maintain lists of
      * listeners, and notify them as appropriate.
@@ -267,17 +282,69 @@ public class DataColumn extends Column
     } /* DataColumn::getItsCells() */
 
 
-    protected void setItsCells(Vector<DataCell> cells) {
+    protected void setItsCells(Vector<DataCell> cells)
+    {
 
         this.itsCells = cells;
 
-        if (this.itsCells == null) {
+        if (this.itsCells == null)
+        {
             this.numCells = 0;
-        } else {
+        } 
+        else
+        {
             this.numCells = this.itsCells.size();
         }
 
     } /* DataColumn::setItsCells(cells) */
+
+
+    /**
+     * getMacshapaColWidth() & setMacshapaColWidth()
+     *
+     * Get or set the current value of the macshapaColWidth field.
+     *
+     * Observe that both of these accesors are protected.  For now at least,
+     * the macshapaColWidth field is intended only to store the MacSHAPA
+     * width of a column loaded from a MacSHAPA ODB file, so the same width
+     * can be written out again should we have to write a modified MacSHAPA
+     * ODB file.
+     *
+     * Should this ever change, we will have to integrate macshapaColWidth
+     * field into the listeners, so that they will be informed when the
+     * field changes.
+     *
+     *                                      JRM -- 8/29/07
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected int getMacshapaColWidth()
+    {
+
+        return this.macshapaColWidth;
+
+    } /* "DataColumn::getMacshapaColWidth() */
+
+
+    protected void setMacshapaColWidth(int newColWidth)
+        throws SystemErrorException
+    {
+        final String mName = "DataColumn::setMacshapaColWidth()";
+
+        if ( ( newColWidth < MacshapaDatabase.MIN_COLUMN_WIDTH ) ||
+             ( newColWidth > MacshapaDatabase.MAX_COLUMN_WIDTH ) )
+        {
+            throw new SystemErrorException(mName + "newColWidth out of range.");
+        }
+
+        this.macshapaColWidth = newColWidth;
+
+        return;
+
+    } /* DataColumn::setMacshapaColWidth() */
 
 
     /**
@@ -294,7 +361,8 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-    public long getItsMveID() {
+    public long getItsMveID()
+    {
 
         return this.itsMveID;
 
@@ -302,29 +370,36 @@ public class DataColumn extends Column
 
 
     protected void setItsMveID(long mveID)
-            throws SystemErrorException {
+            throws SystemErrorException
+    {
         final String mName = "DataColumn::setItsMveID(): ";
         MatrixVocabElement mve;
 
-        if (this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED) {
+        if (this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED)
+        {
             throw new SystemErrorException(mName +
                     "this.itsMveType undefined on entry.");
         }
 
-        if (itsMveID != DBIndex.INVALID_ID) {
+        if (itsMveID != DBIndex.INVALID_ID)
+        {
             throw new SystemErrorException(mName + "itsMveID already set");
-        } else if (mveID == DBIndex.INVALID_ID) {
+        } 
+        else if (mveID == DBIndex.INVALID_ID)
+        {
             throw new SystemErrorException(mName + "mveID == INVALID_ID");
         }
 
         mve = this.lookupMatrixVE(mveID);
 
-        if (mve.getItsColID() != DBIndex.INVALID_ID) {
+        if (mve.getItsColID() != DBIndex.INVALID_ID)
+        {
             throw new SystemErrorException(mName +
                     "target mve already assigned to a column");
         }
 
-        if (mve.getType() != this.itsMveType) {
+        if (mve.getType() != this.itsMveType)
+        {
             throw new SystemErrorException(mName +
                     "target mve type doesn't match this.itsMveType");
         }
@@ -348,7 +423,8 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-    public MatrixVocabElement.MatrixType getItsMveType() {
+    public MatrixVocabElement.MatrixType getItsMveType()
+    {
 
         return this.itsMveType;
 
@@ -366,7 +442,8 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-    public boolean getVarLen() {
+    public boolean getVarLen()
+    {
 
         return this.varLen;
 
@@ -1184,7 +1261,7 @@ public class DataColumn extends Column
      *
      *    - None.
      */
-    private MatrixVocabElement lookupMatrixVE(long mveID)
+    protected MatrixVocabElement lookupMatrixVE(long mveID)
             throws SystemErrorException {
         final String mName = "DataColumn::lookupMatrixVE(mveID): ";
         DBElement dbe;
@@ -1301,6 +1378,261 @@ public class DataColumn extends Column
         return s;
 
     } /* DataColumn::itsCellsToString() */
+
+
+    /**
+     * toMODBFile_colDec()
+     *
+     * Write the MacSHAPA ODB style declaration of the data column
+     * to the supplied file in MacSHAPA ODB file format.  The output of this
+     * method is the <s_var_dec> in the grammar defining the MacSHAPA ODB
+     * file format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * data column element, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_colDec(java.io.PrintStream output,
+                                     String newLine,
+                                     String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "DataColumn::toMODBFile_colDec()";
+        int i;
+        int numFargs;
+        MatrixVocabElement mve = null;
+        FormalArgument farg = null;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        if ( this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED )
+        {
+            throw new SystemErrorException(mName + "itsMveType undefined?!?!");
+        }
+
+        mve = this.lookupMatrixVE(this.itsMveID);
+
+        numFargs = mve.getNumFormalArgs();
+
+        if ( numFargs <= 0 )
+        {
+            /* no formal arguments?? scream and die */
+            throw new SystemErrorException(mName + "no formal arguments?!?!");
+        }
+
+
+        // Opening header and parenthesis:
+
+        output.printf("%s( |%s|%s", indent, this.name, newLine);
+
+        output.printf("%s  (%s", indent, newLine);
+
+
+        // type:
+
+        switch( this.itsMveType )
+        {
+            case FLOAT:
+                output.printf("%s    ( TYPE> <<FLOAT>> )%s", indent, newLine);
+                break;
+
+            case INTEGER:
+                output.printf("%s    ( TYPE> <<INTEGER>> )%s", indent, newLine);
+                break;
+
+            case MATRIX:
+                output.printf("%s    ( TYPE> <<MATRIX>> )%s", indent, newLine);
+                break;
+
+            case NOMINAL:
+                output.printf("%s    ( TYPE> <<NOMINAL>> )%s", indent, newLine);
+                break;
+
+            case PREDICATE:
+                output.printf("%s    ( TYPE> <<PREDICATE>> )%s",
+                              indent, newLine);
+                break;
+
+            case TEXT:
+                output.printf("%s    ( TYPE> <<TEXT>> )%s", indent, newLine);
+                break;
+
+            case UNDEFINED:
+                throw new SystemErrorException(mName +
+                        "this.itsMveType is undefined?!?");
+                // break; /* commented out to keep the compiler happy */
+
+            default:
+                throw new SystemErrorException(mName +
+                        "this.itsMveType has unknown value?!?");
+                // break; /* commented out to keep the compier happy */
+        }
+
+
+        // variable length:
+
+        if ( this.varLen )
+        {
+            output.printf("%s    ( VARIABLE-LENGTH> TRUE )%s", indent, newLine);
+        }
+        else
+        {
+            output.printf("%s    ( VARIABLE-LENGTH> FALSE )%s", indent, newLine);
+        }
+
+
+        // formal argument list:
+
+        output.printf("%s    ( FORMAL-ARG-LIST> ( ", indent);
+
+        i = 0;
+        while ( i < numFargs )
+        {
+            farg = mve.getFormalArg(i);
+            output.printf("|%s| ", farg.getFargName());
+            i++;
+        }
+
+        output.printf(")%s", newLine);
+
+
+        // column width:
+
+        output.printf("%s    ( COLUMN-WIDTH> %d )%s",
+                      indent, this.macshapaColWidth, newLine);
+
+
+        // closing parentheses:
+
+        output.printf("%s  )%s", indent, newLine);
+
+        output.printf("%s)%s", indent, newLine);
+
+
+        return;
+
+    } /* DataColumn::toMODBFile_colDec() */
+
+
+    /**
+     * toMODBFile_colDef()
+     *
+     * Write the MacSHAPA ODB style definition of the data column
+     * to the supplied file in MacSHAPA ODB file format.  The output of this
+     * method is the <s_var_def> in the grammar defining the MacSHAPA ODB
+     * file format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * data column, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_colDef(java.io.PrintStream output,
+                                     String newLine,
+                                     String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "DataColumn::toMODBFile_colDef()";
+        String cellIndent;
+        int i;
+        MatrixVocabElement mve = null;
+        DataCell cell = null;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        if ( this.itsMveType == MatrixVocabElement.MatrixType.UNDEFINED )
+        {
+            throw new SystemErrorException(mName + "itsMveType undefined?!?!");
+        }
+
+        mve = this.lookupMatrixVE(this.itsMveID);
+
+
+        // Opening header and parenthesis:
+
+        output.printf("%s( |%s|%s", indent, this.name, newLine);
+
+        output.printf("%s  (%s", indent, newLine);
+
+
+        // cell definitions:
+
+        output.printf("%s    ( CELLS>%s", indent, newLine);
+
+        cellIndent = indent + "      ";
+        i = 1;
+
+        while ( i <= this.numCells )
+        {
+            cell = this.getCell(i + 1);
+            cell.toMODBFile(mve, output, newLine, cellIndent);
+            i++;
+        }
+
+        output.printf("%s    )%s", indent, newLine);
+
+
+        // vocab list if appropriate:
+
+
+
+        // closing parentheses:
+
+        output.printf("%s  )%s", indent, newLine);
+
+        output.printf("%s)%s", indent, newLine);
+
+
+        return;
+
+    } /* DataColumn::toMODBFile_colDef() */
 
 
     /*************************************************************************/
@@ -1923,7 +2255,8 @@ public class DataColumn extends Column
             boolean[] cpFargInserted,
             java.util.Vector<FormalArgument> oldCPFargList,
             java.util.Vector<FormalArgument> newCPFargList)
-            throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "DataColumn::MVEChanged(): ";
 
         if (this.getDB() != db) {

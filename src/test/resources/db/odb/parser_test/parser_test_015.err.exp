@@ -1,0 +1,46 @@
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      WARNING  22 (Line 9:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  85 (Line 10:33): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 11:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 12:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 13:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 14:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 15:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 16:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 17:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 18:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 19:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      WARNING  85 (Line 20:27): Encountered an atom in the query list.  The atom will be discarded.
+
+
+      ERROR  4 (Line 26:0): Encountered end of file unexpectedly.
+        EOF encountered in an arbitrary list that was being discarded.
+
+Unable to continue parse -- Aborting...

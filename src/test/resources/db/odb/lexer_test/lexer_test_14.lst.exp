@@ -1,0 +1,48 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is a duplicate of lexer_test_06.txt, save with '\n' substituted for 
+00004  ; '\r' throughout the file.  The purpose of the substitution is to verify that
+00005  ; the Openshapa MacshapaODBReader class doesn't care whether new lines are marked
+00006  ; with '\r' or '\n'.
+00007  ; 
+00008  ; This database starts to get rough with the lexer.  The general idea is to 
+00009  ; generate all the errors and warnings that the lexer is capable of flagging.
+00010  ;
+00011  ; Needless to say, this is not a legal database, and will cause even more
+00012  ; fireworks if fed to the parser instead of just the lexer.
+00013  ;
+00014  ; This file deals only with errors that can be generated with string tokens.
+00015  ;
+00016  ; This string contains an illegal escape sequence
+00017  
+00018  " an illegal escape sequence follows: \]"
+
+      WARNING   4 (Line 18:1): Illegal escape sequence detected in a string.  Sequence replaced with a '_'.
+        The sequence was: \]
+
+((code = 6(STRING_TOK)) (aux = 112(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  an illegal escape sequence follows: _) (line_number = 18) (line_index = 1))
+
+00019  
+00020  ; This string contains a backspace
+00021  
+00022  " the next character is a BS (0x08):"
+
+      WARNING   5 (Line 22:1): Illegal character detected in a string.  Character replaced with a '_'.
+        The illegal character was:  (HEX 0x08)
+
+((code = 6(STRING_TOK)) (aux = 112(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  the next character is a BS (0x08):_) (line_number = 22) (line_index = 1))
+
+00023  
+00024  ; finally, an unterminated string
+00025  
+00026  " this string is unterminated and thus ends in an EOF
+
+      ERROR  4 (Line 26:1): Encountered end of file unexpectedly.
+        EOF was encountered in a string.  Unterminated string?
+
+Unable to continue parse -- Aborting...
+((code = 13(EOF_TOK)) (aux = 0) (val = 0.0) (str =  this string is unterminated and thus ends in an EOF
+) (line_number = 26) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+

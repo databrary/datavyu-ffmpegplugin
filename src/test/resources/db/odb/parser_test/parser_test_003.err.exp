@@ -1,0 +1,48 @@
+
+      WARNING  22 (Line 8:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the HEADER> section must be a list.
+
+
+      WARNING  22 (Line 9:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+
+      WARNING  20 (Line 10:23): Encountered an atom in an a-list.  The atom will be read and discarded.
+        The atom was detected in the database body a-list.
+
+
+      WARNING   1 (Line 11:31): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 11:31): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING  22 (Line 11:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+
+      WARNING  17 (Line 13:24): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate HEADER> entry
+
+
+      WARNING  17 (Line 14:24): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate USER> entry."
+
+
+      WARNING   1 (Line 15:31): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 15:31): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING  17 (Line 15:24): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate QUERY> entry.
+
+
+      WARNING  17 (Line 16:24): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate SYSTEM> entry.
+

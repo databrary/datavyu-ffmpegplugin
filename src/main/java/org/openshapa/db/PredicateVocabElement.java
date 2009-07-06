@@ -326,5 +326,94 @@ public final class PredicateVocabElement extends VocabElement
 
     } /* PredicateFormalArgument::getNumElements() */
 
+
+    /**
+     * toMODBFile_predDefs()
+     *
+     * Write the predicate vocab element to the supplied file in MacSHAPA ODB
+     * file format.  The output of this method is the <pred_def> in the
+     * grammar defining the MacSHAPA ODB file format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     * Note that this method throws away a lot of information about each
+     * predicate vocab element, as this data is not used in MacSHAPA.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(java.io.PrintStream output,
+                              String newLine,
+                              String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "PredicateVocabElement::toMODBFile()";
+        int i;
+        int numFArgs;
+        FormalArgument farg = null;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        if ( this.system )
+        {
+            throw new SystemErrorException(mName + "this is a system PVE!!!");
+        }
+
+        if ( fArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
+        }
+
+        output.printf("%s( %s ( ", indent, this.name);
+
+        if ( this.varLen )
+        {
+            output.printf("( VARIABLE-LENGTH> TRUE ) ");
+        }
+        else
+        {
+            output.printf("( VARIABLE-LENGTH> FALSE ) ");
+        }
+
+        output.printf("( FORMAL-ARG-LIST> ( ");
+
+        numFArgs = fArgList.size();
+
+        i = 0;
+
+        while ( i < numFArgs )
+        {
+            farg = this.getFormalArg(i);
+            output.printf("|%s| ", farg.getFargName());
+            i++;
+        }
+
+        output.printf(") ) )%s", newLine);
+
+        return;
+
+    } /* PredicateVocabElement::toMODBFile() */
+
 } /* Class PredicateVocabElement */
 

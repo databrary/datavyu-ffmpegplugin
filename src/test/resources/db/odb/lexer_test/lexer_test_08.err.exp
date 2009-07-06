@@ -1,0 +1,4 @@
+
+      ERROR  1 (Line 22:1): New line encountered in a symbol.  Symbol not terminated with a '|'?
+
+Unable to continue parse -- Aborting...

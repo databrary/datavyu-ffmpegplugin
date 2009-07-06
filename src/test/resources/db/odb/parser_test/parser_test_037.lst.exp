@@ -1,0 +1,48 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db 
+00008   '( 
+00009      ( HEADER> 
+00010        ( 
+00011          ( VERSION> 1 ) 
+00012          ( NAME> "parser_test.db" )
+00013          ( DEBUG-LEVEL> 0 ) 
+00014          ( MAX-ERRORS> 20 )
+00015          ( MAX-WARNINGS> 50 )
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00016        )
+00017      ) 
+00018      ( USER> 
+00019        (
+00020          ( PREDICATE-DEFINITIONS> 
+00021            (
+00022              ( |pred_1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
+00023              ( |pred_2| ( ( VARIABLE-LENGTH> TRUE )  ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+00024            ) 
+00025          )
+00026          ( SPREADSHEET-VARIABLE-DECLARATIONS> 1 )
+00027          ( SPREADSHEET-VARIABLE-DEFINITIONS> 1 )
+
+      WARNING  22 (Line 26:46): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry must be a (possibly empty) list of spreadsheet variable declarations.
+
+00028        )
+
+      WARNING  22 (Line 27:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+00029      ) 
+00030      ( QUERY> 2 )
+00031      ( SYSTEM> 3 )
+
+      WARNING  22 (Line 30:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+00032    ) 
+00033  )

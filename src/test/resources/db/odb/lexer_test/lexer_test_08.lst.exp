@@ -1,0 +1,32 @@
+00001  ; MacSHAPA Open Database
+00002  ; 
+00003  ; This database starts to get rough with the lexer.  The general idea is to 
+00004  ; generate all the errors and warnings that the lexer is capable of flagging.
+00005  ;
+00006  ; Needless to say, this is not a legal database, and will cause even more
+00007  ; fireworks if fed to the parser instead of just the lexer.
+00008  ;
+00009  ; This file is a follow on to lexer_test_07.txt.  It exists as I want to test
+00010  ; an eof in a formal argument.
+00011  ;
+00012  
+00013  ; an unterminated formal argument symbol
+00014  ;
+00015  ; True in MacSHAPA but not in OpenSHAPA -- the class used to read the input file 
+00016  ; in MacshapaODBReader (java.io.BufferedReader) strips the new line character 
+00017  ; (be it \r or \n) from each line as it reads it.  That causes us to recognize the
+00018  ; end of file one character later than we used to -- hence we can no longer get 
+00019  ; an unexpected eof error in this context.  Instead we get a symbol contains
+00020  ; a new line error.
+00021  
+00022  |<this_formal_argument_is_unterminated_and_thus_ends_in_an_EOF
+
+      ERROR  1 (Line 22:1): New line encountered in a symbol.  Symbol not terminated with a '|'?
+
+Unable to continue parse -- Aborting...
+((code = 0(ERROR_TOK)) (aux = 0) (val = 0.0) (str = <this_formal_argument_is_unterminated_and_thus_ends_in_an_EOF) (line_number = 22) (line_index = 1))
+
+forcing modbr.abort_scan back to false...
+
+((code = 13(EOF_TOK)) (aux = 0) (val = 0.0) (str = ) (line_number = 22) (line_index = 0))
+

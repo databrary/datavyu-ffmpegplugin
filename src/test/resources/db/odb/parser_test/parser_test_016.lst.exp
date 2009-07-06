@@ -1,0 +1,36 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db '( 
+00008                        (HEADER> ( (VERSION> 1)
+00009                                   (NAME> "parser_test.db")
+00010                                   (MAX-ERRORS> 5)
+00011                                   (MAX-WARNINGS> 10)
+00012                                   (DEBUG-LEVEL> 5) 
+00013                                 ) 
+00014                        ) 
+00015                        (USER> 1) 
+
+
+Current Header Settings:
+db.name = "parser_test.db"
+odb file format version = 1
+warning limit = 10
+error limit = 5
+debug level = 3
+
+00016                        (QUERY> 2)
+
+      WARNING  22 (Line 15:30): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> section must be a list.
+
+00017                        (SYSTEM> 3)
+
+      WARNING  22 (Line 16:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
+00018                     ) 
+00019  )

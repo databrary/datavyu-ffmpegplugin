@@ -2506,6 +2506,75 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
 
     /**
+     * toMODBFile()
+     *
+     * Write the MacSHAPA ODB style definition of the data cell
+     * to the supplied file in MacSHAPA ODB file format.  The output of this
+     * method is the <s_var_cell> in the grammar defining the MacSHAPA ODB
+     * file format.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     *                                              JRM -- 12/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile(MatrixVocabElement mve,
+                              java.io.PrintStream output,
+                              String newLine,
+                              String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "DataCell::toMODBFile()";
+
+        if ( ( mve == null ) ||
+             ( mve.getID() != this.itsMveID ) )
+        {
+            throw new SystemErrorException(mName + "bad mve on entry");
+        }
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        // opening paren, cell onset and offset ...
+        output.printf("%s(%s", indent, newLine);
+
+        output.printf("%s  ( ONSET> %d )%s", indent,
+                this.onset.getTicks(), newLine);
+
+        output.printf("%s  ( OFFSET> %d ) ", indent,
+                this.offset.getTicks(), newLine);
+
+        // ... cell value ...
+        this.val.toMODBFile(mve, output, newLine, indent);
+
+        // ... closing paren and new line.
+        output.printf(")%s", newLine);
+
+        return;
+
+    } /* DataCell::toMODBFile() */
+
+
+    /**
      * validateNewCell()
      *
      * Verify that the value of a cell that is about to be inserted in

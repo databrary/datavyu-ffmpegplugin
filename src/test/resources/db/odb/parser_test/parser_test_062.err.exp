@@ -1,0 +1,32 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  37 (Line 26:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  37 (Line 29:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  38 (Line 35:89): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition.  New definition ignored.
+
+      WARNING  38 (Line 38:97): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition.  New definition ignored.
+
+      WARNING  38 (Line 41:100): Encountered a duplicate definition of a predicate.  The second definition will be ignored.
+        New definition doesn't match old definition -- formal argument name mismatch.  New definition ignored.
+
+      WARNING  22 (Line 44:46): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry must be a (possibly empty) list of spreadsheet variable declarations.
+
+
+      WARNING  22 (Line 45:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+
+      WARNING  22 (Line 48:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

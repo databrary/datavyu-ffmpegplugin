@@ -1,0 +1,15 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  16 (Line 28:9): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered in the USER> SPREADSHEET-VARIABLE-DECLARATIONS> attribute.
+
+
+      WARNING  22 (Line 29:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+
+      WARNING  22 (Line 32:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+
