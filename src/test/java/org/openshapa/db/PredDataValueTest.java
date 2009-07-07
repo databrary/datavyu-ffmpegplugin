@@ -39,7 +39,7 @@ public class PredDataValueTest extends DataValueTest {
      * @throws org.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         predMVE = new MatrixVocabElement(db, "pred_mve");
         predMVE.setType(MatrixVocabElement.MatrixType.PREDICATE);
@@ -585,9 +585,6 @@ public class PredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -751,9 +748,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -1280,9 +1274,6 @@ public class PredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -1491,9 +1482,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -2075,9 +2063,6 @@ public class PredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -2288,9 +2273,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -2752,9 +2734,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
-            } catch (LogicErrorException e) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.toString();
             }
 
             if ( ( alt_db == null ) ||
@@ -3140,9 +3119,6 @@ public class PredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -3366,9 +3342,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||
@@ -3847,9 +3820,6 @@ public class PredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -3987,9 +3957,6 @@ public class PredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( db == null ) ||

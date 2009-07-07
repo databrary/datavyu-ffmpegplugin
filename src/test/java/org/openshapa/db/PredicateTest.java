@@ -27,7 +27,7 @@ public class PredicateTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
         PredicateVocabElement pve0 = new PredicateVocabElement(db, "test0");
@@ -511,8 +511,6 @@ public class PredicateTest {
 
             pred1 = new Predicate(db, predID1);
         } catch (SystemErrorException e) {
-            threwSystemErrorException = true;
-        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
         }
 
@@ -1213,9 +1211,6 @@ public class PredicateTest {
 
             pred1a = new Predicate(db, predID1, argList1a);
         } catch (SystemErrorException e) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -2322,9 +2317,6 @@ public class PredicateTest {
 
             completed = true;
         } catch (SystemErrorException e) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -3527,9 +3519,6 @@ public class PredicateTest {
 
             completed = true;
         } catch (SystemErrorException e) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }
@@ -6122,9 +6111,6 @@ public class PredicateTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -6915,9 +6901,6 @@ public class PredicateTest {
 
             completed = true;
         } catch (SystemErrorException e) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
         }

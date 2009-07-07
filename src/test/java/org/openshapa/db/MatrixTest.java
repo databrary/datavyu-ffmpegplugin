@@ -33,7 +33,7 @@ public class MatrixTest {
      * @throws SystemErrorException if trouble
      */
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         testdb = new ODBCDatabase();
 
         testMatrixMve = new MatrixVocabElement(testdb, "matrix_mve");
@@ -376,9 +376,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1300,9 +1297,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -3464,9 +3458,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -5039,9 +5030,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -8209,9 +8197,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -9872,9 +9857,6 @@ public class MatrixTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

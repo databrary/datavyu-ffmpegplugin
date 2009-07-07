@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.7</version>
+  <version>0.8</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -16,19 +16,6 @@
 
   <!-- Credits for OpenSHAPA. -->
   <developers>
-    <developer>
-      <id>clinton</id>
-      <name>Clinton Freeman</name>
-      <email>clinton.freeman@_no_spam_nicta.com.au</email>
-      <organization>NICTA</organization>
-      <organizationUrl>www.nicta.com.au</organizationUrl>
-      <roles>
-        <role>Digital Bricklayer</role>
-        <role>Monster Truck Driver</role>       
-      </roles>
-      <timezone>+10</timezone> 
-    </developer>
-
     <developer>
       <id>John</id>
       <name>John Mainzer</name>
@@ -73,6 +60,16 @@
       </roles>
       <timezone>-5</timezone>
     </developer>
+
+    <developer>
+      <id>Jesse</id>
+      <name>Jesse Lingeman</name>
+      <email>jml654@_no_spam_nyu.edu</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
   </developers>
 
   <contributors>
@@ -85,12 +82,6 @@
     <contributor>
       <name>John Franchak</name>
       <email>franchak@_no_spam_gmail.com</email>
-      <timezone>-5</timezone>
-    </contributor>
-
-    <contributor>
-      <name>Jesse Lingeman</name>
-      <email>jml654@_no_spam_nyu.edu</email>
       <timezone>-5</timezone>
     </contributor>
 
@@ -337,7 +328,7 @@
     <dependency>
         <groupId>javax.script</groupId>
         <artifactId>script-api</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
 
     <dependency>
@@ -349,7 +340,7 @@
     <dependency>
         <groupId>org.jruby</groupId>
         <artifactId>jruby-complete</artifactId>
-        <version>1.1RC3</version>
+        <version>1.3.1</version>
     </dependency>
 
     <dependency>
@@ -385,7 +376,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.0-RC3-E</version>
+      <version>v2.0-RC3-G</version>
     </dependency>
 
     <dependency>

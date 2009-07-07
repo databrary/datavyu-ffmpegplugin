@@ -345,9 +345,6 @@ public class FormalArgumentTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||

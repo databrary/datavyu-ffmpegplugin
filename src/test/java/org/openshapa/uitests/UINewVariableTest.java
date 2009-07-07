@@ -40,7 +40,7 @@ public final class UINewVariableTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testTextVariable() throws Exception {
-        String varName = "textVar";
+        String varName = "text var";
         String varType = "TEXT";
         String varRadio = "text";
 

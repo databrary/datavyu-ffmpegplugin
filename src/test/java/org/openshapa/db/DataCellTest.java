@@ -27,7 +27,7 @@ public class DataCellTest extends CellTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
         col = new DataColumn(db, "integer", MatrixVocabElement.MatrixType.INTEGER);
@@ -152,7 +152,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test3ArgConstructor()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing 3 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -949,7 +949,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test4ArgConstructor()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing 4 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -1766,7 +1766,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void Test7ArgConstructor()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing 7 argument constructor for class DataCell                ";
         String passBanner = "PASSED\n";
@@ -3008,9 +3008,6 @@ public class DataCellTest extends CellTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.getMessage();
         }
 
         if ( ( pve10 == null ) ||
@@ -3279,7 +3276,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestAccessors()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing class DataCell accessors                                 ";
         String passBanner = "PASSED\n";
@@ -4280,7 +4277,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestCopyConstructor()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing copy constructor for class DataCell                      ";
         String passBanner = "PASSED\n";
@@ -5442,7 +5439,7 @@ public class DataCellTest extends CellTest {
      */
     @Test
     public void TestToStringMethods()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         String testBanner =
             "Testing toString() & toDBString()                                ";
         String passBanner = "PASSED\n";

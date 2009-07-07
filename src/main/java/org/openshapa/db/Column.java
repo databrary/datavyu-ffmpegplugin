@@ -190,8 +190,7 @@ public abstract class Column
                   String name,
                   boolean hidden,
                   boolean readOnly)
-        throws SystemErrorException, LogicErrorException
-    {
+    throws SystemErrorException {
 
         super(db);
 
@@ -391,18 +390,21 @@ public abstract class Column
 
     } /* Column::getName() */
 
-
     /**
-     * Sets the name of the column
+     * Validates the new name to use for the column.
      *
-     * @param name The new name of the column to use
-     * @throws org.openshapa.db.SystemErrorException when unable to set
-     * the name of the column, either the database or the name is invalid.
-     * @throws org.openshapa.db.LogicErrorException When the user has
-     * induced an error that we can recover from (i.e. set the name of the
-     * column to be identical to an existing column.
+     * @param d The database to use when validating the column name.
+     * @param name The new name to use for the column
+     *
+     * @return True if the name for the supplied column is valid.
+     *
+     * @throws org.openshapa.db.SystemErrorException If we encounter an
+     * unrecoverable database problem while validating the column name.
+     * @throws org.openshapa.db.LogicErrorException If we encounter an error
+     * that the user can recover from - i.e. if the column name contains invalid
+     * characters, or if the column name alread exists in the database.
      */
-    public void setName(final String name)
+    public static boolean isValidColumnName(final Database d, final String name)
     throws SystemErrorException, LogicErrorException {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -413,21 +415,46 @@ public abstract class Column
                                                          name));
         }
 
-        if (this.getDB() == null) {
-            throw new SystemErrorException(rMap.getString("Error.baddb", name));
+        if (d.vl.inVocabList(name)) {
+            VocabElement e = d.getVocabElement(name);
+            if (e.getSystem()) {
+                throw new LogicErrorException(rMap.getString("Error.system",
+                                                             name));
+            } else {
+                throw new LogicErrorException(rMap.getString("Error.exists",
+                                                             name));
+            }
         }
 
-        if (this.getDB().vl.inVocabList(name)) {
+        if (d.cl.inColumnList(name)) {
             throw new LogicErrorException(rMap.getString("Error.exists", name));
         }
 
-        if (this.getDB().cl.inColumnList(name)) {
-            throw new LogicErrorException(rMap.getString("Error.exists", name));
+        return true;
+    }
+
+    /**
+     * Sets the name of the column
+     *
+     * @param name The new name of the column to use
+     *
+     * @throws org.openshapa.db.SystemErrorException when unable to set
+     * the name of the column, either the database or the name is invalid.
+     */
+    public void setName(final String name) throws SystemErrorException {
+        try {
+            if (this.getDB() == null) {
+                throw new SystemErrorException("Column.setName: null db");
+            }
+
+            // Throws exception if new name is not valid.
+            Column.isValidColumnName(this.getDB(), name);
+            this.name = new String(name);
+            return;
+
+        } catch (LogicErrorException e) {
+            throw new SystemErrorException("Column.setName: Invalid name.", e);
         }
-
-        this.name = new String(name);
-        return;
-
     } /* Column::setName() */
 
 

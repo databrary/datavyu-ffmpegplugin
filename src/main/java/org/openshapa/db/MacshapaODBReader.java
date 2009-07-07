@@ -67,8 +67,8 @@ public class MacshapaODBReader
      * entry labels.  Note that the integer values assigned to theses constants
      * also index the string representations of the a-list labels in the a-list
      * label name table.  Since this table is searched via a binary search on a
-     * sorted list, the a-list entry lable codes must be assigned in
-     * alphabetical order.  The a_list_tag_name_table is defined in lexer
+     * sorted list, the a-list entry lable codes must be assigned in 
+     * alphabetical order.  The a_list_tag_name_table is defined in lexer 
      * section below.
      *************************************************************************/
 
@@ -107,16 +107,16 @@ public class MacshapaODBReader
     final int VARIABLE_LENGTH_LABEL                                 = 32;
     final int VERSION_LABEL                                         = 33;
     final int VOCAB_LABEL                                           = 34;
-
+    
     final int NUMBER_OF_ALIST_LABELS                                = 35;
-
+    
     final int UNKNOWN_ALIST_LABEL                                   = 35;
 
 
     /*************************************************************************
      * The following #defines contain the strings used to label a-list entries.
-     * These are the labels refered to in the above a-list label #defines.
-     * They should also be listed in alphabetical order, although this is
+     * These are the labels refered to in the above a-list label #defines.  
+     * They should also be listed in alphabetical order, although this is 
      * merely an aid updating the a_list_tag_name_table in the lexer section
      * below.
      *************************************************************************/
@@ -161,10 +161,10 @@ public class MacshapaODBReader
     /*************************************************************************
      * The following code are used to differentiate between the various private
      * values that MacSHAPA uses to store the database.  Note that the integer
-     * values associated with these constants also index the string
-     * representations of the private values in the private value name table.
-     * Since this table is searched via a binary search on a sorted list, the
-     * private value code must be assigned in alphabetical order.
+     * values associated with these constants also index the string 
+     * representations of the private values in the private value name table.  
+     * Since this table is searched via a binary search on a sorted list, the 
+     * private value code must be assigned in alphabetical order. 
      *
      * If new private value codes are created, parse_s_var_type_attribute()
      * below will have to be updated, along with the tables in the lexer section
@@ -183,20 +183,20 @@ public class MacshapaODBReader
 
 
     /*************************************************************************
-     * The following constants contain the strings used to represent the
-     * private values whose codes are given above.  They should also be
-     * listed in alphabetical order, although this is merely an aid updating
+     * The following constants contain the strings used to represent the 
+     * private values whose codes are given above.  They should also be 
+     * listed in alphabetical order, although this is merely an aid updating 
      * the private_value_name_table in the lexer section below
      *************************************************************************/
 
-    final String FLOAT_PVAL_STR         = "<<FLOAT>>";
+    final String FLOAT_PVAL_STR		= "<<FLOAT>>";
     final String INTEGER_PVAL_STR       = "<<INTEGER>>";
     final String MATRIX_PVAL_STR        = "<<MATRIX>>";
     final String NOMINAL_PVAL_STR       = "<<NOMINAL>>";
     final String PREDICATE_PVAL_STR     = "<<PREDICATE>>";
     final String TEXT_PVAL_STR          = "<<TEXT>>";
 
-
+    
     /* The token constants are used to indicate the general type of a token
      * recognized by the lexical analyzer.
      */
@@ -218,14 +218,14 @@ public class MacshapaODBReader
     final static int MAX_TOKEN_CODE  = 13;
 
 
-    /* When the lexical analyzer encounters a symbol (i.e. an identifier
-     * bracketed  with '|' characters), it doesn't know whether it should be
-     * looking for a  predicate name, a nominal or a formal argument.  Since
-     * there are different constraints on the characters that may appear in
-     * each of these types of symbols, the lexical analyzer keeps track of
-     * what the symbol could be as a function of the characters that appear
-     * in it, and indicates the possibilities via the following flag constants.
-     * There are similar ambiguities when dealing with quoted strings.  The
+    /* When the lexical analyzer encounters a symbol (i.e. an identifier 
+     * bracketed  with '|' characters), it doesn't know whether it should be 
+     * looking for a  predicate name, a nominal or a formal argument.  Since 
+     * there are different constraints on the characters that may appear in 
+     * each of these types of symbols, the lexical analyzer keeps track of 
+     * what the symbol could be as a function of the characters that appear 
+     * in it, and indicates the possibilities via the following flag constants.  
+     * There are similar ambiguities when dealing with quoted strings.  The 
      * second three flag constants are used in this case.
      */
 
@@ -248,27 +248,27 @@ public class MacshapaODBReader
      * error or warning message is defined.
      */
 
-    final int MAX_WARNINGS_EXCEEDED_ERR         		=  0;
-    final int NEW_LINE_IN_SYMBOL_ERR                	=  1;
-    final int UNTERMINATED_FORMAL_ARG_ERR               =  2;
-    final int ZERO_LENGTH_SYMBOL_ERR        			=  3;
-    final int UNEXPECTED_END_OF_FILE_ERR                =  4;
-    final int ILL_FORMED_NUMERICAL_CONST_ERR        	=  5;
-    final int UNKNOWN_TOKEN_TYPE_ERR                    =  6;
-    final int ILL_FORMED_PRIVATE_VALUE_ERR  			=  7;
-    final int LEFT_PAREN_EXPECTED_ERR           		=  8;
-    final int RIGHT_PAREN_EXPECTED_ERR              	=  9;
-    final int SETF_EXPECTED_ERR                         = 10;
-    final int DB_VAR_EXPECTED_ERR                      	= 11;
-    final int QUOTE_EXPECTED_ERR                        = 12;
-    final int MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR   = 13;
-    final int REQUIRED_ALIST_ENTRIES_MISSING_ERR        = 14;
-    final int EMPTY_ALIST_ENTRY_ERR                     = 15;
-    final int DATA_ITEM_TOO_LARGE_ERR                   = 16;
-
-    final int NUMBER_OF_ERROR_MESSAGES                  = 17;
-
-
+    final int MAX_WARNINGS_EXCEEDED_ERR				=  0;
+    final int NEW_LINE_IN_SYMBOL_ERR				=  1;
+    final int UNTERMINATED_FORMAL_ARG_ERR			=  2;
+    final int ZERO_LENGTH_SYMBOL_ERR				=  3;
+    final int UNEXPECTED_END_OF_FILE_ERR                        =  4;
+    final int ILL_FORMED_NUMERICAL_CONST_ERR			=  5;
+    final int UNKNOWN_TOKEN_TYPE_ERR				=  6;
+    final int ILL_FORMED_PRIVATE_VALUE_ERR			=  7;
+    final int LEFT_PAREN_EXPECTED_ERR				=  8;
+    final int RIGHT_PAREN_EXPECTED_ERR				=  9;
+    final int SETF_EXPECTED_ERR					= 10;
+    final int DB_VAR_EXPECTED_ERR				= 11;
+    final int QUOTE_EXPECTED_ERR				= 12;
+    final int MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR           = 13;
+    final int REQUIRED_ALIST_ENTRIES_MISSING_ERR                = 14;
+    final int EMPTY_ALIST_ENTRY_ERR				= 15;
+    final int DATA_ITEM_TOO_LARGE_ERR                           = 16;
+    
+    final int NUMBER_OF_ERROR_MESSAGES				= 17;
+    
+    
     /**
      * MacSHAPA Open Database Error Message table.
      */
@@ -337,119 +337,119 @@ public class MacshapaODBReader
 
     final int ILLEGAL_ESCAPE_SEQ_IN_SYMBOL_WARN                 =   0;
     final int ILLEGAL_CHAR_IN_SYMBOL_WARN                       =   1;
-    final int LEADING_WS_IN_SYMBOL_ERR                          =   2;
-    final int TRAILING_WS_IN_SYMBOL_ERR                         =   3;
+    final int LEADING_WS_IN_SYMBOL_ERR				=   2;
+    final int TRAILING_WS_IN_SYMBOL_ERR				=   3;
     final int ILLEGAL_ESC_SEQ_IN_QUOTE_STR_WARN                 =   4;
-    final int ILLEGAL_CHAR_IN_QUOTE_STR_WARN                    =   5;
-    final int INTEGER_OUT_OF_RANGE_WARN                         =   6;
-    final int FLOAT_VAL_OUT_OF_RANGE_WARN                       =   7;
-    final int PART_OF_FRACTION_DISCARDED_WARN                   =   8;
-    final int LEFT_PAREN_EXPECTED_WARN                          =   9;
-    final int RIGHT_PAREN_EXPECTED_WARN                         =  10;
-    final int SETF_EXPECTED_WARN                                =  11;
-    final int DB_VAR_EXPECTED_WARN                              =  12;
-    final int QUOTE_EXPECTED_WARN                               =  13;
-    final int EMPTY_ALIST_ENTRY_WARN                            =  14;
+    final int ILLEGAL_CHAR_IN_QUOTE_STR_WARN			=   5;
+    final int INTEGER_OUT_OF_RANGE_WARN				=   6;
+    final int FLOAT_VAL_OUT_OF_RANGE_WARN			=   7;
+    final int PART_OF_FRACTION_DISCARDED_WARN			=   8;
+    final int LEFT_PAREN_EXPECTED_WARN				=   9;
+    final int RIGHT_PAREN_EXPECTED_WARN				=  10;
+    final int SETF_EXPECTED_WARN				=  11;
+    final int DB_VAR_EXPECTED_WARN				=  12;
+    final int QUOTE_EXPECTED_WARN				=  13;
+    final int EMPTY_ALIST_ENTRY_WARN				=  14;
     final int ILLEGAL_UNKNOWN_ALIST_ENTRY_VAL_WARN              =  15;
     final int EXCESS_VALUES_IN_ALIST_ENTRY_WARN                 =  16;
-    final int DUPLICATE_ALIST_ENTRY_WARN                        =  17;
+    final int DUPLICATE_ALIST_ENTRY_WARN			=  17;
     final int UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN            =  18;
-    final int NON_ALIST_ENTRY_LIST_IN_ALIST_WARN                =  19;
-    final int NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN                =  20;
+    final int NON_ALIST_ENTRY_LIST_IN_ALIST_WARN		=  19;
+    final int NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN		=  20;
     final int NON_POSITIVE_DB_VERSION_NUM_WARN                  =  21;
     final int ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN                =  22;
     final int EMPTY_QUOTE_STRING_WARN                           =  23;
-    final int NON_POSITIVE_ERROR_LIMIT_WARN                     =  24;
-    final int ERROR_LIMIT_TOO_LARGE_WARN                        =  25;
-    final int NON_POSITIVE_WARNING_LIMIT_WARN                   =  26;
-    final int WARNING_LIMIT_TOO_LARGE_WARN                      =  27;
-    final int NEGATIVE_DEBUG_LEVEL_WARN                         =  28;
-    final int MISSING_ALIST_ENTRY_WARN                          =  29;
+    final int NON_POSITIVE_ERROR_LIMIT_WARN			=  24;
+    final int ERROR_LIMIT_TOO_LARGE_WARN			=  25;
+    final int NON_POSITIVE_WARNING_LIMIT_WARN			=  26;
+    final int WARNING_LIMIT_TOO_LARGE_WARN			=  27;
+    final int NEGATIVE_DEBUG_LEVEL_WARN				=  28;
+    final int MISSING_ALIST_ENTRY_WARN				=  29;
     final int ALIEN_LIST_IN_PRED_DEFS_LIST_WARN                 =  30;
     final int ALIEN_ATOM_IN_PRED_DEFS_LIST_WARN                 =  31;
     final int EMPTY_PRED_DEF_WARN                               =  32;
-    final int TYPE_MISMATCH_IN_PRED_DEF_WARN                    =  33;
+    final int TYPE_MISMATCH_IN_PRED_DEF_WARN			=  33;
     final int EXCESS_VALUES_IN_A_PREDICATE_DEF_WARN             =  34;
     final int NON_FARG_IN_FARG_LIST_WARN                        =  35;
-    final int EMPTY_FORMAL_ARGUMENT_LIST_WARN                   =  36;
+    final int EMPTY_FORMAL_ARGUMENT_LIST_WARN			=  36;
     final int NAME_IN_PRED_DEF_NOT_A_PRED_NAME_WARN             =  37;
     final int PREDICATE_REDEFINITION_WARN                       =  38;
     final int ALIEN_LIST_IN_S_VAR_DEC_LIST_WARN                 =  39;
     final int ALIEN_ATOM_IN_S_VAR_DEC_LIST_WARN                 =  40;
     final int NAME_IN_S_VAR_DEC_NOT_A_S_VAR_NAME_WARN           =  41;
     final int EMPTY_S_VAR_DEC_WARN                              =  42;
-    final int TYPE_MISMATCH_IN_S_VAR_DEC_WARN                   =  43;
+    final int TYPE_MISMATCH_IN_S_VAR_DEC_WARN			=  43;
     final int EXCESS_VALUES_IN_A_S_VAR_DEC_WARN                 =  44;
-    final int BAD_FARG_IN_SVAR_FARG_LIST_WARN                   =  45;
-    final int INSUF_FARGS_IN_SVAR_FARG_LIST_WARN                =  46;
-    final int COL_WIDTH_OUT_OF_RANGE_WARN                       =  47;
+    final int BAD_FARG_IN_SVAR_FARG_LIST_WARN			=  45;
+    final int INSUF_FARGS_IN_SVAR_FARG_LIST_WARN		=  46;
+    final int COL_WIDTH_OUT_OF_RANGE_WARN			=  47;
     final int S_VAR_TYPE_ARG_LIST_MISMATCH_WARN                 =  48;
-    final int S_VAR_PRED_NAME_COLLISION_WARN                    =  49;
-    final int S_VAR_REDEFINITION_WARN                           =  50;
+    final int S_VAR_PRED_NAME_COLLISION_WARN			=  49;
+    final int S_VAR_REDEFINITION_WARN				=  50;
     final int VAR_LEN_NON_MATRIX_S_VAR_DEC_WARN                 =  51;
-    final int DUP_FARG_WARN                                     =  52;
+    final int DUP_FARG_WARN					=  52;
     final int ALIEN_LIST_IN_S_VAR_DEF_LIST_WARN                 =  53;
     final int ALIEN_ATOM_IN_S_VAR_DEF_LIST_WARN                 =  54;
     final int NAME_IN_S_VAR_DEF_NOT_A_S_VAR_NAME_WARN           =  55;
-    final int UNDECLARED_S_VAR_WARN                             =  56;
+    final int UNDECLARED_S_VAR_WARN				=  56;
     final int EMPTY_S_VAR_DEF_WARN                              =  57;
-    final int TYPE_MISMATCH_IN_S_VAR_DEF_WARN                   =  58;
+    final int TYPE_MISMATCH_IN_S_VAR_DEF_WARN			=  58;
     final int EXCESS_VALUES_IN_A_S_VAR_DEF_WARN                 =  59;
     final int INAPROPRIATE_VOCAB_ATTRIBUTE_WARN                 =  60;
-    final int ATOM_IN_A_S_VAR_CELL_LIST_WARN                    =  61;
+    final int ATOM_IN_A_S_VAR_CELL_LIST_WARN			=  61;
     final int UNKNOWN_OR_OUT_OF_ORDER_CELL_VALUE_WARN           =  62;
-    final int TIME_OUT_OF_RANGE_WARN                            =  63;
-    final int S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN               =  64;
-    final int S_VAR_CELL_VALUE_MISSING_WARN                     =  65;
-    final int FARG_NAME_MISMATCH_WARN                           =  66;
+    final int TIME_OUT_OF_RANGE_WARN				=  63;
+    final int S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN		=  64;
+    final int S_VAR_CELL_VALUE_MISSING_WARN			=  65;
+    final int FARG_NAME_MISMATCH_WARN				=  66;
     final int NOMINAL_COERCED_TO_CELL_NOMINAL_WARN              =  67;
     final int INVALID_PRED_NAME_IN_PRED_VALUE_WARN              =  68;
     final int UNDEFINED_PRED_WARN                               =  69;
     final int PRED_VALUE_EXPECTED_WARN                          =  70;
-    final int ILLEGAL_CHARS_IN_QUOTE_STR_WARN                   =  71;
+    final int ILLEGAL_CHARS_IN_QUOTE_STR_WARN			=  71;
     final int PRED_OR_COL_VAR_USED_AS_NOM_WARN                  =  72;
-    final int ILLEGAL_ATOM_IN_PRED_ARG_LIST_WARN                =  73;
-    final int EXCESS_ARGS_IN_PRED_VALUE_WARN                    =  74;
-    final int REQ_ARGS_MISSING_FROM_PRED_VAL_WARN               =  75;
-    final int ILLEGAL_ATOM_IN_MATRIX_ARG_WARN                   =  76;
+    final int ILLEGAL_ATOM_IN_PRED_ARG_LIST_WARN		=  73;
+    final int EXCESS_ARGS_IN_PRED_VALUE_WARN			=  74;
+    final int REQ_ARGS_MISSING_FROM_PRED_VAL_WARN		=  75;
+    final int ILLEGAL_ATOM_IN_MATRIX_ARG_WARN			=  76;
     final int REQ_ARGS_MISSING_FROM_MATRIX_WARN                 =  77;
-    final int CELL_WITH_UNDEFINED_VALUE_WARN                    =  78;
-    final int CELL_WITH_UNDEFINED_ONSET_WARN                    =  79;
-    final int CELL_WITH_UNDEFINED_OFFSET_WARN                   =  80;
-    final int NON_PRED_IN_VOCAB_WARN                            =  81;
-    final int UNDEF_PRED_IN_VOCAB_LIST_WARN                     =  82;
-    final int S_VAR_IN_VOCAB_LIST_WARN                          =  83;
-    final int SYSTEM_PRED_IN_VOCAB_LIST_WARN                    =  84;
-    final int ATOM_IN_QUERY_LIST_WARN                           =  85;
+    final int CELL_WITH_UNDEFINED_VALUE_WARN			=  78;
+    final int CELL_WITH_UNDEFINED_ONSET_WARN			=  79;
+    final int CELL_WITH_UNDEFINED_OFFSET_WARN			=  80;
+    final int NON_PRED_IN_VOCAB_WARN				=  81;
+    final int UNDEF_PRED_IN_VOCAB_LIST_WARN			=  82;
+    final int S_VAR_IN_VOCAB_LIST_WARN				=  83;
+    final int SYSTEM_PRED_IN_VOCAB_LIST_WARN			=  84;
+    final int ATOM_IN_QUERY_LIST_WARN				=  85;
     final int INVALID_S_VAR_NAME_IN_SP_VAR_LIST_WARN            =  86;
     final int REF_TO_UNDEF_S_VAR_IN_SP_VAR_LIST_WARN            =  87;
     final int REF_TO_SYSTEM_S_VAR_IN_SP_VAR_LIST_WARN           =  88;
     final int DUP_REF_TO_S_VAR_IN_SP_VAR_LIST_WARN              =  89;
     final int NON_S_VAR_IN_SHAPA_VARS_LIST_WARN                 =  90;
-    final int ATOM_IN_GROUPS_LIST_WARN                          =  91;
-    final int ATOM_IN_GROUP_LIST_WARN                           =  92;
+    final int ATOM_IN_GROUPS_LIST_WARN				=  91;
+    final int ATOM_IN_GROUP_LIST_WARN				=  92;
     final int INVALID_S_VAR_NAME_IN_GROUP_MEMBER_WARN           =  93;
     final int REF_TO_UNDEF_S_VAR_IN_GROUP_MEMBER_WARN           =  94;
     final int REF_TO_SYS_S_VAR_IN_GROUP_MEMBER_WARN             =  95;
-    final int ILL_FORMED_GROUP_MEMBER_WARN                      =  96;
+    final int ILL_FORMED_GROUP_MEMBER_WARN			=  96;
     final int REF_TO_UNDEF_S_VAR_CELL_IN_GRP_MEM_WARN           =  97;
     final int EXCESS_VALUES_IN_GROUP_MEMBER_WARN                =  98;
-    final int ATOM_IN_ALIGNMENTS_LIST_WARN                      =  99;
-    final int ALIEN_LIST_IN_ALIGNMENTS_LIST_WARN                = 100;
+    final int ATOM_IN_ALIGNMENTS_LIST_WARN			=  99;
+    final int ALIEN_LIST_IN_ALIGNMENTS_LIST_WARN		= 100;
     final int INVALID_ALIGNMENT_NAME_WARN                       = 101;
-    final int ALIGNMENT_NAME_ALREADY_IN_USE_WARN                = 102;
-    final int EMPTY_ALIGNMENT_WARN                              = 103;
-    final int TYPE_MISMATCH_IN_ALIGNMENT_WARN                   = 104;
-    final int EXCESS_VALUES_IN_AN_ALIGNMENT_WARN                = 105;
-    final int ILL_FORMED_ALIGNMENT_WARN                         = 106;
+    final int ALIGNMENT_NAME_ALREADY_IN_USE_WARN		= 102;
+    final int EMPTY_ALIGNMENT_WARN				= 103;
+    final int TYPE_MISMATCH_IN_ALIGNMENT_WARN			= 104;
+    final int EXCESS_VALUES_IN_AN_ALIGNMENT_WARN		= 105;
+    final int ILL_FORMED_ALIGNMENT_WARN				= 106;
     final int ATOM_IN_IMPORT_FORMATS_LIST_WARN                  = 107;
     final int ILLEGAL_IMPORT_FORMAT_LIST_NAME_WARN              = 108;
-    final int EMPTY_IMPORT_FORMAT_LIST_WARN                     = 109;
+    final int EMPTY_IMPORT_FORMAT_LIST_WARN			= 109;
     final int IMPORT_FORMAT_LIST_TYPE_MISMATCH_WARN             = 110;
     final int EXCESS_VALUES_IN_IMP_FORMAT_LIST_WARN             = 111;
     final int ATOM_IN_IMPORT_PRODUCTIONS_LIST_WARN              = 112;
     final int BOTH_PGM_AND_INSERT_ACTION_IN_PROD_WARN           = 113;
-    final int IMPORT_PROD_NAME_TOO_LONG_WARN                    = 114;
+    final int IMPORT_PROD_NAME_TOO_LONG_WARN			= 114;
     final int IMPORT_PROD_PATTERN_TOO_LONG_WARN                 = 115;
     final int ATOM_IN_IMP_PROD_INS_ACTIONS_LIST_WARN            = 116;
     final int ATOM_IN_IMP_PROD_PMG_ACTIONS_LIST_WARN            = 117;
@@ -457,8 +457,8 @@ public class MacshapaODBReader
     final int ALIGNMENTS_AFTER_SHAPA_PANE_VARS_WARN             = 119;
     final int EMPTY_IMPORT_PROD_INS_ACTION_LIST_WARN            = 120;
     final int EMPTY_IMPORT_PROD_PGM_ACTION_LIST_WARN            = 121;
-    final int MISSING_REQ_ATTR_IN_INS_ACTION_WARN               = 122;
-    final int MISSING_REQ_ATTR_IN_PGM_ACTION_WARN               = 123;
+    final int MISSING_REQ_ATTR_IN_INS_ACTION_WARN		= 122;
+    final int MISSING_REQ_ATTR_IN_PGM_ACTION_WARN		= 123;
     final int EXCESS_IMP_PROD_PGM_ACTIONS_WARN                  = 124;
     final int COL_PRED_CANT_REPLACE_PRED_FARG_WARN              = 125;
     final int FARG_ARG_TYPE_MISMATCH_WARN                       = 126;
@@ -994,12 +994,12 @@ public class MacshapaODBReader
         "Encountered an import production program action list with more " +
                 "than one program action.  This upsets the import utility,  " +
                 "and thus the excess actions will be discarded.\n",
-
+        
         /* 125 -- COL_PRED_CANT_REPLACE_PRED_FARG_WARN */
         "Encountered a column being used as the value of a predicate cell.  " +
                 "This is currently not permitted in OpenSHAPA.  The column " +
                 "predicate value will be discarded.\n",
-
+    
         /* 126 -- FARG_ARG_TYPE_MISMATCH_WARN */
         "Encountered type mismatch between argument and formal argument.  " +
                 "Argument replaced with an undefined value.",
@@ -1035,51 +1035,51 @@ public class MacshapaODBReader
         "Input remaining after parse.  Excess input ignored\n."
     };
 
-
+    
     /*************************************************************************/
     /************************** Type Definitions: ****************************/
     /*************************************************************************/
-
+    
     /*************************************************************************
-     * class Token
+     * class Token 
      *
-     * The Token class is used to store tokens as they are read from the data
-     * file by the lexical analyzer, and to pass tokens to the parser.  While
-     * Token is technically a class, we treat it more like a C structure.
+     * The Token class is used to store tokens as they are read from the data 
+     * file by the lexical analyzer, and to pass tokens to the parser.  While 
+     * Token is technically a class, we treat it more like a C structure. 
      * While it does have a few associated methods, for the most part the code
      * that uses intstances of the Token class just go in an read and modify
-     * fields as desired.
-     *
+     * fields as desired. 
+     * 
      * The fields in the class are discussed individually below.  They are
      * all public.
      *
      * reader:  Reference to the instance of MacshapaODBReader in which this
      *          token resides.
      *
-     * code:	Integer code indicating the type of the token.  The set of
-     *		allowable values for this field is equal to the set of token
+     * code:	Integer code indicating the type of the token.  The set of 
+     *		allowable values for this field is equal to the set of token 
      *		constant definitions earlier in this file.
      *
-     * aux:	Unsigned integer whose use depends on the value of the code
+     * aux:	Unsigned integer whose use depends on the value of the code 
      *		field.
      *
-     *		If code contains either SYMBOL_TOK or STRING_TOK, aux contains
-     *		flags indicating the type(s) of symbol or string the token may
+     *		If code contains either SYMBOL_TOK or STRING_TOK, aux contains 
+     *		flags indicating the type(s) of symbol or string the token may 
      *		contain as a function of the characters that appear in the token.
      *
      *		If code contains either ALIST_LABEL_TOK or PRIVATE_VAL_TOK, aux
      *		contains a code indicating the a-list label or private value.
      *
-     *		If code contains BOOL_TOK, aux contains the actual boolean value
+     *		If code contains BOOL_TOK, aux contains the actual boolean value 
      *		of the token.
      *
-     * str:	Reference to an instance of StringBuilder which contains a
-     *		text representation of the token.  Note that in the case of
-     *		numerical values, str need not agree with val, as str may
-     *		contain a text representation of an out of range value.  In
+     * str:	Reference to an instance of StringBuilder which contains a 
+     *		text representation of the token.  Note that in the case of 
+     *		numerical values, str need not agree with val, as str may 
+     *		contain a text representation of an out of range value.  In 
      *		this case, val contains the nearest legal value.
      *
-     * val:	Double containg any numerical value associated with the instance
+     * val:	Double containg any numerical value associated with the instance 
      *		of class Token.
      *
      * line_number: Long containing the number of the line on which the first
@@ -1133,41 +1133,41 @@ public class MacshapaODBReader
             throws SystemErrorException
         {
             super();
-
+         
             final String mName = "Token::Token(reader): ";
-
+            
             if ( reader == null )
             {
                 throw new SystemErrorException(mName + "reader null on entry");
             }
-
+            
             this.reader = reader;
-
+        
         } /* Token::Token(reader) */
+        
 
-
-        /*********************************************************************
-         *
-         * clip_numeric_token_string()
-         *
-         * If a numeric token is out of range, read_numeric_token() forces
-         * the val field of the token to the nearest legal value.  However, we
-         * must also force the string assocated with the token to a legal value.
-         * This method tends to this matter.
-         *
-         *                                                JRM - 6/3/08
-         *
-         * Parameters:
-         *
-         *    - None.
-         *
-         * Returns:  Void
-         *
-         * Changes:
-         *
-         *    - None.
-         *
-         **********************************************************************/
+	/*********************************************************************
+	 *
+	 * clip_numeric_token_string()
+	 *
+	 * If a numeric token is out of range, read_numeric_token() forces
+	 * the val field of the token to the nearest legal value.  However, we
+	 * must also force the string assocated with the token to a legal value.
+	 * This method tends to this matter.
+	 *
+	 *                                                 - 6/3/08
+	 *
+	 * Parameters:
+	 *
+	 *    - None.
+	 *
+	 * Returns:  Void
+	 *
+	 * Changes:
+	 *
+	 *    - None.
+	 *
+	 **********************************************************************/
 
         protected void clip_numeric_token_string()
             throws SystemErrorException
@@ -1211,10 +1211,10 @@ public class MacshapaODBReader
          *
          * coerce_float_token_to_integer()
          *
-         * Coerce a floating point token to an integer token, coercing the
+         * Coerce a floating point token to an integer token, coercing the 
          * value to the nearest legal integer value.
          *
-         *						JRM - 7/29/08
+         *						 - 7/29/08
          *
          * Parameters:
          *
@@ -1239,18 +1239,18 @@ public class MacshapaODBReader
 
             if ( this.reader.abort_parse )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "read_vars->abort_parse TRUE on entry.");
             }
-
+            
             if ( this.code != FLOAT_TOK )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token_ptr->code isnt FLOAT_TOK on entry.");
             }
-
+            
             /* do the coersion */
-
+            
             if ( this.val < 0.0 )
             {
                     sign = -1.0;
@@ -1288,24 +1288,24 @@ public class MacshapaODBReader
             return (long)this.val;
 
         } /* Token::coerce_float_token_to_integer() */
-
+        
 
         /*********************************************************************
          *
          * coerce_nominal_token_to_cell_nominal()
          *
-         * Coerce the string associated with a symbol token to a spreadsheet
-         * cell nominal.  At present characters '|' and ':' are illegal in
-         * nominals that appear in nominal spreadsheet variables but not in
-         * nominals that appear in matrix and predicate arguments.
-         *
-         * This is an inconsistance in MacSHAPA that should be fixed, but for
+         * Coerce the string associated with a symbol token to a spreadsheet 
+         * cell nominal.  At present characters '|' and ':' are illegal in 
+         * nominals that appear in nominal spreadsheet variables but not in 
+         * nominals that appear in matrix and predicate arguments.   
+         * 
+         * This is an inconsistance in MacSHAPA that should be fixed, but for 
          * the nonce, we must support it.
          *
-         * This is done by overwriting illegal characters in this.str with '_'
+         * This is done by overwriting illegal characters in this.str with '_' 
          * characters.
          *
-         *						JRM - 7/30/08
+         *						 - 7/30/08
          *
          * Parameters:
          *
@@ -1322,48 +1322,48 @@ public class MacshapaODBReader
         protected boolean coerce_nominal_token_to_cell_nominal()
             throws SystemErrorException
         {
-            final String mName =
-                    "Token::coerce_nominal_token_to_cell_nominal()";
-            boolean nominal_altered;
-            int i;
+                final String mName = 
+                        "Token::coerce_nominal_token_to_cell_nominal()";
+                boolean nominal_altered;
+                int i;
 
-            nominal_altered = false;
+                nominal_altered = false;
 
-            if ( this.code != SYMBOL_TOK )
-            {
-                throw new SystemErrorException(mName +
-                        "this.code isnt SYMBOL_TOK on entry.");
-            }
-
-            if ( (this.aux & NOMINAL_FLAG) == 0 )
-            {
-                throw new SystemErrorException(mName +
-                        "((token_ptr->aux) & NOMINAL_FLAG) == 0.");
-            }
-
-            /* do the coersion */
-
-            for ( i = 0; i < this.str.length(); i++ )
-            {
-                switch ( this.str.charAt(i) )
+                if ( this.code != SYMBOL_TOK )
                 {
-                    case '|':
-                    case ':':
-                        this.str.setCharAt(i, '_');
-                        nominal_altered = true;
-                        break;
-
-                    default:
-                        /* do nothing */
-                        break;
+                    throw new SystemErrorException(mName + 
+                            "this.code isnt SYMBOL_TOK on entry.");
                 }
-            }
+                
+                if ( (this.aux & NOMINAL_FLAG) == 0 )
+                {
+                    throw new SystemErrorException(mName + 
+                            "((token_ptr->aux) & NOMINAL_FLAG) == 0.");
+                }
+                
+                /* do the coersion */
+                
+                for ( i = 0; i < this.str.length(); i++ )
+                {
+                    switch ( this.str.charAt(i) )
+                    {
+                        case '|':
+                        case ':':
+                            this.str.setCharAt(i, '_');
+                            nominal_altered = true;
+                            break;
 
+                        default:
+                            /* do nothing */
+                            break;
+                    }
+                }
+                
 
-            return(nominal_altered);
+                return(nominal_altered);
 
         } /* coerce_nominal_token_to_cell_nominal() */
-
+        
 
         /*********************************************************************
          *
@@ -1372,7 +1372,7 @@ public class MacshapaODBReader
          * Coerce the text quote string associated with a string token to a
          * quote string.
          *
-         * This is done by overwriting illegal characters in this.str with
+         * This is done by overwriting illegal characters in this.str with 
          * ' ' characters.
          *
          * Parameters:
@@ -1393,15 +1393,15 @@ public class MacshapaODBReader
             final String mName = "Token::coerce_text_qstring_to_qstring()";
             char ch;
             int i;
-
+	
             if ( this.code != STRING_TOK )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token_ptr->code isnt STRING_TOK on entry.");
             }
             else if ( (this.aux & TEXT_QSTRING_FLAG) != 0 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token already contains a predicate name.");
             }
             else /* do the coersion */
@@ -1409,7 +1409,7 @@ public class MacshapaODBReader
                 for ( i = 0; i < this.str.length(); i++ )
                 {
                     ch = this.str.charAt(i);
-
+                    
                     if ( ( ch < 0x20 ) || ( ch > 0x7E ) || ( ch == '\"' ) )
                     {
                         this.str.setCharAt(i, ' ');
@@ -1423,15 +1423,15 @@ public class MacshapaODBReader
 
         } /* Token::coerce_text_qstring_to_qstring() */
 
-
+        
         /*********************************************************************
          *
          * coerce_symbol_token_to_pred_name()
          *
-         * Coerce the string associated with a symbol token to a predicate
+         * Coerce the string associated with a symbol token to a predicate 
          * name.
          *
-         * This is done by overwriting illegal characters in this.str with
+         * This is done by overwriting illegal characters in this.str with 
          * '_' characters.
          *
          * Parameters:
@@ -1449,18 +1449,18 @@ public class MacshapaODBReader
         private void coerce_symbol_token_to_pred_name()
             throws SystemErrorException
         {
-            final String mName =
+            final String mName = 
                     "Token::coerce_symbol_token_to_pred_name()";
             int i;
-
+	
             if ( this.code != SYMBOL_TOK )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token_ptr->code isnt SYMBOL_TOK on entry.");
             }
             else if ( (this.aux & PRED_FLAG) != 0 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token already contains a predicate name.");
             }
             else /* do the coersion */
@@ -1488,7 +1488,7 @@ public class MacshapaODBReader
 
         } /* Token::coerce_symbol_token_to_pred_name() */
 
-
+        
         /**********************************************************************
          *
          * coerce_symbol_token_to_spreadsheet_variable_name()
@@ -1496,10 +1496,10 @@ public class MacshapaODBReader
          * Coerce the string associated with a symbol token to a spread sheet
          * variable name.
          *
-         * This is done by overwriting illegal characters in this.str
+         * This is done by overwriting illegal characters in this.str 
          * with '_' characters.
          *
-         *						JRM - 7/26/08
+         *						 - 7/26/08
          *
          * Parameters:
          *
@@ -1516,19 +1516,19 @@ public class MacshapaODBReader
         private void coerce_symbol_token_to_spreadsheet_variable_name()
             throws SystemErrorException
         {
-            final String mName =
+            final String mName = 
                     "Token::coerce_symbol_token_to_spreadsheet_variable_name()";
             Boolean could_be_pred;
             int i;
 
             if ( this.code != SYMBOL_TOK )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token_ptr->code isnt SYMBOL_TOK on entry.");
             }
             else if ( (this.aux & COLUMN_FLAG) != 0 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "token already contains a spreadsheet variable name.");
             }
             else /* do the coersion */
@@ -1566,26 +1566,26 @@ public class MacshapaODBReader
 
         } /* Token::coerce_symbol_token_to_spreadsheet_variable_name() */
 
-
-        /*********************************************************************
-         * save_char_to_token()
-         *
-         * The save_char_to_token() method adds new_char to the instance of
-         * StringBuilder referenced by this.str.  If this.str is null,
-         * initialize it with the enpty string and then append new_char to it.
-         *
-         *					JRM - 6/3/08
-         *
-         * Parameters:
-         *
-         *    - new_char:  Char containing the new character to be added to
-         *	the token.
-         *
-         * Changes:
-         *
-         *    - None
-         *
-         ********************************************************************/
+	
+	/*********************************************************************
+	 * save_char_to_token()
+	 *
+	 * The save_char_to_token() method adds new_char to the instance of
+	 * StringBuilder referenced by this.str.  If this.str is null, 
+	 * initialize it with the enpty string and then append new_char to it.
+	 *
+	 *					 - 6/3/08
+	 *
+	 * Parameters:
+	 *
+	 *    - new_char:  Char containing the new character to be added to 
+	 *	the token.
+	 *
+	 * Changes:
+	 *
+	 *    - None
+	 *
+	 ********************************************************************/
 
         protected void save_char_to_token(char new_char)
         {
@@ -1600,29 +1600,29 @@ public class MacshapaODBReader
 
         } /* Token::save_char_to_token() */
 
-
-        /*********************************************************************
-         *
-         * toString()
-         *
-         * Debugging routine that returns the contents of an instance of
-         * Token rpresented in a string.
-         *
-         *					    JRM - 6/4/08
-         *
-         * Parameters:
-         *
-         *    - None.
-         *
-         * Returns:
-         *
-         *    - String containing text representation of the token.
-         *
-         *  Changes:
-         *
-         *        - None.
-         *
-         *******************************************************************************/
+	
+	/*********************************************************************
+	 *
+	 * toString()
+	 *
+	 * Debugging routine that returns the contents of an instance of 
+	 * Token rpresented in a string.
+	 * 
+	 *					     - 6/4/08
+	 *
+	 * Parameters:
+	 *
+	 *    - None.
+	 *
+	 * Returns:  
+	 * 
+	 *    - String containing text representation of the token.
+	 *
+	 *  Changes:
+	 *
+	 *        - None.
+	 *
+	 *******************************************************************************/
 
         @Override
         public String toString()
@@ -1697,47 +1697,46 @@ public class MacshapaODBReader
             StringBuilder cookedStr = null;
             String retVal = null;
 
-            if ( ( this.code >= 0 ) && ( this.code <= MAX_TOKEN_CODE ) )
-            {
-                retVal = new String("((code = " + this.code + "(" +
-                                    token_code_names[this.code] + "))");
-            }
-            else
-            {
-                retVal = new String("((code = " + this.code + "(Undefined))");
-            }
+	    if ( ( this.code >= 0 ) && ( this.code <= MAX_TOKEN_CODE ) )
+	    {
+		retVal = new String("((code = " + this.code + "(" +
+			            token_code_names[this.code] + "))");
+	    }
+	    else
+	    {
+		retVal = new String("((code = " + this.code + "(Undefined))");
+	    }
+		
 
+	    /* dump the aux field */
+	    switch (this.code)
+	    {
+		case ALIST_LABEL_TOK:
+		    if ( ( this.aux >= 0 ) &&( this.aux <= NUMBER_OF_ALIST_LABELS ) )
+		    { 
+			retVal += " (aux = " + this.aux + "(" +
+				  a_list_labels[this.aux] + "))";
+		    }
+		    else
+		    {
+			retVal += " (aux = " + this.aux + 
+				  "(Unknown label code))";
+		    }
+		    break;
 
-            /* dump the aux field */
-            switch (this.code)
-            {
-                case ALIST_LABEL_TOK:
-                    if ( ( this.aux >= 0 ) &&
-                         ( this.aux <= NUMBER_OF_ALIST_LABELS ) )
-                    {
-                        retVal += " (aux = " + this.aux + "(" +
-                                  a_list_labels[this.aux] + "))";
-                    }
-                    else
-                    {
-                        retVal += " (aux = " + this.aux +
-                                  "(Unknown label code))";
-                    }
-                    break;
-
-                case PRIVATE_VAL_TOK:
-                    if ( ( this.aux >= 0 ) &&
-                     ( this.aux <= NUMBER_OF_PRIVATE_VALUES ) )
-                    {
-                    retVal += " (aux = " + this.aux + "(" +
-                          pval_names[this.aux] + "))";
-                    }
-                    else
-                    {
-                    retVal += " (aux = " + this.aux +
-                          "(Unknown private value code))";
-                    }
-                    break;
+		case PRIVATE_VAL_TOK:
+		    if ( ( this.aux >= 0 ) &&
+			 ( this.aux <= NUMBER_OF_PRIVATE_VALUES ) )
+		    {
+			retVal += " (aux = " + this.aux + "(" + 
+				  pval_names[this.aux] + "))";
+		    }
+		    else
+		    {
+			retVal += " (aux = " + this.aux + 
+				  "(Unknown private value code))";
+		    }
+		    break;
 
                 case SYMBOL_TOK:
                     retVal += " (aux = " + this.aux + "(";
@@ -1950,56 +1949,56 @@ public class MacshapaODBReader
             retVal += " (line_number = " + this.line_number + ")" +
                       " (line_index = " + this.line_index + "))";
 
-            return retVal;
+	    return retVal;
 
-        } /* Token::toString() */
-
+	} /* Token::toString() */
+	
     }; /* class Token */
 
-
+    
     /*************************************************************************/
     /******************************* Fields: *********************************/
     /*************************************************************************/
-
+    
     /**
      * Disk input, file listing, and output related fields:
      *
-     * input_stream: Reference to the input stream from which the open database
+     * input_stream: Reference to the input stream from which the open database 
      *              format MacSHAPA database is to be read.
      *
-     * list_stream: Reference to the output stream to which the listing is to
+     * list_stream: Reference to the output stream to which the listing is to 
      *              be written, or null if no listing is desired.
      *
-     * line:	    Reference to a String containing the last line read from
+     * line:	    Reference to a String containing the last line read from 
      *		    from the input_file, or null if eof has been reached.
      *
-     * line_number: long integer containing the number of the current line.
-     *		    This value is used to number the lines in the listing and
+     * line_number: long integer containing the number of the current line.  
+     *		    This value is used to number the lines in the listing and 
      *		    in error and warning messages.
      *
-     * line_len:    Integer containing the number of characters (including
-     *		    terminiating carriage return) in line, or zero if
+     * line_len:    Integer containing the number of characters (including 
+     *		    terminiating carriage return) in line, or zero if 
      *		    line is null, or has zero length.
      *
      * line_index:  Integer containing the index of the next character to be
      *		    read from line.  This field should always contain a value
-     *		    in the range 0 to (line_len - 1) inclusive, or zero if the
+     *		    in the range 0 to (line_len - 1) inclusive, or zero if the 
      *		    line is either empty or null.
      *
-     * end_of_file: Boolean flag which is set to true after get_next_char()
+     * end_of_file: Boolean flag which is set to true after get_next_char() 
      *		    returns the last character in the input file.
      *
-     * lookahead_char: Under certain circumstances, the lexical analyzer needs
-     *		    to be able to look at the next character to be read from
-     *		    the file without actually reading it.  The lookahead_char
-     *		    field always contains the next character that will be
-     *		    returned by the get next character function.  This field
-     *		    is initalized to ' ', which has the effect of inserting a
+     * lookahead_char: Under certain circumstances, the lexical analyzer needs 
+     *		    to be able to look at the next character to be read from 
+     *		    the file without actually reading it.  The lookahead_char 
+     *		    field always contains the next character that will be 
+     *		    returned by the get next character function.  This field 
+     *		    is initalized to ' ', which has the effect of inserting a 
      *		    blank at the beginning of every input file.  Due to the
-     *		    syntax of the MacSHAPA open database file, this blank has
+     *		    syntax of the MacSHAPA open database file, this blank has 
      *		    no effect on the semantic content of the file.
      *
-     * db:	    Instance of MacshapaDatabase into which the contents of the
+     * db:	    Instance of MacshapaDatabase into which the contents of the 
      *		    input file is to be loaded.
      *
      * odb_file_format_version: MacSHAPA ODB file format version number as read
@@ -2033,27 +2032,27 @@ public class MacshapaODBReader
     /**
      * Lexical Analysis and Parser related fields:
      *
-     * While it would be possible to rework the grammar for the open database
-     * file format so that we could get away with a one token lookahead in all
-     * cases, the resulting grammar would be considerably more complex.  To
-     * avoid this complexity, we must pay the price of a two token lookahead.
-     * This is implemented by maintaining a list of the next three tokens in
-     * the input stream.
-     *
-     * Each time the parser requests a new token, the lookahead one token
-     * becomes the current token, the lookahead two token becomes the lookahead
+     * While it would be possible to rework the grammar for the open database 
+     * file format so that we could get away with a one token lookahead in all 
+     * cases, the resulting grammar would be considerably more complex.  To 
+     * avoid this complexity, we must pay the price of a two token lookahead.  
+     * This is implemented by maintaining a list of the next three tokens in 
+     * the input stream.  
+     * 
+     * Each time the parser requests a new token, the lookahead one token 
+     * becomes the current token, the lookahead two token becomes the lookahead 
      * one token, and a new token is read into the lookahead two token.
      *
-     * l0_tok:  Reference to an instance of class Token.  This instance contains
+     * l0_tok:  Reference to an instance of class Token.  This instance contains 
      *		the "current" token.
      *
-     * l1_tok:  Reference to an instance of class Token.  This instance contains
+     * l1_tok:  Reference to an instance of class Token.  This instance contains 
      *		the lookahead one token.
      *
-     * l2_tok:  Reference to an instance of class token.  This instance contains
+     * l2_tok:  Reference to an instance of class token.  This instance contains 
      *		the lookahead two token.
      *
-     * in_query: Boolean flag that is set to true when we are parsing the
+     * in_query: Boolean flag that is set to true when we are parsing the 
      *          query variable.
      */
 
@@ -2069,108 +2068,108 @@ public class MacshapaODBReader
     /**
      * Error and Warning related fields:
      *
-     * Before listing the fields in this section, a brief discussion of
+     * Before listing the fields in this section, a brief discussion of 
      * warnings and errors is in order.
-     *
+     * 
      * For the purposes of this application, a warning is issued when the parser
      * detects an error in the input file, but is able to recover from the error
      * without aborting the database load.  Note that the recovery may require
      * discarding data.
-     *
+     * 
      * In contrast, an error is reported when an error is detected in the input
-     * file, and the parser is unable to continue loading data from the file.
-     * In the initial implementation, this means that the parse will be aborted
-     * as well.  However in future implementations that need not be the case.
-     * Hence this section contains fields for counts of warnings and errors,
-     * maximum warnings or errrors before aborting, and an abort flag, even
-     * though initially, I plan to abort the parse upon detection of the initial
+     * file, and the parser is unable to continue loading data from the file.  
+     * In the initial implementation, this means that the parse will be aborted 
+     * as well.  However in future implementations that need not be the case.  
+     * Hence this section contains fields for counts of warnings and errors, 
+     * maximum warnings or errrors before aborting, and an abort flag, even 
+     * though initially, I plan to abort the parse upon detection of the initial 
      * error (as opposed to warning).
      *
      * warning_count:  Integer field used to maintain a count of the number of
-     *		warnings that have been issued.  For the record, warnings are
-     *		issued when the parser detects an error that it is able to
+     *		warnings that have been issued.  For the record, warnings are 
+     *		issued when the parser detects an error that it is able to 
      *		recover from.
-     *
-     * max_warnings:  Integer field containing the maximum number of warnings
+     * 
+     * max_warnings:  Integer field containing the maximum number of warnings 
      *		that the parser will issue before aborting the database load.
      *
-     * error_count:  Integer field used to maintain a count of the number of
-     *		error messages that have been issued.  By definition, the file
-     *		load is aborted as soon as an error is detected, however in the
-     *		future we may wish to continue the parse in the hopes of
-     *		detecting further errors.  For now, however, the error count
+     * error_count:  Integer field used to maintain a count of the number of 
+     *		error messages that have been issued.  By definition, the file 
+     *		load is aborted as soon as an error is detected, however in the 
+     *		future we may wish to continue the parse in the hopes of 
+     *		detecting further errors.  For now, however, the error count 
      *		should always be either zero or one.
-     *
-     * max_errors:  Integer field containing the maximum number of errors that
-     *		may be reported before the file parse is aborted.  I expect that
-     *		this value will be one for some time, if not forever.  However I
-     *		can concieve the case in which we may wish to contunue the parse
-     *		of the database file, even though previous errors have made it
-     *		impossible to continue loading data into OpenSHAPA.  This field
+     * 
+     * max_errors:  Integer field containing the maximum number of errors that 
+     *		may be reported before the file parse is aborted.  I expect that 
+     *		this value will be one for some time, if not forever.  However I 
+     *		can concieve the case in which we may wish to contunue the parse 
+     *		of the database file, even though previous errors have made it 
+     *		impossible to continue loading data into OpenSHAPA.  This field 
      *		exists to serve this purpose whenever and if ever.
      *
-     * debug_level:  Debug level for the parse, or -1 if it hasn't been
+     * debug_level:  Debug level for the parse, or -1 if it hasn't been 
      *		specified yet.
      *
      * abort_scan:  Boolean field that is set to TRUE iff we have encountered an
-     *		error so bad that we can't even continue to scan the input file
-     *		for invalid tokens (even if we get so confused that we can't
-     *		continue to parse the input file in any meaningful way, there is
-     *		in general no reason why we can't tokenize the remainder of the
-     *		file and thereby check the remainder of the file for errors that
-     *		can be detected by the lexer.)  In general this field is set to
-     *		TRUE upon either a fatal error, or when error_count exceeds
-     *		max_errors.  However it can also be set as a result of an
-     *		operator interupt (cmd-period).  Note that
-     *
+     *		error so bad that we can't even continue to scan the input file 
+     *		for invalid tokens (even if we get so confused that we can't 
+     *		continue to parse the input file in any meaningful way, there is 
+     *		in general no reason why we can't tokenize the remainder of the 
+     *		file and thereby check the remainder of the file for errors that 
+     *		can be detected by the lexer.)  In general this field is set to 
+     *		TRUE upon either a fatal error, or when error_count exceeds 
+     *		max_errors.  However it can also be set as a result of an 
+     *		operator interupt (cmd-period).  Note that 
+     * 
      *			abort_scan ==> abort_parse ==> abort_load.
      *
-     * abort_parse:  Boolean field that is set to TRUE iff we have encountered
-     *		some situation that requires us to abandon the parse of the
-     *		input file.  In general, this will occur when we exceed the
-     *		error or warning limit.  However, it can also be occasioned by
-     *		a user interrupt (command period).  Note that
-     *
+     * abort_parse:  Boolean field that is set to TRUE iff we have encountered 
+     *		some situation that requires us to abandon the parse of the 
+     *		input file.  In general, this will occur when we exceed the 
+     *		error or warning limit.  However, it can also be occasioned by 
+     *		a user interrupt (command period).  Note that 
+     * 
      *			abort_parse ==> abort_load.
-     *
-     * abort_load:  Boolean field that is set to TRUE iff we have encountered
-     *		some situation that requires us to stop loading data from the
-     *		input file.  logically, this need not prevent us from continuing
-     *		to parse the input file, looking for further errors.  However,
-     *		in the first cut implementation, I expect abort_parse and
-     *		abort_load to always contain the same value.  For now, this
-     *		field is an attempt to build in hooks to allow more sophisticated
+     * 
+     * abort_load:  Boolean field that is set to TRUE iff we have encountered 
+     *		some situation that requires us to stop loading data from the 
+     *		input file.  logically, this need not prevent us from continuing 
+     *		to parse the input file, looking for further errors.  However, 
+     *		in the first cut implementation, I expect abort_parse and 
+     *		abort_load to always contain the same value.  For now, this 
+     *		field is an attempt to build in hooks to allow more sophisticated 
      *		handling of input file errors in the future.
      */
 
     int warning_count = 0;
-
+	
     int max_warnings = 1;
-
+	
     int error_count = 0;
-
+	
     int max_errors = 1;
-
+    
     int debug_level = -1;
-
+	
     boolean abort_scan = false;;
-
+	
     boolean abort_parse = false;
-
+	
     boolean abort_load = false;
-
-
+       
+    
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
-
+    
     /*********************************************************************
      *
      * MacshapaODBReader()
      *
      * Constructor for an new instance of MacshapaODBReader.
      *
-     *                                                JRM - 12/14/08
+     *                                                 - 12/14/08
      *
      * Parameters:
      *
@@ -2294,7 +2293,7 @@ public class MacshapaODBReader
     /*************************************************************************/
     /*********************** Error Logging Methods: **************************/
     /*************************************************************************/
-
+    
     /*************************************************************************
      *
      * post_error_message()
@@ -2302,14 +2301,14 @@ public class MacshapaODBReader
      * Post an error message to the listing and increment this.error_count.
      * Set this.abort_load to true.
      *
-     * If this.error_count exceeds this.max_errors, set both this.abort_parse
+     * If this.error_count exceeds this.max_errors, set both this.abort_parse 
      * and this.abort_scan to true.
      *
      * If the parse_fatal parameter is true, set thisabort_parse to true.
-     * If in addition the scan_fatal parameter is true, also set this.abort_scan
+     * If in addition the scan_fatal parameter is true, also set this.abort_scan 
      * to TRUE.
      *
-     *                                              JRM - 5/26/08
+     *                                               - 5/26/08
      *
      * Parameters:
      *
@@ -2404,7 +2403,7 @@ public class MacshapaODBReader
                 if ( ( scan_fatal ) || ( this.error_count >= this.max_errors ) )
                 {
                     this.abort_scan = true;
-
+                    
                     if ( this.listing_stream != null )
                     {
                         this.listing_stream.print(
@@ -2438,7 +2437,7 @@ public class MacshapaODBReader
             {
                 this.abort_scan  = true;
                 this.abort_parse = true;
-
+                
                 if ( this.listing_stream != null )
                 {
                     this.listing_stream.print(
@@ -2475,10 +2474,10 @@ public class MacshapaODBReader
      * post_warning_message()
      *
      * Post a warning message to the listing and increment this.warning_count.
-     * If this.warning_count is greater than or equal to this.max_warnings,
+     * If this.warning_count is greater than or equal to this.max_warnings, 
      * issue a MAX_WARNINGS_EXCEEDED_ERR.
      *
-     *                                          JRM - 5/26/08
+     *                                           - 5/26/08
      *
      * Parameters:
      *
@@ -2488,8 +2487,8 @@ public class MacshapaODBReader
      * warning_num:  Integer code indicate the warning message to be posted.
      *
      * comment:  In some cases, we may wish to supplement the warning message
-     *      indicated by the warning_num with a message composed at run time.
-     *      If so, comment points to this addition.  Note that the last
+     *      indicated by the warning_num with a message composed at run time.  
+     *      If so, comment points to this addition.  Note that the last 
      *      character in the comment string should be '\n'.
      *
      * Return Value:  Void.
@@ -2515,7 +2514,7 @@ public class MacshapaODBReader
         else
         {
             (this.warning_count)++;
-
+            
             if ( this.listing_stream != null )
             {
                 this.listing_stream.printf(
@@ -2529,7 +2528,7 @@ public class MacshapaODBReader
                 {
                     this.listing_stream.printf("        %s", comment);
                 }
-
+                
                 this.listing_stream.print("\n");
             }
 
@@ -2570,7 +2569,7 @@ public class MacshapaODBReader
     /*************************************************************************/
     /************************* File Read Methods: ****************************/
     /*************************************************************************/
-
+    
     /*************************************************************************
      *
      * get_next_char()
@@ -2580,7 +2579,7 @@ public class MacshapaODBReader
      * next line if appropriate.  Maintain the this.line_buf_index field,
      * and set this.lookahead_char to ' ' when the end of file is reached.
      *
-     *                                          JRM - 5/27/08
+     *                                           - 5/27/08
      *
      * Parameters:
      *
@@ -2605,45 +2604,44 @@ public class MacshapaODBReader
 
         if ( this.end_of_file )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "this.end_of_file true on entry.");
         }
 
         next_char = this.lookahead_char;
 
-        if ( this.line_index > this.line_len )
-        {
-            /**
-             * must attempt to load the next line -- there may not be one,
-             * in which case we will simply set this.lookahead_char to ' '.
-             */
-            load_next_line();
-        }
-
-        if ( this.end_of_file )
-        {
-            this.lookahead_char = ' ';
-        }
-        else if ( this.line_index < this.line_len )
+	if ( this.line_index > this.line_len )
+	{
+	    /**
+	     * must attempt to load the next line -- there may not be one,
+	     * in which case we will simply set this.lookahead_char to ' '.
+	     */
+	    load_next_line();
+	}
+	
+	if ( this.end_of_file )
+	{
+	    this.lookahead_char = ' ';
+	}
+	else if ( this.line_index < this.line_len )
         {
             this.lookahead_char = this.line.charAt(this.line_index);
             (this.line_index)++;
         }
-        else if ( this.line_index == this.line_len )
+	else if ( this.line_index == this.line_len )
+	{
+	    /* load_next_line() does not include the new line character
+	     * at the end of each line it loads.  Thus we insert that new
+	     * line character here ('\r' since we are dealing with pre-MacOS X
+	     * files), and load the next line.
+	     */
+	    this.lookahead_char = '\r';
+	    (this.line_index)++;
+	}
+	else
         {
-            /* load_next_line() does not include the new line character
-             * at the end of each line it loads.  Thus we insert that new
-             * line character here ('\r' since we are dealing with pre-MacOS X
-             * files), and load the next line.
-             */
-
-            this.lookahead_char = '\r';
-            (this.line_index)++;
-        }
-        else
-        {
-            throw new SystemErrorException(mName +
-                    "this else clause should be unreachable.");
+            throw new SystemErrorException(mName + 
+		    "this else clause should be unreachable.");
         }
 
         return(next_char);
@@ -2655,10 +2653,10 @@ public class MacshapaODBReader
      *
      * load_next_line()
      *
-     * Load the next line from the input file into this.line, and post the
-     * line to the listing file (if it is defined).
+     * Load the next line from the input file into rthis.line, and post the 
+     * line to the listing file (if it is defined).  
      *
-     *                                              JRM - 5/27/08
+     *                                               - 5/27/08
      *
      * Parameters:
      *
@@ -2678,9 +2676,9 @@ public class MacshapaODBReader
     {
         final String mName = "macshapaODBReader::load_next_line(): ";
 
-        if ( this.end_of_file )
+	if ( this.end_of_file )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
 		                           "this.end_of_file true on entry");
         }
 
@@ -2716,7 +2714,7 @@ public class MacshapaODBReader
      *
      * Write the current contents of this.line to the listing.
      *
-     *                                                    JRM - 6/1/08
+     *                                                     - 6/1/08
      *
      * Parameters:
      *
@@ -2731,17 +2729,17 @@ public class MacshapaODBReader
      **************************************************************************/
 
     private void post_line_to_listing()
-        throws SystemErrorException
+	throws SystemErrorException
     {
         final String mName = "macshapa_odb_reader::post_line_to_listing(): ";
-
-        if ( this.listing_stream == null )
+ 
+	if ( this.listing_stream == null )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
 		    "this.listing_stream null on entry");
         }
 
-        if ( this.line == null )
+	if ( this.line == null )
         {
             throw new SystemErrorException(mName + "this.line null on entry");
         }
@@ -2752,8 +2750,8 @@ public class MacshapaODBReader
         return;
 
     } /* post_line_to_listing() */
-
-
+     
+        
     /*************************************************************************/
     /****************************** Lexer: ***********************************/
     /*************************************************************************/
@@ -2769,13 +2767,13 @@ public class MacshapaODBReader
     final long LONG_MIN = MACSHAPA_MIN_INT;
 
     /*************************************************************************
-     * a_list_tag_name_table
-     *
-     * The a-list tag name table contains all the known a-list tags.  This
-     * table must be alphabetically ordered as it is searched via a binary
-     * search on a sorted list.  In addition, the index of each a-list tag
+     * a_list_tag_name_table 
+     * 
+     * The a-list tag name table contains all the known a-list tags.  This 
+     * table must be alphabetically ordered as it is searched via a binary 
+     * search on a sorted list.  In addition, the index of each a-list tag 
      * must match the value of the associated code defined at the top of this
-     * file.  Thus both this table and list of codes must be updated whenever
+     * file.  Thus both this table and list of codes must be updated whenever 
      * a new a-list label is defined.
      *************************************************************************/
 
@@ -2822,42 +2820,42 @@ public class MacshapaODBReader
     /**************************************************************************
      * private_value_name_table
      *
-     * The private value name table contains all the known private values.
-     * This table must be alphabetically ordered as it is searched via a binary
-     * search on a sorted list.  In addition, the index of each private value
-     * name must match the value of the associated code defined at the top of
-     * this file.  Thus both this table and the list of codes must be updated
+     * The private value name table contains all the known private values.  
+     * This table must be alphabetically ordered as it is searched via a binary 
+     * search on a sorted list.  In addition, the index of each private value 
+     * name must match the value of the associated code defined at the top of 
+     * this file.  Thus both this table and the list of codes must be updated 
      * whenever a new private value name is defined.
      **************************************************************************/
-
+	    
     final String private_value_name_table[] =
     {
-        /* 00 FLOAT_PVAL          = */ FLOAT_PVAL_STR,
-        /* 01 INTEGER_PVAL        = */ INTEGER_PVAL_STR,
-        /* 02 MATRIX_PVAL         = */ MATRIX_PVAL_STR,
-        /* 03 NOMINAL_PVAL        = */ NOMINAL_PVAL_STR,
-        /* 04 PREDICATE_PVAL      = */ PREDICATE_PVAL_STR,
-        /* 05 TEXT_PVAL           = */ TEXT_PVAL_STR
+	/* 00 FLOAT_PVAL          = */ FLOAT_PVAL_STR,
+	/* 01 INTEGER_PVAL        = */ INTEGER_PVAL_STR,
+	/* 02 MATRIX_PVAL         = */ MATRIX_PVAL_STR,
+	/* 03 NOMINAL_PVAL        = */ NOMINAL_PVAL_STR,
+	/* 04 PREDICATE_PVAL      = */ PREDICATE_PVAL_STR,
+	/* 05 TEXT_PVAL           = */ TEXT_PVAL_STR
     };
-
+    
     /**************************************************************************
      * isdigit(), isgraph(), islower(), isspace(), & isupper()
      *
      * Rewrites of the standard C library routines for use by the lexer.
      *
-     *						    JRM 6/7/08
+     *						     6/7/08
      *
      **************************************************************************/
-
+    
     private boolean isdigit(char ch)
     {
 	boolean retVal = false;
-
+	
 	if ( ( ch >= 0x30 ) && ( ch <= 0x39 ) )
 	{
 	    retVal = true;
 	}
-
+	
 	return retVal;
 
     } /* MacshapaODBReader::isdigit() */
@@ -2865,13 +2863,13 @@ public class MacshapaODBReader
     private boolean isgraph(char ch)
     {
 	boolean retVal = false;
-
-
+	
+	
 	if ( ( ch >= 0x21 ) && ( ch <= 0x7F ) )
 	{
 	    retVal = true;
 	}
-
+	
 	return retVal;
 
     } /* MacshapaODBReader::isgraph() */
@@ -2879,12 +2877,12 @@ public class MacshapaODBReader
     private boolean islower(char ch)
     {
 	boolean retVal = false;
-
+	
 	if ( ( ch >= 0x61 ) && ( ch <= 0x7A ) )
 	{
 	    retVal = true;
 	}
-
+	
 	return retVal;
 
     } /* MacshapaODBReader::islower() */
@@ -2892,7 +2890,7 @@ public class MacshapaODBReader
     private boolean isspace(char ch)
     {
 	boolean retVal = false;
-
+	
 	if ( ( ch == 0x20 ) || /* space */
 	     ( ch == 0x0C ) || /* form feed */
 	     ( ch == 0x0A ) || /* new line */
@@ -2902,7 +2900,7 @@ public class MacshapaODBReader
 	{
 	    retVal = true;
 	}
-
+	
 	return retVal;
 
     } /* MacshapaODBReader::isspace() */
@@ -2910,12 +2908,12 @@ public class MacshapaODBReader
     private boolean isupper(char ch)
     {
 	boolean retVal = false;
-
+	
 	if ( ( ch >= 0x41 ) && ( ch <= 0x5A ) )
 	{
 	    retVal = true;
 	}
-
+	
 	return retVal;
 
     } /* MacshapaODBReader::isupper() */
@@ -2931,14 +2929,14 @@ public class MacshapaODBReader
      * we must maintain a three token long queue of tokens that have been read
      * in from the input file, and are now waiting to be consumed by the parser.
      *
-     * This function handles the mechanics of managing this queue.  The
-     * "current" token as seen by the parser is always in this.l0_tok, with the
+     * This function handles the mechanics of managing this queue.  The 
+     * "current" token as seen by the parser is always in this.l0_tok, with the 
      * lookahead one and two tokens in this.l1_tok and this.l2_tok respectively.
-     * In general, this is simply a matter of moving tokens along the queue.
-     * However at end of file, we must generate new end of file tokens as the
+     * In general, this is simply a matter of moving tokens along the queue.  
+     * However at end of file, we must generate new end of file tokens as the 
      * queue empties.
      *
-     *                                                 JRM - 6/4/08
+     *                                                  - 6/4/08
      *
      * Parameters:
      *
@@ -2957,26 +2955,26 @@ public class MacshapaODBReader
 	       java.io.IOException
     {
         final String mName = "macshapa_odb_reader::get_next_token(): ";
-        Token tempTok = null;
+	Token tempTok = null;
 
-        if ( this.abort_scan )
-        {
-            throw new SystemErrorException(mName + "abort_scan true on entry");
-        }
-        else if ( (this.l0_tok).code == EOF_TOK )
-        {
-            post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR, null,
+	if ( this.abort_scan )
+	{
+	    throw new SystemErrorException(mName + "abort_scan true on entry");
+	}
+	else if ( (this.l0_tok).code == EOF_TOK )
+	{
+	    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR, null,
                                true, true);
-        }
-        else
-        {
-            tempTok = this.l0_tok;
-            this.l0_tok = this.l1_tok;
-            this.l1_tok = this.l2_tok;
-
-            if ( this.l2_tok.code != EOF_TOK )
-            {
-                this.l2_tok = tempTok;
+	}
+	else
+	{
+	    tempTok = this.l0_tok;
+	    this.l0_tok = this.l1_tok;
+	    this.l1_tok = this.l2_tok;
+	    
+	    if ( this.l2_tok.code != EOF_TOK )
+	    {
+		this.l2_tok = tempTok;
 
                 if ( this.l2_tok.str == null )
                 {
@@ -3014,83 +3012,83 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::get_next_token() */
 
-
-    /**************************************************************************
-     *
-     * get_non_blank()
-     *
-     * Read characters from the input file until either a non white space
-     * character or a the end of file is encountered.  Note that this routine
-     * recognizes comments, and treats them as white space.
-     *
-     *                                                JRM - 6/4/08
-     *
-     * Parameters:
-     *
-     *	  - None.
-     *
-     * Returns:  The first non white space character read, or ' ' if the
-     *	    end of file is encountered.
-     *
-     * Changes:
-     *
-     *	  - None.
-     *
-     **************************************************************************/
+    
+    /*******************************************************************************
+    *
+    * get_non_blank()
+    *
+    * Read characters from the input file until either a non white space
+    * character or a the end of file is encountered.  Note that this routine
+    * recognizes comments, and treats them as white space.
+    *
+    *                                                 - 6/4/08
+    *
+    * Parameters:
+    *
+    *	  - None.
+    *
+    * Returns:  The first non white space character read, or ' ' if the
+    *	    end of file is encountered.
+    *
+    * Changes:
+    *
+    *	  - None.
+    *
+    *******************************************************************************/
 
     private char get_non_blank()
-        throws SystemErrorException,
-               java.io.IOException
+	throws SystemErrorException,
+	       java.io.IOException
     {
         final String mName = "macshapa_odb_reader::get_non_blank(): ";
-        char next_char;
-        Boolean in_comment;
+	char next_char;
+	Boolean in_comment;
 
-        next_char = ' ';
-        in_comment = false;
+	next_char = ' ';
+	in_comment = false;
 
-        if ( ! this.end_of_file )
-        {
-            next_char = get_next_char();
+	if ( ! this.end_of_file )
+	{
+	    next_char = get_next_char();
 
-            if ( next_char == ';' )
-            {
-                in_comment = true;
-            }
+	    if ( next_char == ';' )
+	    {
+		in_comment = true;
+	    }
 
-            while ( ( ! this.end_of_file ) &&
-                    ( ( in_comment ) || ( isspace(next_char) ) ) )
-            {
-                next_char = get_next_char();
+	    while ( ( ! this.end_of_file ) &&
+		    ( ( in_comment ) || ( isspace(next_char) ) ) )
+	    {
+		next_char = get_next_char();
 
-                /**
-                 * The end of a comment is indicated by the end of the line,
-                 * and the beginning of a comment is indicated by a ';'.
-                 * Note that we don't care if one of the following
-                 * assignments fails to alter the value of in_comment.
-                 */
+		/**
+		 * The end of a comment is indicated by the end of the line, 
+		 * and the beginning of a comment is indicated by a ';'.  
+		 * Note that we don't care if one of the following 
+		 * assignments fails to alter the value of in_comment.
+		 */
 
-                if ( next_char == '\r' )
-                {
-                    in_comment = false;
-                }
-                else if ( next_char == ';' )
-                {
-                    in_comment = true;
-                }
-            }
+		if ( next_char == '\r' )
+		{
+		    in_comment = false;
+		}
+		else if ( next_char == ';' )
+		{
+		    in_comment = true;
+		}
+	    }
 
-            if ( ( this.end_of_file ) && ( in_comment ) )
-            {
-                next_char = ' ';
-            }
-        }
+	    if ( ( this.end_of_file ) && ( in_comment ) )
+	    {
+		next_char = ' ';
+	    }
+	}
 
-        return(next_char);
+	return(next_char);
 
     } /* MacshapaODBReader::get_non_blank() */
 
@@ -3119,7 +3117,7 @@ public class MacshapaODBReader
     * we load UNKNOWN_ALIST_LABEL into token_ptr->aux so that the parser can
     * deal with the situation gracefully.
     *
-    *                                                     JRM - 6/5/08
+    *                                                      - 6/5/08
     *
     * Parameters:
     *
@@ -3139,7 +3137,7 @@ public class MacshapaODBReader
     **************************************************************************/
 
     void read_boolean_or_alist_tag_token(char first_char,
-                                         Token token)
+	                                 Token token)
         throws SystemErrorException,
 	       java.io.IOException
     {
@@ -3153,16 +3151,16 @@ public class MacshapaODBReader
         int result;
         int top;
 
-        done = false;
-        is_alist_tag = false;
+	done = false;
+	is_alist_tag = false;
 
-        if ( ( ! isupper(first_char) ) || ( token == null) )
-        {
-            throw new SystemErrorException(mName + "bad param(s) on entry.");
-        }
-
-        /* try to parse the boolean value or alist tag */
-        next_char = first_char;
+	if ( ( ! isupper(first_char) ) || ( token == null) )
+	{
+	    throw new SystemErrorException(mName + "bad param(s) on entry.");
+	}
+	
+	/* try to parse the boolean value or alist tag */
+	next_char = first_char;
 
         while ( ( ! done ) && ( ! this.end_of_file ) && ( ! this.abort_scan ) )
         {
@@ -3182,73 +3180,73 @@ public class MacshapaODBReader
                     "This else clause should be unreachable.");
             }
 
-            if ( ! ( ( isupper(this.lookahead_char) )
-                     ||
-                     ( this.lookahead_char == '-' )
-                     ||
-                     (  this.lookahead_char == '>')
-                   )
-               )
-            {
-                done = true;
-            }
+	    if ( ! ( ( isupper(this.lookahead_char) )
+		     ||
+		     ( this.lookahead_char == '-' )
+		     ||
+		     (  this.lookahead_char == '>')
+		   )
+	       )
+	    {
+		done = true;
+	    }
 
-            if ( ! done )
-            {
-                next_char = get_next_char();
-            }
-        } /* while */
+	    if ( ! done )
+	    {
+		next_char = get_next_char();
+	    }
+	} /* while */
 
-        if ( done )
-        {
-            if ( is_alist_tag ) /* we have an a-list entry tag -- look it up */
-            {
-                token.code = ALIST_LABEL_TOK;
-                token.aux = UNKNOWN_ALIST_LABEL;
+	if ( done )
+	{
+	    if ( is_alist_tag ) /* we have an a-list entry tag -- look it up */
+	    {
+		token.code = ALIST_LABEL_TOK;
+		token.aux = UNKNOWN_ALIST_LABEL;
 
-                /* do a binary search on the a_list_tag_name_table.  If we */
-                /* find the tag in the table, we load the associated code  */
-                /* into token_ptr->aux.                                    */
+		/* do a binary search on the a_list_tag_name_table.  If we */
+		/* find the tag in the table, we load the associated code  */
+		/* into token_ptr->aux.                                    */
 
-                bottom = 0;
-                top = NUMBER_OF_ALIST_LABELS - 1;
-                probe = (top + bottom) / 2;
+		bottom = 0;
+		top = NUMBER_OF_ALIST_LABELS - 1;
+		probe = (top + bottom) / 2;
 
-                while ( top >= bottom )
-                {
-                    result = token.str.toString().
-                    compareTo(a_list_tag_name_table[probe]);
+		while ( top >= bottom )
+		{
+		    result = token.str.toString().
+			    compareTo(a_list_tag_name_table[probe]);
 
-                    if ( result < 0 )
-                    {
-                        top = probe - 1;
-                    }
-                    else if ( result > 0 )
-                    {
-                        bottom = probe + 1;
-                    }
-                    else /* we have a match */
-                    {
-                        token.aux = probe;
-                        top = bottom - 1; /* exit the while */
-                    }
+		    if ( result < 0 )
+		    {
+			top = probe - 1;
+		    }
+		    else if ( result > 0 )
+		    {
+			bottom = probe + 1;
+		    }
+		    else /* we have a match */
+		    {
+			token.aux = probe;
+			top = bottom - 1; /* exit the while */
+		    }
 
-                    probe = (top + bottom) / 2;
-                }
-            }
-            else if ( token.str.toString().compareTo("TRUE") == 0 )
-            {
-                token.code = BOOL_TOK;
-                token.aux = TRUE;
-            }
-            else if  ( token.str.toString().compareTo("FALSE") == 0 )
-            {
-                token.code = BOOL_TOK;
-                token.aux = FALSE;
-            }
-            else /* error - fatal since I don't see how to recover from it. */
-            {
-                token.code = ERROR_TOK;
+		    probe = (top + bottom) / 2;
+		}
+	    }
+	    else if ( token.str.toString().compareTo("TRUE") == 0 )
+	    {
+		token.code = BOOL_TOK;
+		token.aux = TRUE;
+	    }
+	    else if  ( token.str.toString().compareTo("FALSE") == 0 )
+	    {
+		token.code = BOOL_TOK;
+		token.aux = FALSE;
+	    }
+	    else /* error - fatal since I don't see how to recover from it. */
+	    {
+		token.code = ERROR_TOK;
 
                 post_error_message(token, UNKNOWN_TOKEN_TYPE_ERR,
                            "Perhaps an unescaped symbol?\n", true, true);
@@ -3283,7 +3281,7 @@ public class MacshapaODBReader
                 "Why did we exit the while?!?!");
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_boolean_or_alist_tag_token() */
 
@@ -3310,7 +3308,7 @@ public class MacshapaODBReader
      * The end of a numeric token is indicated by the first character
      * in the input stream that cannot be generated by the above productions.
      *
-     *                                                 JRM - 6/5/08
+     *                                                  - 6/5/08
      *
      * Parameters:
      *
@@ -3329,7 +3327,7 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void read_numeric_token(char first_char,
-				                    Token token)
+				    Token token)
         throws SystemErrorException,
 	       java.io.IOException
     {
@@ -3346,107 +3344,107 @@ public class MacshapaODBReader
         double sign;
         double value;
 
-        is_integer = true;
-        done = false;
-        non_empty = false;
+	is_integer = true;
+	done = false;
+	non_empty = false;
 
-        integer_digits_discarded = false;
-        fraction_digits_discarded = false;
+	integer_digits_discarded = false;
+	fraction_digits_discarded = false;
 
-        clip_string = false;
+	clip_string = false;
 
-        fraction = 0.1;
-        sign = 1.0;
-        value = 0.0;
+	fraction = 0.1;
+	sign = 1.0;
+	value = 0.0;
 
-        if ( ( ( ! isdigit(first_char) ) && ( first_char != '+' ) &&
-               ( first_char != '-' ) && ( first_char != '.' )
-             )
-             ||
-             ( token == null ) )
-        {
-            throw new SystemErrorException(mName + "bad param(s) on entry.");
-        }
+	if ( ( ( ! isdigit(first_char) ) && ( first_char != '+' ) &&
+	       ( first_char != '-' ) && ( first_char != '.' )
+	     ) 
+	     ||
+	     ( token == null ) )
+	{
+	    throw new SystemErrorException(mName + "bad param(s) on entry.");
+	}
 
-        /* try to parse the numeric value */
-        next_char = first_char;
+	/* try to parse the numeric value */
+	next_char = first_char;
 
-        do
-        {
-            if ( isdigit(next_char) )
-            {
-                non_empty = true;
+	do
+	{
+	    if ( isdigit(next_char) )
+	    {
+		non_empty = true;
 
-                digit = (double)(next_char - '0');
+		digit = (double)(next_char - '0');
 
-                if ( is_integer )
-                {
-                    if ( value <= (double)FLT_MAX )
-                    {
-                        value = (value * 10.0) + digit;
-                    }
-                    else
-                    {
-                        integer_digits_discarded = true;
-                    }
-                }
-                else
-                {
-                    if ( fraction >= (double)FLT_MIN )
-                    {
-                        value = value + (digit * fraction);
-                        fraction /= 10.0;
-                    }
-                    else
-                    {
-                        fraction_digits_discarded = true;
-                    }
-                }
+		if ( is_integer )
+		{
+		    if ( value <= (double)FLT_MAX )
+		    {
+			value = (value * 10.0) + digit;
+		    }
+		    else
+		    {
+			integer_digits_discarded = true;
+		    }
+		}
+		else
+		{
+		    if ( fraction >= (double)FLT_MIN )
+		    {
+			value = value + (digit * fraction);
+			fraction /= 10.0;
+		    }
+		    else
+		    {
+			fraction_digits_discarded = true;
+		    }
+		}
 
-                token.save_char_to_token(next_char);
-            }
-            else if ( next_char == '-' )
-            {
-                sign = -1.0;
+		token.save_char_to_token(next_char);
+	    }
+	    else if ( next_char == '-' )
+	    {
+		sign = -1.0;
 
-                token.save_char_to_token(next_char);
-            }
-            else if ( next_char == '+' )
-            {
-                sign = +1.0;
+		token.save_char_to_token(next_char);
+	    }
+	    else if ( next_char == '+' )
+	    {
+		sign = +1.0;
 
-                /* Don't save the '+' to the token, since it will confuse */
-                /* MacSHAPA's parsing routines, and it is assumed anyway. */
-            }
-            else if ( next_char == '.' )
-            {
-                is_integer = false;
+		/* Don't save the '+' to the token, since it will confuse */
+		/* MacSHAPA's parsing routines, and it is assumed anyway. */
+	    }
+	    else if ( next_char == '.' )
+	    {
+		is_integer = false;
 
-                token.save_char_to_token(next_char);
-            }
-            else
-            {
-                throw new SystemErrorException(mName +
-                    "This else clause should be unreachable.");
-            }
+		token.save_char_to_token(next_char);
+	    }
+	    else
+	    {
+		throw new SystemErrorException(mName + 
+			"This else clause should be unreachable.");
+	    }
 
-            /* a sign is only allowed as the first character of a numeric */
-            /* token, and thus we need only concern ourselves with digits */
-            /* and at most one decimal point.  As soon as we hit a        */
-            /* character that doesn't fit this description, we stop       */
-            /* reading new characters.  We check for errors after we exit */
-            /* the do loop.                                               */
-            if ( ( isdigit(this.lookahead_char) ) ||
-                 ( ( is_integer ) && ( this.lookahead_char == '.' ) ) )
-            {
-                next_char = get_next_char();
-            }
-            else
-            {
-                done = true;
-            }
-        }
-        while ( ( ! done ) && ( ! this.end_of_file ) && ( ! this.abort_scan ) );
+	    /* a sign is only allowed as the first character of a numeric */
+	    /* token, and thus we need only concern ourselves with digits */
+	    /* and at most one decimal point.  As soon as we hit a        */
+	    /* character that doesn't fit this description, we stop       */
+	    /* reading new characters.  We check for errors after we exit */
+	    /* the do loop.                                               */
+	    if ( ( isdigit(this.lookahead_char) ) ||
+		 ( ( is_integer ) && ( this.lookahead_char == '.' ) ) )
+	    {
+		next_char = get_next_char();
+	    }
+	    else
+	    {
+		done = true;
+	    }
+	}
+	while ( ( ! done ) && ( ! this.end_of_file ) && ( ! this.abort_scan ) );
 
         /**
          * while it should never happen in a valid database file, there
@@ -3469,15 +3467,15 @@ public class MacshapaODBReader
          *                                      JRM -- 12/25/08
          */
 
-        if ( ( done ) || ( this.end_of_file ) )
-        {
-            if ( ! non_empty ) /* the numerical token contains no digits */
-            {
-                /* this is a fatal error since I can't think of a way to recover
-                 * that isn't likely to cascade into further & worse errors
-                 */
+	if ( ( done ) || ( this.end_of_file ) )
+	{
+	    if ( ! non_empty ) /* the numerical token contains no digits */
+	    {
+		/* this is a fatal error since I can't think of a way to recover
+		 * that isn't likely to cascade into further & worse errors      
+		 */
 
-                token.code = ERROR_TOK;
+		token.code = ERROR_TOK;
 
                 post_error_message(token, ILL_FORMED_NUMERICAL_CONST_ERR,
                                    null, true, true);
@@ -3486,7 +3484,7 @@ public class MacshapaODBReader
             {
                 token.code = INT_TOK;
 
-                value *= sign;
+		value *= sign;
 
                 if ( value > (double)LONG_MAX )
                 {
@@ -3503,16 +3501,16 @@ public class MacshapaODBReader
                                          null);
                 }
 
-                token.val = value;
+		token.val = value;
 
-                if ( clip_string )
-                {
-                    token.clip_numeric_token_string();
-                }
-            }
-            else /* we have a floating point value */
-            {
-                token.code = FLOAT_TOK;
+		if ( clip_string )
+		{
+		    token.clip_numeric_token_string();
+		}
+	    }
+	    else /* we have a floating point value */
+	    {
+		token.code = FLOAT_TOK;
 
                 if ( integer_digits_discarded )
                 {
@@ -3521,12 +3519,12 @@ public class MacshapaODBReader
                     post_warning_message(token, FLOAT_VAL_OUT_OF_RANGE_WARN,
                                          null);
 
-                    /* TODO: it is possible that this warning may cause us
-                     *       to exceed the limit on warnings, and to abort
-                     *	 the parse.  Think on whether we need to check for
-                     *       this, and if so, what action we should take.
-                     */
-                }
+		    /* TODO: it is possible that this warning may cause us 
+		     *       to exceed the limit on warnings, and to abort 
+		     *	 the parse.  Think on whether we need to check for
+		     *       this, and if so, what action we should take.
+		     */
+		}
 
                 if ( fraction_digits_discarded )
                 {
@@ -3535,7 +3533,7 @@ public class MacshapaODBReader
                                          null);
                 }
 
-                token.val = sign * value;
+		token.val = sign * value;
 
                 if ( clip_string )
                 {
@@ -3554,7 +3552,7 @@ public class MacshapaODBReader
             throw new SystemErrorException(mName + "Why did we exit while?!?");
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_numeric_token() */
 
@@ -3577,7 +3575,7 @@ public class MacshapaODBReader
      * gracefully.  This should case should only arise when we attemp to read
      * an open database file generated by a later version of MacSHAPA.
      *
-     *                                         JRM - 6/5/08
+     *                                          - 6/5/08
      *
      * Parameters:
      *
@@ -3596,7 +3594,7 @@ public class MacshapaODBReader
      **************************************************************************/
 
     private void read_private_value_token(char first_char,
-	                                      Token token)
+	                                  Token token)
 	throws SystemErrorException,
 	       java.io.IOException
     {
@@ -3728,35 +3726,35 @@ public class MacshapaODBReader
                  * in the table, we load the associated code into token.aux.
                  */
 
-                bottom = 0;
-                top = NUMBER_OF_PRIVATE_VALUES - 1;
-                probe = (top + bottom) / 2;
+		bottom = 0;
+		top = NUMBER_OF_PRIVATE_VALUES - 1;
+		probe = (top + bottom) / 2;
+		
+		while ( top >= bottom )
+		{
+		    result = token.str.toString().
+			    compareTo(private_value_name_table[probe]);
 
-                while ( top >= bottom )
-                {
-                    result = token.str.toString().
-                        compareTo(private_value_name_table[probe]);
+		    if ( result < 0 )
+		    {
+			top = probe - 1;
+		    }
+		    else if ( result > 0 )
+		    {
+			bottom = probe + 1;
+		    }
+		    else /* we have a match */
+		    {
+			token.aux = probe;
+			top = bottom - 1; /* exit the while */
+		    }
 
-                    if ( result < 0 )
-                    {
-                    top = probe - 1;
-                    }
-                    else if ( result > 0 )
-                    {
-                    bottom = probe + 1;
-                    }
-                    else /* we have a match */
-                    {
-                    token.aux = probe;
-                    top = bottom - 1; /* exit the while */
-                    }
-
-                    probe = (top + bottom) / 2;
-                }
-            }
-            else if ( this.end_of_file )
-            {
-                token.code = EOF_TOK;
+		    probe = (top + bottom) / 2;
+		}
+	    }
+	    else if ( this.end_of_file )
+	    {
+		token.code = EOF_TOK;
 
                 post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
                     "EOF was encountered in a private value.\r",
@@ -3769,7 +3767,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_private_value_token() */
 
@@ -3779,12 +3777,12 @@ public class MacshapaODBReader
      * read_reserved_word_token()
      *
      * Read a reserved word token.  At present, there are only two reserved
-     * words, "setf" and "macshapa-db".  Since no new reserved words are
-     * anticipated, this function simply reads an identifier consisting of
-     * lower case letters and '-'s, and tests to see if the identifier is
+     * words, "setf" and "macshapa-db".  Since no new reserved words are 
+     * anticipated, this function simply reads an identifier consisting of 
+     * lower case letters and '-'s, and tests to see if the identifier is 
      * one of the two reserved words.
      *
-     *                                                  JRM - 6/6/08
+     *                                                   - 6/6/08
      *
      *  Parameters:
      *
@@ -3803,7 +3801,7 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void read_reserved_word_token(char first_char,
-                                          Token token)
+		                          Token token)
 	throws SystemErrorException,
 	       java.io.IOException
     {
@@ -3816,57 +3814,57 @@ public class MacshapaODBReader
         int result;
         int top;
 
-        done = false;
-        is_alist_tag = false;
+	done = false;
+	is_alist_tag = false;
 
-        if ( ( ! islower(first_char) ) || ( token == null ) )
-        {
-            throw new SystemErrorException(mName + "bad param(s) on entry.");
-        }
+	if ( ( ! islower(first_char) ) || ( token == null ) )
+	{
+	    throw new SystemErrorException(mName + "bad param(s) on entry.");
+	}
+	
+	/* try to parse the reserved word */
+	next_char = first_char;
 
-        /* try to parse the reserved word */
-        next_char = first_char;
+	while ( ( ! done ) && ( ! this.end_of_file ) )
+	{
+	    if ( ( islower(next_char) ) || ( next_char == '-' ) )
+	    {
+	        token.save_char_to_token(next_char);
+	    }
+	    else
+	    {
+		throw new SystemErrorException(mName + 
+			"This else clause should be unreachable.");
+	    }
 
-        while ( ( ! done ) && ( ! this.end_of_file ) )
-        {
-            if ( ( islower(next_char) ) || ( next_char == '-' ) )
-            {
-                token.save_char_to_token(next_char);
-            }
-            else
-            {
-                throw new SystemErrorException(mName +
-                        "This else clause should be unreachable.");
-            }
+	    if ( ! ( ( islower(this.lookahead_char) )
+		     ||
+		     ( this.lookahead_char == '-' ) 
+		   )
+	       )
+	    {
+	        done = true;
+	    }
 
-            if ( ! ( ( islower(this.lookahead_char) )
-                     ||
-                     ( this.lookahead_char == '-' )
-                   )
-	           )
-            {
-                done = true;
-            }
+	    if ( ! done )
+	    {
+		next_char = this.get_next_char();
+	    }
+	} /* while */
 
-            if ( ! done )
-            {
-                next_char = this.get_next_char();
-            }
-        } /* while */
-
-        if ( done )
-        {
-            if ( token.str.toString().compareTo("setf") == 0 )
-            {
-                token.code = SETF_TOK;
-            }
-            else if ( token.str.toString().compareTo("macshapa-db") == 0 )
-            {
-                token.code = DB_VAR_TOK;
-            }
-            else /* error - fatal since I don't see how to recover from it. */
-            {
-                token.code = ERROR_TOK;
+	if ( done )
+	{
+	    if ( token.str.toString().compareTo("setf") == 0 )
+	    {
+		token.code = SETF_TOK;
+	    }
+	    else if ( token.str.toString().compareTo("macshapa-db") == 0 )
+	    {
+		token.code = DB_VAR_TOK;
+	    }
+	    else /* error - fatal since I don't see how to recover from it. */
+	    {
+		token.code = ERROR_TOK;
 
                 post_error_message(token, UNKNOWN_TOKEN_TYPE_ERR,
                            "Perhaps an unescaped symbol?\r",
@@ -3887,7 +3885,7 @@ public class MacshapaODBReader
                 "Why did we exit the while?!?!");
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_reserved_word_token() */
 
@@ -3905,7 +3903,7 @@ public class MacshapaODBReader
     * Database Grammar document, thinking of it in terms of set theoretic
     * subtraction should give you the basic idea.
     *
-    *	<text_quote_string_char> --> (<char> - ( '\' | '"' | <bs> ) ) |
+    *	<text_quote_string_char> --> (<char> - ( '\' | '"' | <bs> ) ) | 
     *                                ( '\\' | '\"' )
     *
     *	<bs> --> backspace character (i.e. hexadecimal value 0x08)
@@ -3938,7 +3936,7 @@ public class MacshapaODBReader
     *                                     (<text_quote_string_char>)*
     *                                     '"'
     *
-    *   <quote_string_char> --> (<graphic_char> -
+    *   <quote_string_char> --> (<graphic_char> - 
     *                             ( '"' | '\' ) ) | ( ' ' | '\\' )
     *
     *   <graphic_char> --> Any printing character, hexadecimal codes 0x21 - 0x7F
@@ -3960,7 +3958,7 @@ public class MacshapaODBReader
     * string token, forcing them to a legal value ('_'), and issueing a warning
     * should we encounter them.
     *
-    *                                                   JRM -- 6/6/08
+    *                                                    -- 6/6/08
     *
     * Parameters:
     *
@@ -3989,37 +3987,36 @@ public class MacshapaODBReader
         boolean escape;
         boolean non_blank;
 
-        done = false;
-        escape = false;
+	done = false;
+	escape = false;
 
-        if ( ( first_char != '"' ) || ( token == null ) )
-        {
-            throw new SystemErrorException(mName + "bad param(s) on entry.");
-        }
+	if ( ( first_char != '"' ) || ( token == null ) )
+	{
+	    throw new SystemErrorException(mName + "bad param(s) on entry.");
+	}
+	non_blank = false;
 
-        non_blank = false;
+	could_be_quote_string = true;
 
-        could_be_quote_string = true;
+	while ( ( ! done ) && ( ! this.end_of_file ) && ( ! this.abort_scan ) )
+	{
+	    next_char = this.get_next_char();
 
-        while ( ( ! done ) && ( ! this.end_of_file ) && ( ! this.abort_scan ) )
-        {
-            next_char = this.get_next_char();
+	    if ( escape )
+	    {
+		escape = false;
 
-            if ( escape )
-            {
-                escape = false;
+		switch ( next_char )
+		{
+		    case '\\':
+			non_blank = true;
+			break;
 
-                switch ( next_char )
-                {
-                    case '\\':
-                        non_blank = true;
-                        break;
-
-                    case '"':
-                        /* can't have embedded double quotes in quote strings */
-                        non_blank = true;
-                        could_be_quote_string = false;
-                        break;
+		    case '"':
+			/* can't have embedded double quotes in quote strings */
+			non_blank = true;
+			could_be_quote_string = false;
+			break;
 
                     default:  /* warning - illegal escape sequence */
                         /* issue a warning ... */
@@ -4029,74 +4026,74 @@ public class MacshapaODBReader
                         /* ... and convert next_char to a '_' */
                         next_char = '_';
 
-                        non_blank = true;
-                        break;
-                }
+			non_blank = true;
+			break;
+		}
 
-                /* finally, save the character (possibly altered) to the token */
+		/* finally, save the character (possibly altered) to the token */
 
-                token.save_char_to_token(next_char);
-            }
-            else if ( next_char == '\\' )
-            {
-                escape = true;
-            }
-            else if ( next_char == '"' )
-            {
-                done = true;
+		token.save_char_to_token(next_char);
+	    }
+	    else if ( next_char == '\\' )
+	    {
+		escape = true;
+	    }
+	    else if ( next_char == '"' )
+	    {
+		done = true;
 
-                token.code = STRING_TOK;
-                token.aux = TEXT_QSTRING_FLAG;
+		token.code = STRING_TOK;
+		token.aux = TEXT_QSTRING_FLAG;
 
-                if ( could_be_quote_string )
-                {
-                    (token.aux) |= QSTRING_FLAG;
-                }
+		if ( could_be_quote_string )
+		{
+			(token.aux) |= QSTRING_FLAG;
+		}
 
-                if ( non_blank )
-                {
-                    (token.aux) |= NONBLANK_FLAG;
-                }
-            }
-            else if ( isgraph(next_char) || ( next_char == ' ' ) )
-            {
-                token.save_char_to_token(next_char);
+		if ( non_blank )
+		{
+			(token.aux) |= NONBLANK_FLAG;
+		}
+	    }
+	    else if ( isgraph(next_char) || ( next_char == ' ' ) )
+	    {
+		token.save_char_to_token(next_char);
 
-                if ( ! isspace(next_char) )
-                {
-                    non_blank = true;
-                }
-            }
-            else if ( next_char == '\010' ) /* i.e. next_char == 0x08 == back space */
-            {
-                /* Convert it to a '_' and issue a warning. */
+		if ( ! isspace(next_char) )
+		{
+			non_blank = true;
+		}
+	    }
+	    else if ( next_char == '\010' ) /* i.e. next_char == 0x08 == back space */
+	    {
+		/* Convert it to a '_' and issue a warning. */
 
-                token.save_char_to_token('_');
+		token.save_char_to_token('_');
 
                 post_warning_message(token, ILLEGAL_CHAR_IN_QUOTE_STR_WARN,
                         "The illegal character was: " + next_char +
                         " (HEX 0x08)\n");
 
-                non_blank = true;
-            }
-            else
-            {
-                if ( ! isspace(next_char) )
-                {
-                    non_blank = true;
-                }
+		non_blank = true;
+	    }
+	    else
+	    {
+		if ( ! isspace(next_char) )
+		{
+		    non_blank = true;
+		}
 
-                could_be_quote_string = false;
+		could_be_quote_string = false;
 
-                token.save_char_to_token(next_char);
-            }
-        } /* end while */
-
-        if ( ! done )
-        {
-            if ( this.end_of_file )
-            {
-                token.code = EOF_TOK;
+		token.save_char_to_token(next_char);
+	    }
+	} /* end while */
+	
+	if ( ! done )
+	{
+	    if ( this.end_of_file )
+	    {
+		token.code = EOF_TOK;
 
                 post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
                     "EOF was encountered in a string.  Unterminated string?\n",
@@ -4113,7 +4110,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_string_token() */
 
@@ -4132,7 +4129,7 @@ public class MacshapaODBReader
      * escape sequence that prevents Common Lisp from converting lower case
      * letters in the symbol name into upper case.
      *
-     * This function scans the symbol name, and performs the following
+     * This function scans the symbol name, and performs the following 
      * operations as it goes:
      *
      * 1) Discards the bracketing '|' characters, and converts the escape
@@ -4148,7 +4145,7 @@ public class MacshapaODBReader
      *    depending on the severity of the lapse, and if appropriate, replaces
      *    the illegal character with a legal one.
      *
-     *                                                  JRM - 6/7/08
+     *                                                   - 6/7/08
      *
      * Parameters:
      *
@@ -4166,54 +4163,54 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void read_symbol_token(char first_char,
-				                   Token token)
+				   Token token)
         throws SystemErrorException,
-               java.io.IOException
+	       java.io.IOException
     {
         final String mName = "macshapa_odb_reader::read_symbol_token(): ";
-        char last_char;
-        char next_char;
-        boolean could_be_column;
-        boolean could_be_nominal;
-        boolean could_be_pred;
-        boolean done;
-        boolean escape;
-        boolean scanning_first_char;
+	char last_char;
+	char next_char;
+	boolean could_be_column;
+	boolean could_be_nominal;
+	boolean could_be_pred;
+	boolean done;
+	boolean escape;
+	boolean scanning_first_char;
 
-        done = false;
-        escape = false;
+	done = false;
+	escape = false;
 
-        if ( ( first_char != '|' ) || ( token == null ) )
-        {
-            throw new SystemErrorException(mName + "bad param(s) on entry");
-        }
-        else
-        {
-            if ( this.lookahead_char == '<' ) /* if anything, it is a formal */
-            {				                  /* argument.	                 */
-                scanning_first_char = true;
-                next_char = first_char;
+	if ( ( first_char != '|' ) || ( token == null ) )
+	{
+	    throw new SystemErrorException(mName + "bad param(s) on entry");
+	}
+	else
+	{
+	    if ( this.lookahead_char == '<' ) /* if anything, it is a formal */
+	    {				      /* argument.	             */
+		scanning_first_char = true;
+		next_char = first_char;
 
-                while ( ( ! done ) &&
-                        ( ! this.end_of_file ) &&
-                        ( ! this.abort_scan ) )
-                {
-                    last_char = next_char;
-                    next_char = this.get_next_char();
+		while ( ( ! done ) && 
+			( ! this.end_of_file ) && 
+			( ! this.abort_scan ) )
+		{
+		    last_char = next_char;
+		    next_char = this.get_next_char();
 
-                    if ( escape )
-                    {
-                        escape = false;
+		    if ( escape )
+		    {
+			escape = false;
 
-                        switch ( next_char )
-                        {
-                            case '\\':
-                            case '|':
-                                /**
-                                 * no action required - we save the
-                                 * character below
-                                 */
-                                break;
+			switch ( next_char )
+			{
+			    case '\\':
+			    case '|':
+				/**
+				 * no action required - we save the 
+				 * character below 
+				 */
+				break;
 
                             default:  /* warning - illegal escape sequence */
                                 /* issue a warning ... */
@@ -4225,10 +4222,10 @@ public class MacshapaODBReader
                                 break;
                         }
 
-                        /**
-                         * finally, save the character (possibly altered)
-                         * to the token
-                         */
+			/**
+			 * finally, save the character (possibly altered) 
+			 * to the token 
+			 */
 
                         token.save_char_to_token(next_char);
                     }
@@ -4334,37 +4331,37 @@ public class MacshapaODBReader
                                 ")\n");
                     }
 
-                    scanning_first_char = false;
+		    scanning_first_char = false;
 
-                } /* end while */
-            }
-            else /* must be either a nominal, a predicate name, or a */
-            {    /* column variable name.                            */
-                could_be_column = true;
-                could_be_nominal = true;
-                could_be_pred = true;
+		} /* end while */
+	    }
+	    else /* must be either a nominal, a predicate name, or a */
+	    {    /* column variable name.                            */
+		could_be_column = true;
+		could_be_nominal = true;
+		could_be_pred = true;
 
-                scanning_first_char = true;
+		scanning_first_char = true;
 
-                while ( ( ! done ) &&
-                        ( ! this.end_of_file ) &&
-                        ( ! this.abort_scan ) )
-                {
-                    next_char = this.get_next_char();
+		while ( ( ! done ) && 
+			( ! this.end_of_file ) && 
+			( ! this.abort_scan ) )
+		{
+		    next_char = this.get_next_char();
 
-                    if ( escape )
-                    {
-                        escape = false;
+		    if ( escape )
+		    {
+			escape = false;
 
-                        switch ( next_char )
-                        {
-                            case '\\':
-                            case '|':
-                            /**
-                             * no action required - we save the
-                             * character below
-                             */
-                            break;
+			switch ( next_char )
+			{
+			    case '\\':
+			    case '|':
+				/**
+				 * no action required - we save the 
+				 * character below 
+				 */
+				break;
 
                             default:  /* warning - illegal escape sequence */
                                 /* issue a warning ... */
@@ -4377,22 +4374,22 @@ public class MacshapaODBReader
                                 break;
                         }
 
-                        /**
-                         * finally, save the character (possibly altered)
-                         * to the token
-                         */
+			/**
+			 * finally, save the character (possibly altered) 
+			 * to the token 
+			 */
 
-                        token.save_char_to_token(next_char);
-                    }
-                    else if ( next_char == '\\' )
-                    {
-                        escape = true;
-                    }
-                    else if ( next_char == ' ' )
-                    {
-                        if ( scanning_first_char ) /* leading white space */
-                        {
-                            /* issue warning and convert to '_' */
+			token.save_char_to_token(next_char);
+		    }
+		    else if ( next_char == '\\' )
+		    {
+			    escape = true;
+		    }
+		    else if ( next_char == ' ' )
+		    {
+			if ( scanning_first_char ) /* leading white space */
+			{
+			    /* issue warning and convert to '_' */
 
                             post_warning_message(token,
                                     LEADING_WS_IN_SYMBOL_ERR,
@@ -4413,21 +4410,21 @@ public class MacshapaODBReader
                             could_be_pred = false;
                         }
 
-                        token.save_char_to_token(next_char);
-                    }
-                    else if ( next_char == '|' )
-                    {
-                        done = true;
+			token.save_char_to_token(next_char);
+		    }
+		    else if ( next_char == '|' )
+		    {
+			done = true;
 
-                        if ( scanning_first_char )
-                        {
-                            /**
-                             * we have encountered a zero length symbol.
-                             * I can't think of a good way of recovering,
-                             * so issue a fatal error.
-                             */
+			if ( scanning_first_char )
+			{
+			    /**
+			     * we have encountered a zero length symbol.  
+			     * I can't think of a good way of recovering, 
+			     * so issue a fatal error.
+			     */
 
-                            token.code = ERROR_TOK;
+			    token.code = ERROR_TOK;
 
                             post_error_message(token, ZERO_LENGTH_SYMBOL_ERR,
                                                null, true, true);
@@ -4437,15 +4434,15 @@ public class MacshapaODBReader
                             token.code = SYMBOL_TOK;
                             token.aux = 0;
 
-                            if ( could_be_column )
-                            {
-                                (token.aux) |= COLUMN_FLAG;
-                            }
+			    if ( could_be_column )
+			    {
+				(token.aux) |= COLUMN_FLAG;
+			    }
 
-                            if ( could_be_nominal )
-                            {
-                                (token.aux) |= NOMINAL_FLAG;
-                            }
+			    if ( could_be_nominal )
+			    {
+				(token.aux) |= NOMINAL_FLAG;
+			    }
 
                             if ( could_be_pred )
                             {
@@ -4501,11 +4498,11 @@ public class MacshapaODBReader
                 } /* end while */
             }
 
-            if ( ! done )
-            {
-                if ( this.end_of_file )
-                {
-                    token.code = EOF_TOK;
+	    if ( ! done )
+	    {
+		if ( this.end_of_file )
+		{
+		    token.code = EOF_TOK;
 
                     post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
                            "EOF was encountered in a symbol.\n",
@@ -4519,7 +4516,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_symbol_token() */
 
@@ -4531,7 +4528,7 @@ public class MacshapaODBReader
      * Read the next token from the input file, and load it into the instance
      * of Token referenced by token.
      *
-     *                                                  JRM - 6/7/08
+     *                                                   - 6/7/08
      *
      * Parameters:
      *
@@ -4551,7 +4548,7 @@ public class MacshapaODBReader
 	       java.io.IOException
     {
         final String mName = "macshapa_odb_reader::read_token(): ";
-        char next_char;
+	char next_char;
 
         if ( token == null )
         {
@@ -4644,7 +4641,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::read_token() */
 
@@ -4654,506 +4651,506 @@ public class MacshapaODBReader
     /***************************************************************************************************/
 
     /***************************************************************************************************
-     *
+     *                                                                                                
      *                               Organizational Overview
-     *
-     * Source code for the recursive descent parser used in the open database read function.  The
-     * code is devided into several sections .  The first (old odbr_parse.c) contains the top level
-     * routines of the recursive descent parser, and utility routines shared by various section of
-     * the parser.  The remaining functions are divided along functional lines between the following
-     * sections:
-     *
+     *                                                                                                
+     * Source code for the recursive descent parser used in the open database read function.  The 
+     * code is devided into several sections .  The first (old odbr_parse.c) contains the top level 
+     * routines of the recursive descent parser, and utility routines shared by various section of 
+     * the parser.  The remaining functions are divided along functional lines between the following 
+     * sections:                                    
+     *                                                                                                
      *		2) Methods for parsing the header (old odbr_parse_header.c)
-     *      3) Methods for parsing the user section (old odbr_parse_user.c)
-     *      4) Methods for parsing the query section (old odbr_parse_query.c)
-     *      5) Methods for parsing the system section (old odbr_parse_system.c)
-     *      6) Methods for parsing predicates (old odbr_parse_pred.c)
-     *
-     * These sections contain methods specific to the HEADER>, USER>, QUERY>, SYSTEM> sections
+     *          3) Methods for parsing the user section (old odbr_parse_user.c)
+     *          4) Methods for parsing the query section (old odbr_parse_query.c)
+     *          5) Methods for parsing the system section (old odbr_parse_system.c)
+     *          6) Methods for parsing predicates (old odbr_parse_pred.c)                                                     
+     *                                                                                                
+     * These sections contain methods specific to the HEADER>, USER>, QUERY>, SYSTEM> sections         
      * of the open database file, and predicate values respectively.
-     *
-     * Methods in each section are listed in alphabetical order.
-     *
-     * The following chart shows an abreviated version of the calling hierarchy of the parser.
-     * In particular, calls to odbr_get_next_token(), error and warning message display
-     * routines, and other than top level data insertion routines are not shown.
-     *
-     * parse_db()
-     *    parse_db_body()
-     *     +-parse_header_section()
-     *     |  +-parse_header_alist()
-     *     |  |  +-parse_db_version_attribute()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_db_name_attribute()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_max_errors_attribute()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_max_warnings_attribute()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_debug_level_attribute()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_unknown_alist_entry()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  +-parse_arbitrary_list() R
-     *     |  +-discard_excess_alist_entry_values()
-     *     |       parse_arbitrary_list() R
-     *     +-parse_user_section()
-     *     |  +-parse_user_alist()
-     *     |  |  +-discard_excess_alist_entry_values()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  +-parse_preds_list_attribute()
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  |    parse_pred_def_list()
-     *     |  |  |     +-parse_pred_def()
-     *     |  |  |     |    coerce_symbol_token_to_pred_name()
-     *     |  |  |     |    append_str_to_ibuf()
-     *     |  |  |     |    CSymbols::lookupPred()
-     *     |  |  |     |    parse_pred_def_alist()
-     *     |  |  |     |     +-parse_variable_length_attribute()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_pred_formal_arg_list_attribute()
-     *     |  |  |     |     |    parse_pred_formal_arg_list()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |       append_str_to_ibuf()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |    append_str_to_ibuf()
-     *     |  |  |     |     +-parse_unknown_alist_entry()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_arbitrary_list() R
-     *     |  |  |     |     +-append_str_to_ibuf()
-     *     |  |  |     |     +-dump_predicate_definition_to_listing()
-     *     |  |  |     |     +-CSymbols::DefPred()
-     *     |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |     +-parse_arbitrary_list() R
-     *     |  |  +-parse_s_var_decs_attribute()
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  |    parse_s_var_dec_list()
-     *     |  |  |     +-parse_s_var_dec()
-     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()
-     *     |  |  |     |    append_str_to_ibuf()
-     *     |  |  |     |    CSymbols::lookupPred()
-     *     |  |  |     |    CSymbols::lookupVar()
-     *     |  |  |     |    parse_s_var_dec_alist()
-     *     |  |  |     |     +-parse_variable_length_attribute()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_s_var_formal_arg_list_attribute()
-     *     |  |  |     |     |    parse_s_var_formal_arg_list()
-     *     |  |  |     |     |       append_str_to_ibuf()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |    append_str_to_ibuf()
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_s_var_type_attribute()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_s_var_col_width_attribute()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_unknown_alist_entry()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_arbitrary_list() R
-     *     |  |  |     |     +-append_str_to_ibuf()
-     *     |  |  |     |     +-dump_s_var_definition_to_listing()
-     *     |  |  |     |     +-CSymbols::DefVar()
-     *     |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |     +-parse_arbitrary_list() R
-     *     |  |  +-parse_s_var_defs_attribute()
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  |    parse_s_var_def_list()
-     *     |  |  |     +-parse_s_var_def()
-     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()
-     *     |  |  |     |    CSymbols::lookupVar()
-     *     |  |  |     |    parse_s_var_def_alist()
-     *     |  |  |     |     +-parse_s_var_def_cells_attribute()
-     *     |  |  |     |     |  +-parse_s_var_cell_list()
-     *     |  |  |     |     |  |    parse_s_var_cell()
-     *     |  |  |     |     |  |     +-parse_s_var_cell_onset_attribute()
-     *     |  |  |     |     |  |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     +-parse_s_var_cell_offset_attribute()
-     *     |  |  |     |     |  |     |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     +-parse_s_var_cell_value_attribute()
-     *     |  |  |     |     |  |     |  +-parse_text_cell_value()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  +-parse_nominal_cell_value()
-     *     |  |  |     |     |  |     |  |    coerce_nominal_token_to_cell_nominal()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  +-parse_integer_cell_value()
-     *     |  |  |     |     |  |     |  |    coerce_float_token_to_integer()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  +-parse_float_cell_value()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  +-parse_pred_cell_value()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_pred_value() R
-     *     |  |  |     |     |  |     |  |       coerce_symbol_token_to_pred_name()
-     *     |  |  |     |     |  |     |  |       CSymbols::lookupPred()
-     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |       coerce_text_qstring_to_qstring()
-     *     |  |  |     |     |  |     |  |       append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |       parse_time_stamp()
-     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |          discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |  |             parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |       CSymbols::AddDefaultArgToPred()
-     *     |  |  |     |     |  |     |  |       discard_excess_pred_value_arguments()
-     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  +-parse_matrix_cell_value()
-     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |    parse_time_stamp()
-     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |       discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |    coerce_text_qstring_to_qstring()
-     *     |  |  |     |     |  |     |  |    parse_pred_value() R
-     *     |  |  |     |     |  |     |  |       coerce_symbol_token_to_pred_name()
-     *     |  |  |     |     |  |     |  |       CSymbols::lookupPred()
-     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |       coerce_text_qstring_to_qstring()
-     *     |  |  |     |     |  |     |  |       append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  |       parse_time_stamp()
-     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |          discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |  |             parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |       CSymbols::AddDefaultArgToPred()
-     *     |  |  |     |     |  |     |  |       discard_excess_pred_value_arguments()
-     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  |     |  |    CSymbols::lookupPred()
-     *     |  |  |     |     |  |     |  +-append_str_to_ibuf()
-     *     |  |  |     |     |  |     |  +-discard_excess_alist_entry_values()
-     *     |  |  |     |     |  |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |  |     +-dump_s_var_cell_definition_to_listing()
-     *     |  |  |     |     |  |     +-CSheetPane::CreateEmptyCell()
-     *     |  |  |     |     |  |     +-CSymbols::InsertGivenVarCellCstr()
-     *     |  |  |     |     |  |     +-parse_arbitrary_list() R
-     *     |  |  |     |     |  |     +-parse_unknown_alist_entry()
-     *     |  |  |     |     |  |          parse_arbitrary_list() R
-     *     |  |  |     |     |  +-discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_s_var_def_vocab_attribute()
-     *     |  |  |     |     |    parse_vocab_list()
-     *     |  |  |     |     |       CSymbols::lookupPred()
-     *     |  |  |     |     |       CSymbols::PredDefined()
-     *     |  |  |     |     |       AddLocalVocab()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     |    discard_excess_alist_entry_values()
-     *     |  |  |     |     |       parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_unknown_alist_entry()
-     *     |  |  |     |     |    parse_arbitrary_list() R
-     *     |  |  |     |     +-parse_arbitrary_list() R
-     *     |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |     +-parse_arbitrary_list() R
-     *     |  |  +-parse_unknown_alist_entry()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  +-parse_arbitrary_list() R
-     *     |  +-discard_excess_alist_entry_values()
-     *     |       parse_arbitrary_list() R
-     *     +-parse_query_section()
-     *     |  +-parse_query_list()
-     *     |  |  +-append_str_to_ibuf()
-     *     |  |  +-parse_pred_value() R
-     *     |  |  |    coerce_symbol_token_to_pred_name()
-     *     |  |  |    CSymbols::lookupPred()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  |    coerce_text_qstring_to_qstring()
-     *     |  |  |    append_str_to_ibuf()
-     *     |  |  |    parse_time_stamp()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  |       discard_excess_alist_entry_values()
-     *     |  |  |          parse_arbitrary_list() R
-     *     |  |  |    CSymbols::AddDefaultArgToPred()
-     *     |  |  |    discard_excess_pred_value_arguments()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-dump_s_var_cell_definition_to_listing()
-     *     |  |  +-CVocabCell::IVocabCell()
-     *     |  |  +-CSymbols::InsertGivenVarCellCstr()
-     *     |  +-discard_excess_alist_entry_values()
-     *     |       parse_arbitrary_list() R
-     *     +-parse_system_section()
-     *     |  +-parse_system_alist()
-     *     |  |  +-parse_shapa_pane_vars_attribute()
-     *     |  |  |  +-parse_shapa_pane_var_list()
-     *     |  |  |  |    CSymbols::lookupVar()
-     *     |  |  |  |    CShapaPane::FindColumnIndexOfVar()
-     *     |  |  |  |    CShapaPane::InsertVarIntoColumn()
-     *     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |    CShapaPane::UpdateShapaPaneTemporal()
-     *     |  |  |  +-add_all_user_svars_to_shapa_pane()
-     *     |  |  |  |    CVariablesDoc::FirstUserVariable()
-     *     |  |  |  |    CSymbols::lookupVar()
-     *     |  |  |  |    CShapaPane::FindColumnIndexOfVar()
-     *     |  |  |  |    CShapaPane::InsertVarIntoColumn()
-     *     |  |  |  |    CVariablesDoc::NextUserVariable()
-     *     |  |  |  |    CShapaPane::UpdateShapaPaneTemporal()
-     *     |  |  |  +-discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_groups_attribute()
-     *     |  |  |    parse_group_list()
-     *     |  |  |       parse_group_member()
-     *     |  |  |          CSymbols::lookupVar()
-     *     |  |  |          GetVarCellByOrd()   (* in variables.c *)
-     *     |  |  |          parse_arbitrary_list() R
-     *     |  |  |       CSheetPane::GroupCell()
-     *     |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_alignments_attribute()
-     *     |  |  |  +-parse_alignments_list()
-     *     |  |  |  |  +-parse_alignment_var()
-     *     |  |  |  |  |    CSymbols::lookupPred()
-     *     |  |  |  |  |    CSymbols::lookupVar()
-     *     |  |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |    parse_alignment_var_alist()
-     *     |  |  |  |  |     +-parse_variable_length_attribute()
-     *     |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |     +-parse_s_var_formal_arg_list_attribute()
-     *     |  |  |  |  |     |    parse_s_var_formal_arg_list()
-     *     |  |  |  |  |     |       append_str_to_ibuf()
-     *     |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |     |    append_str_to_ibuf()
-     *     |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |     +-parse_s_var_type_attribute()
-     *     |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |     +-parse_s_var_col_width_attribute()
-     *     |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |     +-parse_unknown_alist_entry()
-     *     |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |     +-parse_arbitrary_list() R
-     *     |  |  |  |  |     +-dump_s_var_definition_to_listing()
-     *     |  |  |  |  |     +-CSymbols::DefVar()
-     *     |  |  |  |  |     +-parse_s_var_def_cells_attribute()
-     *     |  |  |  |  |        +-parse_s_var_cell_list()
-     *     |  |  |  |  |        |    parse_s_var_cell()
-     *     |  |  |  |  |        |     +-parse_s_var_cell_onset_attribute()
-     *     |  |  |  |  |        |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     +-parse_s_var_cell_offset_attribute()
-     *     |  |  |  |  |        |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     +-parse_s_var_cell_value_attribute()
-     *     |  |  |  |  |        |     |  +-parse_text_cell_value()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  +-parse_nominal_cell_value()
-     *     |  |  |  |  |        |     |  |    coerce_nominal_token_to_cell_nominal()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  +-parse_integer_cell_value()
-     *     |  |  |  |  |        |     |  |    coerce_float_token_to_integer()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  +-parse_float_cell_value()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  +-parse_pred_cell_value()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_pred_value() R
-     *     |  |  |  |  |        |     |  |       coerce_symbol_token_to_pred_name()
-     *     |  |  |  |  |        |     |  |       CSymbols::lookupPred()
-     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |       coerce_text_qstring_to_qstring()
-     *     |  |  |  |  |        |     |  |       append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |       parse_time_stamp()
-     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |          discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |  |             parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |       CSymbols::AddDefaultArgToPred()
-     *     |  |  |  |  |        |     |  |       discard_excess_pred_value_arguments()
-     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  +-parse_matrix_cell_value()
-     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |    parse_time_stamp()
-     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |       discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |    coerce_text_qstring_to_qstring()
-     *     |  |  |  |  |        |     |  |    parse_pred_value() R
-     *     |  |  |  |  |        |     |  |       coerce_symbol_token_to_pred_name()
-     *     |  |  |  |  |        |     |  |       CSymbols::lookupPred()
-     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |       coerce_text_qstring_to_qstring()
-     *     |  |  |  |  |        |     |  |       append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  |       parse_time_stamp()
-     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |          discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |  |             parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |       CSymbols::AddDefaultArgToPred()
-     *     |  |  |  |  |        |     |  |       discard_excess_pred_value_arguments()
-     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R
-     *     |  |  |  |  |        |     |  |    CSymbols::lookupPred()
-     *     |  |  |  |  |        |     |  +-append_str_to_ibuf()
-     *     |  |  |  |  |        |     |  +-discard_excess_alist_entry_values()
-     *     |  |  |  |  |        |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |        |     +-dump_s_var_cell_definition_to_listing()
-     *     |  |  |  |  |        |     +-CSheetPane::CreateEmptyCell()
-     *     |  |  |  |  |        |     +-CSymbols::InsertGivenVarCellCstr()
-     *     |  |  |  |  |        |     +-parse_arbitrary_list() R
-     *     |  |  |  |  |        |     +-parse_unknown_alist_entry()
-     *     |  |  |  |  |        |          parse_arbitrary_list() R
-     *     |  |  |  |  |        +-discard_excess_alist_entry_values()
-     *     |  |  |  |  |             parse_arbitrary_list() R
-     *     |  |  |  |  +-parse_arbitrary_list() R
-     *     |  |  |  +-discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_import_formats_attribute()
-     *     |  |  |  +-parse_imp_formats_list()
-     *     |  |  |  |  +-parse_imp_format_list()
-     *     |  |  |  |  |  +-allocFormat()       (* in import_internal.c *)
-     *     |  |  |  |  |  +-saveCstr()          (* in mem.c *)
-     *     |  |  |  |  |  +-strTrim()           (* in import_io.c *)
-     *     |  |  |  |  |  +-AddFormatListEnd()  (* in import_internal.c *)
-     *     |  |  |  |  |  +-parse_imp_format_list_alist()
-     *     |  |  |  |  |  |  +-parse_imp_prods_attribute()
-     *     |  |  |  |  |  |  |  +-parse_imp_prod_list()
-     *     |  |  |  |  |  |  |  |    parse_imp_prod()
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_name_attribute()
-     *     |  |  |  |  |  |  |  |     |    saveCstr()          (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |    strTrim()           (* in import_io.c *)
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_pattern_attribute()
-     *     |  |  |  |  |  |  |  |     |    saveCstr()          (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |    skipspace()         (* in import_io.c *)
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_hard_prec_attribute()
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_is_shown_attribute()
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_is_traced_attribute()
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_insert_actions_attribute()
-     *     |  |  |  |  |  |  |  |     |  +-parse_imp_prod_insert_actions_list()
-     *     |  |  |  |  |  |  |  |     |  |  +-parse_imp_prod_insert_action_alist()
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_var_attribute()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_onset_attribute()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_offset_attribute()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_val_attribute()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_unknown_alist_entry()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_arbitrary_list()
-     *     |  |  |  |  |  |  |  |     |  |  |  +-allocAction()       (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  +-freeCstr()          (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  +-AddActionListEnd()     (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     |  +-discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_program_actions_attribute()
-     *     |  |  |  |  |  |  |  |     |  +-parse_imp_prod_program_actions_list()
-     *     |  |  |  |  |  |  |  |     |  |  +-parse_imp_prod_program_action_alist()
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_program_action_text_attribute()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()       (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_unknown_alist_entry()
-     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     |  |  |  +-allocAction()       (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     |  |  |  +-freeCstr()          (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     |  |  +-AddActionListEnd()     (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     |  +-discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |  |     |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-parse_unknown_alist_entry()
-     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  |  |     +-allocProd()                  (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     +-AddProdListEnd()             (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  |     +-freeCstr()                   (* in mem.c *)
-     *     |  |  |  |  |  |  |  |     +-freeActionList()             (* in import_internal.c *)
-     *     |  |  |  |  |  |  |  +-discard_excess_alist_entry_values()
-     *     |  |  |  |  |  |  |       parse_arbitrary_list() R
-     *     |  |  |  |  |  |  +-parse_unknown_alist_entry()
-     *     |  |  |  |  |  |  |    parse_arbitrary_list() R
-     *     |  |  |  |  |  |  +-parse_arbitrary_list() R
-     *     |  |  |  |  |  +-parse_arbitrary_list()
-     *     |  |  |  |  +-parse_arbitrary_list() R
-     *     |  |  |  +-discard_excess_alist_entry_values()
-     *     |  |  |       parse_arbitrary_list() R
-     *     |  |  +-parse_unknown_alist_entry()
-     *     |  |  |    parse_arbitrary_list() R
-     *     |  |  +-parse_arbitrary_list() R
-     *     |  +-discard_excess_alist_entry_values()
-     *     |  |    parse_arbitrary_list() R
-     *     |  +-add_all_user_svars_to_shapa_pane()
-     *     |       CVariablesDoc::FirstUserVariable()
-     *     |       CSymbols::lookupVar()
-     *     |       CShapaPane::FindColumnIndexOfVar()
-     *     |       CShapaPane::InsertVarIntoColumn()
-     *     |       CVariablesDoc::NextUserVariable()
-     *     |       CShapaPane::UpdateShapaPaneTemporal()
-     *     +-parse_unknown_alist_entry()
-     *     |    parse_arbitrary_list() R
-     *     +-parse_arbitrary_list() R
-     *
-     * Functions whose names are followed by a 'R' are recursive.
-     *
-     *                                                      JRM - 6/8/08
-     *
+     *                                                                                                
+     * Methods in each section are listed in alphabetical order.                                       
+     *                                                                                                
+     * The following chart shows an abreviated version of the calling hierarchy of the parser.        
+     * In particular, calls to odbr_get_next_token(), error and warning message display               
+     * routines, and other than top level data insertion routines are not shown.                      
+     *                                                                                                
+     * parse_db()                                                                               
+     *    parse_db_body()                                                                       
+     *     +-parse_header_section()                                                             
+     *     |  +-parse_header_alist()                                                            
+     *     |  |  +-parse_db_version_attribute()                                                 
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_db_name_attribute()                                                    
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_max_errors_attribute()                                                 
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_max_warnings_attribute()                                               
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_debug_level_attribute()                                                
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_unknown_alist_entry()                                                  
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  +-parse_arbitrary_list() R                                                     
+     *     |  +-discard_excess_alist_entry_values()                                             
+     *     |       parse_arbitrary_list() R                                                     
+     *     +-parse_user_section()                                                               
+     *     |  +-parse_user_alist()                                                              
+     *     |  |  +-discard_excess_alist_entry_values()                                          
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  +-parse_preds_list_attribute()                                                 
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  |    parse_pred_def_list()                                                     
+     *     |  |  |     +-parse_pred_def()                                                       
+     *     |  |  |     |    coerce_symbol_token_to_pred_name()                                  
+     *     |  |  |     |    append_str_to_ibuf()                                                
+     *     |  |  |     |    CSymbols::lookupPred()                                                    
+     *     |  |  |     |    parse_pred_def_alist()                                              
+     *     |  |  |     |     +-parse_variable_length_attribute()                                
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_pred_formal_arg_list_attribute()                           
+     *     |  |  |     |     |    parse_pred_formal_arg_list()                                  
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     |       append_str_to_ibuf()                                       
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     |    append_str_to_ibuf()                                          
+     *     |  |  |     |     +-parse_unknown_alist_entry()                                      
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     +-parse_arbitrary_list() R                                         
+     *     |  |  |     |     +-append_str_to_ibuf()                                             
+     *     |  |  |     |     +-dump_predicate_definition_to_listing()                           
+     *     |  |  |     |     +-CSymbols::DefPred()                                                    
+     *     |  |  |     |    parse_arbitrary_list() R                                            
+     *     |  |  |     +-parse_arbitrary_list() R                                               
+     *     |  |  +-parse_s_var_decs_attribute()                                                 
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  |    parse_s_var_dec_list()                                                    
+     *     |  |  |     +-parse_s_var_dec()                                                      
+     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()                  
+     *     |  |  |     |    append_str_to_ibuf()                                                
+     *     |  |  |     |    CSymbols::lookupPred()                                                    
+     *     |  |  |     |    CSymbols::lookupVar()                                                     
+     *     |  |  |     |    parse_s_var_dec_alist()                                             
+     *     |  |  |     |     +-parse_variable_length_attribute()                                
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_s_var_formal_arg_list_attribute()                          
+     *     |  |  |     |     |    parse_s_var_formal_arg_list()                                 
+     *     |  |  |     |     |       append_str_to_ibuf()                                       
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     |    append_str_to_ibuf()                                          
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_s_var_type_attribute()                                     
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_s_var_col_width_attribute()                                
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_unknown_alist_entry()                                      
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     +-parse_arbitrary_list() R                                         
+     *     |  |  |     |     +-append_str_to_ibuf()                                             
+     *     |  |  |     |     +-dump_s_var_definition_to_listing()                               
+     *     |  |  |     |     +-CSymbols::DefVar()                                                     
+     *     |  |  |     |    parse_arbitrary_list() R                                            
+     *     |  |  |     +-parse_arbitrary_list() R                                               
+     *     |  |  +-parse_s_var_defs_attribute()                                                 
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  |    parse_s_var_def_list()                                                    
+     *     |  |  |     +-parse_s_var_def()                                                      
+     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()                  
+     *     |  |  |     |    CSymbols::lookupVar()                                                     
+     *     |  |  |     |    parse_s_var_def_alist()                                             
+     *     |  |  |     |     +-parse_s_var_def_cells_attribute()                                
+     *     |  |  |     |     |  +-parse_s_var_cell_list()                                       
+     *     |  |  |     |     |  |    parse_s_var_cell()                                         
+     *     |  |  |     |     |  |     +-parse_s_var_cell_onset_attribute()                      
+     *     |  |  |     |     |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |     |     |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |     |     |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     +-parse_s_var_cell_offset_attribute()                     
+     *     |  |  |     |     |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |     |     |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |     |     |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     +-parse_s_var_cell_value_attribute()                      
+     *     |  |  |     |     |  |     |  +-parse_text_cell_value()                              
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     |  +-parse_nominal_cell_value()                           
+     *     |  |  |     |     |  |     |  |    coerce_nominal_token_to_cell_nominal()            
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     |  +-parse_integer_cell_value()                           
+     *     |  |  |     |     |  |     |  |    coerce_float_token_to_integer()                   
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     |  +-parse_float_cell_value()                             
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     |  +-parse_pred_cell_value()                              
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_pred_value() R                              
+     *     |  |  |     |     |  |     |  |       coerce_symbol_token_to_pred_name()             
+     *     |  |  |     |     |  |     |  |       CSymbols::lookupPred()                               
+     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |     |     |  |     |  |       coerce_text_qstring_to_qstring()               
+     *     |  |  |     |     |  |     |  |       append_str_to_ibuf()                           
+     *     |  |  |     |     |  |     |  |       parse_time_stamp()                             
+     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |     |     |  |     |  |          discard_excess_alist_entry_values()         
+     *     |  |  |     |     |  |     |  |             parse_arbitrary_list() R                 
+     *     |  |  |     |     |  |     |  |       CSymbols::AddDefaultArgToPred()                      
+     *     |  |  |     |     |  |     |  |       discard_excess_pred_value_arguments()          
+     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |     |     |  |     |  +-parse_matrix_cell_value()                            
+     *     |  |  |     |     |  |     |  |    append_str_to_ibuf()                              
+     *     |  |  |     |     |  |     |  |    parse_time_stamp()                                
+     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |     |     |  |     |  |       discard_excess_alist_entry_values()            
+     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |     |     |  |     |  |    coerce_text_qstring_to_qstring()                  
+     *     |  |  |     |     |  |     |  |    parse_pred_value() R                              
+     *     |  |  |     |     |  |     |  |       coerce_symbol_token_to_pred_name()             
+     *     |  |  |     |     |  |     |  |       CSymbols::lookupPred()                               
+     *     |  |  |     |     |  |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |     |     |  |     |  |       coerce_text_qstring_to_qstring()               
+     *     |  |  |     |     |  |     |  |       append_str_to_ibuf()                           
+     *     |  |  |     |     |  |     |  |       parse_time_stamp()                             
+     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |     |     |  |     |  |          discard_excess_alist_entry_values()         
+     *     |  |  |     |     |  |     |  |             parse_arbitrary_list() R                 
+     *     |  |  |     |     |  |     |  |       CSymbols::AddDefaultArgToPred()                      
+     *     |  |  |     |     |  |     |  |       discard_excess_pred_value_arguments()          
+     *     |  |  |     |     |  |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |     |     |  |     |  |    CSymbols::lookupPred()                                  
+     *     |  |  |     |     |  |     |  +-append_str_to_ibuf()                                 
+     *     |  |  |     |     |  |     |  +-discard_excess_alist_entry_values()                  
+     *     |  |  |     |     |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |     |     |  |     +-dump_s_var_cell_definition_to_listing()                 
+     *     |  |  |     |     |  |     +-CSheetPane::CreateEmptyCell()                                 
+     *     |  |  |     |     |  |     +-CSymbols::InsertGivenVarCellCstr()                            
+     *     |  |  |     |     |  |     +-parse_arbitrary_list() R                                
+     *     |  |  |     |     |  |     +-parse_unknown_alist_entry()                             
+     *     |  |  |     |     |  |          parse_arbitrary_list() R                             
+     *     |  |  |     |     |  +-discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_s_var_def_vocab_attribute()                                
+     *     |  |  |     |     |    parse_vocab_list()                                            
+     *     |  |  |     |     |       CSymbols::lookupPred()                                           
+     *     |  |  |     |     |       CSymbols::PredDefined()                                          
+     *     |  |  |     |     |       AddLocalVocab()                                                  
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |     |     |       parse_arbitrary_list() R                                   
+     *     |  |  |     |     +-parse_unknown_alist_entry()                                      
+     *     |  |  |     |     |    parse_arbitrary_list() R                                      
+     *     |  |  |     |     +-parse_arbitrary_list() R                                         
+     *     |  |  |     |    parse_arbitrary_list() R                                            
+     *     |  |  |     +-parse_arbitrary_list() R                                               
+     *     |  |  +-parse_unknown_alist_entry()                                                  
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  +-parse_arbitrary_list() R                                                     
+     *     |  +-discard_excess_alist_entry_values()                                             
+     *     |       parse_arbitrary_list() R                                                     
+     *     +-parse_query_section()                                                              
+     *     |  +-parse_query_list()                                                              
+     *     |  |  +-append_str_to_ibuf()                                                         
+     *     |  |  +-parse_pred_value() R                                                         
+     *     |  |  |    coerce_symbol_token_to_pred_name()                                        
+     *     |  |  |    CSymbols::lookupPred()                                                          
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  |    coerce_text_qstring_to_qstring()                                          
+     *     |  |  |    append_str_to_ibuf()                                                      
+     *     |  |  |    parse_time_stamp()                                                        
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  |       discard_excess_alist_entry_values()                                    
+     *     |  |  |          parse_arbitrary_list() R                                            
+     *     |  |  |    CSymbols::AddDefaultArgToPred()                                                 
+     *     |  |  |    discard_excess_pred_value_arguments()                                     
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-dump_s_var_cell_definition_to_listing()                                      
+     *     |  |  +-CVocabCell::IVocabCell()                                                           
+     *     |  |  +-CSymbols::InsertGivenVarCellCstr()                                                 
+     *     |  +-discard_excess_alist_entry_values()                                             
+     *     |       parse_arbitrary_list() R                                                     
+     *     +-parse_system_section()                                                             
+     *     |  +-parse_system_alist()                                                            
+     *     |  |  +-parse_shapa_pane_vars_attribute()                                            
+     *     |  |  |  +-parse_shapa_pane_var_list()                                               
+     *     |  |  |  |    CSymbols::lookupVar()                                                        
+     *     |  |  |  |    CShapaPane::FindColumnIndexOfVar()                                           
+     *     |  |  |  |    CShapaPane::InsertVarIntoColumn()                                            
+     *     |  |  |  |    parse_arbitrary_list() R                                               
+     *     |  |  |  |    CShapaPane::UpdateShapaPaneTemporal()                                        
+     *     |  |  |  +-add_all_user_svars_to_shapa_pane()                                        
+     *     |  |  |  |    CVariablesDoc::FirstUserVariable()                                           
+     *     |  |  |  |    CSymbols::lookupVar()                                                        
+     *     |  |  |  |    CShapaPane::FindColumnIndexOfVar()                                           
+     *     |  |  |  |    CShapaPane::InsertVarIntoColumn()                                            
+     *     |  |  |  |    CVariablesDoc::NextUserVariable()                                            
+     *     |  |  |  |    CShapaPane::UpdateShapaPaneTemporal()                                        
+     *     |  |  |  +-discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_groups_attribute()                                                     
+     *     |  |  |    parse_group_list()                                                        
+     *     |  |  |       parse_group_member()                                                   
+     *     |  |  |          CSymbols::lookupVar()                                                     
+     *     |  |  |          GetVarCellByOrd()   (* in variables.c *)                                  
+     *     |  |  |          parse_arbitrary_list() R                                            
+     *     |  |  |       CSheetPane::GroupCell()                                                      
+     *     |  |  |    discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_alignments_attribute()                                                 
+     *     |  |  |  +-parse_alignments_list()                                                   
+     *     |  |  |  |  +-parse_alignment_var()                                                  
+     *     |  |  |  |  |    CSymbols::lookupPred()                                                    
+     *     |  |  |  |  |    CSymbols::lookupVar()                                                     
+     *     |  |  |  |  |    parse_arbitrary_list() R                                            
+     *     |  |  |  |  |    parse_alignment_var_alist()                                         
+     *     |  |  |  |  |     +-parse_variable_length_attribute()                                
+     *     |  |  |  |  |     |    parse_arbitrary_list() R                                      
+     *     |  |  |  |  |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |     |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |     +-parse_s_var_formal_arg_list_attribute()                          
+     *     |  |  |  |  |     |    parse_s_var_formal_arg_list()                                 
+     *     |  |  |  |  |     |       append_str_to_ibuf()                                       
+     *     |  |  |  |  |     |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |     |    append_str_to_ibuf()                                          
+     *     |  |  |  |  |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |     |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |     +-parse_s_var_type_attribute()                                     
+     *     |  |  |  |  |     |    parse_arbitrary_list() R                                      
+     *     |  |  |  |  |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |     |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |     +-parse_s_var_col_width_attribute()                                
+     *     |  |  |  |  |     |    parse_arbitrary_list() R                                      
+     *     |  |  |  |  |     |    discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |     |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |     +-parse_unknown_alist_entry()                                      
+     *     |  |  |  |  |     |    parse_arbitrary_list() R                                      
+     *     |  |  |  |  |     +-parse_arbitrary_list() R                                         
+     *     |  |  |  |  |     +-dump_s_var_definition_to_listing()                               
+     *     |  |  |  |  |     +-CSymbols::DefVar()                                                     
+     *     |  |  |  |  |     +-parse_s_var_def_cells_attribute()                                
+     *     |  |  |  |  |        +-parse_s_var_cell_list()                                       
+     *     |  |  |  |  |        |    parse_s_var_cell()                                         
+     *     |  |  |  |  |        |     +-parse_s_var_cell_onset_attribute()                      
+     *     |  |  |  |  |        |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |        |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |        |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     +-parse_s_var_cell_offset_attribute()                     
+     *     |  |  |  |  |        |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |        |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |        |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     +-parse_s_var_cell_value_attribute()                      
+     *     |  |  |  |  |        |     |  +-parse_text_cell_value()                              
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     |  +-parse_nominal_cell_value()                           
+     *     |  |  |  |  |        |     |  |    coerce_nominal_token_to_cell_nominal()            
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     |  +-parse_integer_cell_value()                           
+     *     |  |  |  |  |        |     |  |    coerce_float_token_to_integer()                   
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     |  +-parse_float_cell_value()                             
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     |  +-parse_pred_cell_value()                              
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_pred_value() R                              
+     *     |  |  |  |  |        |     |  |       coerce_symbol_token_to_pred_name()             
+     *     |  |  |  |  |        |     |  |       CSymbols::lookupPred()                               
+     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |  |  |        |     |  |       coerce_text_qstring_to_qstring()               
+     *     |  |  |  |  |        |     |  |       append_str_to_ibuf()                           
+     *     |  |  |  |  |        |     |  |       parse_time_stamp()                             
+     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |  |  |        |     |  |          discard_excess_alist_entry_values()         
+     *     |  |  |  |  |        |     |  |             parse_arbitrary_list() R                 
+     *     |  |  |  |  |        |     |  |       CSymbols::AddDefaultArgToPred()                      
+     *     |  |  |  |  |        |     |  |       discard_excess_pred_value_arguments()          
+     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |  |  |        |     |  +-parse_matrix_cell_value()                            
+     *     |  |  |  |  |        |     |  |    append_str_to_ibuf()                              
+     *     |  |  |  |  |        |     |  |    parse_time_stamp()                                
+     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |  |  |        |     |  |       discard_excess_alist_entry_values()            
+     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |  |  |        |     |  |    coerce_text_qstring_to_qstring()                  
+     *     |  |  |  |  |        |     |  |    parse_pred_value() R                              
+     *     |  |  |  |  |        |     |  |       coerce_symbol_token_to_pred_name()             
+     *     |  |  |  |  |        |     |  |       CSymbols::lookupPred()                               
+     *     |  |  |  |  |        |     |  |       parse_arbitrary_list() R                       
+     *     |  |  |  |  |        |     |  |       coerce_text_qstring_to_qstring()               
+     *     |  |  |  |  |        |     |  |       append_str_to_ibuf()                           
+     *     |  |  |  |  |        |     |  |       parse_time_stamp()                             
+     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |  |  |        |     |  |          discard_excess_alist_entry_values()         
+     *     |  |  |  |  |        |     |  |             parse_arbitrary_list() R                 
+     *     |  |  |  |  |        |     |  |       CSymbols::AddDefaultArgToPred()                      
+     *     |  |  |  |  |        |     |  |       discard_excess_pred_value_arguments()          
+     *     |  |  |  |  |        |     |  |          parse_arbitrary_list() R                    
+     *     |  |  |  |  |        |     |  |    CSymbols::lookupPred()                                  
+     *     |  |  |  |  |        |     |  +-append_str_to_ibuf()                                 
+     *     |  |  |  |  |        |     |  +-discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |        |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |        |     +-dump_s_var_cell_definition_to_listing()                 
+     *     |  |  |  |  |        |     +-CSheetPane::CreateEmptyCell()                                 
+     *     |  |  |  |  |        |     +-CSymbols::InsertGivenVarCellCstr()                            
+     *     |  |  |  |  |        |     +-parse_arbitrary_list() R                                
+     *     |  |  |  |  |        |     +-parse_unknown_alist_entry()                             
+     *     |  |  |  |  |        |          parse_arbitrary_list() R                             
+     *     |  |  |  |  |        +-discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |             parse_arbitrary_list() R                                   
+     *     |  |  |  |  +-parse_arbitrary_list() R                                               
+     *     |  |  |  +-discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_import_formats_attribute()                                             
+     *     |  |  |  +-parse_imp_formats_list()                                                  
+     *     |  |  |  |  +-parse_imp_format_list()                                                
+     *     |  |  |  |  |  +-allocFormat()       (* in import_internal.c *)                            
+     *     |  |  |  |  |  +-saveCstr()          (* in mem.c *)                                        
+     *     |  |  |  |  |  +-strTrim()           (* in import_io.c *)                                  
+     *     |  |  |  |  |  +-AddFormatListEnd()  (* in import_internal.c *)                            
+     *     |  |  |  |  |  +-parse_imp_format_list_alist()                                       
+     *     |  |  |  |  |  |  +-parse_imp_prods_attribute()                                      
+     *     |  |  |  |  |  |  |  +-parse_imp_prod_list()                                         
+     *     |  |  |  |  |  |  |  |    parse_imp_prod()                                           
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_name_attribute()                         
+     *     |  |  |  |  |  |  |  |     |    saveCstr()          (* in mem.c *)                         
+     *     |  |  |  |  |  |  |  |     |    strTrim()           (* in import_io.c *)                   
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_pattern_attribute()                      
+     *     |  |  |  |  |  |  |  |     |    saveCstr()          (* in mem.c *)                         
+     *     |  |  |  |  |  |  |  |     |    skipspace()         (* in import_io.c *)                   
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_hard_prec_attribute()                    
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_is_shown_attribute()                     
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_is_traced_attribute()                    
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     |    discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_insert_actions_attribute()               
+     *     |  |  |  |  |  |  |  |     |  +-parse_imp_prod_insert_actions_list()                 
+     *     |  |  |  |  |  |  |  |     |  |  +-parse_imp_prod_insert_action_alist()              
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_var_attribute()   
+     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)                     
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()         
+     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R                 
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_onset_attribute()  
+     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)                     
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()         
+     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R                 
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_offset_attribute() 
+     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)                     
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()         
+     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R                 
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_insert_action_val_attribute()   
+     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()     (* in mem.c *)                     
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()         
+     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R                 
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_unknown_alist_entry()                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_arbitrary_list()                         
+     *     |  |  |  |  |  |  |  |     |  |  |  +-allocAction()       (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     |  |  |  +-freeCstr()          (* in mem.c *)                   
+     *     |  |  |  |  |  |  |  |     |  |  +-AddActionListEnd()     (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     |  +-discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |       parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_imp_prod_program_actions_attribute()              
+     *     |  |  |  |  |  |  |  |     |  +-parse_imp_prod_program_actions_list()                
+     *     |  |  |  |  |  |  |  |     |  |  +-parse_imp_prod_program_action_alist()             
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_imp_prod_program_action_text_attribute() 
+     *     |  |  |  |  |  |  |  |     |  |  |  |    saveCstr()       (* in mem.c *)                   
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    discard_excess_alist_entry_values()         
+     *     |  |  |  |  |  |  |  |     |  |  |  |       parse_arbitrary_list() R                 
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_unknown_alist_entry()                    
+     *     |  |  |  |  |  |  |  |     |  |  |  |    parse_arbitrary_list() R                    
+     *     |  |  |  |  |  |  |  |     |  |  |  +-parse_arbitrary_list() R                       
+     *     |  |  |  |  |  |  |  |     |  |  |  +-allocAction()       (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     |  |  |  +-freeCstr()          (* in mem.c *)                   
+     *     |  |  |  |  |  |  |  |     |  |  +-AddActionListEnd()     (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     |  +-discard_excess_alist_entry_values()                  
+     *     |  |  |  |  |  |  |  |     |  |    parse_arbitrary_list() R                          
+     *     |  |  |  |  |  |  |  |     +-parse_arbitrary_list() R                                
+     *     |  |  |  |  |  |  |  |     +-parse_unknown_alist_entry()                             
+     *     |  |  |  |  |  |  |  |     |    parse_arbitrary_list() R                             
+     *     |  |  |  |  |  |  |  |     +-allocProd()                  (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     +-AddProdListEnd()             (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  |     +-freeCstr()                   (* in mem.c *)                   
+     *     |  |  |  |  |  |  |  |     +-freeActionList()             (* in import_internal.c *)       
+     *     |  |  |  |  |  |  |  +-discard_excess_alist_entry_values()                           
+     *     |  |  |  |  |  |  |       parse_arbitrary_list() R                                   
+     *     |  |  |  |  |  |  +-parse_unknown_alist_entry()                                      
+     *     |  |  |  |  |  |  |    parse_arbitrary_list() R                                      
+     *     |  |  |  |  |  |  +-parse_arbitrary_list() R                                         
+     *     |  |  |  |  |  +-parse_arbitrary_list()                                              
+     *     |  |  |  |  +-parse_arbitrary_list() R                                               
+     *     |  |  |  +-discard_excess_alist_entry_values()                                       
+     *     |  |  |       parse_arbitrary_list() R                                               
+     *     |  |  +-parse_unknown_alist_entry()                                                  
+     *     |  |  |    parse_arbitrary_list() R                                                  
+     *     |  |  +-parse_arbitrary_list() R                                                     
+     *     |  +-discard_excess_alist_entry_values()                                             
+     *     |  |    parse_arbitrary_list() R                                                     
+     *     |  +-add_all_user_svars_to_shapa_pane()                                              
+     *     |       CVariablesDoc::FirstUserVariable()                                                 
+     *     |       CSymbols::lookupVar()                                                              
+     *     |       CShapaPane::FindColumnIndexOfVar()                                                 
+     *     |       CShapaPane::InsertVarIntoColumn()                                                  
+     *     |       CVariablesDoc::NextUserVariable()                                                  
+     *     |       CShapaPane::UpdateShapaPaneTemporal()                                              
+     *     +-parse_unknown_alist_entry()                                                        
+     *     |    parse_arbitrary_list() R                                                        
+     *     +-parse_arbitrary_list() R                                                           
+     *                                                                                                
+     * Functions whose names are followed by a 'R' are recursive.                                     
+     *                                                                                                
+     *                                                       - 6/8/08                         
+     *                                                                                                
      ***************************************************************************************************/
 
-
+    
     /*** Parser section 1 -- top level and utility methods ***/
-
+    
     /*************************************************************************
      *
      * discard_excess_alist_entry_values()
@@ -5175,7 +5172,7 @@ public class MacshapaODBReader
      * all items until it comes to the right parenthesis that ends the a-list
      * entry.
      *
-     *                                                     JRM - 6/8/08
+     *                                                      - 6/8/08
      *
      * Parameters:
      *
@@ -5193,19 +5190,19 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName =
+	final String mName = 
 		"macshapa_odb_reader::discard_excess_alist_entry_values()";
 	boolean done;
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
         }
-
+	
 	if ( this.l0_tok.code == R_PAREN_TOK )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "a-list entry appears not to contain excess values.");
 	}
 
@@ -5218,12 +5215,12 @@ public class MacshapaODBReader
 	    switch ( this.l0_tok.code )
 	    {
 		    case R_PAREN_TOK:
-                done = true;
-                break;
+			done = true;
+			break;
 
 		    case L_PAREN_TOK:
-                parse_arbitrary_list();
-                break;
+			parse_arbitrary_list();
+			break;
 
 		    case ERROR_TOK:
 		    case SYMBOL_TOK:
@@ -5236,8 +5233,8 @@ public class MacshapaODBReader
 		    case SETF_TOK:
 		    case DB_VAR_TOK:
 		    case QUOTE_TOK:
-                get_next_token();
-                break;
+			get_next_token();
+			break;
 
 		    case EOF_TOK:
                 done = true;
@@ -5247,9 +5244,9 @@ public class MacshapaODBReader
                 break;
 
 		    default:
-                throw new SystemErrorException(mName +
-                    "Encountered unknown token type.");
-                // break; /* commented out to keep the compiler happy */
+			throw new SystemErrorException(mName + 
+				"Encountered unknown token type.");
+			// break; /* commented out to keep the compiler happy */
 	    }
 	}
 
@@ -5284,7 +5281,7 @@ public class MacshapaODBReader
      *                          'macshapa-db'
      *
      *
-     *                                                 JRM - 6/8/08
+     *                                                  - 6/8/08
      *
      * Parameters:
      *
@@ -5307,10 +5304,10 @@ public class MacshapaODBReader
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+	
 	/* parse the data base body */
 
 	/* first parse the leading left parenthesis */
@@ -5321,7 +5318,7 @@ public class MacshapaODBReader
 	}
 	else /* panic - we shouldn't have been called unless the next token is a '(' */
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.l0_tok.code isnt L_PAREN_TOK.");
 	}
 
@@ -5360,7 +5357,7 @@ public class MacshapaODBReader
 		    break;
 
 		default:
-		    throw new SystemErrorException(mName +
+		    throw new SystemErrorException(mName + 
 			    "Encountered unknown token type.");
 		    // break; /* commented out to keep the compiler happy */
 	    }
@@ -5399,7 +5396,7 @@ public class MacshapaODBReader
      * messages if they do not.
      *
      *
-     *                                            JRM - 6/8/08
+     *                                             - 6/8/08
      *
      * Parameters:
      *
@@ -5414,20 +5411,19 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_db()
-	    throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
 	final String mName = "macshapa_db_reader::parse_db()";
-	final String db_start_mssg =
+	final String db_start_mssg = 
 	    "A database file must start with \"( setf macshapa-db '( ... \".\n";
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+	
 	/* read the opening left parenthesis */
 	if ( this.l0_tok.code == L_PAREN_TOK )
 	{
@@ -5449,7 +5445,7 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == SETF_TOK )
 	    {
-            get_next_token();
+		get_next_token();
 	    }
 	    else if ( this.l0_tok.code == DB_VAR_TOK )
 	    {
@@ -5468,7 +5464,7 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == DB_VAR_TOK )
 	    {
-            get_next_token();
+		get_next_token();
 	    }
 	    else if ( this.l0_tok.code == QUOTE_TOK )
 	    {
@@ -5487,7 +5483,7 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == QUOTE_TOK )
 	    {
-            get_next_token();
+		get_next_token();
 	    }
 	    else if ( this.l0_tok.code == L_PAREN_TOK )
 	    {
@@ -5512,13 +5508,14 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == R_PAREN_TOK )
 	    {
-            /* after this call, the l0_tok should be an EOF token, */
-            /* but we won't check it.                              */
-            get_next_token();
+		/* after this call, the l0_tok should be an EOF token, */
+		/* but we won't check it.                              */
+		get_next_token();
 	    }
 	    else
 	    {
-            post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN, null);
+		post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
+                                     null);
 	    }
 	}
 
@@ -5545,7 +5542,7 @@ public class MacshapaODBReader
      *	    <db_body> --> '(' <header_section> <user_section>
      *                        <query_section> <system_section> ')'
      *
-     *                                                  JRM - 6/8/08
+     *                                                   - 6/8/08
      *
      * Parameters:
      *
@@ -5560,8 +5557,7 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_db_body()
-	    throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
 	final String mName = "macshapa_odb_reader::parse_db_body()";
@@ -5574,10 +5570,10 @@ public class MacshapaODBReader
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse TRUE on entry");
 	}
-
+	
 	/* parse the data base body */
 
 	/* first parse the leading left parenthesis */
@@ -5597,29 +5593,29 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == L_PAREN_TOK )
 	    {
-            if ( this.l1_tok.code == ALIST_LABEL_TOK )
-            {
-                if ( ( next_tag_index < 4 ) &&
-                     ( this.l1_tok.aux == expected_tag_codes[next_tag_index] ) )
-                {
-                    /* parse the alist entry */
-                    switch ( next_tag_index )
-                    {
-                        case 0: /* Header section */
-                        parse_header_section();
-                        break;
+		if ( this.l1_tok.code == ALIST_LABEL_TOK )
+		{
+		    if ( ( next_tag_index < 4 ) &&
+			 ( this.l1_tok.aux == expected_tag_codes[next_tag_index] ) )
+		    {
+			/* parse the alist entry */
+			switch ( next_tag_index )
+			{
+			    case 0: /* Header section */
+				parse_header_section();
+				break;
 
-                        case 1: /* User section */
-                        parse_user_section();
-                        break;
+			    case 1: /* User section */
+				parse_user_section();
+				break;
 
-                        case 2: /* Query section */
-                        parse_query_section();
-                        break;
+			    case 2: /* Query section */
+				parse_query_section();
+				break;
 
-                        case 3: /* System section */
-                        parse_system_section();
-                        break;
+			    case 3: /* System section */
+				parse_system_section();
+				break;
 
                         default:
                         throw new SystemErrorException(mName +
@@ -5640,17 +5636,17 @@ public class MacshapaODBReader
                                                  DUPLICATE_ALIST_ENTRY_WARN,
                                                  "Duplicate HEADER> entry\n");
 
-                            if ( ! this.abort_parse )
-                            {
-                                parse_unknown_alist_entry();
-                            }
-                        }
-                        else
-                        {
-                            throw new SystemErrorException(mName +
-                            "This else clause should be unreachable.");
-                        }
-                        break;
+				    if ( ! this.abort_parse )
+				    {
+					parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    throw new SystemErrorException(mName + 
+					"This else clause should be unreachable.");
+				}
+				break;
 
                         case USER_LABEL:
                             if ( next_tag_index > 1 )
@@ -5659,14 +5655,14 @@ public class MacshapaODBReader
                                         DUPLICATE_ALIST_ENTRY_WARN,
                                         "Duplicate USER> entry.\"\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            else
-                            {
-                                done = true;
+				    if ( ! this.abort_parse )
+				    {
+					parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
 
                                 post_error_message(this.l1_tok,
                                     MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR,
@@ -5683,14 +5679,14 @@ public class MacshapaODBReader
                                     DUPLICATE_ALIST_ENTRY_WARN,
                                     "Duplicate QUERY> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            else
-                            {
-                                done = true;
+				    if ( ! this.abort_parse )
+				    {
+					parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
 
                                 post_error_message(this.l1_tok,
                                     MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR,
@@ -5707,14 +5703,14 @@ public class MacshapaODBReader
                                     DUPLICATE_ALIST_ENTRY_WARN,
                                     "Duplicate SYSTEM> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            else
-                            {
-                                done = true;
+				    if ( ! this.abort_parse )
+				    {
+					parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
 
                                 post_error_message(this.l1_tok,
                                     MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR,
@@ -5745,16 +5741,16 @@ public class MacshapaODBReader
                         NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
                         "The list is located in the database body a-list.\r");
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-            }
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		}
 	    }
 	    else if ( this.l0_tok.code == R_PAREN_TOK )
 	    {
-            done = true;
-            get_next_token();
+		done = true;
+		get_next_token();
 
             if ( ( ! this.abort_parse ) &&
                  ( next_tag_index < 4 ) )
@@ -5778,10 +5774,10 @@ public class MacshapaODBReader
                     NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
                     "The atom was detected in the database body a-list.\n");
 
-            if ( ! this.abort_parse )
-            {
-                get_next_token();
-            }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
 	    }
 	}
 
@@ -5819,7 +5815,7 @@ public class MacshapaODBReader
      *                             <arbitrary_list>
      *
      *
-     *                                                JRM - 6/8/08
+     *                                                 - 6/8/08
      *
      * Parameters:
      *
@@ -5843,10 +5839,10 @@ public class MacshapaODBReader
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse TRUE on entry");
 	}
-
+	
 	/* parse the unknown a-list entry -- note that we discard its contents */
 
 	/* first parse the leading left parenthesis */
@@ -5857,7 +5853,7 @@ public class MacshapaODBReader
 	}
 	else /* system error - we shouldn't have been called unless the next token is a '(' */
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.l0_tok.code isnt L_PAREN_TOK.");
 	}
 
@@ -5870,7 +5866,7 @@ public class MacshapaODBReader
 	    }
 	    else /* system error - we shouldn't have been called unless the next token is an a-list tag */
 	    {
-		throw new SystemErrorException(mName +
+		throw new SystemErrorException(mName + 
 			"this.l0_tok.code isnt ALIST_LABEL_TOK.");
 	    }
 	}
@@ -5886,19 +5882,19 @@ public class MacshapaODBReader
                     "unexpected, hence the point is probably moot.\n");
                 break;
 
-            case L_PAREN_TOK:
-                parse_arbitrary_list();
-                break;
+		case L_PAREN_TOK:
+		    parse_arbitrary_list();
+		    break;
 
-            case ERROR_TOK:
-            case SYMBOL_TOK:
-            case INT_TOK:
-            case FLOAT_TOK:
-            case STRING_TOK:
-            case BOOL_TOK:
-            case PRIVATE_VAL_TOK:
-                get_next_token();
-                break;
+		case ERROR_TOK:
+		case SYMBOL_TOK:
+		case INT_TOK:
+		case FLOAT_TOK:
+		case STRING_TOK:
+		case BOOL_TOK:
+		case PRIVATE_VAL_TOK:
+		    get_next_token();
+		    break;
 
             case ALIST_LABEL_TOK:
             case SETF_TOK:
@@ -5908,11 +5904,11 @@ public class MacshapaODBReader
                         ILLEGAL_UNKNOWN_ALIST_ENTRY_VAL_WARN,
                          null);
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
             case EOF_TOK:
                 done = true;
@@ -5922,15 +5918,16 @@ public class MacshapaODBReader
                     true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                    "Encountered unknown token type.");
-                // break; /* commented out to keep the compiler happy */
+		default:
+		    throw new SystemErrorException(mName +
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
 	    }
 	}
 
 	/**
-	 * check to see if the a-list entry contains more than one value - if
+	 * check to see if the a-list entry contains more than one value - if 
 	 * it does, consume the excess value(s), and issue a warning.
 	 */
 	if ( ! this.abort_parse )
@@ -5941,29 +5938,29 @@ public class MacshapaODBReader
 	    while ( ( ! this.abort_parse ) &&
 		    ( ! done ) )
 	    {
-            switch ( this.l0_tok.code )
-            {
-                case R_PAREN_TOK:
-                    done = true;
-                    break;
+		switch ( this.l0_tok.code )
+		{
+		    case R_PAREN_TOK:
+			done = true;
+			break;
 
-                case L_PAREN_TOK:
-                    excess_values = true;
-                    parse_arbitrary_list();
-                    break;
+		    case L_PAREN_TOK:
+			excess_values = true;
+			parse_arbitrary_list();
+			break;
 
-                case ERROR_TOK:
-                case SYMBOL_TOK:
-                case INT_TOK:
-                case FLOAT_TOK:
-                case STRING_TOK:
-                case BOOL_TOK:
-                case SETF_TOK:
-                case DB_VAR_TOK:
-                case QUOTE_TOK:
-                    excess_values = true;
-                    get_next_token();
-                    break;
+		    case ERROR_TOK:
+		    case SYMBOL_TOK:
+		    case INT_TOK:
+		    case FLOAT_TOK:
+		    case STRING_TOK:
+		    case BOOL_TOK:
+		    case SETF_TOK:
+		    case DB_VAR_TOK:
+		    case QUOTE_TOK:
+			excess_values = true;
+			get_next_token();
+			break;
 
                 case EOF_TOK:
                     done = true;
@@ -5972,16 +5969,16 @@ public class MacshapaODBReader
                         "a-list entry.\n", true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                                /* commented out to keep the compiler happy */
-                    // break;
-            }
+		    default:
+			throw new SystemErrorException(mName + 
+				"Encountered unknown token type.");
+                        /* commented out to keep the compiler happy */
+			// break;
+		}
 	    }
 
 	    if ( ( ! this.abort_parse ) &&
-		     ( done ) && ( excess_values ) )
+		 ( done ) && ( excess_values ) )
 	    {
             post_warning_message(this.l0_tok,
                     EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
@@ -5995,12 +5992,12 @@ public class MacshapaODBReader
 	{
 	    if ( this.l0_tok.code == R_PAREN_TOK )
 	    {
-            get_next_token();
+		get_next_token();
 	    }
 	    else
 	    {
-            throw new SystemErrorException(mName +
-                "This else clause should be unreachable.");
+		throw new SystemErrorException(mName +
+			"This else clause should be unreachable.");
 	    }
 	}
 
@@ -6009,24 +6006,24 @@ public class MacshapaODBReader
     } /* MacshapaODBReader::parse_unknown_alist_entry() */
 
 
-
+    
     /*** Parser section 2 -- header parsing methods ***/
 
     /*************************************************************************
      *
      * dump_header_settings_to_string()
      *
-     * Debugging routine that constructs a String containing the current
-     * settings of all fields that can be modified by attributes in the
+     * Debugging routine that constructs a String containing the current 
+     * settings of all fields that can be modified by attributes in the 
      * HEADER> section, and returns it.
      *
-     *                                           JRM - 6/8/08
+     *                                            - 6/8/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns:  String containing current settings of all fields that can
+     * Returns:  String containing current settings of all fields that can 
      *	    be modified by the HEADER> section.
      *
      * Changes:
@@ -6036,50 +6033,50 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private String dump_header_settings_to_string()
-        throws SystemErrorException
+	throws SystemErrorException
     {
-        final String mName =
-            "macshapa_odb_reader::dump_header_settings_to_string()";
-        String retVal = null;
+	final String mName = 
+		"macshapa_odb_reader::dump_header_settings_to_string()";
+	String retVal = null;
 
-        /* construct the string */
-        retVal = "\n\nCurrent Header Settings:\n" +
-                 "db.name = \"" + this.db.getName() + "\"\n" +
-                 "odb file format version = " +
-                this.odb_file_format_version + "\n" +
-                     "warning limit = " + this.max_warnings + "\n" +
-                 "error limit = " + this.max_errors + "\n" +
-                 "debug level = " + this.debug_level + "\n\n";
+	/* construct the string */
+	retVal = "\n\nCurrent Header Settings:\n" +
+	         "db.name = \"" + this.db.getName() + "\"\n" +
+	         "odb file format version = " + 
+		    this.odb_file_format_version + "\n" +
+                 "warning limit = " + this.max_warnings + "\n" +
+	         "error limit = " + this.max_errors + "\n" +
+	         "debug level = " + this.debug_level + "\n\n";
 
-        return retVal;
+	return retVal;
 
-        } /* dump_header_settings_to_listing() */
+    } /* dump_header_settings_to_listing() */
 
-
-        /*************************************************************************
-         *
-         * parse_db_name_attribute()
-         *
-         * This method parses the database name attribute, and if successful, sets
-         * the name of this.db. This attribute only appears in the a-list
-         * associated with the header section of the open database body.  The
-         * production generating this attribute is given below:
-         *
-         *	    <db-name-attribute> --> '(' 'NAME>' <quote_string> ')'
-         *
-         *                                             JRM - 6/8/08
-         *
-         * Parameters:
-         *
-         *	  - None.
-         *
-         * Returns:  Void.
-         *
-         * Changes:
-         *
-         *    - None.
-         *
-         **************************************************************************/
+    
+    /*************************************************************************
+     *
+     * parse_db_name_attribute()
+     *
+     * This method parses the database name attribute, and if successful, sets
+     * the name of this.db. This attribute only appears in the a-list 
+     * associated with the header section of the open database body.  The 
+     * production generating this attribute is given below:
+     *
+     *	    <db-name-attribute> --> '(' 'NAME>' <quote_string> ')'
+     *
+     *                                              - 6/8/08
+     *
+     * Parameters:
+     *
+     *	  - None.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     **************************************************************************/
 
         private void parse_db_name_attribute()
         throws SystemErrorException,
@@ -6096,39 +6093,39 @@ public class MacshapaODBReader
             "The string provided in the HEADER> NAME> attribute is " +
             "empty.  The attribute will be ignored.\r";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the version attribute */
 
-        /* parse the version attribute */
+	/* first parse the leading left parenthesis */
 
-        /* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* system error - we shouldn't have been called unless the next token == a '(' */
+	{
+	    throw new SystemErrorException(mName +
+		    "this.l0_tok.code != L_PAREN_TOK.");
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* system error - we shouldn't have been called unless the next token == a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "this.l0_tok.code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == NAME_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token == an a-list tag */
-            {
-                throw new SystemErrorException(mName + "this.l0_tok != NAME>.");
-            }
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == NAME_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token == an a-list tag */
+	    {
+		throw new SystemErrorException(mName + "this.l0_tok != NAME>.");
+	    }
+	}
 
         /**
          * read the value associated with the a-list entry & discard
@@ -6149,11 +6146,11 @@ public class MacshapaODBReader
                                              db_name_empty_mssg);
                     }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -6165,11 +6162,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             db_name_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case SYMBOL_TOK:
@@ -6185,11 +6182,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             db_name_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -6211,12 +6208,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the NAME> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the NAME> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -6243,7 +6240,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_db_name_attribute() */
 
@@ -6253,14 +6250,14 @@ public class MacshapaODBReader
      * parse_db_version_attribute()
      *
      * This method parses the database version attribute, and loads the
-     * database version number into this.odb_file_format_version.  This
-     * attribute only appears in the a-list associated with the header
-     * section of the open database body.  The production generating this
+     * database version number into this.odb_file_format_version.  This 
+     * attribute only appears in the a-list associated with the header 
+     * section of the open database body.  The production generating this 
      * attribute is given below:
      *
      *	    <db-version-attribute> --> '(' 'VERSION>' <integer> ')'
      *
-     *                                             JRM - 6/9/08
+     *                                              - 6/9/08
      *
      * Parameters:
      *
@@ -6286,40 +6283,40 @@ public class MacshapaODBReader
             "The value of the HEADER> VERSION> attribute must be a positive " +
             "integer.  Version # forced to 1.\r";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the version attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the version attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == VERSION_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is an a-list tag */
-            {
-                throw new SystemErrorException(mName +
-                        "this.l0_tok != VERSION>.");
-            }
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == VERSION_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is an a-list tag */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != VERSION>.");
+	    }
+	}
 
         /* read the value associated with the a-list entry & discard any excess values */
         if ( ! this.abort_parse )
@@ -6339,11 +6336,11 @@ public class MacshapaODBReader
                                 null);
                     }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -6356,11 +6353,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             db_format_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse  )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse  )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case SYMBOL_TOK:
@@ -6377,11 +6374,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             db_format_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -6390,12 +6387,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break; /* commented out to keep the compiler happy */
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -6408,12 +6406,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the VERSION> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the VERSION> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -6441,7 +6439,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_db_version_attribute() */
 
@@ -6450,14 +6448,14 @@ public class MacshapaODBReader
      *
      * parse_debug_level_attribute()
      *
-     * This method parses the debug level attribute, and loads the debug
-     * level into this.debug_level.  This attribute only appears in the
-     * a-list associated with the header section of the open database body.
+     * This method parses the debug level attribute, and loads the debug 
+     * level into this.debug_level.  This attribute only appears in the 
+     * a-list associated with the header section of the open database body.  
      * The production generating this attribute is given below:
      *
      *	    <db-version-attribute> --> '(' 'DEBUG-LEVEL>' <integer> ')'
      *
-     *                                                  JRM - 6/9/08
+     *                                                   - 6/9/08
      *
      * Parameters:
      *
@@ -6484,24 +6482,24 @@ public class MacshapaODBReader
             "The value of the HEADER> DEBUG-LEVEL> attribute must be a " +
             "non-negative integer.  Debug level forced to 0.\r";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the version attribute */
 
-        /* parse the version attribute */
-
-        /* first parse the leading left parenthesis */
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token == a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token == a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
         /* read the a-list entry name */
         if ( ! this.abort_parse )
@@ -6565,11 +6563,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             debug_level_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case SYMBOL_TOK:
@@ -6586,11 +6584,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             debug_level_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -6598,12 +6596,13 @@ public class MacshapaODBReader
                         true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break; /* commented out to keep the compiler happy */
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -6616,15 +6615,15 @@ public class MacshapaODBReader
             }
         }
 
-        /**
-         * discard any excess values that may appear in the
-         * DEBUG-LEVEL> a-list entry
-         */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/**
+	 * discard any excess values that may appear in the 
+	 * DEBUG-LEVEL> a-list entry 
+	 */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -6651,7 +6650,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_debug_level_attribute() */
 
@@ -6684,7 +6683,7 @@ public class MacshapaODBReader
      *      <max-warnings-attribute> --> '(' 'MAX-WARNINGS>' <integer> ')'
      *
      *
-     *                                            JRM - 6/9/08
+     *                                             - 6/9/08
      *
      * Parameters:
      *
@@ -6702,23 +6701,23 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_od_reader::parse_header_alist()";
-        boolean done;
-        boolean have_version;
-        boolean have_name;
-        boolean have_max_errors;
-        boolean have_max_warnings;
-        boolean have_debug_level;
+	final String mName = "macshapa_od_reader::parse_header_alist()";
+	boolean done;
+	boolean have_version;
+	boolean have_name;
+	boolean have_max_errors;
+	boolean have_max_warnings;
+	boolean have_debug_level;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                        "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the header alist */
 
-        /* parse the header alist */
-
-        /* first parse the leading left parenthesis */
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -6742,21 +6741,21 @@ public class MacshapaODBReader
                  * Thus we eat the left parenthesis & let the cards fall where
                  * they may.                                                           */
 
-                get_next_token();
-            }
-        }
-        else /* system error - we shouldn't have been called unless the next token == a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* system error - we shouldn't have been called unless the next token == a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        done              = false;
-        have_version      = false;
-        have_name         = false;
-        have_max_errors   = false;
-        have_max_warnings = false;
-        have_debug_level  = false;
+	done              = false;
+	have_version      = false;
+	have_name         = false;
+	have_max_errors   = false;
+	have_max_warnings = false;
+	have_debug_level  = false;
 
         /* now parse the a-list assocated with the HEADER> label */
         while ( ( ! this.abort_parse ) && ( ! done ) )
@@ -6779,12 +6778,12 @@ public class MacshapaODBReader
                                         DUPLICATE_ALIST_ENTRY_WARN,
                                         "Duplicate HEADER> VERSION> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         case NAME_LABEL:
                             if ( ! have_name )
@@ -6798,12 +6797,12 @@ public class MacshapaODBReader
                                         DUPLICATE_ALIST_ENTRY_WARN,
                                         "Duplicate HEADER> NAME> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         case MAX_ERRORS_LABEL:
                             if ( ! have_max_errors )
@@ -6817,12 +6816,12 @@ public class MacshapaODBReader
                                     DUPLICATE_ALIST_ENTRY_WARN,
                                     "Duplicate HEADER> MAX-ERRORS> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         case MAX_WARNINGS_LABEL:
                             if ( ! have_max_warnings )
@@ -6855,12 +6854,12 @@ public class MacshapaODBReader
                                     DUPLICATE_ALIST_ENTRY_WARN,
                                     "Duplicate HEADER> DEBUG-LEVEL> entry.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         default:
                             post_warning_message(this.l1_tok,
@@ -6906,23 +6905,23 @@ public class MacshapaODBReader
                         NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
                         "The atom was detected in the HEADER> a-list.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	}
 
-        if ( ( ! this.abort_parse ) && ( ! have_version ) )
-        {
-            this.odb_file_format_version = 1;
+	if ( ( ! this.abort_parse ) && ( ! have_version ) )
+	{
+	    this.odb_file_format_version = 1;
 
             post_warning_message(this.l0_tok, MISSING_ALIST_ENTRY_WARN,
                 "The missing entry == the HEADER> VERSION> entry.  " +
                 "Format version forced to 1.\n");
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_header_alist() */
 
@@ -6938,7 +6937,7 @@ public class MacshapaODBReader
      *
      *	    <header_section> --> '(' 'HEADER>' <header-alist> ')'
      *
-     *                                       JRM - 6/10/08
+     *                                        - 6/10/08
      *
      *  Parameters:
      *
@@ -6956,65 +6955,65 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_header_section()";
+	final String mName = "macshapa_odb_reader::parse_header_section()";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the header section */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the header section */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token == a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == HEADER_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* system error - we shouldn't have been called unless the */
+	    {    /*                next token == the HEADER> a-list tag.    */
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != \"HEADER>\".");
+	    }
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token == a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* read the a-list associated with the header section */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    if ( ( this.debug_level > 0 ) && 
+			 ( this.listing_stream != null ) )
+		    {
+			this.listing_stream.print(
+				this.dump_header_settings_to_string());
+		    }
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == HEADER_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* system error - we shouldn't have been called unless the */
-            {    /*                next token == the HEADER> a-list tag.    */
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != \"HEADER>\".");
-            }
-        }
+		    parse_header_alist();
 
-        /* read the a-list associated with the header section */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    if ( ( this.debug_level > 0 ) &&
-                     ( this.listing_stream != null ) )
-                    {
-                        this.listing_stream.print(
-                            this.dump_header_settings_to_string());
-                    }
-
-                    parse_header_alist();
-
-                    if ( ( this.debug_level > 0 ) &&
-                     ( this.listing_stream != null ) )
-                    {
-                        this.listing_stream.print(
-                            this.dump_header_settings_to_string());
-                    }
-                    break;
+		    if ( ( this.debug_level > 0 ) && 
+			 ( this.listing_stream != null ) )
+		    {
+			this.listing_stream.print(
+				this.dump_header_settings_to_string());
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -7036,11 +7035,11 @@ public class MacshapaODBReader
                         ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                         "The value of the HEADER> section must be a list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			    get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -7049,12 +7048,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break; /* commented out to keep the compiler happy */
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -7067,12 +7067,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the HEADER> section */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the HEADER> section */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -7083,19 +7083,19 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the HEADER> */
-                /* section, this else clause is unreachable at present.      */
-                /* Should we choose to drop this attempt at error recovery,  */
-                /* this clause will again become reachable.   JRM - 9/15/95  */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the HEADER> */
+		/* section, this else clause is unreachable at present.      */
+		/* Should we choose to drop this attempt at error recovery,  */
+		/* this clause will again become reachable.    - 9/15/95  */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "The closing parenthesis was missing from " +
@@ -7103,7 +7103,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_header_section() */
 
@@ -7120,7 +7120,7 @@ public class MacshapaODBReader
      *
      *	    <db-version-attribute> --> '(' 'MAX-ERRORS>' <integer> ')'
      *
-     *                                                                                                      JRM - 9/6/95
+     *                                                                                                       - 9/6/95
      *
      *  Parameters:
      *
@@ -7148,12 +7148,12 @@ public class MacshapaODBReader
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse TRUE on entry");
 	}
-
+	
 	/* parse the version attribute */
-
+	
 	/* first parse the leading left parenthesis */
 
 	if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -7162,7 +7162,7 @@ public class MacshapaODBReader
 	}
 	else /* we shouldn't have been called unless the next token == a '(' */
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "(this.l0_tok).code != L_PAREN_TOK.");
 	}
 
@@ -7176,7 +7176,7 @@ public class MacshapaODBReader
 	    }
 	    else /* we shouldn't have been called unless the next token == an a-list tag */
 	    {
-		throw new SystemErrorException(mName +
+		throw new SystemErrorException(mName + 
 			"this.l0_tok != MAX-ERRORS>.");
 	    }
 	}
@@ -7229,11 +7229,11 @@ public class MacshapaODBReader
                         ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                         errors_limit_type_mismatch_mssg);
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-                break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
             case ERROR_TOK:
             case SYMBOL_TOK:
@@ -7250,11 +7250,11 @@ public class MacshapaODBReader
                         ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                         errors_limit_type_mismatch_mssg);
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
             case EOF_TOK:
@@ -7263,10 +7263,11 @@ public class MacshapaODBReader
                            true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                    "Encountered unknown token type.");
-                // break; /* commented out to keep the compiler happy */
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
 	    }
 	}
 
@@ -7286,7 +7287,7 @@ public class MacshapaODBReader
 	{
 	    if ( (this.l0_tok).code != R_PAREN_TOK )
 	    {
-            discard_excess_alist_entry_values();
+		discard_excess_alist_entry_values();
 
             if ( ! this.abort_parse )
             {
@@ -7304,7 +7305,7 @@ public class MacshapaODBReader
 	{
 	    if ( (this.l0_tok).code == R_PAREN_TOK )
 	    {
-            get_next_token();
+		get_next_token();
 	    }
 	    else
 	    {
@@ -7331,7 +7332,7 @@ public class MacshapaODBReader
      *
      *	    <db-version-attribute> --> '(' 'MAX-WARNINGS>' <integer> ')'
      *
-     *                                                JRM - 6/10/08
+     *                                                 - 6/10/08
      *
      *  Parameters:
      *
@@ -7346,52 +7347,52 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_max_warnings_attribute()
-        throws SystemErrorException,
-                   java.io.IOException
+	throws SystemErrorException,
+               java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_max_warnings_attribute()";
-        final String missing_warnings_limit_mssg =
-            "The HEADER> MAX-WARNINGS> attribute appears not to contain " +
-            "a value.  Warnings limit forced to 1.\n";
-        final String warnings_limit_type_mismatch_mssg =
-            "The value of the HEADER> MAX-WARNINGS> attribute must be " +
-            "a positive integer.  Warnings limit forced to 1.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_max_warnings_attribute()";
+	final String missing_warnings_limit_mssg =
+		"The HEADER> MAX-WARNINGS> attribute appears not to contain " +
+		"a value.  Warnings limit forced to 1.\n";
+	final String warnings_limit_type_mismatch_mssg =
+		"The value of the HEADER> MAX-WARNINGS> attribute must be " +
+		"a positive integer.  Warnings limit forced to 1.\n";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the version attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the version attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token == a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token == a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-             ( (this.l0_tok).aux == MAX_WARNINGS_LABEL ) )
-            {
-            get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token == an a-list tag */
-            {
-            throw new SystemErrorException(mName +
-                "this.l0_tok != MAX-ERRORS>.");
-            }
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == MAX_WARNINGS_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token == an a-list tag */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != MAX-ERRORS>.");
+	    }
+	}
 
         /**
          * read the value associated with the a-list entry &
@@ -7444,11 +7445,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             warnings_limit_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case SYMBOL_TOK:
@@ -7465,11 +7466,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             warnings_limit_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -7477,13 +7478,13 @@ public class MacshapaODBReader
                             true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                        /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -7496,12 +7497,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the MAX-WARNINGS> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the MAX-WARNINGS> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -7528,11 +7529,11 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_max_warnings_attribute() */
 
-
+        
     /*** Parser section 3 -- methods for parsing the user section ***/
 
     /*************************************************************************
@@ -7540,8 +7541,8 @@ public class MacshapaODBReader
      * dump_s_var_cell_definition_to_listing()
      *
      * Dump the contents of the supplied DataCell to the listing file.
-     *
-     *                                                 JRM - 2/16/08
+     *        
+     *                                                  - 2/16/08
      *
      * Parameters:
      *
@@ -7554,29 +7555,30 @@ public class MacshapaODBReader
      *  - None.
      *
      *************************************************************************/
-
+    
     private void dump_s_var_cell_definition_to_listing(DataCell dc)
         throws SystemErrorException
     {
-        final String mName =
+        final String mName = 
                 "macshapa_odb_reader::dump_s_var_cell_definition_to_listing()";
-
+        
         throw new SystemErrorException(mName + "method not implemented.");
+        
+	/* commented out to keep the compiler happy */
+        // return;
+        
+    } /* macshapa_odb_reader::dump_s_var_cell_definition_to_listing() */
 
-        // return;  /* commented out to keep the compiler happy */
-
-    } /* MacshapaODBReader::dump_s_var_cell_definition_to_listing() */
-
-
+    
 
     /*************************************************************************
      *
      * dump_s_var_definition_to_listing()
      *
-     * Dump the supplied spreadsheet variable definition data to the
+     * Dump the supplied spreadsheet variable definition data to the 
      * listing file.
-     *
-     *                                                 JRM - 2/16/08
+     *        
+     *                                                  - 2/16/08
      *
      * Parameters:
      *
@@ -7589,15 +7591,15 @@ public class MacshapaODBReader
      *   - None.
      *
      *************************************************************************/
-
+    
     private void dump_s_var_definition_to_listing(
                                             String name,
                                             MatrixVocabElement.MatrixType type,
-                                            boolean variable_length,
+                                            boolean variable_length, 
                                             int col_width)
         throws SystemErrorException
     {
-        final String mName =
+        final String mName = 
                 "macshapa_odb_reader::dump_s_var_definition_to_listing()";
 
         if ( this.listing_stream != null )
@@ -7614,33 +7616,33 @@ public class MacshapaODBReader
 
     } /* MacshapaODBReader::dump_s_var_definition_to_listing() */
 
-
+    
     /*************************************************************************
      *
      * parse_float_cell_value()
      *
-     * This method parses the value of a spreadsheet variable cell in the
-     * context of a float spreadsheet variable.  The production generating
+     * This method parses the value of a spreadsheet variable cell in the 
+     * context of a float spreadsheet variable.  The production generating 
      * such a cell value is given below:
-     *
+     *        
      *	    <float_cell_value> --> <float>
      *
-     * If there are no type conflicts, the function simply creates a
-     * FloatDataValue containing the value specified, and returns a
+     * If there are no type conflicts, the function simply creates a 
+     * FloatDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by loading the value 0.0 into the
-     * FloatDataValue, issuing a warning message, and consuming the offending
+     * Type conficts are handled by loading the value 0.0 into the 
+     * FloatDataValue, issuing a warning message, and consuming the offending 
      * value.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.    As this function is
-     *          only called to parse the value of a float cell, the
-     *          farg must be of type FLOAT.
+     *          only called to parse the value of a float cell, the 
+     *          farg must be of type FLOAT. 
      *
      * Returns:  Void.
      *
@@ -7654,55 +7656,55 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_float_cell_value()";
-        final String overflow_mssg = "Overflow occured in a float cell value.\n";
+	final String mName = "macshapa_odb_reader::parse_float_cell_value()";
+	final String overflow_mssg = "Overflow occured in a float cell value.\n";
         double value = 0.0;
         FloatDataValue fdv = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.FLOAT )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a float.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
-        /* try to parse the float cell value */
-
-        switch ( (this.l0_tok).code )
-        {
-            case FLOAT_TOK:
+	
+	/* try to parse the float cell value */
+	
+	switch ( (this.l0_tok).code )
+	{
+	    case FLOAT_TOK:
                 value = this.l0_tok.val;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
-            case INT_TOK:
+	    case INT_TOK:
                 value = this.l0_tok.val;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case SYMBOL_TOK:
             case STRING_TOK:
@@ -7717,13 +7719,13 @@ public class MacshapaODBReader
                         "Will discard the value and set the value of the " +
                         "float cell to zero.\n");
 
-                 value = 0.0;
+                value = 0.0;
 
-                 if ( ! this.abort_parse )
-                 {
-                     get_next_token();
-                 }
-                 break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		 break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -7733,18 +7735,18 @@ public class MacshapaODBReader
 
                 value = 0.0;
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    parse_arbitrary_list();
+		}
+		break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
                     "The float cell will be set to zero.\n");
 
                 value = 0.0;
-                break;
+		break;
 
             case ERROR_TOK:
                 post_warning_message(this.l0_tok,
@@ -7752,13 +7754,13 @@ public class MacshapaODBReader
                         "The value is an ill formed token.  The float cell " +
                         "will be set to zero.\n");
 
-                        value = 0.0;
+                value = 0.0;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -7766,23 +7768,23 @@ public class MacshapaODBReader
                                true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-
-                // break;  /* commented out to keep the compiler happy */
-        }
-
+	     default:
+		 throw new SystemErrorException(mName + 
+			 "Encountered unknown token type.");
+	         /* commented out to keep the compiler happy */
+		 // break;
+	}
+        
         // range checking done in the lexer, so if we get this far, just
-        // create the data value.
+        // create the data value.  
         //
         // Note that in the OpenSHAPA version of this code, we will have
         // to check to see if the formal argument is a subranged float,
         // and if so coerce the value to range if ncessary.
-
+        
         fdv = new FloatDataValue(this.db, farg.getID(), value);
-
-        return(fdv);
+        
+	return(fdv);
 
     } /* MacshapaODBReader::parse_float_cell_value() */
 
@@ -7791,24 +7793,24 @@ public class MacshapaODBReader
      *
      * parse_float_value()
      *
-     * This method parses a float value in the context of a matrix or
+     * This method parses a float value in the context of a matrix or 
      * predicate argument.
      *
-     * If there are no type conflicts, the function simply creates a
-     * FloatDataValue containing the value specified, and returns a
+     * If there are no type conflicts, the function simply creates a 
+     * FloatDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by  issuing a warning message, consuming the
+     * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.    This function is
      *          called to parse the value of a matrix or predicate argument,
-     *          so the farg must be of type FLOAT or of type UNTYPED.
+     *          so the farg must be of type FLOAT or of type UNTYPED. 
      *
      * Returns:  Void.
      *
@@ -7826,42 +7828,42 @@ public class MacshapaODBReader
 	final String overflow_mssg = "Overflow occured in a float value.\n";
         double value = 0.0;
         DataValue dv = null;
-
+        
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* we must only be called if the next token is a float -- scream
          * and die if it is not.
          */
-
+        
         if ( (this.l0_tok).code != FLOAT_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "(this.l0_tok).code != FLOAT_TOK");
         }
-
+        
         value = this.l0_tok.val;
-
+	
         if ( ( farg.fargType != FormalArgument.FArgType.FLOAT ) ||
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
-            // create the data value.
+            // create the data value.  
             //
             // Note that in the OpenSHAPA version of this code, we will have
             // to check to see if the formal argument is a subranged float,
@@ -7874,20 +7876,20 @@ public class MacshapaODBReader
             /* type mismatch between formal argument and value.  Construct
              * an udefined data value, and flag a warning.
              */
-            dv = new UndefinedDataValue(this.db,
-                                        farg.getID(),
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID(), 
                                         farg.getFargName());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
         }
-
+        
         if ( ! this.abort_parse ) /* consume the token */
         {
             get_next_token();
         }
-
-        return(dv);
+        
+	return(dv);
 
     } /* MacshapaODBReader::parse_float_value() */
 
@@ -7896,14 +7898,14 @@ public class MacshapaODBReader
      *
      * parse_formal_arg_value()
      *
-     * This method parses a foral argument value in the context of a matrix or
+     * This method parses a foral argument value in the context of a matrix or 
      * predicate argument.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.
      *
      * Returns:  Void.
@@ -7920,36 +7922,36 @@ public class MacshapaODBReader
     {
 	final String mName = "macshapa_odb_reader::parse_formal_arg_value()";
         UndefinedDataValue udv = null;
-
+        
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
-        /* we must only be called if the next token is a symbol with the
+        
+        /* we must only be called if the next token is a symbol with the 
          * formal argument flag set -- scream and die if it is not.
          */
-
+        
         if ( ( (this.l0_tok).code != SYMBOL_TOK ) ||
              ( ((this.l0_tok).aux & FORMAL_ARG_FLAG) == 0 ) )
         {
             throw new SystemErrorException(mName + "(this.l0_tok).code != " +
                     "SYMBOL_TOK or ((this.l0_tok).aux & FORMAL_ARG_FLAG) == 0");
         }
-
+        
         if ( this.l0_tok.str.toString().compareTo(farg.getFargName()) != 0 )
         {
             post_warning_message(this.l0_tok, FARG_NAME_MISMATCH_WARN,
@@ -7958,12 +7960,12 @@ public class MacshapaODBReader
         }
 
         udv = new UndefinedDataValue(this.db, farg.getID(), farg.getFargName());
-
+        
         if ( ! this.abort_parse ) /* consume the token */
         {
             get_next_token();
         }
-
+        
 	return(udv);
 
     } /* MacshapaODBReader::parse_formal_arg_value() */
@@ -7973,10 +7975,10 @@ public class MacshapaODBReader
      *
      * parse_integer_cell_value()
      *
-     * This method parses the value of a spreadsheet variable cell in the
-     * context of an integer spreadsheet variable.  The production generating
+     * This method parses the value of a spreadsheet variable cell in the 
+     * context of an integer spreadsheet variable.  The production generating 
      * such a cell value is given below:
-     *
+     *        
      *            <integer_cell_value> --> <integer>
      *
      * If there are no type conflicts, the function simply creates a Matrix
@@ -7984,19 +7986,19 @@ public class MacshapaODBReader
      * value in the first (and only) entry in the matrix, and returns a
      * reference to the newly created instance of Matrix.
      *
-     * In general, type conficts are handled by loading 0 into the
-     * IntDataValue, issuing a warning message, and consuming the
+     * In general, type conficts are handled by loading 0 into the 
+     * IntDataValue, issuing a warning message, and consuming the 
      * offending value.  However, in the case of a float token, the
-     * float value is silently coerced to an integer.
-     *
-     *                                                JRM - 6/12/08
+     * float value is silently coerced to an integer.  
+     *        
+     *                                                 - 6/12/08
      *
      *  Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  As this function is
-     *          only called to parse the value of an integer cell, the
-     *          farg must be of type INTEGER.
+     *          only called to parse the value of an integer cell, the 
+     *          farg must be of type INTEGER. 
      *
      * Returns:  Void.
      *
@@ -8010,42 +8012,42 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
+	final String mName = 
                 "macshapa_odb_reader::parse_integer_cell_value()";
-        final String overflow_mssg =
-                "Overflow occured in an integer cell value.\n";
+	final String overflow_mssg = 
+		"Overflow occured in an integer cell value.\n";
         long value = 0;
         IntDataValue idv = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName +
+		    "this.abort_parse TRUE on entry");
+	}
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.INTEGER )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an integer.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
-        /* try to parse the integer cell value */
-
-        switch ( (this.l0_tok).code )
-        {
-            case FLOAT_TOK:
-                value = this.l0_tok.coerce_float_token_to_integer();
+	
+	/* try to parse the integer cell value */
+	
+	switch ( (this.l0_tok).code )
+	{
+	    case FLOAT_TOK:
+		value = this.l0_tok.coerce_float_token_to_integer();
 
                 if ( ! this.abort_parse )
                 {
@@ -8055,20 +8057,20 @@ public class MacshapaODBReader
                         "legal integer cell value.\n");
                 }
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
-            case INT_TOK:
+	    case INT_TOK:
                 value = (long)this.l0_tok.val;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case SYMBOL_TOK:
             case STRING_TOK:
@@ -8085,11 +8087,11 @@ public class MacshapaODBReader
 
                 value = 0;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -8099,18 +8101,18 @@ public class MacshapaODBReader
 
                 value = 0;
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    parse_arbitrary_list();
+		}
+		break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
                     "The integer cell will be set to zero.\n");
 
                 value = 0;
-                break;
+		break;
 
             case ERROR_TOK:
                 post_warning_message(this.l0_tok,
@@ -8120,11 +8122,11 @@ public class MacshapaODBReader
 
                 value = 0;
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8132,49 +8134,49 @@ public class MacshapaODBReader
                            true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                            "Encountered unknown token type.");
-
-                // break; /* commented out to keep the compiler happy */
-        }
-
+	     default:
+		 throw new SystemErrorException(mName + 
+			 "Encountered unknown token type.");
+	         /* commented out to keep the compiler happy */
+		 // break;
+	}
+        
         // range checking done in the lexer, so if we get this far, just
-        // create the data value.
+        // create the data value.  
         //
         // Note that in the OpenSHAPA version of this code, we will have
         // to check to see if the formal argument is a subranged integer,
         // and if so coerce the value to range if ncessary.
-
+        
         idv = new IntDataValue(this.db, farg.getID(), value);
-
-        return(idv);
+        
+	return(idv);
 
     } /* machsapa_odb_reader::parse_integer_cell_value() */
-
+    
 
     /*************************************************************************
      *
      * parse_integer_value()
      *
-     * This method parses an integer value in the context of a matrix or
+     * This method parses an integer value in the context of a matrix or 
      * predicate argument.
      *
-     * If there are no type conflicts, the function simply creates an
-     * IntDataValue containing the value specified, and returns a
+     * If there are no type conflicts, the function simply creates an 
+     * IntDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by  issuing a warning message, consuming the
+     * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.    This function is
      *          called to parse the value of a matrix or predicate argument,
-     *          so the farg must be of type INTEGER or of type UNTYPED.
+     *          so the farg must be of type INTEGER or of type UNTYPED. 
      *
      * Returns:  Void.
      *
@@ -8192,42 +8194,42 @@ public class MacshapaODBReader
 	final String overflow_mssg = "Overflow occured in an integer value.\n";
         long value = 0;
         DataValue dv = null;
-
+        
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* we must only be called if the next token is a float -- scream
          * and die if it is not.
          */
-
+        
         if ( (this.l0_tok).code != FLOAT_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "(this.l0_tok).code != FLOAT_TOK");
         }
-
+        
         value = (long)(this.l0_tok.val);
-
+	
         if ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) ||
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
-            // create the data value.
+            // create the data value.  
             //
             // Note that in the OpenSHAPA version of this code, we will have
             // to check to see if the formal argument is a subranged float,
@@ -8240,19 +8242,19 @@ public class MacshapaODBReader
             /* type mismatch between formal argument and value.  Construct
              * an udefined data value, and flag a warning.
              */
-            dv = new UndefinedDataValue(this.db,
-                                        farg.getID(),
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID(), 
                                         farg.getFargName());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
         }
-
+        
         if ( ! this.abort_parse ) /* consume the token */
         {
             get_next_token();
         }
-
+        
 	return(dv);
 
     } /* MacshapaODBReader::parse_int_value() */
@@ -8265,25 +8267,25 @@ public class MacshapaODBReader
      * This method parses a matrix cell value.  If no major errors are detected,
      * the function construct a data value containing the matrix argument, and
      * returns a reference to the new data value,
-     *
+     * 
      * If major errors are detected, the function constructs a undefined
      * data value for the supplied formal argument and returns that instead.
      *
      * The production generating a predicate value is given below:
-     *
+     *        
      *        <matrix_cell_value> --> <pred_arg>
-     *
-     *        <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *        <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                       <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *        <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
-     *                                            JRM - 6/13/08
+     *        
+     *        <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
+     *                                             - 6/13/08
      *
      * Parameters:
      *
-     *	  - farg:  Reverence to a copy of the formal argument of the matrix
-     *          whose value is about to be parsed.  In the context of MacSHAPA
+     *	  - farg:  Reverence to a copy of the formal argument of the matrix 
+     *          whose value is about to be parsed.  In the context of MacSHAPA 
      *          data bases, the farg must always be of type UNTYPED.
      *
      * Returns:  DataValue containing the value of the matrix argument.
@@ -8298,34 +8300,34 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_matrix_cell_value()";
-        final String overflow_mssg =
-            "Overflow occured in a matrix argument value.\n";
-        boolean replace_with_farg;
+	final String mName = "macshapa_odb_reader::parse_matrix_cell_value()";
+	final String overflow_mssg = 
+		"Overflow occured in a matrix argument value.\n";
+	boolean replace_with_farg;
         ColPred cp = null;
         Predicate pred = null;
         DataValue value = null;
 
         if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
 
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.UNTYPED )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "matrix cell value farg is not UNTYPED?!?.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
 
@@ -8338,7 +8340,7 @@ public class MacshapaODBReader
                     "The matrix cell argument will be left undefined.\n");
                 break;
 
-            case L_PAREN_TOK:
+	    case L_PAREN_TOK:
                 if ( ( (this.l1_tok).code == ALIST_LABEL_TOK ) &&
                      ( (this.l1_tok).aux == TIME_LABEL ) )
                 {
@@ -8355,7 +8357,7 @@ public class MacshapaODBReader
                 {
                     value = parse_pred_value(farg);
                 }
-                break;
+		break;
 
             case FLOAT_TOK:
                 value = parse_float_value(farg);
@@ -8374,14 +8376,14 @@ public class MacshapaODBReader
                 {
                     value = parse_formal_arg_value(farg);
                 }
-                else if ( ((this.l0_tok).aux &
+                else if ( ((this.l0_tok).aux & 
                            (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
                 {
                     value = parse_nominal_value(farg);
                 }
                 else /* in theory, this can't happen */
                 {
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "(this.l0_tok).aux corrupt?!?");
                 }
                 break;
@@ -8396,11 +8398,11 @@ public class MacshapaODBReader
                 post_warning_message(this.l0_tok,
                         ILLEGAL_ATOM_IN_MATRIX_ARG_WARN,  null);
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8408,22 +8410,23 @@ public class MacshapaODBReader
                     true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                     "Encountered unknown token type.");
-                // break; /* commented out to keep the compiler happy */
+	     default:
+		 throw new SystemErrorException(mName + 
+			 "Encountered unknown token type.");
+	         /* commented out to keep the compiler happy */
+		 // break;
 
-        }
-
+	}
+        
         if ( ( value == null ) && ( ! this.abort_parse ) )
         {
             // construct an empty argument
-            value = new UndefinedDataValue(this.db,
-                                           farg.getID(),
+            value = new UndefinedDataValue(this.db, 
+                                           farg.getID(), 
                                            farg.getFargName());
         }
 
-        return(value);
+	return(value);
 
     } /* MacshapaODBReader::parse_matrix_cell_value() */
 
@@ -8432,11 +8435,11 @@ public class MacshapaODBReader
      *
      * parse_nominal_cell_value()
      *
-     * This method parses the value of a spreadsheet variable cell in the
-     * context of a nominal spreadsheet variable.  The production generating
+     * This method parses the value of a spreadsheet variable cell in the 
+     * context of a nominal spreadsheet variable.  The production generating 
      * such a cell value is given below:
-     *
-     *    <nominal_cell_value> --> <nominal>
+     *        
+     *    <nominal_cell_value> --> <nominal> 
      *                             |
      *                             '|<val>|'  (* if the nominal is undefined *)
      *
@@ -8446,18 +8449,18 @@ public class MacshapaODBReader
      * value in the first (and only) entry in the matrix, and returns a
      * reference to the newly created instance of Matrix.
      *
-     * Type conficts are handled by loading an empty string into the
-     * NominalDataValue, issuing a warning message, and consuming the
+     * Type conficts are handled by loading an empty string into the 
+     * NominalDataValue, issuing a warning message, and consuming the 
      * offending value.
-     *
-     *                                            JRM - 6/14/08
+     *        
+     *                                             - 6/14/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  As this function is
-     *          only called to parse the value of an integer cell, the
-     *          farg must be of type NOMINAL.
+     *          only called to parse the value of an integer cell, the 
+     *          farg must be of type NOMINAL. 
      *
      * Returns:  DataValue containing the nominal.
      *
@@ -8471,44 +8474,44 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_nominal_cell_value()";
-        final String overflow_mssg =
-            "Overflow occured in a nominal cell value.\n";
-        boolean altered;
+	final String mName = "macshapa_odb_reader::parse_nominal_cell_value()";
+	final String overflow_mssg = 
+		"Overflow occured in a nominal cell value.\n";
+	boolean altered;
         String value = "";
         NominalDataValue ndv = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.NOMINAL )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an nominal.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
+	
+	/* try to parse the nominal cell value */
 
-        /* try to parse the nominal cell value */
-
-        switch ( (this.l0_tok).code )
-        {
-            case SYMBOL_TOK:
-                if ( (((this.l0_tok).aux) & NOMINAL_FLAG) != 0 )
-                {
-                    altered = this.l0_tok.coerce_nominal_token_to_cell_nominal();
+	switch ( (this.l0_tok).code )
+	{
+	    case SYMBOL_TOK:
+		if ( (((this.l0_tok).aux) & NOMINAL_FLAG) != 0 )
+		{
+		    altered = this.l0_tok.coerce_nominal_token_to_cell_nominal();
 
                     if ( ( ! this.abort_parse ) && ( altered ) )
                     {
@@ -8531,24 +8534,24 @@ public class MacshapaODBReader
                     }
 
                     value = new String("");
-                }
-                else /* not a nominal */
-                {
-                    /* This clause is unreachable at present.  However, if we
-                     * change our definitions of nominals, pred names, column
-                     * variable names, etc., this may change.
-                     */
+		}
+		else /* not a nominal */
+		{
+		    /* This clause is unreachable at present.  However, if we 
+		     * change our definitions of nominals, pred names, column 
+		     * variable names, etc., this may change.
+		     */
 
                     post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
                         "Will discard the value && leave the nominal " +
                         "cell undefined.\n");
                 }
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case STRING_TOK:
             case INT_TOK:
@@ -8564,11 +8567,11 @@ public class MacshapaODBReader
                         "Will discard the value && leave the nominal " +
                         "cell undefined.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -8576,11 +8579,11 @@ public class MacshapaODBReader
                         "The value is a list, which will be discarded. " +
                         "The nominal cell will be left undefined.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    parse_arbitrary_list();
+		}
+		break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
@@ -8593,11 +8596,11 @@ public class MacshapaODBReader
                         "The value is an ill formed token.  " +
                         "The nominal cell will be left undefined.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8605,21 +8608,22 @@ public class MacshapaODBReader
                            true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                     "Encountered unknown token type.");
-                // break;  /* commented out to keep the compiler happy */
-        }
-
+	     default:
+		 throw new SystemErrorException(mName + 
+			 "Encountered unknown token type.");
+	         /* commented out to keep the compiler happy */
+		 // break;
+	}
+        
         // range checking done in the lexer, so if we get this far, just
-        // create the data value.
+        // create the data value.  
         //
         // Note that in the OpenSHAPA version of this code, we will have
         // to check to see if the formal argument is a subranged nominal,
         // and if so coerce the value to range if ncessary.
-
+        
         ndv = new NominalDataValue(this.db, farg.getID(), value);
-
+        
         return(ndv);
 
     } /* MacshapaODBReader::parse_nominal_cell_value() */
@@ -8629,24 +8633,24 @@ public class MacshapaODBReader
      *
      * parse_nominal_value()
      *
-     * This method parses a nominal value in the context of a matrix or
+     * This method parses a nominal value in the context of a matrix or 
      * predicate argument.
      *
-     * If there are no type conflicts, the function simply creates an
-     * NominalDataValue containing the value specified, and returns a
+     * If there are no type conflicts, the function simply creates an 
+     * NominalDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by  issuing a warning message, consuming the
+     * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.    This function is
      *          called to parse the value of a matrix or predicate argument,
-     *          so the farg must be of type NOMINAL or of type UNTYPED.
+     *          so the farg must be of type NOMINAL or of type UNTYPED. 
      *
      * Returns:  Void.
      *
@@ -8665,25 +8669,25 @@ public class MacshapaODBReader
         boolean replace_with_farg = false;
         String value = null;
         DataValue dv = null;
-
+        
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* we must only be called if the next token is a SYMBOL_TOK with the
          * formal arg flag not set -- scream and die if it is not.
          */
@@ -8694,17 +8698,17 @@ public class MacshapaODBReader
                     "SYMBOL_TOK or ((this.l0_tok).aux & FORMAL_ARG_FLAG) != 0");
         }
 
-
+        
         /* we only do the following check when this.in_query is true as a  */
         /* result of a bug in MacSHAPA.  When and if this bug is fixed, we */
         /* will run this check all the time.                               */
-        if ( ( this.in_query ) &&
+        if ( ( this.in_query ) && 
              ( ((this.l0_tok).aux & (PRED_FLAG | COLUMN_FLAG)) != 0 ) )
         {
             /* Check to see if the symbol is the name of a defined predicate   */
             /* or column variable.  If it is, discard the argument and replace */
             /* it with the appropriate formal argument.                        */
-
+            
             if ( ( this.db.vl.matrixInVocabList(this.l0_tok.str.toString()) ) ||
                  ( this.db.vl.predInVocabList(this.l0_tok.str.toString()) ) )
             {
@@ -8717,21 +8721,21 @@ public class MacshapaODBReader
             }
             else if ( ((this.l0_tok).aux & NOMINAL_FLAG) == 0 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "This clause should be unreachable.");
             }
         }
-
+        
         value = this.l0_tok.str.toString();
-
+        
         if ( ( replace_with_farg ) ||
              ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) &&
                ( farg.fargType != FormalArgument.FArgType.UNTYPED ) ) )
         {
-            dv = new UndefinedDataValue(this.db,
-                                        farg.getID(),
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID(), 
                                         farg.getFargName());
-
+            
             if ( ! replace_with_farg )
             {
                 /* type mismatch between formal argument and value.
@@ -8744,7 +8748,7 @@ public class MacshapaODBReader
         else
         {
             // range checking done in the lexer, so if we get this far, just
-            // create the data value.
+            // create the data value.  
             //
             // Note that in the OpenSHAPA version of this code, we will have
             // to check to see if the formal argument is a subranged float,
@@ -8752,12 +8756,12 @@ public class MacshapaODBReader
 
             dv = new NominalDataValue(this.db, farg.getID(), value);
         }
-
+        
         if ( ! this.abort_parse ) /* consume the token */
         {
             get_next_token();
         }
-
+        
 	return(dv);
 
     } /* MacshapaODBReader::parse_nominal_value() */
@@ -8769,25 +8773,25 @@ public class MacshapaODBReader
      *
      * This method parses a predicate definition.  The matter of actually
      * loading the definition into the MacSHAPA internal database is handled
-     * by parse_pred_def_alist().  The productions generating a
+     * by parse_pred_def_alist().  The productions generating a 
      * predicate definition are given below:
-     *
+     *        
      *	    <pred_def> --> '(' <pred_name> <pred_def_alist> ')'
-     *
+     *    
      *      <pred_def_alist> --> '(' <pred_def_attributes> ')'
-     *
-     *      <pred_def_attributes> --> { <pred_variable_length_attribute>
+     *    
+     *      <pred_def_attributes> --> { <pred_variable_length_attribute> 
      *                                  <pred_formal_arg_list_attribute> }
-     *
-     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>'
+     *    
+     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>' 
      *                                               <boolean> ')'
-     *
-     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>'
+     *    
+     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>' 
      *                                               <pred_formal_arg_list> ')'
-     *
+     *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                                JRM - 6/14/08
+     *                                                 - 6/14/08
      *
      * Parameters:
      *
@@ -8802,33 +8806,32 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_pred_def()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapap_odb_reader::parse_pred_def()";
-            String predName = null;
-        boolean done;
-        boolean excess_values;
+	final String mName = "macshapap_odb_reader::parse_pred_def()";
+        String predName = null;
+	boolean done;
+	boolean excess_values;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the predicate definition */
 
-        /* parse the predicate definition */
-
-        /* first parse the leading left parenthesis */
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-                throw new SystemErrorException(mName +
-                        "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+            throw new SystemErrorException(mName + 
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
         /* parse the predicate name */
         if ( ! this.abort_parse )
@@ -8841,37 +8844,37 @@ public class MacshapaODBReader
                         NAME_IN_PRED_DEF_NOT_A_PRED_NAME_WARN,
                         "Will coerce the name to a valid predicate name.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                    this.l0_tok.coerce_symbol_token_to_pred_name();
-                    }
-                }
+		    if ( ! this.abort_parse )
+		    {
+			this.l0_tok.coerce_symbol_token_to_pred_name();
+		    }
+		}
 
                 predName = new String(this.l0_tok.str.toString());
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-            else /* we shouldn't have been called unless the next token is a symbol */
-            {
-                    throw new SystemErrorException(mName +
-                            "this.l0_tok != SYMBOL_TOK.");
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	    else /* we shouldn't have been called unless the next token is a symbol */
+	    {
+                throw new SystemErrorException(mName + 
+                        "this.l0_tok != SYMBOL_TOK.");
+	    }
+	}
 
-        /* read the a-list associated with the predicate definition */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    /* note that if we get this far, the predicate name is in
-                             * the String referenced by predName.
-                             */
-                    parse_pred_def_alist(predName);
-                    break;
+	/* read the a-list associated with the predicate definition */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    /* note that if we get this far, the predicate name is in
+                     * the String referenced by predName.
+                     */
+		    parse_pred_def_alist(predName);
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok,
@@ -8893,11 +8896,11 @@ public class MacshapaODBReader
                             TYPE_MISMATCH_IN_PRED_DEF_WARN,
                             "The predicate definition will be discarded.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8905,46 +8908,47 @@ public class MacshapaODBReader
                     break;
 
                 default:
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-             }
-         }
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	 }
 
-        /* discard any excess values & consume the closing parenthesis */
-         if ( ! this.abort_parse )
-         {
-            done = false;
-            excess_values = false;
+	/* discard any excess values & consume the closing parenthesis */
+	 if ( ! this.abort_parse )
+	 {
+	    done = false;
+	    excess_values = false;
 
-            while ( ( ! this.abort_parse ) &&
-                    ( ! done ) )
-            {
-                switch ( (this.l0_tok).code )
-                {
-                    case R_PAREN_TOK:
-                        done = true;
-                        break;
+	    while ( ( ! this.abort_parse ) && 
+		    ( ! done ) )
+	    {
+		switch ( (this.l0_tok).code )
+		{
+		    case R_PAREN_TOK:
+			done = true;
+			break;
 
-                    case L_PAREN_TOK:
-                        excess_values = true;
-                        parse_arbitrary_list();
-                        break;
+		    case L_PAREN_TOK:
+			excess_values = true;
+			parse_arbitrary_list();
+			break;
 
-                    case ERROR_TOK:
-                    case SYMBOL_TOK:
-                    case INT_TOK:
-                    case FLOAT_TOK:
-                    case STRING_TOK:
-                    case BOOL_TOK:
-                    case ALIST_LABEL_TOK:
-                    case PRIVATE_VAL_TOK:
-                    case SETF_TOK:
-                    case DB_VAR_TOK:
-                    case QUOTE_TOK:
-                        excess_values = true;
-                        get_next_token();
-                        break;
+		    case ERROR_TOK:
+		    case SYMBOL_TOK:
+		    case INT_TOK:
+		    case FLOAT_TOK:
+		    case STRING_TOK:
+		    case BOOL_TOK:
+		    case ALIST_LABEL_TOK:
+		    case PRIVATE_VAL_TOK:
+		    case SETF_TOK:
+		    case DB_VAR_TOK:
+		    case QUOTE_TOK:
+			excess_values = true;
+			get_next_token();
+			break;
 
                     case EOF_TOK:
                         done = true;
@@ -8954,12 +8958,13 @@ public class MacshapaODBReader
                                 true, true);
                         break;
 
-                    default:
-                        throw new SystemErrorException(mName +
-                             "Encountered unknown token type.");
-                        // break; /* commented out to keep the compiler happy */
-                }
-            }
+		     default:
+			 throw new SystemErrorException(mName + 
+				 "Encountered unknown token type.");
+	                 /* commented out to keep the compiler happy */
+			 // break;
+		 }
+	    }
 
             if ( ( ! this.abort_parse ) &&
                  ( done ) && ( excess_values ) )
@@ -8970,21 +8975,21 @@ public class MacshapaODBReader
             }
         }
 
-        /* finally, consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                throw new SystemErrorException(mName +
-                    "This else clause should be unreachable.");
-            }
-        }
+	/* finally, consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		throw new SystemErrorException(mName + 
+			"This else clause should be unreachable.");
+	    }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_pred_def() */
 
@@ -8993,33 +8998,33 @@ public class MacshapaODBReader
      *
      * parse_pred_def_alist()
      *
-     * This method parses the a-list associated with a predicate definition,
+     * This method parses the a-list associated with a predicate definition, 
      * and uses the information obtained from it, along with the predicate name
-     * passed to it to insert the definition of the predicate in this.db (the
-     * associated instance of MacshapaDatabase).
-     *
-     * The productions generating the predicate definition
+     * passed to it to insert the definition of the predicate in this.db (the 
+     * associated instance of MacshapaDatabase). 
+     * 
+     * The productions generating the predicate definition 
      * a-list are given below:
-     *
+     *        
      *	    <pred_def_alist> --> '(' <pred_def_attributes> ')'
-     *
-     *      <pred_def_attributes> --> { <pred_variable_length_attribute>
+     *    
+     *      <pred_def_attributes> --> { <pred_variable_length_attribute> 
      *                                 <pred_formal_arg_list_attribute> }
-     *
-     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>'
+     *    
+     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>' 
      *                                               <boolean> ')'
-     *
-     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>'
+     *    
+     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>' 
      *                                               <pred_formal_arg_list> ')'
-     *
+     *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                             JRM - 6/14/08
+     *                                              - 6/14/08
      *
      * Parameters:
      *
-     *    - predName: Reference to a String containing the name of the
-     *          predicate vocab element whose definition is being parsed.
+     *    - predName: Reference to a String containing the name of the 
+     *          predicate vocab element whose definition is being parsed. 
      *
      * Returns:  Void.
      *
@@ -9030,30 +9035,29 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_pred_def_alist(String predName)
-	    throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_pred_def_alist()";
-        final String overflow_mssg =
-            "Overflow occured in the formal argument list of a " +
-            "predicate definition.\n";
-        boolean done;
-        boolean have_args_list;
-        boolean have_variable_length;
+	final String mName = "macshapa_odb_reader::parse_pred_def_alist()";
+	final String overflow_mssg = 
+		"Overflow occured in the formal argument list of a " +
+		"predicate definition.\n";
+	boolean done;
+	boolean have_args_list;
+	boolean have_variable_length;
         boolean ignore_pred_def = false;
-        boolean variable_length;
+	boolean variable_length;
         Vector<String> args = null;
         UnTypedFormalArg fa = null;
         PredicateVocabElement new_pve = null;
         PredicateVocabElement old_pve = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                        "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+	}
+        
         if ( ( predName == null ) ||
              ( predName.length() <= 0 ) )
         {
@@ -9061,8 +9065,8 @@ public class MacshapaODBReader
         }
 
         /* parse the predicate definition alist */
-
-        /* first parse the leading left parenthesis */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -9085,35 +9089,35 @@ public class MacshapaODBReader
                  * left parenthesis & let the cards fall where they may.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	}
 
-        done                  = false;
-        have_args_list        = false;
-        have_variable_length  = false;
-        variable_length       = false;
+	done                  = false;
+	have_args_list        = false;
+	have_variable_length  = false;
+	variable_length       = false;
 
-        /* now parse the a-list assocated with the predicate declaration */
-         while ( ( ! this.abort_parse ) &&
-                 ( ! done ) )
-        {
-            if ( (this.l0_tok).code == L_PAREN_TOK )
-            {
-                if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-                {
-                    switch ( (this.l1_tok).aux )
-                    {
-                        case VARIABLE_LENGTH_LABEL:
-                            if ( ! have_variable_length )
-                            {
-                                have_variable_length = true;
-                                variable_length =
+	/* now parse the a-list assocated with the predicate declaration */
+	 while ( ( ! this.abort_parse ) && 
+		 ( ! done ) )
+	{
+	    if ( (this.l0_tok).code == L_PAREN_TOK )
+	    {
+		if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+		{
+		    switch ( (this.l1_tok).aux )
+		    {
+			case VARIABLE_LENGTH_LABEL:
+			    if ( ! have_variable_length )
+			    {
+				have_variable_length = true;
+				variable_length = 
                                         parse_variable_length_attribute();
                             }
                             else
@@ -9123,23 +9127,23 @@ public class MacshapaODBReader
                                         "Duplicate VARIABLE-LENGTH> entry in a " +
                                         "predicate definition.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
-                        case FORMAL_ARG_LIST_LABEL:
-                            if ( ! have_args_list )
-                            {
-                                have_args_list = true;
-                                args = parse_pred_formal_arg_list_attribute();
+			case FORMAL_ARG_LIST_LABEL:
+			    if ( ! have_args_list )
+			    {
+				have_args_list = true;
+				args = parse_pred_formal_arg_list_attribute();
 
                                 if ( ( ! this.abort_parse ) &&
                                      ( args == null ) )
                                 {
-                                    throw new SystemErrorException(mName +
+                                    throw new SystemErrorException(mName + 
                                             "! abort_parse and " +
                                             "parse_pred_formal_arg_list() " +
                                             "returned null.");
@@ -9205,21 +9209,21 @@ public class MacshapaODBReader
                         "The atom was detected in a predicate " +
                         "definition a-list.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	}
 
-        /* check for missing required attributes -- generate default
-         * values if necessary.
-         */
+	/* check for missing required attributes -- generate default 
+	 * values if necessary. 
+	 */
 
-        if ( ( ! this.abort_parse ) &&
-             ( ! have_variable_length ) )
-        {
-            /* force variable length to false here */
+	if ( ( ! this.abort_parse ) && 
+	     ( ! have_variable_length ) )
+	{
+	    /* force variable length to false here */
 
             post_warning_message(this.l0_tok, MISSING_ALIST_ENTRY_WARN,
                 "VARIABLE-LENGTH> entry missing from predicate " +
@@ -9233,35 +9237,35 @@ public class MacshapaODBReader
                 "FORMAL-ARG-LIST> entry missing from predicate " +
                 "definition?  Will use the arg list \"(|<val>|)\".\n");
 
-            if ( ! this.abort_parse )
-            {
+	    if ( ! this.abort_parse )
+	    {
                 args = new Vector<String>();
                 args.add("<val>");
-            }
-        }
+	    }
+	}
 
-        /* Check to see if the predicate definition conflicts or duplicates with
-         * an existing column variable or predicate definition -- set
+	/* Check to see if the predicate definition conflicts or duplicates with 
+         * an existing column variable or predicate definition -- set 
          * ignore_pred_def to true if it does.
          */
-        if ( ! this.abort_parse )
-        {
-            if ( this.debug_level >= 2 )
-            {
-                dump_predicate_definition_to_listing(predName, args,
+	if ( ! this.abort_parse )
+	{
+	    if ( this.debug_level >= 2 )
+	    {
+		dump_predicate_definition_to_listing(predName, args, 
                                                      variable_length);
-            }
-
+	    }
+            
             if ( this.db.vl.matrixInVocabList(predName) )
             {
-                /* at this point in the parse, all mve's in the vocab list must
-                 * be system mve's defined during the creation of the macshapa
+                /* at this point in the parse, all mve's in the vocab list must 
+                 * be system mve's defined during the creation of the macshapa 
                  * database.
                  */
                 post_warning_message(this.l0_tok, PREDICATE_REDEFINITION_WARN,
                         "Predicate name matches that of a system column " +
                         "variable.  Predicate definition ignored.");
-
+                
                 ignore_pred_def = true;
             }
             else if ( this.db.vl.predInVocabList(predName) )
@@ -9305,7 +9309,7 @@ public class MacshapaODBReader
                     boolean fargNameMismatch = false;
                     int i = 0;
 
-                    while ( ( ! fargNameMismatch ) &&
+                    while ( ( ! fargNameMismatch ) && 
                             ( i < old_pve.getNumFormalArgs() ) )
                     {
                         if ( old_pve.getFormalArg(i).
@@ -9313,10 +9317,10 @@ public class MacshapaODBReader
                         {
                             fargNameMismatch = true;
                         }
-
+                        
                         i++;
                     }
-
+                    
                     if ( fargNameMismatch )
                     {
                         post_warning_message(this.l0_tok,
@@ -9330,26 +9334,26 @@ public class MacshapaODBReader
                 }
             }
         }
-
-        if ( ( ! this.abort_parse ) &&
+        
+        if ( ( ! this.abort_parse ) && 
              ( ! ignore_pred_def ) )
         {
             int i;
-
+            
             new_pve = new PredicateVocabElement(this.db, predName);
-
+            
             for ( i = 0; i < args.size(); i++ )
             {
                 fa = new UnTypedFormalArg(this.db, args.get(i));
                 new_pve.appendFormalArg(fa);
             }
-
+            
             new_pve.setVarLen(variable_length);
 
             this.db.addPredVE(new_pve);
-        }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_pred_def_alist() */
 
@@ -9366,25 +9370,25 @@ public class MacshapaODBReader
      *
      * In reading this function, the following productions for <pred_def> are
      * also useful, as they are used in error detection & recovery.  Note
-     * however that these productions are not parsed in this function, but
+     * however that these productions are not parsed in this function, but 
      * rather in parse_pred_def() and its decendants.
-     *
+     *        
      *      <pred_def> --> '(' <pred_name> <pred_def_alist> ')'
-     *
+     *    
      *      <pred_def_alist> --> '(' <pred_def_attributes> ')'
-     *
-     *      <pred_def_attributes> --> { <pred_variable_length_attribute>
+     *    
+     *      <pred_def_attributes> --> { <pred_variable_length_attribute> 
      *                                  <pred_formal_arg_list_attribute> }
-     *
-     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>'
+     *    
+     *      <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>' 
      *                                               <boolean> ')'
-     *
-     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>'
+     *    
+     *      <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>' 
      *                                               <pred_formal_arg_list> ')'
-     *
+     *    
      *      <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -9399,22 +9403,21 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_pred_def_list()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_pred_def_list()";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_pred_def_list()";
+	boolean done;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
-
-        /* parse the predicate definitions list */
-
-        /* first parse the leading left parenthesis */
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the predicate definitions list */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -9439,17 +9442,17 @@ public class MacshapaODBReader
                  * below.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* parse the predicate definitions list */
-        done = false;
+	/* parse the predicate definitions list */
+	done = false;
 
         while ( ( ! this.abort_parse ) && ( ! done ) )
         {
@@ -9466,17 +9469,17 @@ public class MacshapaODBReader
                                 ALIEN_LIST_IN_PRED_DEFS_LIST_WARN,
                                 null);
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                    }
-                    break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+		    }
+		    break;
 
-                case R_PAREN_TOK:
-                     done = true;
-                     get_next_token();
-                     break;
+		case R_PAREN_TOK:
+		     done = true;
+		     get_next_token();
+		     break;
 
                 case EOF_TOK:
                     done = true;
@@ -9500,21 +9503,22 @@ public class MacshapaODBReader
                             ALIEN_ATOM_IN_PRED_DEFS_LIST_WARN,
                             null);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
-                 default:
-                    throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-             }
-        }
+		 default:
+		    throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_pred_def_list() */
 
@@ -9523,29 +9527,29 @@ public class MacshapaODBReader
      *
      * parse_pred_formal_arg_list()
      *
-     * This method parses a list of formal argument symbol tokens in the
-     * context of a predicate definition.  Such lists are generated by the
+     * This method parses a list of formal argument symbol tokens in the 
+     * context of a predicate definition.  Such lists are generated by the 
      * following productions.
      *
-     *        <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>'
+     *        <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>' 
      *                                                 <pred_formal_arg_list> ')'
-     *
+     *    
      *        <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
      * In addition to parsing the formal argument list, this function must
-     * also copy the formal argument list into the insertion buffer in a
+     * also copy the formal argument list into the insertion buffer in a 
      * format appropriate for a predicate definition.
      *
      * If the formal argument list is empty, the function writes a default
      * formal argument list to the insertion buffer.
      *
-     *                                                 JRM - 6/14/08
+     *                                                  - 6/14/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns: Vector of Strings containing the names of the formal
+     * Returns: Vector of Strings containing the names of the formal 
      *          arguments spedified in the formal arguments list.
      *
      * Changes:
@@ -9558,48 +9562,47 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-                "macshapa_odb_reader::parse_pred_formal_arg_list()";
-        final String overflow_mssg =
-                "Overflow occured in a predicate formal argument list.\n";
+	final String mName = "macshapa_odb_reader::parse_pred_formal_arg_list()";
+	final String overflow_mssg = 
+		"Overflow occured in a predicate formal argument list.\n";
         String newArg;
-        boolean done;
+	boolean done;
         boolean duplicateArg;
-        int arg_count;
+	int arg_count;
         int i;
         Vector<String> args = new Vector<String>();
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the formal argument list */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the formal argument list */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	arg_count = 0;
+	done      = false;
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        arg_count = 0;
-        done      = false;
-
-        while ( ( ! this.abort_parse ) &&
-                ( ! done ) )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case SYMBOL_TOK:
-                    if ( (((this.l0_tok).aux) & FORMAL_ARG_FLAG) != 0 )
-                    {
+	while ( ( ! this.abort_parse ) && 
+		( ! done ) )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case SYMBOL_TOK:
+		    if ( (((this.l0_tok).aux) & FORMAL_ARG_FLAG) != 0 )
+		    {
                         newArg = this.l0_tok.str.toString();
                         duplicateArg = false;
                         i = 0;
@@ -9635,21 +9638,21 @@ public class MacshapaODBReader
                     get_next_token();
                     break;
 
-                case R_PAREN_TOK:
-                    done = true;
-                    get_next_token();
-                    break;
+		case R_PAREN_TOK:
+		    done = true;
+		    get_next_token();
+		    break;
 
                 case L_PAREN_TOK:
                     post_warning_message(this.l0_tok,
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by a list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case INT_TOK:
@@ -9665,11 +9668,11 @@ public class MacshapaODBReader
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by an atom.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -9677,12 +9680,13 @@ public class MacshapaODBReader
                             "argument list.\n", true, true);
                     break;
 
-                 default:
-                     throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                     // break;  /* commented out to keep the compiler happy */
-             }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+ 	             /* commented out to keep the compiler happy */
+		     // break;
+	     }
+	}
 
         if ( ! this.abort_parse )
         {
@@ -9693,14 +9697,14 @@ public class MacshapaODBReader
                         "Will force the contents of the predicate formal " +
                         "argument list to (|<val>|).\n");
 
-                if ( ! this.abort_parse )
-                {
+		if ( ! this.abort_parse )
+		{
                     args.add(new String("<val>"));
-                }
-            }
-        }
+		}
+	    }
+	}
 
-        return args;
+	return args;
 
     } /* MacshapaODBReader::parse_pred_formal_arg_list() */
 
@@ -9710,25 +9714,25 @@ public class MacshapaODBReader
      * parse_pred_formal_arg_list_attribute()
      *
      * This method parses a FORMAL-ARG-LIST> attribute in the context of a
-     * predicate definition.  This attribute is generated by the following
+     * predicate definition.  This attribute is generated by the following 
      * productions:
-     *
-     *        <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>'
+     *        
+     *        <pred_formal_arg_list_attribute> --> '(' 'FORMAL-ARG-LIST>' 
      *                                                 <pred_formal_arg_list> ')'
-     *
+     *    
      *        <pred_formal_arg_list> --> '(' (<formal_arg>)+ ')'
      *
      * If the value of the formal argument list attribute is either missing,
      * or of inapropriate type, this function writes a default formal argument
      * list to the insertion buffer.
      *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns: Vector of Strings containing the names of the formal
+     * Returns: Vector of Strings containing the names of the formal 
      *          arguments spedified in the formal arguments list attribute.
      *
      * Changes:
@@ -9741,72 +9745,72 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_pred_formal_arg_list_attribute()";
-        final String missing_farg_list_mssg =
-            "A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
-            "Value forced to (|<val>|).\n";
-        final String farg_list_type_mismatch_mssg =
-            "The value of the FORMAL-ARG-LIST> attribute must be a list " +
-            "of formal arguments.  Value forced to (|<val>|).\n";
-        final String overflow_mssg =
-            "Overflow occured in a predicate formal argument list.\n";
-            Vector<String> args = null;
+	final String mName = 
+		"macshapa_odb_reader::parse_pred_formal_arg_list_attribute()";
+	final String missing_farg_list_mssg = 
+		"A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
+		"Value forced to (|<val>|).\n";
+	final String farg_list_type_mismatch_mssg = 
+		"The value of the FORMAL-ARG-LIST> attribute must be a list " +
+		"of formal arguments.  Value forced to (|<val>|).\n";
+	final String overflow_mssg = 
+		"Overflow occured in a predicate formal argument list.\n";
+        Vector<String> args = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the formal argument list attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the formal argument list attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is an a-list tag */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != FORMAL-ARG-LIST>.");
+	    }
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is an a-list tag */
-            {
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != FORMAL-ARG-LIST>.");
-            }
-        }
-
-        /* read the value associated with the a-list entry & discard any excess values */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    args = parse_pred_formal_arg_list();
-                    break;
+	/* read the value associated with the a-list entry & discard any excess values */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    args = parse_pred_formal_arg_list();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
                                          missing_farg_list_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
+		    if ( ! this.abort_parse )
+		    {
                         args = new Vector<String>();
                         args.add(new String("<val>"));
-                    }
-                    break;
+		    }
+		    break;
 
                 case BOOL_TOK:
                 case ERROR_TOK:
@@ -9823,17 +9827,17 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             farg_list_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
+		    if ( ! this.abort_parse )
+		    {
                         args = new Vector<String>();
                         args.add(new String("<val>"));
-                    }
+		    }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -9842,12 +9846,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-             }
-         }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	 }
 
          /* check for EOF */
          if ( ! this.abort_parse )
@@ -9860,14 +9865,14 @@ public class MacshapaODBReader
              }
          }
 
-        /* discard any excess values that may appear in the FORMAL-ARG-LIST>
-         * a-list entry
+	/* discard any excess values that may appear in the FORMAL-ARG-LIST> 
+         * a-list entry 
          */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -9879,20 +9884,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the formal
-                 * arg list attribute, this else clause is unreachable at
-                 * present.  Should we choose to drop the above attempt at
-                 * error recovery, this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the formal 
+		 * arg list attribute, this else clause is unreachable at 
+		 * present.  Should we choose to drop the above attempt at 
+		 * error recovery, this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a FORMAL-ARG-LIST> " +
@@ -9900,7 +9905,7 @@ public class MacshapaODBReader
             }
         }
 
-        return args;
+	return args;
 
     } /* MacshapaODBReader::parse_pred_formal_arg_list_attribute() */
 
@@ -9915,9 +9920,9 @@ public class MacshapaODBReader
      *
      *        <preds_list_attribute> --> '(' 'PREDICATE-DEFINITIONS>'
      *                                       <pred_def_list> ')'
+     *        
      *
-     *
-     *                                              JRM - 6/14/08
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -9932,62 +9937,61 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_preds_list_attribute()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_preds_list_attribute()";
-        final String value_missing_mssg =
-            "The USER> PREDICATE-DEFINITIONS> a-list entry doesn't seem " +
-            "to contain a value.\n";
-        final String type_mismatch_mssg =
-            "The value of the USER> PREDICATE-DEFINITIONS> a-list entry " +
-            "must be a (possibly empty) list of predicate definitions.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_preds_list_attribute()";
+	final String value_missing_mssg =
+		"The USER> PREDICATE-DEFINITIONS> a-list entry doesn't seem " +
+		"to contain a value.\n";
+	final String type_mismatch_mssg =
+		"The value of the USER> PREDICATE-DEFINITIONS> a-list entry " +
+		"must be a (possibly empty) list of predicate definitions.\n"; 
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the predicate definitions attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the predicate definitions attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == PREDICATE_DEFINITIONS_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next   */
+	    {    /* token == the PREDICATE-DEFINITIONS> a-list tag. */
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != \"PREDICATE-DEFINITIONS>\".");
+	    }
+	}
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == PREDICATE_DEFINITIONS_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next   */
-            {    /* token == the PREDICATE-DEFINITIONS> a-list tag. */
-
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != \"PREDICATE-DEFINITIONS>\".");
-            }
-        }
-
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    parse_pred_def_list();
-                    break;
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    parse_pred_def_list();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -10009,11 +10013,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -10022,12 +10026,13 @@ public class MacshapaODBReader
                         true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-             }
-         }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	 }
 
          /* check for EOF */
          if ( ! this.abort_parse )
@@ -10040,14 +10045,14 @@ public class MacshapaODBReader
              }
          }
 
-        /* discard any excess values that may appear in the MAX-WARNINGS>
-         * a-list entry
-         */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the MAX-WARNINGS> 
+	 * a-list entry 
+	 */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -10059,20 +10064,20 @@ public class MacshapaODBReader
              }
          }
 
-         /* finally, consume the closing parenthesis */
-         if ( ! this.abort_parse )
-         {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* Since we are cleaning up any excess values in the
-                 * preds list attribute, this else clause is unreachable at
-                 * present.  Should we choose to drop the above attempt at
-                 * error recovery, this clause will again become reachable.
-                 */
+	 /* finally, consume the closing parenthesis */
+	 if ( ! this.abort_parse )
+	 {
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		/* Since we are cleaning up any excess values in the 
+		 * preds list attribute, this else clause is unreachable at 
+		 * present.  Should we choose to drop the above attempt at 
+		 * error recovery, this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "The closing parenthesis was missing from the USER> " +
@@ -10080,7 +10085,7 @@ public class MacshapaODBReader
              }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_preds_list_attribute() */
 
@@ -10091,20 +10096,20 @@ public class MacshapaODBReader
      *
      *  This method parses the a-list describing a cell in a spreadsheet
      *  variable, and inserts the cell into the spreadsheet if everything
-     *  is in order.  The productions generating a spreadsheet variable
+     *  is in order.  The productions generating a spreadsheet variable 
      *  cell a-list are given below:
-     *
+     *        
      *      <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                             <s_var_cell_offset_attribute>
      *                             (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *      <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *      <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *      <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *      <cell_value> -->
+     *        
+     *      <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -10116,47 +10121,47 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *      <text_cell_value> --> <text_quote_string>
-     *
-     *      <nominal_cell_value> --> <nominal>
+     *        
+     *      <nominal_cell_value> --> <nominal> 
      *                               |
      *                               '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *      <integer_cell_value> --> <integer>
-     *
+     *        
      *      <float_cell_value --> <float>
-     *
+     *        
      *      <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *      <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *      <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *      <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                     <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *      <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *      <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *      <matrix_cell_value> --> <pred_arg>
      *
      * It should be noted that this grammar is a bit looser that the parser.
      *
      * First, the parser will require that the type of the spreadsheet variable
-     * match the type of the value provided for the cell.
+     * match the type of the value provided for the cell.  
      *
-     * Second, the formal argument used as a label in a
-     * <s_var_cell_value_attribute> must match the value in question.  In the
-     * case of spreadsheet variables that are not of matrix type, the argument
-     * must have been the fourth argument in the formal argument list in the
-     * spreadsheet variable declaration.  While it is not immediately apparent
+     * Second, the formal argument used as a label in a 
+     * <s_var_cell_value_attribute> must match the value in question.  In the 
+     * case of spreadsheet variables that are not of matrix type, the argument 
+     * must have been the fourth argument in the formal argument list in the 
+     * spreadsheet variable declaration.  While it is not immediately apparent 
      * from the code, this means that the formal argument must be |<val>|.
      *
-     * In the case of matrix spreadsheet variables, the argument must have
-     * appeared in the formal argument list in the fourth or later position.
-     * Futher, the attributes labeled with formal arguments must appear in
-     * the order in the formal arguments appeared in the spreadsheet variable
+     * In the case of matrix spreadsheet variables, the argument must have 
+     * appeared in the formal argument list in the fourth or later position.  
+     * Futher, the attributes labeled with formal arguments must appear in 
+     * the order in the formal arguments appeared in the spreadsheet variable 
      * declaration.
-     *
-     *                                              JRM - 6/14/08
+     *        
+     *                                               - 6/14/08
      *
      * Parameters:
      *
@@ -10164,13 +10169,13 @@ public class MacshapaODBReader
      *          which we will be loading the spreadsheet variable definition.
      *          This ID is used when inserting cells into the DataColumn.
      *
-     *    - s_var_type: Instance of matrixType indicating the type of the
-     *          spreadsheet variable.  This value is used primarily for
+     *    - s_var_type: Instance of matrixType indicating the type of the 
+     *          spreadsheet variable.  This value is used primarily for 
      *          sanity checking.
      *
-     *    - s_var_mve: Reference to a copy of the MatrixVocabElement
-     *          describing the structure of the DataColumn into which the
-     *          spreadsheet variable is being loaded.
+     *    - s_var_mve: Reference to a copy of the MatrixVocabElement 
+     *          describing the structure of the DataColumn into which the 
+     *          spreadsheet variable is being loaded.  
      *
      * Returns:  Void.
      *
@@ -10183,59 +10188,58 @@ public class MacshapaODBReader
     final void parse_s_var_cell(long s_var_col_ID,
                                 MatrixVocabElement.MatrixType s_var_type,
                                 MatrixVocabElement s_var_mve)
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_cell()";
-        final String overflow_mssg =
-            "Overflow occured in a spreadsheet variable cell.\n";
-        boolean done;
-        boolean have_onset;
-        boolean have_offset;
-        boolean success;
-        int arg_number;
+	final String mName = "macshapa_odb_reader::parse_s_var_cell()";
+	final String overflow_mssg = 
+		"Overflow occured in a spreadsheet variable cell.\n";
+	boolean done;
+	boolean have_onset;
+	boolean have_offset;
+	boolean success;
+	int arg_number;
         int num_fargs;
         long dcID;
-        TimeStamp onset;
-        TimeStamp offset;
-        FormalArgument next_farg = null;
+	TimeStamp onset;
+	TimeStamp offset;
+	FormalArgument next_farg = null;
         Vector<DataValue> argList = null;
         DataValue next_arg = null;
-    	Matrix cellValue = null;
+	Matrix cellValue = null;
         DataCell dc = null;
 
-    	if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-        else if ( s_var_col_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_col_ID is invalid on entry.");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	else if ( s_var_col_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_col_ID is invalid on entry.");
+	}
         else if ( ( s_var_mve == null ) ||
                   ( s_var_mve.getItsColID() != s_var_col_ID ) )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "s_var_mve null or col ID mismatch on entry.");
         }
+	
+	/* parse the spreadsheet variable definition a-list */
+	{
+	    /* start with a little more sanity checking */
 
-        /* parse the spreadsheet variable definition a-list */
-        {
-            /* start with a little more sanity checking */
-
-            if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+	    if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
-            {
+	    {
                 throw new SystemErrorException(mName +
                         "s_var_type out of range.");
-            }
+	    }
 
             /* first parse the leading left parenthesis */
             if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -10260,29 +10264,29 @@ public class MacshapaODBReader
                      * they may.
                      */
 
-                    get_next_token();
-                }
-            }
-            else /* system error - we shouldn't have been called unless the next token is a '(' */
-            {
-                throw new SystemErrorException(mName +
-                    "(this.l0_tok).code != L_PAREN_TOK.");
-            }
+		    get_next_token();
+		}
+	    }
+	    else /* system error - we shouldn't have been called unless the next token is a '(' */
+	    {
+		throw new SystemErrorException(mName + 
+			"(this.l0_tok).code != L_PAREN_TOK.");
+	    }
 
-            done        = false;
-            have_onset  = false;
-            have_offset = false;
-            onset       = null;
-            offset      = null;
-            arg_number  = 0;
+	    done        = false;
+	    have_onset  = false;
+	    have_offset = false;
+	    onset       = null;
+	    offset      = null;
+	    arg_number  = 0;
             num_fargs   = s_var_mve.getNumFormalArgs();
-
+            
             if ( num_fargs < 1 )
             {
                 throw new SystemErrorException(mName + "mve has no arguments?!?");
-
+                
             }
-
+        
             argList = new Vector<DataValue>();
             next_farg = s_var_mve.getFormalArg(0);
 
@@ -10311,12 +10315,12 @@ public class MacshapaODBReader
                                             "Duplicate ONSET> entry in a " +
                                             "spreadsheet variable cell a-list.\n");
 
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                break;
+				    if ( ! this.abort_parse )
+				    {
+					 parse_unknown_alist_entry();
+				    }
+				}
+				break;
 
                             case OFFSET_LABEL:
                                 if ( ! have_offset )
@@ -10331,12 +10335,12 @@ public class MacshapaODBReader
                                         "Duplicate OFFSET> entry in a " +
                                         "spreadsheet variable cell a-list.\n");
 
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                break;
+				    if ( ! this.abort_parse )
+				    {
+					 parse_unknown_alist_entry();
+				    }
+				}
+				break;
 
                             default:
                                 post_warning_message(this.l1_tok,
@@ -10344,19 +10348,19 @@ public class MacshapaODBReader
                                     "The entry is located in a spreadsheet " +
                                     "variable cell a-list.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
                                 break;
                         }
-                    }
-                    else if ( ( (this.l1_tok).code == SYMBOL_TOK ) &&
-                              ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
+		    }
+		    else if ( ( (this.l1_tok).code == SYMBOL_TOK ) && 
+			       ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
                     {
                         if ( ( next_farg != null ) &&
-                             ( next_farg.getFargName().
-                               compareTo(this.l1_tok.str.toString()) == 0 ) )
+                              ( next_farg.getFargName().
+                                compareTo(this.l1_tok.str.toString()) == 0 ) )
                         {
                             next_arg =
                                     parse_s_var_cell_value_attribute(next_farg,
@@ -10364,9 +10368,9 @@ public class MacshapaODBReader
                                                                     s_var_type);
 
                             argList.add(next_arg);
-
-                            arg_number++;
-
+                             
+			    arg_number++;
+                             
                             if ( arg_number < num_fargs )
                             {
                                 next_farg = s_var_mve.getFormalArg(arg_number);
@@ -10421,12 +10425,12 @@ public class MacshapaODBReader
                         "The atom was detected in a spreadsheet variable " +
                         "cell a-list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                }
-            }
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		}
+	    }
 
             /* Issue a warning if the onset is missing */
             if ( ( ! this.abort_parse ) && ( ! have_onset ) )
@@ -10435,7 +10439,7 @@ public class MacshapaODBReader
                         CELL_WITH_UNDEFINED_ONSET_WARN, null);
                 onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
                                       MACSHAPA_MIN_TIME);
-            }
+	    }
 
             /* Issue a warning if the offset is missing */
             if ( ( ! this.abort_parse ) && ( ! have_offset ) )
@@ -10444,75 +10448,75 @@ public class MacshapaODBReader
                         CELL_WITH_UNDEFINED_OFFSET_WARN, null);
                 offset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
                                        MACSHAPA_MIN_TIME);
-            }
+	    }
 
-            /* if we ran out of arguments before we ran out of formal
-             * arguments, must issue a warning && insert formal arguments
-             * or a null value depending on the type of the spreadsheet
-             * variable.
+	    /* if we ran out of arguments before we ran out of formal 
+	     * arguments, must issue a warning && insert formal arguments 
+	     * or a null value depending on the type of the spreadsheet 
+	     * variable.  
              *
-             * In the old MacSHAPA odb reader code, there was an exception
+             * In the old MacSHAPA odb reader code, there was an exception 
              * for variable length matrix spreadsheet variables, where it was
              * sufficient to sinply ensure that there was at least one argument,
              * inserting a formal argument if there were no arguments at all.
              *
-             * This changes in OpenShapa, since we are building the cell,
+             * This changes in OpenShapa, since we are building the cell, 
              * instead of a string that will be used to construct a cell.
              * However, exactly how we will handle variable length matricies
              * internally is TBD.  Thus for now thow a system error if the
              * cell is in a variable length matrix datacolumn.
-             */
-            if ( ! this.abort_parse )
-            {
+	     */
+	    if ( ! this.abort_parse )
+	    {
                 if ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) &&
                      ( s_var_mve.getVarLen() ) )
                 {
-                    throw new SystemErrorException(mName +
-                        "we don't handle var len matricies just yet.");
+                    throw new SystemErrorException(mName + 
+                            "we don't handle var len matricies just yet.");
                 }
-
+                
                 while ( next_farg != null )
                 {
                     switch ( s_var_type )
                     {
                         case FLOAT:
                             next_arg = new FloatDataValue(this.db,
-                            next_farg.getID());
+                                                          next_farg.getID());
                             break;
-
+                            
                         case INTEGER:
                             next_arg = new IntDataValue(this.db,
-                            next_farg.getID());
+                                                        next_farg.getID());
                             break;
-
+                            
                         case MATRIX:
                             next_arg = new UndefinedDataValue(this.db,
-                            next_farg.getID(),
-                            next_farg.getFargName());
+                                                       next_farg.getID(),
+                                                       next_farg.getFargName());
                             break;
-
+                            
                         case NOMINAL:
                             next_arg = new NominalDataValue(this.db,
-                            next_farg.getID());
+                                                            next_farg.getID());
                             break;
-
+                            
                         case PREDICATE:
                             next_arg = new PredDataValue(this.db,
-                            next_farg.getID());
+                                                         next_farg.getID());
                             break;
-
+                            
                         case TEXT:
                             next_arg = new TextStringDataValue(this.db,
-                            next_farg.getID());
+                                                             next_farg.getID());
                             break;
 
                         default:
-                            throw new SystemErrorException(mName +
-                                    "s_var_type out of range.");
+                            throw new SystemErrorException(mName + 
+                                 "s_var_type out of range.");
                             /* commented out to keep the compiler happy */
                             // break;
                     }
-
+                    
                     argList.add(next_arg);
 
                     arg_number++;
@@ -10526,37 +10530,37 @@ public class MacshapaODBReader
                         next_farg = null;
                     }
                 }
-            }
-
+	    }
+            
             if ( ( arg_number > 0 ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
             {
-                throw new SystemErrorException(mName +
-                "non-matrix s_var with more than one argument?!?");
+                throw new SystemErrorException(mName + 
+                        "non-matrix s_var with more than one argument?!?");
             }
 
-            /* if no errors, create the cell and insert it */
-            if ( ! this.abort_parse )
-            {
+	    /* if no errors, create the cell and insert it */
+	    if ( ! this.abort_parse )
+	    {
                 long s_var_mve_ID = s_var_mve.getID();
-
+                
                 cellValue = new Matrix(this.db, s_var_mve_ID, argList);
-
-                dc = new DataCell(this.db, null, s_var_col_ID, s_var_mve_ID,
+                
+                dc = new DataCell(this.db, null, s_var_col_ID, s_var_mve_ID, 
                                   onset, offset, cellValue);
-
+                
                 dcID = this.db.appendCell(dc);
-
+                
                 /* if debug level is high enough, dump the cell definition */
                 if ( this.debug_level >= 2 )
                 {
                     dc = (DataCell)(this.db.getCell(dcID));
                     dump_s_var_cell_definition_to_listing(dc);
                 }
-            }
-        }
+	    }
+	 }
 
-        return;
+	 return;
 
     } /* MacshapaODBReader::parse_s_var_cell() */
 
@@ -10566,27 +10570,27 @@ public class MacshapaODBReader
      * parse_s_var_cell_list()
      *
      * This method parses a (posibly empty) list of spreadsheet variable
-     * cells.  Structurally, this list is simply a (possibly empty) list
+     * cells.  Structurally, this list is simply a (possibly empty) list 
      * of lists.  The production generating it is given below:
      *
      *      <s_var_cell_list> --> '(' (<s_var_cell>)* ')'
      *
-     * In reading this function, the following productions for <s_var_cell>
+     * In reading this function, the following productions for <s_var_cell> 
      * are also useful, as they are used in error detection & recovery.  Note
-     * however that these productions are not parsed in this function, but
+     * however that these productions are not parsed in this function, but 
      * rather in parse_s_var_cell() and its decendants.
-     *
+     *        
      *     <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                            <s_var_cell_offset_attribute>
      *                            (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -10598,35 +10602,35 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                              |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
-     *
+     *        
      *     <s_var_def_vocab_attribute> --> '(' VOCAB> <vocab_list> ')'
-     *
+     *        
      *     <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -10634,13 +10638,13 @@ public class MacshapaODBReader
      *          which we will be loading the spreadsheet variable definition.
      *          This ID is used when inserting cells into the DataColumn.
      *
-     *    - s_var_type: Instance of matrixType indicating the type of the
-     *          spreadsheet variable.  This value is used primarily for
+     *    - s_var_type: Instance of matrixType indicating the type of the 
+     *          spreadsheet variable.  This value is used primarily for 
      *          sanity checking.
      *
      *    - s_var_mve_ID: ID assigned to the MatrixVocabElement describing
      *          the structure of the DataColumn into which the spreadsheet
-     *          variable is being loaded.
+     *          variable is being loaded.  
      *
      * Returns:  Void.
      *
@@ -10653,41 +10657,40 @@ public class MacshapaODBReader
     private void parse_s_var_cell_list(long s_var_col_ID,
                                        MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_cell_list()";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_s_var_cell_list()";
+	boolean done;
         MatrixVocabElement s_var_mve = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
-        if ( s_var_col_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                        "s_var_col_ID is invalid on entry.");
-        }
-
-        if ( s_var_mve_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                        "s_var_mve_ID is invalid on entry.");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	if ( s_var_col_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+                    "s_var_col_ID is invalid on entry.");
+	}
+	
+	if ( s_var_mve_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+                    "s_var_mve_ID is invalid on entry.");
+	}
+        
         /* get a copy of the matrix vocab element describing the data column
          * into which we are going to load the cells.  This call throws
          * a system error on failure, so no error check required.
          */
         s_var_mve = this.db.getMatrixVE(s_var_mve_ID);
-
-        /* parse the spreadsheet variable cells list */
-
-        /* first parse the leading left parenthesis */
+	
+	/* parse the spreadsheet variable cells list */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -10711,30 +10714,30 @@ public class MacshapaODBReader
                  * error come to light below.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	 }
 
-        /* parse the spreadsheet variables declarations list */
-        done = false;
+	 /* parse the spreadsheet variables declarations list */
+	 done = false;
 
-        while ( ( ! this.abort_parse ) && ( ! done ) )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                 case L_PAREN_TOK:
-                    parse_s_var_cell(s_var_col_ID, s_var_type, s_var_mve);
-                    break;
+	 while ( ( ! this.abort_parse ) && ( ! done ) )
+	 {
+	     switch ( (this.l0_tok).code )
+	     {
+		 case L_PAREN_TOK:
+		     parse_s_var_cell(s_var_col_ID, s_var_type, s_var_mve);
+		     break;
 
-                 case R_PAREN_TOK:
-                     done = true;
-                     get_next_token();
-                     break;
+		 case R_PAREN_TOK:
+		     done = true;
+		     get_next_token();
+		     break;
 
                 case EOF_TOK:
                     done = true;
@@ -10757,21 +10760,22 @@ public class MacshapaODBReader
                     post_warning_message(this.l0_tok,
                             ATOM_IN_A_S_VAR_CELL_LIST_WARN, null);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_cell_list() */
 
@@ -10780,26 +10784,26 @@ public class MacshapaODBReader
      *
      * parse_s_var_cell_offset_attribute()
      *
-     * This method parses an ONSET> attribute, which at present can only
-     * appear in the context of a spreadheet variable cell a-list.
+     * This method parses an ONSET> attribute, which at present can only 
+     * appear in the context of a spreadheet variable cell a-list.  
      * This attribute is generated by the following production:
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
      *
      * The function returns a reference to an instance of TimeStamp with
-     * ticks per second taken from this.db, and ticks specified by the
-     * value of the integer associated with the OFFSET> attribute, or a
-     * default value if the integer is missing.  Out of range values are
+     * ticks per second taken from this.db, and ticks specified by the 
+     * value of the integer associated with the OFFSET> attribute, or a 
+     * default value if the integer is missing.  Out of range values are 
      * forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
      *	  - None.
      *
      * Returns:  Reference to and instance of TimeStamp representing the
-     *          time associated with the OFFSET> attribute, or a default
+     *          time associated with the OFFSET> attribute, or a default 
      *          time if the integer is missing, or the nearest legal value
      *          if the integer is out of range.
      *
@@ -10810,78 +10814,78 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private TimeStamp parse_s_var_cell_offset_attribute()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_cell_offset_attribute()";
-        final String missing_offset_mssg =
-            "An OFFSET> attribute appears  to contain a value.  " +
-            "Default value used.\n";
-        final String offset_type_mismatch_mssg =
-            "The value of an OFFSET> attribute must be an integer.  " +
-            "Default value used.\n";
-        boolean out_of_range;
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_cell_offset_attribute()";
+	final String missing_offset_mssg = 
+		"An OFFSET> attribute appears  to contain a value.  " +
+		"Default value used.\n";
+	final String offset_type_mismatch_mssg = 
+		"The value of an OFFSET> attribute must be an integer.  " +
+		"Default value used.\n";
+	boolean out_of_range;
         long ticks = MACSHAPA_MIN_TIME; /* default */
-        TimeStamp offset = null;
+	TimeStamp offset = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the integer associated with the attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the integer associated with the attribute */
-
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	}
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == OFFSET_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is OFFSET> */
-            {
-                    throw new SystemErrorException(mName +
-                            "this.l0_tok != OFFSET>.");
-            }
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == OFFSET_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is OFFSET> */
+	    {
+                throw new SystemErrorException(mName + 
+                        "this.l0_tok != OFFSET>.");
+	    }
+	}
 
-        /* read the value associated with the a-list entry & discard
-         * any excess values
+	/* read the value associated with the a-list entry & discard 
+         * any excess values 
          */
-        if ( ! this.abort_parse )
+	if ( ! this.abort_parse )
         {
-            switch ( (this.l0_tok).code )
-            {
-                case INT_TOK:
-                    out_of_range = false;
+	    switch ( (this.l0_tok).code )
+	    {
+		case INT_TOK:
+		    out_of_range = false;
 
-                    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MIN_TIME;
-                    }
-                    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MAX_TIME;
-                    }
-                    else
-                    {
+		    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MIN_TIME;
+		    }
+		    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MAX_TIME;
+		    }
+		    else
+		    {
                         ticks = (long)((this.l0_tok).val);
                     }
 
@@ -10892,11 +10896,11 @@ public class MacshapaODBReader
                         "OFFSET> attribute\n");
                     }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -10908,11 +10912,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             offset_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case PRIVATE_VAL_TOK:
                 case BOOL_TOK:
@@ -10928,11 +10932,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             offset_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -10940,12 +10944,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -10958,12 +10963,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the OFFSET> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the OFFSET> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -10974,20 +10979,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the offset
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the offset
+		 * attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from an OFFSET> attribute.\n");
@@ -10996,7 +11001,7 @@ public class MacshapaODBReader
 
         offset = new TimeStamp(this.db.getTicks(), ticks);
 
-        return(offset);
+	return(offset);
 
     } /* MacshapaODBReader::parse_s_var_cell_offset_attribute() */
 
@@ -11005,26 +11010,26 @@ public class MacshapaODBReader
      *
      * parse_s_var_cell_onset_attribute()
      *
-     * This method parses an ONSET> attribute, which at present can only
-     * appear in the context of a spreadheet variable cell a-list.
+     * This method parses an ONSET> attribute, which at present can only 
+     * appear in the context of a spreadheet variable cell a-list.  
      * This attribute is generated by the following production:
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
      *
      * The function returns a reference to an instance of TimeStamp, whose
      * ticks pers second is takend from this.db, and whose ticks is simply
-     * the of the integer value associated with the ONSET> attribute, or a
-     * default value if the integer is missing.  Out of range values are
+     * the of the integer value associated with the ONSET> attribute, or a 
+     * default value if the integer is missing.  Out of range values are 
      * forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns: Reference to an instance of TimeStamp representing the
-     *          the time specified in the attribute, or a default value
+     * Returns: Reference to an instance of TimeStamp representing the 
+     *          the time specified in the attribute, or a default value 
      *          if the integer is missing, or the nearest legal value
      *          if the integer is out of range.
      *
@@ -11038,78 +11043,78 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_cell_onset_attribute()";
-        final String missing_onset_mssg =
-            "An ONSET> attribute appears not to contain a value.  " +
-            "Default value used.\n";
-        final String onset_type_mismatch_mssg =
-            "The value of an ONSET> attribute must be an integer.  " +
-            "Default value used.\n";
-        boolean out_of_range;
-        TimeStamp onset = null;
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_cell_onset_attribute()";
+	final String missing_onset_mssg = 
+		"An ONSET> attribute appears not to contain a value.  " +
+		"Default value used.\n";
+	final String onset_type_mismatch_mssg = 
+		"The value of an ONSET> attribute must be an integer.  " +
+		"Default value used.\n";
+	boolean out_of_range;
+	TimeStamp onset = null;
         long ticks = MACSHAPA_MIN_TIME; /* default value */
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the integer associated with the attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the integer associated with the attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == ONSET_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is ONSET> */
+	    {
+		throw new SystemErrorException(mName + "this.l0_tok != ONSET>.");
+	    }
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* read the value associated with the a-list entry & discard 
+	 * any excess values 
+	 */
+	if ( ! this.abort_parse )
+	{
+	     switch ( (this.l0_tok).code )
+	     {
+		case INT_TOK:
+		    out_of_range = false;
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == ONSET_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is ONSET> */
-            {
-                throw new SystemErrorException(mName + "this.l0_tok != ONSET>.");
-            }
-        }
-
-        /* read the value associated with the a-list entry & discard
-         * any excess values
-         */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case INT_TOK:
-                    out_of_range = false;
-
-                    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MIN_TIME;
-                    }
-                    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MAX_TIME;
-                    }
-                    else
-                    {
+		    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MIN_TIME;
+		    }
+		    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MAX_TIME;
+		    }
+		    else
+		    {
                         ticks = (long)((this.l0_tok).val);
                     }
-
-                    onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND, ticks);
+                    
+		    onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND, ticks);
 
                     if ( out_of_range )
                     {
@@ -11119,11 +11124,11 @@ public class MacshapaODBReader
                             "ONSET> attribute\n");
                     }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -11135,11 +11140,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             onset_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case PRIVATE_VAL_TOK:
                 case BOOL_TOK:
@@ -11155,11 +11160,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             onset_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok,
@@ -11168,12 +11173,13 @@ public class MacshapaODBReader
                            true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
-             }
-         }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	 }
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -11186,12 +11192,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the ONSET> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the ONSET> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -11202,20 +11208,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the onset
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the onset
+		 * attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from an ONSET> attribute.\n");
@@ -11224,7 +11230,7 @@ public class MacshapaODBReader
 
         onset = new TimeStamp(this.db.getTicks(), ticks);
 
-        return(onset);
+	return(onset);
 
     } /* MacshapaODBReader::parse_s_var_cell_onset_attribute() */
 
@@ -11235,13 +11241,13 @@ public class MacshapaODBReader
      *
      * This method parses an a-list entry defining the value of one of the
      * formal agruments in a cell in a spreadsheet variable, and loads either
-     * the associated value or the default/undefined value of the cell into the
-     * insertion buffer.  The productions generating a spreadsheet variable cell
+     * the associated value or the default/undefined value of the cell into the 
+     * insertion buffer.  The productions generating a spreadsheet variable cell 
      * value attribute are given below:
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -11253,42 +11259,42 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                                     |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value> --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
-     *
-     *                                                    JRM - 6/15/08
+     *        
+     *                                                     - 6/15/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the instance of FormalArgument
-     *          representing the formal argument whose value attribute is
+     *	  - farg:  Reference to a copy of the instance of FormalArgument 
+     *          representing the formal argument whose value attribute is 
      *          being parsed.
      *
      *    - arg_num:  Number of the current argument in the target spreadsheet
-     *          variable's formal argument list, less three.  (recall that the
-     *          first three arguments must be <ord>, <onset>, and <offset>.
-     *          Since these arguments are not thought of as containing the
-     *          "value" of the cell, they are not included in the argument
-     *          number count.) This means that in non-matrix cases, arg_num
+     *          variable's formal argument list, less three.  (recall that the 
+     *          first three arguments must be <ord>, <onset>, and <offset>.  
+     *          Since these arguments are not thought of as containing the 
+     *          "value" of the cell, they are not included in the argument 
+     *          number count.) This means that in non-matrix cases, arg_num 
      *          must always be 0.
      *
      *    - s_var_type:  Type of the DataColumn in which the target cell
@@ -11307,82 +11313,81 @@ public class MacshapaODBReader
                                       int arg_num,
                                       MatrixVocabElement.MatrixType s_var_type)
         throws SystemErrorException,
-               LogicErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_cell_value_attribute()";
-        final String overflow_mssg =
-            "Overflow occured in a cell value attribute.\n";
-        DataValue dv = null;
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_cell_value_attribute()";
+	final String overflow_mssg = 
+		"Overflow occured in a cell value attribute.\n";
+	DataValue dv = null;
+        
+        if ( ( farg == null ) || ( arg_num < 0 ) )
 
-            if ( ( farg == null ) || ( arg_num < 0 ) )
+	{
+	    throw new SystemErrorException(mName + 
+		    "invalid parameter(s) on entry.");
+	}
+	
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
 
-        {
-            throw new SystemErrorException(mName +
-                "invalid parameter(s) on entry.");
-        }
+	/* try to parse the cell value attribute */
+	
+	/* start with a little more sanity checking */
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
-        /* try to parse the cell value attribute */
-
-        /* start with a little more sanity checking */
-
-        if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+	if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
              ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
              ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
              ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
              ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
              ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_ptr->kind out of range.");
-        }
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_ptr->kind out of range.");
+	}
 
-        if ( ! this.abort_parse )
-        {
-            if ( ( arg_num > 0 ) &&
-                     ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
-            {
-                throw new SystemErrorException(mName +
-                    "((arg_num > 1) && (type != matrixID))");
-            }
-        }
+	if ( ! this.abort_parse )
+	{
+	    if ( ( arg_num > 0 ) && 
+                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
+	    {
+		throw new SystemErrorException(mName + 
+			"((arg_num > 1) && (type != matrixID))");
+	    }
+	}
 
-        /* if we haven't detected any errors so far, start the actual parse */
+	/* if we haven't detected any errors so far, start the actual parse */
 
-        /* first parse the leading left parenthesis */
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* system error - we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* system error - we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
 
-        /* read the name of the formal argument used to label the attribute */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == SYMBOL_TOK ) &&
-             ( (((this.l0_tok).aux) & FORMAL_ARG_FLAG) != 0 ) &&
-                     ( farg.getFargName().
-                       compareTo(this.l0_tok.str.toString()) == 0 ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token */
-            {    /* is the formal argument referenced by farg.      */
-                throw new SystemErrorException(mName +
-                    "this.l0_tok.str != farg.getFargName()");
-            }
+	/* read the name of the formal argument used to label the attribute */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == SYMBOL_TOK ) && 
+		 ( (((this.l0_tok).aux) & FORMAL_ARG_FLAG) != 0 ) &&
+                 ( farg.getFargName().
+                   compareTo(this.l0_tok.str.toString()) == 0 ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token */
+	    {    /* is the formal argument referenced by farg.      */
+		throw new SystemErrorException(mName + 
+			"this.l0_tok.str != farg.getFargName()");
+	    }
         }
 
 
@@ -11423,30 +11428,30 @@ public class MacshapaODBReader
                     break;
 
                 default:
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                          "s_var_type out of range.");
-                    /* commented out to keep the compiler happy */
+	            /* commented out to keep the compiler happy */
                     // break;
             }
         }
 
-        /* check for EOF */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == EOF_TOK )
-            {
-                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-                           "EOF in a cell value attribute.\n",
-                           true, true);
-            }
-        }
+	/* check for EOF */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == EOF_TOK )
+	    {
+		post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+				   "EOF in a cell value attribute.\n", 
+				   true, true);
+	    }
+	}
 
-        /* discard any excess values that may appear in the cell value a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the cell value a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -11457,20 +11462,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* Since we are cleaning up any excess values in the cell value
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* Since we are cleaning up any excess values in the cell value
+		 * attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                         "Closing parenthesis missing from a cell value " +
@@ -11478,7 +11483,7 @@ public class MacshapaODBReader
             }
         }
 
-        return dv;
+	return dv;
 
     } /* MacshapaODBReader::parse_s_var_cell_value_attribute() */
 
@@ -11487,23 +11492,23 @@ public class MacshapaODBReader
      *
      * parse_s_var_col_width_attribute()
      *
-     * This method parses a COLUMN-WIDTH> attribute, which at present can only
-     * appear in the context of a spreadheet variable declaration or definition.
+     * This method parses a COLUMN-WIDTH> attribute, which at present can only 
+     * appear in the context of a spreadheet variable declaration or definition.  
      * This attribute is generated by the following production:
-     *
+     *        
      *     <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     * The function returns value of the integer associated with the
-     * COLUMN-WIDTH> attribute, or a default value if the integer is missing.
+     * The function returns value of the integer associated with the 
+     * COLUMN-WIDTH> attribute, or a default value if the integer is missing.  
      * Out of range values are forced to the nearest legal value.
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Return Value:  Integer associated with the COLUMN-WIDTH> attribute, or a
+     * Return Value:  Integer associated with the COLUMN-WIDTH> attribute, or a 
      *	    default value if the integer is missing, or the nearest legal value
      *      if the integer is out of range.
      *
@@ -11514,81 +11519,81 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private int parse_s_var_col_width_attribute()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_col_width_attribute()";
-        final String missing_col_width_mssg =
-            "A COLUMN-WIDTH> attribute appears not to contain a value.  " +
-            "Default value used.\n";
-        final String col_width_type_mismatch_mssg =
-            "The value of the COLUMN-WIDTH> attribute must be an integer.  " +
-            "Default value used.\n";
-        boolean out_of_range;
-        int col_width;
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_col_width_attribute()";
+	final String missing_col_width_mssg = 
+		"A COLUMN-WIDTH> attribute appears not to contain a value.  " +
+		"Default value used.\n";
+	final String col_width_type_mismatch_mssg = 
+		"The value of the COLUMN-WIDTH> attribute must be an integer.  " +
+		"Default value used.\n";
+	boolean out_of_range;
+	int col_width;
 
         col_width = DEFAULT_COLUMN_WIDTH; /* default value */
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the private value associated with the attribute */
+	{
+	    /* first parse the leading left parenthesis */
 
-        /* parse the private value associated with the attribute */
-        {
-            /* first parse the leading left parenthesis */
+	    if ( (this.l0_tok).code == L_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is a '(' */
+	    {
+		throw new SystemErrorException(mName + 
+			"(this.l0_tok).code != L_PAREN_TOK.");
+	    }
 
-            if ( (this.l0_tok).code == L_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is a '(' */
-            {
-                throw new SystemErrorException(mName +
-                    "(this.l0_tok).code != L_PAREN_TOK.");
-            }
+	    /* read the a-list entry name */
+	    if ( ! this.abort_parse )
+	    {
+		if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		     ( (this.l0_tok).aux == COLUMN_WIDTH_LABEL ) )
+		{
+		    get_next_token();
+		}
+		else /* we shouldn't have been called unless the next token is an a-list tag */
+		{
+		    throw new SystemErrorException(mName + 
+			    "this.l0_tok != COLUMN-WIDTH>.");
+		}
+	    }
 
-            /* read the a-list entry name */
-            if ( ! this.abort_parse )
-            {
-                if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                     ( (this.l0_tok).aux == COLUMN_WIDTH_LABEL ) )
-                {
-                    get_next_token();
-                }
-                else /* we shouldn't have been called unless the next token is an a-list tag */
-                {
-                    throw new SystemErrorException(mName +
-                        "this.l0_tok != COLUMN-WIDTH>.");
-                }
-            }
+	    /* read the value associated with the a-list entry & discard any 
+	     * excess values 
+	     */
+	    if ( ! this.abort_parse )
+	    {
+		switch ( (this.l0_tok).code )
+		{
+		    case INT_TOK:
+			out_of_range = false;
 
-            /* read the value associated with the a-list entry & discard any
-             * excess values
-             */
-            if ( ! this.abort_parse )
-            {
-                switch ( (this.l0_tok).code )
-                {
-                    case INT_TOK:
-                        out_of_range = false;
-
-                        if ( (int)((this.l0_tok).val) < MIN_COLUMN_WIDTH )
-                        {
-                            out_of_range = true;
-                            col_width = MIN_COLUMN_WIDTH;
-                        }
-                        else if ( (int)((this.l0_tok).val) > MAX_COLUMN_WIDTH )
-                        {
-                            out_of_range = true;
-                            col_width = MAX_COLUMN_WIDTH;
-                        }
-                        else
-                        {
-                            col_width = (int)((this.l0_tok).val);
-                        }
+			if ( (int)((this.l0_tok).val) < MIN_COLUMN_WIDTH )
+			{
+			    out_of_range = true;
+			    col_width = MIN_COLUMN_WIDTH;
+			}
+			else if ( (int)((this.l0_tok).val) > MAX_COLUMN_WIDTH )
+			{
+			    out_of_range = true;
+			    col_width = MAX_COLUMN_WIDTH;
+			}
+			else
+			{
+			    col_width = (int)((this.l0_tok).val);
+			}
 
                         if ( out_of_range )
                         {
@@ -11597,11 +11602,11 @@ public class MacshapaODBReader
                                     null);
                         }
 
-                        if ( ! this.abort_parse )
-                        {
-                            get_next_token();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    get_next_token();
+			}
+			break;
 
                     case R_PAREN_TOK:
                         post_warning_message(this.l0_tok,
@@ -11614,11 +11619,11 @@ public class MacshapaODBReader
                                 ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                                 col_width_type_mismatch_mssg);
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+			break;
 
                     case PRIVATE_VAL_TOK:
                     case BOOL_TOK:
@@ -11634,11 +11639,11 @@ public class MacshapaODBReader
                                 ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                                 col_width_type_mismatch_mssg);
 
-                        if ( ! this.abort_parse )
-                        {
-                            get_next_token();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    get_next_token();
+			}
+			break;
 
                     case EOF_TOK:
                         post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -11646,12 +11651,13 @@ public class MacshapaODBReader
                                    true, true);
                         break;
 
-                    default:
-                        throw new SystemErrorException(mName +
-                            "Encountered unknown token type.");
-                        // break;  /* commented out to keep the compiler happy */
-                }
-            }
+		    default:
+			throw new SystemErrorException(mName + 
+				"Encountered unknown token type.");
+                        /* commented out to keep the compiler happy */
+			// break;
+		}
+	    }
 
             /* check for EOF */
             if ( ! this.abort_parse )
@@ -11664,14 +11670,14 @@ public class MacshapaODBReader
                 }
             }
 
-            /* discard any excess values that may appear in the
-             * COLUMN-WIDTH> a-list entry
-             */
-            if ( ! this.abort_parse )
-            {
-                if ( (this.l0_tok).code != R_PAREN_TOK )
-                {
-                    discard_excess_alist_entry_values();
+	    /* discard any excess values that may appear in the 
+	     * COLUMN-WIDTH> a-list entry 
+	     */
+	    if ( ! this.abort_parse ) 
+	    {
+		if ( (this.l0_tok).code != R_PAREN_TOK )
+		{
+		    discard_excess_alist_entry_values();
 
                     if ( ! this.abort_parse )
                     {
@@ -11683,20 +11689,20 @@ public class MacshapaODBReader
                 }
             }
 
-            /* read the terminating right parenthesis */
-            if ( ! this.abort_parse )
-            {
-                if ( (this.l0_tok).code == R_PAREN_TOK )
-                {
-                    get_next_token();
-                }
-                else
-                {
-                    /* since we are cleaning up any excess values in the column
-                     * width attribute, this else clause is unreachable at
-                     * present.  Should we choose to drop the above attempt at
-                     * error recovery, this clause will again become reachable.
-                     */
+	    /* read the terminating right parenthesis */
+	    if ( ! this.abort_parse )
+	    {
+		if ( (this.l0_tok).code == R_PAREN_TOK )
+		{
+		    get_next_token();
+		}
+		else
+		{
+		    /* since we are cleaning up any excess values in the column
+		     * width attribute, this else clause is unreachable at 
+		     * present.  Should we choose to drop the above attempt at 
+		     * error recovery, this clause will again become reachable.
+		     */
 
                     post_warning_message(this.l0_tok,
                             RIGHT_PAREN_EXPECTED_WARN,
@@ -11706,7 +11712,7 @@ public class MacshapaODBReader
             }
         }
 
-        return(col_width);
+	return(col_width);
 
     } /* MacshapaODBReader::parse_s_var_col_width_attribute() */
 
@@ -11715,38 +11721,38 @@ public class MacshapaODBReader
      *
      * parse_s_var_dec()
      *
-     * This method parses a spreadsheet variable declaration.  The productions
-     * generating a spreadsheet variable declaration are given below:
-     *
+     * This method parses a spreadsheet variable declaration.  The productions 
+     * generating a spreadsheet variable declaration are given below: 
+     *        
      *    <s_var_dec> --> '(' <s_var_name> <s_var_dec_alist> ')'
      *
      *    <s_var_dec_alist> --> '(' <s_var_dec_attributes> ')'
      *
-     *    <s_var_dec_attributes> --> { <s_var_type_attribute>
-     *                                 <s_var_variable_length_attribute>
-     *                                 <s_var_formal_arg_list_attribute>
+     *    <s_var_dec_attributes> --> { <s_var_type_attribute> 
+     *                                 <s_var_variable_length_attribute> 
+     *                                 <s_var_formal_arg_list_attribute> 
      *                                 [<s_var_col_width_attribute>] }
      *
      *    <s_var_type_attribute> --> '(' 'TYPE>' <s_var_type> ')'
      *
-     *    <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' |
+     *    <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' | 
      *                     '<<FLOAT>>' | '<<PREDICATE>>' | '<<MATRIX>>'
      *
-     *    <s_var_variable_length_attribute> -->
+     *    <s_var_variable_length_attribute> --> 
      *                '(' 'VARIABLE-LENGTH>' <boolean> ')'
      *
-     *    <s_var_formal_arg_list_attribute> -->
+     *    <s_var_formal_arg_list_attribute> --> 
      *                '(' 'FORMAL-ARG-LIST>' <s_var_formal_arg_list> ')'
      *
-     *    <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|'
-     *                                    '|<offset>|' '|<val>|' ')'
+     *    <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|' 
+     *                                    '|<offset>|' '|<val>|' ')' 
      *                                |
-     *                                '(' '|<ord>|' '|<onset>|' '|<offset>|'
+     *                                '(' '|<ord>|' '|<onset>|' '|<offset>|' 
      *                                    (<formal_arg>)+ ')'
      *
      *    <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                            JRM - 6/15/08
+     *                                             - 6/15/08
      *
      * Parameters:
      *
@@ -11758,26 +11764,25 @@ public class MacshapaODBReader
      *
      *      - None.
      *
-     **************************************************************************/
+     *******************************************************************************/
 
     private void parse_s_var_dec()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_dec()";
+	final String mName = "macshapa_odb_reader::parse_s_var_dec()";
         String mveName = null;
-        boolean done;
-        boolean excess_values;
+	boolean done;
+	boolean excess_values;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
         /* parse the spreadsheet variable declaration */
-
+	
         /* first parse the leading left parenthesis */
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -11785,7 +11790,7 @@ public class MacshapaODBReader
         }
         else /* we shouldn't have been called unless the next token is a '(' */
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
         }
 
@@ -11817,20 +11822,20 @@ public class MacshapaODBReader
             }
             else /* we shouldn't have been called unless the next token is a symbol */
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "this.l0_tok != SYMBOL_TOK.");
             }
         }
 
-        /* read the a-list associated with the spreadsheet
-         * variable declaration
+        /* read the a-list associated with the spreadsheet 
+         * variable declaration 
          */
         if ( ! this.abort_parse )
         {
             switch ( (this.l0_tok).code )
             {
                 case L_PAREN_TOK:
-                    /* note that if we get this far, the spreadsheet
+                    /* note that if we get this far, the spreadsheet 
                      * variable name is already in the insertion buffer.
                      */
                     parse_s_var_dec_alist(mveName);
@@ -11855,7 +11860,7 @@ public class MacshapaODBReader
                     post_warning_message(this.l0_tok,
                             TYPE_MISMATCH_IN_S_VAR_DEC_WARN,
                             "The spreadsheet variable declaration " +
-                            "will be discarded.\n");
+                            "will be discarded.\n"); 
 
                     if ( ! this.abort_parse )
                     {
@@ -11870,9 +11875,10 @@ public class MacshapaODBReader
                     break;
 
                 default:
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "Encountered unknown token type.");
-                    // break;  /* commented out to keep the compiler happy */
+	            /* commented out to keep the compiler happy */
+                    // break;
             }
         }
 
@@ -11882,7 +11888,7 @@ public class MacshapaODBReader
             done = false;
             excess_values = false;
 
-            while ( ( ! this.abort_parse ) &&
+            while ( ( ! this.abort_parse ) && 
                     ( ! done ) )
             {
                 switch ( (this.l0_tok).code )
@@ -11915,13 +11921,14 @@ public class MacshapaODBReader
                         done = true;
                         post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                                 "EOF encountered in a spreadsheet " +
-                                "variable declaration.\n", true, true);
+                                "variable declaration.\n", true, true); 
                         break;
 
                     default:
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "Encountered unknown token type.");
-                        // break; /* commented out to keep the compiler happy */
+	                /* commented out to keep the compiler happy */
+                        // break;
                 }
             }
 
@@ -11941,14 +11948,15 @@ public class MacshapaODBReader
             {
                 get_next_token();
             }
-            else
+            else 
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "This else clause should be unreachable.");
             }
         }
+	
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_dec() */
 
@@ -11957,39 +11965,39 @@ public class MacshapaODBReader
      *
      * parse_s_var_dec_alist()
      *
-     * This method parses the a-list associated with a spreadsheet variable
-     * declaration, and uses the information obtained from it, along with the
-     * spreadsheet variable name passed to it, to insert the declaration of
-     * the spreadsheet variable in MacSHAPA's database.  The productions
+     * This method parses the a-list associated with a spreadsheet variable 
+     * declaration, and uses the information obtained from it, along with the 
+     * spreadsheet variable name passed to it, to insert the declaration of 
+     * the spreadsheet variable in MacSHAPA's database.  The productions 
      * generating the spreadsheet variable declaration a-list are given below:
-     *
+     *        
      *     <s_var_dec_alist> --> '(' <s_var_dec_attributes> ')'
      *
-     *     <s_var_dec_attributes> --> { <s_var_type_attribute>
-     *                                  <s_var_variable_length_attribute>
-     *                                  <s_var_formal_arg_list_attribute>
+     *     <s_var_dec_attributes> --> { <s_var_type_attribute> 
+     *                                  <s_var_variable_length_attribute> 
+     *                                  <s_var_formal_arg_list_attribute> 
      *                                  [<s_var_col_width_attribute>] }
      *
      *     <s_var_type_attribute> --> '(' 'TYPE>' <s_var_type> ')'
      *
-     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' |
+     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' | 
      *                      '<<FLOAT>>' | '<<PREDICATE>>' | '<<MATRIX>>'
      *
-     *     <s_var_variable_length_attribute> -->
+     *     <s_var_variable_length_attribute> --> 
      *                '(' 'VARIABLE-LENGTH>' <boolean> ')'
      *
-     *     <s_var_formal_arg_list_attribute> -->
+     *     <s_var_formal_arg_list_attribute> --> 
      *                '(' 'FORMAL-ARG-LIST>' <s_var_formal_arg_list> ')'
      *
-     *     <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|'
-     *                                     '|<offset>|' '|<val>|' ')'
+     *     <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|' 
+     *                                     '|<offset>|' '|<val>|' ')' 
      *                                 |
-     *                                 '(' '|<ord>|' '|<onset>|' '|<offset>|'
+     *                                 '(' '|<ord>|' '|<onset>|' '|<offset>|' 
      *                                     (<formal_arg>)+ ')'
      *
      *     <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -12005,41 +12013,40 @@ public class MacshapaODBReader
 
     private void parse_s_var_dec_alist(String mveName)
         throws SystemErrorException,
-               LogicErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_dec_alist()";
-        final String overflow_mssg =
-            "Overflow occured in the formal argument list of a " +
-            "spreadsheet variable declaration.\n";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_s_var_dec_alist()";
+	final String overflow_mssg = 
+		"Overflow occured in the formal argument list of a " +
+		"spreadsheet variable declaration.\n";
+	boolean done;
         boolean fArgNameMisMatch;
-        boolean have_args_list;
-        boolean have_col_width;
-        boolean have_type;
-        boolean have_variable_length;
-        boolean must_be_matrix;
+	boolean have_args_list;
+	boolean have_col_width;
+	boolean have_type;
+	boolean have_variable_length;
+	boolean must_be_matrix;
         boolean set_system;
-    	int col_width;
+	int col_width;
         int i;
         long mve_id = DBIndex.INVALID_ID;
         long dc_id = DBIndex.INVALID_ID;
-    	boolean variable_length;
+	boolean variable_length;
         FormalArgument fa;
-    	MatrixVocabElement mve;
+	MatrixVocabElement mve;
         MatrixVocabElement.MatrixType mveType;
         Vector<String> args = null;
         DataColumn dc = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
 
         /* parse the spreadsheet variable declaration a-list */
-
-        /* first parse the leading left parenthesis */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -12053,23 +12060,23 @@ public class MacshapaODBReader
                 post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
                         "The opening left parenthesis of a spreadsheet " +
                         "variable declaration a-list appears to be missing.\n");
-            }
-            else
-            {
-                /* if a left paren is missing, the first item in the a-list is
-                 * not an a-list entry.  If we try to recover from this error
-                 * here, we will only confuse things further.  Thus we eat the
+	    }
+	    else 
+	    {
+		/* if a left paren is missing, the first item in the a-list is 
+                 * not an a-list entry.  If we try to recover from this error 
+                 * here, we will only confuse things further.  Thus we eat the 
                  * left parenthesis & let the cards fall where they may.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	}
 
         done                 = false;
         have_args_list       = false;
@@ -12108,19 +12115,19 @@ public class MacshapaODBReader
                                         "in a spreadsheet variable " +
                                         "declaration.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
-                        case FORMAL_ARG_LIST_LABEL:
-                            if ( ! have_args_list )
-                            {
-                                have_args_list = true;
-                                args = parse_s_var_formal_arg_list_attribute();
-
+			case FORMAL_ARG_LIST_LABEL:
+			    if ( ! have_args_list )
+			    {
+				have_args_list = true;
+				args = parse_s_var_formal_arg_list_attribute();
+                                
                                 if ( ( args.size() > 4 ) ||
                                      ( args.get(3).compareTo("<val>") != 0 ) )
                                 {
@@ -12134,12 +12141,12 @@ public class MacshapaODBReader
                                     "Duplicate FORMAL-ARG-LIST> entry in " +
                                     "a spreadsheet variable declaration.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                    parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				    parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         case TYPE_LABEL:
                             if ( ! have_type )
@@ -12154,12 +12161,12 @@ public class MacshapaODBReader
                                         "Duplicate TYPE> entry in a " +
                                         "spreadsheet variable declaration.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         case COLUMN_WIDTH_LABEL:
                             if ( ! have_col_width )
@@ -12174,12 +12181,12 @@ public class MacshapaODBReader
                                     "Duplicate COLUMN-WIDTH> entry in a " +
                                     "spreadsheet variable declaration.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         default:
                             post_warning_message(this.l1_tok,
@@ -12227,16 +12234,16 @@ public class MacshapaODBReader
                         "The atom was detected in a spreadsheet variable " +
                         "declaration a-list.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	}
 
-        /* check for missing required attributes -- generate default values
-         * if necessary.
-         */
+	/* check for missing required attributes -- generate default values 
+	 * if necessary. 
+	 */
 
         if ( ( ! this.abort_parse ) &&
              ( ! have_variable_length ) )
@@ -12254,15 +12261,15 @@ public class MacshapaODBReader
                 "variable declaration?  Will use the arg list \"(|<ord>| " +
                 "|<onset>| |<offset>| |<val>|)\".\n");
 
-            if ( ! this.abort_parse )
-            {
-                    args = new Vector<String>();
-                    args.add("<ord>");
-                    args.add("<onset>");
-                    args.add("<offset>");
-                    args.add("<val>");
-            }
-        }
+	    if ( ! this.abort_parse ) 
+	    {
+                args = new Vector<String>();
+                args.add("<ord>");
+                args.add("<onset>");
+                args.add("<offset>");
+                args.add("<val>");
+	    }
+	}
 
         if ( ( ! this.abort_parse ) &&
              ( ! have_type ) )
@@ -12272,24 +12279,24 @@ public class MacshapaODBReader
                 "declaration?  Will force type to <<MATRIX>>.\n");
         }
 
-        /* check for disagreement between type and argument list */
-        if ( ( ! this.abort_parse ) &&
-             ( must_be_matrix ) &&
-                 ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
-        {
-            mveType = MatrixVocabElement.MatrixType.MATRIX;
+	/* check for disagreement between type and argument list */
+	if ( ( ! this.abort_parse ) && 
+	     ( must_be_matrix ) && 
+             ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
+	{
+	    mveType = MatrixVocabElement.MatrixType.MATRIX;
 
             post_warning_message(this.l0_tok, S_VAR_TYPE_ARG_LIST_MISMATCH_WARN,
                 "Will force the type of the spreadsheet variable " +
                 "to <<MATRIX>>.\n");
         }
 
-        /* check for disagreement between variable_length and type */
-        if ( ( ! this.abort_parse ) &&
-             ( variable_length ) &&
+	/* check for disagreement between variable_length and type */
+	if ( ( ! this.abort_parse ) && 
+	     ( variable_length ) && 
              ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
-        {
-            variable_length = false;
+	{
+	    variable_length = false;
 
             post_warning_message(this.l0_tok,
                     VAR_LEN_NON_MATRIX_S_VAR_DEC_WARN, null);
@@ -12316,7 +12323,7 @@ public class MacshapaODBReader
             else if ( this.db.vl.matrixInVocabList(mveName) )
             {
                 mve = this.db.getMatrixVE(mveName);
-
+                
                 if ( ( mve.getSystem() != false ) ||
                      ( mve.getVarLen() != variable_length ) ||
                      ( mve.getType() != mveType ) ||
@@ -12330,7 +12337,7 @@ public class MacshapaODBReader
                 {
                     i = 0;
                     fArgNameMisMatch = false;
-
+                    
                     while ( ( i + 3 < args.size() ) &&
                             ( ! fArgNameMisMatch ) )
                     {
@@ -12341,7 +12348,7 @@ public class MacshapaODBReader
                         }
                         i++;
                     }
-
+                    
                     if ( fArgNameMisMatch )
                     {
                         post_warning_message(this.l0_tok,
@@ -12372,11 +12379,11 @@ public class MacshapaODBReader
             else
             {
                 set_system = false;
-
+                
                 mve = new MatrixVocabElement(this.db, mveName);
-
+                
                 mve.setType(mveType);
-
+                
                 switch ( mveType )
                 {
                     case FLOAT:
@@ -12384,13 +12391,13 @@ public class MacshapaODBReader
                         mve.appendFormalArg(fa);
                         set_system = true;
                         break;
-
+                        
                     case INTEGER:
                         fa = new IntFormalArg(this.db, "<val>");
                         mve.appendFormalArg(fa);
                         set_system = true;
                         break;
-
+                        
                     case MATRIX:
                         for ( i = 3; i < args.size(); i++ )
                         {
@@ -12399,19 +12406,19 @@ public class MacshapaODBReader
                         }
                         set_system = false;
                         break;
-
+                        
                     case NOMINAL:
                         fa = new NominalFormalArg(this.db, "<val>");
                         mve.appendFormalArg(fa);
                         set_system = true;
                         break;
-
+                        
                     case PREDICATE:
                         fa = new PredFormalArg(this.db, "<val>");
                         mve.appendFormalArg(fa);
                         set_system = true;
                         break;
-
+                        
                     case TEXT:
                         // TextStringFormalArg doesn't allow a formal
                         // argument name at present -- formal argument
@@ -12421,62 +12428,62 @@ public class MacshapaODBReader
                         mve.appendFormalArg(fa);
                         set_system = true;
                         break;
-
+                        
                     case UNDEFINED:
                         throw new SystemErrorException(mName +
                                 "matrix type undefined?!?");
                         /* commented out to keep the compiler happy */
                         // break;
-
+                        
                     default:
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "Unknown matrix type.");
                         /* commented out to keep the compiler happy */
                         // break;
                 }
-
+                
                 mve.setVarLen(variable_length);
-
-                if ( set_system )
+                
+                if ( set_system ) 
                 {
                     mve.setSystem();
                 }
-
+                
                 /* Note that we are not making a copy of the mve
                  * before we insert it -- thus must be careful not
                  * to corrupt it.
                  */
                 this.db.vl.addElement(mve);
-
+        
                 mve_id = mve.getID();
-
+        
                 if ( this.db.vl.getVocabElement(mve_id) != mve )
                 {
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "mve insertion in vl failed?");
                 }
-
+                
                 dc = new DataColumn(this.db, mveName, false, false, mve_id);
 
                 dc.setMacshapaColWidth(col_width);
 
                 this.db.cl.addColumn(dc);
-
+        
                 dc_id = dc.getID();
 
                 if ( ( this.db.cl.getColumn(dc_id) != dc ) ||
                      ( this.db.cl.getColumn(dc.getName()) != dc ) ||
                      ( dc.getItsCells() == null ) )
                 {
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "dc insertion in cl failed");
                 }
-
+        
                 mve.setItsColID(dc_id);
             }
-        }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_dec_alist() */
 
@@ -12486,45 +12493,45 @@ public class MacshapaODBReader
      * parse_s_var_dec_list()
      *
      * This method parses a (posibly empty) list of spreadsheet variable
-     * declarations.  Structurally, this list is simply a (possibly empty) list
+     * declarations.  Structurally, this list is simply a (possibly empty) list 
      * of lists.  The production generating it is given below:
      *
      *      <s_var_dec_list> --> '(' (<s_var_dec>)* ')'
      *
      * In reading this function, the following productions for <s_var_dec> are
      * also useful, as they are used in error detection & recovery.  Note
-     * however that these productions are not parsed in this function, but
+     * however that these productions are not parsed in this function, but 
      * rather in parse_s_var_dec() and its decendants.
-     *
+     *        
      *     <s_var_dec> --> '(' <s_var_name> <s_var_dec_alist> ')'
      *
      *     <s_var_dec_alist> --> '(' <s_var_dec_attributes> ')'
      *
-     *     <s_var_dec_attributes> --> { <s_var_type_attribute>
-     *                                  <s_var_variable_length_attribute>
-     *                                  <s_var_formal_arg_list_attribute>
+     *     <s_var_dec_attributes> --> { <s_var_type_attribute> 
+     *                                  <s_var_variable_length_attribute> 
+     *                                  <s_var_formal_arg_list_attribute> 
      *                                  [<s_var_col_width_attribute>] }
      *
      *     <s_var_type_attribute> --> '(' 'TYPE>' <s_var_type> ')'
      *
-     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' |
+     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' | 
      *                      '<<FLOAT>>' | '<<PREDICATE>>' | '<<MATRIX>>'
      *
-     *     <s_var_variable_length_attribute> -->
+     *     <s_var_variable_length_attribute> --> 
      *                '(' 'VARIABLE-LENGTH>' <boolean> ')'
      *
-     *     <s_var_formal_arg_list_attribute> -->
+     *     <s_var_formal_arg_list_attribute> --> 
      *                '(' 'FORMAL-ARG-LIST>' <s_var_formal_arg_list> ')'
      *
-     *     <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|'
-     *                                     '|<offset>|' '|<val>|' ')'
+     *     <s_var_formal_arg_list> --> '(' '|<ord>|' '|<onset>|' 
+     *                                     '|<offset>|' '|<val>|' ')' 
      *                                 |
-     *                                 '(' '|<ord>|' '|<onset>|' '|<offset>|'
+     *                                 '(' '|<ord>|' '|<onset>|' '|<offset>|' 
      *                                     (<formal_arg>)+ ')'
      *
      *     <s_var_col_width_attribute> --> '(' 'COLUMN-WIDTH>' <integer> ')'
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -12539,22 +12546,21 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_s_var_dec_list()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_dec_list()";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_s_var_dec_list()";
+	boolean done;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
-        /* parse the spreadsheet variables declarations list */
-
-        /* first parse the leading left parenthesis */
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the spreadsheet variables declarations list */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -12579,17 +12585,17 @@ public class MacshapaODBReader
                  * error come to light below.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* parse the spreadsheet variables declarations list */
-        done = false;
+	/* parse the spreadsheet variables declarations list */
+	done = false;
 
         while ( ( ! this.abort_parse ) && ( ! done ) )
         {
@@ -12606,17 +12612,17 @@ public class MacshapaODBReader
                                 ALIEN_LIST_IN_S_VAR_DEC_LIST_WARN,
                                      null);
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                    }
-                    break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+		    }
+		     break;
 
-                case R_PAREN_TOK:
-                    done = true;
-                    get_next_token();
-                    break;
+		case R_PAREN_TOK:
+		    done = true;
+		    get_next_token();
+		    break;
 
                 case EOF_TOK:
                     done = true;
@@ -12640,20 +12646,21 @@ public class MacshapaODBReader
                             ALIEN_ATOM_IN_S_VAR_DEC_LIST_WARN,
                              null);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
-                 default:
-                     throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                     // break;  /* commented out to keep the compiler happy */
-             }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	             /* commented out to keep the compiler happy */
+		     // break;
+	     }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_dec_list() */
 
@@ -12662,15 +12669,15 @@ public class MacshapaODBReader
      *
      * parse_s_var_decs_attribute()
      *
-     * This method parses the spread sheet variable declarations attribute
-     * in the USER> a-list.  Structurally, this attribute is simply an a-list
+     * This method parses the spread sheet variable declarations attribute 
+     * in the USER> a-list.  Structurally, this attribute is simply an a-list 
      * entry with a list value.  The production generating it is given below.
      *
      *    <s_var_decs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DECLARATIONS>'
      *                                      <s_var_dec_list> ')'
+     *        
      *
-     *
-     *                                                    JRM - 6/16/08
+     *                                                     - 6/16/08
      *
      * Parameters:
      *
@@ -12685,63 +12692,62 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_s_var_decs_attribute()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_decs_attribute()";
-        final String value_missing_mssg =
-            "The USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry " +
-            "doesn't seem to contain a value.\n";
-        final String type_mismatch_mssg =
-            "The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> " +
-            "a-list entry must be a (possibly empty) list of spreadsheet " +
-            "variable declarations.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_decs_attribute()";
+	final String value_missing_mssg =
+		"The USER> SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry " +
+		"doesn't seem to contain a value.\n";
+	final String type_mismatch_mssg =
+		"The value of the USER> SPREADSHEET-VARIABLE-DECLARATIONS> " +
+		"a-list entry must be a (possibly empty) list of spreadsheet " +
+		"variable declarations.\n"; 
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the spreadsheet variables declarations attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the spreadsheet variables declarations attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == SPREADSHEET_VARIABLE_DECLARATIONS_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* system error - we shouldn't have been called unless the next */
+	    {    /* token is the SPREADSHEET-VARIABLE-DECLARATIONS> a-list tag.  */
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != \"SPREADSHEET-VARIABLE-DECLARATIONS>\".");
+	    }
+	}
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == SPREADSHEET_VARIABLE_DECLARATIONS_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* system error - we shouldn't have been called unless the next */
-            {    /* token is the SPREADSHEET-VARIABLE-DECLARATIONS> a-list tag.  */
-
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != \"SPREADSHEET-VARIABLE-DECLARATIONS>\".");
-            }
-        }
-
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    parse_s_var_dec_list();
-                    break;
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    parse_s_var_dec_list();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -12763,11 +12769,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -12775,13 +12781,13 @@ public class MacshapaODBReader
                         "attribute.\n", true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	             /* commented out to keep the compiler happy */
+		     // break;
+	     }
+	 }
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -12794,14 +12800,14 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the USER>
-         * SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry
-         */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the USER>
+	 * SPREADSHEET-VARIABLE-DECLARATIONS> a-list entry 
+	 */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -12813,21 +12819,21 @@ public class MacshapaODBReader
             }
         }
 
-        /* finally, consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* Since we are cleaning up any excess values in the
-                 * spreadsheet variable declarations attribute, this else
-                 * clause is unreachable at present.  Should we choose to
-                 * drop the above attempt at error recovery, this clause
-                 * will again become reachable.
-                 */
+	/* finally, consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		/* Since we are cleaning up any excess values in the 
+		 * spreadsheet variable declarations attribute, this else 
+		 * clause is unreachable at present.  Should we choose to 
+		 * drop the above attempt at error recovery, this clause 
+		 * will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "The closing parenthesis was missing from the USER> " +
@@ -12844,31 +12850,31 @@ public class MacshapaODBReader
      *
      * parse_s_var_def()
      *
-     * This method parses a spreadsheet variable definition.  The productions
-     * generating a spreadsheet variable definition are given below:
-     *
+     * This method parses a spreadsheet variable definition.  The productions 
+     * generating a spreadsheet variable definition are given below: 
+     *        
      *     <s_var_def> --> '(' <s_var_name> <s_var_def_alist> ')'
-     *
+     *        
      *     <s_var_def_alist> --> '(' <s_var_def_attributes> ')'
-     *
+     *        
      *     <s_var_def_attributes> --> { <s_var_def_cells_attribute>
      *                                  [<s_var_def_vocab_attribute>] }
-     *
+     *        
      *     <s_var_def_cells_attribute> --> '(' 'CELLS>' <s_var_cell_list> ')'
-     *
+     *        
      *     <s_var_cell_list> --> '(' (<s_var_cell>)* ')'
-     *
+     *        
      *     <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                            <s_var_cell_offset_attribute>
      *                            (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -12880,35 +12886,35 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                              |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
-     *
+     *        
      *     <s_var_def_vocab_attribute> --> '(' VOCAB> <vocab_list> ')'
-     *
+     *        
      *     <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/15/08
+     *                                              - 6/15/08
      *
      * Parameters:
      *
@@ -12923,37 +12929,36 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_s_var_def()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_def()";
-        boolean done;
-        boolean excess_values;
+	final String mName = "macshapa_odb_reader::parse_s_var_def()";
+	boolean done;
+	boolean excess_values;
         DataColumn s_var_col = null;
         long s_var_col_ID = DBIndex.INVALID_ID;
         long s_var_mve_ID = DBIndex.INVALID_ID;
         MatrixVocabElement.MatrixType s_var_type =
                 MatrixVocabElement.MatrixType.UNDEFINED;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the spreadsheet variable definition */
 
-        /* parse the spreadsheet variable definition */
-
-        /* first parse the leading left parenthesis */
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
         /* parse the spreadsheet variable name */
         if ( ! this.abort_parse )
@@ -12967,61 +12972,61 @@ public class MacshapaODBReader
                         "Will coerce the name to a valid spreadsheet " +
                         "variable name.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        this.l0_tok.coerce_symbol_token_to_spreadsheet_variable_name();
-                    }
-                }
+		    if ( ! this.abort_parse )
+		    {
+			this.l0_tok.coerce_symbol_token_to_spreadsheet_variable_name();
+		    }
+		}
 
-                /* Test to see if the target spreadsheet variable has been
+                /* Test to see if the target spreadsheet variable has been 
                  * declared, and load its ID into s_var_ID if it has.
                  */
                 if ( this.db.colNameInUse(this.l0_tok.str.toString()) )
                 {
-                    /* the target spreadsheet variable exists -- get a copy of
+                    /* the target spreadsheet variable exists -- get a copy of 
                      * it and read off the needed information.
                      */
                     s_var_col = this.db.getDataColumn(this.l0_tok.str.toString());
-
+                    
                     /* the target data column exists -- look it up and get its
                      * ID
                      */
                     s_var_col_ID = s_var_col.getID();
-
+                    
                     if ( s_var_col_ID == DBIndex.INVALID_ID )
                     {
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "s_var_col_ID invalid?!?");
                     }
 
                     s_var_type = s_var_col.getItsMveType();
-
+                    
                     if ( s_var_type == MatrixVocabElement.MatrixType.UNDEFINED )
                     {
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "s_var_type undefined?!?");
                     }
-
+                    
                     s_var_mve_ID = s_var_col.getItsMveID();
-
+                    
                     if ( s_var_mve_ID == DBIndex.INVALID_ID )
                     {
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "s_var_mve_ID invalid?!?");
                     }
                 }
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-            else /* we shouldn't have been called unless the next token is a symbol */
-            {
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != SYMBOL_TOK.");
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	    else /* we shouldn't have been called unless the next token is a symbol */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != SYMBOL_TOK.");
+	    }
+	}
 
         /* read the a-list associated with the spreadsheet variable declaration */
         if ( ! this.abort_parse )
@@ -13040,12 +13045,12 @@ public class MacshapaODBReader
                             "The definition of the undeclared " +
                             "spreadsheet variable will be discarded.\n");
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                    }
-                    break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok,
@@ -13068,11 +13073,11 @@ public class MacshapaODBReader
                             "The spreadsheet variable definition will " +
                             "be discarded.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -13081,48 +13086,48 @@ public class MacshapaODBReader
                         true, true);
                     break;
 
-                 default:
-                     throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                     /* commented out to keep the compiler happy */
-                     // break;
-             }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	             /* commented out to keep the compiler happy */
+		     // break;
+	     }
+	}
 
-        /* discard any excess values & consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            done = false;
-            excess_values = false;
+	/* discard any excess values & consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    done = false;
+	    excess_values = false;
 
-            while ( ( ! this.abort_parse ) &&
-                    ( ! done ) )
-            {
-                switch ( (this.l0_tok).code )
-                {
-                    case R_PAREN_TOK:
-                        done = true;
-                        break;
+	    while ( ( ! this.abort_parse ) && 
+		    ( ! done ) )
+	    {
+		 switch ( (this.l0_tok).code )
+		 {
+		    case R_PAREN_TOK:
+			done = true;
+			break;
 
-                    case L_PAREN_TOK:
-                        excess_values = true;
-                        parse_arbitrary_list();
-                        break;
+		    case L_PAREN_TOK:
+			excess_values = true;
+			parse_arbitrary_list();
+			break;
 
-                    case ERROR_TOK:
-                    case SYMBOL_TOK:
-                    case INT_TOK:
-                    case FLOAT_TOK:
-                    case STRING_TOK:
-                    case BOOL_TOK:
-                    case ALIST_LABEL_TOK:
-                    case PRIVATE_VAL_TOK:
-                    case SETF_TOK:
-                    case DB_VAR_TOK:
-                    case QUOTE_TOK:
-                        excess_values = true;
-                        get_next_token();
-                        break;
+		    case ERROR_TOK:
+		    case SYMBOL_TOK:
+		    case INT_TOK:
+		    case FLOAT_TOK:
+		    case STRING_TOK:
+		    case BOOL_TOK:
+		    case ALIST_LABEL_TOK:
+		    case PRIVATE_VAL_TOK:
+		    case SETF_TOK:
+		    case DB_VAR_TOK:
+		    case QUOTE_TOK:
+			excess_values = true;
+			get_next_token();
+			break;
 
                     case EOF_TOK:
                         done = true;
@@ -13131,13 +13136,13 @@ public class MacshapaODBReader
                             "definition.\n", true, true);
                         break;
 
-                    default:
-                        throw new SystemErrorException(mName +
-                            "Encountered unknown token type.");
+		    default:
+			throw new SystemErrorException(mName + 
+				"Encountered unknown token type.");
                         /* commented out to keep the compiler happy */
-                        // break;
-                }
-            }
+			// break;
+		 }
+	    }
 
             if ( ( ! this.abort_parse ) &&
                  ( done ) && ( excess_values ) )
@@ -13147,21 +13152,21 @@ public class MacshapaODBReader
             }
         }
 
-        /* finally, consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                throw new SystemErrorException(mName +
-                    "This else clause should be unreachable.");
-            }
-        }
+	/* finally, consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		throw new SystemErrorException(mName + 
+			"This else clause should be unreachable.");
+	    }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_def() */
 
@@ -13170,30 +13175,30 @@ public class MacshapaODBReader
      *
      * parse_s_var_def_alist()
      *
-     * This method parses the a-list associated with a spreadsheet variable
-     * definition.  The productions generating the spreadsheet variable
+     * This method parses the a-list associated with a spreadsheet variable 
+     * definition.  The productions generating the spreadsheet variable 
      * definition a-list are given below:
-     *
+     *        
      *     <s_var_def_alist> --> '(' <s_var_def_attributes> ')'
-     *
+     *        
      *     <s_var_def_attributes> --> { <s_var_def_cells_attribute>
      *                                  [<s_var_def_vocab_attribute>] }
-     *
+     *        
      *     <s_var_def_cells_attribute> --> '(' 'CELLS>' <s_var_cell_list> ')'
-     *
+     *        
      *     <s_var_cell_list> --> '(' (<s_var_cell>)* ')'
-     *
+     *        
      *     <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                            <s_var_cell_offset_attribute>
      *                            (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -13205,40 +13210,40 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                              |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
-     *
+     *        
      *     <s_var_def_vocab_attribute> --> '(' VOCAB> <vocab_list> ')'
-     *
+     *        
      *     <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *     <vocab_entry> --> <pred_name>
      *
-     * Note that when parse_s_var_def_alist() is called, we are
+     * Note that when parse_s_var_def_alist() is called, we are 
      * guaranteed that the spreadsheet variable has been declared, and that
      * s_var_ptr parameter pointes to the MacSHAPA Variable data structure
      * associated with the spreadsheet variable.
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13246,13 +13251,13 @@ public class MacshapaODBReader
      *          which we will be loading the spreadsheet variable definition.
      *          This ID is used when inserting cells into the DataColumn.
      *
-     *    - s_var_type: Instance of matrixType indicating the type of the
-     *          spreadsheet variable.  This value is used primarily for
+     *    - s_var_type: Instance of matrixType indicating the type of the 
+     *          spreadsheet variable.  This value is used primarily for 
      *          sanity checking.
      *
      *    - s_var_mve_ID: ID assigned to the MatrixVocabElement describing
      *          the structure of the DataColumn into which the spreadsheet
-     *          variable is being loaded.
+     *          variable is being loaded.  
      *
      * Returns:  Void.
      *
@@ -13265,34 +13270,33 @@ public class MacshapaODBReader
     private void parse_s_var_def_alist(long s_var_col_ID,
                                        MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_def_alist()";
-        boolean done;
-        boolean have_cells;
-        boolean have_vocab;
+	final String mName = "macshapa_odb_reader::parse_s_var_def_alist()";
+	boolean done;
+	boolean have_cells;
+	boolean have_vocab;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-        else if ( s_var_col_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_col_ID is invalid on entry.");
-        }
-        else if ( s_var_mve_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_mve_ID is invalid on entry.");
-        }
-
-        /* parse the spreadsheet variable definition a-list */
-
-        /* first parse the leading left parenthesis */
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	else if ( s_var_col_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_col_ID is invalid on entry.");
+	}
+	else if ( s_var_mve_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_mve_ID is invalid on entry.");
+	}
+	
+	/* parse the spreadsheet variable definition a-list */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -13316,36 +13320,36 @@ public class MacshapaODBReader
                  * may.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        done       = false;
-        have_cells = false;
-        have_vocab = false;
+	done       = false;
+	have_cells = false;
+	have_vocab = false;
 
-        /* now parse the a-list assocated with the spreadsheet variable
-         * definition
-         */
-         while ( ( ! this.abort_parse ) &&
-                 ( ! done ) )
-         {
-             if ( (this.l0_tok).code == L_PAREN_TOK )
-             {
-                 if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-                 {
-                    switch ( (this.l1_tok).aux )
-                    {
-                        case CELLS_LABEL:
-                            if ( ! have_cells )
-                            {
-                                have_cells = true;
-                                parse_s_var_def_cells_attribute(s_var_col_ID,
+	/* now parse the a-list assocated with the spreadsheet variable 
+	 * definition 
+	 */
+	 while ( ( ! this.abort_parse ) && 
+		 ( ! done ) )
+	{
+	     if ( (this.l0_tok).code == L_PAREN_TOK )
+	     {
+		 if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+		 {
+		     switch ( (this.l1_tok).aux )
+		     {
+			case CELLS_LABEL:
+			    if ( ! have_cells )
+			    {
+				have_cells = true;
+				parse_s_var_def_cells_attribute(s_var_col_ID, 
                                                                 s_var_type,
                                                                 s_var_mve_ID);
                             }
@@ -13356,19 +13360,19 @@ public class MacshapaODBReader
                                         "Duplicate CELLS> entry in a " +
                                         "spreadsheet variable definition.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
-                        case VOCAB_LABEL:
-                            if ( ! have_vocab )
-                            {
-                                have_vocab = true;
+			case VOCAB_LABEL:
+			    if ( ! have_vocab )
+			    {
+				have_vocab = true;
 
-                                if ( ( s_var_type ==
+				if ( ( s_var_type ==
                                        MatrixVocabElement.MatrixType.MATRIX ) ||
                                      ( s_var_type ==
                                        MatrixVocabElement.MatrixType.PREDICATE ) )
@@ -13395,12 +13399,12 @@ public class MacshapaODBReader
                                         "Duplicate VOCAB> entry in a " +
                                         "spreadsheet variable definition.\n");
 
-                                if ( ! this.abort_parse )
-                                {
-                                     parse_unknown_alist_entry();
-                                }
-                            }
-                            break;
+				if ( ! this.abort_parse )
+				{
+				     parse_unknown_alist_entry();
+				}
+			    }
+			    break;
 
                         default:
                             post_warning_message(this.l1_tok,
@@ -13448,14 +13452,14 @@ public class MacshapaODBReader
                         "The atom was detected in a spreadsheet variable " +
                         "definition a-list.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	}
 
-        /* check for missing required attributes. */
+	/* check for missing required attributes. */
 
         if ( ( ! this.abort_parse ) &&
              ( ! have_cells ) )
@@ -13474,7 +13478,7 @@ public class MacshapaODBReader
                 "matrix variable definition?\n");
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_def_alist() */
 
@@ -13484,24 +13488,24 @@ public class MacshapaODBReader
      * parse_s_var_def_cells_attribute()
      *
      * This method parses a CELLS> attribute in the context of a
-     * spreadsheet variable definition.  This attribute is generated by the
+     * spreadsheet variable definition.  This attribute is generated by the 
      * following productions:
-     *
+     *        
      *     <s_var_def_cells_attribute> --> '(' 'CELLS>' <s_var_cell_list> ')'
-     *
+     *        
      *     <s_var_cell_list> --> '(' (<s_var_cell>)* ')'
-     *
+     *        
      *     <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                            <s_var_cell_offset_attribute>
      *                            (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -13513,29 +13517,29 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                              |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13543,13 +13547,13 @@ public class MacshapaODBReader
      *          which we will be loading the spreadsheet variable definition.
      *          This ID is used when inserting cells into the DataColumn.
      *
-     *    - s_var_type: Instance of matrixType indicating the type of the
-     *          spreadsheet variable.  This value is used primarily for
+     *    - s_var_type: Instance of matrixType indicating the type of the 
+     *          spreadsheet variable.  This value is used primarily for 
      *          sanity checking.
      *
      *    - s_var_mve_ID: ID assigned to the MatrixVocabElement describing
      *          the structure of the DataColumn into which the spreadsheet
-     *          variable is being loaded.
+     *          variable is being loaded.  
      *
      * Returns:  void.
      *
@@ -13562,75 +13566,74 @@ public class MacshapaODBReader
     private void parse_s_var_def_cells_attribute(long s_var_col_ID,
                                        MatrixVocabElement.MatrixType s_var_type,
                                        long s_var_mve_ID)
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_def_cells_attribute()";
-        final String missing_cells_list_mssg =
-            "A CELLS> attribute appears not to contain a value.  " +
-            "Attribute ignored.\n";
-        final String cells_list_type_mismatch_mssg =
-            "The value of a CELLS> attribute must be a list of " +
-            "spreadsheet variable cells.  Attribute ignored.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_def_cells_attribute()";
+	final String missing_cells_list_mssg = 
+		"A CELLS> attribute appears not to contain a value.  " +
+		"Attribute ignored.\n";
+	final String cells_list_type_mismatch_mssg = 
+		"The value of a CELLS> attribute must be a list of " +
+		"spreadsheet variable cells.  Attribute ignored.\n";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	if ( s_var_col_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_col_ID == invalid on entry.");
+	}
+	
+	if ( s_var_mve_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_mve_ID == invalid on entry.");
+	}
+	
+	/* parse the formal argument list attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        if ( s_var_col_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_col_ID == invalid on entry.");
-        }
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        if ( s_var_mve_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_mve_ID == invalid on entry.");
-        }
-
-        /* parse the formal argument list attribute */
-
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == CELLS_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token CELLS> */
-            {
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == CELLS_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token CELLS> */
+	    {
                 throw new SystemErrorException(mName + "this.l0_tok != CELLS>.");
-            }
-        }
+	    }
+	}
 
-        /* read the value associated with the a-list entry & discard any
-         * excess values
-         */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    parse_s_var_cell_list(s_var_col_ID, s_var_type, s_var_mve_ID);
-                    break;
+	/* read the value associated with the a-list entry & discard any 
+	 * excess values 
+	 */
+	if ( ! this.abort_parse )
+	{
+	     switch ( (this.l0_tok).code )
+	     {
+		case L_PAREN_TOK:
+		    parse_s_var_cell_list(s_var_col_ID, s_var_type, s_var_mve_ID);
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -13652,11 +13655,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                              cells_list_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -13665,13 +13668,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -13684,12 +13687,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the CELLS> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the CELLS> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -13700,20 +13703,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the cells list
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the cells list
+		 * attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok,
                         RIGHT_PAREN_EXPECTED_WARN,
@@ -13722,7 +13725,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_def_cells_attribute() */
 
@@ -13732,38 +13735,38 @@ public class MacshapaODBReader
      * parse_s_var_def_list()
      *
      * This method parses a (possibly empty) list of spreadsheet variable
-     * definitions.  Structurally, this list is simply a (possibly empty) list
+     * definitions.  Structurally, this list is simply a (possibly empty) list 
      * of lists.  The production generating it is given below:
      *
      *     <s_var_def_list> --> '(' (<s_var_def)* ')'
      *
      * In reading this function, the following productions for <s_var_def> are
      * also useful, as they are used in error detection & recovery.  Note
-     * however that these productions are not parsed in this function, but
+     * however that these productions are not parsed in this function, but 
      * rather in parse_s_var_def() and its decendants.
-     *
+     *        
      *     <s_var_def> --> '(' <s_var_name> <s_var_def_alist> ')'
-     *
+     *        
      *     <s_var_def_alist> --> '(' <s_var_def_attributes> ')'
-     *
+     *        
      *     <s_var_def_attributes> --> { <s_var_def_cells_attribute>
      *                                 [<s_var_def_vocab_attribute>] }
-     *
+     *        
      *     <s_var_def_cells_attribute> --> '(' 'CELLS>' <s_var_cell_list> ')'
-     *
+     *        
      *     <s_var_cell_list> --> '(' (<s_var_cell>)* ')'
-     *
+     *        
      *     <s_var_cell> --> '(' { <s_var_cell_onset_attribute>
      *                            <s_var_cell_offset_attribute>
      *                            (<s_var_cell_value_attribute>)+ } ')'
-     *
+     *        
      *     <s_var_cell_onset_attribute> --> '(' 'ONSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_offset_attribute> --> '(' 'OFFSET>' <integer> ')'
-     *
+     *        
      *     <s_var_cell_value_attribute> --> '(' <formal_arg> <cell_value> ')'
-     *
-     *     <cell_value> -->
+     *        
+     *     <cell_value> --> 
      *                <text_cell_value>    (* if <s_var_type> == <<TEXT>> *)
      *                |
      *                <nominal_cell_value> (* if <s_var_type> == <<NOMINAL>> *)
@@ -13775,35 +13778,35 @@ public class MacshapaODBReader
      *                <pred_cell_value>    (* if <s_var_type> == <<PREDICATE>> *)
      *                |
      *                <matrix_cell_value>  (* if <s_var_type> == <<MATRIX>> *)
-     *
+     *        
      *     <text_cell_value> --> <text_quote_string>
-     *
-     *     <nominal_cell_value> --> <nominal>
+     *        
+     *     <nominal_cell_value> --> <nominal> 
      *                              |
      *                              '|<val>|'  (* if the nominal is undefined *)
-     *
+     *        
      *     <integer_cell_value> --> <integer>
-     *
+     *        
      *     <float_cell_value --> <float>
-     *
+     *        
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     *        
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     *        
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
+     *        
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
+     *        
      *     <matrix_cell_value> --> <pred_arg>
-     *
+     *        
      *     <s_var_def_vocab_attribute> --> '(' VOCAB> <vocab_list> ')'
-     *
+     *        
      *     <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13818,22 +13821,21 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_s_var_def_list()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_s_var_def_list()";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_s_var_def_list()";
+	boolean done;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
-        /* parse the spreadsheet variables declarations list */
-
-        /* first parse the leading left parenthesis */
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the spreadsheet variables declarations list */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -13858,17 +13860,17 @@ public class MacshapaODBReader
                  * light below.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* parse the spreadsheet variables declarations list */
-        done = false;
+	/* parse the spreadsheet variables declarations list */
+	done = false;
 
         while ( ( ! this.abort_parse ) && ( ! done ) )
         {
@@ -13884,17 +13886,17 @@ public class MacshapaODBReader
                         post_warning_message(this.l1_tok, ALIEN_LIST_IN_S_VAR_DEF_LIST_WARN,
                                       null);
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                    }
-                    break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+		    }
+		    break;
 
-                case R_PAREN_TOK:
-                    done = true;
-                    get_next_token();
-                    break;
+		case R_PAREN_TOK:
+		    done = true;
+		    get_next_token();
+		    break;
 
                 case EOF_TOK:
                     done = true;
@@ -13918,22 +13920,22 @@ public class MacshapaODBReader
                             ALIEN_ATOM_IN_S_VAR_DEF_LIST_WARN,
                             null);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
-                 default:
-                     throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                     /* commented out to keep the compiler happy */
-                     // break;
-            }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	             /* commented out to keep the compiler happy */
+		     // break;
+	    }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_def_list() */
 
@@ -13942,14 +13944,14 @@ public class MacshapaODBReader
      *
      * parse_s_var_defs_attribute()
      *
-     * This method parses the spread sheet variable definitions attribute
-     * in the USER> a-list.  Structurally, this attribute is simply an a-list
+     * This method parses the spread sheet variable definitions attribute 
+     * in the USER> a-list.  Structurally, this attribute is simply an a-list 
      * entry with a list value.  The production generating it is given below.
      *
-     *     <s_var_defs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DEFINITIONS>'
+     *     <s_var_defs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DEFINITIONS>' 
      *                                    <s_var_def_list> ')'
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -13964,64 +13966,62 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private void parse_s_var_defs_attribute()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_defs_attribute()";
-        final String value_missing_mssg =
-            "The USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry " +
-            "doesn't seem to contain a value.\n";
-        final String type_mismatch_mssg =
-            "The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> " +
-            "a-list entry must be a (possibly empty) list of spreadsheet " +
-            "variable definitions.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_defs_attribute()";
+	final String value_missing_mssg =
+		"The USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry " +
+		"doesn't seem to contain a value.\n";
+	final String type_mismatch_mssg =
+		"The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> " +
+		"a-list entry must be a (possibly empty) list of spreadsheet " +
+		"variable definitions.\n"; 
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse true on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse true on entry");
+	}
+	
+	/* parse the spreadsheet variables definitions attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the spreadsheet variables definitions attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == SPREADSHEET_VARIABLE_DEFINITIONS_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* system error - we shouldn't have been called unless the next */
+	    {    /* token is the SPREADSHEET_VARIABLE_DEFINITIONS> a-list tag.   */
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != \"SPREADSHEET-VARIABLE-DEFINITIONS>\".");
+	    }
+	}
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == SPREADSHEET_VARIABLE_DEFINITIONS_LABEL )
-               )
-            {
-                get_next_token();
-            }
-            else /* system error - we shouldn't have been called unless the next */
-            {    /* token is the SPREADSHEET_VARIABLE_DEFINITIONS> a-list tag.   */
-
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != \"SPREADSHEET-VARIABLE-DEFINITIONS>\".");
-            }
-        }
-
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    parse_s_var_def_list();
-                    break;
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    parse_s_var_def_list();
+		     break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -14043,11 +14043,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -14055,13 +14055,13 @@ public class MacshapaODBReader
                         "attribute.\n", true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -14074,12 +14074,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the MAX-WARNINGS> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the MAX-WARNINGS> a-list entry */
+	if ( ! this.abort_parse )
+	{
+	     if ( (this.l0_tok).code != R_PAREN_TOK )
+	     {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -14091,21 +14091,21 @@ public class MacshapaODBReader
             }
         }
 
-        /* finally, consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* Since we are cleaning up any excess values in the spreadsheet
-                 * variable definitions attribute, this else clause is
-                 * unreachable at present.  Should we choose to drop the above
-                 * attempt at error recovery, this clause will again become
-                 * reachable.
-                 */
+	/* finally, consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		/* Since we are cleaning up any excess values in the spreadsheet
+		 * variable definitions attribute, this else clause is 
+		 * unreachable at present.  Should we choose to drop the above 
+		 * attempt at error recovery, this clause will again become 
+		 * reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "The closing parenthesis was missing from the USER> " +
@@ -14113,7 +14113,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_defs_attribute() */
 
@@ -14124,20 +14124,20 @@ public class MacshapaODBReader
      *
      * This method parses a VOCAB> attribute, and adds the predicates in the
      * vocab list to the local vocabulary of the spreadsheet variable pointed
-     * to by s_var_ptr.  This attribute is generated by the following
+     * to by s_var_ptr.  This attribute is generated by the following 
      * productions:
-     *
+     *        
      *     <s_var_def_vocab_attribute> --> '(' VOCAB> <vocab_list> ')'
-     *
+     *        
      *     <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *     <vocab_entry> --> <pred_name>
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
-     *	  - s_var_ID:  ID of the spreadsheet variable whose vocab
+     *	  - s_var_ID:  ID of the spreadsheet variable whose vocab  
      *          attribute we are reading.
      *
      * Returns:  Void.
@@ -14149,58 +14149,58 @@ public class MacshapaODBReader
      **************************************************************************/
 
     private void parse_s_var_def_vocab_attribute(long s_var_col_ID)
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_def_vocab_attribute()";
-        final String missing_vocab_list_mssg =
-            "A VOCAB> attribute appears not to contain a value.  The " +
-            "attribute will be ignored.\n";
-        final String vocab_list_type_mismatch_mssg =
-            "The value of a VOCAB> attribute must be a list of predicate " +
-            "names.  The attribute will be ignored.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_def_vocab_attribute()";
+	final String missing_vocab_list_mssg = 
+		"A VOCAB> attribute appears not to contain a value.  The " +
+		"attribute will be ignored.\n";
+	final String vocab_list_type_mismatch_mssg = 
+		"The value of a VOCAB> attribute must be a list of predicate " +
+		"names.  The attribute will be ignored.\n";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+        
         if ( s_var_col_ID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "s_var_col_ID invalid on entry.");
         }
+	
+	/* parse the vocab attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the vocab attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == VOCAB_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is VOCAB> */
-            {
-                throw new SystemErrorException(mName +
-                        "this.l0_tok != VOCAB>.");
-            }
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == VOCAB_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is VOCAB> */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != VOCAB>.");
+	    }
+	}
 
         /* read the value associated with the a-list entry & discard any excess values */
         if ( ! this.abort_parse )
@@ -14212,9 +14212,9 @@ public class MacshapaODBReader
                              missing_vocab_list_mssg);
                     break;
 
-                case L_PAREN_TOK:
-                    parse_vocab_list(s_var_col_ID);
-                    break;
+		case L_PAREN_TOK:
+		    parse_vocab_list(s_var_col_ID);
+		    break;
 
                 case BOOL_TOK:
                 case ERROR_TOK:
@@ -14231,11 +14231,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             vocab_list_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -14243,13 +14243,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -14261,14 +14261,14 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the VARIABLE-LENGTH>
-             * a-list entry
-             */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the VARIABLE-LENGTH> 
+         * a-list entry 
+         */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -14279,27 +14279,27 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the vocab
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error
-                 * recovery, this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the vocab
+		 * attribute, this else clause is unreachable at present. 
+		 * Should we choose to drop the above attempt at error 
+		 * recovery, this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a VOCAB> attribute.\n");
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_s_var_def_vocab_attribute() */
 
@@ -14308,19 +14308,19 @@ public class MacshapaODBReader
      *
      * parse_s_var_formal_arg_list()
      *
-     * This method parses a list of formal argument symbol tokens in the
+     * This method parses a list of formal argument symbol tokens in the 
      * context of spreadsheet variable formal argument list.  Such
      * list can be generated by the following productions.
      *
-     *     <s_var_formal_arg_list_attribute> -->
+     *     <s_var_formal_arg_list_attribute> --> 
      *                '(' 'FORMAL-ARG-LIST>' <s_var_formal_arg_list> ')'
      *
-     *     <s_var_formal_arg_list> -->
-     *                '(' '|<ord>|' '|<onset>|' '|<offset>|' '|<val>|' ')'
+     *     <s_var_formal_arg_list> --> 
+     *                '(' '|<ord>|' '|<onset>|' '|<offset>|' '|<val>|' ')' 
      *                |
      *                '(' '|<ord>|' '|<onset>|' '|<offset>|' (<formal_arg>)+ ')'
      *
-     * Note that the second alternative in the production for
+     * Note that the second alternative in the production for 
      * <s_var_formal_arg_list> can only occur in matrix spreadsheet variables.
      *
      * In addition to parsing the formal argument list, this function must
@@ -14330,7 +14330,7 @@ public class MacshapaODBReader
      * If the formal argument list is empty, the function writes a default
      * formal argument list to the insertion buffer.
      *
-     *                                                 JRM - 6/18/08
+     *                                                  - 6/18/08
      *
      * Parameters:
      *
@@ -14343,62 +14343,62 @@ public class MacshapaODBReader
      *
      *      - None.
      *
-     **************************************************************************/
+     *******************************************************************************/
 
     private Vector<String> parse_s_var_formal_arg_list()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_formal_arg_list()";
-        final String overflow_mssg =
-            "Overflow occured in a spreadsheet variable formal " +
-            "argument list.\n";
-        final String bad_first_farg_mssg =
-            "The first argument in a spreadsheet variable formal " +
-            "argument list must be \"|<ord>|\".  First argument forced " +
-            "to \"|<ord>|\".\n";
-        final String bad_second_farg_mssg =
-            "The second argument in a spreadsheet variable formal " +
-            "argument list must be \"|<onset>|\".  Second argument " +
-            "forced to \"|<onset>|\".\n";
-        final String bad_third_farg_mssg =
-            "The third argument in a spreadsheet variable formal argument " +
-            "list must be \"|<offset>|\".  Third argument forced to " +
-            "\"|<offset>|\".\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_formal_arg_list()";
+	final String overflow_mssg = 
+		"Overflow occured in a spreadsheet variable formal " +
+		"argument list.\n";
+	final String bad_first_farg_mssg =
+		"The first argument in a spreadsheet variable formal " +
+		"argument list must be \"|<ord>|\".  First argument forced " +
+		"to \"|<ord>|\".\n";
+	final String bad_second_farg_mssg =
+		"The second argument in a spreadsheet variable formal " +
+		"argument list must be \"|<onset>|\".  Second argument " +
+		"forced to \"|<onset>|\".\n";
+	final String bad_third_farg_mssg =
+		"The third argument in a spreadsheet variable formal argument " +
+		"list must be \"|<offset>|\".  Third argument forced to " +
+		"\"|<offset>|\".\n";
         String fargName;
-        boolean done;
+	boolean done;
         boolean duplicateArgName;
-        int arg_count;
+	int arg_count;
         int i;
         Vector<String> args = new Vector<String>();
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the data base body */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the data base body */
-
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	}
 
-        arg_count      = 0;
-        done           = false;
+	arg_count      = 0;
+	done           = false;
 
-        while ( ( ! this.abort_parse ) &&
-                ( ! done ) )
-        {
+        while ( ( ! this.abort_parse ) && 
+		 ( ! done ) )
+	{
             switch ( (this.l0_tok).code )
             {
                 case SYMBOL_TOK:
@@ -14414,10 +14414,10 @@ public class MacshapaODBReader
                                     bad_first_farg_mssg);
                             }
 
-                            if ( ! this.abort_parse )
-                            {
+			    if ( ! this.abort_parse )
+			    {
                                 args.add("<ord>");
-                            }
+			    }
 
                             arg_count++;
                         }
@@ -14431,10 +14431,10 @@ public class MacshapaODBReader
                                     bad_second_farg_mssg);
                             }
 
-                            if ( ! this.abort_parse )
-                            {
+			    if ( ! this.abort_parse )
+			    {
                                 args.add("<onset>");
-                            }
+			    }
 
                             arg_count++;
                         }
@@ -14448,18 +14448,18 @@ public class MacshapaODBReader
                                     bad_third_farg_mssg);
                             }
 
-                            if ( ! this.abort_parse )
-                            {
+			    if ( ! this.abort_parse )
+			    {
                                 args.add("<offset>");
-                            }
+			    }
 
-                            arg_count++;
-                        }
-                        else if ( arg_count == 3 ) /* if the argument != <val>, */
-                        {                          /* must be matrix.           */
+			    arg_count++;
+			}
+			else if ( arg_count == 3 ) /* if the argument != <val>, */
+			{                          /* must be matrix.           */
                             fargName = this.l0_tok.str.toString();
                             if ( ( fargName.compareTo("<ord>") == 0 ) ||
-                                 ( fargName.compareTo("<onset>") == 0 ) ||
+                                 ( fargName.compareTo("<onset>") == 0 ) || 
                                  ( fargName.compareTo("<offset>") == 0 ) )
                             {
                                 post_warning_message(this.l0_tok, DUP_FARG_WARN,
@@ -14471,14 +14471,14 @@ public class MacshapaODBReader
                                 args.add(fargName);
 
                                 arg_count++;
-                            }
-                        }
-                        else if ( arg_count >= 4 ) /* must be matrix */
-                        {
+			    }
+			}
+			else if ( arg_count >= 4 ) /* must be matrix */
+			{
                             fargName = this.l0_tok.str.toString();
                             i = 0;
                             duplicateArgName = false;
-
+                            
                             while ( ( i < arg_count ) &&
                                     ( ! duplicateArgName ) )
                             {
@@ -14494,9 +14494,9 @@ public class MacshapaODBReader
                                 post_warning_message(this.l0_tok, DUP_FARG_WARN,
                                         "Duplicate appeared in a spreadsheet " +
                                         "variable formal argument list.\n");
-                            }
-                            else
-                            {
+			    }
+			    else
+			    {
                                 args.add(fargName);
 
                                 arg_count++;
@@ -14518,21 +14518,21 @@ public class MacshapaODBReader
                     get_next_token();
                     break;
 
-                case R_PAREN_TOK:
-                    done = true;
-                    get_next_token();
-                    break;
+		case R_PAREN_TOK:
+		    done = true;
+		    get_next_token();
+		    break;
 
                 case L_PAREN_TOK:
                     post_warning_message(this.l0_tok,
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by a list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse ) 
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case INT_TOK:
@@ -14548,11 +14548,11 @@ public class MacshapaODBReader
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by an atom.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     done = true;
@@ -14561,13 +14561,13 @@ public class MacshapaODBReader
                         "formal argument list.\n", true, true);
                     break;
 
-                 default:
-                     throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                     /* commented out to keep the compiler happy */
-                     // break;
-             }
-        }
+		 default:
+		     throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	             /* commented out to keep the compiler happy */
+		     // break;
+	     }
+	}
 
         if ( ! this.abort_parse )
         {
@@ -14578,8 +14578,8 @@ public class MacshapaODBReader
                         "Formal argument list forced to \"(|<ord>| |<onset>| " +
                         "|<offset>| |<val>|)\".\n");
 
-                if ( ! this.abort_parse )
-                {
+		if ( ! this.abort_parse )
+		{
                     args = new Vector<String>();
                     args.add("<ord>");
                     args.add("<onset>");
@@ -14594,18 +14594,18 @@ public class MacshapaODBReader
                         "Formal argument list forced to \"(|<ord>| |<onset>| " +
                         "|<offset>| |<val>|)\".\n");
 
-                if ( ! this.abort_parse )
-                {
-                    args = new Vector<String>();
-                    args.add("<ord>");
-                    args.add("<onset>");
-                    args.add("<offset>");
-                    args.add("<val>");
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+                        args = new Vector<String>();
+                        args.add("<ord>");
+                        args.add("<onset>");
+                        args.add("<offset>");
+                        args.add("<val>");
+		}
+	    }
+	}
 
-        return(args);
+	return(args);
 
     } /* MacshapaODBReader::parse_s_var_formal_arg_list() */
 
@@ -14615,18 +14615,18 @@ public class MacshapaODBReader
      * parse_s_var_formal_arg_list_attribute()
      *
      * This method parses a FORMAL-ARG-LIST> attribute in the context of a
-     * spreadsheet variable declarations.  This attribute is generated by the
+     * spreadsheet variable declarations.  This attribute is generated by the 
      * following productions:
-     *
-     *            <s_var_formal_arg_list_attribute> -->
+     *        
+     *            <s_var_formal_arg_list_attribute> --> 
      *                '(' 'FORMAL-ARG-LIST>' <s_var_formal_arg_list> ')'
      *
-     *            <s_var_formal_arg_list> -->
-     *                '(' '|<ord>|' '|<onset>|' '|<offset>|' '|<val>|' ')'
+     *            <s_var_formal_arg_list> --> 
+     *                '(' '|<ord>|' '|<onset>|' '|<offset>|' '|<val>|' ')' 
      *                |
      *                '(' '|<ord>|' '|<onset>|' '|<offset>|' (<formal_arg>)+ ')'
      *
-     * Note that the second alternative in the production for
+     * Note that the second alternative in the production for 
      * <s_var_formal_arg_list> can only occur in matrix spreadsheet variables.
      * If this alternative occurs, the function returns true.  Otherwise the
      * function returns false.
@@ -14635,13 +14635,13 @@ public class MacshapaODBReader
      * or of inapropriate type, this function loads a default formal argument
      * list in to a vector of String and returns it.
      *
-     *                                                    JRM - 9/21/95
+     *                                                     - 9/21/95
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns: a Vector of String containing the argument list of the
+     * Returns: a Vector of String containing the argument list of the 
      *          spread sheet variable.
      *
      * Changes:
@@ -14651,80 +14651,80 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private Vector<String> parse_s_var_formal_arg_list_attribute()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_s_var_formal_arg_list_attribute()";
-        final String missing_farg_list_mssg =
-            "A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
-            "Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).\n";
-        final String farg_list_type_mismatch_mssg =
-            "The value of the FORMAL-ARG-LIST> attribute must be a list " +
-            "of formal arguments.  Value forced to (|<ord>| |<onset>| " +
-            "|<offset>| |<val>|).\n";
-        final String overflow_mssg =
-            "Overflow occured in a spreadsheet variable declaration " +
-            "formal argument list.\n";
+	final String mName = 
+		"macshapa_odb_reader::parse_s_var_formal_arg_list_attribute()";
+	final String missing_farg_list_mssg = 
+		"A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
+		"Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).\n";
+	final String farg_list_type_mismatch_mssg = 
+		"The value of the FORMAL-ARG-LIST> attribute must be a list " +
+		"of formal arguments.  Value forced to (|<ord>| |<onset>| " +
+		"|<offset>| |<val>|).\n";
+	final String overflow_mssg = 
+		"Overflow occured in a spreadsheet variable declaration " +
+		"formal argument list.\n";
         Vector<String> args = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the formal argument list attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the formal argument list attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse ) 
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is an a-list tag */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != FORMAL-ARG-LIST>.");
+	    }
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-             ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is an a-list tag */
-            {
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != FORMAL-ARG-LIST>.");
-            }
-        }
-
-        /* read the value associated with the a-list entry & discard any excess values */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    args = parse_s_var_formal_arg_list();
-                    break;
+	/* read the value associated with the a-list entry & discard any excess values */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    args = parse_s_var_formal_arg_list();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
                              missing_farg_list_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
+		    if ( ! this.abort_parse )
+		    {
                         args = new Vector<String>();
                         args.add("<ord>");
                         args.add("<onset>");
                         args.add("<offset>");
                         args.add("<val>");
-                    }
-                    break;
+		    }
+		    break;
 
                 case BOOL_TOK:
                 case ERROR_TOK:
@@ -14741,20 +14741,20 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             farg_list_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
+		    if ( ! this.abort_parse )
+		    {
                         args = new Vector<String>();
                         args.add("<ord>");
                         args.add("<onset>");
                         args.add("<offset>");
                         args.add("<val>");
-                    }
+		    }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
 
                 case EOF_TOK:
@@ -14763,13 +14763,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -14782,14 +14782,14 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the FORMAL-ARG-LIST>
-         * a-list entry
-         */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the FORMAL-ARG-LIST> 
+	 * a-list entry 
+	 */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -14801,20 +14801,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the formal arg
-                 * list attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the formal arg
+		 * list attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a FORMAL-ARG-LIST> " +
@@ -14822,7 +14822,7 @@ public class MacshapaODBReader
             }
         }
 
-        return(args);
+	return(args);
 
     } /* MacshapaODBReader::parse_s_var_formal_arg_list_attribute() */
 
@@ -14832,19 +14832,19 @@ public class MacshapaODBReader
      * parse_s_var_type_attribute()
      *
      * This method parses a TYPE> attribute, which at present can only appear
-     * in the context of a spreadheet variable declaration or definition.  This
+     * in the context of a spreadheet variable declaration or definition.  This 
      * attribute is generated by the following productions:
-     *
+     *        
      *     <s_var_type_attribute> --> '(' 'TYPE>' <s_var_type> ')'
      *
-     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' |
+     *     <s_var_type> --> '<<TEXT>>' | '<<NOMINAL>>' | '<<INTEGER>>' | 
      *                      '<<FLOAT>>' | '<<PREDICATE>>' | '<<MATRIX>>'
      *
      * The function returns a MatrixVocabElement.MatrixType indicating the value
-     * of the TYPE> a-list entry, or the code for <<MATRIX>> if the value is
+     * of the TYPE> a-list entry, or the code for <<MATRIX>> if the value is 
      * either missing or of an inappropriate type.
      *
-     *                                             JRM - 6/18/08
+     *                                              - 6/18/08
      *
      * Parameters:
      *
@@ -14860,100 +14860,100 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private MatrixVocabElement.MatrixType parse_s_var_type_attribute()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshap_odb_reader::parse_s_var_type_attribute()";
-        final String missing_type_val_mssg =
-            "A TYPE> attribute appears not to contain a value.  " +
-            "Value forced to <<MATRIX>>.\n";
-        final String type_val_type_mismatch_mssg =
-            "The value of the TYPE> attribute must be a private value.  " +
-            "Value forced to <<MATRIX>>.\n";
-        MatrixVocabElement.MatrixType type;
+	final String mName = "macshap_odb_reader::parse_s_var_type_attribute()";
+	final String missing_type_val_mssg = 
+		"A TYPE> attribute appears not to contain a value.  " +
+		"Value forced to <<MATRIX>>.\n";
+	final String type_val_type_mismatch_mssg = 
+		"The value of the TYPE> attribute must be a private value.  " +
+		"Value forced to <<MATRIX>>.\n";
+	MatrixVocabElement.MatrixType type;
 
-        type = MatrixVocabElement.MatrixType.MATRIX;  /* default value --
-                                                       * overwritten if we read
-                                                       * a value from the db
+	type = MatrixVocabElement.MatrixType.MATRIX;  /* default value --
+                                                       * overwritten if we read 
+                                                       * a value from the db 
                                                        * file
                                                        */
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the private value associated with the attribute */
+	
+	/* first parse the leading left parenthesis */
+
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
+
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == TYPE_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is an a-list tag */
+	    {
+		throw new SystemErrorException(mName + "this.l0_tok != TYPE>.");
+	    }
         }
 
-        /* parse the private value associated with the attribute */
+	/* read the value associated with the a-list entry & discard any excess values */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case PRIVATE_VAL_TOK:
+		    switch ( (this.l0_tok).aux )
+		    {
+			case FLOAT_PVAL:
+			    type = MatrixVocabElement.MatrixType.FLOAT;
+			    break;
 
-        /* first parse the leading left parenthesis */
+			case INTEGER_PVAL:
+			    type = MatrixVocabElement.MatrixType.INTEGER;
+			    break;
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+			case MATRIX_PVAL:
+			    type = MatrixVocabElement.MatrixType.MATRIX;
+			    break;
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == TYPE_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is an a-list tag */
-            {
-                throw new SystemErrorException(mName + "this.l0_tok != TYPE>.");
-            }
-        }
+			case NOMINAL_PVAL:
+			    type = MatrixVocabElement.MatrixType.NOMINAL;
+			    break;
 
-        /* read the value associated with the a-list entry & discard any excess values */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case PRIVATE_VAL_TOK:
-                    switch ( (this.l0_tok).aux )
-                    {
-                        case FLOAT_PVAL:
-                            type = MatrixVocabElement.MatrixType.FLOAT;
-                            break;
+			case PREDICATE_PVAL:
+			    type = MatrixVocabElement.MatrixType.PREDICATE;
+			    break;
 
-                        case INTEGER_PVAL:
-                            type = MatrixVocabElement.MatrixType.INTEGER;
-                            break;
+			case TEXT_PVAL:
+			    type = MatrixVocabElement.MatrixType.TEXT;
+			    break;
 
-                        case MATRIX_PVAL:
-                            type = MatrixVocabElement.MatrixType.MATRIX;
-                            break;
+			default:
+			    /* if we add new private values, this will cease to 
+			     * be an automatic system error.
+			     */
 
-                        case NOMINAL_PVAL:
-                            type = MatrixVocabElement.MatrixType.NOMINAL;
-                            break;
-
-                        case PREDICATE_PVAL:
-                            type = MatrixVocabElement.MatrixType.PREDICATE;
-                            break;
-
-                        case TEXT_PVAL:
-                            type = MatrixVocabElement.MatrixType.TEXT;
-                            break;
-
-                        default:
-                            /* if we add new private values, this will cease to
-                             * be an automatic system error.
-                             */
-
-                            throw new SystemErrorException(mName +
-                                "(this.l0_tok).aux out of range.");
-                    }
-                    get_next_token();
-                    break;
+			    throw new SystemErrorException(mName + 
+				    "(this.l0_tok).aux out of range.");
+		    }
+		    get_next_token();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -14965,11 +14965,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             type_val_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		     if ( ! this.abort_parse )
+		     {
+			parse_arbitrary_list();
+		     }
+		     break;
 
                 case BOOL_TOK:
                 case ERROR_TOK:
@@ -14985,24 +14985,24 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             type_val_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                         "EOF in a TYPE> attribute.\n", true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	     }
+	 }
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -15014,12 +15014,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the TYPE> a-list entry */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the TYPE> a-list entry */
+	 if ( ! this.abort_parse )
+	 {
+	     if ( (this.l0_tok).code != R_PAREN_TOK )
+	     {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -15030,27 +15030,27 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* Since we are cleaning up any excess values in the type
-                 * attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* Since we are cleaning up any excess values in the type
+		 * attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a TYPE> attribute.\n");
             }
         }
 
-        return(type);
+	return(type);
 
     } /* MacshapaODBReader::parse_s_var_type_attribute() */
 
@@ -15059,10 +15059,10 @@ public class MacshapaODBReader
      *
      * parse_text_cell_value()
      *
-     * This method parses the value of a spreadsheet variable cell in the
+     * This method parses the value of a spreadsheet variable cell in the 
      * context of a text spreadsheet variable.  The production generating such
      * a cell value is given below:
-     *
+     *        
      *            <text_cell_value> --> <text_quote_string>
      *
      * If there are no type conflicts, the function simply creates a Matrix
@@ -15071,18 +15071,18 @@ public class MacshapaODBReader
      * reference to the newly created instance of Matrix.
      *
      * Type conficts are handled by coercing coercing the value to a string
-     * where convenient, and loading the text representation into the
-     * TextStringDataValue.  Where this is inconvenient, the value is discarded,
-     * and the TextStringDataValue is set to contain an empty string.
-     *
-     *                                                    JRM - 6/18/08
+     * where convenient, and loading the text representation into the 
+     * TextStringDataValue.  Where this is inconvenient, the value is discarded, 
+     * and the TextStringDataValue is set to contain an empty string.        
+     *        
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  As this function is
-     *          only called to parse the value of an integer cell, the
-     *          farg must be of type TEXT.
+     *          only called to parse the value of an integer cell, the 
+     *          farg must be of type TEXT. 
      *
      * Returns:  Void.
      *
@@ -15093,52 +15093,51 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private DataValue parse_text_cell_value(FormalArgument farg)
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_text_cell_value()";
-        final String overflow_mssg = "Overflow occured in a text cell value.\r";
+	final String mName = "macshapa_odb_reader::parse_text_cell_value()";
+	final String overflow_mssg = "Overflow occured in a text cell value.\r";
         String value = "";
         TextStringDataValue tsdv = null;
         Vector<DataValue> argList = null;
         Matrix m = null;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.TEXT )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a text string.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
-        /* try to parse the text cell value */
-
-        switch ( (this.l0_tok).code )
-        {
-            case STRING_TOK:
+	
+	/* try to parse the text cell value */
+	
+	switch ( (this.l0_tok).code )
+	{
+	    case STRING_TOK:
                 value = new String(this.l0_tok.str.toString());
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case INT_TOK:
             case FLOAT_TOK:
@@ -15154,16 +15153,16 @@ public class MacshapaODBReader
                         "Will force the text cell value to a text " +
                         "representation of the value.\n");
 
-                if ( ! this.abort_parse )
-                {
+		if ( ! this.abort_parse )
+		{
                     value = new String(this.l0_tok.str.toString());
-                }
+		}
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -15171,11 +15170,11 @@ public class MacshapaODBReader
                         "The value is a list, which will be discarded. " +
                         "Text cell value will be set to the empty string.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    parse_arbitrary_list();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    parse_arbitrary_list();
+		}
+		break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
@@ -15188,27 +15187,27 @@ public class MacshapaODBReader
                     "The value is an ill formed token.  Text cell value " +
                     "set to the empty string.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-                break;
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+		break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                            "EOF in a text cell value.\n", true, true);
                 break;
 
-            default:
-                throw new SystemErrorException(mName +
-                     "Encountered unknown token type.");
-                /* commented out to keep the compiler happy */
-                // break;
-        }
+	    default:
+		throw new SystemErrorException(mName + 
+			 "Encountered unknown token type.");
+	        /* commented out to keep the compiler happy */
+		// break;
+	}
 
         tsdv = new TextStringDataValue(this.db, farg.getID(), value);
 
-        return(tsdv);
+	return(tsdv);
 
     } /* MacshapaODBReader::parse_text_cell_value() */
 
@@ -15217,13 +15216,13 @@ public class MacshapaODBReader
      *
      * parse_user_alist()
      *
-     * This method parses the a-list associated with the user section of
+     * This method parses the a-list associated with the user section of 
      * the open database body.  Structurally, this list is simply a list of
      * a-list entries, each of which is a two element list consisting a an
      * a-list entry name and its assocated value.  The productions generating
      * the user section a-list are given below:
      *
-     *     <user_alist> --> '(' <preds_list_attribute>
+     *     <user_alist> --> '(' <preds_list_attribute> 
      *                          <s_var_decs_attribute>
      *                          <s_var_defs_attribute> ')'
      *
@@ -15234,13 +15233,13 @@ public class MacshapaODBReader
      *     <s_var_decs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DECLARATIONS>'
      *                                    <s_var_dec_list> ')'
      *
-     *     <s_var_defs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DEFINITIONS>'
+     *     <s_var_defs_attribute> --> '(' 'SPREADSHEET-VARIABLE-DEFINITIONS>' 
      *                                    <s_var_def_list> ')'
      *
      * Note that the attributes in the user alist must appear in the order
      * given, as each may employ definitions introduced in its predicessor.
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -15255,33 +15254,32 @@ public class MacshapaODBReader
      *******************************************************************************/
 
     private void parse_user_alist()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_user_alist()";
-        final String missing_entry_mssg_1 =
-            "PREDICATE-DEFINITIONS> a-list entry missing from the " +
-            "USER> a-list?";
-        final String missing_entry_mssg_2 =
-            "PREDICATE-DEFINITIONS> and/or " +
-            "SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry(s) missing " +
-            "from the USER> a-list?";
-        boolean done;
-        int next_tag_index; /* index into the expected_tag_codes array */
-        int expected_tag_codes[] = { PREDICATE_DEFINITIONS_LABEL,
-                             SPREADSHEET_VARIABLE_DECLARATIONS_LABEL,
-                         SPREADSHEET_VARIABLE_DEFINITIONS_LABEL};
+	final String mName = "macshapa_odb_reader::parse_user_alist()";
+	final String missing_entry_mssg_1 =
+		"PREDICATE-DEFINITIONS> a-list entry missing from the " +
+		"USER> a-list?";
+	final String missing_entry_mssg_2 =
+		"PREDICATE-DEFINITIONS> and/or " +
+		"SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry(s) missing " +
+		"from the USER> a-list?";
+	boolean done;
+	int next_tag_index; /* index into the expected_tag_codes array */
+	int expected_tag_codes[] = { PREDICATE_DEFINITIONS_LABEL, 
+			             SPREADSHEET_VARIABLE_DECLARATIONS_LABEL, 
+				     SPREADSHEET_VARIABLE_DEFINITIONS_LABEL};
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
-
-        /* parse the user alist */
-
-        /* first parse the leading left parenthesis */
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the user alist */
+	
+	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -15305,47 +15303,46 @@ public class MacshapaODBReader
                  * may.
                  */
 
-                get_next_token();
-            }
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+		get_next_token();
+	    }
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        done           = false;
-        next_tag_index = 0;
+	done           = false;
+	next_tag_index = 0;
 
-        while ( ( ! this.abort_parse ) &&
-            ( ! done ) )
-        {
-            if ( (this.l0_tok).code == L_PAREN_TOK )
-            {
-                if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-                {
-                    if ( ( next_tag_index < 3 ) &&
-                         ( (this.l1_tok).aux ==
-                           expected_tag_codes[next_tag_index] ) )
-                    {
-                        /* parse the alist entry */
-                        switch ( next_tag_index )
-                        {
-                            case 0: /* predicate definitions */
-                                parse_preds_list_attribute();
-                                break;
+	while ( ( ! this.abort_parse ) && 
+		( ! done ) )
+	{
+	    if ( (this.l0_tok).code == L_PAREN_TOK )
+	    {
+		if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+		{
+		    if ( ( next_tag_index < 3 ) && 
+			 ( (this.l1_tok).aux == expected_tag_codes[next_tag_index] ) )
+		    {
+			/* parse the alist entry */
+			switch ( next_tag_index )
+			{
+			    case 0: /* predicate definitions */
+				parse_preds_list_attribute();
+				break;
 
-                            case 1: /* spreadsheet variable declarations */
-                                parse_s_var_decs_attribute();
-                                break;
+			    case 1: /* spreadsheet variable declarations */
+				parse_s_var_decs_attribute();
+				break;
 
-                            case 2: /* spreadsheet variable definitions */
-                                parse_s_var_defs_attribute();
-                                break;
+			    case 2: /* spreadsheet variable definitions */
+				parse_s_var_defs_attribute();
+				break;
 
-                            default:
-                                throw new SystemErrorException(mName +
-                                    "next_tag_index out of range.");
+			    default:
+				throw new SystemErrorException(mName + 
+					"next_tag_index out of range.");
                                 /* commented out to keep the compiler happy */
                                 // break;
                         }
@@ -15363,19 +15360,19 @@ public class MacshapaODBReader
                                         "Duplicate USER> " +
                                         "PREDICATE-DEFINITIONS> entry\n");
 
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                else
-                                {
-                                    done = true;
-                                    throw new SystemErrorException(mName +
-                                        "This else clause should be " +
-                                        "unreachable.");
-                                }
-                                break;
+				    if ( ! this.abort_parse )
+				    {
+					 parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
+				    throw new SystemErrorException(mName + 
+					    "This else clause should be " + 
+					    "unreachable.");
+				}
+				break;
 
                             case SPREADSHEET_VARIABLE_DECLARATIONS_LABEL:
                                 if ( next_tag_index > 1 )
@@ -15386,14 +15383,14 @@ public class MacshapaODBReader
                                         "SPREADSHEET-VARIABLE-DECLARATIONS> " +
                                         "entry.\"\n");
 
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                else
-                                {
-                                    done = true;
+				    if ( ! this.abort_parse )
+				    {
+					parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
 
                                     post_error_message(this.l1_tok,
                                             MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR,
@@ -15410,14 +15407,14 @@ public class MacshapaODBReader
                                         "SPREADSHEET-VARIABLE-DEFINITIONS> " +
                                         "entry.\n");
 
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                else
-                                {
-                                    done = true;
+				    if ( ! this.abort_parse )
+				    {
+					 parse_unknown_alist_entry();
+				    }
+				}
+				else
+				{
+				    done = true;
 
                                     post_error_message(this.l1_tok,
                                         MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR,
@@ -15446,16 +15443,16 @@ public class MacshapaODBReader
                             NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
                             "The list is located in the USER> a-list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                }
-            }
-            else if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                done = true;
-                get_next_token();
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		}
+	    }
+	    else if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		done = true;
+		get_next_token();
 
                 if ( ( ! this.abort_parse ) &&
                      ( next_tag_index < 3 ) )
@@ -15478,14 +15475,14 @@ public class MacshapaODBReader
                         NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
                         "The atom was detected in the USER> a-list.\n");
 
-                if ( ! this.abort_parse )
-                {
-                    get_next_token();
-                }
-            }
-        }
+		if ( ! this.abort_parse )
+		{
+		    get_next_token();
+		}
+	    }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_user_alist() */
 
@@ -15496,13 +15493,13 @@ public class MacshapaODBReader
      *
      * This method parses the user section of the open database body.
      * Structurally, the user section is an a-list entry with the label
-     * "USER>" and a list as its value.  The production generating the
+     * "USER>" and a list as its value.  The production generating the 
      * user section is shown below.
      *
      *         <user_section> --> '(' 'USER>' <user-alist> ')'
+     *        
      *
-     *
-     *                                             JRM - 9/11/95
+     *                                              - 9/11/95
      *
      * Parameters:
      *
@@ -15517,56 +15514,55 @@ public class MacshapaODBReader
      **************************************************************************/
 
     final void parse_user_section()
-        throws SystemErrorException,
-               LogicErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_user_section()";
+	final String mName = "macshapa_odb_reader::parse_user_section()";
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
 
-        /* parse the user section */
+	/* parse the user section */
+	
+	/* first parse the leading left parenthesis */
 
-        /* first parse the leading left parenthesis */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+		 ( (this.l0_tok).aux == USER_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the */
+	    {    /* next token is the USER> a-list tag.    */
 
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == USER_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the */
-            {    /* next token is the USER> a-list tag.    */
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != \"USER>\".");
+	    }
+	}
 
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != \"USER>\".");
-            }
-        }
-
-        /* read the a-list associated with the user section */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case L_PAREN_TOK:
-                    parse_user_alist();
-                    break;
+	/* read the a-list associated with the user section */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case L_PAREN_TOK:
+		    parse_user_alist();
+		    break;
 
                  case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -15588,11 +15584,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             "The value of the USER> section must be a list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -15600,13 +15596,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                         "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			     "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -15618,12 +15614,12 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the USER> section a-list */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the USER> section a-list */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -15634,20 +15630,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* finally, consume the closing parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the user
-                 * section this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* finally, consume the closing parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else 
+	    {
+		/* since we are cleaning up any excess values in the user 
+		 * section this else clause is unreachable at present.  
+		 * Should we choose to drop the above attempt at error recovery, 
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "The closing parenthesis was missing from the USER> " +
@@ -15655,7 +15651,7 @@ public class MacshapaODBReader
             }
         }
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_user_section() */
 
@@ -15666,12 +15662,12 @@ public class MacshapaODBReader
      *
      * This method parses a VARIABLE-LENGTH> attribute, and returns
      * the boolean value associated with the attribute.  This attribute
-     * can appear in a number of contexts, and is generated by the
+     * can appear in a number of contexts, and is generated by the 
      * following productions:
-     *
+     *        
      * <pred_variable_length_attribute> --> '(' 'VARIABLE-LENGTH>' <boolean> ')'
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -15687,62 +15683,62 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private boolean parse_variable_length_attribute()
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
-            "macshapa_odb_reader::parse_variable_length_attribute()";
-        final String missing_variable_length_mssg =
-            "A VARIABLE-LENGTH> attribute appears not to contain a " +
-            "value.  Value forced to FALSE.\n";
-        final String variable_length_type_mismatch_mssg =
-            "The value of a VARIABLE-LENGTH> attribute must be TRUE " +
-            "or FALSE.  Value forced to FALSE.\n";
-        boolean variable_length;
+	final String mName = 
+		"macshapa_odb_reader::parse_variable_length_attribute()";
+	final String missing_variable_length_mssg = 
+		"A VARIABLE-LENGTH> attribute appears not to contain a " +
+		"value.  Value forced to FALSE.\n";
+	final String variable_length_type_mismatch_mssg = 
+		"The value of a VARIABLE-LENGTH> attribute must be TRUE " +
+		"or FALSE.  Value forced to FALSE.\n";
+	boolean variable_length;
 
-        variable_length = false;
+	variable_length = false;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	/* parse the version attribute */
+	
+	/* first parse the leading left parenthesis */
 
-        /* parse the version attribute */
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* first parse the leading left parenthesis */
+	/* read the a-list entry name */
+	if ( ! this.abort_parse )
+	{
+	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+		 ( (this.l0_tok).aux == VARIABLE_LENGTH_LABEL ) )
+	    {
+		get_next_token();
+	    }
+	    else /* we shouldn't have been called unless the next token is an a-list tag */
+	    {
+		throw new SystemErrorException(mName + 
+			"this.l0_tok != VARIABLE-LENGTH>.");
+	    }
+	}
 
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* read the a-list entry name */
-        if ( ! this.abort_parse )
-        {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-                 ( (this.l0_tok).aux == VARIABLE_LENGTH_LABEL ) )
-            {
-                get_next_token();
-            }
-            else /* we shouldn't have been called unless the next token is an a-list tag */
-            {
-                throw new SystemErrorException(mName +
-                    "this.l0_tok != VARIABLE-LENGTH>.");
-            }
-        }
-
-        /* read the value associated with the a-list entry & discard any excess values */
-        if ( ! this.abort_parse )
-        {
-            switch ( (this.l0_tok).code )
-            {
-                case BOOL_TOK:
+	/* read the value associated with the a-list entry & discard any excess values */
+	if ( ! this.abort_parse )
+	{
+	    switch ( (this.l0_tok).code )
+	    {
+		case BOOL_TOK:
                     if ( (this.l0_tok).aux == TRUE )
                     {
                         variable_length = true;
@@ -15753,11 +15749,11 @@ public class MacshapaODBReader
                     }
                     else
                     {
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "boolean token neither true nor false?!?");
                     }
-                    get_next_token();
-                    break;
+		    get_next_token();
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -15769,11 +15765,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             variable_length_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			parse_arbitrary_list();
+		    }
+		    break;
 
                 case ERROR_TOK:
                 case SYMBOL_TOK:
@@ -15789,11 +15785,11 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             variable_length_type_mismatch_mssg);
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case EOF_TOK:
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -15801,13 +15797,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-                default:
-                    throw new SystemErrorException(mName +
-                        "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
-                    // break;
-            }
-        }
+		default:
+		    throw new SystemErrorException(mName + 
+			    "Encountered unknown token type.");
+	            /* commented out to keep the compiler happy */
+		    // break;
+	    }
+	}
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -15820,14 +15816,14 @@ public class MacshapaODBReader
             }
         }
 
-        /* discard any excess values that may appear in the VARIABLE-LENGTH>
-         * a-list entry
-         */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code != R_PAREN_TOK )
-            {
-                discard_excess_alist_entry_values();
+	/* discard any excess values that may appear in the VARIABLE-LENGTH> 
+	 * a-list entry
+	 */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code != R_PAREN_TOK )
+	    {
+		discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -15839,20 +15835,20 @@ public class MacshapaODBReader
             }
         }
 
-        /* read the terminating right parenthesis */
-        if ( ! this.abort_parse )
-        {
-            if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                get_next_token();
-            }
-            else
-            {
-                /* since we are cleaning up any excess values in the variable
-                 * length attribute, this else clause is unreachable at present.
-                 * Should we choose to drop the above attempt at error recovery,
-                 * this clause will again become reachable.
-                 */
+	/* read the terminating right parenthesis */
+	if ( ! this.abort_parse )
+	{
+	    if ( (this.l0_tok).code == R_PAREN_TOK )
+	    {
+		get_next_token();
+	    }
+	    else
+	    {
+		/* since we are cleaning up any excess values in the variable
+		 * length attribute, this else clause is unreachable at present.
+		 * Should we choose to drop the above attempt at error recovery,
+		 * this clause will again become reachable.
+		 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a VARIABLE-LENGTH> " +
@@ -15860,7 +15856,7 @@ public class MacshapaODBReader
             }
         }
 
-        return(variable_length);
+	return(variable_length);
 
     } /* MacshapaODBReader::parse_variable_length_attribute() */
 
@@ -15870,17 +15866,17 @@ public class MacshapaODBReader
      * parse_vocab_list()
      *
      * This method parses a vocabulary list.
-     *
+     * 
      * This attribute is generated by the following productions:
-     *
+     *        
      *            <vocab_list> --> '(' (<vocab_entry>)* ')'
-     *
+     *        
      *            <vocab_entry> --> <pred_name>
      *
-     * OpenSHAPA doesn't maintain a local vocab list, so we just discard the
+     * OpenSHAPA doesn't maintain a local vocab list, so we just discard the 
      * data in the vocab list.
      *
-     *                                                    JRM - 6/18/08
+     *                                                     - 6/18/08
      *
      * Parameters:
      *
@@ -15896,42 +15892,42 @@ public class MacshapaODBReader
      **************************************************************************/
 
     private void parse_vocab_list(long s_var_col_ID)
-        throws SystemErrorException,
+	throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_vocab_list()";
-        boolean done;
+	final String mName = "macshapa_odb_reader::parse_vocab_list()";
+	boolean done;
 
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
-                "this.abort_parse TRUE on entry");
-        }
+	if ( this.abort_parse )
+	{
+	    throw new SystemErrorException(mName + 
+		    "this.abort_parse TRUE on entry");
+	}
+	
+	if ( s_var_col_ID == DBIndex.INVALID_ID )
+	{
+	    throw new SystemErrorException(mName + 
+		    "s_var_col_ID is invalid on entry.");
+	}
+	
+	/* parse the vocab list */
+	
+	/* first parse the leading left parenthesis */
 
-        if ( s_var_col_ID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName +
-                "s_var_col_ID is invalid on entry.");
-        }
+	if ( (this.l0_tok).code == L_PAREN_TOK )
+	{
+	    get_next_token();
+	}
+	else /* we shouldn't have been called unless the next token is a '(' */
+	{
+	    throw new SystemErrorException(mName + 
+		    "(this.l0_tok).code != L_PAREN_TOK.");
+	}
 
-        /* parse the vocab list */
-
-        /* first parse the leading left parenthesis */
-
-        if ( (this.l0_tok).code == L_PAREN_TOK )
-        {
-            get_next_token();
-        }
-        else /* we shouldn't have been called unless the next token is a '(' */
-        {
-            throw new SystemErrorException(mName +
-                "(this.l0_tok).code != L_PAREN_TOK.");
-        }
-
-        /* now read the vocabulary list */
-        if ( ! this.abort_parse )
-        {
-            done = false;
+	/* now read the vocabulary list */
+	if ( ! this.abort_parse )
+	{
+	    done = false;
 
             while ( ( ! this.abort_parse ) && ( ! done ) )
             {
@@ -15975,27 +15971,27 @@ public class MacshapaODBReader
                                 "(this.l0_tok).aux appears to be corrupt.");
                         }
 
-                        if ( ! this.abort_parse )
-                        {
-                            get_next_token();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    get_next_token();
+			}
+			break;
 
-                    case R_PAREN_TOK:
-                        done = true;
-                        get_next_token();
-                        break;
+		    case R_PAREN_TOK:
+			done = true;
+			get_next_token();
+			break;
 
                     case L_PAREN_TOK:
                         post_warning_message(this.l0_tok,
                                 NON_PRED_IN_VOCAB_WARN,
                                 "The item was a list.\n");
 
-                        if ( ! this.abort_parse )
-                        {
-                            parse_arbitrary_list();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    parse_arbitrary_list();
+			}
+			break;
 
                     case BOOL_TOK:
                     case ERROR_TOK:
@@ -16011,11 +16007,11 @@ public class MacshapaODBReader
                                 NON_PRED_IN_VOCAB_WARN,
                                 "The item was an atom.\n");
 
-                        if ( ! this.abort_parse )
-                        {
-                            get_next_token();
-                        }
-                        break;
+			if ( ! this.abort_parse )
+			{
+			    get_next_token();
+			}
+			break;
 
                     case EOF_TOK:
                         post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -16023,16 +16019,16 @@ public class MacshapaODBReader
                                    true, true);
                         break;
 
-                    default:
-                        throw new SystemErrorException(mName +
-                            "Encountered unknown token type.");
+		    default:
+			throw new SystemErrorException(mName + 
+				"Encountered unknown token type.");
                         /* commented out to keep the compiler happy */
-                        // break;
-                 }
-             }
-        }
+			// break;
+		 }
+	     }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_vocab_list() */
 
@@ -16043,8 +16039,8 @@ public class MacshapaODBReader
      *
      * parse_query_list()
      *
-     * This function parses the list of queries that constitutes the core of
-     * the query section of the open database body.  Structurally, the query
+     * This function parses the list of queries that constitutes the core of 
+     * the query section of the open database body.  Structurally, the query 
      * list is a list of predicate cell values, each of which is nominally a
      * query.  The production generating the query list is shown below.
      *
@@ -16053,14 +16049,14 @@ public class MacshapaODBReader
      * In addition to parsing the query list, this function also inserts each
      * query in the list into the query variable.
      *
-     *						JRM - 12/14/08
+     *						 - 12/14/08
      *
      * Parameters:
      *
      *    - query_col_ID: ID of the query data column.
      *
-     *    - query_mve_ID: ID of the mve defining the structure of the query
-     *          column.
+     *    - query_mve_ID: ID of the mve defining the structure of the query 
+     *          column.   
      *
      * Return Value:  Void.
      *
@@ -16076,26 +16072,26 @@ public class MacshapaODBReader
         throws SystemErrorException,
                java.io.IOException
     {
-        final String mName = "macshapa_odb_reader::parse_query_list()";
-        final String overflow_mssg = "Overflow occured in a query.\n";
-        Boolean done;
-        Boolean have_query;
-        Boolean success;
+	final String mName = "macshapa_odb_reader::parse_query_list()";
+	final String overflow_mssg = "Overflow occured in a query.\n";
+	Boolean done;
+	Boolean have_query;
+	Boolean success;
         long cellID = DBIndex.INVALID_ID;
         Vector<DataValue> argList = null;
         DataValue query_dv = null;
         Matrix query_matrix = null;
-        DataCell query_cell = null;
-
-        if ( this.abort_parse )
-        {
-            throw new SystemErrorException(mName +
+	DataCell query_cell = null;
+	
+	if ( this.abort_parse )
+	{
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
-        }
+	}
         else if ( ( query_col_ID == DBIndex.INVALID_ID ) ||
                   ( query_mve_ID == DBIndex.INVALID_ID ) )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "query col and/or mve ID invalid on entry.");
         }
         else if ( farg == null )
@@ -16104,35 +16100,35 @@ public class MacshapaODBReader
         }
         else if ( farg.getFargType() != FormalArgument.FArgType.PREDICATE )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "farg not of type predicate?!?");
         }
         else if ( farg.getID() == DBIndex.INVALID_ID )
         {
             throw new SystemErrorException(mName + "farg has invalid ID");
         }
-        else /* parse the header section */
-        {
+	else /* parse the header section */
+	{
             /* first parse the leading left parenthesis */
-
+		
             if ( (this.l0_tok).code == L_PAREN_TOK )
             {
                 this.get_next_token();
             }
-            else /* we shouldn't have been called unless the next token is a '(' */
+	    else /* we shouldn't have been called unless the next token is a '(' */
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "(this.l0_tok).code isnt L_PAREN_TOK.");
             }
-
+ 		
             /* set the in_query flag to true, so that parse_pred_value() will
-             * flag as an error any attempt to use a defined predicate or column
+             * flag as an error any attempt to use a defined predicate or column 
              * variable name as a nominal.
              */
             this.in_query = true;
-
+		
             done = false;
-
+		
             while ( ( ! this.abort_parse ) && ( ! done ) )
             {
                 have_query = false; /* will set this to true if we have a query */
@@ -16140,24 +16136,25 @@ public class MacshapaODBReader
                 argList = null;
                 query_matrix = null;
                 query_cell = null;
-
+                
+			
                 switch ( (this.l0_tok).code )
                 {
                     case L_PAREN_TOK:
                         have_query = true; /* at worst, we will insert an empty query */
-
+					
                         if ( (this.l1_tok).code == R_PAREN_TOK ) /* empty cell */
-                        {
+			{
                             /* construct empty query cell value */
-                            query_dv = new PredDataValue(this.db,
-                                                         farg.getID(),
+                            query_dv = new PredDataValue(this.db, 
+                                                         farg.getID(), 
                                                          new Predicate(this.db));
-
+	
                             if ( ! this.abort_parse )
                             {
                                 this.get_next_token(); // eat left paren
                             }
-
+	
                             if ( ! this.abort_parse )
                             {
                                 this.get_next_token();
@@ -16166,13 +16163,13 @@ public class MacshapaODBReader
                         else /* should be a predicate value */
                         {
                             query_dv = parse_pred_value(farg);
-                        }
+			}
                         break;
-
+	 				
                     case R_PAREN_TOK:
-                        done = true;
-                        this.get_next_token(); /* eat the closing parenthesis */
-                        break;
+                            done = true;
+                            this.get_next_token(); /* eat the closing parenthesis */
+                            break;
 
                     case FLOAT_TOK:
                     case INT_TOK:
@@ -16202,45 +16199,45 @@ public class MacshapaODBReader
                         break;
 
                     default:
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "Encountered unknown token type.");
                         /* commented out to keep the compiler happy */
                         // break;
-
+	 				
                 } /* end switch */
-
+ 		 	
                 if ( ( have_query ) && ( ! this.abort_parse ) )
                 {
                     argList = new Vector<DataValue>();
                     argList.add(query_dv);
                     query_matrix = new Matrix(this.db, query_mve_ID, argList);
-                    query_cell =
-                        new DataCell(this.db,
-                            null,
+                    query_cell = 
+                        new DataCell(this.db, 
+                            null, 
                             query_col_ID,
                             query_mve_ID,
                             new TimeStamp(MACSHAPA_TICKS_PER_SECOND, 0),
                             new TimeStamp(MACSHAPA_TICKS_PER_SECOND, 0),
                             query_matrix);
                     cellID = this.db.appendCell(query_cell);
-
-                    /* if debug level is high enough, dump the query cell
-                     * definition
+                    
+                    /* if debug level is high enough, dump the query cell 
+                     * definition 
                      */
-                    if ( ( ! this.abort_parse ) &&
+                    if ( ( ! this.abort_parse ) && 
                          ( this.debug_level >= 2 ) )
                     {
                         query_cell = (DataCell)this.db.getCell(cellID);
                         dump_s_var_cell_definition_to_listing(query_cell);
                     }
                 }
-
+                
             } /* end while */
-
+ 		
             this.in_query = false; /* reset the in_query flag to FALSE */
-        }
+	}
 
-        return;
+	return;
 
     } /* MacshapaODBReader::parse_query_list() */
 
@@ -16251,7 +16248,7 @@ public class MacshapaODBReader
      *
      * This function parses the query section of the open database body.
      * Structurally, the query section is an a-list entry with the label
-     * "QUERY>" and a list as its value.  The production generating the
+     * "QUERY>" and a list as its value.  The production generating the 
      * query section is shown below.
      *
      *  	<query_section> --> '(' 'QUERY>' <query_list> ')'
@@ -16259,7 +16256,7 @@ public class MacshapaODBReader
      *          <query_list> --> '(' (<pred_cell_value>)* ')'
      *
      *
-     *                                              JRM - 12/14/08
+     *                                               - 12/14/08
      *
      * Parameters:
      *
@@ -16275,7 +16272,6 @@ public class MacshapaODBReader
 
     private void parse_query_section()
         throws SystemErrorException,
-               LogicErrorException,
                java.io.IOException
     {
         final String mName = "macshapa_odb_reader::parse_query_section()";
@@ -16287,28 +16283,28 @@ public class MacshapaODBReader
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
         else if ( this.db.colNameInUse(QUERY_VAR_NAME) )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Query variable alread defined?!?");
         }
         else /* parse the header section */
         {
             /* Set up the query variable */
-
+            
             query_mve = new MatrixVocabElement(this.db, QUERY_VAR_NAME);
-
+            
             query_mve.setType(MatrixVocabElement.MatrixType.PREDICATE);
-
+                
             query_farg = new PredFormalArg(this.db, "<val>");
-
+            
             query_mve.appendFormalArg(query_farg);
-
+                
             query_mve.setSystem();
-
+                
             /* Note that we are not making a copy of the mve
              * before we insert it -- thus must be careful not
              * to corrupt it.
@@ -16316,37 +16312,37 @@ public class MacshapaODBReader
             this.db.vl.addElement(query_mve);
 
             query_mve_ID = query_mve.getID();
-
+        
             if ( this.db.vl.getVocabElement(query_mve_ID) != query_mve )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "query_mve insertion in vl failed?");
             }
-
+                
             query_col = new DataColumn(this.db, QUERY_VAR_NAME, true, false, query_mve_ID);
-
+        
             this.db.cl.addColumn(query_col);
-
+        
             query_col_ID = query_col.getID();
 
             if ( ( this.db.cl.getColumn(query_col_ID) != query_col ) ||
                  ( this.db.cl.getColumn(query_col.getName()) != query_col ) ||
                  ( query_col.getItsCells() == null ) )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "query col insertion in cl failed");
             }
-
+        
             query_mve.setItsColID(query_col_ID);
-
+            
             /* now get copies of the query col, mve, & farg so we don't have
              * to worry about corrupting them.
              */
             query_mve = this.db.getMatrixVE(query_mve_ID);
             query_farg = query_mve.getFormalArg(0);
             query_col = this.db.getDataColumn(query_col_ID);
-
-
+        
+            
             /* Parse the leading left parenthesis */
 
             if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -16355,7 +16351,7 @@ public class MacshapaODBReader
             }
             else /* we shouldn't have been called unless the next token is a '(' */
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "(this.l0_tok).code isnt L_PAREN_TOK.");
             }
 
@@ -16369,7 +16365,7 @@ public class MacshapaODBReader
                 }
                 else /* system error - we shouldn't have been called unless the */
                 {    /*                next token is the QUERY> a-list tag.     */
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "this.l0_tok isnt \"QUERY>\".");
                 }
             }
@@ -16380,10 +16376,10 @@ public class MacshapaODBReader
                 switch ( (this.l0_tok).code )
                 {
                     case L_PAREN_TOK:
-                        parse_query_list(query_col_ID,
-                                         query_mve_ID,
-                                         query_farg);
-                        break;
+                            parse_query_list(query_col_ID, 
+                                             query_mve_ID, 
+                                             query_farg);
+                            break;
 
                     case R_PAREN_TOK:
                         post_warning_message(this.l0_tok,
@@ -16420,7 +16416,7 @@ public class MacshapaODBReader
                         break;
 
                     default:
-                        throw new SystemErrorException(mName +
+                        throw new SystemErrorException(mName + 
                                 "Encountered unknown token type.");
                         /* commented out to keep the compiler happy */
                         // break;
@@ -16460,70 +16456,70 @@ public class MacshapaODBReader
                 {
                     this.get_next_token();
                 }
-                else
+                else 
                 {
-                    /* since we are cleaning up any excess values in the query
-                     * section this else clause is unreachable at present.
-                     * Should we choose to drop the above attempt at error
+                    /* since we are cleaning up any excess values in the query 
+                     * section this else clause is unreachable at present.  
+                     * Should we choose to drop the above attempt at error 
                      * recovery, this clause will again become reachable.
-                     *                                  JRM -10/24/95
+                     *                                   -10/24/95
                      */
 
                     post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                             "The closing parenthesis was missing from " +
                             "the QUERY> section.\n");
                 }
-            }
+             }
         }
 
         return;
 
     } /* MacshapaODBReader::parse_query_section() */
 
-
+        
     /*** Parser section 5 -- methods for parsing the system section ***/
 
 //    /*************************************************************************
 //     *
 //     * parse_alignments_attribute()
 //     *
-//     * This method parses a ALIGNMENTS> attribute, which is generated by
+//     * This method parses a ALIGNMENTS> attribute, which is generated by 
 //     * the following productions:
-//     *
+//     * 
 //     *     <alignments_attribute> --> '(' 'ALIGNMENTS>' <alignments_list> ')'
-//     *
+//     *    
 //     *     <alignments_list> --> '(' (<alignment_var>)* ')'
 //     *
 //     *     <alignment_var> --> '(' <s_var_name> <alignment_var_alist> ')'
 //     *
 //     *     <alignment_var_alist> --> '(' <alignment_var_attributes> ')'
 //     *
-//     *     <alignment_var_attributes> --> <s_var_type_attribute>
-//     *                                    <s_var_variable_length_attribute>
-//     *                                    <s_var_formal_arg_list_attribute>
+//     *     <alignment_var_attributes> --> <s_var_type_attribute> 
+//     *                                    <s_var_variable_length_attribute> 
+//     *                                    <s_var_formal_arg_list_attribute> 
 //     *                                    <s_var_col_width_attribute>
 //     *                                    <s_var_def_cells_attribute>
 //     *
 //     * The purpose of this attribute is to support the saving and restoring of
-//     * alignments by the comparisons report.  Note that the set of valid
+//     * alignments by the comparisons report.  Note that the set of valid 
 //     * saved alignments is much smaller than the set described by the above
-//     * productions.  Thus, I presume that it is possible to include a
+//     * productions.  Thus, I presume that it is possible to include a 
 //     * stored alignment in the value of this attribute that will crash the
-//     * comparisons report.  On the other hand, I don't understand the
+//     * comparisons report.  On the other hand, I don't understand the 
 //     * comparisons report well enough to write a parser that would prevent
 //     * this.  On the third hand, this should all be moot as this section of
 //     * the SYSTEM> section is optional, and had been declared off limits to
-//     * the user.
+//     * the user.  
 //     *
 //     * At present, the parser for the ALIGNEMNTS> attribute piggybacks on the
 //     * code for parsing spreadsheet variable declarations and definitions in
 //     * the user section.  Should we ever narrow the above production so that
-//     * it will be impossible for the user to crash MacSHAPA by entering
+//     * it will be impossible for the user to crash MacSHAPA by entering 
 //     * junk in the value of this attribute, we should write new code for the
 //     * purpose, instead of modifying the user spreadsheet variable parsing
 //     * code.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16545,16 +16541,16 @@ public class MacshapaODBReader
 //        final String missing_alignments_list_mssg =
 //                "The ALIGNMENTS> attribute appears not to contain a value.  " +
 //                "The attribute will be ignored.\n";
-//        final String alignments_list_type_mismatch_mssg =
+//        final String alignments_list_type_mismatch_mssg = 
 //                "The value of a ALIGNMENTS> attribute must be a list.  " +
 //                "The attribute will be ignored.\n";
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the alignments attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -16565,27 +16561,27 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == ALIGNMENTS_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is ALIGNMENTS> */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok isnt ALIGNMENTS>.");
 //            }
 //        }
 //
-//        /* read the value associated with the a-list entry & discard
-//         * any excess values
+//        /* read the value associated with the a-list entry & discard 
+//         * any excess values 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -16628,7 +16624,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SysetmErrorException(mName +
+//                     throw new SysetmErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
@@ -16672,8 +16668,8 @@ public class MacshapaODBReader
 //            else
 //            {
 //                /* since we are cleaning up any excess values in the alignments
-//                 * attribute, this else clause is unreachable at present.
-//                 * Should we choose to drop the above attempt at error
+//                 * attribute, this else clause is unreachable at present. 
+//                 * Should we choose to drop the above attempt at error 
 //                 * recovery, this clause will again become reachable.
 //                 */
 //
@@ -16693,19 +16689,19 @@ public class MacshapaODBReader
 //     * parse_alignments_list()
 //     *
 //     * This method parses a list of alignments, each of which is a spreadsheet
-//     * variable of system type.  While there are rather strict restrictions on
+//     * variable of system type.  While there are rather strict restrictions on 
 //     * the type and contents of alignments, at present the parser will accept
 //     * almost anything generated by the following productions:
-//     *
+//     * 
 //     *     <alignments_list> --> '(' (<alignment_var>)* ')'
 //     *
 //     *     <alignment_var> --> '(' <s_var_name> <alignment_var_alist> ')'
 //     *
 //     *     <alignment_var_alist> --> '(' <alignment_var_attributes> ')'
 //     *
-//     *     <alignment_var_attributes> --> <s_var_type_attribute>
-//     *                                    <s_var_variable_length_attribute>
-//     *                                    <s_var_formal_arg_list_attribute>
+//     *     <alignment_var_attributes> --> <s_var_type_attribute> 
+//     *                                    <s_var_variable_length_attribute> 
+//     *                                    <s_var_formal_arg_list_attribute> 
 //     *                                    <s_var_col_width_attribute>
 //     *                                    <s_var_def_cells_attribute>
 //     *
@@ -16713,15 +16709,15 @@ public class MacshapaODBReader
 //     * alignment variable include the required prefix.
 //     *
 //     * As a result of the laxity of the parser it is possible to load an
-//     * invalid alignment into MacSHAPA and presumably crash it.  However,
+//     * invalid alignment into MacSHAPA and presumably crash it.  However, 
 //     * if the users follow instructions, and never attempt to generate or
 //     * alter an alignment, this should never happen.  Frankly, this makes
 //     * me nervous as hell, as the user should never be able to crash a program
-//     * with input.  However we don't have the resources to do the job
+//     * with input.  However we don't have the resources to do the job 
 //     * correctly at this time, and this seems to be one of the safest places
 //     * to cut corners.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16734,7 +16730,7 @@ public class MacshapaODBReader
 //     *    - None.
 //     *
 //     *************************************************************************/
-//
+//       
 //    private void parse_alignments_list()
 //        throws SystemErrorException
 //    {
@@ -16743,12 +16739,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the alignments list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -16757,7 +16753,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -16814,12 +16810,12 @@ public class MacshapaODBReader
 //                case EOF_TOK:
 //                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                            "EOF in the alignments list in the SYSTEM> " +
-//                            "ALIGNMENTS> attribute.\n",
+//                            "ALIGNMENTS> attribute.\n", 
 //                            true, true);
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -16834,24 +16830,24 @@ public class MacshapaODBReader
 //     *
 //     * parse_alignment_var()
 //     *
-//     * This method parses an alignment spreadsheet variable.  The productions
-//     * generating a alignment spreadsheet variable are given below:
-//     *
+//     * This method parses an alignment spreadsheet variable.  The productions 
+//     * generating a alignment spreadsheet variable are given below: 
+//     * 
 //     *     <alignment_var> --> '(' <s_var_name> <alignment_var_alist> ')'
 //     *
 //     *     <alignment_var_alist> --> '(' <alignment_var_attributes> ')'
 //     *
-//     *     <alignment_var_attributes> --> <s_var_type_attribute>
-//     *                                    <s_var_variable_length_attribute>
-//     *                                    <s_var_formal_arg_list_attribute>
+//     *     <alignment_var_attributes> --> <s_var_type_attribute> 
+//     *                                    <s_var_variable_length_attribute> 
+//     *                                    <s_var_formal_arg_list_attribute> 
 //     *                                    <s_var_col_width_attribute>
 //     *                                    <s_var_def_cells_attribute>
 //     *
-//     * Note the heavy use of non-terminals from the user section of the
-//     * grammar.  In effect, the parser will currently accept almost any
+//     * Note the heavy use of non-terminals from the user section of the 
+//     * grammar.  In effect, the parser will currently accept almost any 
 //     * spreadsheet variable as an alignment.  This causes potential problems
 //     * as the actual code for storing and reloading alignments is much more
-//     * finicky, but in theory the user will never attempt to generate or
+//     * finicky, but in theory the user will never attempt to generate or 
 //     * modify an alignment.  Wishful thinking I know, but given the limited
 //     * resources available, I had to cut corners somewhere, and this seemed to
 //     * be one of the least dangerous places.
@@ -16861,7 +16857,7 @@ public class MacshapaODBReader
 //     * instance, in this function we test to make sure that we are dealing with
 //     * a valid alignment variable name.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -16885,12 +16881,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the spreadsheet variable declaration */
-//
+//        
 //        discard       = false;
 //
 //        /* reset ibuf_len to zero since we are probably starting a new buffer */
@@ -16903,7 +16899,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token == a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -16913,7 +16909,7 @@ public class MacshapaODBReader
 //            if ( (this.l0_tok).code == SYMBOL_TOK )
 //            {
 //                if ( ( ((this.l0_tok).aux & COLUMN_FLAG ) == 0 ) ||
-//                     ( this.l0_tok.toString().compareTo(STORED_ALIGNMENT_PREFIX)
+//                     ( this.l0_tok.toString().compareTo(STORED_ALIGNMENT_PREFIX) 
 //                       != 0 ) )
 //                {
 //                    discard = true;
@@ -16922,12 +16918,12 @@ public class MacshapaODBReader
 //                                         null);
 //                }
 //                else if ( ( this.spread_doc_ptr->SymTable->
-//                            lookupPred((this.l0_tok).str_ptr) != NULL
-//                          )
+//                            lookupPred((this.l0_tok).str_ptr) != NULL 
+//                          ) 
 //                          or
 //                          ( this.spread_doc_ptr->SymTable->
-//                            lookupVar((this.l0_tok).str_ptr) != NULL
-//                          )
+//                            lookupVar((this.l0_tok).str_ptr) != NULL 
+//                          ) 
 //                        )
 //                {
 //                    /* a predicate and/or spreadsheet variable of the same name already exists */
@@ -16950,7 +16946,7 @@ public class MacshapaODBReader
 //            }
 //            else /* we shouldn't have been called unless the next token is a symbol */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok isnt SYMBOL_TOK.");
 //            }
 //        }
@@ -16962,8 +16958,8 @@ public class MacshapaODBReader
 //            {
 //                case L_PAREN_TOK:
 //                    /* note that if we get this far, and discard isnt TRUE, the
-//                     * spreadsheet variable name is already in the insertion
-//                     * buffer.
+//                     * spreadsheet variable name is already in the insertion 
+//                     * buffer. 
 //                     */
 //
 //                    if ( discard )
@@ -17004,11 +17000,11 @@ public class MacshapaODBReader
 //                case EOF_TOK:
 //                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                            "EOF in an alignment in the SYSTEM> ALIGNMENTS> " +
-//                            "attribute.\n", true, true);
+//                            "attribute.\n", true, true); 
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -17020,7 +17016,7 @@ public class MacshapaODBReader
 //            done = false;
 //            excess_values = false;
 //
-//            while ( ( ! this.abort_parse ) &&
+//            while ( ( ! this.abort_parse ) && 
 //                    ( ! done ) )
 //            {
 //                switch ( (this.l0_tok).code )
@@ -17053,11 +17049,11 @@ public class MacshapaODBReader
 //                        done = true;
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in an alignment in the SYSTEM> " +
-//                                "ALIGNMENTS> attribute.\n", true, true);
+//                                "ALIGNMENTS> attribute.\n", true, true); 
 //                        break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName +
+//                        throw new SystemErrorException(mName + 
 //                                "Encountered unknown token type.");
 //                        break;
 //                }
@@ -17077,9 +17073,9 @@ public class MacshapaODBReader
 //            {
 //                get_next_token();
 //            }
-//            else
+//            else 
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "This else clause should be unreachable.");
 //            }
 //        }
@@ -17094,22 +17090,22 @@ public class MacshapaODBReader
 //     * parse_alignment_var_alist()
 //     *
 //     * This method parses the alist assocated with an alignment spreadsheet
-//     * variable.  The productions generating a alignment spreadsheet variable
-//     * are given below:
+//     * variable.  The productions generating a alignment spreadsheet variable 
+//     * are given below: 
 //     *
 //     *     <alignment_var_alist> --> '(' <alignment_var_attributes> ')'
 //     *
-//     *     <alignment_var_attributes> --> <s_var_type_attribute>
-//     *                                    <s_var_variable_length_attribute>
-//     *                                    <s_var_formal_arg_list_attribute>
+//     *     <alignment_var_attributes> --> <s_var_type_attribute> 
+//     *                                    <s_var_variable_length_attribute> 
+//     *                                    <s_var_formal_arg_list_attribute> 
 //     *                                    <s_var_col_width_attribute>
 //     *                                    <s_var_def_cells_attribute>
 //     *
-//     * Note the heavy use of non-terminals from the user section of the
-//     * grammar.  In effect, the parser will currently accept almost any
+//     * Note the heavy use of non-terminals from the user section of the 
+//     * grammar.  In effect, the parser will currently accept almost any 
 //     * spreadsheet variable as an alignment.  This causes potential problems
 //     * as the actual code for storing and reloading alignments is much more
-//     * finicky, but in theory the user will never attempt to generate or
+//     * finicky, but in theory the user will never attempt to generate or 
 //     * modify an alignment.  Wishful thinking I know, but given the limited
 //     * resources available, I had to cut corners somewhere, and this seemed to
 //     * be one of the least dangerous places.
@@ -17120,10 +17116,10 @@ public class MacshapaODBReader
 //     * a fixed length matrix spreadsheet variable before we actually create the
 //     * variable.
 //     *
-//     * When this function is called, we are guaranteed that the name of the
-//     * alignment has already been written to the input buffer.
+//     * When this function is called, we are guaranteed that the name of the 
+//     * alignment has already been written to the input buffer.  
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -17149,20 +17145,20 @@ public class MacshapaODBReader
 //        Variable alignment_var_ptr;
 //        DataID type;
 //        int next_tag_index; /* index into the expected_tag_codes array */
-//        int expected_tag_codes[] = { TYPE_LABEL,
-//                                     VARIABLE_LENGTH_LABEL,
-//                                     FORMAL_ARG_LIST_LABEL,
+//        int expected_tag_codes[] = { TYPE_LABEL, 
+//                                     VARIABLE_LENGTH_LABEL, 
+//                                     FORMAL_ARG_LIST_LABEL, 
 //                                     COLUMN_WIDTH_LABEL,
 //                                     CELLS_LABEL };
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the a-list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
@@ -17170,7 +17166,7 @@ public class MacshapaODBReader
 //        }
 //        else /* system error - we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -17178,15 +17174,15 @@ public class MacshapaODBReader
 //        done           = false;
 //        next_tag_index = 0;
 //
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                ( ! done ) )
 //        {
 //            if ( (this.l0_tok).code == L_PAREN_TOK )
 //            {
 //                if ( (this.l1_tok).code == ALIST_LABEL_TOK )
 //                {
-//                    if ( ( next_tag_index < 5 ) &&
-//                         ( (this.l1_tok).aux ==
+//                    if ( ( next_tag_index < 5 ) && 
+//                         ( (this.l1_tok).aux == 
 //                            expected_tag_codes[next_tag_index] ) )
 //                    {
 //                        /* parse the alist entry */
@@ -17207,7 +17203,7 @@ public class MacshapaODBReader
 //                                break;
 //
 //                            case 1: /* variable length */
-//                                variable_length =
+//                                variable_length = 
 //                                        parse_variable_length_attribute();
 //
 //                                if ( ( ! this.abort_parse ) &&
@@ -17223,7 +17219,7 @@ public class MacshapaODBReader
 //                                break;
 //
 //                            case 2: /* formal argument list */
-//                                must_be_matrix =
+//                                must_be_matrix = 
 //                                        parse_s_var_formal_arg_list_attribute();
 //
 //                                if ( ( ! this.abort_parse ) &&
@@ -17248,7 +17244,7 @@ public class MacshapaODBReader
 //                                {
 //                                    if ( this.debug_level >= 2 )
 //                                    {
-//                                        dump_s_var_definition_to_listing(type,
+//                                        dump_s_var_definition_to_listing(type, 
 //                                                variable_length, col_width);
 //                                    }
 //
@@ -17258,7 +17254,7 @@ public class MacshapaODBReader
 //                                    if ( alignment_var_ptr == NULL )
 //                                    {
 //                                        this.proceed = FALSE;
-//                                        error3("SYSTEM ERROR",
+//                                        error3("SYSTEM ERROR", 
 //                                               "Definition of an alignment variable failed.",
 //                                               fcnNamePtr);
 //                                    }
@@ -17282,7 +17278,7 @@ public class MacshapaODBReader
 //                                break;
 //
 //                            default:
-//                                throw new SystemErrorException(mName +
+//                                throw new SystemErrorException(mName + 
 //                                        "next_tag_index out of range.");
 //                                break;
 //                         }
@@ -17295,8 +17291,8 @@ public class MacshapaODBReader
 //                             case TYPE_LABEL:
 //                                 if ( next_tag_index > 0 )
 //                                 {
-//                                    post_warning_message(this.l1_tok,
-//                                            DUPLICATE_ALIST_ENTRY_WARN,
+//                                    post_warning_message(
+//                                            DUPLICATE_ALIST_ENTRY_WARN, 
 //                                            "Duplicate TYPE> entry in an " +
 //                                            "alignment a-list\n");
 //
@@ -17307,7 +17303,7 @@ public class MacshapaODBReader
 //                                }
 //                                else
 //                                {
-//                                     throw new SystemErrorException(mName +
+//                                     throw new SystemErrorException(mName + 
 //                                             "This else clause should be " +
 //                                             "unreachable.");
 //                                }
@@ -17321,7 +17317,7 @@ public class MacshapaODBReader
 //                                            "Duplicate VARIABLE-LENGTH> " +
 //                                            "entry in an alignment a-list.\n");
 //
-//                                    if ( ! this.abort_parse )
+//                                    if ( ! this.abort_parse ) 
 //                                    {
 //                                         parse_unknown_alist_entry();
 //                                    }
@@ -17446,7 +17442,7 @@ public class MacshapaODBReader
 //                done = true;
 //                get_next_token();
 //
-//                if ( ( ! this.abort_parse ) &&
+//                if ( ( ! this.abort_parse ) && 
 //                     ( next_tag_index < 5 ) )
 //                {
 //                    post_error_message(this.l0_tok, REQUIRED_ALIST_ENTRIES_MISSING_ERR,
@@ -17482,7 +17478,7 @@ public class MacshapaODBReader
 //     *
 //     * parse_group_list()
 //     *
-//     * This method parses a list of spreadsheet variable name, cell ord pairs.
+//     * This method parses a list of spreadsheet variable name, cell ord pairs.  
 //     * This list is generated by the following productions:
 //     *
 //     *     <group_list --> '(' <group_member> (<group_member>)+ ')'
@@ -17496,7 +17492,7 @@ public class MacshapaODBReader
 //     * exists.  parse_group_list() uses these pointers to link all the cells
 //     * mentioned in the group list into a single group.
 //     *
-//     *                                             JRM - 6/28/08
+//     *                                              - 6/28/08
 //     *
 //     * Parameters:
 //     *
@@ -17520,10 +17516,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the groups list */
 //        {
 //            /* first parse the leading left parenthesis */
@@ -17534,7 +17530,7 @@ public class MacshapaODBReader
 //            }
 //            else /* we shouldn't have been called unless the next token is a '(' */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "(this.l0_tok).code isnt L_PAREN_TOK.");
 //            }
 //
@@ -17556,7 +17552,7 @@ public class MacshapaODBReader
 //                    case L_PAREN_TOK:
 //                        cell_ptr = parse_group_member();
 //
-//                        if ( ( cell_ptr != NULL ) &&
+//                        if ( ( cell_ptr != NULL ) && 
 //                             ( ! this.abort_parse ) )
 //                        {
 //                            if ( group_ptr == NULL )
@@ -17593,11 +17589,11 @@ public class MacshapaODBReader
 //                    case EOF_TOK:
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in a group list in the SYSTEM> " +
-//                                "GROUPS> attribute.\n", true, true);
+//                                "GROUPS> attribute.\n", true, true); 
 //                        break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName +
+//                        throw new SystemErrorException(mName + 
 //                                "Encountered unknown token type.");
 //                        break;
 //                 }
@@ -17613,7 +17609,7 @@ public class MacshapaODBReader
 //     *
 //     * parse_group_member()
 //     *
-//     * This method parses a spreadsheet variable name, cell ord pair.
+//     * This method parses a spreadsheet variable name, cell ord pair.  
 //     * These pairs are generated by the following productions:
 //     *
 //     *     <group_member> --> '(' <s_var_name> <cell_ord> ')'
@@ -17621,10 +17617,10 @@ public class MacshapaODBReader
 //     *     <cell_ord> --> <integer>
 //     *
 //     * The function attempts to look up the spreadsheet variable cell referenced
-//     * by the spreadsheet variable / ord pair.  If successful, the function
+//     * by the spreadsheet variable / ord pair.  If successful, the function 
 //     * returns a pointer to the varcell.  Otherwise the function returns NULL.
 //     *
-//     *                                             JRM - 6/22/08
+//     *                                              - 6/22/08
 //     *
 //     * Parameters:
 //     *
@@ -17655,7 +17651,7 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
 //        else /* parse the group member */
@@ -17668,7 +17664,7 @@ public class MacshapaODBReader
 //            }
 //            else /* we shouldn't have been called unless the next token is a '(' */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "(this.l0_tok).code isnt L_PAREN_TOK.");
 //            }
 //
@@ -17696,8 +17692,8 @@ public class MacshapaODBReader
 //                            }
 //                        }
 //
-//                        /* get pointer to the spreadsheet variable.  The
-//                         * spreadsheet variable should already have been
+//                        /* get pointer to the spreadsheet variable.  The 
+//                         * spreadsheet variable should already have been 
 //                         * defined.  If not, lookupVar() will return  NULL.
 //                         */
 //
@@ -17733,8 +17729,8 @@ public class MacshapaODBReader
 //                        post_warning_message(this.l0_tok, ILL_FORMED_GROUP_MEMBER_WARN,
 //                            "The group member is an empty list.\n");
 //
-//                        /* don't eat the right parenthesis now -- save it for
-//                         * later so we don't get confused.
+//                        /* don't eat the right parenthesis now -- save it for 
+//                         * later so we don't get confused. 
 //                         */
 //
 //                        break;
@@ -17744,7 +17740,7 @@ public class MacshapaODBReader
 //                                ILL_FORMED_GROUP_MEMBER_WARN,
 //                                "The <s_var_name> element in the group " +
 //                                "member is a list, instead of the required " +
-//                                "spreadsheet variable name.\n");
+//                                "spreadsheet variable name.\n"); 
 //
 //                        if ( ! this.abort_parse )
 //                        {
@@ -17764,7 +17760,7 @@ public class MacshapaODBReader
 //                    case QUOTE_TOK:
 //                        post_warning_message(this.l0_tok, ILL_FORMED_GROUP_MEMBER_WARN,
 //                                "The <s_var_name> element in the group " +
-//                                "member must be an atom of symbol type.\n");
+//                                "member must be an atom of symbol type.\n"); 
 //
 //                        if ( ! this.abort_parse )
 //                        {
@@ -17775,11 +17771,11 @@ public class MacshapaODBReader
 //                    case EOF_TOK:
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in a group member in the value of the " +
-//                                "SYSTEM> GROUP> attribute.\n", true, true);
+//                                "SYSTEM> GROUP> attribute.\n", true, true); 
 //                        break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName +
+//                        throw new SystemErrorException(mName + 
 //                                "Encountered unknown token type.");
 //                        break;
 //                }
@@ -17819,13 +17815,13 @@ public class MacshapaODBReader
 //                            post_warning_message(this.l0_tok, ILL_FORMED_GROUP_MEMBER_WARN,
 //                                    "The <cell_ord> element of the group " +
 //                                    "member is missing.\n");
-//                        }
+//                        } 
 //                        break;
 //
 //                    case L_PAREN_TOK:
 //                        post_warning_message(this.l0_tok, ILL_FORMED_GROUP_MEMBER_WARN,
 //                                "The <cell_ord> element must be a positive " +
-//                                "integer, not a list.\n");
+//                                "integer, not a list.\n"); 
 //
 //                        if ( ! this.abort_parse )
 //                        {
@@ -17846,7 +17842,7 @@ public class MacshapaODBReader
 //                        post_warning_message(this.l0_tok, ILL_FORMED_GROUP_MEMBER_WARN,
 //                                "The <cell_ord> element in the group member " +
 //                                "must be a positive integer, not an atom of " +
-//                                "non-integer type.\n");
+//                                "non-integer type.\n"); 
 //
 //                        if ( ! this.abort_parse )
 //                        {
@@ -17857,11 +17853,11 @@ public class MacshapaODBReader
 //                    case EOF_TOK:
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in a group member in the value of the " +
-//                                "SYSTEM> GROUP> attribute.\n", true, true);
+//                                "SYSTEM> GROUP> attribute.\n", true, true); 
 //                        break;
 //
 //                     default:
-//                         throw new SystemErrorException(mName +
+//                         throw new SystemErrorException(mName + 
 //                                 "Encountered unknown token type.");
 //                         break;
 //                }
@@ -17872,7 +17868,7 @@ public class MacshapaODBReader
 //            /* look up the varcell now, so that if we fail, we can generate the warning */
 //            /* message closer to the actual point of failure.                           */
 //
-//            if ( ( ! this.abort_parse ) &&
+//            if ( ( ! this.abort_parse ) && 
 //                 ( s_var_ptr != NULL ) && ( have_ord ) )
 //            {
 //                cell_ptr = s_var_ptr->GetVarCellByOrd(ord);
@@ -17885,7 +17881,7 @@ public class MacshapaODBReader
 //                else if ( s_var_ptr != cell_ptr->itsVar )
 //                {
 //                    cell_ptr = NULL;
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "s_var_ptr appears to be corrupt.");
 //                }
 //            }
@@ -17898,7 +17894,7 @@ public class MacshapaODBReader
 //                done = false;
 //                excess_values = false;
 //
-//                while ( ( ! this.abort_parse ) &&
+//                while ( ( ! this.abort_parse ) && 
 //                        ( ! done ) )
 //                 {
 //                     switch ( (this.l0_tok).code )
@@ -17937,7 +17933,7 @@ public class MacshapaODBReader
 //                            break;
 //
 //                        default:
-//                            throw new SystemErrorException(mName +
+//                            throw new SystemErrorException(mName + 
 //                                    "Encountered unknown token type.");
 //                            break;
 //                     }
@@ -17961,9 +17957,9 @@ public class MacshapaODBReader
 //     *
 //     * parse_groups_attribute()
 //     *
-//     * This method parses a GROUPS> attribute, which is generated by
+//     * This method parses a GROUPS> attribute, which is generated by 
 //     * the following productions:
-//     *
+//     * 
 //     *     <groups_attribute> --> '(' 'GROUPS>' <groups_list> ')'
 //     *
 //     *     <groups_list> --> '(' (<group_list>)* ')'
@@ -17978,7 +17974,7 @@ public class MacshapaODBReader
 //     * variable cells.  However, the actual construction of the groups is done
 //     * in parse_group_list().
 //     *
-//     *                                             JRM - 6/20/08
+//     *                                              - 6/20/08
 //     *
 //     * Parameters:
 //     *
@@ -17999,19 +17995,19 @@ public class MacshapaODBReader
 //        final String missing_groups_list_mssg =
 //                "The GROUPS> attribute appears not to contain a value.  " +
 //                "The attribute will be ignored.\n";
-//        final String groups_list_type_mismatch_mssg =
+//        final String groups_list_type_mismatch_mssg = 
 //                "The value of a GROUPS> attribute must be a list.  " +
 //                "The attribute will be ignored.\n";
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
-//
+//        
+//        
 //        /* parse the groups attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -18020,27 +18016,27 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == GROUPS_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is GROUPS> */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok isnt GROUPS>.");
 //            }
 //        }
 //
-//        /* read the value associated with the a-list entry & discard any
-//         * excess values
+//        /* read the value associated with the a-list entry & discard any 
+//         * excess values 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -18082,7 +18078,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -18099,8 +18095,8 @@ public class MacshapaODBReader
 //            }
 //        }
 //
-//        /* discard any excess values that may appear in the GROUPS>
-//         * a-list entry
+//        /* discard any excess values that may appear in the GROUPS> 
+//         * a-list entry 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -18126,9 +18122,9 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the groups
-//                 * attripute, this else clause is unreachable at present.
-//                 * Should we choose to drop the above attempt at error recovery,
+//                /* since we are cleaning up any excess values in the groups 
+//                 * attripute, this else clause is unreachable at present. 
+//                 * Should we choose to drop the above attempt at error recovery, 
 //                 * this clause will again become reachable.
 //                 */
 //
@@ -18149,7 +18145,7 @@ public class MacshapaODBReader
 //     *
 //     * This function parses a list of lists of spreadsheet variable name, cell
 //     * ord pairs.  This list is generated by the following productions:
-//     *
+//     * 
 //     *     <groups_list> --> '(' (<group_list>)* ')'
 //     *
 //     *     <group_list --> '(' <group_member> (<group_member>)+ ')'
@@ -18159,10 +18155,10 @@ public class MacshapaODBReader
 //     *     <cell_ord> --> <integer>
 //     *
 //     * The purpose of this list is to support the groups feature in MacSHAPA.
-//     * However the actual construction of groups is done in
+//     * However the actual construction of groups is done in 
 //     * parse_group_list().
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -18184,12 +18180,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the groups list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -18198,7 +18194,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -18246,7 +18242,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -18264,7 +18260,7 @@ public class MacshapaODBReader
 //     * This method parses an import format list.  This list is generated
 //     * by the following productions:
 //     *
-//     *     <imp_format_list> -->
+//     *     <imp_format_list> --> 
 //     *             '(' <imp_format_list_name> <imp_format_list_alist> ')'
 //     *
 //     *     <imp_format_list_name> --> <non_blank_text_quote_string>
@@ -18273,7 +18269,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_format_attributes> --> { <imp_prods_attribute> }
 //     *
-//     *     <imp_prods_attribute> -->
+//     *     <imp_prods_attribute> --> 
 //     *             '(' 'IMPORT-PRODUCTION-LIST>' <imp_prod_list> ')'
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -18298,56 +18294,56 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     * Note that this method adds formats to the list pointed to by
-//     * this.import_format_list_root instead of adding them directly to
-//     * this.spread_doc_ptr->itsFormatList.  We do this so that we can
+//     * Note that this method adds formats to the list pointed to by 
+//     * this.import_format_list_root instead of adding them directly to 
+//     * this.spread_doc_ptr->itsFormatList.  We do this so that we can 
 //     * read import formats with this code even when this.spread_doc_ptr
-//     * is undefined (i.e. NULL).  This allows us to load the formats from a
+//     * is undefined (i.e. NULL).  This allows us to load the formats from a 
 //     * database file without loading the rest of the database as well.
 //     *
-//     *                                             JRM - 10/31/95
+//     *                                              - 10/31/95
 //     *
 //     * Parameters:
 //     *
@@ -18378,12 +18374,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the import format list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -18392,14 +18388,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
 //        /* now read the import format name & allocate the new format data structure */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == STRING_TOK ) &&
+//            if ( ( (this.l0_tok).code == STRING_TOK ) && 
 //                 ( (((this.l0_tok).aux) & TEXT_QSTRING_FLAG) != 0 ) &&
 //                 ( (((this.l0_tok).aux) & NONBLANK_FLAG) != 0 ) )
 //            {
@@ -18428,7 +18424,7 @@ public class MacshapaODBReader
 //            }
 //            else /* we shouldn't have been called unless the import format name was valid */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok isnt a valid format name.");
 //            }
 //        }
@@ -18475,18 +18471,18 @@ public class MacshapaODBReader
 //                    discard = true;
 //                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                            "EOF in an import format list in the SYSTEM> " +
-//                            "IMPORT-FORMAT-LISTS> attribute.\n", true, true);
+//                            "IMPORT-FORMAT-LISTS> attribute.\n", true, true); 
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
 //        }
 //
 //
-//        if ( ( ! discard ) &&
+//        if ( ( ! discard ) && 
 //             ( format_ptr != null ) && ( format_ptr->prods == null ) )
 //        {
 //            /* Encountered an import format that doesn't contain any productions. */
@@ -18541,7 +18537,7 @@ public class MacshapaODBReader
 //             }
 //             else /* add the new format to the formats list */
 //             {
-//                this.import_format_list_root =
+//                this.import_format_list_root = 
 //                    AddFormatListEnd(this.import_format_list_root, format_ptr);
 //             }
 //        }
@@ -18553,7 +18549,7 @@ public class MacshapaODBReader
 //            done = false;
 //            excess_values = false;
 //
-//            while ( ( ! this.abort_parse ) &&
+//            while ( ( ! this.abort_parse ) && 
 //                    ( ! done ) )
 //            {
 //                switch ( (this.l0_tok).code )
@@ -18587,12 +18583,12 @@ public class MacshapaODBReader
 //                        done = TRUE;
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in an import format list in the SYSTEM> " +
-//                                "IMPORT-FORMAT-LISTS> attribute.\n",
+//                                "IMPORT-FORMAT-LISTS> attribute.\n", 
 //                                true, true);
 //                        break;
 //
 //                    default:
-//                        throw new SystemErrorException(mName +
+//                        throw new SystemErrorException(mName + 
 //                                "Encountered unknown token type.");
 //                        break;
 //                }
@@ -18615,14 +18611,14 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_format_list_alist()
 //     *
-//     * This function parses an import format list attribute list.  This list is
+//     * This function parses an import format list attribute list.  This list is 
 //     * generated by the following productions:
 //     *
 //     *     <imp_format_list_alist> --> '(' (<imp_format_attributes>) ')'
 //     *
 //     *     <imp_format_attributes> --> { <imp_prods_attribute> }
 //     *
-//     *     <imp_prods_attribute> -->
+//     *     <imp_prods_attribute> --> 
 //     *             '(' 'IMPORT-PRODUCTION-LIST>' <imp_prod_list> ')'
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -18647,56 +18643,56 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
 //     * format_ptr:  Pointer to an instance of the Format structure, whose
 //     *     type definition may be found in import.h.  format_ptr points
-//     *     to the instance of format into which we will load the import
-//     *     productions as we read them.
+//     *     to the instance of format into which we will load the import 
+//     *     productions as we read them. 
 //     *
 //     * Returns:  Void.
 //     *
@@ -18716,24 +18712,24 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
-//        if ( ( format_ptr == null ) || ( format_ptr->name == null ) ||
+//        
+//        if ( ( format_ptr == null ) || ( format_ptr->name == null ) || 
 //             ( format_ptr->prods != null ) || ( format_ptr->next != null ) )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "format_ptr seems to be corrupt on entry");
 //        }
-//
+//        
 //        /* parse the a-list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
 //                 ( (this.l1_tok).code == R_PAREN_TOK ) )
 //            {
 //                get_next_token();
@@ -18744,11 +18740,11 @@ public class MacshapaODBReader
 //                        "The opening left parenthesis of an import " +
 //                        "format list a-list appears to be missing.\n");
 //            }
-//            else
+//            else 
 //            {
-//                /* if a left paren is missing, the first item in the a-list is
-//                 * not an a-list entry.  If we try to recover from this error
-//                 * here, we will only confuse things further.  Thus we eat the
+//                /* if a left paren is missing, the first item in the a-list is 
+//                 * not an a-list entry.  If we try to recover from this error 
+//                 * here, we will only confuse things further.  Thus we eat the 
 //                 * left parenthesis & let the cards fall where they may.
 //                 */
 //
@@ -18757,7 +18753,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -18765,7 +18761,7 @@ public class MacshapaODBReader
 //        have_import_production_list = false;
 //
 //        /* now parse the a-list assocated with the import format list */
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                ( ! done ) )
 //        {
 //            if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -18856,7 +18852,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_formats_list> --> '(' (<imp_format_list>)* ')'
 //     *
-//     *     <imp_format_list> -->
+//     *     <imp_format_list> --> 
 //     *             '(' <imp_format_list_name> <imp_format_list_alist> ')'
 //     *
 //     *     <imp_format_list_name> --> <non_blank_text_quote_string>
@@ -18865,7 +18861,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_format_attributes> --> { <imp_prods_attribute> }
 //     *
-//     *     <imp_prods_attribute> -->
+//     *     <imp_prods_attribute> --> 
 //     *             '(' 'IMPORT-PRODUCTION-LIST>' <imp_prod_list> ')'
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -18890,49 +18886,49 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -18954,10 +18950,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the import formats list */
 //
 //        /* first parse the leading left parenthesis */
@@ -18968,7 +18964,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -18986,7 +18982,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                case L_PAREN_TOK:
-//                    if ( ( (this.l1_tok).code == STRING_TOK ) &&
+//                    if ( ( (this.l1_tok).code == STRING_TOK ) && 
 //                         ( (((this.l1_tok).aux) & TEXT_QSTRING_FLAG) != 0 ) &&
 //                         ( (((this.l1_tok).aux) & NONBLANK_FLAG) != 0 ) )
 //                    {
@@ -19024,11 +19020,11 @@ public class MacshapaODBReader
 //                case EOF_TOK:
 //                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                            "EOF in the import formats list in the SYSTEM> " +
-//                            "IMPORT-FORMATS-LIST> attribute.\n", true, true);
+//                            "IMPORT-FORMATS-LIST> attribute.\n", true, true); 
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -19046,13 +19042,13 @@ public class MacshapaODBReader
 //     * This method is the top level routine in a collection of functions that
 //     * parses a 'IMPORT-FORMAT-LISTS> attribute>  The grammar generating the
 //     * import formats attribute is given below:
-//     *
-//     *     <import_formats_attribute> -->
+//     * 
+//     *     <import_formats_attribute> --> 
 //     *             '(' 'IMPORT-FORMAT-LISTS>' <imp_formats_list> ')'
 //     *
 //     *     <imp_formats_list> --> '(' (<imp_format_list>)* ')'
 //     *
-//     *     <imp_format_list> -->
+//     *     <imp_format_list> --> 
 //     *             '(' <imp_format_list_name> <imp_format_list_alist> ')'
 //     *
 //     *     <imp_format_list_name> --> <non_blank_text_quote_string>
@@ -19061,7 +19057,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_format_attributes> --> { <imp_prods_attribute> }
 //     *
-//     *     <imp_prods_attribute> -->
+//     *     <imp_prods_attribute> --> 
 //     *             '(' 'IMPORT-PRODUCTION-LIST>' <imp_prod_list> ')'
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -19086,50 +19082,50 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
 //     *
-//     *                                             JRM - 6/29/08
+//     *                                              - 6/29/08
 //     *
 //     * Parameters:
 //     *
@@ -19150,18 +19146,18 @@ public class MacshapaODBReader
 //        final String missing_import_formats_list_mssg =
 //                "The IMPORT-FORMAT-LISTS> attribute appears not to contain a " +
 //                "value.  The attribute will be ignored.\n";
-//        final String import_formats_list_type_mismatch_mssg =
+//        final String import_formats_list_type_mismatch_mssg = 
 //                "The value of a IMPORT-FORMAT-LISTS> attribute must be a list.  " +
 //                "The attribute will be ignored.\n";
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the alignments attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -19170,21 +19166,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == IMPORT_FORMATS_LIST_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is IMPORT-FORMAT-LISTS> */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok isnt IMPORT-FORMAT-LISTS>.");
 //            }
 //        }
@@ -19230,7 +19226,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -19272,7 +19268,7 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the import formats
+//                /* since we are cleaning up any excess values in the import formats 
 //                 * list attribute, this else clause is unreachable at present.
 //                 * Should we choose to drop the above attempt at error recovery,
 //                 * this clause will again become reachable.
@@ -19316,54 +19312,54 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     * In addition to parsing the import production, this function also
-//     * allocates an instance of the Prod structure, loads the data from the
-//     * production into it, and appends it to the linked list of instances of
-//     * Prod associated with the instance of the Format structure.
+//     * In addition to parsing the import production, this function also 
+//     * allocates an instance of the Prod structure, loads the data from the 
+//     * production into it, and appends it to the linked list of instances of 
+//     * Prod associated with the instance of the Format structure.  
 //     *
-//     *                                             JRM - 7/1/08
+//     *                                              - 7/1/08
 //     *
 //     * Parameters:
 //     *
@@ -19406,25 +19402,25 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
-//        if ( ( format_ptr == null ) ||
-//             ( format_ptr->name == null ) ||
+//        
+//        if ( ( format_ptr == null ) || 
+//             ( format_ptr->name == null ) || 
 //             ( format_ptr->next != null ) )
 //        {
 //            this.proceed = FALSE;
 //            error3("SYSTEM ERROR", "format_ptr seems to be corrupt on entry", fcnNamePtr);
 //        }
-//
+//        
 //        /* parse the attribute list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
 //                 ( (this.l1_tok).code == R_PAREN_TOK ) )
 //            {
 //                get_next_token();
@@ -19435,10 +19431,10 @@ public class MacshapaODBReader
 //                        "The opening left parenthesis of an import " +
 //                        "production appears to be missing.\n");
 //            }
-//            else
+//            else 
 //            {
-//                /* if a left paren is missing, the first item in the a-list
-//                 * is not an a-list  entry.  If we try to recover from this
+//                /* if a left paren is missing, the first item in the a-list 
+//                 * is not an a-list  entry.  If we try to recover from this 
 //                 * error here, we will only confuse things further.  Thus we
 //                 * eat the left parenthesis & let the cards fall where they may.
 //                 */
@@ -19448,7 +19444,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
@@ -19469,7 +19465,7 @@ public class MacshapaODBReader
 //        action_list_ptr      = null;
 //
 //        /* now parse the a-list assocated with the import production */
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                 ( ! done ) )
 //        {
 //            if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -19559,7 +19555,7 @@ public class MacshapaODBReader
 //                            if ( ! have_is_traced )
 //                            {
 //                                 have_is_traced = true;
-//                                 is_traced =
+//                                 is_traced = 
 //                                         parse_imp_prod_is_traced_attribute();
 //                            }
 //                            else
@@ -19582,7 +19578,7 @@ public class MacshapaODBReader
 //
 //                                if ( ! have_program_actions )
 //                                {
-//                                     action_list_ptr =
+//                                     action_list_ptr = 
 //                                         parse_imp_prod_insert_actions_attribute();
 //                                }
 //                                else
@@ -19619,7 +19615,7 @@ public class MacshapaODBReader
 //
 //                                if ( ! have_insert_actions )
 //                                {
-//                                    action_list_ptr =
+//                                    action_list_ptr = 
 //                                        parse_imp_prod_program_actions_attribute();
 //                                }
 //                                else
@@ -19700,13 +19696,13 @@ public class MacshapaODBReader
 //         /* create the production & add it to the production list */
 //         if ( ! this.abort_parse )
 //         {
-//             if ( ( have_name ) &&
-//                  ( have_pattern ) &&
-//                  ( have_hard_prec ) &&
-//                  ( have_is_shown ) &&
-//                  ( have_is_traced ) &&
+//             if ( ( have_name ) && 
+//                  ( have_pattern ) && 
+//                  ( have_hard_prec ) && 
+//                  ( have_is_shown ) && 
+//                  ( have_is_traced ) && 
 //                  ( ( have_insert_actions ) || ( have_program_actions ) ) &&
-//                  ( name_ptr != NULL ) &&
+//                  ( name_ptr != NULL ) && 
 //                  ( pattern_str_ptr != null ) &&
 //                  ( action_list_ptr != null ) )
 //             {
@@ -19727,7 +19723,7 @@ public class MacshapaODBReader
 //                     prod_ptr->isTraced = is_traced;
 //                     prod_ptr->isShown  = is_shown;
 //
-//                     if ( have_insert_actions )
+//                     if ( have_insert_actions ) 
 //                     {
 //                         prod_ptr->actionKind = INSERT_ACTION;
 //                         prod_ptr->actions    = action_list_ptr;
@@ -19743,7 +19739,7 @@ public class MacshapaODBReader
 //                     }
 //                     else
 //                     {
-//                         throw SystemErrorException(mName +
+//                         throw SystemErrorException(mName + 
 //                                 "This clause should be unreachable.");
 //                     }
 //                 }
@@ -19754,11 +19750,11 @@ public class MacshapaODBReader
 //                 if ( pattern_str_ptr != NULL ) freeCstr(pattern_str_ptr);
 //                 if ( action_list_ptr != NULL ) freeActionList(action_list_ptr);
 //
-//                 if ( ( ! have_name ) ||
-//                      ( ! have_pattern ) ||
-//                      ( ! have_hard_prec ) ||
-//                      ( ! have_is_shown ) ||
-//                      ( ! have_is_traced ) ||
+//                 if ( ( ! have_name ) || 
+//                      ( ! have_pattern ) || 
+//                      ( ! have_hard_prec ) || 
+//                      ( ! have_is_shown ) || 
+//                      ( ! have_is_traced ) || 
 //                      ( ( ! have_insert_actions ) && ( ! have_program_actions ) ) )
 //                {
 //                    post_warning_message(this.l0_tok, MISSING_REQ_ATTR_IN_IMP_PROD_WARN,
@@ -19776,7 +19772,7 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_hard_prec_attribute()
 //     *
-//     * This function parses an import production hard precidence attribute, and
+//     * This function parses an import production hard precidence attribute, and 
 //     * returns the integer value associated with the attribute, or zero if no
 //     * integer value is found.  The hard precidence attribute is generated by
 //     * the following production:
@@ -19784,12 +19780,12 @@ public class MacshapaODBReader
 //     *     <imp_prod_hard_prec_attribute> --> '(' 'HARD-PREC>' <integer> ')'
 //     *
 //     * As best I can tell, the hardPrec field of the Prod structure is not used
-//     * for anything.  Thus I am not particularly concerned about using a more or
-//     * less randomly selected default value.  (Actually, zero is not quite
-//     * random.  It is the value to which the hardPrec field is initialized in
+//     * for anything.  Thus I am not particularly concerned about using a more or 
+//     * less randomly selected default value.  (Actually, zero is not quite 
+//     * random.  It is the value to which the hardPrec field is initialized in 
 //     * the allocProd() function in import_internals.c.)
 //     *
-//     *                                             JRM - 7/2/08
+//     *                                              - 7/2/08
 //     *
 //     * Parameters:
 //     *
@@ -19812,7 +19808,7 @@ public class MacshapaODBReader
 //        final String missing_hard_prec_mssg =
 //                "A HARD-PREC> attribute appears not to contain a value.  " +
 //                "Value forced to 0.\n";
-//        final String hard_prec_type_mismatch_mssg =
+//        final String hard_prec_type_mismatch_mssg = 
 //                "The value of a HARD-PREC> attribute must be an integer.  " +
 //                "Value forced to 0.\n";
 //        int hardPrec;
@@ -19821,12 +19817,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -19835,21 +19831,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code isnt L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == HARD_PREC_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* system error - we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok inst HARD-PREC>.");
 //            }
 //        }
@@ -19910,7 +19906,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
@@ -19951,7 +19947,7 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the hard
+//                /* since we are cleaning up any excess values in the hard 
 //                 * precidence, this else clause is unreachable at present.
 //                 */
 //
@@ -19969,42 +19965,42 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_action_alist()
 //     *
-//     * This method parses an import production insert action a-lists, and
-//     * returns a pointer to an instance of Action which has been loaded with
-//     * the data obtained from the a-list.  Import production insert action
+//     * This method parses an import production insert action a-lists, and 
+//     * returns a pointer to an instance of Action which has been loaded with 
+//     * the data obtained from the a-list.  Import production insert action 
 //     * a-lists may be generated by the following productions:
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
 //     * The function returns NULL if an error is detected, or if a required
 //     * attribute is missing.
 //     *
-//     *                                             JRM - 7/2/08
+//     *                                              - 7/2/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
-//     * Returns:  Pointer an instance of the Action structure, or NULL if
+//     * Returns:  Pointer an instance of the Action structure, or NULL if 
 //     *     any errors are detected.
 //     *
 //     * Changes:
@@ -20033,17 +20029,17 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the attribute list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
 //                 ( (this.l1_tok).code == R_PAREN_TOK ) )
 //            {
 //                get_next_token();
@@ -20054,11 +20050,11 @@ public class MacshapaODBReader
 //                        "The opening left parenthesis of an import production " +
 //                        "insert action a-list appears to be missing.\n");
 //            }
-//            else
+//            else 
 //            {
-//                /* if a left paren is missing, the first item in the a-list is
-//                 * not an a-list entry.  If we try to recover from this error
-//                 * here, we will only confuse things further.  Thus we eat the
+//                /* if a left paren is missing, the first item in the a-list is 
+//                 * not an a-list entry.  If we try to recover from this error 
+//                 * here, we will only confuse things further.  Thus we eat the 
 //                 * left parenthesis & let the cards fall where they may.
 //                 */
 //
@@ -20067,7 +20063,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -20084,7 +20080,7 @@ public class MacshapaODBReader
 //
 //        /* now parse the a-list */
 //
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                ( ! done ) )
 //        {
 //            if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -20097,7 +20093,7 @@ public class MacshapaODBReader
 //                            if ( ! have_var_str )
 //                            {
 //                                 have_var_str = true;
-//                                 var_str_ptr =
+//                                 var_str_ptr = 
 //                                     parse_imp_prod_insert_action_var_attribute();
 //                            }
 //                            else
@@ -20117,7 +20113,7 @@ public class MacshapaODBReader
 //                            if ( ! have_onset_str )
 //                            {
 //                                have_onset_str = true;
-//                                onset_str_ptr =
+//                                onset_str_ptr = 
 //                                    parse_imp_prod_insert_action_onset_attribute();
 //                            }
 //                            else
@@ -20137,7 +20133,7 @@ public class MacshapaODBReader
 //                            if ( ! have_offset_str )
 //                            {
 //                                have_offset_str = true;
-//                                offset_str_ptr =
+//                                offset_str_ptr = 
 //                                    parse_imp_prod_insert_action_offset_attribute();
 //                            }
 //                            else
@@ -20157,7 +20153,7 @@ public class MacshapaODBReader
 //                            if ( ! have_val_str )
 //                            {
 //                                 have_val_str = true;
-//                                 val_str_ptr =
+//                                 val_str_ptr = 
 //                                     parse_imp_prod_insert_action_val_attribute();
 //                            }
 //                            else
@@ -20224,14 +20220,14 @@ public class MacshapaODBReader
 //            }
 //        } /* while */
 //
-//        /* if we have all the data, allocate the instance of Action and load
-//         * pointers to strings into it.  Otherwise, we discard the CStrings
+//        /* if we have all the data, allocate the instance of Action and load 
+//         * pointers to strings into it.  Otherwise, we discard the CStrings 
 //         * that we would otherwise load into the action.
 //         */
 //
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( have_var_str ) && ( have_onset_str ) &&
+//            if ( ( have_var_str ) && ( have_onset_str ) && 
 //                 ( have_offset_str ) && ( have_val_str ) )
 //            {
 //                action_ptr = allocAction();
@@ -20271,15 +20267,15 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_action_offset_attribute()
 //     *
-//     * This function parses an import production insert action offset attribute,
-//     * and returns a pointer to a CString containing the contents of the
-//     * <text_quote_string>.  This attribute is generated by the following
+//     * This function parses an import production insert action offset attribute, 
+//     * and returns a pointer to a CString containing the contents of the 
+//     * <text_quote_string>.  This attribute is generated by the following 
 //     * production:
 //     *
-//     * <imp_prod_insert_action_offset_attribute> -->
+//     * <imp_prod_insert_action_offset_attribute> --> 
 //     *                                  '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/10/08
+//     *                                              - 7/10/08
 //     *
 //     * Parameters:
 //     *
@@ -20302,7 +20298,7 @@ public class MacshapaODBReader
 //        final String missing_offset_mssg =
 //                "An OFFSET> attribute in an import production insert action " +
 //                "appears not to contain a value.  Value forced to the empty string.\n";
-//        final String offset_type_mismatch_mssg =
+//        final String offset_type_mismatch_mssg = 
 //                "The value associated with an OFFSET> attribute in an import " +
 //                "production insert action must be a quoted string.  Value forced " +
 //                "to the empty string.\n";
@@ -20310,12 +20306,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the offset attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -20324,14 +20320,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == OFFSET_LABEL ) )
 //            {
 //                get_next_token();
@@ -20397,7 +20393,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -20463,15 +20459,15 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_action_onset_attribute()
 //     *
-//     * This function parses an import production insert action onset attribute,
-//     * and returns a reference to a String containing the contents of the
-//     * <text_quote_string>.  This attribute is generated by the following
+//     * This function parses an import production insert action onset attribute, 
+//     * and returns a reference to a String containing the contents of the 
+//     * <text_quote_string>.  This attribute is generated by the following 
 //     * production:
 //     *
 //     * <imp_prod_insert_action_onset_attribute> -->
 //     *                      '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/11/08
+//     *                                              - 7/11/08
 //     *
 //     * Parameters:
 //     *
@@ -20496,7 +20492,7 @@ public class MacshapaODBReader
 //                "An ONSET> attribute in an import production insert action " +
 //                "appears not to contain a value.  " +
 //                "Value forced to the empty string.\n";
-//        String onset_type_mismatch_mssg =
+//        String onset_type_mismatch_mssg = 
 //                "The value associated with an ONSET> attribute in an import " +
 //                "production insert action must be a quoted string.  " +
 //                "Value forced to the empty string.\n";
@@ -20504,10 +20500,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the onset attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -20518,14 +20514,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == ONSET_LABEL ) )
 //            {
 //                get_next_token();
@@ -20543,7 +20539,7 @@ public class MacshapaODBReader
 //             {
 //                case STRING_TOK:
 //                    str = new String(this.l0_tok.toString());
-//
+//                    
 //                    if ( ! this.abort_parse )
 //                    {
 //                        get_next_token();
@@ -20591,7 +20587,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -20662,47 +20658,47 @@ public class MacshapaODBReader
 //     * production insert actions attributes may be generated by the following
 //     * productions:
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
 //     * The function returns a pointer to the first element in a
 //     * linked list of instances of the Action structure, whose type
 //     * definition may be found in import.h.  All instances of Action
-//     * in this structure will be of INSERT_ACTION kind.
+//     * in this structure will be of INSERT_ACTION kind.  
 //     *
 //     * Note that a NULL pointer will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None
 //     *
-//     * Returns:  Pointer to the first element in a linked list of
+//     * Returns:  Pointer to the first element in a linked list of 
 //     *     instances of the Action structure, or NULL if the list
 //     *     happens to be empty.
 //     *
@@ -20720,7 +20716,7 @@ public class MacshapaODBReader
 //        final String missing_insert_actions_mssg =
 //                "An INSERT-ACTIONS> attribute appears not to contain a value.  " +
 //                "The associated import production will be discarded.\n";
-//        final String insert_actions_type_mismatch_mssg =
+//        final String insert_actions_type_mismatch_mssg = 
 //                "The value of an INSERT-ACTIONS> attribute must be a list.  " +
 //                "The associated import production will be discarded.\n";
 //        ActionPtr action_list_ptr;
@@ -20729,10 +20725,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -20743,21 +20739,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == INSERT_ACTIONS_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != INSERT-ACTIONS>.");
 //            }
 //        }
@@ -20803,7 +20799,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -20845,8 +20841,8 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the insert
-//                 * actions attribute, this else clause is unreachable at
+//                /* since we are cleaning up any excess values in the insert 
+//                 * actions attribute, this else clause is unreachable at 
 //                 * present.
 //                 */
 //
@@ -20865,49 +20861,49 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_actions_list()
 //     *
-//     * This method parses a list of import production insert actions, and
-//     * returns a pointer to a linked list of instance of Action.  Lists of
-//     * import production insert actions may be generated by the following
+//     * This method parses a list of import production insert actions, and 
+//     * returns a pointer to a linked list of instance of Action.  Lists of 
+//     * import production insert actions may be generated by the following 
 //     * productions:
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
 //     * The function returns a pointer to the first element in a
 //     * linked list of instances of the Action structure, whose type
 //     * definition may be found in import.h.  All instances of Action
-//     * in this structure will be of INSERT_ACTION kind.
+//     * in this structure will be of INSERT_ACTION kind.  
 //     *
 //     * Note that a NULL pointer will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
-//     * Returns:  Pointer to the first element in a linked list of
+//     * Returns:  Pointer to the first element in a linked list of 
 //     *     instances of the Action structure, or NULL if the list
 //     *     happens to be empty.
 //     *
@@ -20931,7 +20927,7 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
 //
@@ -20945,7 +20941,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -20969,10 +20965,10 @@ public class MacshapaODBReader
 //                    {
 //                        if ( action_ptr != NULL )
 //                        {
-//                            action_list_ptr = AddActionListEnd(action_list_ptr,
+//                            action_list_ptr = AddActionListEnd(action_list_ptr, 
 //                                                               action_ptr);
 //                        }
-//                    }
+//                    } 
 //                    break;
 //
 //                case BOOL_TOK:
@@ -21002,7 +20998,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -21023,22 +21019,22 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_action_val_attribute()
 //     *
-//     * This method parses an import production insert action val attribute,
-//     * and returns a pointer to a CString containing the contents of the
-//     * <text_quote_string>.  This attribute is generated by the following
+//     * This method parses an import production insert action val attribute, 
+//     * and returns a pointer to a CString containing the contents of the 
+//     * <text_quote_string>.  This attribute is generated by the following 
 //     * production:
 //     *
-//     * <imp_prod_insert_action_val_attribute> -->
+//     * <imp_prod_insert_action_val_attribute> --> 
 //     *                                  '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
 //     * Returns: Refernce to a String containing the string associated
-//     *          with the VAL> attribute, or the empty string if no string is
+//     *          with the VAL> attribute, or the empty string if no string is 
 //     *          found.
 //     *
 //     * Changes:
@@ -21056,7 +21052,7 @@ public class MacshapaODBReader
 //                "An VAL> attribute in an import production insert action " +
 //                "appears not to contain a value.  Value forced to the empty " +
 //                "string.\n";
-//        final String val_type_mismatch_mssg =
+//        final String val_type_mismatch_mssg = 
 //                "The value associated with a VAL> attribute in an import " +
 //                "production insert action must be a quoted string.  Value " +
 //                "forced to the empty string.\n";
@@ -21066,10 +21062,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the val attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -21080,14 +21076,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == VAL_LABEL ) )
 //            {
 //                get_next_token();
@@ -21153,7 +21149,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -21220,22 +21216,22 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_insert_action_var_attribute()
 //     *
-//     * This method parses an import production insert action var attribute,
-//     * and returns a referende to a String containing the contents of the
-//     * <text_quote_string>.  This attribute is generated by the following
+//     * This method parses an import production insert action var attribute, 
+//     * and returns a referende to a String containing the contents of the 
+//     * <text_quote_string>.  This attribute is generated by the following 
 //     * production:
 //     *
-//     * <imp_prod_insert_action_var_attribute> -->
+//     * <imp_prod_insert_action_var_attribute> --> 
 //     *                          '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *   - None.
 //     *
 //     * Returns: Refernce to a String containing the string associated
-//     *          with the VAR> attribute, or the empty string if no string is
+//     *          with the VAR> attribute, or the empty string if no string is 
 //     *          found.
 //     *
 //     * Changes:
@@ -21253,7 +21249,7 @@ public class MacshapaODBReader
 //                "A VAR> attribute in an import production insert action " +
 //                "appears not to contain a value.  " +
 //                "Value forced to the empty string.\n";
-//        final String var_type_mismatch_mssg =
+//        final String var_type_mismatch_mssg = 
 //                "The value associated with a VAR> attribute in an import " +
 //                "production insert action must be a quoted string.  " +
 //                "Value forced to the empty string.\n";
@@ -21263,10 +21259,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the var attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -21277,14 +21273,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == VAR_LABEL ) )
 //            {
 //                get_next_token();
@@ -21295,8 +21291,8 @@ public class MacshapaODBReader
 //            }
 //        }
 //
-//        /* read the value associated with the a-list entry & discard
-//         * any excess values
+//        /* read the value associated with the a-list entry & discard 
+//         * any excess values 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -21352,7 +21348,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -21425,7 +21421,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_shown_attribute> --> '(' 'IS-SHOWN>' <boolean> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21448,7 +21444,7 @@ public class MacshapaODBReader
 //        final String missing_is_shown_mssg =
 //                "An IS-SHOWN> attribute appears not to contain a value.  " +
 //                "Value forced to FALSE.\n";
-//        final String is_shown_type_mismatch_mssg =
+//        final String is_shown_type_mismatch_mssg = 
 //                "The value of an IS-SHOWN> attribute must be either TRUE " +
 //                "or FALSE.  Value forced to FALSE.\n";
 //        boolean is_shown;
@@ -21457,10 +21453,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the version attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -21471,21 +21467,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token == a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == IS_SHOWN_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != IS-SHOWN>.");
 //            }
 //        }
@@ -21541,7 +21537,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //             }
@@ -21583,7 +21579,7 @@ public class MacshapaODBReader
 //            else
 //            {
 //                /* since we are cleaning up any excess values in the is shown
-//                 * attribute, this else clause is unreachable at present.
+//                 * attribute, this else clause is unreachable at present.  
 //                 * Should we choose to drop the above attempt at error recovery,
 //                 * this clause will again become reachable.
 //                 */
@@ -21609,7 +21605,7 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -21632,7 +21628,7 @@ public class MacshapaODBReader
 //        final String missing_is_traced_mssg =
 //                "An IS-TRACED> attribute appears not to contain a value.  " +
 //                "Value forced to FALSE.\n";
-//        final String is_traced_type_mismatch_mssg =
+//        final String is_traced_type_mismatch_mssg = 
 //                "The value of an IS-TRACED> attribute must be either " +
 //                "TRUE or FALSE.  Value forced to FALSE.\n";
 //        boolean is_traced;
@@ -21641,10 +21637,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the version attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -21655,21 +21651,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == IS_TRACED_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != IS-TRACED>.");
 //            }
 //        }
@@ -21725,7 +21721,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
@@ -21767,7 +21763,7 @@ public class MacshapaODBReader
 //            else
 //            {
 //                /* since we are cleaning up any excess values in the is traced
-//                 * attribute, this else clause is unreachable at present.
+//                 * attribute, this else clause is unreachable at present.  
 //                 * Should we choose to drop the above attempt at error recovery,
 //                 * this clause will again become reachable.
 //                 */
@@ -21787,7 +21783,7 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_list()
 //     *
-//     * This method parses a list of import productions.  This list is
+//     * This method parses a list of import productions.  This list is 
 //     * generated by the following productions:
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -21812,56 +21808,56 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - format_ptr:  Pointer to an instance of the Format structure, whose
 //     *          type definition may be found in import.h.  format_ptr points
-//     *          to the instance of format into which we will load the import
-//     *          productions as we read them.
+//     *          to the instance of format into which we will load the import 
+//     *          productions as we read them. 
 //     *
 //     * Returns:  Void.
 //     *
@@ -21879,11 +21875,11 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throws SystemErrorException(mName +
+//            throws SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
-//        if ( ( format_ptr == NULL ) || ( format_ptr->name == NULL ) ||
+//        
+//        if ( ( format_ptr == NULL ) || ( format_ptr->name == NULL ) || 
 //             ( format_ptr->prods != NULL ) || ( format_ptr->next != NULL ) )
 //        {
 //            throw new SystemErrorException(mName + ]
@@ -21891,7 +21887,7 @@ public class MacshapaODBReader
 //        }
 //
 //        /* parse the list of import productions */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -21900,7 +21896,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token == a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -21948,7 +21944,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -21964,20 +21960,20 @@ public class MacshapaODBReader
 //     * parse_imp_prod_name_attribute()
 //     *
 //     * This method parses an import production name attribute, and returns
-//     * a refereence to a String containing the contents of the
-//     * <text_quote_string>.  Import production name attributes are generated
+//     * a refereence to a String containing the contents of the 
+//     * <text_quote_string>.  Import production name attributes are generated 
 //     * by the following production:
 //     *
 //     *     <imp_prod_name_attribute> --> '(' 'NAME>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
 //     * Returns: Reference to a String containing the name associated
-//     *          with the NAME> attribute, or the empty string if no name is
+//     *          with the NAME> attribute, or the empty string if no name is 
 //     *          found.
 //     *
 //     * Changes:
@@ -21994,7 +21990,7 @@ public class MacshapaODBReader
 //        final String missing_prod_name_mssg =
 //                "A NAME> attribute in an import production appears not to " +
 //                "contain a value.  The attribute will be ignored.\n";
-//        final String prod_name_type_mismatch_mssg =
+//        final String prod_name_type_mismatch_mssg = 
 //                "The value associated with the NAME> attribute in an import " +
 //                "production must be a quoted string.  " +
 //                "The attribute will be ignored.\n";
@@ -22002,10 +21998,10 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the version attribute */
 //
 //        /* first parse the leading left parenthesis */
@@ -22016,14 +22012,14 @@ public class MacshapaODBReader
 //        }
 //        else /* system error - we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == NAME_LABEL ) )
 //            {
 //                get_next_token();
@@ -22040,9 +22036,9 @@ public class MacshapaODBReader
 //            switch ( (this.l0_tok).code )
 //            {
 //                case STRING_TOK:
-//                    /* the following 255 character limit on the length of a
-//                     * pattern name is a legacy of the old import save and
-//                     * reload routines.  Don't change it without changing
+//                    /* the following 255 character limit on the length of a 
+//                     * pattern name is a legacy of the old import save and 
+//                     * reload routines.  Don't change it without changing 
 //                     * those routines as well.
 //                     */
 //
@@ -22107,7 +22103,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //             }
@@ -22150,9 +22146,9 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the import
-//                 * format name attribute, this else clause should be
-//                 * unreachable.
+//                /* since we are cleaning up any excess values in the import 
+//                 * format name attribute, this else clause should be 
+//                 * unreachable. 
 //                 */
 //
 //                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
@@ -22172,19 +22168,19 @@ public class MacshapaODBReader
 //     *
 //     * This method parses an import production pattern attribute, and returns
 //     * a reference to a String containing the contents of the
-//     * <text_quote_string>.  Import production pattern attributes are
+//     * <text_quote_string>.  Import production pattern attributes are 
 //     * generated by the following production:
 //     *
 //     *     <imp_prod_pattern_attribute> --> '(' 'PATTERN>' <text_quote_string> ')'
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
 //     * Returns: Reference to a String containing the pattern string associated
-//     *          with the PATTERN> attribute, or the empty string if no pattern
+//     *          with the PATTERN> attribute, or the empty string if no pattern 
 //     *          string is found.
 //     *
 //     * Changes:
@@ -22201,7 +22197,7 @@ public class MacshapaODBReader
 //        final String missing_pattern_mssg =
 //                "A PATTERN> attribute in an import production appears not to " +
 //                "contain a value.  The attribute will be ignored.\n";
-//        final String pattern_type_mismatch_mssg =
+//        final String pattern_type_mismatch_mssg = 
 //                "The value associated with the PATTERN> attribute in an " +
 //                "import production must be a quoted string.  " +
 //                "The attribute will be ignored.\n";
@@ -22209,12 +22205,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the version attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -22223,14 +22219,14 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == PATTERN_LABEL ) )
 //            {
 //                get_next_token();
@@ -22242,17 +22238,17 @@ public class MacshapaODBReader
 //            }
 //        }
 //
-//        /* read the value associated with the a-list entry & discard
-//         * any excess values
+//        /* read the value associated with the a-list entry & discard 
+//         * any excess values 
 //         */
 //        if ( ! this.abort_parse )
 //        {
 //            switch ( (this.l0_tok).code )
 //            {
 //                case STRING_TOK:
-//                    /* the following 255 character limit on the length of a
-//                     * pattern string is a legacy of the old import save and
-//                     * reload routines.  Don't change it without changing
+//                    /* the following 255 character limit on the length of a 
+//                     * pattern string is a legacy of the old import save and 
+//                     * reload routines.  Don't change it without changing 
 //                     * those routines as well.
 //                     */
 //
@@ -22265,7 +22261,7 @@ public class MacshapaODBReader
 //                    }
 //                    else
 //                    {
-//                        pattern_str =
+//                        pattern_str = 
 //                            new String((skipspace((this.l0_tok).str_ptr.toString()));
 //                    }
 //
@@ -22361,7 +22357,7 @@ public class MacshapaODBReader
 //            else
 //            {
 //                /* since we are cleaning up any excess values in the import
-//                 * format name attribute, this else clause should be
+//                 * format name attribute, this else clause should be 
 //                 * unreachable.
 //                 */
 //
@@ -22388,30 +22384,30 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_program_action_alist()
 //     *
-//     * This method parses an import production program action a-list, and
-//     * returns a pointer to an instance of Action which has been loaded with
-//     * the data obtained from the a-list.  Import production program action
+//     * This method parses an import production program action a-list, and 
+//     * returns a pointer to an instance of Action which has been loaded with 
+//     * the data obtained from the a-list.  Import production program action 
 //     * a-lists may be generated by the following productions:
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
 //     * The function returns NULL if an error is detected, or if a required
 //     * attribute is missing.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
-//     * Returns:  Pointer an instance of the Action structure, or NULL if
+//     * Returns:  Pointer an instance of the Action structure, or NULL if 
 //     *     any errors are detected.
 //     *
 //     * Changes:
@@ -22434,17 +22430,17 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the attribute list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
 //                 ( (this.l1_tok).code == R_PAREN_TOK ) )
 //            {
 //                get_next_token();
@@ -22456,11 +22452,11 @@ public class MacshapaODBReader
 //                        "production program action a-list appears to " +
 //                        "be missing.\n");
 //            }
-//            else
+//            else 
 //            {
-//                /* if a left paren is missing, the first item in the a-list is
-//                 * not an a-list entry.  If we try to recover from this error
-//                 * here, we will only confuse things further.  Thus we eat the
+//                /* if a left paren is missing, the first item in the a-list is 
+//                 * not an a-list entry.  If we try to recover from this error 
+//                 * here, we will only confuse things further.  Thus we eat the 
 //                 * left parenthesis & let the cards fall where they may.
 //                 */
 //
@@ -22469,7 +22465,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -22479,7 +22475,7 @@ public class MacshapaODBReader
 //
 //        /* now parse the a-list */
 //
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                ( ! done ) )
 //        {
 //            if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -22492,7 +22488,7 @@ public class MacshapaODBReader
 //                            if ( ! have_text_str )
 //                            {
 //                                have_text_str = true;
-//                                text_str =
+//                                text_str = 
 //                                    parse_imp_prod_program_action_text_attribute();
 //                            }
 //                            else
@@ -22559,8 +22555,8 @@ public class MacshapaODBReader
 //            }
 //        } /* while */
 //
-//        /* if we have all the data, allocate the instance of Action && load
-//         * references to strings into it.  Otherwise, we discard the Strings
+//        /* if we have all the data, allocate the instance of Action && load 
+//         * references to strings into it.  Otherwise, we discard the Strings 
 //         * that we would otherwise load into the action.
 //         */
 //
@@ -22604,29 +22600,29 @@ public class MacshapaODBReader
 //     * production program actions attributes may be generated by the following
 //     * productions:
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
 //     * The function returns a pointer to the first element in a
 //     * linked list of instances of the Action structure, whose type
 //     * definition may be found in import.h.  All instances of Action
-//     * in this structure will be of PROGRAM_ACTION kind.
+//     * in this structure will be of PROGRAM_ACTION kind.  
 //     *
 //     * Note that null will be returned if the list is empty.
 //     *
-//     *                                             JRM - 11/2/95
+//     *                                              - 11/2/95
 //     *
 //     * Parameters:
 //     *
@@ -22634,7 +22630,7 @@ public class MacshapaODBReader
 //     *
 //     * None.
 //     *
-//     * Returns: Reference to the first element in a linked list of
+//     * Returns: Reference to the first element in a linked list of 
 //     *          instances of the Action structure, or NULL if the list
 //     *          happens to be empty.
 //     *
@@ -22652,7 +22648,7 @@ public class MacshapaODBReader
 //        final String missing_program_actions_mssg =
 //                "An PROGRAM-ACTIONS> attribute appears not to contain a value.  " +
 //                "The associated import production will be discarded.\n";
-//        final String program_actions_type_mismatch_mssg =
+//        final String program_actions_type_mismatch_mssg = 
 //                "The value of an PROGRAM-ACTIONS> attribute must be a list.  " +
 //                "The associated import production will be discarded.\n";
 //        ActionPtr action_list_ptr;
@@ -22661,12 +22657,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -22675,21 +22671,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == PROGRAM_ACTIONS_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /*we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != PROGRAM-ACTIONS>.");
 //            }
 //        }
@@ -22736,7 +22732,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
@@ -22778,7 +22774,7 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the program
+//                /* since we are cleaning up any excess values in the program 
 //                 * actions attribute, this else clause is unreachable at present.
 //                 */
 //
@@ -22797,37 +22793,37 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_program_actions_list()
 //     *
-//     * This method parses a list of import production program actions, and
-//     * returns a pointer to a linked list of instance of Action.  Lists of
-//     * import production program actions may be generated by the following
+//     * This method parses a list of import production program actions, and 
+//     * returns a pointer to a linked list of instance of Action.  Lists of 
+//     * import production program actions may be generated by the following 
 //     * productions:
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
 //     * The method returns a reference to the first element in a
 //     * linked list of instances of the Action structure, whose type
 //     * definition may be found in import.h.  All instances of Action
-//     * in this structure will be of PROGRAM_ACTION kind.
+//     * in this structure will be of PROGRAM_ACTION kind.  
 //     *
 //     * Note that a null will be returned if the list is empty.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - None.
 //     *
-//     * Returns: Reference to the first element in a linked list of
+//     * Returns: Reference to the first element in a linked list of 
 //     *          instances of the Action structure, or null if the list
 //     *          happens to be empty.
 //     *
@@ -22852,12 +22848,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the import production program actions list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -22866,7 +22862,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token == a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -22893,7 +22889,7 @@ public class MacshapaODBReader
 //                        {
 //                            if ( action_ptr != NULL )
 //                            {
-//                                action_list_ptr =
+//                                action_list_ptr = 
 //                                        AddActionListEnd(action_list_ptr, action_ptr);
 //                            }
 //                        }
@@ -22901,7 +22897,7 @@ public class MacshapaODBReader
 //                    else
 //                    {
 //                        if ( ! excess_actions_warning_delivered )
-//                        {
+//                        { 
 //                            excess_actions_warning_delivered = TRUE;
 //
 //                            post_warning_message(this.l0_tok, EXCESS_IMP_PROD_PGM_ACTIONS_WARN,
@@ -22912,7 +22908,7 @@ public class MacshapaODBReader
 //                        {
 //                            parse_arbitrary_list();
 //                        }
-//                    }
+//                    } 
 //                    break;
 //
 //                case BOOL_TOK:
@@ -22942,7 +22938,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -22962,15 +22958,15 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prod_program_action_text_attribute()
 //     *
-//     * This method parses an import production program action text attribute,
-//     * and returns a pointer to a CString containing the contents of the
-//     * <text_quote_string>.  This attribute is generated by the following
+//     * This method parses an import production program action text attribute, 
+//     * and returns a pointer to a CString containing the contents of the 
+//     * <text_quote_string>.  This attribute is generated by the following 
 //     * production:
 //     *
-//     * <imp_prod_program_action_text_attribute> -->
-//     *                                  '(' 'TEXT>' <text_quote_string> ')'
+//     * <imp_prod_program_action_text_attribute> --> 
+//     *                                  '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -22994,7 +22990,7 @@ public class MacshapaODBReader
 //                "An TEXT> attribute in an import production program action " +
 //                "appears not to contain a value.  Value forced to the empty " +
 //                "string.\n";
-//        final String text_type_mismatch_mssg =
+//        final String text_type_mismatch_mssg = 
 //                "The value associated with a TEXT> attribute in an import " +
 //                "production program action must be a quoted string.  " +
 //                "Value forced to the empty string.\n";
@@ -23002,12 +22998,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the text attribute */
-//
+//    
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -23016,21 +23012,21 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == TEXT_LABEL ) )
 //            {
 //                get_next_token();
 //            }
 //            else /* we shouldn't have been called unless the next token is an a-list tag */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != TEXT>.");
 //            }
 //        }
@@ -23090,7 +23086,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //             }
@@ -23157,10 +23153,10 @@ public class MacshapaODBReader
 //     *
 //     * parse_imp_prods_attribute()
 //     *
-//     * This method parses an import productions attribute list.  This list is
+//     * This method parses an import productions attribute list.  This list is 
 //     * generated by the following productions:
 //     *
-//     *     <imp_prods_attribute> -->
+//     *     <imp_prods_attribute> --> 
 //     *             '(' 'IMPORT-PRODUCTION-LIST>' <imp_prod_list> ')'
 //     *
 //     *     <imp_prod_list> --> '(' (<imp_prod>)* ')'
@@ -23185,56 +23181,56 @@ public class MacshapaODBReader
 //     *
 //     *     <imp_prod_is_traced_attribute> --> '(' 'IS-TRACED>' <boolean> ')'
 //     *
-//     *     <imp_prod_insert_actions_attribute> -->
+//     *     <imp_prod_insert_actions_attribute> --> 
 //     *             '(' 'INSERT-ACTIONS>' <imp_prod_insert_actions_list> ')'
 //     *
-//     *     <imp_prod_insert_actions_list> -->
+//     *     <imp_prod_insert_actions_list> --> 
 //     *             '(' (<imp_prod_insert_action_alist>)* ')'
 //     *
-//     *     <imp_prod_insert_action_alist> -->
+//     *     <imp_prod_insert_action_alist> --> 
 //     *             '(' <imp_prod_insert_action_attributes> ')'
 //     *
-//     *     <imp_prod_insert_action_attributes> -->
-//     *             ( <imp_prod_insert_action_var_attribute>
-//     *               <imp_prod_insert_action_onset_attribute>
-//     *               <imp_prod_insert_action_offset_attribute>
+//     *     <imp_prod_insert_action_attributes> --> 
+//     *             ( <imp_prod_insert_action_var_attribute> 
+//     *               <imp_prod_insert_action_onset_attribute> 
+//     *               <imp_prod_insert_action_offset_attribute> 
 //     *               <imp_prod_insert_action_val_attribute> )
 //     *
-//     *     <imp_prod_insert_action_var_attribute> -->
+//     *     <imp_prod_insert_action_var_attribute> --> 
 //     *             '(' 'VAR>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_onset_attribute> -->
+//     *     <imp_prod_insert_action_onset_attribute> --> 
 //     *             '(' 'ONSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_offset_attribute> -->
+//     *     <imp_prod_insert_action_offset_attribute> --> 
 //     *             '(' 'OFFSET>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_insert_action_val_attribute> -->
+//     *     <imp_prod_insert_action_val_attribute> --> 
 //     *             '(' 'VAL>' <text_quote_string> ')'
 //     *
-//     *     <imp_prod_program_actions_attribute> -->
+//     *     <imp_prod_program_actions_attribute> --> 
 //     *             '(' 'PROGRAM-ACTIONS>' <imp_prod_program_actions_list> ')'
 //     *
-//     *     <imp_prod_program_actions_list> -->
+//     *     <imp_prod_program_actions_list> --> 
 //     *             '(' (<imp_prod_program_action_alist>)* ')'
 //     *
-//     *     <imp_prod_program_action_alist> -->
+//     *     <imp_prod_program_action_alist> --> 
 //     *             '(' <imp_prod_program_action_attributes> ')'
 //     *
-//     *     <imp_prod_program_action_attributes> -->
+//     *     <imp_prod_program_action_attributes> --> 
 //     *             ( <imp_prod_program_action_text_attribute> )
 //     *
 //     *     <imp_prod_program_action_text_attribute> -->
-//     *             '(' 'TEXT>' <text_quote_string> ')'
+//     *             '(' 'TEXT>' <text_quote_string> ')' 
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
 //     *    - format_ptr:  Pointer to an instance of the Format structure, whose
 //     *          type definition may be found in import.h.  format_ptr points
-//     *          to the instance of format into which we will load the import
-//     *          productions as we read them.
+//     *          to the instance of format into which we will load the import 
+//     *          productions as we read them. 
 //     *
 //     * Returns:  Void.
 //     *
@@ -23251,25 +23247,25 @@ public class MacshapaODBReader
 //        final String missing_import_prods_list_mssg =
 //                "An IMPORT-PRODUCTION-LIST> attribute appears not to contain " +
 //                "a value.  The attribute will be ignored.\n";
-//        final String import_prods_list_type_mismatch_mssg =
+//        final String import_prods_list_type_mismatch_mssg = 
 //                "The value of a IMPORT-PRODUCTION-LIST> attribute must be a " +
 //                "list.  The attribute will be ignored.\n";
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
-//        if ( ( format_ptr == NULL ) || ( format_ptr->name == NULL ) ||
+//        
+//        if ( ( format_ptr == NULL ) || ( format_ptr->name == NULL ) || 
 //             ( format_ptr->prods != NULL ) || ( format_ptr->next != NULL ) )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "format_ptr seems to be corrupt on entry");
 //        }
-//
+//        
 //        /* parse the import productions attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -23278,7 +23274,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -23286,16 +23282,16 @@ public class MacshapaODBReader
 //
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == IMPORT_PRODUCTION_LIST_LABEL ) )
 //            {
 //                get_next_token();
 //            }
-//            else /* we shouldn't have been called unless the next token
-//                  * is IMPORT-FORMAT-LISTS>
+//            else /* we shouldn't have been called unless the next token 
+//                  * is IMPORT-FORMAT-LISTS> 
 //                  */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != IMPORT-PRODUCTION-LIST>.");
 //            }
 //        }
@@ -23343,7 +23339,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -23385,9 +23381,9 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the import
-//                 * productions list attribute, this else clause is unreachable
-//                 * at present.  Should we choose to drop the above attempt at
+//                /* since we are cleaning up any excess values in the import 
+//                 * productions list attribute, this else clause is unreachable 
+//                 * at present.  Should we choose to drop the above attempt at 
 //                 * error recovery, this clause will again become reachable.
 //                 */
 //
@@ -23409,12 +23405,12 @@ public class MacshapaODBReader
 //     * This method parses a list of spreadsheet variable names that are to
 //     * be added to the shapaPane of the current document, thereby making them
 //     * visible.  This list is generated by the following productions:
-//     *
+//     * 
 //     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
-//     *
+//     * 
 //     *     <shapa_pane_var_name> --> <s_var_name>
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -23439,12 +23435,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the shapa pane vars list */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -23453,7 +23449,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw3 new SystemErrorException(mName +
+//            throw3 new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -23483,8 +23479,8 @@ public class MacshapaODBReader
 //                            }
 //                        }
 //
-//                        /* get pointer to the spreadsheet variable.  The
-//                         * spreadsheet variable should already have been
+//                        /* get pointer to the spreadsheet variable.  The 
+//                         * spreadsheet variable should already have been 
 //                         * defined.  If not, lookupVar() will return NULL.
 //                         */
 //
@@ -23565,12 +23561,12 @@ public class MacshapaODBReader
 //                    case EOF_TOK:
 //                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
 //                                "EOF in the list associated with the SYSTEM> " +
-//                                "SHAPA-PANE-VARS> attribute.\n",
+//                                "SHAPA-PANE-VARS> attribute.\n", 
 //                                true, true);
 //                        break;
 //
 //                     default:
-//                         throw new SystemErrorException(mName +
+//                         throw new SystemErrorException(mName + 
 //                                 "Encountered unknown token type.");
 //                         break;
 //                }
@@ -23589,14 +23585,14 @@ public class MacshapaODBReader
 //     *
 //     * parse_shapa_pane_vars_attribute()
 //     *
-//     * This method parses a SHAPA-PANE-VARS> attribute, which is generated by
+//     * This method parses a SHAPA-PANE-VARS> attribute, which is generated by 
 //     * the following productions:
-//     *
-//     *     <shapa_pane_vars_attribute> -->
+//     * 
+//     *     <shapa_pane_vars_attribute> --> 
 //     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
-//     *
+//     * 
 //     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
-//     *
+//     * 
 //     *     <shapa_pane_var_name> --> <s_var_name>
 //     *
 //     * The purpose of this attribute is to support the insertion of user
@@ -23604,7 +23600,7 @@ public class MacshapaODBReader
 //     * document, thereby making them visible on the spreadsheet.  However,
 //     * the actual insertions are made in shapa_pane_var_list().
 //     *
-//     *                                             JRM - 10/28/95
+//     *                                              - 10/28/95
 //     *
 //     * Parameters:
 //     *
@@ -23626,19 +23622,19 @@ public class MacshapaODBReader
 //        final String missing_shapa_pane_vars_list_mssg =
 //                "The SHAPA-PANE-VARS> attribute appears not to contain a " +
 //                "value.  All spreadsheet variables will be made visible.\n";
-//        final String shapa_pane_vars_list_type_mismatch_mssg =
+//        final String shapa_pane_vars_list_type_mismatch_mssg = 
 //                "The value of a SHAPA-PANE-VARS> attribute must be a list " +
 //                "of spreadsheet names.  " +
 //                "All spreadsheet variables will be made visible.\n";
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the shapa pane vars attribute */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -23647,29 +23643,29 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
 //        /* read the a-list entry name */
 //        if ( ! this.abort_parse )
 //        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
 //                 ( (this.l0_tok).aux == SHAPA_PANE_VARS_LABEL ) )
 //            {
 //                get_next_token();
 //            }
-//            else /* we shouldn't have been called unless the next token
-//                  * is SHAPA-PANE-VARS>
+//            else /* we shouldn't have been called unless the next token 
+//                  * is SHAPA-PANE-VARS> 
 //                  */
 //            {
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != SHAPA-PANE-VARS>.");
 //            }
 //        }
 //
-//        /* read the value associated with the a-list entry & discard
-//         * any excess values
+//        /* read the value associated with the a-list entry & discard 
+//         * any excess values 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -23721,7 +23717,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                default:
-//                    throw new SystemErrorException(mName +
+//                    throw new SystemErrorException(mName + 
 //                            "Encountered unknown token type.");
 //                    break;
 //            }
@@ -23738,8 +23734,8 @@ public class MacshapaODBReader
 //            }
 //        }
 //
-//        /* discard any excess values that may appear in the
-//         * SHAPA-PANE-VARS> a-list entry
+//        /* discard any excess values that may appear in the 
+//         * SHAPA-PANE-VARS> a-list entry 
 //         */
 //        if ( ! this.abort_parse )
 //        {
@@ -23765,9 +23761,9 @@ public class MacshapaODBReader
 //            }
 //            else
 //            {
-//                /* since we are cleaning up any excess values in the shapa
-//                 * pane vars list attribute, this else clause is unreachable
-//                 * at present. Should we choose to drop the above attempt
+//                /* since we are cleaning up any excess values in the shapa 
+//                 * pane vars list attribute, this else clause is unreachable 
+//                 * at present. Should we choose to drop the above attempt 
 //                 * at error recovery, this clause will again become reachable.
 //                 */
 //
@@ -23786,7 +23782,7 @@ public class MacshapaODBReader
 //     *
 //     * parse_system_alist()
 //     *
-//     * This method parses the a-list associated with the system section of
+//     * This method parses the a-list associated with the system section of 
 //     * the open database body.  Structurally, this list is simply a list of
 //     * a-list entries, each of which is a two element list consisting a an
 //     * a-list entry name and its assocated value.  The productions generating
@@ -23799,20 +23795,20 @@ public class MacshapaODBReader
 //     *                               [<alignments-attribute>]
 //     *                               [<import_formats_attribute>] }
 //     *
-//     *     <shapa_pane_vars_attribute> -->
+//     *     <shapa_pane_vars_attribute> --> 
 //     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
 //     *
 //     *     <groups_attribute> --> '(' 'GROUPS>' <groups_list> ')'
 //     *
 //     *     <alignments_attribute> --> '(' 'ALIGNMENTS>' <alignments_list> ')'
 //     *
-//     *     <import_formats_attribute> -->
+//     *     <import_formats_attribute> --> 
 //     *             '(' 'IMPORT-FORMAT-LISTS>' <imp_format_lists> ')'
 //     *
 //     * Note that the attributes in the system alist may appear in any order,
 //     * or they may be ommited entirely.
 //     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -23838,17 +23834,17 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the user alist */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
 //        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
 //                 ( (this.l1_tok).code == R_PAREN_TOK ) )
 //            {
 //                get_next_token();
@@ -23859,11 +23855,11 @@ public class MacshapaODBReader
 //                        "The opening left parenthesis of the SYSTEM> " +
 //                        "a-list appears to be missing.\n");
 //            }
-//            else
+//            else 
 //            {
-//                /* if a left paren is missing, the first item in the a-list is
-//                 * not an a-list entry.  If we try to recover from this error
-//                 * here, we will only confuse things further.  Thus we eat the
+//                /* if a left paren is missing, the first item in the a-list is 
+//                 * not an a-list entry.  If we try to recover from this error 
+//                 * here, we will only confuse things further.  Thus we eat the 
 //                 * left parenthesis & let the cards fall where they may.
 //                 */
 //
@@ -23872,7 +23868,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -23883,7 +23879,7 @@ public class MacshapaODBReader
 //        have_import_formats  = false;
 //
 //        /* now parse the a-list assocated with the predicate declaration */
-//        while ( ( ! this.abort_parse ) &&
+//        while ( ( ! this.abort_parse ) && 
 //                ( ! done ) )
 //        {
 //             if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -23939,8 +23935,8 @@ public class MacshapaODBReader
 //                                {
 //                                    parse_alignments_attribute();
 //                                }
-//                                else /* can't read alignments after we have
-//                                      * read the shapa pane variables
+//                                else /* can't read alignments after we have 
+//                                      * read the shapa pane variables 
 //                                      */
 //                                {
 //                                    post_warning_message(this.l1_tok,
@@ -23972,7 +23968,7 @@ public class MacshapaODBReader
 //
 //                                if ( this.proceed ) /* save the format list */
 //                                {
-//                                    this.spread_doc_ptr->itsFormatList =
+//                                    this.spread_doc_ptr->itsFormatList = 
 //                                         this.import_format_list_root;
 //                                }
 //                            }
@@ -24039,7 +24035,7 @@ public class MacshapaODBReader
 //
 //        /* check for missing <shapa_pane_vars_attribute>. */
 //
-//        if ( ( ! this.abort_parse ) &&
+//        if ( ( ! this.abort_parse ) && 
 //             ( ! have_shapa_pane_vars ) )
 //        {
 //            add_all_user_svars_to_shapa_pane();
@@ -24056,13 +24052,13 @@ public class MacshapaODBReader
 //     *
 //     * This method parses the system section of the open database body.
 //     * Structurally, the system section is an a-list entry with the label
-//     * "SYSTEM>" and a list as its value.  The production generating the
+//     * "SYSTEM>" and a list as its value.  The production generating the 
 //     * user section is shown below.
 //     *
 //     *     <system_section> --> '(' 'SYSTEM>' <system_alist> ')'
+//     * 
 //     *
-//     *
-//     *                                             JRM - 7/13/08
+//     *                                              - 7/13/08
 //     *
 //     * Parameters:
 //     *
@@ -24083,7 +24079,7 @@ public class MacshapaODBReader
     {
         parse_arbitrary_list();
     }
-
+    
 //    private void parse_system_section()
 //        throws SystemErrorException
 //    {
@@ -24091,12 +24087,12 @@ public class MacshapaODBReader
 //
 //        if ( this.abort_parse )
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "this.abort_parse TRUE on entry");
 //        }
-//
+//        
 //        /* parse the system section */
-//
+//        
 //        /* first parse the leading left parenthesis */
 //
 //        if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -24105,7 +24101,7 @@ public class MacshapaODBReader
 //        }
 //        else /* we shouldn't have been called unless the next token is a '(' */
 //        {
-//            throw new SystemErrorException(mName +
+//            throw new SystemErrorException(mName + 
 //                    "(this.l0_tok).code != L_PAREN_TOK.");
 //        }
 //
@@ -24120,7 +24116,7 @@ public class MacshapaODBReader
 //            else /* system error - we shouldn't have been called unless the */
 //            {    /*         next token is the SYSTEM> a-list tag.    */
 //
-//                throw new SystemErrorException(mName +
+//                throw new SystemErrorException(mName + 
 //                        "this.l0_tok != \"SYSTEM>\".");
 //            }
 //        }
@@ -24167,7 +24163,7 @@ public class MacshapaODBReader
 //                    break;
 //
 //                 default:
-//                     throw new SystemErrorException(mName +
+//                     throw new SystemErrorException(mName + 
 //                             "Encountered unknown token type.");
 //                     break;
 //            }
@@ -24205,11 +24201,11 @@ public class MacshapaODBReader
 //            {
 //                get_next_token();
 //            }
-//            else
+//            else 
 //            {
-//                /* since we are cleaning up any excess values in the system
-//                 * section this else clause is unreachable at present.  Should
-//                 * we choose to drop the above attempt at error recovery, this
+//                /* since we are cleaning up any excess values in the system 
+//                 * section this else clause is unreachable at present.  Should 
+//                 * we choose to drop the above attempt at error recovery, this 
 //                 * clause will again become reachable.
 //                 */
 //
@@ -24224,7 +24220,7 @@ public class MacshapaODBReader
 //    } /* MacshapaODBReader::parse_system_section() */
 
 
-
+        
     /*** Parser section 6 -- methods for parsing predicates ***/
 
     /*************************************************************************
@@ -24239,10 +24235,10 @@ public class MacshapaODBReader
      * definition.
      *
      * However, it is always possible that the user may include more
-     * than the maximum number of arguments.  In such cases, we simply
+     * than the maximum number of arguments.  In such cases, we simply 
      * discard all the excess items until we come to the closing parenthesis.
      *
-     *                                             JRM - 10/3/95
+     *                                              - 10/3/95
      *
      * Parameters:
      *
@@ -24260,27 +24256,27 @@ public class MacshapaODBReader
         throws SystemErrorException,
                java.io.IOException
     {
-        final String mName =
+        final String mName = 
                 "macshapa_odb_reader::discard_excess_pred_value_arguments()";
         boolean done;
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
-
+        
         if ( (this.l0_tok).code == R_PAREN_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "pred value appears not to contain excess arguments.");
         }
-
+        
         /* go ahead and read and then discard the excess arguments */
-
+        
         done = false;
 
-        while ( ( ! this.abort_parse ) &&
+        while ( ( ! this.abort_parse ) && 
                 ( ! done ) )
         {
             switch ( (this.l0_tok).code )
@@ -24311,13 +24307,13 @@ public class MacshapaODBReader
                     done = true;
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                             "EOF encountered in a predicate value with " +
-                            "excess arguments.\n", true, true);
+                            "excess arguments.\n", true, true); 
                     break;
 
                 default:
                     throw new SystemErrorException(mName +
                             "Encountered unknown token type.");
-                    /* commented out to keep the compiler happy */
+	            /* commented out to keep the compiler happy */
                     // break;
             }
         }
@@ -24333,13 +24329,13 @@ public class MacshapaODBReader
      *
      * Dump the supplied predicate to the listing file
      *
-     *                                           JRM - 6/8/08
+     *                                            - 6/8/08
      *
      * Parameters:
      *
      *	  - None.
      *
-     * Returns:  String containing current settings of all fields that can
+     * Returns:  String containing current settings of all fields that can 
      *	    be modified by the HEADER> section.
      *
      * Changes:
@@ -24347,13 +24343,13 @@ public class MacshapaODBReader
      *    - None.
      *
      *************************************************************************/
-
-    private void dump_predicate_definition_to_listing(String name,
-                                                      Vector<String> args,
+    
+    private void dump_predicate_definition_to_listing(String name, 
+                                                      Vector<String> args, 
                                                       boolean variable_length)
         throws SystemErrorException
     {
-        final String mName =
+        final String mName = 
                 "macshapa_odb_reader::dump_predicate_definition_to_listing()";
     
         if ( this.listing_stream != null )
@@ -24398,25 +24394,25 @@ public class MacshapaODBReader
      *
      * parse_col_pred_value()
      *
-     * This method parses column predicate value in the context of a
-     * predicate argument, or a matrix argument.
-     *
-     * If no errors are detected, the function constructs an instance of
-     * ColPred and loads it with a representation of the column predicate
-     * and its arguments.
+     * This method parses column predicate value in the context of a 
+     * predicate argument, or a matrix argument.  
+     * 
+     * If no errors are detected, the function constructs an instance of 
+     * ColPred and loads it with a representation of the column predicate 
+     * and its arguments.  
      *
      * If errors are detected, the function simply returns an empty column
      * predicate.
      *
      * The production generating column predicate is the same as that generating
      * a predicate, and is given below:
-     *
+     * 
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     * 
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
+     * 
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
      *
      * Note that MacSHAPA creates a predicate for every column variable, and
      * treats these predicates the same as all other predicates.  In contrast,
@@ -24426,18 +24422,18 @@ public class MacshapaODBReader
      * This causes some incompatibilities with MacSHAPA databases.  However,
      * it is hoped that these incompatibilities will be minor in practice.
      *
-     * Note that we are guaranteed that upon entry, the next token is a left
-     * parenthesis.
-     *
-     *                                             JRM - 12/11/08
+     * Note that we are guaranteed that upon entry, the next token is a left 
+     * parenthesis. 
+     * 
+     *                                              - 12/11/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  It must be of type
      *          COL_PREDICATE or type UNTYPED.
      *
-     * Returns:  Instance of ColPredDataValue containing a representation of
+     * Returns:  Instance of ColPredDataValue containing a representation of 
      *          the specified column predicate value.
      *
      * Changes:
@@ -24457,44 +24453,44 @@ public class MacshapaODBReader
         int num_fargs = 0;
         MatrixVocabElement mve = null;
         FormalArgument next_farg = null;
-        ColPred value = null;
+        ColPred value = null; 
         Vector<DataValue> argList = null;
         DataValue next_arg = null;
         DataValue arg;
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
-
+        
         if ( (this.l0_tok).code != L_PAREN_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK on entry");
         }
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( ( farg.fargType != FormalArgument.FArgType.COL_PREDICATE ) ||
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with a column predicate.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* try to parse the predicate value */
-
-        /* first check to make sure that we are dealing with a defined
+        
+        /* first check to make sure that we are dealing with a defined 
          * column predicate.
          */
         if ( (this.l1_tok).code == SYMBOL_TOK )
@@ -24508,7 +24504,7 @@ public class MacshapaODBReader
             }
             else /* the symbol is not a column variable name */
             {
-                /* the name of the column in the column predicate value is not a
+                /* the name of the column in the column predicate value is not a 
                  * valid column variable name -- force it to a valid column
                  * variable name, issue a warning message, and look it up
                  * again.
@@ -24531,7 +24527,7 @@ public class MacshapaODBReader
                         mve = this.db.getMatrixVE(this.l1_tok.str.toString());
                     }
                 }
-            }
+            } 
 
             if ( ! this.abort_parse )
             {
@@ -24541,8 +24537,8 @@ public class MacshapaODBReader
                 }
             }
         }
-        else /* it ain't a predicate -- discard it, issue a warning & construct
-              * a empty predicate place holder
+        else /* it ain't a predicate -- discard it, issue a warning & construct 
+              * a empty predicate place holder 
               */
         {
             post_warning_message(this.l1_tok, PRED_VALUE_EXPECTED_WARN, null);
@@ -24558,32 +24554,32 @@ public class MacshapaODBReader
             {
                 parse_arbitrary_list();
             }
-
+            
             value = new ColPred(this.db);
 
         }
-        else /* eat the left paren & col pred name tokens, and set up to parse
-              * the argument list
+        else /* eat the left paren & col pred name tokens, and set up to parse 
+              * the argument list 
               */
         {
-            arg_num = 0;
+	    arg_num = 0;
 
             num_fargs = mve.getNumCPFormalArgs();
             varLen = mve.getVarLen();
-
+            
             if ( num_fargs < 4 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "col pred has less than 4 arguments?!?");
             }
-
+        
             argList = new Vector<DataValue>();
-
+            
             next_farg = mve.getCPFormalArg(0);
-
+            
             if ( next_farg.getID() == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "next_farg has invalid ID?!?");
             }
 
@@ -24599,13 +24595,13 @@ public class MacshapaODBReader
         }
 
         /* parse the arguments of the column predicate or predicate value */
-        if ( mve != null )
+        if ( mve != null ) 
         {
             done = false;
             next_arg = null;
 
-            while ( ( next_farg != null ) &&
-                    ( ! done ) &&
+            while ( ( next_farg != null ) && 
+                    ( ! done ) && 
                     ( ! this.abort_parse ) )
             {
                 switch ( (this.l0_tok).code )
@@ -24647,7 +24643,7 @@ public class MacshapaODBReader
                         next_arg = parse_float_value(next_farg);
                         break;
 
-
+                        
                     case INT_TOK:
                         next_arg = parse_integer_value(next_farg);
                         break;
@@ -24661,14 +24657,14 @@ public class MacshapaODBReader
                         {
                             next_arg = parse_formal_arg_value(next_farg);
                         }
-                        else if ( ((this.l0_tok).aux &
+                        else if ( ((this.l0_tok).aux & 
                                    (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
                         {
                             next_arg = parse_nominal_value(next_farg);
                         }
                         else /* in theory, this can't happen */
                         {
-                            throw new SystemErrorException(mName +
+                            throw new SystemErrorException(mName + 
                                     "(this.l0_tok).aux corrupt?!?");
                         }
                         break;
@@ -24698,21 +24694,21 @@ public class MacshapaODBReader
                         break;
 
                      default:
-                         throw new SystemErrorException(mName +
+                         throw new SystemErrorException(mName + 
                                  "Encountered unknown token type.");
                          /* commented out to keep the compiler happy */
                          // break;
 
                 } /* end switch */
-
+                
                 if ( ( next_arg == null ) && ( ! this.abort_parse ) )
                 {
                     // construct an empty argument
-                    next_arg = new UndefinedDataValue(this.db,
-                                                      next_farg.getID(),
+                    next_arg = new UndefinedDataValue(this.db, 
+                                                      next_farg.getID(), 
                                                       next_farg.getFargName());
                 }
-
+                
                 if ( ! this.abort_parse )
                 {
                     argList.add(next_arg);
@@ -24722,7 +24718,7 @@ public class MacshapaODBReader
                 if ( ( ! this.abort_parse ) && ( ! done ) )
                 {
                     arg_num++;
-
+                    
                     if ( num_fargs > arg_num )
                     {
                         next_farg = mve.getCPFormalArg(arg_num);
@@ -24741,12 +24737,12 @@ public class MacshapaODBReader
                 {
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                             "EOF encountered in a column predicate value " +
-                            "argument list.\n", true, true);
+                            "argument list.\n", true, true); 
                 }
             }
 
-            /* discard any excess values that may appear in the column
-             * predicate value argument list
+            /* discard any excess values that may appear in the column 
+             * predicate value argument list 
              */
             if ( ! this.abort_parse )
             {
@@ -24754,8 +24750,8 @@ public class MacshapaODBReader
                 {
                     if ( next_farg != null )
                     {
-                        throw new SystemErrorException(mName +
-                                "( ! done ) && ( next_farg != null )");
+                        throw new SystemErrorException(mName + 
+                                "( ! done ) && ( next_farg != null )");    
                     }
                     else if ( (this.l0_tok).code != R_PAREN_TOK )
                     {
@@ -24771,8 +24767,8 @@ public class MacshapaODBReader
                 }
             }
 
-            /* consume the closing parenthesis in the predicate value
-             * argument list.
+            /* consume the closing parenthesis in the predicate value 
+             * argument list. 
              */
             if ( ! this.abort_parse )
             {
@@ -24782,19 +24778,19 @@ public class MacshapaODBReader
                 }
                 else /* system error */
                 {
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "(this.l0_tok).code != R_PAREN_TOK.");
                 }
             }
 
 
-            /* if we ran out of arguments before we ran out of formal arguments,
-             * must issue a warning and insert formal arguments.  Note however
-             * that there is an exception in the case of variable length
-             * predicates.  In this case, we simply make sure that there is at
+            /* if we ran out of arguments before we ran out of formal arguments, 
+             * must issue a warning and insert formal arguments.  Note however 
+             * that there is an exception in the case of variable length 
+             * predicates.  In this case, we simply make sure that there is at 
              * least one argument, inserting a formal argument if there is not.
              */
-            // TODO: Figure out how we will support variable length preds and
+            // TODO: Figure out how we will support variable length preds and 
             //       and update this code accordingly.
             if ( ! this.abort_parse )
             {
@@ -24809,18 +24805,18 @@ public class MacshapaODBReader
                                     REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
                                     null);
                         }
-
-                        // TODO:  Here we make sure that the argument list
-                        //        contains at least one argument in the
-                        //        case of a variable length predicate or
+                        
+                        // TODO:  Here we make sure that the argument list 
+                        //        contains at least one argument in the 
+                        //        case of a variable length predicate or 
                         //        column predicate.
                         //
-                        //        This may or may not be the right thing to
+                        //        This may or may not be the right thing to 
                         //        do.  Return to this when we have variable
                         //        length arguments hammered out.
-
-                        next_arg = new UndefinedDataValue(this.db,
-                                                          next_farg.getID(),
+                        
+                        next_arg = new UndefinedDataValue(this.db, 
+                                                          next_farg.getID(), 
                                                           next_farg.getFargName());
                         argList.add(next_arg);
                         next_arg = null;
@@ -24831,11 +24827,11 @@ public class MacshapaODBReader
                                 REQ_ARGS_MISSING_FROM_COL_PRED_VAL_WARN,
                                 null);
 
-                        while ( ( ! this.abort_parse ) &&
+                        while ( ( ! this.abort_parse ) && 
                                 ( next_farg != null ) )
                         {
-                            next_arg = new UndefinedDataValue(this.db,
-                                                          next_farg.getID(),
+                            next_arg = new UndefinedDataValue(this.db, 
+                                                          next_farg.getID(), 
                                                           next_farg.getFargName());
                             argList.add(next_arg);
                             next_arg = null;
@@ -24855,8 +24851,8 @@ public class MacshapaODBReader
                 }
             }
 
-            /* Finally, construct the instance of ColPred,
-             * load it into an instance of ColPredDataValue, and return
+            /* Finally, construct the instance of ColPred, 
+             * load it into an instance of ColPredDataValue, and return 
              * the data value.
              */
             value = new ColPred(this.db, mve.getID(), argList);
@@ -24874,33 +24870,33 @@ public class MacshapaODBReader
      *
      * parse_pred_cell_value()
      *
-     * This method parses the value of a spreadsheet variable cell in the
-     * context of a predicate spreadsheet variable.  The production generating
+     * This method parses the value of a spreadsheet variable cell in the 
+     * context of a predicate spreadsheet variable.  The production generating 
      * such a cell value is given below:
-     *
+     * 
      *     <pred_cell_value> --> '(' ')' | <pred_value>
-     *
+     * 
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     * 
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
+     * 
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
      *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
-     * If there are no type conflicts, the function returns a PredDataValue
+     * If there are no type conflicts, the function returns a PredDataValue 
      * containing the specified value.
      *
-     * Type conficts are handled by creating an empty PredDataValue, issuing
+     * Type conficts are handled by creating an empty PredDataValue, issuing 
      * a warning message, and consuming the offending value.
-     *
-     *                                             JRM - 7/13/08
+     * 
+     *                                              - 7/13/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  As this function is
-     *          only called to parse the value of an integer cell, the
-     *          farg must be of type PREDICATE.
+     *          only called to parse the value of an integer cell, the 
+     *          farg must be of type PREDICATE. 
      *
      * Returns:  Void.
      *
@@ -24915,35 +24911,35 @@ public class MacshapaODBReader
                java.io.IOException
     {
         final String mName = "macshapa_odb_reader::parse_pred_cell_value()";
-        final String overflow_mssg =
+        final String overflow_mssg = 
                 "Overflow occured in a predicate cell value.\n";
         DataValue dv = null;
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.fargType != FormalArgument.FArgType.PREDICATE )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an predicate.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* try to parse the predicate cell value */
-
+        
         switch ( (this.l0_tok).code )
         {
             case FLOAT_TOK:
@@ -24959,7 +24955,7 @@ public class MacshapaODBReader
                 post_warning_message(this.l0_tok,
                         S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
                         "Will discard the value and leave the predicate " +
-                        "cell empty.\n");
+                        "cell empty.\n"); 
 
                 if ( ! this.abort_parse )
                 {
@@ -24995,7 +24991,7 @@ public class MacshapaODBReader
                 post_warning_message(this.l0_tok,
                         S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
                         "The value is an ill formed token.  The predicate " +
-                        "cell will be left empty.\n");
+                        "cell will be left empty.\n"); 
 
                 if ( ! this.abort_parse )
                 {
@@ -25010,7 +25006,7 @@ public class MacshapaODBReader
                 break;
 
             default:
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "Encountered unknown token type.");
                 /* commented out to keep the compiler happy */
                 // break;
@@ -25032,36 +25028,36 @@ public class MacshapaODBReader
      *
      * parse_pred_value()
      *
-     * This method parses a predicate or column predicate value in the context
-     * of a predicate cell, a predicate argument, or a matrix argument.
-     *
-     * If no errors are detected, the function constructs an instance of
+     * This method parses a predicate or column predicate value in the context 
+     * of a predicate cell, a predicate argument, or a matrix argument.  
+     * 
+     * If no errors are detected, the function constructs an instance of 
      * Predicate and loads it with a representation of the predicate and its
-     * arguments.
+     * arguments.  
      *
      * If errors are detected, the function simply returns an empty predicate.
      *
      * The production generating a predicate value is given below:
-     *
+     * 
      *     <pred_value> --> '(' <pred_name> (<pred_arg>)+ ')'
-     *
-     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> |
+     * 
+     *     <pred_arg> --> <quote_string> | <nominal> | <pred_value> | 
      *                    <integer> | <float> | <time_stamp> | <formal_arg>
+     * 
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
      *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
-     *
-     * Note that we are guaranteed that upon entry, the next token is a left
-     * parenthesis.
-     *
-     *                                             JRM - 12/11/08
+     * Note that we are guaranteed that upon entry, the next token is a left 
+     * parenthesis. 
+     * 
+     *                                              - 12/11/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  It must be of type
      *          PREDICATE or type UNTYPED.
      *
-     * Returns:  Instance of PredDataValue containing a representation of the
+     * Returns:  Instance of PredDataValue containing a representation of the 
      *          specified predicate.
      *
      * Changes:
@@ -25081,7 +25077,7 @@ public class MacshapaODBReader
         int arg_num = 0;
         int num_fargs = 0;
         PredicateVocabElement pve = null;
-        Predicate value = null;
+        Predicate value = null; 
         Vector<DataValue> argList = null;
         FormalArgument next_farg = null;
         DataValue next_arg = null;
@@ -25089,37 +25085,37 @@ public class MacshapaODBReader
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
-
+        
         if ( (this.l0_tok).code != L_PAREN_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK on entry");
         }
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( ( farg.fargType != FormalArgument.FArgType.PREDICATE ) ||
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "Supplied farg cannot be replaced with an predicate.");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* try to parse the predicate value */
-
-        /* first check to make sure that we are dealing with a defined
+        
+        /* first check to make sure that we are dealing with a defined 
          * predicate or column predicate.
          */
         if ( (this.l1_tok).code == SYMBOL_TOK )
@@ -25133,8 +25129,8 @@ public class MacshapaODBReader
             }
             else /* the symbol is not a predicate name */
             {
-                /* the name of the predicate in the predicate value is not a
-                 * valid predicate name -- force it to a valid predicate name,
+                /* the name of the predicate in the predicate value is not a 
+                 * valid predicate name -- force it to a valid predicate name, 
                  * issue a warning message, and look it up.
                  */
 
@@ -25154,7 +25150,7 @@ public class MacshapaODBReader
                         pve = this.db.getPredVE(this.l1_tok.str.toString());
                     }
                 }
-            }
+            } 
 
             if ( ! this.abort_parse )
             {
@@ -25165,8 +25161,8 @@ public class MacshapaODBReader
                 }
             }
         }
-        else /* it ain't a predicate -- discard it, issue a warning & construct
-              * a empty predicate place holder
+        else /* it ain't a predicate -- discard it, issue a warning & construct 
+              * a empty predicate place holder 
               */
         {
             post_warning_message(this.l1_tok, PRED_VALUE_EXPECTED_WARN, null);
@@ -25182,32 +25178,32 @@ public class MacshapaODBReader
             {
                 parse_arbitrary_list();
             }
-
+            
             value = new Predicate(this.db);
 
         }
-        else /* eat the left paren & pred name tokens, and set up to parse the
-              * argument list
+        else /* eat the left paren & pred name tokens, and set up to parse the 
+              * argument list 
               */
         {
 	    arg_num = 0;
-
+            
             num_fargs = pve.getNumFormalArgs();
             varLen = pve.getVarLen();
-
+            
             if ( num_fargs < 1 )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "pve or mve has no arguments?!?");
             }
-
+        
             argList = new Vector<DataValue>();
-
+            
             next_farg = pve.getFormalArg(0);
-
+            
             if ( farg.getID() == DBIndex.INVALID_ID )
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "next_farg has invalid ID?!?");
             }
 
@@ -25224,13 +25220,13 @@ public class MacshapaODBReader
         }
 
         /* parse the arguments of the predicate value */
-        if ( pve != null )
+        if ( pve != null ) 
         {
             done = false;
             next_arg = null;
 
-            while ( ( next_farg != null ) &&
-                    ( ! done ) &&
+            while ( ( next_farg != null ) && 
+                    ( ! done ) && 
                     ( ! this.abort_parse ) )
             {
                 switch ( (this.l0_tok).code )
@@ -25271,7 +25267,7 @@ public class MacshapaODBReader
                     case FLOAT_TOK:
                         next_arg = parse_float_value(next_farg);
                         break;
-
+                        
                     case INT_TOK:
                         next_arg = parse_integer_value(next_farg);
                         break;
@@ -25285,14 +25281,14 @@ public class MacshapaODBReader
                         {
                             next_arg = parse_formal_arg_value(next_farg);
                         }
-                        else if ( ((this.l0_tok).aux &
+                        else if ( ((this.l0_tok).aux & 
                                    (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
                         {
                             next_arg = parse_nominal_value(next_farg);
                         }
                         else /* in theory, this can't happen */
                         {
-                            throw new SystemErrorException(mName +
+                            throw new SystemErrorException(mName + 
                                     "(this.l0_tok).aux corrupt?!?");
                         }
                         break;
@@ -25322,21 +25318,21 @@ public class MacshapaODBReader
                         break;
 
                      default:
-                         throw new SystemErrorException(mName +
+                         throw new SystemErrorException(mName + 
                                  "Encountered unknown token type.");
                          /* commented out to keep the compiler happy */
                          // break;
 
                 } /* end switch */
-
+                
                 if ( ( next_arg == null ) && ( ! this.abort_parse ) )
                 {
                     // construct an empty argument
-                    next_arg = new UndefinedDataValue(this.db,
-                                                      next_farg.getID(),
+                    next_arg = new UndefinedDataValue(this.db, 
+                                                      next_farg.getID(), 
                                                       next_farg.getFargName());
                 }
-
+                
                 if ( ! this.abort_parse )
                 {
                     argList.add(next_arg);
@@ -25345,9 +25341,9 @@ public class MacshapaODBReader
 
                 if ( ( ! this.abort_parse ) && ( ! done ) )
                 {
-                    /* in the case of a system variable length predicate that
-                     * is not a predicate associated with a spreadsheet variable
-                     * (i.e. and(), or(), etc.) we need to add new formal
+                    /* in the case of a system variable length predicate that 
+                     * is not a predicate associated with a spreadsheet variable 
+                     * (i.e. and(), or(), etc.) we need to add new formal 
                      * arguments as necessary.  Do this as follows:
                      */
 
@@ -25355,15 +25351,15 @@ public class MacshapaODBReader
                          ( pve.getVarLen() ) &&
                          ( pve.getSystem() ) )
                     {
-                        // TODO: Write code to support this -- for now
+                        // TODO: Write code to support this -- for now 
                         //       throw a system error.
                         throw new SystemErrorException(mName +
                                 "Adding args to var len predicates isn't " +
                                 "supported yet.");
                     }
-
+                    
                     arg_num++;
-
+                    
                     if ( num_fargs > arg_num )
                     {
                         next_farg = pve.getFormalArg(arg_num);
@@ -25382,12 +25378,12 @@ public class MacshapaODBReader
                 {
                     post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                             "EOF encountered in a predicate value " +
-                            "argument list.\n", true, true);
+                            "argument list.\n", true, true); 
                 }
             }
 
-            /* discard any excess values that may appear in the predicate
-             * value argument list
+            /* discard any excess values that may appear in the predicate 
+             * value argument list 
              */
             if ( ! this.abort_parse )
             {
@@ -25395,8 +25391,8 @@ public class MacshapaODBReader
                 {
                     if ( next_farg != null )
                     {
-                        throw new SystemErrorException(mName +
-                                "( ! done ) && ( next_farg != null )");
+                        throw new SystemErrorException(mName + 
+                                "( ! done ) && ( next_farg != null )");    
                     }
                     else if ( (this.l0_tok).code != R_PAREN_TOK )
                     {
@@ -25412,8 +25408,8 @@ public class MacshapaODBReader
                 }
             }
 
-            /* consume the closing parenthesis in the predicate value
-             * argument list.
+            /* consume the closing parenthesis in the predicate value 
+             * argument list. 
              */
             if ( ! this.abort_parse )
             {
@@ -25423,19 +25419,19 @@ public class MacshapaODBReader
                 }
                 else /* system error */
                 {
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "(this.l0_tok).code != R_PAREN_TOK.");
                 }
             }
 
 
-            /* if we ran out of arguments before we ran out of formal arguments,
-             * must issue a warning and insert formal arguments.  Note however
-             * that there is an exception in the case of variable length
-             * predicates.  In this case, we simply make sure that there is at
+            /* if we ran out of arguments before we ran out of formal arguments, 
+             * must issue a warning and insert formal arguments.  Note however 
+             * that there is an exception in the case of variable length 
+             * predicates.  In this case, we simply make sure that there is at 
              * least one argument, inserting a formal argument if there is not.
              */
-            // TODO: Figure out how we will support variable length preds and
+            // TODO: Figure out how we will support variable length preds and 
             //       and update this code accordingly.
             if ( ! this.abort_parse )
             {
@@ -25450,18 +25446,18 @@ public class MacshapaODBReader
                                     REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
                                     null);
                         }
-
-                        // TODO:  Here we make sure that the argument list
-                        //        contains at least one argument in the
-                        //        case of a variable length predicate or
+                        
+                        // TODO:  Here we make sure that the argument list 
+                        //        contains at least one argument in the 
+                        //        case of a variable length predicate or 
                         //        column predicate.
                         //
-                        //        This may or may not be the right thing to
+                        //        This may or may not be the right thing to 
                         //        do.  Return to this when we have variable
                         //        length arguments hammered out.
-
-                        next_arg = new UndefinedDataValue(this.db,
-                                                          next_farg.getID(),
+                        
+                        next_arg = new UndefinedDataValue(this.db, 
+                                                          next_farg.getID(), 
                                                           next_farg.getFargName());
                         argList.add(next_arg);
                         next_arg = null;
@@ -25472,11 +25468,11 @@ public class MacshapaODBReader
                                 REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
                                 null);
 
-                        while ( ( ! this.abort_parse ) &&
+                        while ( ( ! this.abort_parse ) && 
                                 ( next_farg != null ) )
                         {
-                            next_arg = new UndefinedDataValue(this.db,
-                                                          next_farg.getID(),
+                            next_arg = new UndefinedDataValue(this.db, 
+                                                          next_farg.getID(), 
                                                           next_farg.getFargName());
                             argList.add(next_arg);
                             next_arg = null;
@@ -25512,24 +25508,24 @@ public class MacshapaODBReader
      *
      * parse_quote_string_value()
      *
-     * This method parses an quote string value in the context of a matrix or
+     * This method parses an quote string value in the context of a matrix or 
      * predicate argument.
      *
-     * If there are no type conflicts, the function simply creates an
-     * QuoteStringDataValue containing the value specified, and returns a
+     * If there are no type conflicts, the function simply creates an 
+     * QuoteStringDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by  issuing a warning message, consuming the
+     * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
-     *
-     *                                                    JRM - 6/12/08
+     *        
+     *                                                     - 6/12/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.    This function is
      *          called to parse the value of a matrix or predicate argument,
-     *          so the farg must be of type QUOTE_STRING or of type UNTYPED.
+     *          so the farg must be of type QUOTE_STRING or of type UNTYPED. 
      *
      * Returns:  Void.
      *
@@ -25547,37 +25543,37 @@ public class MacshapaODBReader
 	final String overflow_mssg = "Overflow occured in a float value.\n";
         String value = null;
         DataValue dv = null;
-
+        
 
 	if ( this.abort_parse )
 	{
-	    throw new SystemErrorException(mName +
+	    throw new SystemErrorException(mName + 
 		    "this.abort_parse true on entry");
 	}
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
+        
         /* we must only be called if the next token is a float -- scream
          * and die if it is not.
          */
-
+        
         if ( (this.l0_tok).code != STRING_TOK )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "(this.l0_tok).code != STRING_TOK");
         }
-
+        
         value = this.l0_tok.str.toString();
-
+	
         if ( ( farg.fargType != FormalArgument.FArgType.QUOTE_STRING ) ||
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
@@ -25601,19 +25597,19 @@ public class MacshapaODBReader
             /* type mismatch between formal argument and value.  Construct
              * an udefined data value, and flag a warning.
              */
-            dv = new UndefinedDataValue(this.db,
-                                        farg.getID(),
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID(), 
                                         farg.getFargName());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
         }
-
+        
         if ( ! this.abort_parse ) /* consume the token */
         {
             get_next_token();
         }
-
+        
 	return(dv);
 
     } /* MacshapaODBReader::parse_quote_string_value() */
@@ -25623,24 +25619,24 @@ public class MacshapaODBReader
      *
      * parse_time_stamp()
      *
-     * This method parses a TIME> attribute, which at present can only
+     * This method parses a TIME> attribute, which at present can only 
      * appear in the context of either a predicate value or a matrix cell
      * value.  This attribute is generated by the following production:
-     *
-     *     <time_stamp> --> '(' 'TIME>' <integer> ')'
+     * 
+     *     <time_stamp> --> '(' 'TIME>' <integer> ')' 
      *
      * If there are no type conflicts, the function simply creates a
-     * TimeStampDataValue containing the value specified, and returns a
+     * TimeStampDataValue containing the value specified, and returns a 
      * reference to the newly created data value.
      *
-     * Type conficts are handled by  issuing a warning message, consuming the
+     * Type conficts are handled by  issuing a warning message, consuming the 
      * offending value, and returning an undefined data value.
      *
-     *                                             JRM - 7/13/08
+     *                                              - 7/13/08
      *
      * Parameters:
      *
-     *	  - farg:  Reference to a copy of the formal argument we
+     *	  - farg:  Reference to a copy of the formal argument we 
      *          are going to create a data value for.  It must be of type
      *          TIME_STAMP or type UNTYPED.
      *
@@ -25657,41 +25653,41 @@ public class MacshapaODBReader
                java.io.IOException
     {
         final String mName = "macshapa_odb_reader::parse_time_stamp()";
-        final String overflow_mssg =
+        final String overflow_mssg = 
                 "Overflow occured in a TIME> a-list entry.\n";
-        final String missing_time_mssg =
+        final String missing_time_mssg = 
                 "A TIME> attribute appears not to contain a value.  " +
                 "Default value used.\n";
-        final String time_type_mismatch_mssg =
+        final String time_type_mismatch_mssg = 
                 "The value of a TIME> attribute must be an integer.  " +
                 "Default value used.\n";
         boolean out_of_range;
         long ticks;
         TimeStamp ts = null;
         DataValue dv = null;
-
+        
         ticks = MACSHAPA_MIN_TIME; /* default value */
 
         if ( this.abort_parse )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
         }
-
+        
         if ( farg == null )
         {
             throw new SystemErrorException(mName + "farg null on entry");
         }
-
+        
         if ( farg.getID() == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                                            "Supplied farg has invalid ID.");
         }
-
-
+        
+                
         /* parse the time stamp */
-
+        
         /* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -25700,47 +25696,47 @@ public class MacshapaODBReader
         }
         else /* we shouldn't have been called unless the next token is a '(' */
         {
-            throw new SystemErrorException(mName +
+            throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
         }
 
         /* read the a-list entry name */
         if ( ! this.abort_parse )
         {
-            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
                  ( (this.l0_tok).aux == TIME_LABEL ) )
             {
                 get_next_token();
             }
             else /* we shouldn't have been called unless the next token is TIME> */
             {
-                throw new SystemErrorException(mName +
+                throw new SystemErrorException(mName + 
                         "this.l0_tok != TIME>.");
             }
         }
 
-        /* read the value associated with the a-list entry & discard
-         * any excess values
+        /* read the value associated with the a-list entry & discard 
+         * any excess values 
          */
         if ( ! this.abort_parse )
         {
             switch ( (this.l0_tok).code )
             {
                 case INT_TOK:
-                    out_of_range = false;
+		    out_of_range = false;
 
-                    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MIN_TIME;
-                    }
-                    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
-                    {
-                        out_of_range = true;
-                        ticks = MACSHAPA_MAX_TIME;
-                    }
-                    else
-                    {
+		    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MIN_TIME;
+		    }
+		    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
+		    {
+			out_of_range = true;
+			ticks = MACSHAPA_MAX_TIME;
+		    }
+		    else
+		    {
                         ticks = (long)((this.l0_tok).val);
                     }
 
@@ -25749,14 +25745,14 @@ public class MacshapaODBReader
                         post_warning_message(this.l0_tok,
                                 TIME_OUT_OF_RANGE_WARN,
                                 "The out of range value appeared in a " +
-                                "TIME> attribute\n");
-                    }
+                                "TIME> attribute\n"); 
+		    }
 
-                    if ( ! this.abort_parse )
-                    {
-                        get_next_token();
-                    }
-                    break;
+		    if ( ! this.abort_parse )
+		    {
+			get_next_token();
+		    }
+		    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -25801,12 +25797,12 @@ public class MacshapaODBReader
                     break;
 
                 default:
-                    throw new SystemErrorException(mName +
+                    throw new SystemErrorException(mName + 
                             "Encountered unknown token type.");
                     /* commented out to keep the compiler happy */
                     // break;
-            }
-        }
+             }
+         }
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -25816,8 +25812,8 @@ public class MacshapaODBReader
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
                                    "EOF in a TIME> attribute.\n",
                                    true, true);
-            }
-        }
+             }
+         }
 
         /* discard any excess values that may appear in the TIME> a-list entry */
         if ( ! this.abort_parse )
@@ -25866,14 +25862,14 @@ public class MacshapaODBReader
             /* type mismatch between formal argument and value.  Construct
              * an udefined data value, and flag a warning.
              */
-            dv = new UndefinedDataValue(this.db,
-                                        farg.getID(),
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID(), 
                                         farg.getFargName());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
         }
-
+                    
         return(dv);
 
     } /* MacshapaODBReader::parse_time_stamp() */

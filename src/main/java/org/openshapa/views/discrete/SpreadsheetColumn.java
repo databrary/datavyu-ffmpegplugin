@@ -6,12 +6,11 @@ import org.openshapa.db.Database;
 import org.openshapa.db.ExternalCascadeListener;
 import org.openshapa.db.ExternalDataColumnListener;
 import org.openshapa.db.SystemErrorException;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Vector;
-import javax.swing.Box;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -50,8 +49,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /** Default column height. */
     private static final int DEFAULT_HEADER_HEIGHT = 16;
 
-    /** filler box for use when there are no datacells. */
-    private Component filler;
+    /** Width of the column in pixels. */
+    private int width = DEFAULT_COLUMN_WIDTH;
 
     /**
      * Private class for recording the changes reported by the listener
@@ -116,10 +115,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             headerpanel = new ColumnHeaderPanel(this, dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")", selector);
 
-            datapanel = new ColumnDataPanel();
-            datapanel.setPreferredSize(new Dimension(getWidth(),
-                                                            Integer.MAX_VALUE));
-
+            datapanel = new ColumnDataPanel(width);
             buildDataPanelCells(dbColumn);
 
         } catch (SystemErrorException e) {
@@ -134,15 +130,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      */
     private void buildDataPanelCells(final DataColumn dbColumn) {
         try {
-            int numCells = dbColumn.getNumCells();
-
-            // hold onto a filler box for when there are no datacells
-            filler = Box.createRigidArea(new Dimension(getWidth(), 0));
-            if (numCells == 0) {
-               datapanel.add(filler);
-            }
             // traverse and build the cells
-            for (int j = 1; j <= numCells; j++) {
+            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB()
                                     .getCell(dbColumn.getID(), j);
 
@@ -156,7 +145,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         } catch (SystemErrorException e) {
            logger.error("Failed to populate Spreadsheet.", e);
         }
-
     }
 
     /**
@@ -167,10 +155,31 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
+     * @param colWidth Column width to set in pixels.
+     */
+    public void setWidth(final int colWidth) {
+        width = colWidth;
+        Dimension dim = getHeaderSize();
+        headerpanel.setMinimumSize(dim);
+        headerpanel.setPreferredSize(dim);
+        headerpanel.setMaximumSize(dim);
+        Dimension dim2 = getHeaderSize();
+        dim2.height = Integer.MAX_VALUE;
+
+        datapanel.setWidth(width);
+        for (SpreadsheetCell cell : getCells()) {
+            cell.setWidth(width);
+        }
+        headerpanel.revalidate();
+        datapanel.revalidate();
+        spreadsheetPanel.relayoutCells();
+    }
+
+    /**
      * @return Column Width in pixels.
      */
     public int getWidth() {
-        return DEFAULT_COLUMN_WIDTH;
+        return width;
     }
 
     /**
@@ -270,10 +279,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             if (cell.getCellID() == cellID) {
                 cells.remove(cell);
                 datapanel.remove(cell);
-                if (cells.size() == 0) {
-                    // add in filler to keep column width
-                    datapanel.add(filler);
-                }
                 break;
             }
         }
@@ -291,13 +296,12 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             Long newOrd = new Long(dc.getOrd());
             if (cells.size() > newOrd.intValue()) {
                 cells.insertElementAt(newCell, newOrd.intValue() - 1);
+                datapanel.add(newCell, newOrd.intValue() - 1);
             } else {
                 cells.add(newCell);
+                datapanel.add(newCell);
             }
-            newCell.setWidth(getWidth() - 1);
-            datapanel.add(newCell);
-            datapanel.remove(filler);
-            newCell.requestFocusInWindow();
+            newCell.requestFocus();
         } catch (SystemErrorException e) {
             logger.error("Problem inserting a new SpreadsheetCell", e);
         }
@@ -381,12 +385,23 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
+     * resetLayout changes the layout manager depending on the SheetLayoutType.
+     * @param type SheetLayoutType
+     */
+    public void resetLayoutManager(final SheetLayoutType type) {
+        datapanel.resetLayoutManager(type);
+    }
+
+    /**
      * Set the preferred size of the column.
      * @param bottom Number of pixels to set.
      */
     public void setBottomBound(final int bottom) {
-        datapanel.setPreferredSize(
-                    new Dimension(datapanel.getPreferredSize().width, bottom));
+        if (bottom < 0) {
+            datapanel.setPreferredSize(null);
+        } else {
+            datapanel.setPreferredSize(new Dimension(this.getWidth(), bottom));
+        }
     }
 
     /**

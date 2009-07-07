@@ -1,167 +1,175 @@
-/*
- * VocabElementListeners.java
- *
- * Created on February 3, 2008, 2:11 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
+import java.util.Vector;
+
 /**
- * Class VocabElementListeners
- *
- * Instances of this class are used to manage the mechanics registering and
+ * A VocabElementListeners is used to manage the mechanics registering and
  * de-registering internal and external listeners for changed in Vocab Elements,
  * and notifying the registered listeners when changes occur.
  *
- *                                               -- 2/2/08
+ * @date 2008/02/02
  */
-public class VocabElementListeners extends Listeners
-{
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
+public class VocabElementListeners extends Listeners {
 
     /**
-     * itsVE: Reference to the instance of VocabElement for which this
-     *      instance of VocabElementListeners is managing change listeners.
-     *
-     * itsVEID: Long containing the ID assigned to itsVE.
-     *
-     * changeNoted:  Boolean flag used to note if any reportable changes were
-     *      detected between the old and new versions of the target VocabElement
-     *      were detected the last time the two versions were examined.
-     *
-     *      Thus, given the current set of reportable changes, changeNoted
-     *      will be true iff (nameChanged || varLenChanged || argListChanged).
-     *
-     *      Note that this field, like all the other fields used to note changes
-     *      between subsequent versions of the target VocabElement, is reset
-     *      after the listeners are notified.
-     *
-     * nameChanged:  Boolean flag used to record the fact that the name of the
-     *      associated vocab element has changed.
-     *
-     * oldName: String containing the old name if the associated vocab element
-     *      name has changed, and null otherwise.
-     *
-     * newName: String containing the new name if the associated vocab element
-     *      name has changed, and null otherwise.
-     *
-     * varLenChanged:  Boolean flag used to record the fact that the varLen
-     *      field of the associated vocab element has changed value.
-     *
-     * oldVarLen: Boolean containing the old value of the varLen field of the
-     *      associated vocab element if it has changed, and undefined otherwise.
-     *
-     * newVarLen: Boolean containing the new value of the varLen field of the
-     *      assocated vocab element if it has changed, and undefined otherwise.
-     *
-     * fargListChanged: Boolean flag used to record the fact that the formal
-     *      argument list of the associated vocab element has changed.
-     *
-     * oldFargList: Reference to a vector of FormalArgument containing a copy
-     *      of the old formal argument list if it has changed, and null otherwise.
-     *
-     * newFargList: Reference to a vector of FormalArgument containing a copy
-     *      of the new formal argument list if it has changed, and null
-     *      otherwise.
-     *
-     * n2o: Reference to an array of long of length equal to the new formal
-     *      argument list mapping the indicies of all formal arguments in the
-     *      new formal argument list, to the index of that argument in the old
-     *      formal argument list, or to -1 if the formal argument doesn't appear
-     *      in the old formal argument list.
-     *
-     * o2n: Reference to an array of long of length equal to the old formal
-     *      argument list mapping the indicies of all formal arguments in the
-     *      old formal argument list, to the index of that argument in the new
-     *      formal argument list, or to -1 if the formal argument doesn't appear
-     *      in the new formal argument list.
-     *
-     * fargNameChanged: Reference to an array of boolean of length equal to
-     *      the new formal argument list.  Cells in the array are set to true
-     *      iff the formal argument at the corresponding location in the
-     *      new formal argument list appeared in both the new and old formal
-     *      argument lists, and has changed its name.
-     *
-     * fargSubRangeChanged: Reference to an array of boolean of length equal to
-     *      the new formal argument list.  Cells in the array are set to true
-     *      iff the formal argument at the corresponding location in the
-     *      new formal argument list appeared in both the new and old formal
-     *      argument lists, and has changed the value of its subRange field.
-     *
-     * fargRangeChanged: Reference to an array of boolean of length equal to
-     *      the new formal argument list.  Cells in the array are set to true
-     *      iff the formal argument at the corresponding location in the
-     *      new formal argument list appeared in both the new and old formal
-     *      argument lists, and has changed the value(s) of the fields
-     *      specifying the range of permissable values.
-     *
-     * fargDeleted: Reference to an array of boolean of length equal to
-     *      the old formal argument list.  Cells in the array are set to true
-     *      iff the formal argument at the corresponding location in the
-     *      old formal argument list does not appear in the new formal
-     *      argument list, and thus is deleted.
-     *
-     * fargInserted: Reference to an array of boolean of length equal to
-     *      the new formal argument list.  Cells in the array are set to true
-     *      iff the formal argument at the corresponding location in the
-     *      new formal argument list does not appear in the old formal
-     *      argument list, and thus has been inserted.
+     * Reference to the instance of VocabElement for which this instance of
+     * VocabElementListeners is managing change listeners.
      */
-
     protected VocabElement itsVE = null;
+
+    /** Long containing the ID assigned to itsVE. */
     protected long itsVEID = DBIndex.INVALID_ID;
 
+    /**
+     * Boolean flag used to note if any reportable changes were detected between
+     * the old and new versions of the target VocabElement were detected the
+     * last time the two versions were examined.
+     *
+     * Thus, given the current set of reportable changes, changeNoted will be
+     * true iff (nameChanged || varLenChanged || argListChanged).
+     *
+     * Note that this field, like all the other fields used to note changes
+     * between subsequent versions of the target VocabElement, is reset
+     * after the listeners are notified.
+     */
     protected boolean changeNoted = false;
 
+    /**
+     * Boolean flag used to record the fact that the name of the associated
+     * vocab element has changed.
+     */
     protected boolean nameChanged = false;
-    protected String oldName = null;
-    protected String newName = null;
-
-    protected boolean varLenChanged = false;
-    protected boolean oldVarLen = false;
-    protected boolean newVarLen = false;
-
-    protected boolean fargListChanged = false;
-    protected java.util.Vector<FormalArgument> oldFargList = null;
-    protected java.util.Vector<FormalArgument> newFargList = null;
-    protected long[] n2o = null;
-    protected long[] o2n = null;
-    protected boolean[] fargNameChanged = null;
-    protected boolean[] fargSubRangeChanged = null;
-    protected boolean[] fargRangeChanged = null;
-    protected boolean[] fargDeleted = null;
-    protected boolean[] fargInserted = null;
-
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
 
     /**
-     * VocabElementListeners
+     * String containing the old name if the associated vocab element name has
+     * changed, and null otherwise.
+     */
+    protected String oldName = null;
+
+    /**
+     * String containing the new name if the associated vocab element name has
+     * changed, and null otherwise.
+     */
+    protected String newName = null;
+
+    /**
+     * Boolean flag used to record the fact that the varLen field of the
+     * associated vocab element has changed value.
+     */
+    protected boolean varLenChanged = false;
+
+    /**
+     * Boolean containing the old value of the varLen field of the associated
+     * vocab element if it has changed, and undefined otherwise.
+     */
+    protected boolean oldVarLen = false;
+
+    /**
+     * Boolean containing the new value of the varLen field of the assocated
+     * vocab element if it has changed, and undefined otherwise.
+     */
+    protected boolean newVarLen = false;
+
+    /**
+     * Boolean flag used to record the fact that the formal argument list of the
+     * associated vocab element has changed.
+     */
+    protected boolean fargListChanged = false;
+
+    /**
+     * Reference to a vector of FormalArgument containing a copy of the old
+     * formal argument list if it has changed, and null otherwise.
+     */
+    protected Vector<FormalArgument> oldFargList = null;
+
+    /**
+     * Reference to a vector of FormalArgument containing a copy of the new
+     * formal argument list if it has changed, and null otherwise.
+     */
+    protected Vector<FormalArgument> newFargList = null;
+
+    /**
+     * Reference to an array of long of length equal to the new formal argument
+     * list mapping the indicies of all formal arguments in the new formal
+     * argument list, to the index of that argument in the old formal argument
+     * list, or to -1 if the formal argument doesn't appear in the old formal
+     * argument list.
+     */
+    protected long[] n2o = null;
+
+    /**
+     * Reference to an array of long of length equal to the old formal argument
+     * list mapping the indicies of all formal arguments in the old formal
+     * argument list, to the index of that argument in the new formal argument
+     * list, or to -1 if the formal argument doesn't appear in the new formal
+     * argument list.
+     */
+    protected long[] o2n = null;
+
+    /**
+     * Reference to an array of boolean of length equal to the new formal
+     * argument list.  Cells in the array are set to true if the formal argument
+     * at the corresponding location in the new formal argument list appeared in
+     * both the new and old formal argument lists, and has changed its name.
+     */
+    protected boolean[] fargNameChanged = null;
+
+    /**
+     * Reference to an array of boolean of length equal to the new formal
+     * argument list.  Cells in the array are set to true if the formal argument
+     * at the corresponding location in the new formal argument list appeared in
+     * both the new and old formal argument lists, and has changed the value of
+     * its subRange field.
+     */
+    protected boolean[] fargSubRangeChanged = null;
+
+    /**
+     * Reference to an array of boolean of length equal to the new formal
+     * argument list.  Cells in the array are set to true if the formal argument
+     * at the corresponding location in the new formal argument list appeared in
+     * both the new and old formal argument lists, and has changed the value(s)
+     * of the fields specifying the range of permissable values.
+     */
+    protected boolean[] fargRangeChanged = null;
+
+    /**
+     * Reference to an array of boolean of length equal to the old formal
+     * argument list.  Cells in the array are set to true if the formal argument
+     * at the corresponding location in the old formal argument list does not
+     * appear in the new formal argument list, and thus is deleted.
+     */
+    protected boolean[] fargDeleted = null;
+
+    /**
+     * Reference to an array of boolean of length equal to the new formal
+     * argument list.  Cells in the array are set to true if the formal argument
+     * at the corresponding location in the new formal argument list does not
+     * appear in the old formal argument list, and thus has been inserted.
+     */
+    protected boolean[] fargInserted = null;
+
+    /**
+     * Constructor.
      *
-     * For now at least, only one constructors:
+     * @param db The database that this list of VocabElementListeners listens to
+     * for changes.
+     * @param ve The vocab element that this list of listeners listens to for
+     * changes.
      *
-     * The initial constructor takes a db, and a reference to a VocabElement,
-     * and sets up the new instance to start managing change listeners for the
-     * instance of Vocab element.
-     *
-     * No copy constructor, as the plan is to use the same instance of
+     * N.B. No copy constructor, as the plan is to use the same instance of
      * VocabElementListeners to manage listeners for all incarnations of a given
      * VocabElement.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to create the
+     * VocabElementListeners
+     *
+     * @date 2008/02/02
      */
-
     public VocabElementListeners(Database db,
                              VocabElement ve)
         throws SystemErrorException
@@ -188,25 +196,23 @@ public class VocabElementListeners extends Listeners
         this.itsVE = ve;
         this.itsVEID = ve.getID();
 
-    } /* VocabElementListeners::VocabElementListeners(db, ve) */
-
-
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
+    }
 
     /**
-     * UpdateItsVE()
-     *
      * Update the itsVE field for a new incarnation of the target VocabElement.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param ve The new VocabElement to use to listen for changes too.
+     *
+     * @throws SystemErrorException If unable to update the vocab element that
+     * this listener listens too.
+     *
+     * @date 2008/02/02
      */
-
     protected void updateItsVE(VocabElement ve)
         throws SystemErrorException
     {
@@ -232,25 +238,18 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::updateItsVE() */
-
-
-    /*************************************************************************/
-    /************************** Change Logging: ******************************/
-    /*************************************************************************/
+    }
 
     /**
-     * discardChangeNotes()
-     *
      * Discard all notes on changes that should be reported to the listeners.
      *
-     *                                                   -- 8/26/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @date 2008/08/26
      */
-
     protected void discardChangeNotes()
     {
         this.changeNoted = false;
@@ -273,18 +272,22 @@ public class VocabElementListeners extends Listeners
     }
 
     /**
-     * noteChange()
-     *
      * Given references to the old and new versions of the target VocabElement,
      * make note of any changes that should be reported to the listeners.
      *
-     *                                                   -- 2/2/08
+     * @param oldVE The old VocabElement that we are comparing.
+     * @param newVE The new VocabElement that we are comparing.
      *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to determine the changes between
+     * the oldVE and newVE.
+     *
+     * @date 2008/02/02
      */
-
     protected boolean noteChange(VocabElement oldVE,
                                  VocabElement newVE)
         throws SystemErrorException
@@ -534,23 +537,21 @@ public class VocabElementListeners extends Listeners
         }
 
         return this.changeNoted;
-
-    } /* VocabElementListeners::noteChange() */
-
+    }
 
     /**
-     *
-     * notifyExternalListenersOfChange()
-     *
      * Call the external listeners to advise them of changes.
      *
-     *                                               -- 8/26/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to notify the external listeners
+     * of any changes.
+     *
+     * @date 2008/08/26
      */
-
     protected void notifyExternalListenersOfChange()
         throws SystemErrorException
     {
@@ -581,23 +582,21 @@ public class VocabElementListeners extends Listeners
         }
 
         return;
-
-    } /* VocabElementListeners::notifyExternalListenersOfChange() */
-
+    }
 
     /**
-     *
-     * notifyInternalListenersOfChange()
-     *
      * Call the internal listeners to advise them of changes.
      *
-     *                                           -- 8/26/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to notify internal listeners of
+     * any changes.
+     *
+     * @date 2008/08/26
      */
-
     protected void notifyInternalListenersOfChange()
         throws SystemErrorException
     {
@@ -645,24 +644,23 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::notifyInternalListenersOfChange() */
-
+    }
 
     /**
-     *
-     * notifyListenersOfChange()
-     *
      * If any notable changes have been noted since the last call to
      * NotifyListenersOfChanges(), call the listeners to advise them of the
      * changes, and then clear the fields used to note changes.
      *
-     *                                                   -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable to notify all listeners of any
+     * changes
+     *
+     * @date 2008/02/02
      */
-
     protected void notifyListenersOfChange()
         throws SystemErrorException
     {
@@ -681,22 +679,22 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::notifyListenersOfChange() */
-
+    }
 
     /**
-     * notifyExternalListenersOfDeletion()
-     *
      * Advise any external listeners of the deletion of the associated
      * VocabElement.
      *
-     *                                                   -- 8/26/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If unable notify external listeners of any
+     * deletion.
+     *
+     * @date 2008/08/26
      */
-
     protected void notifyExternalListenersOfDeletion()
         throws SystemErrorException
     {
@@ -719,23 +717,17 @@ public class VocabElementListeners extends Listeners
         }
 
         return;
-
-    } /* VocabElementListeners::notifyExternalListenersOfDeletion() */
-
+    }
 
     /**
-     * notifyInternalListenersOfDeletion()
-     *
      * Advise any internal listeners of the deletion of the associated
      * VocabElement.
      *
-     *                                                   -- 8/26/08
+     * @throws SystemErrorException If unable to notify internal listeners of
+     * deletion.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/08/26
      */
-
     protected void notifyInternalListenersOfDeletion()
         throws SystemErrorException
     {
@@ -761,21 +753,21 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::notifyInternalListenersOfDeletion() */
-
+    }
 
     /**
-     * notifyListenersOfDeletion()
-     *
      * Advise any listeners of the deletion of the associated VocabElement.
      *
-     *                                                   -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException If Unable to notify all listeners of
+     * deletion.
+     *
+     * @date 2008/02/02
      */
-
     protected void notifyListenersOfDeletion()
         throws SystemErrorException
     {
@@ -789,27 +781,25 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::notifyListenersOfDeletion() */
-
-
-    /*************************************************************************/
-    /*********************** Listener Management: ****************************/
-    /*************************************************************************/
+    }
 
     /**
-     * checkExternalListenerType()
-     *
      * Given a reference to an external listener, check to see if it is
      * correctly typed.  If it is, do nothing.  If it isn't, throw a system
      * error with the appropriate diagnostic message.
      *
-     *                                               -- 8/26/98
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The object to Check.
+     *
+     * @throws SystemErrorException If the supplied object is not an
+     * ExternalVocabElementListener.
+     *
+     * @date 1998/08/26
      */
-
     protected void checkExternalListenerType(Object el)
         throws SystemErrorException
     {
@@ -824,23 +814,25 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::checkExternalListenerType() */
-
+    }
 
     /**
-     * checkInternalListenerType()
-     *
      * Given a reference to an internal listener, check to see if it is
      * correctly typed.  If it is, do nothing.  If it isn't, throw a system
      * error with the appropriate diagnostic message.
      *
-     *                                               -- 8/26/98
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param il The object to check.
+     *
+     * @throws SystemErrorException If the supplied object is not an
+     * InternalVocabElementListener.
+     *
+     * @date 1998/08/26
      */
-
     protected void checkInternalListenerType(Object il)
         throws SystemErrorException
     {
@@ -855,21 +847,23 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::checkInternalListenerType() */
-
+    }
 
     /**
-     * deregisterExternalListener()
-     *
      * Deregister an external listener.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The external listener to deregister.
+     *
+     * @throws SystemErrorException If unable to deregister the external
+     * listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void deregisterExternalListener(Object el)
         throws SystemErrorException
     {
@@ -886,21 +880,23 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::deregisterExternalListener() */
-
+    }
 
     /**
-     * deregisterInternalListener()
-     *
      * Deregister an external listener.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param ID The id of the internal listener to deregister.
+     *
+     * @throws SystemErrorException If unable to deregister the internal
+     * listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void deregisterInternalListener(long ID)
         throws SystemErrorException
     {
@@ -915,21 +911,22 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::deregisterInternalListener() */
-
+    }
 
     /**
-     * registerExternalListener()
-     *
      * Register an external listener.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param el The External listener to register.
+     *
+     * @throws SystemErrorException if unable to register the external listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void registerExternalListener(Object el)
         throws SystemErrorException
     {
@@ -946,21 +943,22 @@ public class VocabElementListeners extends Listeners
 
         return;
 
-    } /* VocabElementListeners::registerExternalListener() */
-
+    }
 
     /**
-     * registerInternalListener()
-     *
      * Register an internal listener.
      *
-     *                                               -- 2/2/08
-     *
      * Changes:
+     * <ul>
+     *   <li>None.</li>
+     * </ul>
      *
-     *    - None.
+     * @param ID The ID of the internal listener to register.
+     *
+     * @throws SystemErrorException If unable to register the internal listener.
+     *
+     * @date 2008/02/02
      */
-
     protected void registerInternalListener(long ID)
         throws SystemErrorException
     {
@@ -979,7 +977,5 @@ public class VocabElementListeners extends Listeners
         this.AddInternalListener(ID);
 
         return;
-
-    } /* VocabElementListeners::registerExternalListener() */
-
+    }
 } /* class VocabElementListeners */

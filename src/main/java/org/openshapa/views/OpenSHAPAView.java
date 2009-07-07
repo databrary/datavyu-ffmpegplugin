@@ -16,6 +16,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Font;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -25,7 +26,12 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
+import org.openshapa.controllers.OpenDatabaseC;
+import org.openshapa.db.Database;
+import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
+import org.openshapa.util.Constants;
+import org.openshapa.Configuration;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -52,6 +58,10 @@ implements KeyEventDispatcher {
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
+    }
+
+    public OpenSHAPAView getOpenSHAPAView(){
+        return this;
     }
 
     /**
@@ -88,6 +98,33 @@ implements KeyEventDispatcher {
         FileFilter ff = jd.getFileFilter();
         if (result == JFileChooser.APPROVE_OPTION) {
             new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+        }
+    }
+
+    /**
+     * Action for loading a database from a file.
+     */
+    @Action
+    public void open() {
+        JFileChooser jd = new JFileChooser();
+        jd.addChoosableFileFilter(new CSVFilter());
+        int result = jd.showOpenDialog(this.getComponent());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
+                Database newDB = new MacshapaDatabase();
+                OpenSHAPA.setDatabase(newDB);
+                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                           .getMainView();
+                s.showSpreadsheet();
+                // TODO- BugzID:79 This needs to move above showSpreadsheet,
+                // when setTicks is fully implemented.
+                newDB.setTicks(Constants.TICKS_PER_SECOND);
+            } catch (SystemErrorException se) {
+                logger.error("Unable to create new database on open", se);
+            }
+
+            new OpenDatabaseC(jd.getSelectedFile());
         }
     }
 
@@ -135,6 +172,7 @@ implements KeyEventDispatcher {
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
         this.getComponent().revalidate();
+        this.getComponent().resetKeyboardActions();
     }
 
     /**
@@ -187,8 +225,9 @@ implements KeyEventDispatcher {
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        javax.swing.JMenuItem openMenuItem = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem newMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -202,6 +241,11 @@ implements KeyEventDispatcher {
         jSeparator3 = new javax.swing.JSeparator();
         weakTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
         strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
+        zoomMenu = new javax.swing.JMenu();
+        zoomInMenuItem = new javax.swing.JMenuItem();
+        zoomOutMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JSeparator();
+        resetZoomMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
@@ -243,14 +287,19 @@ implements KeyEventDispatcher {
         fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
-        openMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
-        openMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
-        openMenuItem.setName("openMenuItem"); // NOI18N
+        openMenuItem.setAction(actionMap.get("open")); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
+        openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
+        openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
         fileMenu.add(openMenuItem);
 
-        jMenuItem5.setAction(actionMap.get("saveAs")); // NOI18N
-        jMenuItem5.setName("jMenuItem5"); // NOI18N
-        fileMenu.add(jMenuItem5);
+        newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
+        newMenuItem.setName("newMenuItem"); // NOI18N
+        fileMenu.add(newMenuItem);
+
+        saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
+        saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
+        fileMenu.add(saveAsMenuItem);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
         fileMenu.add(fileMenuSeparator);
@@ -317,6 +366,40 @@ implements KeyEventDispatcher {
             }
         });
         jMenu3.add(strongTemporalOrderMenuItem);
+
+        zoomMenu.setName("zoomMenu"); // NOI18N
+
+        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.META_MASK));
+        zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
+        zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomInMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(zoomInMenuItem);
+
+        zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.META_MASK));
+        zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
+        zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zoomOutMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(zoomOutMenuItem);
+
+        jSeparator5.setName("jSeparator5"); // NOI18N
+        zoomMenu.add(jSeparator5);
+
+        resetZoomMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.META_MASK));
+        resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
+        resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetZoomMenuItemActionPerformed(evt);
+            }
+        });
+        zoomMenu.add(resetZoomMenuItem);
+
+        jMenu3.add(zoomMenu);
 
         menuBar.add(jMenu3);
 
@@ -446,7 +529,7 @@ implements KeyEventDispatcher {
         // Favourite script list starts after the 'favScripts' menu item - which
         // is just a stub for a starting point. Search for the favScripts as the
         // starting point for deleting existing scripts from the menu.
-        Component list[] = scriptMenu.getMenuComponents();
+        Component[] list = scriptMenu.getMenuComponents();
         int start = 0;
         for (Component c : list) {
             start++;
@@ -472,6 +555,67 @@ implements KeyEventDispatcher {
             }
         }
     }//GEN-LAST:event_populateFavourites
+
+    /**=
+     * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
+     * @param evt The event that triggered this action.
+     */
+    private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
+            changeFontSize(ZOOM_INTERVAL);
+    }//GEN-LAST:event_zoomInMenuItemActionPerformed
+
+    /**
+     * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
+     * @param evt
+     */
+    private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
+            changeFontSize(-ZOOM_INTERVAL);
+    }//GEN-LAST:event_zoomOutMenuItemActionPerformed
+
+    /**
+     * Function to reset the zoom level to the default size.
+     * @param evt The event that triggered this action.
+     */
+    private void resetZoomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetZoomMenuItemActionPerformed
+
+        Configuration config = Configuration.getInstance();
+        Font f = config.getSSDataFont();
+
+        changeFontSize(ZOOM_DEFAULT_SIZE - f.getSize());
+    }//GEN-LAST:event_resetZoomMenuItemActionPerformed
+
+    /**
+     * Changes the font size by adding sizeDif to the current size.  Then it
+     * creates and revalidates a new panel to show the font update.
+     *
+     * This will not make the font smaller than smallestSize.
+     *
+     * @param sizeDif The number to add to the current font size.
+     */
+    public void changeFontSize(int sizeDif) {
+        Configuration config = Configuration.getInstance();
+        Font f = config.getSSDataFont();
+        int size = f.getSize();
+        size = size + sizeDif;
+
+        if (size < ZOOM_MIN_SIZE) {
+            size = ZOOM_MIN_SIZE;
+        } else if (size > ZOOM_MAX_SIZE) {
+            size = ZOOM_MAX_SIZE;
+        }
+
+        Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
+
+        config.setSSDataFont(biggerFont);
+
+        //Create and redraw fresh window pane so all of the fonts are new again.
+        SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.setComponent(panel);
+        this.getComponent().revalidate();
+        this.getComponent().resetKeyboardActions();
+
+
+    }
 
     /**
      * Creates a new menu item for running a named script.
@@ -503,12 +647,6 @@ implements KeyEventDispatcher {
         new RunScriptC(evt.getActionCommand());
     }
 
-    /**
-     * The action to poplate the recently ran scripts menu with scripts that
-     * have been, well... Recently ran.
-     *
-     * @param evt The event that triggered this action.
-     */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem1;
     private javax.swing.JMenuItem contentsMenuItem;
@@ -521,22 +659,36 @@ implements KeyEventDispatcher {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem recentScriptsHeader;
+    private javax.swing.JMenuItem resetZoomMenuItem;
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
+    private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
+    private javax.swing.JMenuItem zoomInMenuItem;
+    private javax.swing.JMenu zoomMenu;
+    private javax.swing.JMenuItem zoomOutMenuItem;
     // End of variables declaration//GEN-END:variables
+
+    //Variable for the amount to raise the font size by when zooming.
+    public static final int ZOOM_INTERVAL = 4;
+    public static final int ZOOM_DEFAULT_SIZE = 14;
+
+    //Variables to set the maximum zoom and minimum zoom.
+    static final int ZOOM_MAX_SIZE = 42;
+    static final int ZOOM_MIN_SIZE = 8;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);

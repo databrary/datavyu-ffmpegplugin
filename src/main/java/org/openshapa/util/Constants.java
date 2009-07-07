@@ -3,7 +3,10 @@ package org.openshapa.util;
 /**
  * Class containing common constants for OpenSHAPA.
  */
-public class Constants {
+public final class Constants {
+
+    /** The margin to use at the bottom of spreadsheet columns. */
+    public static final int BOTTOM_MARGIN = 100;
 
     /** The default number of ticks per second to use. */
     public static final int TICKS_PER_SECOND = 1000;
@@ -52,4 +55,11 @@ public class Constants {
 
     /** Seed value for generating hash codes. */
     public static final int SEED15 = 59;
+
+    /**
+     * Hidden Constructor - you can't create this - just a holder for global
+     * constant values.
+     */
+    private Constants() {
+    }
 }

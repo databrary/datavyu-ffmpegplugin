@@ -48,62 +48,116 @@ import org.openshapa.util.HashUtils;
  *
  *                                               -- 1/22/08
  */
-public class TimeStamp
-{
-  /** Class constants **/
+public class TimeStamp {
 
-  static final long MIN_TICKS = 0L;
-  static final long MAX_TICKS = Long.MAX_VALUE;
+    /** The minimum number of ticks possible. */
+    public static final long MIN_TICKS = 0L;
 
-  /* the value for MAX_TPS has been chosen somewhat arbitrarily -- it restricts
-   * us to no better than a milisecond resolution.  From a database perspective,
-   * it can be changed to any positive value.  However, if it is increased
-   * beyond 1000, there will be implication for time stamp display in the GUI.
-   *
-   *                                             -- 2/12/07
-   */
-  static final int MIN_TPS = 1;
-  static final int MAX_TPS = 1000;
+    /** The maximum number of ticks possible. */
+    public static final long MAX_TICKS = Long.MAX_VALUE;
 
+    /** The minimum permitted value of ticks per second. */
+    public static final int MIN_TPS = 1;
 
-  /** Number formatters **/
-  private final static NumberFormatter NUMFORM = new NumberFormatter();
+    /**
+     * The maximum permitted value of ticks per second - this value has been
+     * chosen somewhat arbitrarily -- it restricts us to no better than a
+     * milisecond resolution.  From a database perspective, it can be changed to
+     * any positive value.  However, if it is increased beyond 1000, there will
+     * be implication for time stamp display in the GUI.
+     *
+     * @date 2008/02/12
+     */
+    public static final int MAX_TPS = 1000;
 
-  /** The number of ticks per second for this timestamp **/
-  private int  tps  = 0;
+    /** Conversion factor for converting hours to ticks. */
+    private static final long HH_TO_TICKS = 3600000;
 
-  /** The value of the timestamp in ticks **/
-  private long ticks = 0;
+    /** Array index for hourse. */
+    private static final int HH = 0;
 
-  /**
-   * Creates a new instance of Timestamp with the given ticks per second
-   * and the given time.
-   * @param tps  Ticks per second.
-   * @param ticks The value of the timestamp in ticks.
-   */
-  public TimeStamp(int tps, long ticks)
-        throws SystemErrorException
-  {
-    this.setTPS(tps);
-    this.setTime(ticks);
-  } //End of TimeStamp() constructor
+    /** Array index for minutes.  */
+    private static final int MM = 1;
 
-  public TimeStamp(TimeStamp t)
-        throws SystemErrorException
-  {
-    super();
+    /** Array index for seconds. */
+    private static final int SS = 2;
 
-    final String mName = "TimeStamp::TimeStamp(): ";
+    /** Array index for milliseconds. */
+    private static final int MMM = 3;
 
-    if ( t == null )
-    {
-      throw new SystemErrorException(mName + "t is null");
+    /** Conversion factor for converting minutes to ticks. */
+    private static final long MM_TO_TICKS = 60000;
+
+    /** Conversion factor for converting seconds to ticks. */
+    private static final int SS_TO_TICKS = 1000;
+
+    /** Number formatters. **/
+    private static final NumberFormatter NUMFORM = new NumberFormatter();
+
+    /** The number of ticks per second for this timestamp. **/
+    private int  tps  = 0;
+
+    /** The value of the timestamp in ticks. **/
+    private long ticks = 0;
+
+    /**
+     * Creates a new instance of Timestamp with the given ticks per second
+     * and the given time.
+     *
+     * @param tps  Ticks per second.
+     * @param ticks The value of the timestamp in ticks.
+     *
+     * @throws SystemErroeXception If unable to build the timestamp from the
+     * supplied parameters.
+     */
+    public TimeStamp(int tps, long ticks) throws SystemErrorException {
+        this.setTPS(tps);
+        this.setTime(ticks);
     }
 
-    this.setTPS(t.getTPS());
-    this.setTime(t.getTime());
+    /**
+     * Creates a timestamp from a string in the format HH:MM:SS:mmm, where
+     * HH = hours
+     * MM = minutes
+     * SS = seconds
+     * mmm = milliseconds
+     *
+     * @param timeStamp A string in the format HH:MM:SS:mmm
+     * @throws SystemErrorException If unable to build the timestamp from the
+     * supplied string.
+     */
+    public TimeStamp(final String timeStamp) throws SystemErrorException {
+        long parsedTicks = 0;
 
-  } /* TimeStamp::TimeStamp() -- copy constructor */
+        String[] timeChunks = timeStamp.split(":");
+        parsedTicks += (new Long(timeChunks[HH]) * HH_TO_TICKS);
+        parsedTicks += (new Long(timeChunks[MM]) * MM_TO_TICKS);
+        parsedTicks += (new Long(timeChunks[SS]) * SS_TO_TICKS);
+        parsedTicks += (new Long(timeChunks[MMM]));
+
+        this.setTPS(SS_TO_TICKS);
+        this.setTime(parsedTicks);
+    }
+
+    /**
+     * Copy constructor - creates a new timestamp from an existing timestamp.
+     *
+     * @param t The timestamp to copy.
+     * @throws SystemErrorException If unable to create a copy of the supplied
+     * timestamp.
+     */
+    public TimeStamp(TimeStamp t) throws SystemErrorException {
+        super();
+
+        final String mName = "TimeStamp::TimeStamp(): ";
+
+        if ( t == null ) {
+          throw new SystemErrorException(mName + "t is null");
+        }
+
+        this.setTPS(t.getTPS());
+        this.setTime(t.getTime());
+    }
 
   /**
    * Creates a new instance of Timestamp with the given ticks per second.

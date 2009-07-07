@@ -39,7 +39,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * @throws org.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
         matrix_mve = new MatrixVocabElement(db, "matrix_mve");
@@ -588,9 +588,6 @@ public class ColPredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1935,9 +1932,6 @@ public class ColPredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2514,9 +2508,6 @@ public class ColPredDataValueTest extends DataValueTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( alt_db == null ) ||
@@ -2850,9 +2841,6 @@ public class ColPredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -3888,9 +3876,6 @@ public class ColPredDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

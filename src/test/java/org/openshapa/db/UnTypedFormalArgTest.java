@@ -1242,9 +1242,6 @@ public class UnTypedFormalArgTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.toString();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( pve == null ) ||

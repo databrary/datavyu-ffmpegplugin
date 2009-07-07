@@ -22,7 +22,7 @@ public class ColPredTest {
     }
 
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         
         MatrixVocabElement floatMVE = new MatrixVocabElement(db, "floatMVE");
@@ -595,9 +595,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1745,9 +1742,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -4113,9 +4107,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -5783,9 +5774,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -10189,9 +10177,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -12143,9 +12128,6 @@ public class ColPredTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             SystemErrorExceptionString = e.toString();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            SystemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

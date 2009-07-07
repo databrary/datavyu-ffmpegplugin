@@ -14,6 +14,8 @@ Download
 
   <<Latest Releases:>>
 
+    * 2009-06-12: <<0.7-Alpha>> ({{{http://openshapa.org/dev/download/openshapa-0.7-bin-20090612164512.zip}Download}}, {{{http://openshapa.org/dev/releases/Alpha-0.7_Release_Notes.pdf}Release Notes}})
+
     * 2009-05-08: <<0.6-Alpha>> ({{{http://openshapa.org/dev/download/openshapa-0.6-bin-20090508104003.zip}Download}}, {{{http://openshapa.org/dev/releases/Alpha-0.6_Release_Notes.pdf}Release Notes}})
 
     * 2009-04-09: <<0.5-Alpha>> ({{{http://openshapa.org/dev/download/openshapa-0.5-bin-20090408170044.zip}Download}}, {{{http://openshapa.org/dev/releases/Alpha-0.5_Release_Notes.pdf}Release Notes}})
@@ -34,7 +36,7 @@ Documentation
 
   For information on how to install and use OpenSHAPA and best practices to help
   you get the most out of your research data, see the
-  {{{http://openshapa.org/fogbugz/default.php?W19}OpenSHAPA User Guide}}.
+  {{{https://openshapa.org/fogbugz/default.php?W19}OpenSHAPA User Guide}}.
 
 
 Contribute
@@ -48,10 +50,10 @@ Contribute
 
     * <<Test:>> Live dangerously by grabbing the latest
       {{{http://openshapa.org/download/}development snapshot}} and
-      {{{http://openshapa.org/fogbugz/default.php?W48}reporting
+      {{{https://openshapa.org/fogbugz/default.php?W48}reporting
       any issues}} you find.
 
     * <<Document:>> Did it take you a while to figure something out, or was
       existing documentation out of date or wrong? Help others stand on your
-      shoulders by {{{http://openshapa.org/fogbugz/default.php?W49}improving
+      shoulders by {{{https://openshapa.org/fogbugz/default.php?W49}improving
       documentation}}.

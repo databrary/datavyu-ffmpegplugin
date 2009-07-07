@@ -265,9 +265,6 @@ public class PredFormalArgTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! testFinished ) ||
@@ -1901,9 +1898,6 @@ public class PredFormalArgTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( ! completed ) ||
@@ -2498,9 +2492,6 @@ public class PredFormalArgTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.toString();
-        } catch (LogicErrorException e) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = e.toString();
         }
 
         if ( ( db == null ) ||
@@ -3089,9 +3080,6 @@ public class PredFormalArgTest {
             } catch (SystemErrorException e) {
                 threwSystemErrorException = true;
                 systemErrorExceptionString = e.getMessage();
-            } catch (LogicErrorException le) {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = le.toString();
             }
 
             if ( ( ! methodReturned ) ||

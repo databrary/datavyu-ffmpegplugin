@@ -7,77 +7,64 @@ import org.openshapa.util.HashUtils;
  * An instance of UndefinedDataValue is used as a place holder for an untyped
  * formal argument until a value is assigned.
  */
+public final class UndefinedDataValue extends DataValue {
 
-public final class UndefinedDataValue extends DataValue
-{
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * itsValue:   String containing the name of the formal argument.
-     */
-    
-    /** the name of the associated formal arg */
+    /** String containing the name of the formal argument. */
     String itsValue = "<val>";
 
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-    
-    /** 
-     * UndefinedDataValue()
+    /**
+     * Constructor
      *
-     * Constructor for instances of UndefinedDataValue.  
-     * 
-     * Three versions of this constructor.  
-     * 
-     * The first takes a reference to a database as its parameter and just 
-     * calls the super() constructor.
+     * @param db The database that this undefined data value belongs too.
      *
-     * The second takes a reference to a database, a formal argument ID, and 
-     * a value as arguments, and attempts to set the itsFargID and itsValue 
-     * of the data value accordingly.
-     *
-     * The third takes a reference to an instance of UndefinedDataValue as an
-     * argument, and uses it to create a copy.
-     *
-     *                                               -- 8/16/07  
-     *
-     * Changes:
-     *
-     *    - None.
-     *      
+     * @date 2007/08/16
      */
- 
     public UndefinedDataValue(Database db)
         throws SystemErrorException
     {
         super(db);
-        
-    } /* UndefinedDataValue::UndefinedDataValue(db) */
-    
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param db The database that this undefined data value belongs too.
+     * @param fargID The ID for the formal argument that this DataValue resides
+     * within.
+     * @param value The value of the Undefined Data Value.
+     *
+     * @throws SystemErrorException If unable to create the Undefined Data
+     * Value.
+     *
+     * @date 2007/08/16
+     */
     public UndefinedDataValue(Database db,
                               long fargID,
                               String value)
         throws SystemErrorException
     {
         super(db);
-        
         this.setItsFargID(fargID);
-        
         this.setItsValue(value);
-    
-    } /* UndefinedDataValue::UndefinedDataValue(db, fargID, value) */
-    
+    }
+
+    /**
+     * Copy Constructor.
+     *
+     * @param dv The UndefinedDataValue to clone.
+     * @throws SystemErrorException If unable to create a copy of the supplied
+     * UndefinedDataValue.
+     *
+     * @date 2007/08/16
+     */
     public UndefinedDataValue(UndefinedDataValue dv)
         throws SystemErrorException
     {
         super(dv);
-        
+
         this.itsValue  = new String(dv.itsValue);
-        
-    } /* UndefinedDataValue::UndefinedDataValue(dv) */
+
+    }
 
     /**
      * Creates a new copy of the object.
@@ -98,61 +85,50 @@ public final class UndefinedDataValue extends DataValue
         }
 
         return clone;
-    }    
-        
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
+    }
 
     /**
-     * getItsValue()
+     * @return A string containing a copy of the current value of the data
+     * value.
      *
-     * Return a string containing a copy of the current value of the data value.
-     *
-     *                           -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
-    
     public String getItsValue()
     {
-        
         return new String(this.itsValue);
-    
     } /* UndefinedDataValue::getItsValue() */
-    
+
     /**
-     * setItsValue()
-     *
-     * Set itsValue to the specified value.  In the case of an undefined 
-     * data value, the value must be the name of the associated untyped 
+     * Set itsValue to the specified value.  In the case of an undefined
+     * data value, the value must be the name of the associated untyped
      * formal argument, or any valid formal argument name if itsFargID
      * is undefined.
      *
-     *                                               -- 8/16/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     With the advent of column predicates and the prospect of
+     *     implementing the old MacSHAPA query language in OpenSHAPA,
+     *     the requirement that undefined data values only be used to
+     *     replace untyped formal arguments is removed. -- 2008/12/12
+     *   </li>
+     *   <li>
+     *     Able to set values of undefined datavalues to things other than
+     *     valid formal arguments. --2009/06/09
+     *   </li>
+     * </ul>
      *
-     *    - With the advent of column predicates and the prospect of 
-     *      implementing the old MacSHAPA query language in OpenSHAPA,
-     *      the requirement that undefined data values only be used to 
-     *      replace untyped formal arguments is removed.
+     * @param value The value to use with this undefined data value.
      *
-     *                                               -- 12/12/08
+     * @throws SystemErrorException If unable to set the value to specified
+     * input.
+     *
+     * @date 2007/08/16
      */
-    
     public void setItsValue(String value)
         throws SystemErrorException
     {
         final String mName = "UndefinedDataValue::setItsValue(): ";
-        
-        if ( ! ( getDB().IsValidFargName(value) ) )
-        {
-            throw new SystemErrorException(mName +
-                    "value isn't a valid formal argument name");
-        }
         
         if ( this.itsFargID != DBIndex.INVALID_ID )
         {
@@ -192,9 +168,8 @@ public final class UndefinedDataValue extends DataValue
         this.itsValue = new String(value);
         
         return;
-        
-    } /* UndefinedDataValue::setItsValue() */
-  
+    }
+
     /**
      * @return true if the value equals the default value
      */
@@ -203,11 +178,6 @@ public final class UndefinedDataValue extends DataValue
         return true;
     }
 
-
-    /*************************************************************************/
-    /*************************** Overrides: **********************************/
-    /*************************************************************************/
-    
     /**
      * toString()
      *

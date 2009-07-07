@@ -5,7 +5,6 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.TimeStampDataValue;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.views.discrete.Editor;
 import org.openshapa.views.discrete.Selector;
@@ -20,27 +19,6 @@ import org.apache.log4j.Logger;
  * An abstract view for TimeStampDataValues.
  */
 public abstract class TimeStampDataValueView extends DataValueElementV {
-
-    /** Conversion factor for converting hours to ticks. */
-    private static final long HH_TO_TICKS = 3600000;
-
-    /** Array index for hourse. */
-    private static final int HH = 0;
-
-    /** Array index for minutes.  */
-    private static final int MM = 1;
-
-    /** Array index for seconds. */
-    private static final int SS = 2;
-
-    /** Array index for milliseconds. */
-    private static final int MMM = 3;
-
-    /** Conversion factor for converting minutes to ticks. */
-    private static final long MM_TO_TICKS = 60000;
-
-    /** Conversion factor for converting seconds to ticks. */
-    private static final int SS_TO_TICKS = 1000;
 
     /** Logger for this class. */
     private static Logger logger = Logger
@@ -139,62 +117,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
     /**
      * Editor to use for the time stamp data value.
      */
-    class TimeStampEditor extends DataValueElementV.DataValueEditor {
-
-        /**
-         * The action to invoke when a key is pressed.
-         *
-         * @param e The key event that triggered this action.
-         */
-        @Override
-        public void keyPressed(final KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    // Ignore - handled when the key is typed.
-                    e.consume();
-                    break;
-
-                case KeyEvent.VK_LEFT:
-                    // If the character two steps to the left is a preserved
-                    // character we need to skip one before passing the key
-                    // event down to skip again (effectively skipping the
-                    // preserved character).
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.max(0, getCaretPosition() - 2);
-
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.max(0,
-                                                      getCaretPosition() - 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_RIGHT:
-                    // If the character to the right is a preserved character,
-                    // we need to skip one before passing the key event down to
-                    // skip again (effectively skipping the preserved character)
-                    for (int i = 0; i < getPreservedChars().size(); i++) {
-                        int c = Math.min(getText().length() - 1,
-                                         getCaretPosition() + 1);
-                        if (getText().charAt(c) == getPreservedChars().get(i)) {
-                            setCaretPosition(Math.min(getText().length() - 1,
-                                                      getCaretPosition() + 1));
-                            break;
-                        }
-                    }
-                    break;
-
-                case KeyEvent.VK_DOWN:
-                case KeyEvent.VK_UP:
-                    // Key stroke gets passed up a parent element to navigate
-                    // cells up and down.
-                    break;
-                default:
-                    break;
-            }
-        }
+    class TimeStampEditor extends DataValueElementV.DataValueEditorInner {
 
         /**
          * Attempt to paste the contents of the clipboard into this timestamp.
@@ -219,7 +142,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                                       .getTransferData(DataFlavor.stringFlavor);
 
                 // Validate clipboard contents - if it is invalid, don't attempt
-                // to paste it into the timestamp.
+                // to paste it into the timestamp. 1234 1234
                 boolean reject = true;
                 for (int i = 0; i < text.length(); i++) {
                     if (Character.isDigit(text.charAt(i))) {
@@ -278,7 +201,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         // to benefit from 'smart' edits.
                         v.deleteCharAt(getCaretPosition());
                         v.insert(getCaretPosition(), text.charAt(i));
-                        ts = buildValue(v.toString());
+                        ts = new TimeStamp(v.toString());
 
                         // If we have got no more room in the timestamp - stop
                         // copying values.
@@ -321,7 +244,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                     // Can't delete empty time stamp data value.
                     if (!tdv.isEmpty()) {
                         this.removeBehindCaret();
-                        tdv.setItsValue(buildValue(getText()));
+                        tdv.setItsValue(new TimeStamp(getText()));
                         e.consume();
                     }
 
@@ -354,7 +277,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                         }
 
                         advanceCaret();
-                        tdv.setItsValue(buildValue(getText()));
+                        tdv.setItsValue(new TimeStamp(getText()));
                         e.consume();
                     }
 
@@ -365,7 +288,7 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                     currentValue.deleteCharAt(getCaretPosition());
                     currentValue.insert(getCaretPosition(), e.getKeyChar());
                     advanceCaret();
-                    tdv.setItsValue(buildValue(currentValue.toString()));
+                    tdv.setItsValue(new TimeStamp(currentValue.toString()));
                     e.consume();
 
                 // Every other key stroke is ignored by the float editor.
@@ -381,31 +304,6 @@ public abstract class TimeStampDataValueView extends DataValueElementV {
                 restoreCaretPosition();
             } catch (SystemErrorException se) {
                 logger.error("Unable to update TimeStampDataValue", se);
-            }
-        }
-
-        /**
-         * Builds a new Double value from a string.
-         *
-         * @param textField The String that you want to create a Double from.
-         *
-         * @return A Double value that can be used setting the database.
-         */
-        public final TimeStamp buildValue(final String textField) {
-            try {
-                long ticks = 0;
-
-                String[] timeChunks = textField.split(":");
-
-                ticks += (new Long(timeChunks[HH]) * HH_TO_TICKS);
-                ticks += (new Long(timeChunks[MM]) * MM_TO_TICKS);
-                ticks += (new Long(timeChunks[SS]) * SS_TO_TICKS);
-                ticks += (new Long(timeChunks[MMM]));
-
-                return new TimeStamp(SS_TO_TICKS, ticks);
-            } catch (SystemErrorException e) {
-                logger.error("Unable to build TimeStamp value", e);
-                return null;
             }
         }
     }

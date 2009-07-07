@@ -42,7 +42,7 @@ public class NominalDataValueTest extends DataValueTest {
      * @throws org.openshapa.db.SystemErrorException on failure.
      */
     @Before
-    public void setUp() throws SystemErrorException, LogicErrorException {
+    public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         nom_mve = new MatrixVocabElement(db, "nom_mve");
         nom_mve.setType(MatrixVocabElement.MatrixType.NOMINAL);
@@ -786,9 +786,6 @@ public class NominalDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1226,9 +1223,6 @@ public class NominalDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -1667,9 +1661,6 @@ public class NominalDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2125,9 +2116,6 @@ public class NominalDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||
@@ -2459,9 +2447,6 @@ public class NominalDataValueTest extends DataValueTest {
         } catch (SystemErrorException e) {
             threwSystemErrorException = true;
             systemErrorExceptionString = e.getMessage();
-        } catch (LogicErrorException le) {
-            threwSystemErrorException = true;
-            systemErrorExceptionString = le.toString();
         }
 
         if ( ( db == null ) ||

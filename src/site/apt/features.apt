@@ -1,7 +1,9 @@
 Introduction
 
-    Short intro to OpenSHAPA, the problems it solves. Dives off into sections on
-    different features (including screenshots).
+    OpenSHAPA aims to be a tool that allows users to visualise and navigate
+    different kinds of digital data and to provide a mechanisim that can be used
+    to create observations. OpenSHAPA is cross platform and can be used on both
+    MAC and PC platforms.
 
 Temporal Ordering
 
@@ -13,17 +15,40 @@ Temporal Ordering
     events. While strong temporal ordering preserves the scale of these in
     between periods.
 
+[images/no-ordering.png] No temporal ordering.
+
+
+[images/weak-temporal.png] Weak temporal ordering.
+
 Data Viewer
 
-    The power of the new data viewer (screenshot).
+    In order to make observations of your digital data, you need a tool to
+    visualise and navigate your data in a manner that makes observations easier.
+    The original MacSHAPA provided support for digital video, but with OpenSHAPA
+    we are going much further. We are creating a plugin architecture that allows
+    users to drop down different tracks of data Ð these tracks could come from
+    any kind of source: video, sound, even output from various measuring
+    equipment such as goniometers and gaitmats. The proposed interface for
+    OpenSHAPA (see figure below) will allow users to quickly and easily
+    synchronise your data so that it is all temporally aligned. This feature is
+    under active specification and development, and we would appreciate your
+    help Information on how you can contribute can be found
+    {{{https://openshapa.org/fogbugz/default.php?W20}here.}}
+
+[images/data-viewer.png] Planned Data Viewer.
 
 Reports
 
-    Reports to visualise captured data (screenshot).
+    While OpenSHAPA allows you to export your observations in a simple CSV file
+    so that you can do statistical analysis in other applications. We are
+    planning to add support for many reports that existed in the original
+    MacSHAPA, we are always on the lookout for new ideas and suggestions on
+    other reports we could include in OpenSHAPA Ð Information on how you can
+    contribute can be found {{{https://openshapa.org/fogbugz/default.php?W20}here.}}
 
 Extendable
 
     OpenSHAPA is embedded with a scripting engine based on the ruby language,
-    enabling you to programatically manipulate your database with scripts
-    allowing you to easily query, export and clean observations stored in the
-    database.
+    enabling you to programatically manipulate your observations with scripts.
+    This scripting language allows you to easily query, export and clean
+    observations stored in the database.

@@ -48,7 +48,7 @@ public class MacshapaDatabaseTest {
      */
     @Test
     public void TestClassMacshapaDatabase()
-    throws SystemErrorException, LogicErrorException {
+    throws SystemErrorException {
         PrintStream outStream = System.out;
         boolean verbose = true;
 
@@ -92,8 +92,7 @@ public class MacshapaDatabaseTest {
 
     public static boolean TestAPIExamples(java.io.PrintStream outStream,
                                           boolean verbose)
-        throws SystemErrorException, LogicErrorException
-    {
+        throws SystemErrorException {
         String testBanner =
             "Testing API examples                                             ";
          String passBanner = "PASSED\n";
@@ -211,8 +210,7 @@ public class MacshapaDatabaseTest {
 
     private static int TestAPIExample_01(java.io.PrintStream outStream,
                                          boolean verbose)
-        throws SystemErrorException, LogicErrorException
-    {
+        throws SystemErrorException {
         final String header = "test 01: ";
         final String description = "This is a test MacSHAPA database created " +
                 "for purposes of demonstrating the API.";
