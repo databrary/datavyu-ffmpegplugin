@@ -37,7 +37,7 @@ public final class VocabElementRootView extends JTextArea  {
      * represent.
      */
     public VocabElementRootView(final VocabElement vocabElement,
-                                                        final VocabElementV pv) {
+                                                       final VocabElementV pv) {
         super();
         setLineWrap(true);
         setWrapStyleWord(true);

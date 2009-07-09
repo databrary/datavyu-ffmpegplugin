@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.openshapa.db.VocabElement;
-import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -32,9 +31,8 @@ public final class VENameEditor extends EditorComponent {
      * Constructor.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
+     * @param ve The parent VocabElement the editor is in.
+     * @param pv The parent VocabElementV the editor is in.
      */
     public VENameEditor(final JTextComponent ta, final VocabElement ve,
                                                     final VocabElementV pv) {
@@ -46,10 +44,9 @@ public final class VENameEditor extends EditorComponent {
 
     /**
      * Reset the values by retrieving from the database.
-     * @param cell The Parent cell that holds the matrix.
-     * @param matrix The parent matrix that holds the DataValue.
+     * @param ve The parent VocabElement the editor is in.
      */
-    public final void resetValue(final VocabElement ve) {
+    public void resetValue(final VocabElement ve) {
         vocabElement = ve;
 
         setText(vocabElement.getName());
@@ -122,7 +119,7 @@ public final class VENameEditor extends EditorComponent {
     /**
      * Update the database with the model value.
      */
-    public final void updateDatabase() {
+    public void updateDatabase() {
         // update the model.
         System.out.println("VENameEditor updatedatabase called");
     }

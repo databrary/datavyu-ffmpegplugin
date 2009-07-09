@@ -1,11 +1,11 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
-import org.openshapa.views.discrete.datavalues.*;
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
+import org.openshapa.views.discrete.datavalues.FixedText;
 
 /**
  * A Factory for creating data value editors.
@@ -23,13 +23,13 @@ public class VocabElementEditorFactory {
      * data cell.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix in the data cell.
-     *
-     * @return A vector of editor components to represent the matrix.
+     * @param ve The parent VocabElement the editor is in.
+     * @param pv The parent VocabElementV the editor is in.
+     * @throws SystemErrorException if problem getting vocab element from db.
+     * @return A vector of editor components to represent the element.
      */
-    public static Vector<EditorComponent> buildVocabElement(JTextComponent ta,
-                                            VocabElement ve, VocabElementV pv)
+    public static Vector<EditorComponent> buildVocabElement(
+         final JTextComponent ta, final VocabElement ve, final VocabElementV pv)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -65,11 +65,11 @@ public class VocabElementEditorFactory {
      * data cell's matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix containing the argument.
-     * @param i The index of the argument within the matrix.
-     *
-     * @return A vector of editor components to represent the matrix argument.
+     * @param ve The parent VocabElement the editor is in.
+     * @param i The index of the argument within the element.
+     * @param pv The parent VocabElementV the editor is in.
+     * @throws SystemErrorException if problem getting vocab element from db.
+     * @return A vector of editor components to represent the argument.
      */
     public static Vector<EditorComponent> buildFormalArg(JTextComponent ta,
                                        VocabElement ve, int i, VocabElementV pv)
@@ -86,14 +86,14 @@ public class VocabElementEditorFactory {
 
     /**
      * Creates a vector of editor components to represent an argument of a
-     * data cell's matrix.
+     * vocab element, including an editor for argument type
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix containing the argument.
-     * @param i The index of the argument within the matrix.
-     *
-     * @return A vector of editor components to represent the matrix argument.
+     * @param ve The parent VocabElement the editor is in.
+     * @param i The index of the argument within the element.
+     * @param pv The parent VocabElementV the editor is in.
+     * @throws SystemErrorException if problem getting vocab element from db.
+     * @return A vector of editor components to represent the argument.
      */
     public static Vector<EditorComponent> buildFormalArgWithType(
                     JTextComponent ta, VocabElement ve, int i, VocabElementV pv)
@@ -113,8 +113,7 @@ public class VocabElementEditorFactory {
     /**
      * Reset the value of an Editor component.
      * @param ed The editor component.
-     * @param c The parent data cell.
-     * @param m The matrix.
+     * @param ve The parent VocabElement the editor is in.
      */
     public static void resetValue(EditorComponent ed, VocabElement ve) {
         if (ed.getClass() == VENameEditor.class) {
