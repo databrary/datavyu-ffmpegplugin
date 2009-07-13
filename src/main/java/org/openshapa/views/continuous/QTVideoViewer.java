@@ -102,7 +102,7 @@ implements MovieDrawingComplete {
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
             this.pack();
-            //this.invalidate();
+            this.invalidate();
             this.setVisible(true);
 
             setName(this.getClass().getSimpleName() + videoFile.getName());
