@@ -29,7 +29,7 @@ Download
 
   <<Development Snapshots:>>
 
-  {{{http://openshapa.org/dev/download/}These development snapshots}}
+  {{{http://openshapa.org/dev/snapshot.php}These development snapshots}}
   contain the very latest development work, and are a little unstable. However
   we need your help to try and test the latest features.
 
@@ -51,7 +51,7 @@ Contribute
       we remove the lid).
 
     * <<Test:>> Live dangerously by grabbing the latest
-      {{{http://openshapa.org/download/}development snapshot}} and
+      {{{http://openshapa.org/dev/snapshot.php}development snapshot}} and
       {{{https://openshapa.org/fogbugz/default.php?W48}reporting
       any issues}} you find.
 
