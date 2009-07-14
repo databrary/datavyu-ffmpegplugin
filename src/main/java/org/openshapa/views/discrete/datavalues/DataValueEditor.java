@@ -317,6 +317,14 @@ public abstract class DataValueEditor extends EditorComponent {
      * Update the database with the model value.
      */
     public final void updateDatabase() {
+        // reget the parentCell in case onset or offset have been changed.
+        try {
+            parentCell = (DataCell) parentCell.getDB()
+                                                   .getCell(parentCell.getID());
+        } catch (SystemErrorException e) {
+            logger.error("Unable to reget the cell data: ", e);
+        }
+
         // update the model.
         if (isNullArg()) {
             updateModelNull();
