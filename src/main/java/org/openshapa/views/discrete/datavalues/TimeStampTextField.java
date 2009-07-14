@@ -1,0 +1,213 @@
+package org.openshapa.views.discrete.datavalues;
+
+import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import org.openshapa.db.DataCell;
+import org.openshapa.views.discrete.Selector;
+import javax.swing.JTextField;
+import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.db.TimeStamp;
+import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+
+/**
+ * JTextArea view of the Matrix (database cell) data.
+*/
+public final class TimeStampTextField extends JTextField
+implements FocusListener, KeyListener {
+
+    /** The selection (used for cells) for the parent spreadsheet. */
+    private Selector sheetSelection;
+
+    /** The parent cell for this JPanel. */
+    private DataCell parentCell = null;
+
+    /** The editors that make up the representation of the data. */
+    private TimeStampDataValueEditor myEditor;
+
+    /** The logger for this class. */
+    private static Logger logger = Logger.getLogger(TimeStampTextField.class);
+
+    /**
+     * Creates a new instance of MatrixV.
+     *
+     * @param cellSelection The parent selection for spreadsheet cells.
+     * @param cell The parent datacell for this spreadsheet cell.
+     * @param tsType Which TimeStamp of the cell to display.
+     * represent.
+     */
+    public TimeStampTextField(final Selector cellSelection,
+                   final DataCell cell,
+                   final TimeStampSource tsType) {
+        super();
+
+        sheetSelection = cellSelection;
+        parentCell = cell;
+
+        myEditor = new TimeStampDataValueEditor(this, cell, tsType);
+
+        setValue();
+        // Set visual appearance.
+        setBorder(null);
+        setOpaque(false);
+
+        this.addFocusListener(this);
+        this.addKeyListener(this);
+    }
+
+    /**
+     * Sets the value to be displayed.
+     */
+    public void setValue() {
+        myEditor.resetValue();
+
+        rebuildText();
+    }
+
+    /**
+     * Recalculates and sets the text to display.
+     */
+    public void rebuildText() {
+        setText(myEditor.getText());
+    }
+
+    /**
+     * The action to invoke if the focus is gained by this MatrixRootView.
+     * @param fe The Focus Event that triggered this action.
+     */
+    public void focusGained(final FocusEvent fe) {
+        // BugzID:320 Deselect Cells before selecting cell contents.
+        if (sheetSelection != null) {
+            sheetSelection.deselectAll();
+            sheetSelection.deselectOthers();
+        }
+
+        // We need to remember which cell should be duplicated if the user
+        // presses the enter key or selects New Cell from the menu.
+        if (parentCell != null) {
+            // method names don't reflect usage - we didn't really create this
+            // cell just now.
+            OpenSHAPA.setLastCreatedColId(parentCell.getItsColID());
+            OpenSHAPA.setLastCreatedCellId(parentCell.getID());
+        }
+
+        myEditor.focusGained(fe);
+        // myEditor.select(0, 0);
+    }
+
+    /**
+     * The action to invoke if the focus is lost.
+     * @param fe The FocusEvent that triggered this action.
+     */
+    public void focusLost(final FocusEvent fe) {
+        myEditor.focusLost(fe);
+    }
+
+    /**
+     * Process key events that have been dispatched to this component, pass
+     * them through to all listeners, and then if they are not consumed pass
+     * it onto the parent of this component.
+     *
+     * @param ke They keyboard event that was dispatched to this component.
+     */
+    @Override
+    public void processKeyEvent(final KeyEvent ke) {
+
+        super.processKeyEvent(ke);
+
+        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
+            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
+            getParent().dispatchEvent(ke);
+        }
+    }
+
+    /**
+     * The action to invoke when a key is released.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyReleased(final KeyEvent e) {
+        resetEditorText();
+        myEditor.keyReleased(e);
+    }
+
+    /**
+     * The action to invoke when a key is typed.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyTyped(final KeyEvent e) {
+        myEditor.keyTyped(e);
+    }
+
+    /**
+     * The action to invoke when a key is pressed.
+     *
+     * @param e The KeyEvent that triggered this action.
+     */
+    public void keyPressed(final KeyEvent e) {
+        switch (e.getKeyCode()) {
+
+            case KeyEvent.VK_ENTER:
+                if (!myEditor.isReturnKeyAccepted()) {
+                    // help out the editors that don't want the return key
+                    if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+                        e.consume();
+                    }
+                }
+                break;
+            case KeyEvent.VK_TAB:
+                // myEditor.focusGained(null);
+                myEditor.selectAll();
+                e.consume();
+                break;
+
+            default:
+                break;
+        }
+
+        if (!e.isConsumed()) {
+            myEditor.keyPressed(e);
+        }
+    }
+
+    /**
+     * Calculate the currentEditor's text and call it's resetText method.
+     */
+    public void resetEditorText() {
+        myEditor.resetText(getText());
+    }
+
+    /**
+     * Pastes contents of the clipboard into the nominal data value view.
+     */
+    @Override
+    public void paste() {
+        if (myEditor.prePasteCheck()) {
+            super.paste();
+        }
+    }
+
+    /**
+     * Override to address bug(?) in JTextField see java bug id 4446522
+     * for discussion. Probably not the final answer but resolves the
+     * clipping of first character displayed.
+     * @return the dimension of this textfield
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension size = new Dimension(super.getPreferredSize());
+        size.width += 2;
+        return size;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension mysize = super.getPreferredSize();
+        return new Dimension(mysize.width, mysize.height);
+    }
+
+}
