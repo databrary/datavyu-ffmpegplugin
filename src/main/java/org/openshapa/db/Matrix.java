@@ -717,16 +717,16 @@ public class Matrix implements Cloneable {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
 
-        while ( i < (numArgs - 1) )
+        while ( i < numArgs )
         {
             farg = mve.getFormalArg(i);
             arg = this.getArg(i);
 
-            output.printf("( |%s| ", farg.getFargName());
+            output.printf("%s( |%s| ", indent, farg.getFargName());
 
             arg.toMODBFile(output);
 
-            output.printf(") ");
+            output.printf(")%s", newLine);
 
             i++;
         }

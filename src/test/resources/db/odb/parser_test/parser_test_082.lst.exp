@@ -1,0 +1,152 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db 
+00008   '( 
+00009      ( HEADER> 
+00010        ( 
+00011          ( VERSION> 1 ) 
+00012          ( NAME> "parser_test.db" )
+00013          ( DEBUG-LEVEL> 2 ) 
+00014          ( MAX-ERRORS> 20 )
+00015          ( MAX-WARNINGS> 50 )
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00016        )
+00017      ) 
+00018      ( USER> 
+
+
+Current Header Settings:
+db.name = "parser_test.db"
+odb file format version = 1
+warning limit = 50
+error limit = 10
+debug level = 2
+
+00019        (
+00020          ( PREDICATE-DEFINITIONS> 
+00021            (
+00022            	; no predicate definitions, for now
+00023            )
+00024          ) 
+00025          ( SPREADSHEET-VARIABLE-DECLARATIONS> 
+00026            (
+00027              ( |svar 1| 
+00028                ( 
+00029                  ( TYPE> <<INTEGER>> ) 
+00030                  ( VARIABLE-LENGTH> FALSE )
+00031                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00032                  ( COLUMN-WIDTH> 2 ) ; too small
+00033                )
+
+      WARNING  47 (Line 32:33): The integer value associated with a COLUMN-WIDTH> attribute is out of range.  The value will be forced to the nearest legal value.
+
+00034              )
+00035              ( |svar 2| 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 1"
+	type = INTEGER
+	variable length = false
+	column width = 125
+00036                ( 
+00037                  ( TYPE> <<INTEGER>> ) 
+00038                  ( VARIABLE-LENGTH> FALSE )
+00039                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00040                  ( COLUMN-WIDTH> 2000 ) ; too big
+00041                )
+
+      WARNING  47 (Line 40:33): The integer value associated with a COLUMN-WIDTH> attribute is out of range.  The value will be forced to the nearest legal value.
+
+00042              )
+00043              ( |svar 3| 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 2"
+	type = INTEGER
+	variable length = false
+	column width = 1500
+00044                ( 
+00045                  ( TYPE> <<INTEGER>> ) 
+00046                  ( VARIABLE-LENGTH> FALSE )
+00047                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00048                  ( COLUMN-WIDTH>  ) ; missing value
+00049                )
+00050              )
+
+      WARNING  14 (Line 48:34): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        A COLUMN-WIDTH> attribute appears not to contain a value.  Default value used.
+
+00051              ( |svar 4| 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 3"
+	type = INTEGER
+	variable length = false
+	column width = 200
+00052                ( 
+00053                  ( TYPE> <<INTEGER>> ) 
+00054                  ( VARIABLE-LENGTH> FALSE )
+00055                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00056                  ( COLUMN-WIDTH> 200.0 ) ; type mismatch
+00057                )
+
+      WARNING  22 (Line 56:33): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the COLUMN-WIDTH> attribute must be an integer.  Default value used.
+
+00058              )
+00059              ( |svar 5| 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 4"
+	type = INTEGER
+	variable length = false
+	column width = 200
+00060                ( 
+00061                  ( TYPE> <<INTEGER>> ) 
+00062                  ( VARIABLE-LENGTH> FALSE )
+00063                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00064                  ( COLUMN-WIDTH> (200) ) ; type mismatch
+
+      WARNING  22 (Line 64:33): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the COLUMN-WIDTH> attribute must be an integer.  Default value used.
+
+00065                )
+00066              )
+00067              ( |svar 6| 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 5"
+	type = INTEGER
+	variable length = false
+	column width = 200
+00068                ( 
+00069                  ( TYPE> <<TEXT>> ) 
+00070                  ( VARIABLE-LENGTH> FALSE )
+00071                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00072                  ( COLUMN-WIDTH> ; unexpeceted EOF <<TEXT>> 200 ) 
+00073  ;              )
+00074  ;            )
+00075  ;          )
+00076  ;        ) 
+00077  ;        ( SPREADSHEET-VARIABLE-DEFINITIONS> 1 )
+00078  ;      ) 
+00079  ;    ) 
+00080  ;    ( QUERY> 2 )
+00081  ;    ( SYSTEM> 3 )
+00082  ;  ) 
+00083  ;)
+
+      ERROR  4 (Line 83:0): Encountered end of file unexpectedly.
+        EOF in a COLUMN-WIDTH> attribute.
+Unable to continue parse -- Aborting...

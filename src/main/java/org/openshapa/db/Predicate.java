@@ -1002,7 +1002,7 @@ public class Predicate extends DBElement
 
             output.printf("( |%s| ", this.predName);
 
-            while ( i < (numArgs - 1) )
+            while ( i < numArgs )
             {
                 arg = this.getArg(i);
 

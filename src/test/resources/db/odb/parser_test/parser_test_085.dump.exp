@@ -1,0 +1,96 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "parser_test.db" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 2 )
+        ( MAX_ERRORS> 10 )
+        ( MAX-WARNINGS> 50 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+            ( pred-2 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( a-pred ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |really a matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val1>| |<val2>| )
+                ( COLUMN-WIDTH> 125 )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<arg1>| )
+                ( COLUMN-WIDTH> 125 )
+              )
+            )
+            ( |a text var|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 125 )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 125 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |really a matrix|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |a text var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+      )
+    )
+  )
+)

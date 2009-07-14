@@ -1,0 +1,52 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "parser_test.db" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 2 )
+        ( MAX_ERRORS> 10 )
+        ( MAX-WARNINGS> 50 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |svar 1|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |svar 1|
+              (
+                ( CELLS>
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+      )
+    )
+  )
+)

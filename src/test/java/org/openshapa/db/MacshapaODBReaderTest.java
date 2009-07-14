@@ -23,7 +23,7 @@ import org.junit.Test;
  */
 public class MacshapaODBReaderTest {
 
-    private boolean globalSaveMismatchFiles = false;
+    private boolean globalSaveMismatchFiles = true;
     private int EOF_TOK;
     boolean verbose = true;
     java.io.PrintStream outStream = System.out;
@@ -52,9 +52,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest01()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest01()";
         final boolean continueOnError = false;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -84,9 +85,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest02()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest02()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -116,9 +118,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest03()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest03()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -148,9 +151,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest04()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest04()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -180,9 +184,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest05()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest05()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -212,9 +217,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest06()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest06()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -244,9 +250,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest07()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest07()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -276,9 +283,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest08()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest08()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -308,9 +316,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest09()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest09()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -340,9 +349,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest10()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest10()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -372,9 +382,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest11()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest11()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -404,9 +415,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest12()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest12()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -436,9 +448,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest13()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest13()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -468,9 +481,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest14()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest14()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -500,9 +514,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest15()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest15()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -532,9 +547,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void lexerTest16()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::lexerTest16()";
         final boolean continueOnError = true;
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
@@ -564,9 +580,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest001()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest001()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -599,9 +616,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest002()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest002()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -634,9 +652,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest003()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest003()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -669,9 +688,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest004()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest004()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -704,9 +724,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest005()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest005()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -739,9 +760,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest006()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest006()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -774,9 +796,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest007()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest007()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -809,9 +832,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest008()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest008()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -844,9 +868,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest009()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest009()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -879,9 +904,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest010()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest010()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -914,9 +940,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest011()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest011()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -949,9 +976,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest012()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest012()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -984,9 +1012,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest013()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest013()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1019,9 +1048,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest014()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest014()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1054,9 +1084,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest015()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest015()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1089,9 +1120,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest016()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest016()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1124,9 +1156,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest017()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest017()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1159,9 +1192,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest018()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest018()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1194,9 +1228,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest019()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest019()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1229,9 +1264,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest020()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest020()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1264,9 +1300,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest021()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest021()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1299,9 +1336,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest022()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest022()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1334,9 +1372,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest023()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest023()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1369,9 +1408,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest024()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest024()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1404,9 +1444,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest025()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest025()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1439,9 +1480,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest026()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest026()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1474,9 +1516,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest027()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest027()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1509,9 +1552,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest028()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest028()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1544,9 +1588,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest029()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest029()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1579,9 +1624,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest030()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest030()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1614,9 +1660,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest031()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest031()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1649,9 +1696,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest032()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest032()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1684,9 +1732,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest033()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest033()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1719,9 +1768,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest034()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest034()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1754,9 +1804,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest035()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest035()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1789,9 +1840,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest036()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest036()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1824,9 +1876,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest037()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest037()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1859,9 +1912,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest038()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest038()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1894,9 +1948,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest039()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest039()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1929,9 +1984,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest040()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest040()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1964,9 +2020,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest041()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest041()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -1999,9 +2056,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest042()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest042()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2034,9 +2092,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest043()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest043()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2069,9 +2128,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest044()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest044()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2104,9 +2164,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest045()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest045()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2139,9 +2200,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest046()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest046()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2174,9 +2236,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest047()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest047()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2209,9 +2272,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest048()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest048()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2244,9 +2308,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest049()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest049()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2279,9 +2344,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest050()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest050()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2314,9 +2380,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest051()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest051()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2349,9 +2416,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest052()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest052()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2384,9 +2452,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest053()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest053()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2419,9 +2488,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest054()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest054()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2454,9 +2524,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest055()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest055()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2489,9 +2560,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest056()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest056()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2524,9 +2596,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest057()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest057()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2559,9 +2632,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest058()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest058()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2594,9 +2668,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest059()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest059()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2629,9 +2704,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest060()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest060()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2664,9 +2740,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest061()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest061()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2699,9 +2776,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest062()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest062()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2874,9 +2952,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest067()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest067()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2909,9 +2988,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest068()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest068()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2944,9 +3024,10 @@ public class MacshapaODBReaderTest {
 
     @Test
     public void parserTest069()
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::parserTest069()";
         final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
         final boolean saveOutputFiles = false;
@@ -2975,6 +3056,736 @@ public class MacshapaODBReaderTest {
         return;
 
     } /* MacshapaODBReaderTest::parserTest069() */
+
+
+
+    @Test
+    public void parserTest070()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest070()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_070.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_070.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_070.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_070.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_070.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_070.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_070.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest070() */
+
+
+    @Test
+    public void parserTest071()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest071()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_071.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_071.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_071.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_071.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_071.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_071.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_071.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest071() */
+
+
+    @Test
+    public void parserTest072()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest072()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_072.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_072.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_072.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_072.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_072.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_072.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_072.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest072() */
+
+
+    @Test
+    public void parserTest073()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest073()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_073.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_073.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_073.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_073.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_073.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_073.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_073.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest073() */
+
+
+    @Test
+    public void parserTest074()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest074()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_074.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_074.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_074.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_074.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_074.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_074.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_074.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_074() */
+
+
+    @Test
+    public void parserTest075()
+        throws SystemErrorException,
+            LogicErrorException,
+            java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest075()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_075.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_075.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_075.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_075.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_075.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_075.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_075.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest075() */
+
+
+    @Test
+    public void parserTest076()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest076()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_076.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_076.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_076.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_076.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_076.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_076.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_076.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest076() */
+
+
+    @Test
+    public void parserTest077()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest077()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_077.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_077.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_077.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_077.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_077.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_077.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_077.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest077() */
+
+
+    @Test
+    public void parserTest078()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest078()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_078.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_078.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_078.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_078.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_078.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_078.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_078.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest078() */
+
+
+    @Test
+    public void parserTest079()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest079()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_079.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_079.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_079.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_079.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_079.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_079.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_079.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest079() */
+
+
+    @Test
+    public void parserTest080()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest080()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_080.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_080.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_080.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_080.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_080.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_080.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_080.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest080() */
+
+
+    @Test
+    public void parserTest081()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest081()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_081.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_081.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_081.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_081.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_081.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_081.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_081.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest081() */
+
+
+    @Test
+    public void parserTest082()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest082()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_082.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_082.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_082.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_082.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_082.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_082.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_082.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest082() */
+
+
+    @Test
+    public void parserTest083()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest083()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_083.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_083.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_083.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_083.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_083.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_083.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_083.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest083() */
+
+
+    @Test
+    public void parserTest084()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest084()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_084.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_084.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_084.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_084.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_084.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_084.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_084.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_084() */
+
+
+    @Test
+    public void parserTest085()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest085()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_085.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_085.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_085.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_085.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_085.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_085.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_085.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest085() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/13/09
+    @Test
+    public void parserTest086()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest086()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_086.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_086.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_086.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_086.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_086.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_086.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_086.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest086() */
+
+
+    @Test
+    public void parserTest087()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest087()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_087.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_087.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_087.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_087.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_087.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_087.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_087.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest087() */
+
+
+    @Test
+    public void parserTest088()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest088()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_088.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_088.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_088.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_088.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_088.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_088.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_088.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest088() */
+
+
+    @Test
+    public void parserTest089()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest089()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_089.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_089.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_089.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_089.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_089.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_089.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_089.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest089() */
+
+
 
 //    /**
 //     * Test of get_next_token method, of class MacshapaODBReader.
@@ -3029,8 +3840,10 @@ public class MacshapaODBReaderTest {
 //        fail("The test case is a prototype.");
 //    }
 
-    private boolean compareFiles(File expectedFile, File actualFile)
-            throws java.io.IOException {
+    private boolean compareFiles(File expectedFile,
+                                 File actualFile)
+        throws java.io.IOException
+    {
         boolean done = false;
         boolean filesAreEqual = true;
         FileReader expectedFileReader = new FileReader(expectedFile);
@@ -3040,16 +3853,24 @@ public class MacshapaODBReaderTest {
         String expectedLine = null;
         String actualLine = null;
 
-        while (!done) {
+        while ( ! done )
+        {
             expectedLine = expectedStream.readLine();
             actualLine = actualStream.readLine();
 
-            if ((expectedLine == null) && (actualLine == null)) {
+            if ( ( expectedLine == null ) &&
+                 ( actualLine == null ) )
+            {
                 done = true;
-            } else if ((expectedLine == null) || (actualLine == null)) {
+            } 
+            else if ( ( expectedLine == null ) ||
+                      ( actualLine == null ) )
+            {
                 filesAreEqual = false;
                 done = true;
-            } else if (expectedLine.compareTo(actualLine) != 0) {
+            } 
+            else if ( expectedLine.compareTo(actualLine) != 0 )
+            {
                 filesAreEqual = false;
                 done = true;
             }
@@ -3062,18 +3883,19 @@ public class MacshapaODBReaderTest {
     }
 
     private void runLexerTest(String inputFileName,
-            String listingFileName,
-            String errorFileName,
-            String expectedListingFileName,
-            String expectedErrorFileName,
-            int errorLimit,
-            int warningLimit,
-            boolean continueOnError,
-            boolean saveMismatchFiles,
-            boolean saveOutputFiles)
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+                              String listingFileName,
+                              String errorFileName,
+                              String expectedListingFileName,
+                              String expectedErrorFileName,
+                              int errorLimit,
+                              int warningLimit,
+                              boolean continueOnError,
+                              boolean saveMismatchFiles,
+                              boolean saveOutputFiles)
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::runLexerTest()";
         boolean listingMismatch = false;
         boolean errorMismatch = false;
@@ -3168,19 +3990,20 @@ public class MacshapaODBReaderTest {
 
 
     private void runParserTest(String inputFileName,
-            String listingFileName,
-            String errorFileName,
-            String dumpFileName,
-            String expectedListingFileName,
-            String expectedErrorFileName,
-            String expectedDumpFileName,
-            boolean saveMismatchFiles,
-            boolean saveOutputFiles,
-            int errorLimit,
-            int warningLimit)
-            throws SystemErrorException,
-            LogicErrorException,
-            java.io.IOException {
+                               String listingFileName,
+                               String errorFileName,
+                               String dumpFileName,
+                               String expectedListingFileName,
+                               String expectedErrorFileName,
+                               String expectedDumpFileName,
+                               boolean saveMismatchFiles,
+                               boolean saveOutputFiles,
+                               int errorLimit,
+                               int warningLimit)
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
         final String mName = "MacshapaODBReaderTest::runParserTest()";
         boolean listingMismatch = false;
         boolean errorMismatch = false;
@@ -3201,17 +4024,20 @@ public class MacshapaODBReaderTest {
         java.io.PrintStream error_stream = null;
         java.io.PrintStream dump_stream = null;
 
-        if (!listing.createNewFile()) {
+        if ( ! listing.createNewFile() )
+        {
             throw new SystemErrorException(mName + "can't create listing file");
         }
         listing_stream = new PrintStream(listing);
 
-        if (!errors.createNewFile()) {
+        if ( ! errors.createNewFile() )
+        {
             throw new SystemErrorException(mName + "can't create error file");
         }
         error_stream = new PrintStream(errors);
 
-        if (!dump.createNewFile()) {
+        if ( ! dump.createNewFile() )
+        {
             throw new SystemErrorException(mName + "can't create dump file");
         }
         dump_stream = new PrintStream(dump);
@@ -3233,59 +4059,70 @@ public class MacshapaODBReaderTest {
         error_stream.close();
         dump_stream.close();
 
-        if (!this.compareFiles(expected_listing, listing)) {
+        if ( ! this.compareFiles(expected_listing, listing) )
+        {
             listingMismatch = true;
         }
 
-        if (!this.compareFiles(expected_errors, errors)) {
+        if ( ! this.compareFiles(expected_errors, errors) )
+        {
             errorMismatch = true;
         }
 
-        if (!this.compareFiles(expected_dump, dump)) {
+        if ( ! this.compareFiles(expected_dump, dump) )
+        {
             dumpMismatch = true;
         }
 
-        if ((!saveOutputFiles) &&
-                ((!listingMismatch) || (!saveMismatchFiles))) {
-            if (!listing.delete()) {
+        if ( ( ! saveOutputFiles ) &&
+             ( ( ! listingMismatch ) || ( ! saveMismatchFiles ) ) )
+        {
+            if ( ! listing.delete() )
+            {
                 throw new SystemErrorException(mName +
                         "can't delete listing file");
             }
         }
 
-        if ((!saveOutputFiles) &&
-                ((!errorMismatch) || (!saveMismatchFiles))) {
-            if (!errors.delete()) {
+        if ( ( ! saveOutputFiles ) &&
+             ( ( ! errorMismatch ) ||  ( ! saveMismatchFiles ) ) )
+        {
+            if ( ! errors.delete() )
+            {
                 throw new SystemErrorException(mName +
                         "can't delete errors file");
             }
         }
 
-        if ((!saveOutputFiles) &&
-                ((!dumpMismatch) || (!saveMismatchFiles))) {
-            if (!dump.delete()) {
+        if ( ( ! saveOutputFiles ) &&
+             ( ( ! dumpMismatch ) || ( ! saveMismatchFiles ) ) )
+        {
+            if ( ! dump.delete() )
+            {
                 throw new SystemErrorException(mName +
                         "can't delete dump file");
             }
         }
 
-        if (listingMismatch) {
+        if ( listingMismatch )
+        {
             org.junit.Assert.fail(
                     "actual listing doesn't match expected listing.");
         }
 
-        if (errorMismatch) {
+        if ( errorMismatch )
+        {
             org.junit.Assert.fail(
                     "actual error output doesn't match expected error ourput.");
         }
 
-        if (dumpMismatch) {
+        if ( dumpMismatch )
+        {
             org.junit.Assert.fail(
-                    "actual db dump output doesn't match expected error ourput.");
+                    "actual db dump output doesn't match expected dump ourput.");
         }
 
         return;
 
     } /* Macshapa_DBReaderTest::runParserTest() */
-
 }

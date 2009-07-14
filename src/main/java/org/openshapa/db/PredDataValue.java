@@ -614,9 +614,6 @@ public final class PredDataValue extends DataValue
                java.io.IOException
     {
         final String mName = "PredDataValue::toMODBFile()";
-        char ch;
-        StringBuilder tmp = new StringBuilder("");
-        int i;
 
         if ( output == null )
         {
@@ -625,14 +622,12 @@ public final class PredDataValue extends DataValue
 
         if ( this.itsValue == null )
         {
-            output.printf("() ", tmp.toString());
+            output.print("() ");
         }
         else
         {
             this.itsValue.toMODBFile(output);
         }
-
-        output.printf("\"%s\" ", tmp.toString());
 
         return;
 

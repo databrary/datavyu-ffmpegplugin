@@ -1264,11 +1264,7 @@ public class MacshapaDatabase extends Database {
         output.printf("%s( SPREADSHEET-VARIABLE-DECLARATIONS>%s",
                       indent, newLine);
 
-        output.printf("%s  (%s", indent, newLine);
-
-        this.cl.toMODBFile_colDecs(output, newLine, indent + "    ");
-
-        output.printf("%s  )%s", indent, newLine);
+        this.cl.toMODBFile_colDecs(output, newLine, indent + "  ");
 
         output.printf("%s)%s", indent, newLine);
 
@@ -1321,11 +1317,7 @@ public class MacshapaDatabase extends Database {
         output.printf("%s( SPREADSHEET-VARIABLE-DEFINITIONS>%s",
                       indent, newLine);
 
-        output.printf("%s  (%s", indent, newLine);
-
-        // dump sVar defs here
-
-        output.printf("%s  )%s", indent, newLine);
+        this.cl.toMODBFile_colDefs(output, newLine, indent + "  ");
 
         output.printf("%s)%s", indent, newLine);
 

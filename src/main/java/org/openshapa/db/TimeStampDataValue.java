@@ -382,7 +382,7 @@ public final class TimeStampDataValue extends DataValue
             throw new SystemErrorException(mName + "itsValue is null");
         }
 
-        output.printf("( TIME> %d ) ", this.itsValue.getTicks());
+        output.printf("( TIME> %d ) ", this.itsValue.getTime());
 
         return;
 

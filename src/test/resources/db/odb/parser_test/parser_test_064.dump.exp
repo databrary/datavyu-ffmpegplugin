@@ -18,68 +18,108 @@
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
           (
-            (
-              ( |a float var|
-                (
-                  ( TYPE> <<FLOAT>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<val>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            ( |a float var|
+              (
+                ( TYPE> <<FLOAT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
               )
-              ( |a nominal var|
-                (
-                  ( TYPE> <<NOMINAL>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<val>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            )
+            ( |a nominal var|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
               )
-              ( |a predicate var|
-                (
-                  ( TYPE> <<PREDICATE>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<val>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            )
+            ( |a predicate var|
+              (
+                ( TYPE> <<PREDICATE>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
               )
-              ( |fixed len matrix|
-                (
-                  ( TYPE> <<MATRIX>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            )
+            ( |fixed len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
+                ( COLUMN-WIDTH> 200 )
               )
-              ( |an integer var|
-                (
-                  ( TYPE> <<INTEGER>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<val>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            )
+            ( |an integer var|
+              (
+                ( TYPE> <<INTEGER>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
               )
-              ( |var len matrix|
-                (
-                  ( TYPE> <<MATRIX>> )
-                  ( VARIABLE-LENGTH> TRUE )
-                  ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
-                  ( COLUMN-WIDTH> 225 )
-                )
+            )
+            ( |var len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> TRUE )
+                ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
+                ( COLUMN-WIDTH> 225 )
               )
-              ( |a text var|
-                (
-                  ( TYPE> <<TEXT>> )
-                  ( VARIABLE-LENGTH> FALSE )
-                  ( FORMAL-ARG-LIST> ( |<val>| )
-                  ( COLUMN-WIDTH> 200 )
-                )
+            )
+            ( |a text var|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( COLUMN-WIDTH> 200 )
               )
             )
           )
         )
         ( SPREADSHEET-VARIABLE-DEFINITIONS>
           (
+            ( |a float var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |a predicate var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |an integer var|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |var len matrix|
+              (
+                ( CELLS>
+                )
+              )
+            )
+            ( |a text var|
+              (
+                ( CELLS>
+                )
+              )
+            )
           )
         )
       )

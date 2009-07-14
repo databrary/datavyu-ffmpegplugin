@@ -1,0 +1,30 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  29 (Line 42:13): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        VARIABLE-LENGTH> entry missing from a spreadsheet variable declaration?  VARIABLE-LENGTH> forced to false.
+
+
+      WARNING  29 (Line 42:13): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        FORMAL-ARG-LIST> entry missing from a spreadsheet variable declaration?  Will use the arg list "(|<ord>| |<onset>| |<offset>| |<val>|)".
+
+
+      WARNING  29 (Line 42:13): A required a-list entry appears to be missing.  Will attempt to proceed with a default value.  Errors may result.
+        TYPE> entry missing from a spreadsheet variable declaration?  Will force type to <<MATRIX>>.
+
+
+      WARNING  48 (Line 50:13): Attempt to declare a non matrix spreadsheet variable with a formal argument list that can only appear in a matrix spreadsheet variable.
+        Will force the type of the spreadsheet variable to <<MATRIX>>.
+
+
+      WARNING  51 (Line 58:13): Attempt to declare a variable length spreadsheet variable that is not of <<MATRIX>> type.  Spreadsheet variable forced to fixed length.
+
+
+      WARNING  22 (Line 61:45): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the USER> SPREADSHEET-VARIABLE-DEFINITIONS> a-list entry must be a (possibly empty) list of spreadsheet variable definitions.
+
+
+      WARNING  22 (Line 64:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

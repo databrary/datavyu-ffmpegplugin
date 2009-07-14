@@ -1607,9 +1607,9 @@ public class DataColumn extends Column
         output.printf("%s    ( CELLS>%s", indent, newLine);
 
         cellIndent = indent + "      ";
-        i = 1;
+        i = 0;
 
-        while ( i <= this.numCells )
+        while ( i < this.numCells )
         {
             cell = this.getCell(i + 1);
             cell.toMODBFile(mve, output, newLine, cellIndent);

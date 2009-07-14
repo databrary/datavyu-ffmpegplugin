@@ -1,0 +1,92 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db 
+00008   '( 
+00009      ( HEADER> 
+00010        ( 
+00011          ( VERSION> 1 ) 
+00012          ( NAME> "parser_test.db" )
+00013          ( DEBUG-LEVEL> 2 ) 
+00014          ( MAX-ERRORS> 20 )
+00015          ( MAX-WARNINGS> 50 )
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00016        )
+00017      ) 
+00018      ( USER> 
+
+
+Current Header Settings:
+db.name = "parser_test.db"
+odb file format version = 1
+warning limit = 50
+error limit = 10
+debug level = 2
+
+00019        (
+00020          ( PREDICATE-DEFINITIONS> 
+00021            (
+00022            	; no predicate definitions, for now
+00023            )
+00024          ) 
+00025          ( SPREADSHEET-VARIABLE-DECLARATIONS> 
+00026            (
+00027              ( |svar 1| 
+00028                ( 
+00029                  ( TYPE> <<TEXT>> ) 
+00030                  ( VARIABLE-LENGTH> FALSE )
+00031                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) ) 
+00032                  ( COLUMN-WIDTH> 200 ) 
+00033                )
+00034                3.14159
+00035                ("a list" FALSE macshapa-db setf ' 1 |symbol|) 
+
+
+Spreadsheet Variable Definition:
+	name = "svar 1"
+	type = TEXT
+	variable length = false
+	column width = 200
+00036              )
+00037              ( |svar 1| 
+
+      WARNING  44 (Line 36:13): Encountered excess values in a spreadsheet variable declaration.  The excess values were discarded.
+
+00038                ( 
+00039                  ( TYPE> <<TEXT>> ) 
+00040                  ( VARIABLE-LENGTH> FALSE )
+00041                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) ) 
+00042                  ( COLUMN-WIDTH> 200 ) 
+00043                )
+00044                ; unexpected EOF
+00045  ;            )
+00046  ;          )
+00047  ;        ) 
+00048  ;        ( SPREADSHEET-VARIABLE-DEFINITIONS> 1 )
+00049  ;      ) 
+00050  ;    ) 
+00051  ;    ( QUERY> 2 )
+00052  ;    ( SYSTEM> 3 )
+00053  ;  ) 
+00054  ;)
+
+
+Spreadsheet Variable Definition:
+	name = "svar 1"
+	type = TEXT
+	variable length = false
+	column width = 200
+
+      WARNING  50 (Line 54:0): Encountered a duplicate declaration of a spreadsheet variable.  The second declaration will be ignored.
+        The duplicate declaration differed from the initial definition.
+
+
+      ERROR  4 (Line 54:0): Encountered end of file unexpectedly.
+        EOF encountered in a spreadsheet variable declaration.
+
+Unable to continue parse -- Aborting...

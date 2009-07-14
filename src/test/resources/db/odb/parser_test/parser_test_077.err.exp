@@ -1,0 +1,16 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  14 (Line 31:37): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        A FORMAL-ARG-LIST> attribute appears not to contain a value.  Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).
+
+
+      WARNING  22 (Line 39:36): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the FORMAL-ARG-LIST> attribute must be a list of formal arguments.  Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).
+
+
+      ERROR  4 (Line 59:0): Encountered end of file unexpectedly.
+        EOF in a FORMAL-ARG-LIST> attribute.
+
+Unable to continue parse -- Aborting...

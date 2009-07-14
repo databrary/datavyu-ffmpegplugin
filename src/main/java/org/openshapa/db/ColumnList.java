@@ -1501,7 +1501,7 @@ public class ColumnList
     /**
      * toMODBFile_colDefs()
      *
-     * Write definitions of all non system data columns to the supplied file
+     * Write definitions of all user data columns to the supplied file
      * in MacSHAPA ODB file format.  The output of this method is the
      * <s_var_def_list> in the grammar defining the MacSHAPA ODB file
      * format.
@@ -1528,7 +1528,6 @@ public class ColumnList
     {
         final String mName = "VocabList::toMODBFile_colDefs()";
         String colIndent;
-        MatrixVocabElement mve;
         Column col;
         DataColumn dc;
         java.util.Enumeration<Column> entries;
@@ -1562,15 +1561,12 @@ public class ColumnList
             {
                 dc = (DataColumn)col;
 
-                mve = dc.lookupMatrixVE(dc.getItsMveID());
-
-                if ( ! mve.getSystem() )
+                if ( this.db.toMODBFile_includeDataColumnInUserSection(dc) )
                 {
                     dc.toMODBFile_colDef(output, newLine, colIndent);
                 }
             }
         }
-
 
         output.printf("%s)%s", indent, newLine);
 

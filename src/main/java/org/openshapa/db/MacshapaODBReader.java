@@ -7562,10 +7562,19 @@ public class MacshapaODBReader
         final String mName = 
                 "macshapa_odb_reader::dump_s_var_cell_definition_to_listing()";
         
-        throw new SystemErrorException(mName + "method not implemented.");
-        
-	/* commented out to keep the compiler happy */
-        // return;
+        if ( this.listing_stream != null )
+        {
+            this.listing_stream.print("\n\nSpreadsheet Variable Cell Definition:\n");
+            this.listing_stream.printf("\tord = %d\n", dc.getOrd());
+            this.listing_stream.printf("\tonset = %s\n",
+                                       dc.getOffset().toHMSFString());
+            this.listing_stream.printf("\toffset = %s\n",
+                                       dc.getOffset().toHMSFString());
+            this.listing_stream.printf("\tvalue = %s\n",
+                                       dc.getVal().argListToString());
+        }
+
+        return;
         
     } /* macshapa_odb_reader::dump_s_var_cell_definition_to_listing() */
 
@@ -7824,17 +7833,17 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_float_value()";
-	final String overflow_mssg = "Overflow occured in a float value.\n";
+        final String mName = "macshapa_odb_reader::parse_float_value()";
+        final String overflow_mssg = "Overflow occured in a float value.\n";
         double value = 0.0;
         DataValue dv = null;
         
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse true on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse true on entry");
+        }
         
         if ( farg == null )
         {
@@ -7859,8 +7868,8 @@ public class MacshapaODBReader
         
         value = this.l0_tok.val;
 	
-        if ( ( farg.fargType != FormalArgument.FArgType.FLOAT ) ||
-             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
+        if ( ( farg.fargType == FormalArgument.FArgType.FLOAT ) ||
+             ( farg.fargType == FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
             // create the data value.  
@@ -8012,18 +8021,18 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = 
-                "macshapa_odb_reader::parse_integer_cell_value()";
-	final String overflow_mssg = 
-		"Overflow occured in an integer cell value.\n";
-        long value = 0;
-        IntDataValue idv = null;
+        final String mName =
+                    "macshapa_odb_reader::parse_integer_cell_value()";
+        final String overflow_mssg =
+            "Overflow occured in an integer cell value.\n";
+            long value = 0;
+            IntDataValue idv = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName +
-		    "this.abort_parse TRUE on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
         
         if ( farg == null )
         {
@@ -8042,35 +8051,35 @@ public class MacshapaODBReader
                                            "Supplied farg has invalid ID.");
         }
 	
-	/* try to parse the integer cell value */
-	
-	switch ( (this.l0_tok).code )
-	{
-	    case FLOAT_TOK:
-		value = this.l0_tok.coerce_float_token_to_integer();
+        /* try to parse the integer cell value */
+
+        switch ( (this.l0_tok).code )
+        {
+            case FLOAT_TOK:
+            value = this.l0_tok.coerce_float_token_to_integer();
+
+                    if ( ! this.abort_parse )
+                    {
+                        post_warning_message(this.l0_tok,
+                            S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
+                            "Coerced the floating point value to the nearest " +
+                            "legal integer cell value.\n");
+                    }
+
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
+
+            case INT_TOK:
+                value = (long)this.l0_tok.val;
 
                 if ( ! this.abort_parse )
                 {
-                    post_warning_message(this.l0_tok,
-                        S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
-                        "Coerced the floating point value to the nearest " +
-                        "legal integer cell value.\n");
+                    get_next_token();
                 }
-
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
-
-	    case INT_TOK:
-                value = (long)this.l0_tok.val;
-
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                break;
 
             case SYMBOL_TOK:
             case STRING_TOK:
@@ -8087,11 +8096,11 @@ public class MacshapaODBReader
 
                 value = 0;
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+                break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -8101,18 +8110,18 @@ public class MacshapaODBReader
 
                 value = 0;
 
-		if ( ! this.abort_parse )
-		{
-		    parse_arbitrary_list();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    parse_arbitrary_list();
+                }
+                break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
                     "The integer cell will be set to zero.\n");
 
                 value = 0;
-		break;
+                break;
 
             case ERROR_TOK:
                 post_warning_message(this.l0_tok,
@@ -8122,11 +8131,11 @@ public class MacshapaODBReader
 
                 value = 0;
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+                break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8134,12 +8143,12 @@ public class MacshapaODBReader
                            true, true);
                 break;
 
-	     default:
-		 throw new SystemErrorException(mName + 
-			 "Encountered unknown token type.");
-	         /* commented out to keep the compiler happy */
-		 // break;
-	}
+             default:
+                 throw new SystemErrorException(mName +
+                     "Encountered unknown token type.");
+                 /* commented out to keep the compiler happy */
+                 // break;
+        }
         
         // range checking done in the lexer, so if we get this far, just
         // create the data value.  
@@ -8150,7 +8159,7 @@ public class MacshapaODBReader
         
         idv = new IntDataValue(this.db, farg.getID(), value);
         
-	return(idv);
+        return(idv);
 
     } /* machsapa_odb_reader::parse_integer_cell_value() */
     
@@ -8190,17 +8199,17 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_integer_value()";
-	final String overflow_mssg = "Overflow occured in an integer value.\n";
+        final String mName = "macshapa_odb_reader::parse_integer_value()";
+        final String overflow_mssg = "Overflow occured in an integer value.\n";
         long value = 0;
         DataValue dv = null;
         
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse true on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse true on entry");
+        }
         
         if ( farg == null )
         {
@@ -8213,20 +8222,20 @@ public class MacshapaODBReader
                                            "Supplied farg has invalid ID.");
         }
         
-        /* we must only be called if the next token is a float -- scream
+        /* we must only be called if the next token is an integer -- scream
          * and die if it is not.
          */
         
-        if ( (this.l0_tok).code != FLOAT_TOK )
+        if ( (this.l0_tok).code != INT_TOK )
         {
             throw new SystemErrorException(mName + 
-                                           "(this.l0_tok).code != FLOAT_TOK");
+                                           "(this.l0_tok).code != INT_TOK");
         }
         
         value = (long)(this.l0_tok.val);
 	
-        if ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) ||
-             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
+        if ( ( farg.fargType == FormalArgument.FArgType.INTEGER ) ||
+             ( farg.fargType == FormalArgument.FArgType.UNTYPED ) )
         {
             // range checking done in the lexer, so if we get this far, just
             // create the data value.  
@@ -8255,7 +8264,7 @@ public class MacshapaODBReader
             get_next_token();
         }
         
-	return(dv);
+        return(dv);
 
     } /* MacshapaODBReader::parse_int_value() */
 
@@ -8661,21 +8670,21 @@ public class MacshapaODBReader
      *************************************************************************/
 
     private DataValue parse_nominal_value(FormalArgument farg)
-	throws SystemErrorException,
+        throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_nominal_value()";
-	final String overflow_mssg = "Overflow occured in a float value.\n";
+        final String mName = "macshapa_odb_reader::parse_nominal_value()";
+        final String overflow_mssg = "Overflow occured in a float value.\n";
         boolean replace_with_farg = false;
         String value = null;
         DataValue dv = null;
         
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse true on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse true on entry");
+        }
         
         if ( farg == null )
         {
@@ -8729,7 +8738,7 @@ public class MacshapaODBReader
         value = this.l0_tok.str.toString();
         
         if ( ( replace_with_farg ) ||
-             ( ( farg.fargType != FormalArgument.FArgType.INTEGER ) &&
+             ( ( farg.fargType != FormalArgument.FArgType.NOMINAL ) &&
                ( farg.fargType != FormalArgument.FArgType.UNTYPED ) ) )
         {
             dv = new UndefinedDataValue(this.db, 
@@ -10191,34 +10200,34 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_s_var_cell()";
-	final String overflow_mssg = 
-		"Overflow occured in a spreadsheet variable cell.\n";
-	boolean done;
-	boolean have_onset;
-	boolean have_offset;
-	boolean success;
-	int arg_number;
+        final String mName = "macshapa_odb_reader::parse_s_var_cell()";
+        final String overflow_mssg =
+            "Overflow occured in a spreadsheet variable cell.\n";
+        boolean done;
+        boolean have_onset;
+        boolean have_offset;
+        boolean success;
+        int arg_number;
         int num_fargs;
         long dcID;
-	TimeStamp onset;
-	TimeStamp offset;
-	FormalArgument next_farg = null;
+        TimeStamp onset;
+        TimeStamp offset;
+        FormalArgument next_farg = null;
         Vector<DataValue> argList = null;
         DataValue next_arg = null;
-	Matrix cellValue = null;
+    	Matrix cellValue = null;
         DataCell dc = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
-	else if ( s_var_col_ID == DBIndex.INVALID_ID )
-	{
-	    throw new SystemErrorException(mName + 
-		    "s_var_col_ID is invalid on entry.");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
+        else if ( s_var_col_ID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                "s_var_col_ID is invalid on entry.");
+        }
         else if ( ( s_var_mve == null ) ||
                   ( s_var_mve.getItsColID() != s_var_col_ID ) )
         {
@@ -10226,20 +10235,20 @@ public class MacshapaODBReader
                     "s_var_mve null or col ID mismatch on entry.");
         }
 	
-	/* parse the spreadsheet variable definition a-list */
-	{
-	    /* start with a little more sanity checking */
+        /* parse the spreadsheet variable definition a-list */
+        {
+            /* start with a little more sanity checking */
 
-	    if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+            if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
                  ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
-	    {
-                throw new SystemErrorException(mName +
-                        "s_var_type out of range.");
-	    }
+            {
+                    throw new SystemErrorException(mName +
+                            "s_var_type out of range.");
+            }
 
             /* first parse the leading left parenthesis */
             if ( (this.l0_tok).code == L_PAREN_TOK )
@@ -10264,21 +10273,21 @@ public class MacshapaODBReader
                      * they may.
                      */
 
-		    get_next_token();
-		}
-	    }
-	    else /* system error - we shouldn't have been called unless the next token is a '(' */
-	    {
-		throw new SystemErrorException(mName + 
-			"(this.l0_tok).code != L_PAREN_TOK.");
-	    }
+                    get_next_token();
+                }
+            }
+            else /* system error - we shouldn't have been called unless the next token is a '(' */
+            {
+                throw new SystemErrorException(mName +
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+            }
 
-	    done        = false;
-	    have_onset  = false;
-	    have_offset = false;
-	    onset       = null;
-	    offset      = null;
-	    arg_number  = 0;
+            done        = false;
+            have_onset  = false;
+            have_offset = false;
+            onset       = null;
+            offset      = null;
+            arg_number  = 0;
             num_fargs   = s_var_mve.getNumFormalArgs();
             
             if ( num_fargs < 1 )
@@ -10315,12 +10324,12 @@ public class MacshapaODBReader
                                             "Duplicate ONSET> entry in a " +
                                             "spreadsheet variable cell a-list.\n");
 
-				    if ( ! this.abort_parse )
-				    {
-					 parse_unknown_alist_entry();
-				    }
-				}
-				break;
+                                    if ( ! this.abort_parse )
+                                    {
+                                        parse_unknown_alist_entry();
+                                    }
+                                }
+                                break;
 
                             case OFFSET_LABEL:
                                 if ( ! have_offset )
@@ -10335,12 +10344,12 @@ public class MacshapaODBReader
                                         "Duplicate OFFSET> entry in a " +
                                         "spreadsheet variable cell a-list.\n");
 
-				    if ( ! this.abort_parse )
-				    {
-					 parse_unknown_alist_entry();
-				    }
-				}
-				break;
+                                    if ( ! this.abort_parse )
+                                    {
+                                     parse_unknown_alist_entry();
+                                    }
+                                }
+                                break;
 
                             default:
                                 post_warning_message(this.l1_tok,
@@ -10348,19 +10357,19 @@ public class MacshapaODBReader
                                     "The entry is located in a spreadsheet " +
                                     "variable cell a-list.\n");
 
-				if ( ! this.abort_parse )
-				{
-				    parse_unknown_alist_entry();
-				}
+                                if ( ! this.abort_parse )
+                                {
+                                    parse_unknown_alist_entry();
+                                }
                                 break;
                         }
-		    }
-		    else if ( ( (this.l1_tok).code == SYMBOL_TOK ) && 
-			       ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
+                    }
+                    else if ( ( (this.l1_tok).code == SYMBOL_TOK ) &&
+                              ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
                     {
                         if ( ( next_farg != null ) &&
-                              ( next_farg.getFargName().
-                                compareTo(this.l1_tok.str.toString()) == 0 ) )
+                             ( next_farg.getFargName().
+                               compareTo(this.l1_tok.str.toString()) == 0 ) )
                         {
                             next_arg =
                                     parse_s_var_cell_value_attribute(next_farg,
@@ -10369,7 +10378,7 @@ public class MacshapaODBReader
 
                             argList.add(next_arg);
                              
-			    arg_number++;
+                            arg_number++;
                              
                             if ( arg_number < num_fargs )
                             {
@@ -10425,138 +10434,138 @@ public class MacshapaODBReader
                         "The atom was detected in a spreadsheet variable " +
                         "cell a-list.\n");
 
-		    if ( ! this.abort_parse )
-		    {
-			get_next_token();
-		    }
-		}
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+            }
 	    }
 
-            /* Issue a warning if the onset is missing */
-            if ( ( ! this.abort_parse ) && ( ! have_onset ) )
-            {
-                post_warning_message(this.l0_tok,
-                        CELL_WITH_UNDEFINED_ONSET_WARN, null);
-                onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
-                                      MACSHAPA_MIN_TIME);
+        /* Issue a warning if the onset is missing */
+        if ( ( ! this.abort_parse ) && ( ! have_onset ) )
+        {
+            post_warning_message(this.l0_tok,
+                    CELL_WITH_UNDEFINED_ONSET_WARN, null);
+            onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
+                                  MACSHAPA_MIN_TIME);
 	    }
 
-            /* Issue a warning if the offset is missing */
-            if ( ( ! this.abort_parse ) && ( ! have_offset ) )
-            {
-                post_warning_message(this.l0_tok,
-                        CELL_WITH_UNDEFINED_OFFSET_WARN, null);
-                offset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
-                                       MACSHAPA_MIN_TIME);
+        /* Issue a warning if the offset is missing */
+        if ( ( ! this.abort_parse ) && ( ! have_offset ) )
+        {
+            post_warning_message(this.l0_tok,
+                    CELL_WITH_UNDEFINED_OFFSET_WARN, null);
+            offset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
+                                   MACSHAPA_MIN_TIME);
 	    }
 
 	    /* if we ran out of arguments before we ran out of formal 
 	     * arguments, must issue a warning && insert formal arguments 
 	     * or a null value depending on the type of the spreadsheet 
 	     * variable.  
-             *
-             * In the old MacSHAPA odb reader code, there was an exception 
-             * for variable length matrix spreadsheet variables, where it was
-             * sufficient to sinply ensure that there was at least one argument,
-             * inserting a formal argument if there were no arguments at all.
-             *
-             * This changes in OpenShapa, since we are building the cell, 
-             * instead of a string that will be used to construct a cell.
-             * However, exactly how we will handle variable length matricies
-             * internally is TBD.  Thus for now thow a system error if the
-             * cell is in a variable length matrix datacolumn.
+         *
+         * In the old MacSHAPA odb reader code, there was an exception
+         * for variable length matrix spreadsheet variables, where it was
+         * sufficient to sinply ensure that there was at least one argument,
+         * inserting a formal argument if there were no arguments at all.
+         *
+         * This changes in OpenShapa, since we are building the cell,
+         * instead of a string that will be used to construct a cell.
+         * However, exactly how we will handle variable length matricies
+         * internally is TBD.  Thus for now thow a system error if the
+         * cell is in a variable length matrix datacolumn.
 	     */
 	    if ( ! this.abort_parse )
 	    {
-                if ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) &&
-                     ( s_var_mve.getVarLen() ) )
-                {
-                    throw new SystemErrorException(mName + 
-                            "we don't handle var len matricies just yet.");
-                }
-                
-                while ( next_farg != null )
-                {
-                    switch ( s_var_type )
-                    {
-                        case FLOAT:
-                            next_arg = new FloatDataValue(this.db,
-                                                          next_farg.getID());
-                            break;
-                            
-                        case INTEGER:
-                            next_arg = new IntDataValue(this.db,
-                                                        next_farg.getID());
-                            break;
-                            
-                        case MATRIX:
-                            next_arg = new UndefinedDataValue(this.db,
-                                                       next_farg.getID(),
-                                                       next_farg.getFargName());
-                            break;
-                            
-                        case NOMINAL:
-                            next_arg = new NominalDataValue(this.db,
-                                                            next_farg.getID());
-                            break;
-                            
-                        case PREDICATE:
-                            next_arg = new PredDataValue(this.db,
-                                                         next_farg.getID());
-                            break;
-                            
-                        case TEXT:
-                            next_arg = new TextStringDataValue(this.db,
-                                                             next_farg.getID());
-                            break;
-
-                        default:
-                            throw new SystemErrorException(mName + 
-                                 "s_var_type out of range.");
-                            /* commented out to keep the compiler happy */
-                            // break;
-                    }
-                    
-                    argList.add(next_arg);
-
-                    arg_number++;
-
-                    if ( arg_number < num_fargs )
-                    {
-                        next_farg = s_var_mve.getFormalArg(arg_number);
-                    }
-                    else
-                    {
-                        next_farg = null;
-                    }
-                }
-	    }
-            
-            if ( ( arg_number > 0 ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
+            if ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) &&
+                 ( s_var_mve.getVarLen() ) )
             {
-                throw new SystemErrorException(mName + 
-                        "non-matrix s_var with more than one argument?!?");
+                throw new SystemErrorException(mName +
+                        "we don't handle var len matricies just yet.");
             }
+
+            while ( next_farg != null )
+            {
+                switch ( s_var_type )
+                {
+                    case FLOAT:
+                        next_arg = new FloatDataValue(this.db,
+                                                      next_farg.getID());
+                        break;
+
+                    case INTEGER:
+                        next_arg = new IntDataValue(this.db,
+                                                    next_farg.getID());
+                        break;
+
+                    case MATRIX:
+                        next_arg = new UndefinedDataValue(this.db,
+                                                   next_farg.getID(),
+                                                   next_farg.getFargName());
+                        break;
+
+                    case NOMINAL:
+                        next_arg = new NominalDataValue(this.db,
+                                                        next_farg.getID());
+                        break;
+
+                    case PREDICATE:
+                        next_arg = new PredDataValue(this.db,
+                                                     next_farg.getID());
+                        break;
+
+                    case TEXT:
+                        next_arg = new TextStringDataValue(this.db,
+                                                         next_farg.getID());
+                        break;
+
+                    default:
+                        throw new SystemErrorException(mName +
+                             "s_var_type out of range.");
+                        /* commented out to keep the compiler happy */
+                        // break;
+                }
+
+                argList.add(next_arg);
+
+                arg_number++;
+
+                if ( arg_number < num_fargs )
+                {
+                    next_farg = s_var_mve.getFormalArg(arg_number);
+                }
+                else
+                {
+                    next_farg = null;
+                }
+            }
+        }
+
+        if ( ( arg_number > 1 ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) )
+        {
+            throw new SystemErrorException(mName +
+                    "non-matrix s_var with more than one argument?!?");
+        }
 
 	    /* if no errors, create the cell and insert it */
 	    if ( ! this.abort_parse )
 	    {
-                long s_var_mve_ID = s_var_mve.getID();
-                
-                cellValue = new Matrix(this.db, s_var_mve_ID, argList);
-                
-                dc = new DataCell(this.db, null, s_var_col_ID, s_var_mve_ID, 
-                                  onset, offset, cellValue);
-                
-                dcID = this.db.appendCell(dc);
-                
-                /* if debug level is high enough, dump the cell definition */
-                if ( this.debug_level >= 2 )
-                {
-                    dc = (DataCell)(this.db.getCell(dcID));
-                    dump_s_var_cell_definition_to_listing(dc);
-                }
+            long s_var_mve_ID = s_var_mve.getID();
+
+            cellValue = new Matrix(this.db, s_var_mve_ID, argList);
+
+            dc = new DataCell(this.db, null, s_var_col_ID, s_var_mve_ID,
+                              onset, offset, cellValue);
+
+            dcID = this.db.appendCell(dc);
+
+            /* if debug level is high enough, dump the cell definition */
+            if ( this.debug_level >= 2 )
+            {
+                dc = (DataCell)(this.db.getCell(dcID));
+                dump_s_var_cell_definition_to_listing(dc);
+            }
 	    }
 	 }
 
@@ -12015,38 +12024,38 @@ public class MacshapaODBReader
         throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_s_var_dec_alist()";
-	final String overflow_mssg = 
-		"Overflow occured in the formal argument list of a " +
-		"spreadsheet variable declaration.\n";
-	boolean done;
+        final String mName = "macshapa_odb_reader::parse_s_var_dec_alist()";
+        final String overflow_mssg =
+            "Overflow occured in the formal argument list of a " +
+            "spreadsheet variable declaration.\n";
+        boolean done;
         boolean fArgNameMisMatch;
-	boolean have_args_list;
-	boolean have_col_width;
-	boolean have_type;
-	boolean have_variable_length;
-	boolean must_be_matrix;
+        boolean have_args_list;
+        boolean have_col_width;
+        boolean have_type;
+        boolean have_variable_length;
+        boolean must_be_matrix;
         boolean set_system;
-	int col_width;
+    	int col_width;
         int i;
         long mve_id = DBIndex.INVALID_ID;
         long dc_id = DBIndex.INVALID_ID;
-	boolean variable_length;
+    	boolean variable_length;
         FormalArgument fa;
-	MatrixVocabElement mve;
+    	MatrixVocabElement mve;
         MatrixVocabElement.MatrixType mveType;
         Vector<String> args = null;
         DataColumn dc = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
 
         /* parse the spreadsheet variable declaration a-list */
 	
-	/* first parse the leading left parenthesis */
+    	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -12060,23 +12069,23 @@ public class MacshapaODBReader
                 post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
                         "The opening left parenthesis of a spreadsheet " +
                         "variable declaration a-list appears to be missing.\n");
-	    }
-	    else 
-	    {
-		/* if a left paren is missing, the first item in the a-list is 
-                 * not an a-list entry.  If we try to recover from this error 
-                 * here, we will only confuse things further.  Thus we eat the 
+            }
+            else
+            {
+                /* if a left paren is missing, the first item in the a-list is
+                 * not an a-list entry.  If we try to recover from this error
+                 * here, we will only confuse things further.  Thus we eat the
                  * left parenthesis & let the cards fall where they may.
                  */
 
-		get_next_token();
-	    }
-	}
-	else /* we shouldn't have been called unless the next token is a '(' */
-	{
-            throw new SystemErrorException(mName + 
-                    "(this.l0_tok).code != L_PAREN_TOK.");
-	}
+                get_next_token();
+            }
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+                throw new SystemErrorException(mName +
+                        "(this.l0_tok).code != L_PAREN_TOK.");
+        }
 
         done                 = false;
         have_args_list       = false;
@@ -12115,23 +12124,40 @@ public class MacshapaODBReader
                                         "in a spreadsheet variable " +
                                         "declaration.\n");
 
-				if ( ! this.abort_parse )
-				{
-				     parse_unknown_alist_entry();
-				}
-			    }
-			    break;
-
-			case FORMAL_ARG_LIST_LABEL:
-			    if ( ! have_args_list )
-			    {
-				have_args_list = true;
-				args = parse_s_var_formal_arg_list_attribute();
-                                
-                                if ( ( args.size() > 4 ) ||
-                                     ( args.get(3).compareTo("<val>") != 0 ) )
+                                if ( ! this.abort_parse )
                                 {
-                                    must_be_matrix = true;
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
+
+                        case FORMAL_ARG_LIST_LABEL:
+                            if ( ! have_args_list )
+                            {
+
+                                args = parse_s_var_formal_arg_list_attribute();
+
+                                if ( ! this.abort_parse )
+                                {
+                                    if ( args == null )
+                                    {
+                                        throw new SystemErrorException(mName +
+                                            "! abort_parse && args == null?!?");
+                                    }
+                                    else if ( args.size() < 4 )
+                                    {
+                                        throw new SystemErrorException(mName +
+                                            "arg list too small?!?");
+                                    }
+
+                                    have_args_list = true;
+
+                                    if ( ( args.size() > 4 ) ||
+                                         ( args.get(3).compareTo("<val>") != 0 )
+                                       )
+                                    {
+                                        must_be_matrix = true;
+                                    }
                                 }
                             }
                             else
@@ -12141,12 +12167,12 @@ public class MacshapaODBReader
                                     "Duplicate FORMAL-ARG-LIST> entry in " +
                                     "a spreadsheet variable declaration.\n");
 
-				if ( ! this.abort_parse )
-				{
-				    parse_unknown_alist_entry();
-				}
-			    }
-			    break;
+                                if ( ! this.abort_parse )
+                                {
+                                    parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
 
                         case TYPE_LABEL:
                             if ( ! have_type )
@@ -12161,12 +12187,12 @@ public class MacshapaODBReader
                                         "Duplicate TYPE> entry in a " +
                                         "spreadsheet variable declaration.\n");
 
-				if ( ! this.abort_parse )
-				{
-				     parse_unknown_alist_entry();
-				}
-			    }
-			    break;
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
 
                         case COLUMN_WIDTH_LABEL:
                             if ( ! have_col_width )
@@ -12181,12 +12207,12 @@ public class MacshapaODBReader
                                     "Duplicate COLUMN-WIDTH> entry in a " +
                                     "spreadsheet variable declaration.\n");
 
-				if ( ! this.abort_parse )
-				{
-				     parse_unknown_alist_entry();
-				}
-			    }
-			    break;
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
 
                         default:
                             post_warning_message(this.l1_tok,
@@ -12199,51 +12225,51 @@ public class MacshapaODBReader
                                 parse_unknown_alist_entry();
                             }
                             break;
+                        }
+                    }
+                    else /* a-list contains a list that is not an a-list entry. */
+                         /* read it & discard it.                               */
+                    {
+                        post_warning_message(this.l1_tok,
+                                NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
+                                "The list is located in a spreadsheet variable " +
+                                "declaration a-list.\n");
+
+                        if ( ! this.abort_parse )
+                        {
+                            parse_arbitrary_list();
+                        }
                     }
                 }
-                else /* a-list contains a list that is not an a-list entry. */
-                     /* read it & discard it.                               */
+                else if ( (this.l0_tok).code == R_PAREN_TOK )
                 {
-                    post_warning_message(this.l1_tok,
-                            NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
-                            "The list is located in a spreadsheet variable " +
+                    done = true;
+                    get_next_token();
+                }
+                else if ( (this.l0_tok).code == EOF_TOK )
+                {
+                    done = true;
+                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                        "EOF occurred in a spreadsheet variable " +
+                        "declaration a-list.\n", true, true);
+                }
+                else /* (this.l0_tok).code isn't '(', ')', or  EOF */
+                {
+                    post_warning_message(this.l0_tok,
+                            NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
+                            "The atom was detected in a spreadsheet variable " +
                             "declaration a-list.\n");
 
-                    if ( ! this.abort_parse )
-                    {
-                        parse_arbitrary_list();
-                    }
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
                 }
             }
-            else if ( (this.l0_tok).code == R_PAREN_TOK )
-            {
-                done = true;
-                get_next_token();
-            }
-            else if ( (this.l0_tok).code == EOF_TOK )
-            {
-                done = true;
-                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-                    "EOF occurred in a spreadsheet variable " +
-                    "declaration a-list.\n", true, true);
-            }
-            else /* (this.l0_tok).code isn't '(', ')', or  EOF */
-            {
-                post_warning_message(this.l0_tok,
-                        NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
-                        "The atom was detected in a spreadsheet variable " +
-                        "declaration a-list.\n");
+        } /* while */
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-	    }
-	}
-
-	/* check for missing required attributes -- generate default values 
-	 * if necessary. 
-	 */
+        /* check for missing required attributes -- generate default values
+         * if necessary.
+         */
 
         if ( ( ! this.abort_parse ) &&
              ( ! have_variable_length ) )
@@ -12261,15 +12287,15 @@ public class MacshapaODBReader
                 "variable declaration?  Will use the arg list \"(|<ord>| " +
                 "|<onset>| |<offset>| |<val>|)\".\n");
 
-	    if ( ! this.abort_parse ) 
-	    {
-                args = new Vector<String>();
-                args.add("<ord>");
-                args.add("<onset>");
-                args.add("<offset>");
-                args.add("<val>");
-	    }
-	}
+            if ( ! this.abort_parse )
+            {
+                    args = new Vector<String>();
+                    args.add("<ord>");
+                    args.add("<onset>");
+                    args.add("<offset>");
+                    args.add("<val>");
+            }
+        }
 
         if ( ( ! this.abort_parse ) &&
              ( ! have_type ) )
@@ -12279,24 +12305,24 @@ public class MacshapaODBReader
                 "declaration?  Will force type to <<MATRIX>>.\n");
         }
 
-	/* check for disagreement between type and argument list */
-	if ( ( ! this.abort_parse ) && 
-	     ( must_be_matrix ) && 
-             ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
-	{
-	    mveType = MatrixVocabElement.MatrixType.MATRIX;
+        /* check for disagreement between type and argument list */
+        if ( ( ! this.abort_parse ) &&
+             ( must_be_matrix ) &&
+                 ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
+        {
+            mveType = MatrixVocabElement.MatrixType.MATRIX;
 
             post_warning_message(this.l0_tok, S_VAR_TYPE_ARG_LIST_MISMATCH_WARN,
                 "Will force the type of the spreadsheet variable " +
                 "to <<MATRIX>>.\n");
         }
 
-	/* check for disagreement between variable_length and type */
-	if ( ( ! this.abort_parse ) && 
-	     ( variable_length ) && 
-             ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
-	{
-	    variable_length = false;
+        /* check for disagreement between variable_length and type */
+        if ( ( ! this.abort_parse ) &&
+             ( variable_length ) &&
+                 ( mveType != MatrixVocabElement.MatrixType.MATRIX ) )
+        {
+            variable_length = false;
 
             post_warning_message(this.l0_tok,
                     VAR_LEN_NON_MATRIX_S_VAR_DEC_WARN, null);
@@ -12481,9 +12507,9 @@ public class MacshapaODBReader
         
                 mve.setItsColID(dc_id);
             }
-	}
+        }
 
-	return;
+        return;
 
     } /* MacshapaODBReader::parse_s_var_dec_alist() */
 
@@ -14268,36 +14294,36 @@ public class MacshapaODBReader
 	{
 	    if ( (this.l0_tok).code != R_PAREN_TOK )
 	    {
-		discard_excess_alist_entry_values();
+            discard_excess_alist_entry_values();
 
-                if ( ! this.abort_parse )
-                {
-                    post_warning_message(this.l0_tok,
-                            EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
-                            "Excess values encountered a VOCAB> attribute.\n");
-                }
+            if ( ! this.abort_parse )
+            {
+                post_warning_message(this.l0_tok,
+                        EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
+                        "Excess values encountered a VOCAB> attribute.\n");
             }
         }
+    }
 
 	/* read the terminating right parenthesis */
 	if ( ! this.abort_parse )
 	{
 	    if ( (this.l0_tok).code == R_PAREN_TOK )
 	    {
-		get_next_token();
+            get_next_token();
 	    }
 	    else
 	    {
-		/* since we are cleaning up any excess values in the vocab
-		 * attribute, this else clause is unreachable at present. 
-		 * Should we choose to drop the above attempt at error 
-		 * recovery, this clause will again become reachable.
-		 */
+            /* since we are cleaning up any excess values in the vocab
+             * attribute, this else clause is unreachable at present.
+             * Should we choose to drop the above attempt at error
+             * recovery, this clause will again become reachable.
+             */
 
-                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
-                    "Closing parenthesis missing from a VOCAB> attribute.\n");
-            }
+            post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
+                "Closing parenthesis missing from a VOCAB> attribute.\n");
         }
+    }
 
 	return;
 
@@ -14346,59 +14372,59 @@ public class MacshapaODBReader
      *******************************************************************************/
 
     private Vector<String> parse_s_var_formal_arg_list()
-	throws SystemErrorException,
+        throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = 
-		"macshapa_odb_reader::parse_s_var_formal_arg_list()";
-	final String overflow_mssg = 
-		"Overflow occured in a spreadsheet variable formal " +
-		"argument list.\n";
-	final String bad_first_farg_mssg =
-		"The first argument in a spreadsheet variable formal " +
-		"argument list must be \"|<ord>|\".  First argument forced " +
-		"to \"|<ord>|\".\n";
-	final String bad_second_farg_mssg =
-		"The second argument in a spreadsheet variable formal " +
-		"argument list must be \"|<onset>|\".  Second argument " +
-		"forced to \"|<onset>|\".\n";
-	final String bad_third_farg_mssg =
-		"The third argument in a spreadsheet variable formal argument " +
-		"list must be \"|<offset>|\".  Third argument forced to " +
-		"\"|<offset>|\".\n";
-        String fargName;
-	boolean done;
+        final String mName =
+            "macshapa_odb_reader::parse_s_var_formal_arg_list()";
+        final String overflow_mssg =
+            "Overflow occured in a spreadsheet variable formal " +
+            "argument list.\n";
+        final String bad_first_farg_mssg =
+            "The first argument in a spreadsheet variable formal " +
+            "argument list must be \"|<ord>|\".  First argument forced " +
+            "to \"|<ord>|\".\n";
+        final String bad_second_farg_mssg =
+            "The second argument in a spreadsheet variable formal " +
+            "argument list must be \"|<onset>|\".  Second argument " +
+            "forced to \"|<onset>|\".\n";
+        final String bad_third_farg_mssg =
+            "The third argument in a spreadsheet variable formal argument " +
+            "list must be \"|<offset>|\".  Third argument forced to " +
+            "\"|<offset>|\".\n";
+            String fargName;
+        boolean done;
         boolean duplicateArgName;
-	int arg_count;
+        int arg_count;
         int i;
         Vector<String> args = new Vector<String>();
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
-	
-	/* parse the data base body */
-	
-	/* first parse the leading left parenthesis */
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
 
-	if ( (this.l0_tok).code == L_PAREN_TOK )
-	{
-	    get_next_token();
-	}
-	else /* we shouldn't have been called unless the next token is a '(' */
-	{
+        /* parse the arg list */
+
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
             throw new SystemErrorException(mName + 
                     "(this.l0_tok).code != L_PAREN_TOK.");
-	}
+        }
 
-	arg_count      = 0;
-	done           = false;
+        arg_count      = 0;
+        done           = false;
 
         while ( ( ! this.abort_parse ) && 
-		 ( ! done ) )
-	{
+                ( ! done ) )
+        {
             switch ( (this.l0_tok).code )
             {
                 case SYMBOL_TOK:
@@ -14414,10 +14440,10 @@ public class MacshapaODBReader
                                     bad_first_farg_mssg);
                             }
 
-			    if ( ! this.abort_parse )
-			    {
-                                args.add("<ord>");
-			    }
+                            if ( ! this.abort_parse )
+                            {
+                                            args.add("<ord>");
+                            }
 
                             arg_count++;
                         }
@@ -14431,10 +14457,10 @@ public class MacshapaODBReader
                                     bad_second_farg_mssg);
                             }
 
-			    if ( ! this.abort_parse )
-			    {
+                            if ( ! this.abort_parse )
+                            {
                                 args.add("<onset>");
-			    }
+                            }
 
                             arg_count++;
                         }
@@ -14448,15 +14474,15 @@ public class MacshapaODBReader
                                     bad_third_farg_mssg);
                             }
 
-			    if ( ! this.abort_parse )
-			    {
-                                args.add("<offset>");
-			    }
+                            if ( ! this.abort_parse )
+                            {
+                                            args.add("<offset>");
+                            }
 
-			    arg_count++;
-			}
-			else if ( arg_count == 3 ) /* if the argument != <val>, */
-			{                          /* must be matrix.           */
+                            arg_count++;
+                        }
+                        else if ( arg_count == 3 ) /* if the argument != <val>, */
+                        {                          /* must be matrix.           */
                             fargName = this.l0_tok.str.toString();
                             if ( ( fargName.compareTo("<ord>") == 0 ) ||
                                  ( fargName.compareTo("<onset>") == 0 ) || 
@@ -14471,10 +14497,10 @@ public class MacshapaODBReader
                                 args.add(fargName);
 
                                 arg_count++;
-			    }
-			}
-			else if ( arg_count >= 4 ) /* must be matrix */
-			{
+                            }
+                        }
+                        else if ( arg_count >= 4 ) /* must be matrix */
+                        {
                             fargName = this.l0_tok.str.toString();
                             i = 0;
                             duplicateArgName = false;
@@ -14494,9 +14520,9 @@ public class MacshapaODBReader
                                 post_warning_message(this.l0_tok, DUP_FARG_WARN,
                                         "Duplicate appeared in a spreadsheet " +
                                         "variable formal argument list.\n");
-			    }
-			    else
-			    {
+                            }
+                            else
+                            {
                                 args.add(fargName);
 
                                 arg_count++;
@@ -14510,29 +14536,29 @@ public class MacshapaODBReader
                     }
                     else
                     {
-                    post_warning_message(this.l0_tok,
-                            NON_FARG_IN_FARG_LIST_WARN,
-                            "This warning was occasioned by a nominal or " +
-                            "predicate name.\n");
+                        post_warning_message(this.l0_tok,
+                                NON_FARG_IN_FARG_LIST_WARN,
+                                "This warning was occasioned by a nominal or " +
+                                "predicate name.\n");
                     }
                     get_next_token();
                     break;
 
-		case R_PAREN_TOK:
-		    done = true;
-		    get_next_token();
-		    break;
+                case R_PAREN_TOK:
+                    done = true;
+                    get_next_token();
+                    break;
 
                 case L_PAREN_TOK:
                     post_warning_message(this.l0_tok,
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by a list.\n");
 
-		    if ( ! this.abort_parse ) 
-		    {
-			parse_arbitrary_list();
-		    }
-		    break;
+                    if ( ! this.abort_parse )
+                    {
+                        parse_arbitrary_list();
+                    }
+                    break;
 
                 case ERROR_TOK:
                 case INT_TOK:
@@ -14548,11 +14574,11 @@ public class MacshapaODBReader
                             NON_FARG_IN_FARG_LIST_WARN,
                             "This warning was occasioned by an atom.\n");
 
-		    if ( ! this.abort_parse )
-		    {
-			get_next_token();
-		    }
-		    break;
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
 
                 case EOF_TOK:
                     done = true;
@@ -14561,13 +14587,13 @@ public class MacshapaODBReader
                         "formal argument list.\n", true, true);
                     break;
 
-		 default:
-		     throw new SystemErrorException(mName + 
-			     "Encountered unknown token type.");
-	             /* commented out to keep the compiler happy */
-		     // break;
-	     }
-	}
+                 default:
+                     throw new SystemErrorException(mName +
+                         "Encountered unknown token type.");
+                         /* commented out to keep the compiler happy */
+                     // break;
+             }
+        }
 
         if ( ! this.abort_parse )
         {
@@ -14578,34 +14604,34 @@ public class MacshapaODBReader
                         "Formal argument list forced to \"(|<ord>| |<onset>| " +
                         "|<offset>| |<val>|)\".\n");
 
-		if ( ! this.abort_parse )
-		{
-                    args = new Vector<String>();
-                    args.add("<ord>");
-                    args.add("<onset>");
-                    args.add("<offset>");
-                    args.add("<val>");
+                if ( ! this.abort_parse )
+                {
+                            args = new Vector<String>();
+                            args.add("<ord>");
+                            args.add("<onset>");
+                            args.add("<offset>");
+                            args.add("<val>");
+                        }
+                    }
+                    else if ( arg_count < 4 )
+                    {
+                        post_warning_message(this.l0_tok,
+                                INSUF_FARGS_IN_SVAR_FARG_LIST_WARN,
+                                "Formal argument list forced to \"(|<ord>| |<onset>| " +
+                                "|<offset>| |<val>|)\".\n");
+
+                if ( ! this.abort_parse )
+                {
+                                args = new Vector<String>();
+                                args.add("<ord>");
+                                args.add("<onset>");
+                                args.add("<offset>");
+                                args.add("<val>");
                 }
             }
-            else if ( arg_count < 4 )
-            {
-                post_warning_message(this.l0_tok,
-                        INSUF_FARGS_IN_SVAR_FARG_LIST_WARN,
-                        "Formal argument list forced to \"(|<ord>| |<onset>| " +
-                        "|<offset>| |<val>|)\".\n");
+        }
 
-		if ( ! this.abort_parse )
-		{
-                        args = new Vector<String>();
-                        args.add("<ord>");
-                        args.add("<onset>");
-                        args.add("<offset>");
-                        args.add("<val>");
-		}
-	    }
-	}
-
-	return(args);
+        return(args);
 
     } /* MacshapaODBReader::parse_s_var_formal_arg_list() */
 
@@ -14654,77 +14680,77 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = 
-		"macshapa_odb_reader::parse_s_var_formal_arg_list_attribute()";
-	final String missing_farg_list_mssg = 
-		"A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
-		"Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).\n";
-	final String farg_list_type_mismatch_mssg = 
-		"The value of the FORMAL-ARG-LIST> attribute must be a list " +
-		"of formal arguments.  Value forced to (|<ord>| |<onset>| " +
-		"|<offset>| |<val>|).\n";
-	final String overflow_mssg = 
-		"Overflow occured in a spreadsheet variable declaration " +
-		"formal argument list.\n";
-        Vector<String> args = null;
+        final String mName =
+            "macshapa_odb_reader::parse_s_var_formal_arg_list_attribute()";
+        final String missing_farg_list_mssg =
+            "A FORMAL-ARG-LIST> attribute appears not to contain a value.  " +
+            "Value forced to (|<ord>| |<onset>| |<offset>| |<val>|).\n";
+        final String farg_list_type_mismatch_mssg =
+            "The value of the FORMAL-ARG-LIST> attribute must be a list " +
+            "of formal arguments.  Value forced to (|<ord>| |<onset>| " +
+            "|<offset>| |<val>|).\n";
+        final String overflow_mssg =
+            "Overflow occured in a spreadsheet variable declaration " +
+            "formal argument list.\n";
+            Vector<String> args = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
-	
-	/* parse the formal argument list attribute */
-	
-	/* first parse the leading left parenthesis */
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
 
-	if ( (this.l0_tok).code == L_PAREN_TOK )
-	{
-	    get_next_token();
-	}
-	else /* we shouldn't have been called unless the next token is a '(' */
-	{
-	    throw new SystemErrorException(mName + 
-		    "(this.l0_tok).code != L_PAREN_TOK.");
-	}
+        /* parse the formal argument list attribute */
 
-	/* read the a-list entry name */
-	if ( ! this.abort_parse ) 
-	{
-	    if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
-		 ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
-	    {
-		get_next_token();
-	    }
-	    else /* we shouldn't have been called unless the next token is an a-list tag */
-	    {
-		throw new SystemErrorException(mName + 
-			"this.l0_tok != FORMAL-ARG-LIST>.");
-	    }
-	}
+        /* first parse the leading left parenthesis */
 
-	/* read the value associated with the a-list entry & discard any excess values */
-	if ( ! this.abort_parse )
-	{
-	    switch ( (this.l0_tok).code )
-	    {
-		case L_PAREN_TOK:
-		    args = parse_s_var_formal_arg_list();
-		    break;
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName +
+                "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        /* read the a-list entry name */
+        if ( ! this.abort_parse )
+        {
+            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+                 ( (this.l0_tok).aux == FORMAL_ARG_LIST_LABEL ) )
+            {
+                get_next_token();
+            }
+            else /* we shouldn't have been called unless the next token is an a-list tag */
+            {
+                throw new SystemErrorException(mName +
+                    "this.l0_tok != FORMAL-ARG-LIST>.");
+            }
+        }
+
+        /* read the value associated with the a-list entry & discard any excess values */
+        if ( ! this.abort_parse )
+        {
+            switch ( (this.l0_tok).code )
+            {
+                case L_PAREN_TOK:
+                    args = parse_s_var_formal_arg_list();
+                    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
                              missing_farg_list_mssg);
 
-		    if ( ! this.abort_parse )
-		    {
-                        args = new Vector<String>();
-                        args.add("<ord>");
-                        args.add("<onset>");
-                        args.add("<offset>");
-                        args.add("<val>");
-		    }
-		    break;
+                    if ( ! this.abort_parse )
+                    {
+                                args = new Vector<String>();
+                                args.add("<ord>");
+                                args.add("<onset>");
+                                args.add("<offset>");
+                                args.add("<val>");
+                    }
+                    break;
 
                 case BOOL_TOK:
                 case ERROR_TOK:
@@ -14741,20 +14767,20 @@ public class MacshapaODBReader
                             ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
                             farg_list_type_mismatch_mssg);
 
-		    if ( ! this.abort_parse )
-		    {
+                    if ( ! this.abort_parse )
+                    {
                         args = new Vector<String>();
                         args.add("<ord>");
                         args.add("<onset>");
                         args.add("<offset>");
                         args.add("<val>");
-		    }
+                    }
 
-		    if ( ! this.abort_parse )
-		    {
-			get_next_token();
-		    }
-		    break;
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
 
 
                 case EOF_TOK:
@@ -14763,13 +14789,13 @@ public class MacshapaODBReader
                                true, true);
                     break;
 
-		default:
-		    throw new SystemErrorException(mName + 
-			    "Encountered unknown token type.");
-	            /* commented out to keep the compiler happy */
-		    // break;
-	    }
-	}
+                default:
+                    throw new SystemErrorException(mName +
+                        "Encountered unknown token type.");
+                        /* commented out to keep the compiler happy */
+                    // break;
+            }
+        }
 
         /* check for EOF */
         if ( ! this.abort_parse )
@@ -14782,14 +14808,14 @@ public class MacshapaODBReader
             }
         }
 
-	/* discard any excess values that may appear in the FORMAL-ARG-LIST> 
-	 * a-list entry 
-	 */
-	if ( ! this.abort_parse )
-	{
-	    if ( (this.l0_tok).code != R_PAREN_TOK )
-	    {
-		discard_excess_alist_entry_values();
+        /* discard any excess values that may appear in the FORMAL-ARG-LIST>
+         * a-list entry
+         */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code != R_PAREN_TOK )
+            {
+                discard_excess_alist_entry_values();
 
                 if ( ! this.abort_parse )
                 {
@@ -14801,20 +14827,20 @@ public class MacshapaODBReader
             }
         }
 
-	/* read the terminating right parenthesis */
-	if ( ! this.abort_parse )
-	{
-	    if ( (this.l0_tok).code == R_PAREN_TOK )
-	    {
-		get_next_token();
-	    }
-	    else
-	    {
-		/* since we are cleaning up any excess values in the formal arg
-		 * list attribute, this else clause is unreachable at present.
-		 * Should we choose to drop the above attempt at error recovery,
-		 * this clause will again become reachable.
-		 */
+        /* read the terminating right parenthesis */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code == R_PAREN_TOK )
+            {
+                get_next_token();
+            }
+            else
+            {
+                /* since we are cleaning up any excess values in the formal arg
+                 * list attribute, this else clause is unreachable at present.
+                 * Should we choose to drop the above attempt at error recovery,
+                 * this clause will again become reachable.
+                 */
 
                 post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
                     "Closing parenthesis missing from a FORMAL-ARG-LIST> " +
@@ -14822,7 +14848,7 @@ public class MacshapaODBReader
             }
         }
 
-	return(args);
+        return(args);
 
     } /* MacshapaODBReader::parse_s_var_formal_arg_list_attribute() */
 
@@ -25100,7 +25126,7 @@ public class MacshapaODBReader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( ( farg.fargType != FormalArgument.FArgType.PREDICATE ) ||
+        if ( ( farg.fargType != FormalArgument.FArgType.PREDICATE ) &&
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             throw new SystemErrorException(mName + 
@@ -25539,17 +25565,17 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_integer_value()";
-	final String overflow_mssg = "Overflow occured in a float value.\n";
+        final String mName = "macshapa_odb_reader::parse_integer_value()";
+        final String overflow_mssg = "Overflow occured in a float value.\n";
         String value = null;
         DataValue dv = null;
         
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse true on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse true on entry");
+        }
         
         if ( farg == null )
         {
@@ -25574,8 +25600,8 @@ public class MacshapaODBReader
         
         value = this.l0_tok.str.toString();
 	
-        if ( ( farg.fargType != FormalArgument.FArgType.QUOTE_STRING ) ||
-             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
+        if ( ( farg.fargType == FormalArgument.FArgType.QUOTE_STRING ) ||
+             ( farg.fargType == FormalArgument.FArgType.UNTYPED ) )
         {
             if ( ((this.l0_tok).aux & QSTRING_FLAG) == 0 )
             {
@@ -25723,20 +25749,20 @@ public class MacshapaODBReader
             switch ( (this.l0_tok).code )
             {
                 case INT_TOK:
-		    out_of_range = false;
+                    out_of_range = false;
 
-		    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
-		    {
-			out_of_range = true;
-			ticks = MACSHAPA_MIN_TIME;
-		    }
-		    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
-		    {
-			out_of_range = true;
-			ticks = MACSHAPA_MAX_TIME;
-		    }
-		    else
-		    {
+                    if ( ((this.l0_tok).val) < (double)MACSHAPA_MIN_TIME )
+                    {
+                        out_of_range = true;
+                        ticks = MACSHAPA_MIN_TIME;
+                    }
+                    else if ( ((this.l0_tok).val) > (double)MACSHAPA_MAX_TIME )
+                    {
+                        out_of_range = true;
+                        ticks = MACSHAPA_MAX_TIME;
+                    }
+                    else
+                    {
                         ticks = (long)((this.l0_tok).val);
                     }
 
@@ -25745,14 +25771,14 @@ public class MacshapaODBReader
                         post_warning_message(this.l0_tok,
                                 TIME_OUT_OF_RANGE_WARN,
                                 "The out of range value appeared in a " +
-                                "TIME> attribute\n"); 
-		    }
+                                "TIME> attribute\n");
+                    }
 
-		    if ( ! this.abort_parse )
-		    {
-			get_next_token();
-		    }
-		    break;
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
 
                 case R_PAREN_TOK:
                     post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
@@ -25851,8 +25877,8 @@ public class MacshapaODBReader
             }
         }
 
-        if ( ( farg.fargType != FormalArgument.FArgType.TIME_STAMP ) ||
-             ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
+        if ( ( farg.fargType == FormalArgument.FArgType.TIME_STAMP ) ||
+             ( farg.fargType == FormalArgument.FArgType.UNTYPED ) )
         {
             ts = new TimeStamp(MACSHAPA_TICKS_PER_SECOND, ticks);
             dv = new TimeStampDataValue(this.db, farg.getID(), ts);

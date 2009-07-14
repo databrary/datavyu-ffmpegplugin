@@ -431,7 +431,8 @@ public abstract class Column
         }
 
         return true;
-    }
+
+    } /* Column::isValidColumnName90 */
 
     /**
      * Sets the name of the column

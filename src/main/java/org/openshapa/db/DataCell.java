@@ -2558,16 +2558,16 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         output.printf("%s(%s", indent, newLine);
 
         output.printf("%s  ( ONSET> %d )%s", indent,
-                this.onset.getTicks(), newLine);
+                this.onset.getTime(), newLine);
 
-        output.printf("%s  ( OFFSET> %d ) ", indent,
-                this.offset.getTicks(), newLine);
+        output.printf("%s  ( OFFSET> %d )%s", indent,
+                this.offset.getTime(), newLine);
 
         // ... cell value ...
-        this.val.toMODBFile(mve, output, newLine, indent);
+        this.val.toMODBFile(mve, output, newLine, indent + "  ");
 
         // ... closing paren and new line.
-        output.printf(")%s", newLine);
+        output.printf("%s)%s", indent, newLine);
 
         return;
 
