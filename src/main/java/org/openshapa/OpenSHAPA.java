@@ -94,7 +94,11 @@ implements KeyEventDispatcher {
         boolean result = true;
 
         switch (evt.getKeyCode()) {
+            case KeyEvent.VK_DIVIDE:
+                qtVideoController.setCellOnsetAction();
+                break;
             case KeyEvent.VK_ASTERISK:
+            case KeyEvent.VK_MULTIPLY:
                 qtVideoController.setCellOffsetAction();
                 break;
             case KeyEvent.VK_NUMPAD7:

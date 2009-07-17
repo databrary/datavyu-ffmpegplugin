@@ -25,7 +25,6 @@ import org.openshapa.views.discrete.EditorComponent;
  * A view for a vocab element.
  */
 public class VocabElementV extends JPanel {
-//implements KeyListener {
 
     /** The width of icon to use in the vocab element view. */
     private static final int VE_WIDTH = 22;
@@ -132,10 +131,13 @@ public class VocabElementV extends JPanel {
         this.rebuildContents();
     }
 
+    /**
+     * @return The parent dialog of this vocab element view.
+     */
     public final VocabEditorV getParentDialog() {
         return parentEditor;
     }
-    
+
     /**
      * Replaces the model used for this vocab element view.
      *
@@ -162,13 +164,6 @@ public class VocabElementV extends JPanel {
         this.parentEditor.updateDialogState();
 
         veRootView.setVocabElement(veModel, this);
-
-        // Maintain focus after draw.
-//        if (hasFocus && focusedArg == null) {
-//            veNameField.requestFocus();
-//        } else if (focusedArg != null) {
-//            getArgumentView(focusedArg).requestFocus();
-//        }
     }
 
     /**
@@ -231,7 +226,7 @@ public class VocabElementV extends JPanel {
                 return (VENameEditor) ed;
             }
         }
-        return null ;
+        return null;
     }
 
     /**
@@ -264,7 +259,7 @@ public class VocabElementV extends JPanel {
     public final void requestArgFocus(FormalArgEditor argEd) {
         veRootView.getEdTracker().setEditor(argEd);
     }
-    
+
     /**
      * Sets the deleted flag for this vocab element.
      *
