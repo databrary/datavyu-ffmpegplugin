@@ -337,119 +337,119 @@ public class MacshapaODBReader
 
     final int ILLEGAL_ESCAPE_SEQ_IN_SYMBOL_WARN                 =   0;
     final int ILLEGAL_CHAR_IN_SYMBOL_WARN                       =   1;
-    final int LEADING_WS_IN_SYMBOL_ERR				=   2;
-    final int TRAILING_WS_IN_SYMBOL_ERR				=   3;
+    final int LEADING_WS_IN_SYMBOL_ERR                          =   2;
+    final int TRAILING_WS_IN_SYMBOL_ERR                         =   3;
     final int ILLEGAL_ESC_SEQ_IN_QUOTE_STR_WARN                 =   4;
-    final int ILLEGAL_CHAR_IN_QUOTE_STR_WARN			=   5;
-    final int INTEGER_OUT_OF_RANGE_WARN				=   6;
-    final int FLOAT_VAL_OUT_OF_RANGE_WARN			=   7;
-    final int PART_OF_FRACTION_DISCARDED_WARN			=   8;
-    final int LEFT_PAREN_EXPECTED_WARN				=   9;
-    final int RIGHT_PAREN_EXPECTED_WARN				=  10;
-    final int SETF_EXPECTED_WARN				=  11;
-    final int DB_VAR_EXPECTED_WARN				=  12;
-    final int QUOTE_EXPECTED_WARN				=  13;
-    final int EMPTY_ALIST_ENTRY_WARN				=  14;
+    final int ILLEGAL_CHAR_IN_QUOTE_STR_WARN                    =   5;
+    final int INTEGER_OUT_OF_RANGE_WARN                         =   6;
+    final int FLOAT_VAL_OUT_OF_RANGE_WARN                       =   7;
+    final int PART_OF_FRACTION_DISCARDED_WARN                   =   8;
+    final int LEFT_PAREN_EXPECTED_WARN                          =   9;
+    final int RIGHT_PAREN_EXPECTED_WARN                         =  10;
+    final int SETF_EXPECTED_WARN                                =  11;
+    final int DB_VAR_EXPECTED_WARN                              =  12;
+    final int QUOTE_EXPECTED_WARN                               =  13;
+    final int EMPTY_ALIST_ENTRY_WARN                            =  14;
     final int ILLEGAL_UNKNOWN_ALIST_ENTRY_VAL_WARN              =  15;
     final int EXCESS_VALUES_IN_ALIST_ENTRY_WARN                 =  16;
-    final int DUPLICATE_ALIST_ENTRY_WARN			=  17;
+    final int DUPLICATE_ALIST_ENTRY_WARN                        =  17;
     final int UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN            =  18;
-    final int NON_ALIST_ENTRY_LIST_IN_ALIST_WARN		=  19;
-    final int NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN		=  20;
+    final int NON_ALIST_ENTRY_LIST_IN_ALIST_WARN                =  19;
+    final int NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN                =  20;
     final int NON_POSITIVE_DB_VERSION_NUM_WARN                  =  21;
     final int ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN                =  22;
     final int EMPTY_QUOTE_STRING_WARN                           =  23;
-    final int NON_POSITIVE_ERROR_LIMIT_WARN			=  24;
-    final int ERROR_LIMIT_TOO_LARGE_WARN			=  25;
-    final int NON_POSITIVE_WARNING_LIMIT_WARN			=  26;
-    final int WARNING_LIMIT_TOO_LARGE_WARN			=  27;
-    final int NEGATIVE_DEBUG_LEVEL_WARN				=  28;
-    final int MISSING_ALIST_ENTRY_WARN				=  29;
+    final int NON_POSITIVE_ERROR_LIMIT_WARN                     =  24;
+    final int ERROR_LIMIT_TOO_LARGE_WARN                        =  25;
+    final int NON_POSITIVE_WARNING_LIMIT_WARN                   =  26;
+    final int WARNING_LIMIT_TOO_LARGE_WARN                      =  27;
+    final int NEGATIVE_DEBUG_LEVEL_WARN                         =  28;
+    final int MISSING_ALIST_ENTRY_WARN                          =  29;
     final int ALIEN_LIST_IN_PRED_DEFS_LIST_WARN                 =  30;
     final int ALIEN_ATOM_IN_PRED_DEFS_LIST_WARN                 =  31;
     final int EMPTY_PRED_DEF_WARN                               =  32;
-    final int TYPE_MISMATCH_IN_PRED_DEF_WARN			=  33;
+    final int TYPE_MISMATCH_IN_PRED_DEF_WARN                    =  33;
     final int EXCESS_VALUES_IN_A_PREDICATE_DEF_WARN             =  34;
     final int NON_FARG_IN_FARG_LIST_WARN                        =  35;
-    final int EMPTY_FORMAL_ARGUMENT_LIST_WARN			=  36;
+    final int EMPTY_FORMAL_ARGUMENT_LIST_WARN                   =  36;
     final int NAME_IN_PRED_DEF_NOT_A_PRED_NAME_WARN             =  37;
     final int PREDICATE_REDEFINITION_WARN                       =  38;
     final int ALIEN_LIST_IN_S_VAR_DEC_LIST_WARN                 =  39;
     final int ALIEN_ATOM_IN_S_VAR_DEC_LIST_WARN                 =  40;
     final int NAME_IN_S_VAR_DEC_NOT_A_S_VAR_NAME_WARN           =  41;
     final int EMPTY_S_VAR_DEC_WARN                              =  42;
-    final int TYPE_MISMATCH_IN_S_VAR_DEC_WARN			=  43;
+    final int TYPE_MISMATCH_IN_S_VAR_DEC_WARN                   =  43;
     final int EXCESS_VALUES_IN_A_S_VAR_DEC_WARN                 =  44;
-    final int BAD_FARG_IN_SVAR_FARG_LIST_WARN			=  45;
-    final int INSUF_FARGS_IN_SVAR_FARG_LIST_WARN		=  46;
-    final int COL_WIDTH_OUT_OF_RANGE_WARN			=  47;
+    final int BAD_FARG_IN_SVAR_FARG_LIST_WARN                   =  45;
+    final int INSUF_FARGS_IN_SVAR_FARG_LIST_WARN                =  46;
+    final int COL_WIDTH_OUT_OF_RANGE_WARN                       =  47;
     final int S_VAR_TYPE_ARG_LIST_MISMATCH_WARN                 =  48;
-    final int S_VAR_PRED_NAME_COLLISION_WARN			=  49;
-    final int S_VAR_REDEFINITION_WARN				=  50;
+    final int S_VAR_PRED_NAME_COLLISION_WARN                    =  49;
+    final int S_VAR_REDEFINITION_WARN                           =  50;
     final int VAR_LEN_NON_MATRIX_S_VAR_DEC_WARN                 =  51;
-    final int DUP_FARG_WARN					=  52;
+    final int DUP_FARG_WARN                                     =  52;
     final int ALIEN_LIST_IN_S_VAR_DEF_LIST_WARN                 =  53;
     final int ALIEN_ATOM_IN_S_VAR_DEF_LIST_WARN                 =  54;
     final int NAME_IN_S_VAR_DEF_NOT_A_S_VAR_NAME_WARN           =  55;
-    final int UNDECLARED_S_VAR_WARN				=  56;
+    final int UNDECLARED_S_VAR_WARN                             =  56;
     final int EMPTY_S_VAR_DEF_WARN                              =  57;
-    final int TYPE_MISMATCH_IN_S_VAR_DEF_WARN			=  58;
+    final int TYPE_MISMATCH_IN_S_VAR_DEF_WARN                   =  58;
     final int EXCESS_VALUES_IN_A_S_VAR_DEF_WARN                 =  59;
     final int INAPROPRIATE_VOCAB_ATTRIBUTE_WARN                 =  60;
-    final int ATOM_IN_A_S_VAR_CELL_LIST_WARN			=  61;
+    final int ATOM_IN_A_S_VAR_CELL_LIST_WARN                    =  61;
     final int UNKNOWN_OR_OUT_OF_ORDER_CELL_VALUE_WARN           =  62;
-    final int TIME_OUT_OF_RANGE_WARN				=  63;
-    final int S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN		=  64;
-    final int S_VAR_CELL_VALUE_MISSING_WARN			=  65;
-    final int FARG_NAME_MISMATCH_WARN				=  66;
+    final int TIME_OUT_OF_RANGE_WARN                            =  63;
+    final int S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN               =  64;
+    final int S_VAR_CELL_VALUE_MISSING_WARN                     =  65;
+    final int FARG_NAME_MISMATCH_WARN                           =  66;
     final int NOMINAL_COERCED_TO_CELL_NOMINAL_WARN              =  67;
     final int INVALID_PRED_NAME_IN_PRED_VALUE_WARN              =  68;
     final int UNDEFINED_PRED_WARN                               =  69;
     final int PRED_VALUE_EXPECTED_WARN                          =  70;
-    final int ILLEGAL_CHARS_IN_QUOTE_STR_WARN			=  71;
+    final int ILLEGAL_CHARS_IN_QUOTE_STR_WARN                   =  71;
     final int PRED_OR_COL_VAR_USED_AS_NOM_WARN                  =  72;
-    final int ILLEGAL_ATOM_IN_PRED_ARG_LIST_WARN		=  73;
-    final int EXCESS_ARGS_IN_PRED_VALUE_WARN			=  74;
-    final int REQ_ARGS_MISSING_FROM_PRED_VAL_WARN		=  75;
-    final int ILLEGAL_ATOM_IN_MATRIX_ARG_WARN			=  76;
+    final int ILLEGAL_ATOM_IN_PRED_ARG_LIST_WARN                =  73;
+    final int EXCESS_ARGS_IN_PRED_VALUE_WARN                    =  74;
+    final int REQ_ARGS_MISSING_FROM_PRED_VAL_WARN               =  75;
+    final int ILLEGAL_ATOM_IN_MATRIX_ARG_WARN                   =  76;
     final int REQ_ARGS_MISSING_FROM_MATRIX_WARN                 =  77;
-    final int CELL_WITH_UNDEFINED_VALUE_WARN			=  78;
-    final int CELL_WITH_UNDEFINED_ONSET_WARN			=  79;
-    final int CELL_WITH_UNDEFINED_OFFSET_WARN			=  80;
-    final int NON_PRED_IN_VOCAB_WARN				=  81;
-    final int UNDEF_PRED_IN_VOCAB_LIST_WARN			=  82;
-    final int S_VAR_IN_VOCAB_LIST_WARN				=  83;
-    final int SYSTEM_PRED_IN_VOCAB_LIST_WARN			=  84;
-    final int ATOM_IN_QUERY_LIST_WARN				=  85;
+    final int CELL_WITH_UNDEFINED_VALUE_WARN                    =  78;
+    final int CELL_WITH_UNDEFINED_ONSET_WARN                    =  79;
+    final int CELL_WITH_UNDEFINED_OFFSET_WARN                   =  80;
+    final int NON_PRED_IN_VOCAB_WARN                            =  81;
+    final int UNDEF_PRED_IN_VOCAB_LIST_WARN                     =  82;
+    final int S_VAR_IN_VOCAB_LIST_WARN                          =  83;
+    final int SYSTEM_PRED_IN_VOCAB_LIST_WARN                    =  84;
+    final int ATOM_IN_QUERY_LIST_WARN                           =  85;
     final int INVALID_S_VAR_NAME_IN_SP_VAR_LIST_WARN            =  86;
     final int REF_TO_UNDEF_S_VAR_IN_SP_VAR_LIST_WARN            =  87;
     final int REF_TO_SYSTEM_S_VAR_IN_SP_VAR_LIST_WARN           =  88;
     final int DUP_REF_TO_S_VAR_IN_SP_VAR_LIST_WARN              =  89;
     final int NON_S_VAR_IN_SHAPA_VARS_LIST_WARN                 =  90;
-    final int ATOM_IN_GROUPS_LIST_WARN				=  91;
-    final int ATOM_IN_GROUP_LIST_WARN				=  92;
+    final int ATOM_IN_GROUPS_LIST_WARN                          =  91;
+    final int ATOM_IN_GROUP_LIST_WARN                           =  92;
     final int INVALID_S_VAR_NAME_IN_GROUP_MEMBER_WARN           =  93;
     final int REF_TO_UNDEF_S_VAR_IN_GROUP_MEMBER_WARN           =  94;
     final int REF_TO_SYS_S_VAR_IN_GROUP_MEMBER_WARN             =  95;
-    final int ILL_FORMED_GROUP_MEMBER_WARN			=  96;
+    final int ILL_FORMED_GROUP_MEMBER_WARN                      =  96;
     final int REF_TO_UNDEF_S_VAR_CELL_IN_GRP_MEM_WARN           =  97;
     final int EXCESS_VALUES_IN_GROUP_MEMBER_WARN                =  98;
-    final int ATOM_IN_ALIGNMENTS_LIST_WARN			=  99;
-    final int ALIEN_LIST_IN_ALIGNMENTS_LIST_WARN		= 100;
+    final int ATOM_IN_ALIGNMENTS_LIST_WARN                      =  99;
+    final int ALIEN_LIST_IN_ALIGNMENTS_LIST_WARN                = 100;
     final int INVALID_ALIGNMENT_NAME_WARN                       = 101;
-    final int ALIGNMENT_NAME_ALREADY_IN_USE_WARN		= 102;
-    final int EMPTY_ALIGNMENT_WARN				= 103;
-    final int TYPE_MISMATCH_IN_ALIGNMENT_WARN			= 104;
-    final int EXCESS_VALUES_IN_AN_ALIGNMENT_WARN		= 105;
-    final int ILL_FORMED_ALIGNMENT_WARN				= 106;
+    final int ALIGNMENT_NAME_ALREADY_IN_USE_WARN                = 102;
+    final int EMPTY_ALIGNMENT_WARN                              = 103;
+    final int TYPE_MISMATCH_IN_ALIGNMENT_WARN                   = 104;
+    final int EXCESS_VALUES_IN_AN_ALIGNMENT_WARN                = 105;
+    final int ILL_FORMED_ALIGNMENT_WARN                         = 106;
     final int ATOM_IN_IMPORT_FORMATS_LIST_WARN                  = 107;
     final int ILLEGAL_IMPORT_FORMAT_LIST_NAME_WARN              = 108;
-    final int EMPTY_IMPORT_FORMAT_LIST_WARN			= 109;
+    final int EMPTY_IMPORT_FORMAT_LIST_WARN                     = 109;
     final int IMPORT_FORMAT_LIST_TYPE_MISMATCH_WARN             = 110;
     final int EXCESS_VALUES_IN_IMP_FORMAT_LIST_WARN             = 111;
     final int ATOM_IN_IMPORT_PRODUCTIONS_LIST_WARN              = 112;
     final int BOTH_PGM_AND_INSERT_ACTION_IN_PROD_WARN           = 113;
-    final int IMPORT_PROD_NAME_TOO_LONG_WARN			= 114;
+    final int IMPORT_PROD_NAME_TOO_LONG_WARN                    = 114;
     final int IMPORT_PROD_PATTERN_TOO_LONG_WARN                 = 115;
     final int ATOM_IN_IMP_PROD_INS_ACTIONS_LIST_WARN            = 116;
     final int ATOM_IN_IMP_PROD_PMG_ACTIONS_LIST_WARN            = 117;
@@ -457,8 +457,8 @@ public class MacshapaODBReader
     final int ALIGNMENTS_AFTER_SHAPA_PANE_VARS_WARN             = 119;
     final int EMPTY_IMPORT_PROD_INS_ACTION_LIST_WARN            = 120;
     final int EMPTY_IMPORT_PROD_PGM_ACTION_LIST_WARN            = 121;
-    final int MISSING_REQ_ATTR_IN_INS_ACTION_WARN		= 122;
-    final int MISSING_REQ_ATTR_IN_PGM_ACTION_WARN		= 123;
+    final int MISSING_REQ_ATTR_IN_INS_ACTION_WARN               = 122;
+    final int MISSING_REQ_ATTR_IN_PGM_ACTION_WARN               = 123;
     final int EXCESS_IMP_PROD_PGM_ACTIONS_WARN                  = 124;
     final int COL_PRED_CANT_REPLACE_PRED_FARG_WARN              = 125;
     final int FARG_ARG_TYPE_MISMATCH_WARN                       = 126;
@@ -468,7 +468,7 @@ public class MacshapaODBReader
     final int ILLEGAL_ATOM_IN_COL_PRED_ARG_LIST_WARN            = 130;
     final int EXCESS_ARGS_IN_COL_PRED_VALUE_WARN                = 131;
     final int REQ_ARGS_MISSING_FROM_COL_PRED_VAL_WARN           = 132;
-    final int UNREAD_INPUT_REMAINING_AFTER_PARSE_WARN            = 133;
+    final int UNREAD_INPUT_REMAINING_AFTER_PARSE_WARN           = 133;
 
     final int NUMBER_OF_WARNING_MESSAGES                        = 134;
 
@@ -799,7 +799,8 @@ public class MacshapaODBReader
                 "formal arguments.\n",
 
         /*  78 -- CELL_WITH_UNDEFINED_VALUE_WARN */
-        "Encountered a spreadsheet cell whose value is undefined.\n",
+        "Encountered a spreadsheet cell whose value is undefined.  Will use " +
+                "a default value.\n",
 
         /*  79 -- CELL_WITH_UNDEFINED_ONSET_WARN */
         "Encountered a spreadsheet cell whose onset is undefined.  Will force " +
@@ -7567,7 +7568,7 @@ public class MacshapaODBReader
             this.listing_stream.print("\n\nSpreadsheet Variable Cell Definition:\n");
             this.listing_stream.printf("\tord = %d\n", dc.getOrd());
             this.listing_stream.printf("\tonset = %s\n",
-                                       dc.getOffset().toHMSFString());
+                                       dc.getOnset().toHMSFString());
             this.listing_stream.printf("\toffset = %s\n",
                                        dc.getOffset().toHMSFString());
             this.listing_stream.printf("\tvalue = %s\n",
@@ -9047,25 +9048,25 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_pred_def_alist()";
-	final String overflow_mssg = 
-		"Overflow occured in the formal argument list of a " +
-		"predicate definition.\n";
-	boolean done;
-	boolean have_args_list;
-	boolean have_variable_length;
+        final String mName = "macshapa_odb_reader::parse_pred_def_alist()";
+        final String overflow_mssg =
+            "Overflow occured in the formal argument list of a " +
+            "predicate definition.\n";
+        boolean done;
+        boolean have_args_list;
+        boolean have_variable_length;
         boolean ignore_pred_def = false;
-	boolean variable_length;
+    	boolean variable_length;
         Vector<String> args = null;
         UnTypedFormalArg fa = null;
         PredicateVocabElement new_pve = null;
         PredicateVocabElement old_pve = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-                    "this.abort_parse TRUE on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                        "this.abort_parse TRUE on entry");
+        }
         
         if ( ( predName == null ) ||
              ( predName.length() <= 0 ) )
@@ -9075,7 +9076,7 @@ public class MacshapaODBReader
 
         /* parse the predicate definition alist */
 	
-	/* first parse the leading left parenthesis */
+    	/* first parse the leading left parenthesis */
 
         if ( (this.l0_tok).code == L_PAREN_TOK )
         {
@@ -9098,36 +9099,36 @@ public class MacshapaODBReader
                  * left parenthesis & let the cards fall where they may.
                  */
 
-		get_next_token();
-	    }
-	}
-	else /* we shouldn't have been called unless the next token is a '(' */
-	{
-            throw new SystemErrorException(mName + 
+                get_next_token();
+            }
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName +
                     "(this.l0_tok).code != L_PAREN_TOK.");
-	}
+        }
 
-	done                  = false;
-	have_args_list        = false;
-	have_variable_length  = false;
-	variable_length       = false;
+        done                  = false;
+        have_args_list        = false;
+        have_variable_length  = false;
+        variable_length       = false;
 
-	/* now parse the a-list assocated with the predicate declaration */
-	 while ( ( ! this.abort_parse ) && 
-		 ( ! done ) )
-	{
-	    if ( (this.l0_tok).code == L_PAREN_TOK )
-	    {
-		if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-		{
-		    switch ( (this.l1_tok).aux )
-		    {
-			case VARIABLE_LENGTH_LABEL:
-			    if ( ! have_variable_length )
-			    {
-				have_variable_length = true;
-				variable_length = 
-                                        parse_variable_length_attribute();
+        /* now parse the a-list assocated with the predicate declaration */
+         while ( ( ! this.abort_parse ) &&
+                 ( ! done ) )
+        {
+            if ( (this.l0_tok).code == L_PAREN_TOK )
+            {
+                if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+                {
+                    switch ( (this.l1_tok).aux )
+                    {
+                        case VARIABLE_LENGTH_LABEL:
+                            if ( ! have_variable_length )
+                            {
+                                have_variable_length = true;
+                                variable_length =
+                                                    parse_variable_length_attribute();
                             }
                             else
                             {
@@ -9136,23 +9137,23 @@ public class MacshapaODBReader
                                         "Duplicate VARIABLE-LENGTH> entry in a " +
                                         "predicate definition.\n");
 
-				if ( ! this.abort_parse )
-				{
-				     parse_unknown_alist_entry();
-				}
-			    }
-			    break;
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
 
-			case FORMAL_ARG_LIST_LABEL:
-			    if ( ! have_args_list )
-			    {
-				have_args_list = true;
-				args = parse_pred_formal_arg_list_attribute();
+                        case FORMAL_ARG_LIST_LABEL:
+                            if ( ! have_args_list )
+                            {
+                                have_args_list = true;
+                                args = parse_pred_formal_arg_list_attribute();
 
                                 if ( ( ! this.abort_parse ) &&
                                      ( args == null ) )
                                 {
-                                    throw new SystemErrorException(mName + 
+                                    throw new SystemErrorException(mName +
                                             "! abort_parse and " +
                                             "parse_pred_formal_arg_list() " +
                                             "returned null.");
@@ -9218,25 +9219,25 @@ public class MacshapaODBReader
                         "The atom was detected in a predicate " +
                         "definition a-list.\n");
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-	    }
-	}
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+            }
+        }
 
-	/* check for missing required attributes -- generate default 
-	 * values if necessary. 
-	 */
+        /* check for missing required attributes -- generate default
+         * values if necessary.
+         */
 
-	if ( ( ! this.abort_parse ) && 
-	     ( ! have_variable_length ) )
-	{
-	    /* force variable length to false here */
+        if ( ( ! this.abort_parse ) &&
+             ( ! have_variable_length ) )
+        {
+            /* force variable length to false here */
 
-            post_warning_message(this.l0_tok, MISSING_ALIST_ENTRY_WARN,
-                "VARIABLE-LENGTH> entry missing from predicate " +
-                "definition?  VARIABLE-LENGTH> forced to false.\n");
+                post_warning_message(this.l0_tok, MISSING_ALIST_ENTRY_WARN,
+                    "VARIABLE-LENGTH> entry missing from predicate " +
+                    "definition?  VARIABLE-LENGTH> forced to false.\n");
         }
 
         if ( ( ! this.abort_parse ) &&
@@ -9246,35 +9247,35 @@ public class MacshapaODBReader
                 "FORMAL-ARG-LIST> entry missing from predicate " +
                 "definition?  Will use the arg list \"(|<val>|)\".\n");
 
-	    if ( ! this.abort_parse )
-	    {
+        if ( ! this.abort_parse )
+        {
                 args = new Vector<String>();
                 args.add("<val>");
-	    }
-	}
+        }
+    }
 
-	/* Check to see if the predicate definition conflicts or duplicates with 
-         * an existing column variable or predicate definition -- set 
-         * ignore_pred_def to true if it does.
-         */
-	if ( ! this.abort_parse )
-	{
-	    if ( this.debug_level >= 2 )
-	    {
-		dump_predicate_definition_to_listing(predName, args, 
+    /* Check to see if the predicate definition conflicts or duplicates with
+     * an existing column variable or predicate definition -- set
+     * ignore_pred_def to true if it does.
+     */
+    if ( ! this.abort_parse )
+    {
+        if ( this.debug_level >= 2 )
+        {
+            dump_predicate_definition_to_listing(predName, args,
                                                      variable_length);
-	    }
-            
+        }
+
             if ( this.db.vl.matrixInVocabList(predName) )
             {
-                /* at this point in the parse, all mve's in the vocab list must 
-                 * be system mve's defined during the creation of the macshapa 
+                /* at this point in the parse, all mve's in the vocab list must
+                 * be system mve's defined during the creation of the macshapa
                  * database.
                  */
                 post_warning_message(this.l0_tok, PREDICATE_REDEFINITION_WARN,
                         "Predicate name matches that of a system column " +
                         "variable.  Predicate definition ignored.");
-                
+
                 ignore_pred_def = true;
             }
             else if ( this.db.vl.predInVocabList(predName) )
@@ -9318,7 +9319,7 @@ public class MacshapaODBReader
                     boolean fargNameMismatch = false;
                     int i = 0;
 
-                    while ( ( ! fargNameMismatch ) && 
+                    while ( ( ! fargNameMismatch ) &&
                             ( i < old_pve.getNumFormalArgs() ) )
                     {
                         if ( old_pve.getFormalArg(i).
@@ -9326,10 +9327,10 @@ public class MacshapaODBReader
                         {
                             fargNameMismatch = true;
                         }
-                        
+
                         i++;
                     }
-                    
+
                     if ( fargNameMismatch )
                     {
                         post_warning_message(this.l0_tok,
@@ -9343,26 +9344,26 @@ public class MacshapaODBReader
                 }
             }
         }
-        
-        if ( ( ! this.abort_parse ) && 
+
+        if ( ( ! this.abort_parse ) &&
              ( ! ignore_pred_def ) )
         {
             int i;
-            
+
             new_pve = new PredicateVocabElement(this.db, predName);
-            
+
             for ( i = 0; i < args.size(); i++ )
             {
                 fa = new UnTypedFormalArg(this.db, args.get(i));
                 new_pve.appendFormalArg(fa);
             }
-            
+
             new_pve.setVarLen(variable_length);
 
             this.db.addPredVE(new_pve);
-	}
+        }
 
-	return;
+        return;
 
     } /* MacshapaODBReader::parse_pred_def_alist() */
 
@@ -10460,7 +10461,7 @@ public class MacshapaODBReader
 	    }
 
 	    /* if we ran out of arguments before we ran out of formal 
-	     * arguments, must issue a warning && insert formal arguments 
+	     * arguments, must issue a warning and/or insert formal arguments
 	     * or a null value depending on the type of the spreadsheet 
 	     * variable.  
          *
@@ -10469,19 +10470,40 @@ public class MacshapaODBReader
          * sufficient to sinply ensure that there was at least one argument,
          * inserting a formal argument if there were no arguments at all.
          *
-         * This changes in OpenShapa, since we are building the cell,
-         * instead of a string that will be used to construct a cell.
-         * However, exactly how we will handle variable length matricies
-         * internally is TBD.  Thus for now thow a system error if the
-         * cell is in a variable length matrix datacolumn.
+         * This changes in OpenShapa, since we are building the cell.
+         * Here, we must fill out the cell with undefined data values, but
+         * only issue a warning message if the matrix is of fixed rather
+         * than variable length.
+         *
+         * Note that even in the case of a variable length matrix, we still
+         * require that the number of arguments in this cell not exceed the
+         * number of arguments in the spreadsheet variable declaration.  This
+         * is OK, since MacSHAPA (and OpenSHAPA) will create a new formal
+         * argument each time the maximum length of the matrix is increased
+         * by the user inserting a new argument on the fly.
+         *
+         * It should be mentioned in passing, that when we get to extending
+         * this code for OpenSHAPA databases, this code will become a bit
+         * more complicated, due to the possibility that undefined arguments
+         * will be typed.
 	     */
 	    if ( ! this.abort_parse )
 	    {
-            if ( ( s_var_type == MatrixVocabElement.MatrixType.MATRIX ) &&
-                 ( s_var_mve.getVarLen() ) )
+            if ( next_farg != null ) 
             {
-                throw new SystemErrorException(mName +
-                        "we don't handle var len matricies just yet.");
+                if ( s_var_type == MatrixVocabElement.MatrixType.MATRIX )
+                {
+                    if ( ! s_var_mve.getVarLen() )
+                    {
+                        post_warning_message(this.l0_tok,
+                                REQ_ARGS_MISSING_FROM_MATRIX_WARN, null);
+                    }
+                }
+                else if ( arg_number == 0 )
+                {
+                    post_warning_message(this.l0_tok,
+                            CELL_WITH_UNDEFINED_VALUE_WARN, null);
+                }
             }
 
             while ( next_farg != null )
@@ -25212,7 +25234,7 @@ public class MacshapaODBReader
               * argument list 
               */
         {
-	    arg_num = 0;
+            arg_num = 0;
             
             num_fargs = pve.getNumFormalArgs();
             varLen = pve.getVarLen();
@@ -25220,7 +25242,7 @@ public class MacshapaODBReader
             if ( num_fargs < 1 )
             {
                 throw new SystemErrorException(mName + 
-                        "pve or mve has no arguments?!?");
+                        "pve has no arguments?!?");
             }
         
             argList = new Vector<DataValue>();
@@ -25377,11 +25399,8 @@ public class MacshapaODBReader
                          ( pve.getVarLen() ) &&
                          ( pve.getSystem() ) )
                     {
-                        // TODO: Write code to support this -- for now 
-                        //       throw a system error.
-                        throw new SystemErrorException(mName +
-                                "Adding args to var len predicates isn't " +
-                                "supported yet.");
+                        pve = this.db.addArgToPredVE(pve.getID());
+                        num_fargs = pve.getNumFormalArgs();
                     }
                     
                     arg_num++;

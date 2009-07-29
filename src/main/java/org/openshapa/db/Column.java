@@ -404,8 +404,12 @@ public abstract class Column
      * that the user can recover from - i.e. if the column name contains invalid
      * characters, or if the column name alread exists in the database.
      */
-    public static boolean isValidColumnName(final Database d, final String name)
-    throws SystemErrorException, LogicErrorException {
+
+    public static boolean isValidColumnName(final Database d,
+                                            final String name)
+        throws SystemErrorException,
+               LogicErrorException
+    {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(Column.class);
@@ -432,7 +436,7 @@ public abstract class Column
 
         return true;
 
-    } /* Column::isValidColumnName90 */
+    } /* Column::isValidColumnName() */
 
     /**
      * Sets the name of the column

@@ -553,23 +553,37 @@ public class MacshapaDatabase extends Database {
      *
      * Changes:
      *
-     *    - None.
+     * <ul>
+     *   <li>
+     *      Modified the method to use addSystemPredVE() it the system
+     *      parameter is true.
+     *                                              JRM -- 7/26/09
+     *   </li>
+     * </ul>
      */
 
     private long definePVE(String name,
                            String arg1,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1);
+        
         pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -579,17 +593,24 @@ public class MacshapaDatabase extends Database {
                            String arg1,
                            String arg2,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2);
         pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -600,17 +621,24 @@ public class MacshapaDatabase extends Database {
                            String arg2,
                            String arg3,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3);
         pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -622,17 +650,24 @@ public class MacshapaDatabase extends Database {
                            String arg3,
                            String arg4,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4);
         pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -645,17 +680,24 @@ public class MacshapaDatabase extends Database {
                            String arg4,
                            String arg5,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5);
         pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -670,17 +712,25 @@ public class MacshapaDatabase extends Database {
                            String arg5,
                            String arg6,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6);
-        pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        pve.setVarLen(vLen);
+
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -696,17 +746,23 @@ public class MacshapaDatabase extends Database {
                            String arg6,
                            String arg7,
                            boolean vLen,
-                           boolean system) throws SystemErrorException {
+                           boolean system) 
+        throws SystemErrorException
+    {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-        pve.setVarLen(vLen);
-        if (system) {
-            pve.setSystem();
-        }
 
-        pve_id = this.addPredVE(pve);
+        if ( system )
+        {
+            pve.setSystem();
+            pve_id = this.addSystemPredVE(pve);
+        }
+        else
+        {
+            pve_id = this.addPredVE(pve);
+        }
 
         return pve_id;
 
@@ -733,7 +789,8 @@ public class MacshapaDatabase extends Database {
     protected long defineSystemPVE(String name,
                                    String arg1,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, vLen, true);
     }
 
@@ -741,7 +798,8 @@ public class MacshapaDatabase extends Database {
                                    String arg1,
                                    String arg2,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, vLen, true);
     }
 
@@ -750,7 +808,8 @@ public class MacshapaDatabase extends Database {
                                    String arg2,
                                    String arg3,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, vLen, true);
     }
 
@@ -760,7 +819,8 @@ public class MacshapaDatabase extends Database {
                                    String arg3,
                                    String arg4,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, vLen, true);
     }
 
@@ -771,7 +831,8 @@ public class MacshapaDatabase extends Database {
                                    String arg4,
                                    String arg5,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, vLen, true);
     }
 
@@ -783,7 +844,8 @@ public class MacshapaDatabase extends Database {
                                    String arg5,
                                    String arg6,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, vLen, true);
     }
 
@@ -796,7 +858,8 @@ public class MacshapaDatabase extends Database {
                                    String arg6,
                                    String arg7,
                                    boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7, vLen, true);
     }
 
@@ -821,7 +884,8 @@ public class MacshapaDatabase extends Database {
     protected long defineUserPVE(String name,
                                  String arg1,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, vLen, false);
     }
 
@@ -829,7 +893,8 @@ public class MacshapaDatabase extends Database {
                                  String arg1,
                                  String arg2,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, vLen, false);
     }
 
@@ -838,7 +903,8 @@ public class MacshapaDatabase extends Database {
                                  String arg2,
                                  String arg3,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, vLen, false);
     }
 
@@ -848,7 +914,8 @@ public class MacshapaDatabase extends Database {
                                  String arg3,
                                  String arg4,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, vLen, false);
     }
 
@@ -859,7 +926,8 @@ public class MacshapaDatabase extends Database {
                                  String arg4,
                                  String arg5,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, vLen, false);
     }
 
@@ -871,7 +939,8 @@ public class MacshapaDatabase extends Database {
                                  String arg5,
                                  String arg6,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, vLen, false);
     }
 
@@ -884,7 +953,8 @@ public class MacshapaDatabase extends Database {
                                  String arg6,
                                  String arg7,
                                  boolean vLen)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         return definePVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7, vLen, false);
     }
 

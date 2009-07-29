@@ -138,16 +138,6 @@
             ( |a float var|
               (
                 ( CELLS>
-                  (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| 10.000000 )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| 0.000000 )
-                  )
                 )
               )
             )

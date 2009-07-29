@@ -1,0 +1,14 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  54 (Line 88:11): Encountered an atom in the spreadsheet variable definitions list.  The atom was discarded.
+
+
+      WARNING  53 (Line 89:13): Encountered a list that is not a spreadsheet variable definition in the spreadsheet variables definitions list.  List discarded.
+
+
+      ERROR  4 (Line 178:0): Encountered end of file unexpectedly.
+        EOF encountered in the spreadsheet variable definitions list.
+
+Unable to continue parse -- Aborting...

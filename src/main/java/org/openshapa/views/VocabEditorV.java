@@ -301,7 +301,16 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
-                db.removeVE(view.getModel().getID());
+
+                /* This code used to call db.removeVocabElement().  I replaced the call
+                 * with one to db.removePredVE() and modified db.removeVocabElement()
+                 * to throw a system error unconditionally.  Do not change it
+                 * back, as matrix vocabulary elements MUST NOT be deleted
+                 * directly from the data base.  Doing so will corrupt it.
+                 *
+                 *                                      JRM -- 7/26/09
+                 */
+                db.removePredVE(view.getModel().getID());
                 verticalFrame.remove(view);
                 veViews.remove(view);
             }
@@ -311,7 +320,38 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
                     VocabElement ve = vev.getModel();
                     if (ve.getID() == DBIndex.INVALID_ID) {
-                        VocabList.isValidElement(db.getVocabList(), ve);
+
+                        /* This code used to call db.getVocabList().  As
+                         * that method exposes internal structures to the
+                         * outside world, it should not exist, and I have
+                         * modified it to throw a system error unconditionally.
+                         *
+                         * As best I can tell, the objective of the old code
+                         * is to determine whether the name of the vocab
+                         * element that is about to be inserted is unique, and
+                         * if not, to throw a logic error exception.
+                         *
+                         * I have replaced the old call:
+                         *
+                         * VocabList.isValidElement(db.getVocabList(), ve);
+                         *
+                         * with new code that I believe serves the same purpose.
+                         *
+                         * Note that calling both db.colNameInUse() and
+                         * db.predNameInUse() is redundant at present, as
+                         * predicates and matricies share the same name space.
+                         * However this could change, so best program
+                         * defensively.
+                         *
+                         *                                    JRM -- 7/26/09
+                         */
+                        if ( ( db.colNameInUse(ve.getName()) ||
+                             ( db.predNameInUse(ve.getName()) ) ) ) {
+
+                            // the string passed to the exception probably
+                            // should be modified to allow localization.
+                            throw new LogicErrorException("ve name in use");
+                        }
                         long id = db.addVocabElement(ve);
                         vev.setModel(db.getVocabElement(id));
 

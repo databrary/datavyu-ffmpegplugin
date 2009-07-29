@@ -1,0 +1,24 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  14 (Line 96:17): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        A CELLS> attribute appears not to contain a value.  Attribute ignored.
+
+
+      WARNING  22 (Line 103:19): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of a CELLS> attribute must be a list of spreadsheet variable cells.  Attribute ignored.
+
+
+      WARNING  16 (Line 108:17): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered a CELLS> attribute.
+
+
+      WARNING  16 (Line 155:17): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered a CELLS> attribute.
+
+
+      ERROR  4 (Line 181:0): Encountered end of file unexpectedly.
+        EOF in a CELLS> attribute.
+
+Unable to continue parse -- Aborting...

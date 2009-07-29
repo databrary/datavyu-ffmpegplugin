@@ -76,9 +76,8 @@ public abstract class Database
     /*************************** Constructors: *******************************/
     /*************************************************************************/
 
+    // Database()
     /**
-     * Database()
-     *
      * Constructor for Database.  Sets up data structures used by all flavors
      * of databases.
      *                                               -- 4/30/07
@@ -112,9 +111,8 @@ public abstract class Database
 
     /*** Version Reporting ***/
 
+    // getType()
     /**
-     * getType()
-     *
      * Gets the database type string<br>
      * (eg ODB File)
      *
@@ -125,9 +123,8 @@ public abstract class Database
 
     public abstract String getType();
 
+    // getVersion()
     /**
-     * getVersion()
-     *
      * Gets the database version number<br>
      * (eg 2.1)
      *
@@ -266,9 +263,8 @@ public abstract class Database
     /***************************** Overrides: ********************************/
     /*************************************************************************/
 
+    // toDBString()
     /**
-     * toDBString()
-     *
      * Returns a String representation of the Database for debugging or testing.
      *
      * @return the string value.
@@ -278,6 +274,7 @@ public abstract class Database
      *    - None.
      *
      */
+
     public String toDBString()
     {
         String s;
@@ -290,9 +287,9 @@ public abstract class Database
 
     } /* Database::toDBString() */
 
+
+    // toString()
     /**
-     * toString()
-     *
      * Returns a String representation of the Database for display or testing.
      *
      * @return the string value.
@@ -302,6 +299,7 @@ public abstract class Database
      *    - None.
      *
      */
+
     public String toString()
     {
         String s;
@@ -329,9 +327,8 @@ public abstract class Database
     /***************************** Accessors: ********************************/
     /*************************************************************************/
 
+    // getCurUID()
     /**
-     * getCurUID()
-     *
      * Get the current user ID.
      *
      *                -- 4/11/07
@@ -350,9 +347,8 @@ public abstract class Database
     } /* Database::getCurUID() */
 
 
+    // getDescription()
     /**
-     * getDescription()
-     *
      * Get the description of the database.
      *
      *                     -- 4/10/07
@@ -378,9 +374,9 @@ public abstract class Database
 
     } /* Database::geDescription() */
 
+
+    // getName()
     /**
-     * getName()
-     *
      * Get the name of the database.
      *
      *                     -- 4/10/07
@@ -406,9 +402,9 @@ public abstract class Database
 
     } /* Database::getName() */
 
+
+    // getTemporalOrdering()
     /**
-     * getTemporalOrdering()
-     *
      * Gets the current value of the temporal ordering flag.
      *
      *                               -- 3/20/08
@@ -427,16 +423,36 @@ public abstract class Database
 
     } /* Database::getTemporalOrdering() */
 
+    // getVocabList()
     /**
-     * @return The vocab list used for this database.
+     * This method shouldn't exist as it is currently written as it gives
+     * the caller direct access to the data base's copy of the vocab list,
+     * and allows the caller to corrupt the database.
+     *
+     * I am modifying the method to throw a system error unconditionally.
+     *
+     *                                      JRM -- 7/26/09
+     *
+     * @return throws system error unconditionally.
      */
-    public VocabList getVocabList() {
-        return this.vl;
+    public VocabList getVocabList()
+        throws SystemErrorException
+    {
+        final String mName = "Database::removeVocabElement(targetID): ";
+
+        throw new SystemErrorException(mName + "This routine allows the user " +
+                "direct access to internal database structures.  It should " +
+                "not exist and must not be used.  I am leaving it in place " +
+                "to prevent the creation of something similar in the " +
+                "future. -- JRM");
+
+        // This is the old body of the method.  DO NOT re-enable it.
+        // return this.vl;
     }
 
+    
+    // getTicks()
     /**
-     * getTicks()
-     *
      * Gets the ticks per second
      *
      * @return ticks per second
@@ -452,9 +468,9 @@ public abstract class Database
 
     } /* Datebase::getTicks() */
 
+
+    // setDescription()
     /**
-     * setDescription()
-     *
      * Set the description of the database.  Note that null is a valid
      * new description, as the database description is optional.
      *
@@ -483,9 +499,8 @@ public abstract class Database
     } /* Database::seDescription() */
 
 
+    // setName()
     /**
-     * setName()
-     *
      * Set the description of the database.  Note that null is a valid
      * new description, as the database description is optional.
      *
@@ -521,9 +536,8 @@ public abstract class Database
     } /* Database::setName() */
 
 
+    // setTemporalOrdering()
     /**
-     * setTemporalOrdering()
-     *
      * Set the current value of the temporal ordering flag.  If the flag is
      * switched from false to true, sort all the columns.
      *
@@ -555,9 +569,8 @@ public abstract class Database
     } /* Database::setTemporalOrdering() */
 
 
+    // setTicks()
     /**
-     * setTicks()
-     *
      * Sets the ticks per second
      *
      * @param tps ticks per second
@@ -587,9 +600,8 @@ public abstract class Database
     } /* Datebase::setTicks() */
 
 
+    // getUseStartTime()
     /**
-     * useStartTime()
-     *
      * Gets the use start time flag
      *
      * @return true if we are to use a start time
@@ -599,15 +611,15 @@ public abstract class Database
      *      - None.
      */
 
-    public boolean useStartTime()
+    public boolean getUseStartTime()
     {
         return (this.useStartTime);
 
-    } /* Database::useStartTime() */
+    } /* Database::getUseStartTime() */
 
+
+    // setUseStartTime()
     /**
-     * setUseStartTime()
-     *
      * Sets the start time flag
      *
      * @param useStartTime the use start time flag value
@@ -624,9 +636,8 @@ public abstract class Database
     } /* Database::useStartTime() */
 
 
+    // getStartTime()
     /**
-     * getStartTime()
-     *
      * Gets the start time
      * @return the start time value
      *
@@ -641,9 +652,9 @@ public abstract class Database
 
     } /* Database::getStarTime() */
 
+
+    // setStartTime()
     /**
-     * setStartTime()
-     *
      * Sets the start time
      * @param startTime the start time
      *
@@ -698,9 +709,8 @@ public abstract class Database
     /*                                                                       */
     /*************************************************************************/
 
+    // appendCell()
     /**
-     * appendCell()
-     *
      * Append a copy of the supplied cell to the column indicated in the
      * itsColID field of the cell.  The cell must not have an ID assigned,
      * and must be of a type congruent with the type of the column.  In the
@@ -790,9 +800,8 @@ public abstract class Database
     } /* Database::appendCell(cell) */
 
 
+    // insertCell()
     /**
-     * insertCell()
-     *
      * Insert a copy of the supplied cell to the column indicated in the
      * itsColID field of the cell at the specified ord.
      *
@@ -892,9 +901,8 @@ public abstract class Database
     } /* Database::insertCell(cell, ord) */
 
 
+    // getCell(id)
     /**
-     * getCell(id)
-     *
      * Given a cell id, look it up in the index, and return copy.  Throw a
      * system error exception if no such cell exists.
      *
@@ -947,9 +955,8 @@ public abstract class Database
     } /* Database::getCell(id) */
 
 
+    // getCell(colID, ord)
     /**
-     * getCell(colID, ord)
-     *
      * Given a column id, and a cell ord, look it up the cell at that ord in
      * the target column, and return copy.  Throw a system error exception
      * if no such cell exists.
@@ -1000,9 +1007,8 @@ public abstract class Database
     } /* Database::getCell(colID, ord) */
 
 
+    // replaceCell()
     /**
-     * replaceCell()
-     *
      * Replace the old version of a cell with the new one supplied as a
      * parameter.
      *
@@ -1130,9 +1136,8 @@ public abstract class Database
     } /* Database::replaceCell(cell) */
 
 
+    // removeCell()
     /**
-     * removeCell()
-     *
      * Remove the specified cell from its column and discard it.
      *
      *                                           -- 8/31/07
@@ -1284,9 +1289,8 @@ public abstract class Database
     /*                                                                       */
     /*************************************************************************/
 
+    // addColumn()
     /**
-     * addColumn()
-     *
      * Insert a copy of the supplied Column into the column list, and return
      * its ID.
      *
@@ -1348,9 +1352,8 @@ public abstract class Database
     } /* Database::addColumn(col) */
 
 
+    // addDataColumn()
     /**
-     * addDataColumn()
-     *
      * Given an instance of DataColumn with a valid name and type set, but
      * no associated MatrixVocabElement or ID, construct an initial
      * MatrixVocabElement for the DataColumn, and insert it into the vocab
@@ -1443,9 +1446,8 @@ public abstract class Database
     } /* Database::addDataColumn(dc) */
 
 
+    // addReferenceColumn()
     /**
-     * addReferenceColumn()
-     *
      * Given an instance of a ReferenceColumn with a valid name, insert it into
      * the column list (and in passing, the index), and return the newly
      * assigned ID of the column.
@@ -1498,9 +1500,8 @@ public abstract class Database
     } /* Database::addReferenceColumn(rc) */
 
 
+    // colNameInUse(name)
     /**
-     * colNameInUse(name)
-     *
      * Test to see if a column name is in use.  Return true if it is, and false
      * if it isn't.  Throw a system error if the name is invalid.
      *
@@ -1536,9 +1537,8 @@ public abstract class Database
     } /* DataBase::colNameInUse(name) */
 
 
+    // getColumn(id)
     /**
-     * getColumn(id)
-     *
      * Given a column ID, try to look up the associated column in the
      * column list, and return a copy of its DataColumn or ReferenceColumn
      * structure, but with itsCells set to null.
@@ -1579,9 +1579,8 @@ public abstract class Database
     } /* Database::getColumn(id) */
 
 
+    // getColumn(name)
     /**
-     * getColumn(name)
-     *
      * Given a column name, try to look up the associated column in the
      * column list, and return a copy of its DataColumn or ReferenceColumn
      * structure, but with itsCells set to null.
@@ -1622,9 +1621,8 @@ public abstract class Database
     } /* Database::getColumn(name) */
 
 
+    // getDataColumn(id)
     /**
-     * getDataColumn(id)
-     *
      * Given a data column ID, try to look up the associated data column in the
      * column list, and return a copy of its DataColumn structure, but with
      * itsCells set to null.
@@ -1660,9 +1658,8 @@ public abstract class Database
     } /* Database::getDataColumn(id) */
 
 
+    // getDataColumn(name)
     /**
-     * getDataColumn(name)
-     *
      * Given a data column name, try to look up the associated dat column in the
      * column list, and return a copy of its DataColumn structure, but with
      * itsCells set to null.
@@ -1698,9 +1695,8 @@ public abstract class Database
     } /* Database::getDataColumn(name) */
 
 
+    // getReferenceColumn(id)
     /**
-     * getReferenceColumn(id)
-     *
      * Given a reference column ID, try to look up the associated reference
      * column in the column list, and return a copy of its ReferenceColumn
      * structure, but with itsCells set to null.
@@ -1736,9 +1732,8 @@ public abstract class Database
     } /* Database::getDataColumn(id) */
 
 
+    // getReferenceColumn(name)
     /**
-     * getReferenceColumn(name)
-     *
      * Given a reference column name, try to look up the associated refernce
      * column in the column list, and return a copy of its ReferenceColumn
      * structure, but with itsCells set to null.
@@ -1774,9 +1769,8 @@ public abstract class Database
     } /* Database::getDataColumn(name) */
 
 
+    // getColumns()
     /**
-     * getColumns()
-     *
      * Return a vector containing copies of the DataColumn or ReferenceColumn
      * classes of each column in the column list, but with the itsCells fields
      * set to null.
@@ -1801,9 +1795,8 @@ public abstract class Database
     } /* Database::getColumns() */
 
 
+    // getDataColumns()
     /**
-     * getDataColumns()
-     *
      * Return a vector containing copies of the DataColumn classes of each
      * data column in the column list, but with the itsCells fields
      * set to null.
@@ -1828,9 +1821,8 @@ public abstract class Database
     } /* Database::getDataColumns() */
 
 
+    // getReferenceColumns()
     /**
-     * getReferenceColumns()
-     *
      * Return a vector containing copies of the ReferenceColumn classes of each
      * reference column in the column list, but with the itsCells fields
      * set to null.
@@ -1855,9 +1847,8 @@ public abstract class Database
     } /* Database::getReferenceColumns() */
 
 
+    // removeColumn()
     /**
-     * removeColumn()
-     *
      * Given the ID of a column, attempt to remove it from the column list
      * (and thereby from the database as a whole).  Note that a column must be
      * empty (i.e. have no cells), before it can be removed.
@@ -1929,9 +1920,8 @@ public abstract class Database
     } /* Database::removeColumn(id) */
 
 
+    // replaceColumn()
     /**
-     * replaceColumn()
-     *
      * Given an instance of DataColumn or ReferenceColumn with ID matching
      * that of a column in the column list, replace the current verion of
      * the (Data or Reference) column with a copy of the supplied (Data or
@@ -2086,15 +2076,14 @@ public abstract class Database
     } /* Database::replaceColumn(newCol) */
 
 
+    // toMODBFile_includeDataColumnInUserSection()
     /**
-     * toMODBFile_includeDataColumnInUserSection()
-     *
      * Some types of databases construct columns that are not directly created
      * by the user, and store them in the column list.  This method exists to
      * allow these databases to prevent such columns from appearing in the
      * user section of a MacSHAPA ODB file.
      *
-     * Such database should override this method.
+     * Such databases should override this method.
      *
      *                                           -- 7/5/09
      * Changes:
@@ -2109,13 +2098,13 @@ public abstract class Database
 
     } /* toMODBFile_includeDataColumnInUserSection() */
 
+
     /*************************************************************************/
     /************************ Listener Management ****************************/
     /*************************************************************************/
 
+    // cascadeEnd()
     /**
-     * cascadeEnd()
-     *
      * Note the end of a cascade of changes.  Note that such cascades
      * may be nested.
      *                                           -- 2/11/08
@@ -2135,9 +2124,8 @@ public abstract class Database
     } /* Database::cascadeEnd() */
 
 
+    // cascadeStart()
     /**
-     * cascadeStart()
-     *
      * Note the beginning of a cascade of changes.  Note that such cascades
      * may be nested.
      *                                           -- 2/11/08
@@ -2157,9 +2145,8 @@ public abstract class Database
     } /* Database::cascadeStart() */
 
 
+    // deregisterCascadeListener()
     /**
-     * deregisterCascadeListener()
-     *
      * Deregister a cascade listener.  The listener must implement the
      * ExternalCascadeListener interface, and must be registered with the
      * Database on entry.
@@ -2183,9 +2170,8 @@ public abstract class Database
     } /* Database::deregisterCascadeListener() */
 
 
+    // deregisterInternalCascadeListener()
     /**
-     * deregisterInternalCascadeListener()
-     *
      * Deregister an internal cascade listener.  The listener must implement the
      * ExternalCascadeListener interface, and must be registered with the
      * Database on entry.
@@ -2209,9 +2195,8 @@ public abstract class Database
     } /* Database::deregisterInternalCascadeListener() */
 
 
+    // deregisterColumnListListener()
     /**
-     * deregisterColumnListListener()
-     *
      * Deregister a ColumnList listener.  The listener must implement the
      * ExternalColumnListListener interface, and must be registered with the
      * column list on entry.
@@ -2235,9 +2220,8 @@ public abstract class Database
     } /* Database::deregisterColumnListListener() */
 
 
+    // deregisterDataCellListener()
     /**
-     * deregisterDataCellListener()
-     *
      * Deregister a DataCell listener.  The listener must implement the
      * ExternalDataCellListener interface, and must be registered with the
      * target on entry.
@@ -2274,9 +2258,8 @@ public abstract class Database
     } /* Database::deregisterDataCellListener() */
 
 
+    // deregisterDataColumnListener()
     /**
-     * deregisterDataColumnListener()
-     *
      * Deregister a DataColumn listener.  The listener must implement the
      * ExternalDataColumnListener interface, and must be registered with the
      * target on entry.
@@ -2313,9 +2296,8 @@ public abstract class Database
     } /* Database::deregisterDataColumnListener() */
 
 
+    // deregisterVocabElementListener()
     /**
-     * deregisterVocabElementListener()
-     *
      * Deregister a vocab element listener.  The listener must implement the
      * ExternalVocabElementListener interface, and must be registered with the
      * target on entry.
@@ -2352,9 +2334,8 @@ public abstract class Database
     } /* Database::deregisterVocabElementListener() */
 
 
+    // deregisterVocabListListener()
     /**
-     * deregisterVocabListListener()
-     *
      * Deregister a vocab list change listener.  The listener must implement the
      * ExternalVocabListListener interface, and must be registered with the
      * vocab list on entry.
@@ -2378,9 +2359,8 @@ public abstract class Database
     } /* Database::deregisterVocabListListener() */
 
 
+    // registerCascadeListener()
     /**
-     * registerCascadeListener()
-     *
      * Register a cascade listener.  The listener must implement the
      * ExternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
@@ -2404,9 +2384,8 @@ public abstract class Database
     } /* Database::registerCascadeListener() */
 
 
+    // registerColumnListListener()
     /**
-     * registerColumnListListener()
-     *
      * Register a cascade listener.  The listener must implement the
      * ExternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
@@ -2430,9 +2409,8 @@ public abstract class Database
     } /* Database::registerColumnListListener() */
 
 
+    // registerDataCellListener()
     /**
-     * registerDataCellListener()
-     *
      * Register a DataCell listener.  The listener must implement the
      * ExternalDataCellListener interface.  The listener will be informed
      * of changes in and deletions of data cells in the target column.
@@ -2469,9 +2447,8 @@ public abstract class Database
     } /* Database::registerDataCellListener() */
 
 
+    // registerDataColumnListener()
     /**
-     * registerDataColumnListener()
-     *
      * Register a DataColumn listener.  The listener must implement the
      * ExternalDataColumnListener interface.  The listener will be informed
      * of changes in and deletions of data cells in the target column.
@@ -2508,9 +2485,8 @@ public abstract class Database
     } /* Database::registerDataColumnListener() */
 
 
+    // registerInternalCascadeListener()
     /**
-     * registerInternalCascadeListener()
-     *
      * Register an internal cascade listener.  The listener must implement the
      * InternalCascadeListener interface.  The listener will be informed
      * of the beginning and end of cascades of changes.
@@ -2534,9 +2510,8 @@ public abstract class Database
     } /* Database::registerInternalCascadeListener() */
 
 
+    // registerVocabElementListener()
     /**
-     * registerVocabElementListener()
-     *
      * Register a vocab element listener.  The listener must implement the
      * ExternalVocabElementListener interface.  The listener will be informed
      * of changes in and deletions of vocab elements.
@@ -2573,9 +2548,8 @@ public abstract class Database
     } /* Database::registerVocabElementListener() */
 
 
+    // registerVocabListListener()
     /**
-     * registerVocabListListener()
-     *
      * Register a vocab list listener.  The listener must implement the
      * ExternalVocabListListener interface.  The listener will be informed
      * of the insertion and deletion of vocab element into and from the
@@ -2643,7 +2617,7 @@ public abstract class Database
     /* more general methods are absolutely necessary.  This will make it     */
     /* easier to put predicates and matricies (i.e. column variables) in     */
     /* separate name spaces should we ever wish to.                          */
-    /*                                                   -- 6/11/07       */
+    /*                                                      -- 6/11/07       */
     /*                                                                       */
     /* MatrixVocabElement based methods:                                     */
     /*                                                                       */
@@ -2661,6 +2635,7 @@ public abstract class Database
     /* PredicateVocabElement based methods:                                  */
     /*                                                                       */
     /*      addPredVE(pve)                                                   */
+    /*      addSystemPredVE(pve) -- internal use only                        */
     /*      getPredVE(id)                                                    */
     /*      getPredVE(name)                                                  */
     /*      getPredVEs()                                                     */
@@ -2673,8 +2648,11 @@ public abstract class Database
     /*                                                                       */
     /* VocabElement based methods (use only when necessary):                 */
     /*                                                                       */
+    /*      addVocabElement(ve)                                              */
     /*      getVocabElement(id)                                              */
     /*      getVocabElement(name)                                            */
+    /*      replaceVocabElement(ve)                                          */
+    /*      removeVocabElement(id) -- scare crow -- should not exist         */
     /*      vocabElementExists(id)                                           */
     /*      vocabElementExists(name)                                         */
     /*                                                                       */
@@ -2682,9 +2660,8 @@ public abstract class Database
 
     /*** MatrixVocabElement methods ***/
 
+    // addMatrixVE(mve)
     /**
-     * addMatrixVE(mve)
-     *
      * Given a MatrixVocabElement, make a copy, add the copy to the
      * vocab list and index, and return the id assigned to the copy.
      * Throws a system error if any errors are detected.
@@ -2701,7 +2678,8 @@ public abstract class Database
      */
 
     private long addMatrixVE(MatrixVocabElement mve)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Database::addMatrixVE(mve): ";
         MatrixVocabElement local_mve = null;
 
@@ -2723,9 +2701,8 @@ public abstract class Database
     } /* Database::addMatrixVE(mve) */
 
 
+    // getMatrixVE(id)
     /**
-     * getMatrixVE(id)
-     *
      * Given an matrix vocab element ID, return a copy of the associated
      * MatrixVocabElement.  Throws a system error if no such
      * MatrixVocabElement exists.
@@ -2756,9 +2733,8 @@ public abstract class Database
     } /* Database::getMatrixVE(id) */
 
 
+    // getMatrixVE(name)
     /**
-     * getMatrixVE(name)
-     *
      * Given an matrix vocab element name, return a copy of the associated
      * MatrixVocabElement.  Throws a system error if no such
      * MatrixVocabElement exists.
@@ -2789,9 +2765,8 @@ public abstract class Database
     } /* Database::getMatrixVE(name) */
 
 
+    // getMatrixVEs()
     /**
-     * getMatrixVEs()
-     *
      * If the vocab list contains any non-system matricies of type
      * matrixType.MATRIX, construct a vector containing copies of all such
      * entries, and return it.  If there are no such entries, return null.
@@ -2806,13 +2781,14 @@ public abstract class Database
     public java.util.Vector<MatrixVocabElement> getMatrixVEs()
         throws SystemErrorException
     {
+
         return this.vl.getMatricies();
-    }
+    
+    } /* Database::getMatrixVEs() */
 
 
+    // matrixNameInUse(name)
     /**
-     * matrixNameInUse(name)
-     *
      * Given a valid matrix (i.e. column variable) name, return true if it is
      * in use, and false if it is not.  Throws a system error on a null or
      * invalid name.
@@ -2826,13 +2802,14 @@ public abstract class Database
     public boolean matrixNameInUse(String matrixName)
         throws SystemErrorException
     {
+
         return this.vl.inVocabList(matrixName);
-    }
+    
+    } /* Database::matrixNameInUse() */
 
 
+    // matrixVEExists(id)
     /**
-     * matrixVEExists(id)
-     *
      * Given a matrix vocab element id, return true if the vocab list contains
      * a MatrixVocabElement with that id, and false otherwise.
      *
@@ -2846,13 +2823,14 @@ public abstract class Database
     public boolean matrixVEExists(long targetID)
         throws SystemErrorException
     {
+
         return this.vl.matrixInVocabList(targetID);
-    }
+    
+    } /* Database::matrixVEExists(ID) */
 
 
+    // matrixVEExists(name)
     /**
-     * matrixVEExists(name)
-     *
      * Given a matrix vocab element name, return true if the vocab list contains
      * a MatrixVocabElement with that name, and false otherwise.
      *
@@ -2866,13 +2844,14 @@ public abstract class Database
     public boolean matrixVEExists(String targetName)
         throws SystemErrorException
     {
+
         return this.vl.matrixInVocabList(targetName);
-    }
+    
+    } /* Database::matrixVEExists(name) */
 
 
+    // removeMatrixVE(id)
     /**
-     * removeMatrixVE(id)
-     *
      * Given a matrix vocab element id, remove the associated instance of
      * MatrixVocabElement from the vocab list.  Also delete the
      * MatrixVocabElement from the index, along with all of its formal
@@ -2904,9 +2883,8 @@ public abstract class Database
     } /* Database::removeMatrixVE(id) */
 
 
-    /**
-     * replaceMatrixVE(mve)
-     *
+    // replaceMatrixVE(mve)
+    /***
      * Given a (possibly modified) copy of a MatrixVocabElement that exists in
      * the vocab list, replace the old copy with a copy of the supplied
      * MatrixVocabElement.  The old version is matched with the new via id.
@@ -2917,7 +2895,14 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None.
+     * <ul>
+     *   <li>
+     *      Added test to see if the target mve is a system mve, and throw a
+     *      system error if it is.  Need this to prevent the UI code from
+     *      modifying system matricies.
+     *                                              JRM -- 7/25/09
+     *   </li>
+     * </ul>
      */
 
     public void replaceMatrixVE(MatrixVocabElement mve)
@@ -2930,6 +2915,23 @@ public abstract class Database
         {
             throw new SystemErrorException(mName + "mve == null");
         }
+        else if ( mve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied mve is marked as system");
+        }
+        else if ( mve.getID() == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "mve has invalid ID");
+        }
+        else if ( ! this.vl.matrixInVocabList(mve.getID()) )
+        {
+            throw new SystemErrorException(mName + "target mve doesn't exist");
+        }
+        else if ( this.vl.getMatrixVocabElement(mve.getID()).getSystem() )
+        {
+            throw new SystemErrorException(mName + "target mve is a system mve");
+        }
         else if ( (local_mve = new MatrixVocabElement(mve)) == null )
         {
             throw new SystemErrorException(mName + "couldn't copy mve");
@@ -2941,54 +2943,94 @@ public abstract class Database
 
     } /* Database::replaceMatrixVE(mve) */
 
-    public void replaceVocabElement(final VocabElement ve)
-    throws SystemErrorException {       
-        try {
-            if (ve == null) {
-                throw new SystemErrorException("Cant to replace vocab element");
-            }
-
-            VocabElement local_mve = (VocabElement) ve.clone();
-            this.vl.replaceVocabElement(local_mve);
-
-        } catch (CloneNotSupportedException e) {
-            throw new SystemErrorException("Cant to replace vocab element");
-        }
-    }
-
-
-    /**
-     * Adds a vocab element to the database.
-     *
-     * @param ve The vocab element to add to the database.
-     * @return The ID of the vocab element within the database.
-     * @throws org.openshapa.db.SystemErrorException If unable to add
-     * the vocab element to the database.
-     */
-    public long addVocabElement(final VocabElement ve)
-    throws SystemErrorException {
-        try {
-            // Throw an error if the vocab element is null.
-            if (ve == null) {
-                throw new SystemErrorException("Unable to add ve - it is null");
-            }
-
-            // Create a copy of the vocab element and add it to the database
-            //vocab.
-            VocabElement copy = (VocabElement) ve.clone();
-            this.vl.addElement(copy);
-            return copy.getID();
-        } catch (CloneNotSupportedException e) {
-            throw new SystemErrorException(e.toString());
-        }
-    }
-
 
     /*** PredicateVocabElement methods ***/
 
+    // addArgToPredVE()
     /**
-     * addPredVE(mve)
+     * Add a new argument to the target predicate vocab element, and return a
+     * copy of the revised pve.  This version of the method adds an untyped
+     * formal arguement unconditionally -- we will probably want a version
+     * that allows the user to specify the type of the formal argument, and/or
+     * suggest a name.  However, this version should be sufficient for now.
      *
+     * In the case of normal predicates, this is a convenience method, however
+     * in the case of variable length system predicates, it is absolutely
+     * essential, as there is no other way for code above the level of the
+     * database to add new arguements to a system variable length predicate.
+     *
+     *                                              JRM -- 7/26/09
+     *
+     * @param targetID id of the variable length predicate vocab element to
+     *          which a new argument is to be added.
+     *
+     * @return copy of the predicate vocab elememnt to which the new argument
+     *          has been added.
+     *
+     * @throws org.openshapa.db.SystemErrorException if the target pve doesn't
+     *          exits, is not variable length, or on any other error.
+     */
+
+    public PredicateVocabElement addArgToPredVE(long targetID)
+        throws SystemErrorException
+    {
+        final String mName = "Database::addArgToPredVE(id): ";
+        String new_farg_name = null;
+        int i = 0;
+        UnTypedFormalArg new_farg = null;
+        PredicateVocabElement old_pve = null;
+        PredicateVocabElement local_pve = null;
+        PredicateVocabElement new_pve = null;
+
+        if ( ! this.vl.predInVocabList(targetID) )
+        {
+            throw new SystemErrorException(mName + "target pve doesn't exist");
+        }
+
+        /* old_pve is the data base's internal copy -- be careful
+         * not to change it.
+         */
+        old_pve = this.vl.getPredicateVocabElement(targetID);
+
+        if ( ! old_pve.getVarLen() )
+        {
+            throw new SystemErrorException(mName +
+                                           "target pve isn't variable length");
+        }
+
+        /* make a copy of the database's version of the pve, so we can add
+         * a new argument to it, and then replace the old version with the
+         * new.  Must do this as otherwise we will fail to trigger the
+         * listeners so that they can update the database to reflect the
+         * change.
+         */
+        local_pve = new PredicateVocabElement(old_pve);
+
+        do
+        {
+            new_farg_name = "<arg" + i + ">";
+            i++;
+
+        } while ( ! local_pve.fArgNameIsUnique(new_farg_name));
+
+        new_farg = new UnTypedFormalArg(this, new_farg_name);
+
+        local_pve.appendFormalArg(new_farg, local_pve.getSystem());
+
+        this.vl.replaceVocabElement(local_pve);
+
+        /* new_pve is the data base's internal copy -- be careful
+         * not to change it or return it.
+         */
+        new_pve = this.vl.getPredicateVocabElement(targetID);
+
+        return new PredicateVocabElement(new_pve);
+
+    } /* Database::addArgToPredVE(id) */
+
+
+    // addPredVE(pve)
+    /**
      * Given a PredicateVocabElement, make a copy and add the copy to the
      * vocab list and index.  Return the ID assigned to the copy.
      * Throws a system error if any errors are detected.
@@ -2997,17 +3039,32 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None.
+     *
+     * <ul>
+     *   <li>
+     *      Added test to see if the new pve is a system pve, and throw a
+     *      system error if it is.  Need this to prevent the insertion of
+     *      system predicates from outside the database.
+     *
+     *                                              JRM -- 7/25/09
+     *   </li>
+     * </ul>
      */
 
     public long addPredVE(PredicateVocabElement pve)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Database::addPredVE(pve): ";
         PredicateVocabElement local_pve = null;
 
         if ( pve == null )
         {
             throw new SystemErrorException(mName + "null pve.");
+        }
+        else if ( pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve is marked as system");
         }
         else if ( (local_pve = new PredicateVocabElement(pve)) == null )
         {
@@ -3023,9 +3080,57 @@ public abstract class Database
     } /* Database::addPredVE(mve) */
 
 
+    // addSystemPredVE(pve)
     /**
-     * getPredVE(id)
+     * Given a system PredicateVocabElement, make a copy and add the copy
+     * to the vocab list and index.  Return the ID assigned to the copy.
+     * Throws a system error if any errors are detected.
      *
+     * For now, at least, system predicates will always be added by the
+     * database itself.  Thus this method should remain protected.
+     *
+     *                                               -- 7/26/09
+     *
+     * Changes:
+     *
+     * <ul>
+     *   <li>
+     *      None
+     *   </li>
+     * </ul>
+     */
+
+    protected long addSystemPredVE(PredicateVocabElement pve)
+        throws SystemErrorException
+    {
+        final String mName = "Database::addSystemPredVE(pve): ";
+        PredicateVocabElement local_pve = null;
+
+        if ( pve == null )
+        {
+            throw new SystemErrorException(mName + "null pve.");
+        }
+        else if ( ! pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve not marked as system");
+        }
+        else if ( (local_pve = new PredicateVocabElement(pve)) == null )
+        {
+            throw new SystemErrorException(mName + "couldn't copy pve");
+        }
+        else
+        {
+            this.vl.addElement(local_pve);
+        }
+
+        return local_pve.getID();
+
+    } /* Database::addSystemPredVE(mve) */
+
+
+    // getPredVE(id)
+    /**
      * Given an predicate vocab element ID, return a copy of the associated
      * PredicateVocabElement.  Throws a system error if no such
      * PredicateVocabElement exists.
@@ -3034,7 +3139,11 @@ public abstract class Database
      *
      * Changes:
      *
-     *    - None.
+     * <ul>
+     *   <li>
+     *      None.
+     *   </li>
+     * </ul>
      */
 
     public PredicateVocabElement getPredVE(long targetID)
@@ -3056,9 +3165,8 @@ public abstract class Database
     } /* Database::getPredVE(id) */
 
 
+    // getPredVE(name)
     /**
-     * getPredVE(name)
-     *
      * Given an predicate vocab element name, return a copy of the associated
      * PredicateVocabElement.  Throws a system error if no such
      * PredicateVocabElement exists.
@@ -3089,9 +3197,8 @@ public abstract class Database
     } /* Database::getPredVE(name) */
 
 
+    // getPredVEs()
     /**
-     * getPredVEs()
-     *
      * If the vocab list contains any non-system predicates, construct a vector
      * containing copies of all such entries, and return it.  If there are no
      * such entries, return null.
@@ -3110,9 +3217,8 @@ public abstract class Database
     }
 
 
+    // predNameInUse(name)
     /**
-     * predNameInUse(name)
-     *
      * Given a valid predicate name, return true if it is in use, and false
      * if it is not.  Throws a system error on a null or invalid name.
      *
@@ -3130,9 +3236,8 @@ public abstract class Database
     }
 
 
+    // predVEExists(id)
     /**
-     * predVEExists(id)
-     *
      * Given a predicate vocab element id, return true if the vocab list
      * contains a PredicateVocabElement with that id, and false otherwise.
      *
@@ -3150,9 +3255,8 @@ public abstract class Database
     }
 
 
+    // predVEExists(name)
     /**
-     * predVEExists(name)
-     *
      * Given a predicate vocab element name, return true if the vocab list
      * contain a PredicateVocabElement with that name, and false otherwise.
      *
@@ -3169,14 +3273,9 @@ public abstract class Database
         return this.vl.predInVocabList(targetName);
     }
 
-    public void removeVE(long targetID) throws SystemErrorException {
-        this.vl.removeVocabElement(targetID);
-    }
 
-
+    // removePredVE(id)
     /**
-     * removePredVE(id)
-     *
      * Given a pred vocab element id, remove the associated instance of
      * PredicateVocabElement from the vocab list.  Also delete the
      * PredicateVocabElement from the index, along with all of its formal
@@ -3205,9 +3304,8 @@ public abstract class Database
     } /* Database::removePredVE(id) */
 
 
+    // replacePredVE(pve)
     /**
-     * replacePredVE(mve)
-     *
      * Given a (possibly modified) copy of a PredicateVocabElement that exists
      * in the vocab list, replace the old copy with a copy of the supplied
      * PredicateVocabElement.  The old version is matched with the new via id.
@@ -3217,8 +3315,14 @@ public abstract class Database
      *                                               -- 6/12/07
      *
      * Changes:
-     *
-     *    - None.
+     * <ul>
+     *   <li>
+     *      Added test to see if the target pve is a system pve, and throw a
+     *      system error if it is.  Need this to prevent the UI code from
+     *      modifying system predicates.
+     *                                              JRM -- 7/25/09
+     *   </li>
+     * </ul>
      */
 
     public void replacePredVE(PredicateVocabElement pve)
@@ -3230,6 +3334,23 @@ public abstract class Database
         if ( pve == null )
         {
             throw new SystemErrorException(mName + "pve == null");
+        }
+        else if ( pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve is marked as system");
+        }
+        else if ( pve.getID() == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "pve has invalid ID");
+        }
+        else if ( ! this.vl.predInVocabList(pve.getID()) )
+        {
+            throw new SystemErrorException(mName + "target pve doesn't exist");
+        }
+        else if ( this.vl.getPredicateVocabElement(pve.getID()).getSystem() )
+        {
+            throw new SystemErrorException(mName + "target pve is a system pve");
         }
         else if ( (local_pve = new PredicateVocabElement(pve)) == null )
         {
@@ -3243,11 +3364,59 @@ public abstract class Database
     } /* Database::replacePredVE(mve) */
 
 
-   /*** VocabElement methods -- use only if type is unknown ***/
+    /*** VocabElement methods -- use only if type is unknown ***/
 
+    // addVocabElement()
     /**
-     * getVocabElement(id)
+     * Adds a vocab element to the database.
      *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     * @param ve The vocab element to add to the database.
+     * @return The ID of the vocab element within the database.
+     * @throws org.openshapa.db.SystemErrorException If unable to add
+     * the vocab element to the database.
+     */
+    public long addVocabElement(final VocabElement ve)
+        throws SystemErrorException
+    {
+        final String mName = "Database::addVocabElement(ve): ";
+        long new_ID = DBIndex.INVALID_ID;
+        VocabElement copy = null;
+
+        try
+        {
+            // Throw an error if the vocab element is null.
+            if ( ve == null )
+            {
+                throw new SystemErrorException(mName +
+                                               "Unable to add ve - it is null");
+            }
+
+            // Create a copy of the vocab element and add it to the database
+            // vocab.
+            copy = (VocabElement) ve.clone();
+
+            this.vl.addElement(copy);
+
+            new_ID = copy.getID();
+
+        }
+
+        catch (CloneNotSupportedException e)
+        {
+            throw new SystemErrorException(e.toString());
+        }
+
+        return new_ID;
+
+    } /* Database::addVocabElement(ve) */
+
+
+    // getVocabElement(id)
+    /**
      * Given a vocab element ID, return a copy of the associated vocab element.
      * Throws a system error if the target does not exist.
      *
@@ -3300,9 +3469,8 @@ public abstract class Database
     } /* Database::getVocabElement(targetID) */
 
 
+    // getVocabElement(name)
     /**
-     * getVocabElement(name)
-     *
      * Given a vocab element name, return a copy of the associated vocab
      * element.  Throws a system error if the target does not exist.
      *
@@ -3355,9 +3523,98 @@ public abstract class Database
     } /* Database::getVocabElement(targetName) */
 
 
+    // TODO:  Implement removeVocabElementAndAssociatedData(id)
+
+    // removeVocabElement()
     /**
-     * vocabElementExists(id)
+     * Never use this routine.  It was created in error, and is left here
+     * as a scarecrow to prevent its re-implementation.
      *
+     * Matrix vocab elements MUST NOT be deleted directly by the user.  In
+     * its original version, this method permitted this operation, and thus
+     * allowed corruption of the database.
+     *
+     * @param targetID
+     * @throws org.openshapa.db.SystemErrorException unconditionally.
+     */
+
+    public void removeVocabElement(long targetID)
+        throws SystemErrorException
+    {
+        final String mName = "Database::removeVocabElement(targetID): ";
+
+        throw new SystemErrorException(mName + "This routine allows the user " +
+                "to corrupt the data base.  It should not exist and must not " +
+                "be used.  I am leaving it in place to prevent the creation " +
+                "of something similar in the future. -- JRM");
+
+        // This is the old body of the method.  DO NOT re-enable it.
+        // this.vl.removeVocabElement(targetID);
+    }
+
+
+    // replaceVocabElement()
+    /**
+     * Attempt to replace a vocab element in the database.  Fail if the
+     * supplied ve is null, if the supplied ve is marked system, if the
+     * target (indicated by ve.getID()) doesn't exist, if the target ve
+     * is marked as system, or if there is a type mismatch.
+     *
+     * @param ve -- new version of the target vocab element that is to
+     *              replace the old version.
+     *
+     * @throws org.openshapa.db.SystemErrorException on failure.
+     */
+
+    public void replaceVocabElement(final VocabElement ve)
+        throws SystemErrorException
+    {
+        final String mName = "Database::replaceVocabElement(ve): ";
+        VocabElement local_ve = null;
+
+        try
+        {
+            if ( ve == null )
+            {
+                throw new SystemErrorException(mName + "ve == null");
+            }
+            else if ( ve.getSystem() )
+            {
+                throw new SystemErrorException(mName +
+                                           "supplied ve is marked as system");
+            }
+            else if ( ve.getID() == DBIndex.INVALID_ID )
+            {
+                throw new SystemErrorException(mName + "ve has invalid ID");
+            }
+            else if ( ! this.vl.inVocabList(ve.getID()) )
+            {
+                throw new SystemErrorException(mName +
+                                               "target ve doesn't exist");
+            }
+            else if ( this.vl.getVocabElement(ve.getID()).getSystem() )
+            {
+                throw new SystemErrorException(mName +
+                                               "target ve is a system ve");
+            }
+
+            local_ve = (VocabElement) ve.clone();
+
+            this.vl.replaceVocabElement(local_ve);
+        }
+
+        catch (CloneNotSupportedException e)
+        {
+            throw new SystemErrorException("Cant to replace vocab element");
+        }
+
+        return;
+
+    } /* Database::replaceVocabElement(ve) */
+
+
+    // vocabElementExists(id)
+    /**
      * Given a vocab element id, return true if a vocab element with that id
      * exists, and false otherwise.
      *
@@ -3379,9 +3636,8 @@ public abstract class Database
     }
 
 
+    // vocabElementExists(name)
     /**
-     * vocabElementExists(name)
-     *
      * Given a vocab element name, return true if a vocab element with that
      * name exists, and false otherwise.
      *
@@ -3405,9 +3661,8 @@ public abstract class Database
 
     /*** UID management ***/
 
+    // isValidUID()
     /**
-     * isValidUID()
-     *
      * Determine whether a user ID is valid.  Return true if it is, and
      * false otherwise.
      *
@@ -3522,9 +3777,8 @@ public abstract class Database
 
     /*** Version String Construction ***/
 
+    // getDBVersionString()
     /**
-     * getDBVersionString()
-     *
      * Gets the database type and version string<br>
      * (eg ODB File v2.1)
      *
@@ -3549,9 +3803,8 @@ public abstract class Database
     /************************ Class Methods: *********************************/
     /*************************************************************************/
 
+    // IsGraphicalChar
     /**
-     * IsGraphicalChar
-     *
      * Test to see if the character passed in as a parameter is a graphical
      * character.  Return true if it is, and false otherwise.
      *
@@ -3582,9 +3835,8 @@ public abstract class Database
     } /* Database::IsGraphicalChar() */
 
 
+    // IsValidFargName()
     /**
-     * IsValidFargName()
-     *
      * Test to see if a formal argument name is valid.  Return true if it
      * is, and false if it isn't.
      *
@@ -3662,9 +3914,8 @@ public abstract class Database
     } /* Database::IsValidFargName() */
 
 
+    // IsValidFloat()
     /**
-     * IsValidFloat()
-     *
      * Test to see if the object passed in as a parameter is a Double that can
      * be used to replace a formal argument.
      *
@@ -3703,9 +3954,8 @@ public abstract class Database
     } /* Database::IsValidFloat() */
 
 
+    // IsValidInt()
     /**
-     * IsValidInt()
-     *
      * Test to see if the object passed in as a parameter is a Long that can
      * be used to replace a formal argument.
      *
@@ -3740,9 +3990,8 @@ public abstract class Database
     } /* Database::IsValidInt() */
 
 
+    // IsValidNominal()
     /**
-     * IsValidNominal()
-     *
      * Test to see if a string contains a valid nominal.  Return true if it
      * is, and false if it isn't.
      *
@@ -3841,9 +4090,8 @@ public abstract class Database
     } /* Database::IsValidNominal() */
 
 
+    // IsValidPredName()
     /**
-     * IsValidPredName()
-     *
      * Test to see if a string contains a valid predicate name.  Return true
      * if it does, and false if it isn't.
      *
@@ -3922,9 +4170,8 @@ public abstract class Database
     } /* Database::IsValidPredName() */
 
 
+    // IsValidSVarName()
     /**
-     * IsValidSVarName()
-     *
      * Test to see if a string contains a valid spreadsheet variable name.
      * Return true if it does, and false if it doesn't.
      *
@@ -4020,9 +4267,8 @@ public abstract class Database
     } /* Database::IsValidSVarName() */
 
 
+    // IsValidTextString()
     /**
-     * IsValidTextString()
-     *
      * Test to see if a string contains a valid text string -- that is a string
      * that can appear as the value of a cell in a text column variable.
      * Return true if it does, and false if it doesn't.
@@ -4105,9 +4351,8 @@ public abstract class Database
     } /* Database::IsValidTextString() */
 
 
+    // IsValidTimeStamp()
     /**
-     * IsValidTimeStamp()
-     *
      * Test to see if the object is a valid time stamp.  For now that means
      * checking to see if it is an instance of Timestamp, verifying that the
      * number of ticks is non-negative, and that the number of ticks per
@@ -4152,9 +4397,8 @@ public abstract class Database
     } /* Database::IsValidTimeStamp() */
 
 
+    // IsValidQuoteString()
     /**
-     * IsValidQuoteString()
-     *
      * Test to see if a object contains a valid quote string -- that is a
      * string that can appear as an argument in a matrix or predicate.
      * Return true if it does, and false if it doesn't.

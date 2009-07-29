@@ -91,16 +91,22 @@ public abstract class DBElement implements Cloneable {
      * containing the contents of the instance with sufficient detail for
      * debugging.
      */
-    public String toDBString() throws SystemErrorException {
+    public String toDBString()
+        throws SystemErrorException
+    {
+
         return "toDBString() not implemented";
-    };
+    
+    } /* DBElement::toDBString() */
 
     /**
      * Set the id to INVALID_ID.
      *
      * @date 2008/02/19
      */
-    protected void clearID() throws SystemErrorException {
+    protected void clearID() 
+        throws SystemErrorException
+    {
         this.id = DBIndex.INVALID_ID;
         return;
     }
@@ -111,18 +117,24 @@ public abstract class DBElement implements Cloneable {
      *
      * @date 2007/04/11
      */
-    public Database getDB() {
+    public Database getDB() 
+    {
+
         return this.db;
-    }
+    
+    } /* DBElement::getDB() */
 
     /**
      * @return The unique ID assigned to this DBElement.
      *
      * @date 2007/04/11
      */
-    public long getID() {
+    public long getID()
+    {
+
         return this.id;
-    }
+    
+    } /* DBElement::getID() */
 
     /**
      * Return the user ID associated with the last change to this database
@@ -132,9 +144,12 @@ public abstract class DBElement implements Cloneable {
      *
      * @date 2007/04/11
      */
-    public int getLastModUID() {
+    public int getLastModUID() 
+    {
+
         return this.lastModUID;
-    }
+    
+    } /* DBElement::getLastModUID() */
 
     /**
      * Set the unique ID of this DBElement.
@@ -144,17 +159,24 @@ public abstract class DBElement implements Cloneable {
      * @throws SystemErrorException If the supplied id is invalid.
      *
      * @date 2007/04/11
+     *
      */
-    public void setID(long id) throws SystemErrorException {
-        if (id == DBIndex.INVALID_ID) {
+    public void setID(long id)
+        throws SystemErrorException
+    {
+        if (id == DBIndex.INVALID_ID)
+        {
             final String mName = "DBElement::setID(id): ";
             throw new SystemErrorException(mName + "invalid id");
-        } else {
+        } 
+        else
+        {
            this.id = id;
         }
 
         return;
-    }
+
+    } /* DBElement::setID() */
 
     /**
      * Query the associated database, and set lastModUID to the current user
@@ -165,16 +187,22 @@ public abstract class DBElement implements Cloneable {
      *
      * @date 2007/04/11
      */
-    public void setLastModUID() throws SystemErrorException {
-        if (this.db == null) {
+    public void setLastModUID() 
+        throws SystemErrorException
+    {
+        if (this.db == null)
+        {
             final String mName = "DBElement::setLastModUID(uid): ";
             throw new SystemErrorException(mName + "Bad this.db on entry");
-        } else {
+        } 
+        else
+        {
             this.lastModUID = this.db.getCurUID();
         }
 
         return;
-    }
+    
+    } /* DBElement::setLastModUID() */
 
     /**
      * Set the UID of the last user to modify this database element.  The UID
@@ -197,16 +225,22 @@ public abstract class DBElement implements Cloneable {
     public void setLastModUID(int uid) throws SystemErrorException {
         final String mName = "DBElement::setLastModUID(uid): ";
 
-        if (this.db == null) {
+        if (this.db == null)
+        {
             throw new SystemErrorException(mName + "Bad this.db on entry");
-        } else if ( !(this.db.isValidUID(uid)) ) {
+        } 
+        else if ( !(this.db.isValidUID(uid)) )
+        {
             throw new SystemErrorException(mName + "invalid uid");
-        } else {
+        } 
+        else
+        {
             this.lastModUID = uid;
         }
 
         return;
-    }
+    
+    } /* DBElement::setLastModUID() */
 
     /**
      * Creates a new copy of the object.
@@ -230,7 +264,8 @@ public abstract class DBElement implements Cloneable {
      * @return A hash code value for the object.
      */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = lastModUID * Constants.SEED1;
         hash += HashUtils.Long2H(id) * Constants.SEED2;
         hash += HashUtils.Obj2H(db) * Constants.SEED3;
@@ -249,7 +284,8 @@ public abstract class DBElement implements Cloneable {
      * @return true if the Object obj is logically equal to this.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(final Object obj)
+    {
         if (this == obj) {
             return true;
         }

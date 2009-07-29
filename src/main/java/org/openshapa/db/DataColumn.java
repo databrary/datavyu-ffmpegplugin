@@ -8,6 +8,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import java.util.HashSet;
 import java.util.Vector;
 
 /**
@@ -53,6 +54,13 @@ public class DataColumn extends Column
      *      a reference to a modified version of the cannonical instance of
      *      the DataColumn, which will become the cannonical at the end of
      *      the cascade.
+     *
+     * localVocabIDSet: When writing a MacSHAPA ODB format database file, we
+     *      must construct a list of all the predicates and column predicates
+     *      that appear in the DataColumn.  This instance of HashSet is used
+     *      for this purpose.  The field will always be null unless we are
+     *      in the process of writing the contents of the column to a MacSHAPA
+     *      ODB file.
      */
 
     /** Width of the column in a MacSHAPA spreadsheet */
@@ -82,6 +90,15 @@ public class DataColumn extends Column
      * will become the cannonical version at the end of the cascade.
      */
     private DataColumn pending = null;
+
+    /**
+     * Reference to a set of long used to assemble a list of all the predicates
+     * and column predicates that appear in this data column.  This field will
+     * always be null except for a brief period while writing the contents of
+     * the data column to a MacSHAPA ODB file, and then only if this column
+     * is of matrix or predicate type.
+     */
+    private HashSet<Long> localVocabIDSet = null;
 
     /**
      * @return A hash code value for the object.
@@ -1571,6 +1588,7 @@ public class DataColumn extends Column
         int i;
         MatrixVocabElement mve = null;
         DataCell cell = null;
+        Vector<String> lvl = null;
 
         if ( output == null )
         {
@@ -1621,6 +1639,21 @@ public class DataColumn extends Column
 
         // vocab list if appropriate:
 
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
+        {
+            output.printf("%s    ( VOCAB> ( ", indent);
+
+            lvl = this.toMODBFile_construct_local_vocab_list();
+
+            for ( i = 0; i < lvl.size(); i++ )
+            {
+                output.printf("%s ", lvl.get(i));
+            }
+
+            output.printf(") )%s", newLine);
+        }
+
 
 
         // closing parentheses:
@@ -1634,6 +1667,165 @@ public class DataColumn extends Column
 
     } /* DataColumn::toMODBFile_colDef() */
 
+
+    /**
+     * toMODBFile_construct_local_vocab_list()
+     *
+     * To write a MacSHAPA ODB format database file, we must constuct
+     * a list of the names of the predicate and column predicates that
+     * appear in the cells of this DataColumn.
+     *
+     * This method is the main routine for this task.
+     *
+     * The cycle of operation is as follows:
+     *
+     * 1) Construct an empty set of long integers to hold the set of IDs of
+     *    predicates and column predicates that appear in the cells of the
+     *    data column.
+     *
+     * 2) Send a toMODBFile_update_local_vocab_list() message to each
+     *    cell in the cell in the data column.
+     *
+     * 3) Upon receipt of the message, each cell passes it to its value matrix.
+     *
+     * 4) Upon receipt, each matrix scans its arguments to see if any are
+     *    either predicates or column predicates.  If so, it passes the
+     *    message on to them.
+     *
+     * 5) Upon receipt, each instance pred or colPred calls the
+     *    toMODBFile_update_local_vocab_list() of this instance of DataColumn
+     *    with the ID of the PVE or MVE of which it is an instance, and then
+     *    passes the toMODBFile_update_local_vocab_list() message on to any
+     *    predicates or column predicates wich appear in its argument list.
+     *
+     * 6) Once all cells have been polled, this method uses the set of mve and
+     *    pve IDs to construct a vector of strings containing the names of the
+     *    predicates and columns that appear in the data column at this point
+     *    in time, and returns that vector.
+     *
+     *                                              JRM -- 7/20/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    private Vector<String>
+    toMODBFile_construct_local_vocab_list()
+        throws SystemErrorException
+    {
+        final String mName = "DataColumn::toMODBFile_construct_vocab_list(): ";
+        int i;
+        DataCell cell = null;
+        Vector<String> lvl = null;
+
+        if ( ( this.itsMveType != MatrixVocabElement.MatrixType.MATRIX ) &&
+             ( this.itsMveType != MatrixVocabElement.MatrixType.PREDICATE ) )
+        {
+            throw new SystemErrorException(mName +
+                    "not a matrix or predicate column?!?");
+        }
+
+        if ( this.localVocabIDSet != null )
+        {
+            throw new SystemErrorException(mName +
+                    "this.localVocabIDSet not null on entry?!?");
+        }
+
+        this.localVocabIDSet = new HashSet<Long>();
+
+        i = 0;
+
+        while ( i < this.numCells )
+        {
+            cell = this.getCell(i + 1);
+            cell.toMODBFile_update_local_vocab_list(this);
+            i++;
+        }
+
+        lvl = new Vector<String>();
+
+        if ( ! this.localVocabIDSet.isEmpty() )
+        {
+            long ID;
+            String name;
+            java.util.Iterator it = this.localVocabIDSet.iterator();
+            DBElement dbe;
+
+            while (it.hasNext())
+            {
+                ID = (Long)it.next();
+                dbe = this.getDB().idx.getElement(ID);
+
+                if ( dbe instanceof VocabElement )
+                {
+                    VocabElement ve;
+
+                    ve = (VocabElement)dbe;
+
+                    name = ve.getName();
+
+                    lvl.add(name);
+                }
+                else
+                {
+                    throw new SystemErrorException(mName +
+                            ": localVocabIDSet contains an ID that isn't " +
+                            "the ID of a vocab element.");
+                }
+            }
+        }
+
+        this.localVocabIDSet = null;
+
+        return lvl;
+
+    } /* DataColumn::toMODBFile_construct_local_vocab_list() */
+
+
+    /**
+     * toMODBFile_update_local_vocab_list()
+     *
+     * Check to see if this.localVocabIDSet contains the supplied ID, and
+     * add it to the set if it does not.
+     *
+     * Thow a sytem error on entry if either this.localVocabIDSet is null,
+     * or the supplied ID is invalid.
+     *
+     *                                      JRM -- 7/22/09
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     * @param ID
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(Long ID)
+        throws SystemErrorException
+    {
+        final String mName = "DataColumn::toMODBFile_update_local_vocab_list(): ";
+
+        if ( this.localVocabIDSet == null )
+        {
+            throw new SystemErrorException(mName +
+                    "localVocabIDSet null on entry.");
+        }
+
+        if ( ID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName + "ID is invalid.");
+        }
+
+        if ( ! this.localVocabIDSet.contains(ID) )
+        {
+            this.localVocabIDSet.add(ID);
+        }
+
+        return;
+    }
 
     /*************************************************************************/
     /************************* Cells Management: *****************************/
@@ -1656,7 +1848,8 @@ public class DataColumn extends Column
      *                                          -- 2/10/08
      */
     protected void appendCell(DataCell newCell)
-            throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "DataColumn::appendCell(): ";
         DataCellListeners nl = null;
 

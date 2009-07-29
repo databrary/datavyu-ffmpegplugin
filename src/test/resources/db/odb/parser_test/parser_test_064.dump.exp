@@ -94,12 +94,14 @@
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |fixed len matrix|
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |an integer var|
@@ -112,6 +114,7 @@
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |a text var|

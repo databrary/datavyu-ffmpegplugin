@@ -833,6 +833,11 @@ public abstract class DatabaseTest {
             failures++;
         }
 
+        if ( ! TestAddArgToPredVE(outStream, verbose) )
+        {
+            failures++;
+        }
+
         if ( ! TestAddPredVE(outStream, verbose) )
         {
             failures++;
@@ -5289,6 +5294,1324 @@ public abstract class DatabaseTest {
 
 
     /**
+     * TestAddArgToPredVE()
+     *
+     * Test the addArgToPredVE() method.  The testing must be a bit more
+     * involved that usual, as the target method creates a new argument for
+     * the variable length predicate indicated, and then uses
+     * VocabList.replaceVocabElement() to make the desired change.
+     *
+     *                                               -- 7/26/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestAddArgToPredVE(java.io.PrintStream outStream,
+                                             boolean verbose)
+    throws SystemErrorException {
+        String testBanner =
+            "Testing addArgToPredVE()                                         ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        String systemErrorExceptionString;
+        String s0 = null;
+        String s1 = null;
+        String s2 = null;
+        String s3 = null;
+        String expected_string_0 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(pred data column(<val>), " +
+               "vl_sys_pve(<echo>), " +
+               "fl_sys_pve(<delta>), " +
+               "vl_usr_pve(<charlie>), " +
+               "fl_usr_pve(<bravo>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((pred data column, " +
+                "((1, 00:00:00:000, 00:00:01:000, (fl_usr_pve(1))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (vl_usr_pve(2))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (fl_sys_pve(3))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (vl_sys_pve(4)))))))))";
+        String expected_string_1 = "vl_usr_pve(<charlie>, <arg0>)";
+        String expected_string_2 = "vl_usr_pve(<charlie>, <arg0>, <arg1>)";
+        String expected_string_3 = "vl_sys_pve(<echo>, <arg0>)";
+        String expected_string_4 = "vl_sys_pve(<echo>, <arg0>, <arg1>)";
+        String expected_string_5 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(pred data column(<val>), " +
+               "vl_sys_pve(<echo>), " +
+               "fl_sys_pve(<delta>), " +
+               "vl_usr_pve(<charlie>, <arg0>), " +
+               "fl_usr_pve(<bravo>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((pred data column, " +
+                "((1, 00:00:00:000, 00:00:01:000, (fl_usr_pve(1))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (vl_usr_pve(2, <arg0>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (fl_sys_pve(3))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (vl_sys_pve(4)))))))))";
+        String expected_string_6 = 
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(pred data column(<val>), " +
+               "vl_sys_pve(<echo>), " +
+               "fl_sys_pve(<delta>), " +
+               "vl_usr_pve(<charlie>, <arg0>, <arg1>), " +
+               "fl_usr_pve(<bravo>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((pred data column, " +
+                "((1, 00:00:00:000, 00:00:01:000, (fl_usr_pve(1))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (vl_usr_pve(2, <arg0>, <arg1>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (fl_sys_pve(3))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (vl_sys_pve(4)))))))))";
+        String expected_string_7 = 
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(pred data column(<val>), " +
+               "vl_sys_pve(<echo>, <arg0>), " +
+               "fl_sys_pve(<delta>), " +
+               "vl_usr_pve(<charlie>, <arg0>, <arg1>), " +
+               "fl_usr_pve(<bravo>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((pred data column, " +
+                "((1, 00:00:00:000, 00:00:01:000, (fl_usr_pve(1))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (vl_usr_pve(2, <arg0>, <arg1>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (fl_sys_pve(3))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (vl_sys_pve(4, <arg0>)))))))))";
+        String expected_string_8 = 
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(pred data column(<val>), " +
+               "vl_sys_pve(<echo>, <arg0>, <arg1>), " +
+               "fl_sys_pve(<delta>), " +
+               "vl_usr_pve(<charlie>, <arg0>, <arg1>), " +
+               "fl_usr_pve(<bravo>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((pred data column, " +
+                "((1, 00:00:00:000, 00:00:01:000, (fl_usr_pve(1))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (vl_usr_pve(2, <arg0>, <arg1>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (fl_sys_pve(3))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (vl_sys_pve(4, <arg0>, <arg1>)))))))))";
+        String expected_db_string_0 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_size: 5) " +
+            "(vl_contents: " +
+              "(((MatrixVocabElement: 9 pred data column) " +
+                 "(system: true) " +
+                 "(type: PREDICATE) " +
+                 "(varLen: false) " +
+                 "(fArgList: " +
+                   "((PredFormalArg 10 <val> false ()))), " +
+               "((PredicateVocabElement: 7 vl_sys_pve) " +
+                 "(system: true) " +
+                 "(varLen: true) " +
+                 "(fArgList: ((UnTypedFormalArg 8 <echo>))), " +
+               "((PredicateVocabElement: 5 fl_sys_pve) " +
+                 "(system: true) " +
+                 "(varLen: false) " +
+                 "(fArgList: ((UnTypedFormalArg 6 <delta>))), " +
+               "((PredicateVocabElement: 3 vl_usr_pve) " +
+                 "(system: false) " +
+                 "(varLen: true) " +
+                 "(fArgList: ((UnTypedFormalArg 4 <charlie>))), " +
+               "((PredicateVocabElement: 1 fl_usr_pve) " +
+                 "(system: false) " +
+                 "(varLen: false) " +
+                 "(fArgList: ((UnTypedFormalArg 2 <bravo>)))))) " +
+          "((ColumnList) " +
+            "(cl_size: 1) " +
+            "(cl_contents: " +
+              "((DataColumn " +
+                "(name pred data column) " +
+                "(id 15) " +
+                "(hidden false) " +
+                "(readOnly false) " +
+                "(itsMveID 9) " +
+                "(itsMveType PREDICATE) " +
+                "(varLen false) " +
+                "(numCells 4) " +
+                "(itsCells " +
+                  "((DataCell " +
+                     "(id 16) " +
+                     "(itsColID 15) " +
+                     "(itsMveID 9) " +
+                     "(itsMveType PREDICATE) " +
+                     "(ord 1) " +
+                     "(onset (60,00:00:00:000)) " +
+                     "(offset (60,00:00:01:000)) " +
+                     "(val " +
+                       "(Matrix " +
+                         "(mveID 9) " +
+                         "(varLen false) " +
+                         "(argList " +
+                           "((PredDataValue " +
+                             "(id 17) " +
+                             "(itsFargID 10) " +
+                             "(itsFargType PREDICATE) " +
+                             "(itsCellID 16) " +
+                             "(itsValue " +
+                               "(predicate " +
+                                 "(id 18) " +
+                                 "(predID 1) " +
+                                 "(predName fl_usr_pve) " +
+                                 "(varLen false) " +
+                                 "(argList " +
+                                   "((IntDataValue " +
+                                     "(id 19) " +
+                                     "(itsFargID 2) " +
+                                     "(itsFargType UNTYPED) " +
+                                     "(itsCellID 16) " +
+                                     "(itsValue 1) " +
+                                     "(subRange false) " +
+                                     "(minVal 0) " +
+                                     "(maxVal 0))))))) " +
+                          "(subRange false)))))))), " +
+                    "(DataCell " +
+                      "(id 20) " +
+                      "(itsColID 15) " +
+                      "(itsMveID 9) " +
+                      "(itsMveType PREDICATE) " +
+                      "(ord 2) " +
+                      "(onset (60,00:00:01:000)) " +
+                      "(offset (60,00:00:02:000)) " +
+                      "(val " +
+                        "(Matrix " +
+                          "(mveID 9) " +
+                          "(varLen false) " +
+                          "(argList " +
+                            "((PredDataValue " +
+                              "(id 21) " +
+                              "(itsFargID 10) " +
+                              "(itsFargType PREDICATE) " +
+                              "(itsCellID 20) " +
+                              "(itsValue " +
+                                "(predicate " +
+                                  "(id 22) " +
+                                  "(predID 3) " +
+                                  "(predName vl_usr_pve) " +
+                                  "(varLen true) " +
+                                  "(argList " +
+                                    "((IntDataValue " +
+                                      "(id 23) " +
+                                      "(itsFargID 4) " +
+                                      "(itsFargType UNTYPED) " +
+                                      "(itsCellID 20) " +
+                                      "(itsValue 2) " +
+                                      "(subRange false) " +
+                                      "(minVal 0) (maxVal 0))))))) " +
+                          "(subRange false)))))))), " +
+                    "(DataCell " +
+                      "(id 24) " +
+                      "(itsColID 15) " +
+                      "(itsMveID 9) " +
+                      "(itsMveType PREDICATE) " +
+                      "(ord 3) " +
+                      "(onset (60,00:00:02:000)) " +
+                      "(offset (60,00:00:03:000)) " +
+                      "(val " +
+                        "(Matrix " +
+                          "(mveID 9) " +
+                          "(varLen false) " +
+                          "(argList " +
+                            "((PredDataValue " +
+                              "(id 25) " +
+                              "(itsFargID 10) " +
+                              "(itsFargType PREDICATE) " +
+                              "(itsCellID 24) " +
+                              "(itsValue " +
+                                "(predicate " +
+                                  "(id 26) " +
+                                  "(predID 5) " +
+                                  "(predName fl_sys_pve) " +
+                                  "(varLen false) " +
+                                  "(argList " +
+                                    "((IntDataValue " +
+                                      "(id 27) " +
+                                      "(itsFargID 6) " +
+                                      "(itsFargType UNTYPED) " +
+                                      "(itsCellID 24) " +
+                                      "(itsValue 3) " +
+                                      "(subRange false) " +
+                                      "(minVal 0) " +
+                                      "(maxVal 0))))))) " +
+                          "(subRange false)))))))), " +
+                    "(DataCell " +
+                      "(id 28) " +
+                      "(itsColID 15) " +
+                      "(itsMveID 9) " +
+                      "(itsMveType PREDICATE) " +
+                      "(ord 4) " +
+                      "(onset (60,00:00:03:000)) " +
+                      "(offset (60,00:00:04:000)) " +
+                      "(val " +
+                        "(Matrix " +
+                          "(mveID 9) " +
+                          "(varLen false) " +
+                          "(argList " +
+                            "((PredDataValue " +
+                              "(id 29) " +
+                              "(itsFargID 10) " +
+                              "(itsFargType PREDICATE) " +
+                              "(itsCellID 28) " +
+                              "(itsValue " +
+                                "(predicate " +
+                                  "(id 30) " +
+                                  "(predID 7) " +
+                                  "(predName vl_sys_pve) " +
+                                  "(varLen true) " +
+                                  "(argList " +
+                                    "((IntDataValue " +
+                                      "(id 31) " +
+                                      "(itsFargID 8) " +
+                                      "(itsFargType UNTYPED) " +
+                                      "(itsCellID 28) " +
+                                      "(itsValue 4) " +
+                                      "(subRange false) " +
+                                      "(minVal 0) " +
+                                      "(maxVal 0))))))) " +
+                          "(subRange false))))))))))))))))";
+        String expected_db_string_1 = 
+        "((PredicateVocabElement: 3 vl_usr_pve) " +
+          "(system: false) " +
+          "(varLen: true) " +
+          "(fArgList: " +
+            "((UnTypedFormalArg 4 <charlie>), " +
+            "(UnTypedFormalArg 32 <arg0>)))";
+        String expected_db_string_2 = 
+        "((PredicateVocabElement: 3 vl_usr_pve) " +
+          "(system: false) " +
+          "(varLen: true) " +
+          "(fArgList: " +
+            "((UnTypedFormalArg 4 <charlie>), " +
+             "(UnTypedFormalArg 32 <arg0>), " +
+             "(UnTypedFormalArg 34 <arg1>)))";
+        String expected_db_string_3 = 
+        "((PredicateVocabElement: 7 vl_sys_pve) " +
+          "(system: true) " +
+          "(varLen: true) " +
+          "(fArgList: " +
+            "((UnTypedFormalArg 8 <echo>), " +
+             "(UnTypedFormalArg 36 <arg0>)))";
+        String expected_db_string_4 = 
+        "((PredicateVocabElement: 7 vl_sys_pve) " +
+          "(system: true) " +
+          "(varLen: true) " +
+          "(fArgList: " +
+            "((UnTypedFormalArg 8 <echo>), " +
+             "(UnTypedFormalArg 36 <arg0>), " +
+             "(UnTypedFormalArg 38 <arg1>)))";
+        boolean completed = false;
+        boolean pass = true;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long fl_usr_pve_ID = DBIndex.INVALID_ID;
+        long vl_usr_pve_ID = DBIndex.INVALID_ID;
+        long fl_sys_pve_ID = DBIndex.INVALID_ID;
+        long vl_sys_pve_ID = DBIndex.INVALID_ID;
+        long pred_mve_ID = DBIndex.INVALID_ID;
+        long pred_dc_ID = DBIndex.INVALID_ID;
+        Database db = null;
+        MatrixVocabElement pred_mve = null;
+        PredicateVocabElement fl_usr_pve = null;
+        PredicateVocabElement vl_usr_pve = null;
+        PredicateVocabElement vl_usr_pve_1 = null;
+        PredicateVocabElement vl_usr_pve_2 = null;
+        PredicateVocabElement fl_sys_pve = null;
+        PredicateVocabElement vl_sys_pve = null;
+        PredicateVocabElement vl_sys_pve_1 = null;
+        PredicateVocabElement vl_sys_pve_2 = null;
+        PredicateVocabElement pve = null;
+        IntFormalArg alpha = null;
+        UnTypedFormalArg bravo = null;
+        UnTypedFormalArg charlie = null;
+        UnTypedFormalArg delta = null;
+        UnTypedFormalArg echo = null;
+        UnTypedFormalArg foxtrot = null;
+        DataColumn pred_dc = null;
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        /* setup for test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            db = null;
+            alpha = null;
+            bravo = null;
+            charlie = null;
+            delta = null;
+            echo = null;
+            foxtrot = null;
+            pred_dc = null;
+            pred_mve = null;
+            fl_usr_pve = null;
+            vl_usr_pve = null;
+            fl_sys_pve = null;
+            vl_sys_pve = null;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db = new ODBCDatabase();
+
+                alpha = new IntFormalArg(db, "<alpha>");
+                bravo = new UnTypedFormalArg(db, "<bravo>");
+                charlie = new UnTypedFormalArg(db, "<charlie>");
+                delta = new UnTypedFormalArg(db, "<delta>");
+                echo = new UnTypedFormalArg(db, "<echo>");
+                foxtrot = new UnTypedFormalArg(db, "<foxtrot>");
+
+                fl_usr_pve = VocabListTest.ConstructTestPred(db, "fl_usr_pve",
+                        bravo, null, null, null);
+                fl_usr_pve.setVarLen(false);
+
+                vl_usr_pve = VocabListTest.ConstructTestPred(db, "vl_usr_pve",
+                        charlie, null, null, null);
+                vl_usr_pve.setVarLen(true);
+
+                fl_sys_pve = VocabListTest.ConstructTestPred(db, "fl_sys_pve",
+                        delta, null, null, null);
+                fl_sys_pve.setVarLen(false);
+                fl_sys_pve.setSystem();
+
+                vl_sys_pve = VocabListTest.ConstructTestPred(db, "vl_sys_pve",
+                        echo, null, null, null);
+                vl_sys_pve.setVarLen(true);
+                vl_sys_pve.setSystem();
+
+                fl_usr_pve_ID = db.addPredVE(fl_usr_pve);
+                vl_usr_pve_ID = db.addPredVE(vl_usr_pve);
+
+                fl_sys_pve_ID = db.addSystemPredVE(fl_sys_pve);
+                vl_sys_pve_ID = db.addSystemPredVE(vl_sys_pve);
+
+                pred_dc = new DataColumn(db,
+                        "pred data column",
+                        MatrixVocabElement.MatrixType.PREDICATE);
+
+                pred_dc_ID = db.addColumn(pred_dc);
+
+                pred_dc = db.getDataColumn(pred_dc_ID);
+
+                pred_mve_ID = pred_dc.getItsMveID();
+
+                pred_mve = db.getMatrixVE(pred_mve_ID);
+
+                // cells for pred_dc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pred_dc_ID,
+                        pred_mve_ID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            pred_mve_ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    fl_usr_pve_ID,
+                                    IntDataValue.Construct(db, 1))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pred_dc_ID,
+                        pred_mve_ID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            pred_mve_ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    vl_usr_pve_ID,
+                                    IntDataValue.Construct(db, 2))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pred_dc_ID,
+                        pred_mve_ID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            pred_mve_ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    fl_sys_pve_ID,
+                                    IntDataValue.Construct(db, 3))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pred_dc_ID,
+                        pred_mve_ID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            pred_mve_ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    vl_sys_pve_ID,
+                                    IntDataValue.Construct(db, 4))))));
+
+                pred_dc = db.getDataColumn(pred_dc_ID);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( alpha == null ) ||
+                 ( bravo == null ) ||
+                 ( charlie == null ) ||
+                 ( delta == null ) ||
+                 ( echo == null ) ||
+                 ( foxtrot == null ) ||
+                 ( pred_dc == null ) ||
+                 ( pred_mve == null ) ||
+                 ( fl_usr_pve == null ) ||
+                 ( vl_usr_pve == null ) ||
+                 ( fl_sys_pve == null ) ||
+                 ( vl_sys_pve == null ) ||
+                 ( pred_dc_ID == DBIndex.INVALID_ID ) ||
+                 ( pred_mve_ID == DBIndex.INVALID_ID ) ||
+                 ( fl_usr_pve_ID == DBIndex.INVALID_ID ) ||
+                 ( vl_usr_pve_ID == DBIndex.INVALID_ID ) ||
+                 ( fl_sys_pve_ID == DBIndex.INVALID_ID ) ||
+                 ( vl_sys_pve_ID == DBIndex.INVALID_ID ) ||
+                 ( pred_dc.getNumCells() != 4 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.print("test setup failed to complete.\n");
+                    }
+
+                    if ( db == null )
+                    {
+                        outStream.print("new ODBCDatabase() returned null.\n");
+                    }
+
+                    if ( alpha == null )
+                    {
+                        outStream.print("new IntFormalArg() returned null.\n");
+                    }
+
+                    if ( bravo == null )
+                    {
+                        outStream.print("new UnTypedFormalArg() returned null 1.\n");
+                    }
+
+                    if ( charlie == null )
+                    {
+                        outStream.print("new UnTypedFormalArg() returned null 2.\n");
+                    }
+
+                    if ( delta == null )
+                    {
+                        outStream.print("new UnTypedFormalArg() returned null 3.\n");
+                    }
+
+                    if ( echo == null )
+                    {
+                        outStream.print("new UnTypedFormalArg() returned null 4.\n");
+                    }
+
+                    if ( foxtrot == null )
+                    {
+                        outStream.print("new UnTypedFormalArg() returned null 5.\n");
+                    }
+
+                    if ( pred_dc == null )
+                    {
+                        outStream.print("couldn't construct pred_dc.\n");
+                    }
+
+                    if ( pred_mve == null )
+                    {
+                        outStream.print("couldn't obtain pred_mve.\n");
+                    }
+
+                    if ( fl_usr_pve == null )
+                    {
+                        outStream.print("couldn't construct fl_usr_pve.\n");
+                    }
+
+                    if ( vl_usr_pve == null )
+                    {
+                        outStream.print("couldn't construct vl_usr_pve.\n");
+                    }
+
+                    if ( fl_sys_pve == null )
+                    {
+                        outStream.print("couldn't construct fl_sys_pve.\n");
+                    }
+
+                    if ( vl_sys_pve == null )
+                    {
+                        outStream.print("couldn't construct vl_sys_pve.\n");
+                    }
+
+                    if ( pred_dc_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't insert pred_dc.\n");
+                    }
+
+                    if ( pred_mve_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't obtain pred_mve_ID.\n");
+                    }
+
+                    if ( fl_usr_pve_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't insert fl_usr_pve.\n");
+                    }
+
+                    if ( vl_usr_pve_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't insert vl_usr_pve.\n");
+                    }
+
+                    if ( fl_sys_pve_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't insert fl_sys_pve.\n");
+                    }
+
+                    if ( vl_sys_pve_ID == DBIndex.INVALID_ID )
+                    {
+                        outStream.print("couldn't insert vl_sys_pve.\n");
+                    }
+
+                    if ( pred_dc.getNumCells() != 4 )
+                    {
+                        outStream.print(
+                            "pred_dc contains unexpected number of cells.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else if ( db.toString().compareTo(expected_string_0) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected db.toString() after setup: \"%s\"\n",
+                            db.toString());
+                }
+            }
+            else if ( db.toDBString().compareTo(expected_db_string_0) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected db.toDBString() after setup: \"%s\"\n",
+                            db.toDBString());
+                }
+            }
+        }
+
+        /* test setup is complete.
+         *
+         * Start with calls that should succeed -- specifically attempts to
+         * add arguments to variable length user and system predicates.
+         */
+        if ( failures == 0 )
+        {
+            s0 = null;
+            s1 = null;
+            s2 = null;
+            s3 = null;
+            vl_usr_pve_1 = null;
+            vl_usr_pve_2 = null;
+            vl_sys_pve_1 = null;
+            vl_sys_pve_2 = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                vl_usr_pve_1 = db.addArgToPredVE(vl_usr_pve_ID);
+                s0 = db.toString();
+
+                vl_usr_pve_2 = db.addArgToPredVE(vl_usr_pve_ID);
+                s1 = db.toString();
+
+                vl_sys_pve_1 = db.addArgToPredVE(vl_sys_pve_ID);
+                s2 = db.toString();
+
+                vl_sys_pve_2 = db.addArgToPredVE(vl_sys_pve_ID);
+                s3 = db.toString();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( vl_usr_pve_1 == null ) ||
+                 ( vl_usr_pve_2 == null ) ||
+                 ( vl_sys_pve_1 == null ) ||
+                 ( vl_sys_pve_2 == null ) ||
+                 ( s0 == null ) ||
+                 ( s1 == null ) ||
+                 ( s2 == null ) ||
+                 ( s3 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( vl_usr_pve_1 == null )
+                    {
+                        outStream.print("vl_usr_pve_1 == null.\n");
+                    }
+
+                    if ( vl_usr_pve_2 == null )
+                    {
+                        outStream.print("vl_usr_pve_2 == null.\n");
+                    }
+
+                    if ( vl_sys_pve_1 == null )
+                    {
+                        outStream.print("vl_sys_pve_1 == null.\n");
+                    }
+
+                    if ( vl_sys_pve_2 == null )
+                    {
+                        outStream.print("vl_sys_pve_2 == null.\n");
+                    }
+
+                    if ( ( s0 == null ) ||
+                         ( s1 == null ) ||
+                         ( s2 == null ) ||
+                         ( s3 == null ) )
+                    {
+                        outStream.print("one or more test strings is null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("sequence of call to addArgToPredVE " +
+                                        "failed to complete.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("addArgToPredVE(id) threw " +
+                                "unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else if ( vl_usr_pve_1.toString().compareTo(expected_string_1)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "uexpected vl_usr_pve_1.toString(): \"%s\"\n",
+                            vl_usr_pve_1.toString());
+                }
+            }
+            else if ( vl_usr_pve_2.toString().compareTo(expected_string_2)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "uexpected vl_usr_pve_2.toString(): \"%s\"\n",
+                            vl_usr_pve_2.toString());
+                }
+            }
+            else if ( vl_sys_pve_1.toString().compareTo(expected_string_3)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "uexpected vl_sys_pve_1.toString(): \"%s\"\n",
+                            vl_sys_pve_1.toString());
+                }
+            }
+            else if ( vl_sys_pve_2.toString().compareTo(expected_string_4)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "uexpected vl_sys_pve_2.toString(): \"%s\"\n",
+                            vl_sys_pve_2.toString());
+                }
+            }
+            else if ( vl_usr_pve_1.toDBString().compareTo(expected_db_string_1)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected vl_usr_pve_1.toDBString(): \"%s\"\n",
+                            vl_usr_pve_1.toDBString());
+                }
+            }
+            else if ( vl_usr_pve_2.toDBString().compareTo(expected_db_string_2)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected vl_usr_pve_2.toDBString(): \"%s\"\n",
+                            vl_usr_pve_2.toDBString());
+                }
+            }
+            else if ( vl_sys_pve_1.toDBString().compareTo(expected_db_string_3)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected vl_sys_pve_1.toDBString(): \"%s\"\n",
+                            vl_sys_pve_1.toDBString());
+                }
+            }
+            else if ( vl_sys_pve_2.toDBString().compareTo(expected_db_string_4)
+                      != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf(
+                            "unexpected vl_sys_pve_2.toDBString(): \"%s\"\n",
+                            vl_sys_pve_2.toDBString());
+                }
+            }
+            else if ( s0.compareTo(expected_string_5) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("unexpected test string s0: \"%s\"\n", s0);
+                }
+            }
+            else if ( s1.compareTo(expected_string_6) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("unexpected test string s1: \"%s\"\n", s1);
+                }
+            }
+            else if ( s2.compareTo(expected_string_7) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("unexpected test string s2: \"%s\"\n", s2);
+                }
+            }
+            else if ( s3.compareTo(expected_string_8) != 0 )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    outStream.printf("unexpected test string s3: \"%s\"\n", s3);
+                }
+            }
+        }
+
+
+        /* pass the invalid ID to db.addArgToSystemPred -- should fail */
+        if ( failures == 0 )
+        {
+            pve = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                pve = db.addArgToPredVE(DBIndex.INVALID_ID);
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( pve != null ) ||
+                 ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( pve != null )
+                    {
+                        outStream.print(
+                                "addArgToPredVE(invalid) returned non-null.\n");
+                    }
+
+                    if ( completed )
+                    {
+                        outStream.print("addArgToPredVE(invalid) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("addArgToPredVE(invalid) failed to " +
+                                "throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                s0 = db.toString();
+
+                if ( s0 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.toString() returned null after " +
+                                        "addArgToPredVE(invalid).\n");
+                    }
+                }
+                else if ( s0.compareTo(expected_string_8) != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf("db.toString() returned unexpected " +
+                                "string after addArgToPredVE(invalid): " +
+                                "\"%s\"\n", s0);
+                    }
+                }
+            }
+        }
+
+
+        /* pass an unused ID to db.addArgToSystemPred -- should fail */
+        if ( failures == 0 )
+        {
+            pve = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                pve = db.addArgToPredVE(1066);
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( pve != null ) ||
+                 ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( pve != null )
+                    {
+                        outStream.print(
+                                "addArgToPredVE(1066) returned non-null.\n");
+                    }
+
+                    if ( completed )
+                    {
+                        outStream.print("addArgToPredVE(1066) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("addArgToPredVE(1066) failed to " +
+                                "throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                s0 = db.toString();
+
+                if ( s0 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.toString() returned null after " +
+                                        "addArgToPredVE(1066).\n");
+                    }
+                }
+                else if ( s0.compareTo(expected_string_8) != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf("db.toString() returned unexpected " +
+                                "string after addArgToPredVE(1066): " +
+                                "\"%s\"\n", s0);
+                    }
+                }
+            }
+        }
+
+
+        /* pass the ID of a fixed length user pve db.addArgToSystemPred
+         * -- should fail
+         */
+        if ( failures == 0 )
+        {
+            pve = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                pve = db.addArgToPredVE(fl_usr_pve_ID);
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( pve != null ) ||
+                 ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( pve != null )
+                    {
+                        outStream.print(
+                            "addArgToPredVE(fl_usr_pve_ID) returned non-null.\n");
+                    }
+
+                    if ( completed )
+                    {
+                        outStream.print(
+                                "addArgToPredVE(fl_usr_pve_ID) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("addArgToPredVE(fl_usr_pve_ID) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                s0 = db.toString();
+
+                if ( s0 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.toString() returned null after " +
+                                        "addArgToPredVE(fl_usr_pve_ID).\n");
+                    }
+                }
+                else if ( s0.compareTo(expected_string_8) != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf("db.toString() returned unexpected " +
+                                "string after addArgToPredVE(fl_usr_pve_ID): " +
+                                "\"%s\"\n", s0);
+                    }
+                }
+            }
+        }
+
+
+        /* pass the ID of a fixed length system pve db.addArgToSystemPred
+         *              -- should fail
+         */
+        if ( failures == 0 )
+        {
+            pve = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                pve = db.addArgToPredVE(fl_sys_pve_ID);
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( pve != null ) ||
+                 ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( pve != null )
+                    {
+                        outStream.print(
+                            "addArgToPredVE(fl_sys_pve_ID) returned non-null.\n");
+                    }
+
+                    if ( completed )
+                    {
+                        outStream.print(
+                                "addArgToPredVE(fl_sys_pve_ID) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("addArgToPredVE(fl_sys_pve_ID) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                s0 = db.toString();
+
+                if ( s0 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.toString() returned null after " +
+                                        "addArgToPredVE(fl_sys_pve_ID).\n");
+                    }
+                }
+                else if ( s0.compareTo(expected_string_8) != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf("db.toString() returned unexpected " +
+                                "string after addArgToPredVE(fl_sys_pve_ID): " +
+                                "\"%s\"\n", s0);
+                    }
+                }
+            }
+        }
+
+
+        /* pass the ID of the predicate column mve to db.addArgToPredVE()
+         *              -- should fail
+         */
+        if ( failures == 0 )
+        {
+            pve = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                pve = db.addArgToPredVE(pred_mve_ID);
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( pve != null ) ||
+                 ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( pve != null )
+                    {
+                        outStream.print(
+                            "addArgToPredVE(pred_mve_ID) returned non-null.\n");
+                    }
+
+                    if ( completed )
+                    {
+                        outStream.print(
+                                "addArgToPredVE(pred_mve_ID) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("addArgToPredVE(pred_mve_ID) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                s0 = db.toString();
+
+                if ( s0 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.toString() returned null after " +
+                                        "addArgToPredVE(pred_mve_ID).\n");
+                    }
+                }
+                else if ( s0.compareTo(expected_string_8) != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf("db.toString() returned unexpected " +
+                                "string after addArgToPredVE(pred_mve_ID): " +
+                                "\"%s\"\n", s0);
+                    }
+                }
+            }
+        }
+
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestAddArgToPredVE() */
+
+
+    /**
      * TestAddPredVE()
      *
      * Test the addPredVE() method.  Only cursory testing is needed, as
@@ -6608,7 +7931,15 @@ public abstract class DatabaseTest {
      *
      * Changes:
      *
-     *    - None.
+     * <ul>
+     *   <li>
+     *      Modified test to use addSystemPredVE() when creating a system
+     *      predicate.  This change was necessitated by my tightening up
+     *      who can create and/or modify system predicates.
+     *
+     *                                              JRM -- 7/26/09
+     *   </li>
+     * </ul>
      */
 
     public static boolean TestPredVEExists(java.io.PrintStream outStream,
@@ -6705,7 +8036,7 @@ public abstract class DatabaseTest {
                 smve_id = addMatrixVEPrivate(db,smve);
                 mve_id = addMatrixVEPrivate(db,mve);
                 pve_id = db.addPredVE(pve);
-                spve_id = db.addPredVE(spve);
+                spve_id = db.addSystemPredVE(spve);
                 pveExists5 = db.predVEExists("s-matrix");
                 pveExists6 = db.predVEExists("matrix");
                 pveExists7 = db.predVEExists("pred");
@@ -7320,7 +8651,7 @@ public abstract class DatabaseTest {
 
 
     /**
-     * TestReplaceMatrixVE()
+     * TestReplacePredVE()
      *
      * Test the replaceMatrixVE() method.  Only cursory testing is needed, as
      * the function does little more than call vl.replaceVocabElement().
@@ -8121,7 +9452,11 @@ public abstract class DatabaseTest {
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified test to use addSystemPredVE() when adding a system
+     *      predicate.  This was made necessary by my tightening up on
+     *      restrictions on who can create or modify a system predicate.
+     * 
+     *                                              JRM -- 7/26/09
      */
 
     public static boolean TestVocabElementExists(java.io.PrintStream outStream,
@@ -8218,7 +9553,7 @@ public abstract class DatabaseTest {
                 smve_id = addMatrixVEPrivate(db,smve);
                 mve_id = addMatrixVEPrivate(db,mve);
                 pve_id = db.addPredVE(pve);
-                spve_id = db.addPredVE(spve);
+                spve_id = db.addSystemPredVE(spve);
                 veExists5 = db.vocabElementExists("s-matrix");
                 veExists6 = db.vocabElementExists("matrix");
                 veExists7 = db.vocabElementExists("pred");

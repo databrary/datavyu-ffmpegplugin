@@ -734,6 +734,66 @@ public class Matrix implements Cloneable {
         return;
 
     } /* Matrix::toMODBFile() */
+    
+    
+    /**
+     * toMODBFile_update_local_vocab_list()
+     * 
+     * Pass the toMODBFile_update_local_vocab_list() message on to all data
+     * values in the matrix.
+     * 
+     *                                          JRM -- 7/22/09
+     * 
+     * Changes:
+     * 
+     *    - None.
+     * 
+     * @param dc
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName = "Matrix::toMODBFile_update_local_vocab_list(): ";
+        int i;
+        int numArgs;
+        DataValue arg;
+
+        if ( dc == null )
+        {
+            throw new SystemErrorException(mName + "null dc parameter.");
+        }
+
+        if ( argList == null )
+        {
+            /* argList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "argList unitialized?!?!");
+        }
+
+        numArgs = this.argList.size();
+
+        if ( numArgs <= 0 )
+        {
+            throw new SystemErrorException(mName + "numArgs <= 0");
+        }
+
+        i = 0;
+
+        while ( i < numArgs )
+        {
+            arg = this.getArg(i);
+
+            arg.toMODBFile_update_local_vocab_list(dc);
+
+            i++;
+        }
+
+
+        return;
+
+    } /* Matrix::toMODBFile_update_local_vocab_list() */
 
 
     /**

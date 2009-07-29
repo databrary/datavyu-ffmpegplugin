@@ -782,6 +782,37 @@ public abstract class DataValue extends DBElement
         
     } /* DataValue::replaceInIndex() */
 
+
+    /**
+     * toMODBFile_update_local_vocab_list()
+     *
+     * For most subclasses of DataValue, this definition of
+     * toMODBFile_update_local_vocab_list() is sufficient.  However,
+     * PredDataValue and ColPredDataValue must override this method
+     * to call the the toMODBFile_update_local_vocab_list() method of
+     * the supplied data column with the ID of the base PVE or MVE
+     * respectively.
+     *
+     *                                      JRM -- 7/2/09
+     *
+     * Changes;
+     *
+     *    - None.
+     *
+     * @param dc
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName = "DataValue::toMODBFile_update_local_vocab_list(): ";
+
+        return;
+
+    } /* DataValue::toMODBFile_update_local_vocab_list() */
+
     
 //    /*************************************************************************/
 //    /****************** Change Listener List Management: *********************/

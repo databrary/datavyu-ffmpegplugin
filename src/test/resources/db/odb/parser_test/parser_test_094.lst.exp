@@ -135,18 +135,16 @@ Spreadsheet Variable Definition:
 00073                  ( COLUMN-WIDTH> 200 ) 
 00074                ) 
 00075              )
-00076  ; At present, openshapa doesn't handle variable length matricies well -- comment
-00077  ; this portion of the test out until we fix this.  JRM -- 7/13/09
-00078  ;            ( |var len matrix|
-00079  ;              (
-00080  ;                ( TYPE> <<MATRIX>> )
-00081  ;                ( VARIABLE-LENGTH> TRUE )
-00082  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
-00083  ;                ( COLUMN-WIDTH> 225 )
-00084  ;              )
-00085  ;            )
-00086            ) 
-00087          ) 
+00076  ;            ( |var len matrix|
+00077  ;              (
+00078  ;                ( TYPE> <<MATRIX>> )
+00079  ;                ( VARIABLE-LENGTH> TRUE )
+00080  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+00081  ;                ( COLUMN-WIDTH> 225 )
+00082  ;              )
+00083  ;            )
+00084            ) 
+00085          ) 
 
 
 Spreadsheet Variable Definition:
@@ -154,8 +152,16 @@ Spreadsheet Variable Definition:
 	type = MATRIX
 	variable length = false
 	column width = 200
-00088          ( SPREADSHEET-VARIABLE-DEFINITIONS> 
-00089            (
+00086          ( SPREADSHEET-VARIABLE-DEFINITIONS>
+00087           ( 
+00088           	33 ; first item in list is an atom
+00089           	( "an arbitrary list" "that appears" "in the variable definitions list") ; this should gernerate a warning
+
+      WARNING  54 (Line 88:11): Encountered an atom in the spreadsheet variable definitions list.  The atom was discarded.
+
+
+      WARNING  53 (Line 89:13): Encountered a list that is not a spreadsheet variable definition in the spreadsheet variables definitions list.  List discarded.
+
 00090              ( |a text var|
 00091                (
 00092                  ( CELLS>
@@ -342,31 +348,30 @@ Spreadsheet Variable Cell Definition:
 	value = <arg1>, <arg2>
 00155                )
 00156              )
-00157  ; At present, openshapa doesn't handle variable length matricies well -- comment
-00158  ; this portion of the test out until we fix this.  JRM -- 7/13/09
-00159  ;            ( |var len matrix|
-00160  ;              (
-00161  ;                ( CELLS>
-00162  ;                  (
-00163  ;                    ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
-00164  ;                    ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
-00165  ;                    ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
-00166  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
-00167  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
-00168  ;                  )
-00169  ;                )
-00170  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
-00171  ;              )
-00172  ;            )
-00173            )
-00174          )
-00175        ) 
-00176      ) 
-00177      ( QUERY> 2 )
-00178      ( SYSTEM> 3 )
+00157  ;            ( |var len matrix|
+00158  ;              (
+00159  ;                ( CELLS>
+00160  ;                  (
+00161  ;                    ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00162  ;                    ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+00163  ;                    ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+00164  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
+00165  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+00166  ;                  )
+00167  ;                )
+00168  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
+00169  ;              )
+00170  ;            ) ; unexpected eof in spreadsheet variable definitions list
+00171  ;          )
+00172  ;        )
+00173  ;      ) 
+00174  ;    ) 
+00175  ;    ( QUERY> 2 )
+00176  ;    ( SYSTEM> 3 )
+00177  ;  ) 
+00178  ;)
 
-      WARNING  22 (Line 177:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
-        The value of the QUERY> section must be a list.
+      ERROR  4 (Line 178:0): Encountered end of file unexpectedly.
+        EOF encountered in the spreadsheet variable definitions list.
 
-00179    ) 
-00180  )
+Unable to continue parse -- Aborting...

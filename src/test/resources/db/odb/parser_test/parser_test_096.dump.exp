@@ -36,6 +36,14 @@
                 ( COLUMN-WIDTH> 200 )
               )
             )
+            ( |var len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> TRUE )
+                ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
+                ( COLUMN-WIDTH> 225 )
+              )
+            )
             ( |a text var|
               (
                 ( TYPE> <<TEXT>> )
@@ -117,6 +125,13 @@
                     ( |<val>| 0 )
                   )
                 )
+              )
+            )
+            ( |var len matrix|
+              (
+                ( CELLS>
+                )
+                ( VOCAB> ( ) )
               )
             )
             ( |a text var|

@@ -635,6 +635,41 @@ public final class PredDataValue extends DataValue
 
 
     /**
+     * toMODBFile_update_local_vocab_list() -- OVERRIDE
+     *
+     * If the predicate data value is defined, pass the
+     * toMODBFile_update_local_vocab_list() message on to the instance of
+     * Pred.  Otherwise do nothing.
+     *
+     *                                      JRM -- 7/2/09
+     *
+     * Changes;
+     *
+     *    - None.
+     *
+
+     * @param dc
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName =
+                "PredDataValue::toMODBFile_update_local_vocab_list(): ";
+
+        if ( this.itsValue != null )
+        {
+            this.itsValue.toMODBFile_update_local_vocab_list(dc);
+        }
+
+        return;
+
+    } /* PredDataValue::toMODBFile_update_local_vocab_list() */
+
+
+    /**
      * updateForMVEDefChange()
      *
      * Scan the list of data values in the matrix, and pass an update for

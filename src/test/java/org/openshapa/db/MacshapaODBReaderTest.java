@@ -3786,6 +3786,432 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest089() */
 
 
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest090()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest090()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_090.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_090.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_090.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_090.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_090.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_090.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_090.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest090() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest091()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest091()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_091.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_091.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_091.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_091.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_091.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_091.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_091.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest091() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest092()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest092()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_092.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_092.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_092.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_092.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_092.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_092.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_092.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest092() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest093()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest093()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_093.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_093.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_093.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_093.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_093.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_093.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_093.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest093() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest094()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest094()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_094.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_094.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_094.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_094.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_094.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_094.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_094.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_094() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //
+    //       Note that this particular test has an error in the variable
+    //       length matrix, so don't be surprised if a new bug is uncovered
+    //       when the var len matrix clauses are uncommented.
+    //
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest095()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest095()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_095.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_095.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_095.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_095.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_095.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_095.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_095.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest095() */
+
+
+    @Test
+    public void parserTest096()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest096()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 10;
+        final String inputFile = "/db/odb/parser_test/parser_test_096.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_096.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_096.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_096.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_096.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_096.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_096.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest096() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //
+    //       Note that this particular test has a lot of errors in the variable
+    //       length matrix, so don't be surprised if new bugs are uncovered
+    //       when the var len matrix clauses are uncommented.
+    //
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest097()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest097()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_097.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_097.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_097.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_097.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_097.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_097.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_097.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest097() */
+
+
+    @Test
+    public void parserTest098()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest098()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_098.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_098.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_098.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_098.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_098.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_098.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_098.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest098() */
+
+
+    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
+    //       properly, so I commented out references to same in the target
+    //       test file.
+    //
+    //       Reverse this as soon as variable length matricies are handled
+    //       correctly.
+    //                                          JRM -- 7/23/09
+    @Test
+    public void parserTest099()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest099()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_099.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_099.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_099.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_099.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_099.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_099.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_099.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest099() */
+
+
 
 //    /**
 //     * Test of get_next_token method, of class MacshapaODBReader.

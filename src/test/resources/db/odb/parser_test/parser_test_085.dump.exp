@@ -60,12 +60,14 @@
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |fixed len matrix|
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |a text var|

@@ -286,8 +286,10 @@ public abstract class VocabElement extends DBElement {
      */
     public boolean getSystem()
     {
+
         return system;
-    }
+
+    } /* VocabElement::getSystem() */
 
     /**
      * Sets this vocab element to be a System vocab element.
@@ -315,7 +317,7 @@ public abstract class VocabElement extends DBElement {
 
         return;
 
-    }
+    } /* VocabElement::setSystem() */
 
     /**
      * @return True if the Vocab Element has a varying number of formal
@@ -356,8 +358,18 @@ public abstract class VocabElement extends DBElement {
     }
 
     /**
+     * appendFormalArg()
+     *
      * Append the supplied formal argument to the end of the formal argument
      * list.
+     *
+     * Two versions of this method -- a public one that will always fail
+     * on an attempt to modify a system predicate, and a protected one that
+     * will go ahead and do the modification if the force parameter is true.
+     *
+     * We need the protected version, as there are some variable length
+     * system predicates in MacSHAPA database, and we must be able to add
+     * parameters to them.
      *
      * @param newArg The formal argument to append to the list of formal
      * arguments used for this VocabElement.
@@ -368,7 +380,19 @@ public abstract class VocabElement extends DBElement {
      * @date 2007/02/27
      */
     public void appendFormalArg(FormalArgument newArg)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
+        
+        this.appendFormalArg(newArg, false);
+        
+        return;
+        
+    } /* VocabElement::appendFormalArg(newArg) */
+    
+    protected void appendFormalArg(FormalArgument newArg,
+                                   boolean force)
+        throws SystemErrorException
+    {
         final String mName = "VocabElement::appendFormalArg(): ";
 
         if ( fArgList == null )
@@ -377,9 +401,14 @@ public abstract class VocabElement extends DBElement {
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
 
-        if ( this.system )
+        if ( ( this.system ) && ( ! force ) )
         {
-            /* this is a system vocab element, and thus is read only. */
+            /* this is a system vocab element, and thus is read only.
+             *
+             * as originally envisioned, system vocab elements were completely
+             * imutable -- however support for MacSHAPA databases requires
+             * that we relax this on occasion.
+             */
             throw new SystemErrorException(mName +
                     "attempt to modify a system vocab element.");
         }
@@ -397,6 +426,7 @@ public abstract class VocabElement extends DBElement {
         fArgList.add(newArg);
 
         newArg.setItsVocabElement(this);
+
         newArg.setItsVocabElementID(this.getID());  /* may be INVALID_ID */
 
         return;

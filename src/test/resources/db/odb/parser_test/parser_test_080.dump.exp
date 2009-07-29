@@ -50,18 +50,21 @@
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |svar 3|
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
             ( |svar 1|
               (
                 ( CELLS>
                 )
+                ( VOCAB> ( ) )
               )
             )
           )

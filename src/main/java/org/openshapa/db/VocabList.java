@@ -251,13 +251,15 @@ public class VocabList {
      */
     public static boolean isValidElement(final VocabList list,
                                          final VocabElement ve)
-    throws LogicErrorException {
+    throws LogicErrorException
+    {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(VocabList.class);
 
-        if (list.vl.containsReference(ve)
-            || list.nameMap.containsKey(ve.name)) {
+        if ( ( list.vl.containsReference(ve) ) ||
+             ( list.nameMap.containsKey(ve.name) ) )
+        {
             throw new LogicErrorException(rMap.getString("Error.veExists",
                                                          ve.getName()));
         }
@@ -475,7 +477,7 @@ public class VocabList {
 
         return matricies;
 
-    }
+    } /* VocabList::matricies:getMatricies() */
 
     /**
      * @return a vector containing copies of all non-system predicates in the
@@ -518,7 +520,7 @@ public class VocabList {
 
         return preds;
 
-    }
+    } /* VocabList::getPreds() */
 
     /**
      * Gets the VocabElement corresponding to the supplied id.

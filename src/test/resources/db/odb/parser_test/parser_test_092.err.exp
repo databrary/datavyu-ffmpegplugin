@@ -1,0 +1,11 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  16 (Line 171:9): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess value(s) encountered in the USER> SPREADSHEET-VARIABLE-DEFINITIONS> attribute.
+
+
+      WARNING  22 (Line 174:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the QUERY> section must be a list.
+

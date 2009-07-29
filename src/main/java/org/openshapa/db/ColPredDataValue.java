@@ -480,6 +480,40 @@ public final class ColPredDataValue extends DataValue {
 
 
     /**
+     * toMODBFile_update_local_vocab_list() -- OVERRIDE
+     *
+     * If the column predicate data value is defined, pass the
+     * toMODBFile_update_local_vocab_list() message on to the instance of
+     * colPred.  Otherwise do nothing.
+     *
+     *                                      JRM -- 7/2/09
+     *
+     * Changes;
+     *
+     *    - None.
+     *
+     * @param dc
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName =
+                "ColPredDataValue::toMODBFile_update_local_vocab_list(): ";
+
+        if ( this.itsValue != null )
+        {
+            this.itsValue.toMODBFile_update_local_vocab_list(dc);
+        }
+
+        return;
+
+    } /* ColPredDataValue::toMODBFile_update_local_vocab_list() */
+
+
+    /**
      * updateForMVEDefChange()
      *
      * If the associated column predicate is defined, pass an update for

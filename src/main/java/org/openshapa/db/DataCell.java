@@ -2572,6 +2572,48 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         return;
 
     } /* DataCell::toMODBFile() */
+    
+    
+    /**
+     * toMODBFile_update_local_vocab_list()
+     * 
+     * Pass the toMODBFile_update_local_vocab_list() on to the instance of 
+     * Matrix that comprises the value of the cell.
+     * 
+     *                                                  JRM -- 7/22/09
+     * 
+     * Changes:
+     * 
+     *    - None.
+     * 
+     * @param dc
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName = "DataCell::toMODBFile_update_local_vocab_list(): ";
+
+        if ( ( dc == null ) ||
+             ( dc.getID() != this.itsColID ) )
+        {
+            throw new SystemErrorException(mName +
+                                           "bad/mismatch dc parameter.");
+        }
+
+        if ( this.val == null )
+        {
+            throw new SystemErrorException(mName + "val is null!?!?");
+        }
+
+        this.val.toMODBFile_update_local_vocab_list(dc);
+
+        return;
+
+    } /* DataCell::toMODBFile_update_local_vocab_list() */
 
 
     /**

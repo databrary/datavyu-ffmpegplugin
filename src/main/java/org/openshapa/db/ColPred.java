@@ -956,6 +956,76 @@ implements InternalMatrixVocabElementListener {
 
 
     /**
+     * toMODBFile_update_local_vocab_list()
+     *
+     * If the column predicate is defined, call
+     * dc.toMODBFile_update_local_vocab_list() with the ID of the base matrix
+     * vocab element.  Then pass the
+     * toMODBFile_update_local_vocab_list() message on to all the arguments
+     * of the predicate.
+     *
+     * Otherwise do nothing.
+     *
+     *                                      JRM -- 7/2/09
+     *
+     * Changes;
+     *
+     *    - None.
+     *
+     * @param dc -- reference to the data column containing this column predicate.
+     *
+     * @throws org.openshapa.db.SystemErrorException
+     */
+
+    protected void
+    toMODBFile_update_local_vocab_list(DataColumn dc)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::toMODBFile_update_local_vocab_list(): ";
+        int i = 0;
+        int numArgs;
+        DataValue arg;
+
+        if ( dc == null )
+        {
+            throw new SystemErrorException(mName + "dc null on entry.");
+        }
+
+        if ( this.mveID != DBIndex.INVALID_ID )
+        {
+            dc.toMODBFile_update_local_vocab_list(this.mveID);
+
+            if ( this.argList == null )
+            {
+                /* argList hasn't been instantiated yet -- scream and die */
+                throw new SystemErrorException(mName + "argList unitialized?!?!");
+            }
+
+            numArgs = this.argList.size();
+
+            if ( numArgs <= 0 )
+            {
+                throw new SystemErrorException(mName + "numArgs <= 0");
+            }
+
+            while ( i < numArgs )
+            {
+                arg = this.getArg(i);
+
+                arg.toMODBFile_update_local_vocab_list(dc);
+
+                i++;
+            }
+        }
+
+        return;
+
+    } /* ColPred::toMODBFile_update_local_vocab_list() */
+
+
+
+
+    /**
      * @return A string representaiton of this ColPred.
      */
     public String toString()
@@ -994,7 +1064,8 @@ implements InternalMatrixVocabElementListener {
      * @date 2008/08/08
      */
     private Vector<DataValue> blindCopyArgList(Vector<DataValue> srcArgList)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::blindCopyArgList(srcArgList): ";
         int i;
         int numArgs;
@@ -1060,7 +1131,8 @@ implements InternalMatrixVocabElementListener {
      * @date 2008/08/08
      */
     private Vector<DataValue> constructEmptyArgList(MatrixVocabElement mve)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::constructEmptyArgList(pve): ";
         int i;
         int numArgs;
@@ -1112,7 +1184,8 @@ implements InternalMatrixVocabElementListener {
 
         return argList;
 
-    }
+    } /* ColPred::constructEmptyArgList(pve) */
+
 
     /**
      * Given a reference to a Vector containing an argument list for the ColPred
@@ -1132,7 +1205,8 @@ implements InternalMatrixVocabElementListener {
      */
     private Vector<DataValue> copyArgList(Vector<DataValue> srcArgList,
                                           boolean clearID)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::copyArgList(srcArgList, clearID): ";
         int i;
         int numArgs;
@@ -1508,7 +1582,7 @@ implements InternalMatrixVocabElementListener {
 
         return newArgList;
 
-    }
+    } /* ColPred::ColPred::copyArgList(srcArgList, clearID) */
 
     /**
      * If the ColPred is defined (i.e. this.mveID is not DBIndex.INVALID_ID,
