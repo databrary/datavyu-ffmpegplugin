@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
@@ -16,16 +15,9 @@ import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 
-
-
-
 /**
  * Test for the New Cells.
- *
- * @todo After bugs resolved, add more advanced cell tests involving
- * left/right caret movement
  */
-
 public final class UINewCellTest extends UISpecTestCase {
 
     /**
@@ -46,12 +38,11 @@ public final class UINewCellTest extends UISpecTestCase {
         "NOMINAL", "MATRIX", "FLOAT"
     };
 
-
     static {
       UISpec4J.init();
     }
 
-     /**
+    /**
      * Test creating a new NOMINAL cell.
      * @throws java.lang.Exception on any error
      */
@@ -60,13 +51,13 @@ public final class UINewCellTest extends UISpecTestCase {
         String varType = "NOMINAL";
         String varRadio = "nominal";
 
-        String[] testInput = {"Subject stands )up", "$10,432",
+        String[] testInput = {"Subject stands )up ", "$10,432",
             "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
             "If x>7 then x|2"};
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput = {"Subject stands up", "$10432",
+        String[] expectedTestOutput = {"Subject stands up ", "$10432",
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x7 then x2"};
 
@@ -74,7 +65,7 @@ public final class UINewCellTest extends UISpecTestCase {
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
-        //1. Create new TEXT variable,
+        //1. Create new variable,
         //open spreadsheet and check that it's there
         createNewVariable(varName, varType, varRadio);
 
@@ -92,27 +83,26 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
-                    .equals("<val>"));
+            assertTrue(cells.elementAt(i).getValueText().equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i]);
+            c.enterText(Cell.VALUE, testInput[i]);
+
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
         //5. Check copy pasting
-        Clipboard c = null;
-        for (int i = 1; i < numOfTests + 1; i++) {
+         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
-            c.putText(testInput[j]);
+            TextBox t = cells.elementAt(i - 1).getValue();
+            Clipboard.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
             //BugzID383: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
@@ -144,6 +134,7 @@ public final class UINewCellTest extends UISpecTestCase {
                      Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
                      Key.BACKSPACE, }};
 
+
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"Subject stands $10432up",
@@ -172,18 +163,18 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            c.enterText(0, testInput[i], advancedInput[i], testInput[i + 1]);
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
@@ -197,7 +188,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varType = "TEXT";
         String varRadio = "text";
 
-        String[] testInput = {"Subject stands up", "$10,432",
+        String[] testInput = {"Subject stands up ", "$10,432",
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
@@ -228,18 +219,18 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i]);
+            c.enterText(Cell.VALUE, testInput[i]);
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
@@ -253,7 +244,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varType = "TEXT";
         String varRadio = "text";
 
-        String[] testInput = {"Subject stands up", "$10,432",
+        String[] testInput = {"Subject stands up ", "$10,432",
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
@@ -281,11 +272,10 @@ public final class UINewCellTest extends UISpecTestCase {
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
         //5. Check copy pasting
-        Clipboard c = null;
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
-            c.putText(testInput[j]);
+            TextBox t = cells.elementAt(i - 1).getValue();
+            Clipboard.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
@@ -315,10 +305,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput = testInput;
-
         String[] advancedExpectedOutput = {"Subject stands $10,432up",
-            "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
+            "$10,43Hand me the manual!2", "Hand me the manuaTote_that_balel",
             "Tote_that_aJeune fille celebrel",
             "Jeune fille celebreIf x?7 then x? 2"};
 
@@ -344,18 +332,19 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i], advancedInput[i], testInput[i + 1]);
+            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
+                    testInput[i + 1]);
             assertTrue(t.getText().equalsIgnoreCase(advancedExpectedOutput[i]));
         }
     }
@@ -371,11 +360,12 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2"};
+            "If x?7 then. x? 2 "/* BugzID:486, "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
         int numOfTests = testInput.length;
 
-        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2};
+        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2/*, -0.1, 0.2,
+        0, 0, 0*/};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -399,36 +389,35 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i]);
+            c.enterText(Cell.VALUE, testInput[i]);
 
             assertTrue(Double.parseDouble(t.getText())
                     == (expectedTestOutput[i]));
         }
 
        //5. Check copy pasting
-        Clipboard c = null;
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
-            c.putText(testInput[j]);
+            TextBox t = cells.elementAt(i - 1).getValue();
+            Clipboard.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
             //BugzID:384: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
-/**
+    /**
      * Test creating a new FLOAT cell with advanced input.
      * @throws java.lang.Exception on any error
      */
@@ -439,7 +428,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then.- x? 2", "()12.3"};
+            "If x?7 then.- x? 2",  /*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
@@ -451,7 +440,7 @@ public final class UINewCellTest extends UISpecTestCase {
                 Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
                 Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 708, -27,
+        double[] expectedTestOutput = {-43.21019, -43.28921, 2178.8, 7, -27,
         -27.3};
 
         // Retrieve the components
@@ -476,25 +465,19 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i], advancedInput[i],
+            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
                     testInput[i + 1]);
-
-            if (Double.parseDouble(t.getText())
-                    != expectedTestOutput[i]) {
-                System.out.println(t.getText());
-                System.out.println(expectedTestOutput[i]);
-            }
 
             assertTrue(Double.parseDouble(t.getText())
                     == expectedTestOutput[i]);
@@ -513,12 +496,12 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2"};
+            "If x?7 then x? 2 ", "99999999999999999999"/* BugzID:485, "-", "-0"*/};
 
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72"};
+            "72", "999999999999999999"/*, "0", "0"*/};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -541,28 +524,27 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i]);
+            c.enterText(Cell.VALUE, testInput[i]);
 
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
-               //5. Check copy pasting
-        Clipboard c = null;
+        //5. Check copy pasting
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValueTextBox(0);
-            c.putText(testInput[j]);
+            TextBox t = cells.elementAt(i - 1).getValue();
+            Clipboard.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
             //BugzID369: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
@@ -579,7 +561,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
-            "!289(", "178&", "If x?7. then x? 2", "17-8&", "()12.3"};
+            "!289(", "178&", "If x?7. then x? 2", "17-8&"/*, BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
@@ -616,18 +598,18 @@ public final class UINewCellTest extends UISpecTestCase {
 
         for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnsetTime().toString())
+            assertTrue((cells.elementAt(i).getOnset().getText())
                     .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffsetTime().toString())
+            assertTrue((cells.elementAt(i).getOffset().getText())
                     .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValueTextBox(0).getText()
+            assertTrue(cells.elementAt(i).getValue().getText()
                     .equals("<val>"));
 
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
-            TextBox t = c.getValueTextBox(0);
+            TextBox t = c.getValue();
 
-            c.enterEditorText(0, testInput[i], advancedInput[i],
+            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
                     testInput[i + 1]);
 
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));

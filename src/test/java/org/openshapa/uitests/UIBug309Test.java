@@ -76,5 +76,5 @@ public final class UIBug309Test extends UISpecTestCase {
                 .equals(varType));
         //check that column has no cells
         assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-    }    
+    }
 }
