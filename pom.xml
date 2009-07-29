@@ -132,7 +132,7 @@
   <distributionManagement>
     <site>
       <id>website</id>
-      <url>scp://openshapa.org/var/www/openshapa/</url>
+      <url>scp://hudson@openshapa.org/var/www/openshapa/</url>
     </site>
   </distributionManagement>
 
