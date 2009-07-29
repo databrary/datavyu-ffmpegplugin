@@ -2,11 +2,10 @@ package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
+import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.uispec4j.utils.KeyUtils;
 
 /**
@@ -22,58 +21,30 @@ public class Cell extends AbstractUIComponent {
      * UISpec4J convention to declare associated class.
      */
     public static final Class[] SWING_CLASSES = {SpreadsheetCell.class};
+    /**
+     * Data value element.
+     */
     public static final int VALUE = 0;
+    /**
+     * Onset Timestamp.
+     */
     public static final int ONSET = 1;
+    /**
+     * Offset Timestamp.
+     */
     public static final int OFFSET = 2;
     /**
      * Since this is an Adaptor class, this is the class being adapted.
      */
     private SpreadsheetCell ssCell;
 
-    private MatrixRootView matrixRV;
-
-    /**
-     * Inner class for Cell to track changes to the MatrixRootView TextBox
-     * and adjust the caret location accordingly.
-     */
-    private class DocListener implements DocumentListener {
-
-        /**
-         * Gives notification that there was an insert into the document.
-         * The range given by the DocumentEvent bounds the freshly inserted
-         * region.
-         * @param e DocumentEvent
-         */
-        public void insertUpdate(DocumentEvent e) {
-           setCaretPosition(matrixRV.getCaretPosition() + e.getLength());
-        }
-
-        /**
-         * Gives notification that a portion of the document has been removed.
-         * The range is given in terms of what the view last saw (that is,
-         * before updating sticky positions).
-         * @param e DocumentEvent
-         */
-        public void removeUpdate(DocumentEvent e) {
-           setCaretPosition(matrixRV.getCaretPosition() - e.getLength());
-        }
-
-        /**
-         * Not used currently.
-         * @param e DocumentEvent
-         */
-        public void changedUpdate(DocumentEvent e) {
-        }
-    }
     /**
      * Spreadsheet constructor.
-     * @param SpreadsheetCell actual SpreadsheetCell class being adapted
+     * @param spreadsheetCell actual SpreadsheetCell class being adapted
      */
     public Cell(final SpreadsheetCell spreadsheetCell) {
         Assert.assertNotNull(spreadsheetCell);
-        ssCell = spreadsheetCell;
-        matrixRV = ssCell.getDataView();
-        matrixRV.getDocument().addDocumentListener(new DocListener());
+        this.ssCell = spreadsheetCell;
     }
 
     public Component getAwtComponent() {
@@ -104,7 +75,7 @@ public class Cell extends AbstractUIComponent {
      * Returns Timestamp of Offset so that components are easily accessible.
      * @return Timestamp offset timestamp
      */
-    public final Timestamp getOffsetTime() {
+    public final Timestamp getOffsetTimestamp() {
         return new Timestamp(this.getOffset().getText());
     }
 
@@ -125,220 +96,81 @@ public class Cell extends AbstractUIComponent {
     }
 
     /**
-     * This is a matrix, which may change in the future, but right now,
-     * it is not easy to hide this implementation.
-     * @return MatrixRootView of the cell
+     * returns the value, which is a JTextArea (MatrixRootView).
+     * returns as a TextBox
+     * @return TextBox value
      */
-    public final MatrixRootView getMatrixRootView() {
-        return matrixRV;
+    public final TextBox getValue() {
+        MatrixRootView mrv = ssCell.getDataView();
+        return new TextBox(mrv);
     }
 
-     /**
-     * types text into the cell value.
-     * @param part int section of the value
+    /**
+     * returns the text of the value.
+     * returns as a String
+     * @return String value
+     */
+    public final String getValueText() {
+        return getValue().getText();
+    }
+
+    /**
+     * types text into a cell element.
+     * @param element element to type value into
      * @param s String to type
      */
-    public final void enterEditorText(final int part, final String s) {
-        requestEditorFocus(VALUE);
-        enterEditorTextNoFocus(part, s);
-    }
-
-    private void enterEditorTextNoFocus(final int part, final String s) {
-        for (int i = 0; i < s.length(); i++) {
-            Key k = new Key(s.charAt(i));
-            KeyUtils.pressKey(matrixRV, k);
-            KeyUtils.typeKey(matrixRV, k);
-            KeyUtils.releaseKey(matrixRV, k);
-        }
+    public final void enterText(final int element, final String s) {
+        requestFocus(element);
+        KeyUtils.enterString(getComponentByType(element), s);
     }
 
      /**
-     * types text into the cell value.
-     * @param part int section of the value
+     * types text into the cell element.
+     * @param element element to type value into
      * @param s1 String to type first
      * @param keys Keys to type next
      * @param s2 String to add at the end
      */
-    public final void enterEditorText(final int part, final String s1,
+    public final void enterText(final int element, final String s1,
             final Key[] keys, final String s2) {
-        requestEditorFocus(VALUE);
-        enterEditorTextNoFocus(part, s1, keys, s2);
-    }
+        requestFocus(element);
 
-    private final void enterEditorTextNoFocus(final int part, final String s1,
-            final Key[] keys, final String s2) {
-        enterEditorTextNoFocus(0, s1);
-        enterEditorKeysNoFocus(0, keys);
-        enterEditorTextNoFocus(0, s2);
+        KeyUtils.enterString(getComponentByType(element), s1);
+        KeyUtils.enterKeys(getComponentByType(element), keys);
+        KeyUtils.enterString(getComponentByType(element), s2);
     }
 
      /**
-     * types text into the cell value.
-     * @param part int section of the value
-     * @param s1 String to type first
-     * @param keys Keys to type next
-     * @param s2 String to add at the end
+     * sets the focus to a particular element of cell.
+     * @param element to gain focus
      */
-    public final void enterEditorKeys(final int part, final Key[] keys) {
-        requestEditorFocus(VALUE);
-        enterEditorKeysNoFocus(part, keys);
-    }
-
-    private void enterEditorKeysNoFocus(final int part, final Key[] keys) {
-        for (Key k : keys) {
-            int caret = matrixRV.getCaretPosition();
-            if (k.getChar() != null) {
-                KeyUtils.pressKey(matrixRV, k);
-                KeyUtils.typeKey(matrixRV, k);
-                KeyUtils.releaseKey(matrixRV, k);
-            } else {
-                KeyUtils.pressKey(matrixRV, k);
-                KeyUtils.releaseKey(matrixRV, k);
-            }
-
-            if (k == Key.LEFT) {
-                caret -= 1;
-            } else if (k == Key.RIGHT) {
-                caret += 1;
-            } else if (k == Key.BACKSPACE) {
-                caret -= 1;
-            } else if (k == Key.DELETE) {
-                caret += 0;
-            } else {
-                caret += 1;
-            }
-            // if there is a selection we do not need to update the caret.
-            if (matrixRV.getCaret().getDot() == matrixRV.getCaret().getMark()) {
-                setCaretPosition(caret);
-            }
+    public final void requestFocus(final int element) {
+       if (element == VALUE) {
+            ((MatrixRootView) getComponentByType(element)).focusGained(null);
+             ((MatrixRootView) getComponentByType(element)).getEdTracker().focusGained(null);
+        } else {
+            ((TimeStampTextField) getComponentByType(element))
+                    .focusGained(null);
         }
-    }
 
-    private void setCaretPosition(int pos) {
-        int caretPos = Math.max(pos, 0);
-        caretPos = Math.min(caretPos, matrixRV.getText().length());
-        matrixRV.setCaretPosition(caretPos);
-    }
-
-     /**
-     * types text into the onset timestamp.
-     * @param s String to type
-     */
-    public final void enterOnsetText(final String s) {
-        requestEditorFocus(ONSET);
-        KeyUtils.enterString(getDVEditorByType(ONSET, 0), s);
-    }
-
-     /**
-     * types text into the offset timestamp.
-     * @param s String to type
-     */
-    public final void enterOffsetText(final String s) {
-        requestEditorFocus(OFFSET);
-        KeyUtils.enterString(getDVEditorByType(OFFSET, 0), s);
     }
 
     /**
-     * sets the focus to a particular component of cell.
-     * @param component to gain focus
-     * @param i Int of value part, if value
-     */
-    public final void requestEditorFocus(final int component) {
-        switch (component) {
-            case VALUE:
-                matrixRV.focusGained(null);
-                matrixRV.getEdTracker().focusGained(null);
-                break;
-            case ONSET:
-                ssCell.getOnset().focusGained(null);
-                break;
-            case OFFSET:
-                ssCell.getOffset().focusGained(null);
-                break;
-        }
-    }
-
-    /**
-     * type a single key into a particular component in the cell.
-     * @param component to type into
-     * @param i section of value, if value
-     * @param k Key to type
-     */
-    public final void typeEditorKey(final int component, final Key k) {
-        switch (component) {
-            case VALUE:
-                KeyUtils.typeKey(this.getMatrixRootView(), k);
-                break;
-            case ONSET:
-                KeyUtils.typeKey(ssCell.getOnset(), k);
-                break;
-            case OFFSET:
-                KeyUtils.typeKey(ssCell.getOffset(), k);
-                break;
-        }
-    }
-
-    /**
-     * returns the onset or offset component of the cell.
+     * returns the text component by its type.
      * @param type cell component type
-     * @param i int of value section if value
-     * @return DataValueEditorInner of particular component of cell
+     * @return JTextComponent of particular component of cell
      */
-    public final JTextComponent getDVEditorByType(final int type, final int i) {
+    private JTextComponent getComponentByType(final int type) {
         switch (type) {
+            case VALUE:
+                return ssCell.getDataView();
             case ONSET:
                 return ssCell.getOnset();
             case OFFSET:
                 return ssCell.getOffset();
             default:
-                return null;
-        }
-    }
-    
-    public final Component getMREditorByType(final int type, final int i) {
-        switch (type) {
-            case VALUE:
-                return this.getMatrixRootView();
-            default:
-                return null;
-        }
-
-    }
-
-     /**
-     * presses a single key into a particular component in the cell.
-     * @param component to type into
-     * @param i section of value, if value
-     * @param k Key to type
-     */
-    public final void pressEditorKey(final int component, final Key k) {
-        switch (component) {
-            case VALUE:
-                KeyUtils.pressKey(this.getMatrixRootView(), k);
-                break;
-            case ONSET:
-                KeyUtils.pressKey(ssCell.getOnset(), k);
-                break;
-            case OFFSET:
-                KeyUtils.pressKey(ssCell.getOffset(), k);
-                break;
+                return ssCell.getDataView();
         }
     }
 
-     /**
-     * returns a Textbox for the value component of a cell.
-     * @param part section of the value of which to turn the Textbox
-     * @return Textbox of section of the value component
-     */
-    public final TextBox getValueTextBox(final int part) {
-        // this returns a TextBox for the whole MatrixRootView of the Cell
-        // (an extended JTextArea now)
-
-        // Currently returns the whole MatrixRootView where one day (soon)
-        // we would want to be able to enter text into other editor components
-        // in a matrix or predicate for instance.
-        // The current tests all operate on single editors.
-
-        return new TextBox(this.getMatrixRootView());
-    }
 }

@@ -64,8 +64,22 @@ public class Spreadsheet extends AbstractUIComponent {
             }
         }
         return null;
+    }
 
+     /**
+     * Returns all Columns in the Spreadsheet.
+     * Returns empty vector if not found.
+     * @param name name (label) of column spreadsheet
+     * @return Vector<Column> , empty vector if not found
+     */
+    public final Vector<Column> getColumns() {
+        Vector<SpreadsheetColumn> columns = ssPanel.getColumns();
+        Vector<Column> returnColumns = new Vector<Column>();
+        for (SpreadsheetColumn sc : columns) {
+            returnColumns.add(new Column(sc));
+        }
 
+        return returnColumns;
     }
 
 }
