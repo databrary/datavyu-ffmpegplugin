@@ -471,7 +471,7 @@ implements ExternalDataCellListener, Selectable {
     public void DCellDeleted(Database db,
                              long colID,
                              long cellID) {
-        // TODO- Figure out how to work with cells that are deleted.
+        // TODO - Figure out how to work with cells that are deleted.
     }
 
     /**

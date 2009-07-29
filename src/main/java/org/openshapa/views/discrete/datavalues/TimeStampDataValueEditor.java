@@ -6,12 +6,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
-import org.openshapa.db.PredDataValue;
 import java.awt.event.KeyEvent;
-import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.openshapa.db.DataValue;
@@ -48,20 +45,11 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     private static Logger logger = Logger
                                    .getLogger(TimeStampDataValueEditor.class);
 
-    /** Are we deleting characters, or replacing them with a substitute? */
-    private boolean isDeletingChar;
-
-    /** The character to use as a substitute if we are doing replacement. */
-    private char replaceChar;
-
     /** The last caret position. */
     private int oldCaretPosition;
 
     /** Should the oldCaretPosition be advanced by a single position? */
     private boolean advanceCaret;
-
-    /** A list of characters that can not be removed from this view. */
-    private Vector<Character> preservedChars;
 
     /** The TimeStampDataValue that this view represents. **/
     private TimeStampDataValue model;
@@ -102,15 +90,14 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      * @param sourceType What timestamp are we displaying.
      */
     public TimeStampDataValueEditor(final JTextComponent ta,
-                                  final DataCell cell,
+                                   final DataCell cell,
                                   final TimeStampSource sourceType) {
         super(ta);
         setEditable(true);
         parentCell = cell;
         dataSourceType = sourceType;
-        preservedChars = new Vector<Character>();
-        addPreservedChar(new Character(':'));
-        setDeleteChar('0');
+        this.addPreservedChars(":");
+        this.setDeleteChar('0');
         resetValue();
     }
 
@@ -177,49 +164,68 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     }
 
     /**
-     * Constructor.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
-     */
-    public TimeStampDataValueEditor(final JTextComponent ta,
-                                  final DataCell cell,
-                                  final PredDataValue p,
-                                  final int pi,
-                                  final Matrix matrix,
-                                  final int matrixIndex) {
-        // TODO - Timestamps within datacell
-        // could I hold a proxy here? to use the updatedatabase code
-        // from inside DataValueEditor.
-    }
-
-    /**
-     * @return The list of preserved characters.
-     */
-    public Vector<Character> getPreservedChars() {
-        return preservedChars;
-    }
-
-    /**
-     * The action to invoke when a key is pressed.
-     * @param e The key event that triggered this action.
+     * Action to take by this editor when a key is pressed.
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        if (!e.isConsumed()) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    // Ignore - handled when the key is typed.
-                    e.consume();
-                    break;
-                default:
-                    break;
-            }
+        //prevText = getText();
+        //prevCaret = getCaretPosition();
+        //checkNullArgKeyTyped(e);
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+
+            case KeyEvent.VK_LEFT:
+                // Move caret to the left.
+                int c = Math.max(0, this.getCaretPosition() - 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the left is
+                // preserved character we need to skip one before passing
+                // the key event down to skip again (effectively skipping
+                // the preserved character).
+                int b = Math.max(0, getCaretPosition());
+                c = Math.max(0, this.getCaretPosition() - 1);
+                if (this.isPreserved(getText().charAt(b))
+                    || this.isPreserved(getText().charAt(c))) {
+                    setCaretPosition(Math.max(0, getCaretPosition() - 1));
+                }
+                e.consume();
+                break;
+
+            case KeyEvent.VK_RIGHT:
+                // Move caret to the right.
+                c = Math.min(this.getText().length(),
+                             this.getCaretPosition() + 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the right that
+                // is a preserved character, we need to skip one before
+                // passing the key event down to skip again (effectively
+                // skipping the preserved character)
+                b = Math.min(getText().length() - 1, getCaretPosition());
+                c = Math.min(getText().length() - 1, getCaretPosition() + 1);
+                if (c < this.getText().length()
+                    && (this.isPreserved(getText().charAt(c))
+                        || this.isPreserved(getText().charAt(b)))) {
+                    setCaretPosition(Math.min(getText().length() - 1,
+                                              getCaretPosition() + 1));
+                }
+                e.consume();
+                break;
+
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_UP:
+                // Key stroke gets passed up a parent element to navigate
+                // cells up and down.
+                break;
+            default:
+                break;
         }
     }
 
@@ -234,7 +240,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
             // The backspace key removes digits from behind the caret.
             if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                       && e.getKeyChar() == '\u0008') {
+                && e.getKeyChar() == '\u0008') {
 
                 // Can't delete empty time stamp data value.
                 if (!tdv.isEmpty()) {
@@ -251,24 +257,11 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                 if (!tdv.isEmpty()) {
                     int caret = getSelectionEnd();
                     this.removeAheadOfCaret();
+                    setCaretPosition(caret);
 
-                    boolean nextIsReserved = false;
-
-                    for (int i = 0;
-                         i < this.getPreservedChars().size();
-                         i++) {
-
-                        if (getText().charAt(caret)
-                            == this.getPreservedChars().get(i)) {
-                            nextIsReserved = true;
-                            break;
-                        }
-                    }
-
-                    if (nextIsReserved) {
-                        setCaretPosition(caret);
-                    } else {
-                        setCaretPosition(caret - 1);
+                    if (caret < getText().length()
+                        && this.isPreserved(getText().charAt(caret))) {
+                        setCaretPosition(getCaretPosition() + 1);
                     }
 
                     advanceCaret();
@@ -277,7 +270,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                 }
 
             // Key stoke is number - insert stroke at current caret position
-            } else if (Character.isDigit(e.getKeyChar())) {
+            // but only if their is room in the editor for the new digit.
+            } else if (Character.isDigit(e.getKeyChar())
+                       && this.getCaretPosition() < getText().length()) {
                 this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.deleteCharAt(getCaretPosition());
@@ -329,16 +324,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // to paste it into the timestamp. 1234 1234
             boolean reject = true;
             for (int i = 0; i < text.length(); i++) {
-                if (Character.isDigit(text.charAt(i))) {
+                if (Character.isDigit(text.charAt(i))
+                    || this.isPreserved(text.charAt(i))) {
                     reject = false;
-                }
-
-                for (int j = 0;
-                     reject && j < getPreservedChars().size();
-                     j++) {
-                    if (getPreservedChars().get(i) == text.charAt(i)) {
-                        reject = false;
-                    }
                 }
             }
 
@@ -347,13 +335,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             if (!reject) {
                 // Truncate any delimiters out of the timestamp datavalue.
                 // and treat it as a continous stream of digits.
-                for (int i = 0; i < getPreservedChars().size(); i++) {
-                    char[] temp = new char[1];
-                    temp[0] = getPreservedChars().get(i);
-                    String chars = new String(temp);
-                    text = text.replace(chars, "");
-                }
-
                 TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
                 TimeStamp ts = tsdv.getItsValue();
 
@@ -373,11 +354,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                     // If the character in the current caret position of the
                     // destination time stamp is a preservedCharacter, skip
                     // over it.
-                    for (int j = 0; j < getPreservedChars().size(); j++) {
-                        if (v.charAt(getCaretPosition())
-                            == getPreservedChars().get(j)) {
-                            setCaretPosition(getCaretPosition() + 1);
-                        }
+                    if (this.isPreserved(v.charAt(getCaretPosition()))) {
+                        setCaretPosition(getCaretPosition() + 1);
                     }
 
                     // Replace the character in the current caret position
@@ -416,7 +394,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
     /**
      * Builds a new value from a string.
+     *
      * @param textField The string that you want to create the value from.
+     *
      * @return A value that can be set into the database.
      */
     public TimeStamp buildValue(final String textField) {
@@ -469,154 +449,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
         advanceCaret = false;   // reset the advance caret flag - only applies
                                 // once per database update. Database update
                                 // triggers this method via a listener.
-    }
-
-    /**
-     * Removes characters from ahead of the caret if they are not in the
-     * preservedChars parameter. If the character is to be preserved, this
-     * method will simple shift the caret forward one spot.
-     */
-    public void removeAheadOfCaret() {
-        // Underlying text field has selection no caret, remove everything that
-        // is selected.
-        if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText();
-
-        // Underlying Text field has no selection, just a caret. Go ahead and
-        // manipulate it as such.
-        } else if (getText() != null && getText().length() > 0) {
-            // Check ahead of caret to see if it is a preserved character. If
-            // the character is preserved - simply move the caret ahead one spot
-            // and leave the preserved character untouched.
-            for (int i = 0; i < preservedChars.size(); i++) {
-                if (getText().charAt(getCaretPosition())
-                    == preservedChars.get(i)) {
-                    setCaretPosition(getCaretPosition() + 1);
-                    break;
-                }
-            }
-
-            // Delete next character.
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.deleteCharAt(getCaretPosition());
-
-            if (!isDeletingChar) {
-                currentValue.insert(getCaretPosition(), replaceChar);
-            }
-
-            int cPosition = getCaretPosition();
-            this.setText(currentValue.toString());
-            setCaretPosition(cPosition);
-        }
-    }
-
-    /**
-     * Removes characters from behind the caret if they are not in the
-     * preservedChars parameter. If the character is to be preserved, this
-     * method will simply shift the caret back one spot.
-     */
-    public void removeBehindCaret() {
-        // Underlying text field has selection and no carret, simply remove
-        // everything that is selected.
-        if ((getSelectionEnd() - getSelectionStart()) > 0) {
-            removeSelectedText();
-
-        // Underlying text field has no selection, just a caret. Go ahead and
-        // manipulate it as such.
-        } else if (getText() != null && getText().length() > 0) {
-            // Check behind the caret to see if it is a preserved character. If
-            // the character is preserved - simply move the caret back one spot
-            // and leave the preserved character untouched.
-            int carPosMinusOne = Math.max(0, getCaretPosition() - 1);
-            for (int i = 0; i < preservedChars.size(); i++) {
-                if (getText().charAt(carPosMinusOne)
-                    == preservedChars.get(i)) {
-                    setCaretPosition(carPosMinusOne);
-                    carPosMinusOne = Math.max(0, getCaretPosition() - 1);
-                    break;
-                }
-            }
-
-            // Delete previous character.
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.deleteCharAt(carPosMinusOne);
-            if (!isDeletingChar) {
-                currentValue.insert(carPosMinusOne, replaceChar);
-            }
-
-            int cPosition = carPosMinusOne;
-            this.setText(currentValue.toString());
-            setCaretPosition(cPosition);
-        }
-    }
-
-    /**
-     * This method will remove any characters that have been selected in the
-     * underlying text field and that don't exist in the preservedChars
-     * parameter. If no characters have been selected, the underlying text field
-     * is unchanged.
-     */
-    public void removeSelectedText() {
-        // Get the current value of the visual representation of this DataValue.
-        StringBuffer cValue = new StringBuffer(getText());
-
-        // Obtain the start and finish of the selected text.
-        int start = this.getSelectionStart();
-        int end = this.getSelectionEnd();
-        int pos = start;
-
-        for (int i = start; i < end; i++) {
-            boolean found = false;
-
-            // See if the character at the current position is reserved.
-            for (int j = 0; j < preservedChars.size(); j++) {
-                if (preservedChars.get(j) == cValue.charAt(pos)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            // Current character is not reserved - either delete or replace it.
-            if (!found) {
-                cValue.deleteCharAt(pos);
-
-                // Replace the character rather than remove it, we then need to
-                // skip to the next position to delete a character.
-                if (!isDeletingChar) {
-                    cValue.insert(pos, replaceChar);
-                    pos++;
-                }
-
-            // Current character is reserved, skip over current position.
-            } else {
-                pos++;
-            }
-        }
-
-        // Set the text for this data value to the new string.
-        this.setText(cValue.toString());
-        this.setCaretPosition(start);
-    }
-
-    /**
-     * Rather than delete characters.
-     *
-     * @param c The character to use when deleting (rather than deleting - the
-     * supplied character is used to replace).
-     */
-    public void setDeleteChar(final char c) {
-        isDeletingChar = false;
-        replaceChar = c;
-    }
-
-    /**
-     * Adds a character to the list that must be preserved by the editor
-     * (characters that can not be deleted).
-     *
-     * @param c The character to be preserved.
-     */
-    public void addPreservedChar(final Character c) {
-        preservedChars.add(c);
     }
 
     /**

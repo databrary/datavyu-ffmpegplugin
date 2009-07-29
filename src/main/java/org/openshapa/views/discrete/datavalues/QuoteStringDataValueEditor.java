@@ -78,32 +78,6 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     */
-    @Override
-    public void updateModelValue() {
-        QuoteStringDataValue dv = (QuoteStringDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            // logger
-        }
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval?
-        // Todo
-        return res;
-    }
-
-    /**
      * Recalculate the string for this editor.
      * Overrides to handle the extra quote character fixed texts.
      */

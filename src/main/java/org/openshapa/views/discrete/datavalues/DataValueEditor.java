@@ -45,26 +45,8 @@ public abstract class DataValueEditor extends EditorComponent {
     /** Text when editor gained focus (became current editor). */
     private String textOnFocus;
 
-    /** Previous text during edits. */
-    private String prevText;
-
-    /** Previous caret location during edits. */
-    private int prevCaret;
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueEditor.class);
-
-    /**
-     * Update the model to reflect the value represented by the editor's text
-     * representation.
-     */
-    public abstract void updateModelValue();
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    public abstract boolean sanityCheck();
 
     /**
      * Constructor.
@@ -237,9 +219,62 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        prevText = getText();
-        prevCaret = getCaretPosition();
         checkNullArgKeyTyped(e);
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+
+            case KeyEvent.VK_LEFT:
+                // Move caret to the left.
+                int c = Math.max(0, this.getCaretPosition() - 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the left is
+                // preserved character we need to skip one before passing
+                // the key event down to skip again (effectively skipping
+                // the preserved character).
+                int b = Math.max(0, getCaretPosition());
+                c = Math.max(0, this.getCaretPosition() - 1);
+                if (this.isPreserved(getText().charAt(b))
+                    || this.isPreserved(getText().charAt(c))) {
+                    setCaretPosition(Math.max(0, getCaretPosition() - 1));
+                }
+                e.consume();
+                break;
+
+            case KeyEvent.VK_RIGHT:
+                // Move caret to the right.
+                c = Math.min(this.getText().length(),
+                             this.getCaretPosition() + 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the right that
+                // is a preserved character, we need to skip one before
+                // passing the key event down to skip again (effectively
+                // skipping the preserved character)
+                b = Math.min(getText().length() - 1, getCaretPosition());
+                c = Math.min(getText().length() - 1, getCaretPosition() + 1);
+                if (c < this.getText().length()
+                    && (this.isPreserved(getText().charAt(c))
+                        || this.isPreserved(getText().charAt(b)))) {
+                    setCaretPosition(Math.min(getText().length() - 1,
+                                              getCaretPosition() + 1));
+                }
+                e.consume();
+                break;
+
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_UP:
+                // Key stroke gets passed up a parent element to navigate
+                // cells up and down.
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -249,6 +284,27 @@ public abstract class DataValueEditor extends EditorComponent {
     @Override
     public void keyTyped(final KeyEvent e) {
         checkNullArgKeyTyped(e);
+
+        // The backspace key removes digits from behind the caret.
+        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+            && e.getKeyChar() == '\u0008') {
+
+            // Can't delete an empty nominal data value.
+            if (!this.getModel().isEmpty()) {
+                this.removeBehindCaret();
+                e.consume();
+            }
+
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            // Can't delete an empty nominal data value.
+            if (!this.getModel().isEmpty()) {
+                this.removeAheadOfCaret();
+                e.consume();
+            }
+        }
     }
 
     /**
@@ -266,10 +322,11 @@ public abstract class DataValueEditor extends EditorComponent {
         if (argIsNull) {
             selectAll();
         } else {
+            /*
             if (!sanityCheck()) {
                 setText(prevText);
                 setCaretPosition(prevCaret);
-            }
+            }*/
         }
     }
 
@@ -316,24 +373,26 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Update the database with the model value.
      */
-    public final void updateDatabase() {
-        // reget the parentCell in case onset or offset have been changed.
-        try {
-            parentCell = (DataCell) parentCell.getDB()
-                                                   .getCell(parentCell.getID());
+    public void updateDatabase() {
+        /*
+        try {            
         } catch (SystemErrorException e) {
             logger.error("Unable to reget the cell data: ", e);
         }
-
+        
         // update the model.
         if (isNullArg()) {
             updateModelNull();
         } else {
             // call the subclass (template pattern)
             updateModelValue();
-        }
+        }*/
 
         try {
+            // reget the parentCell in case onset or offset have been changed.
+            parentCell = (DataCell) parentCell.getDB()
+                                              .getCell(parentCell.getID());
+
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {
                 parentMatrix.replaceArg(mIndex, model);
@@ -349,14 +408,6 @@ public abstract class DataValueEditor extends EditorComponent {
         } catch (SystemErrorException ex) {
             logger.error("Unable to update Database: ", ex);
         }
-    }
-
-    /**
-     * Update the model to reflect a null value.
-     */
-    public final void updateModelNull() {
-        DataValue dv = (DataValue) getModel();
-        dv.clearValue();
     }
 
     /**

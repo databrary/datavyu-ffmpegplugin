@@ -45,30 +45,4 @@ public final class UndefinedDataValueEditor extends DataValueEditor {
                             final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
     }
-
-    /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     */
-    @Override
-    public void updateModelValue() {
-        UndefinedDataValue dv = (UndefinedDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            // logger
-        }
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        // Todo
-        return res;
-    }
 }

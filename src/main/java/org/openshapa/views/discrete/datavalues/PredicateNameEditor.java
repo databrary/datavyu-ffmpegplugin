@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete.datavalues;
 
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
@@ -25,20 +24,11 @@ public final class PredicateNameEditor extends DataValueEditor {
     /** The matrixRootView in which this editor belongs. */
     private MatrixRootView matrixRootView;
 
-    /** The predicate name to search for in the vocab. */
-    private String searchText = "";
-
-    /** Set true while we are editing the predicate name. */
-    private boolean editing = false;
-
-    /** The new predicate ID corresponding to the edited text. */
-    private long newPredID = DBIndex.INVALID_ID;
-
     /** Vector of the editors that make up the predicate args. */
     private Vector<EditorComponent> argsEditors;
 
     /** String holding the reserved characters. */
-    static final String PREDNAME_RESERVED_CHARS = ")(<>|,;";
+    static final String PREDNAME_RESERVED_CHARS = ")(<>|,;\t\n";
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(PredicateNameEditor.class);
@@ -53,10 +43,10 @@ public final class PredicateNameEditor extends DataValueEditor {
      * @param eds The vector of predicate argument editors.
      */
     public PredicateNameEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex,
-                            final Vector<EditorComponent> eds) {
+                               final DataCell cell,
+                               final Matrix matrix,
+                               final int matrixIndex,
+                               final Vector<EditorComponent> eds) {
 
         super(ta, cell, matrix, matrixIndex);
 
@@ -65,54 +55,24 @@ public final class PredicateNameEditor extends DataValueEditor {
     }
 
     /**
-     * Recalculate the string for this editor.
-     * Overrides because toString for a Predicate includes all the args
-     * We just want the predicate name in this case.
+     * Recalculate the string for this editor. Overrides because toString for a
+     * Predicate includes all the args We just want the predicate name in this
+     * case.
      */
     @Override
     public void updateStrings() {
-        // if we are editing the name, do not try to get it from the
-        // database or else it will change to a null value.
-        if (editing) {
-            return;
-        }
-
-        String t = "";
-        if (!isNullArg()) {
-            try {
-                PredDataValue pdv = (PredDataValue) getModel();
-                Predicate pred = pdv.getItsValue();
-                t = pred.getPredName();
-            } catch (SystemErrorException e) {
-                logger.error("Problem getting predicate.", e);
+        try {
+            String newText = this.getText();
+            PredDataValue pdv = (PredDataValue) getModel();
+            if (!pdv.isEmpty()) {
+                newText = pdv.getItsValue().getPredName();
+            } else if (getText().length() == 0) {
+                newText = getNullArg();
             }
+            this.resetText(newText);
+        } catch (SystemErrorException e) {
+            logger.error("Problem getting predicate.", e);
         }
-        if (t.length() == 0) {
-            t = getNullArg();
-        }
-        this.resetText(t);
-    }
-
-    /**
-     * focusSet is the signal that this editor has become "current".
-     * @param fe Focus Event
-     */
-    @Override
-    public void focusGained(final FocusEvent fe) {
-        super.focusGained(fe);
-        searchText = getText();
-        editing = true;
-    }
-
-    /**
-     * Action to take when focus is lost for this editor.
-     * @param fe Focus Event
-     */
-    @Override
-    public void focusLost(final FocusEvent fe) {
-        editing = false;
-        super.focusLost(fe);
-        updateStrings();
     }
 
     /**
@@ -121,65 +81,42 @@ public final class PredicateNameEditor extends DataValueEditor {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        super.keyTyped(e);
+        //super.keyTyped(e);
+        int pos = this.getCaretPosition();
 
-        if (!e.isConsumed() && isReserved(e.getKeyChar())) {
-            // Ignore reserved characters.
+        // The backspace key removes characters from behind the caret.
+        if (!e.isConsumed()
+            && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+            && e.getKeyChar() == '\u0008') {
+
+            this.removeBehindCaret();
+            pos = this.getCaretPosition();
+            this.searchForPredicate(this.getText());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // The delete key removes characters ahead of the caret.
+        } else if (!e.isConsumed()
+                   && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            this.removeAheadOfCaret();
+            pos = this.getCaretPosition();
+            this.searchForPredicate(this.getText());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // If the character is not reserved - add it to the name of the pred
+        } else if (!e.isConsumed() && !isReserved(e.getKeyChar())) {
+            this.removeSelectedText();
+            StringBuffer cValue = new StringBuffer(this.getText());
+            cValue.insert(this.getCaretPosition(), e.getKeyChar());
+            pos = this.getCaretPosition() + 1;
+            this.setText(cValue.toString());
+            this.searchForPredicate(this.getText());
+            this.setCaretPosition(pos);
             e.consume();
         }
-    }
-
-    /**
-     * Action to take by this editor when a key is released.
-     * @param e KeyEvent
-     */
-    @Override
-    public void keyReleased(final KeyEvent e) {
-        super.keyReleased(e);
-
-        // return if no change since last search for a predicate match
-        if (getText().equals(searchText)) {
-            return;
-        }
-
-        int caret = getCaretPosition();
-
-        // reset the predicate argument editors
-        EditorTracker edTracker = matrixRootView.getEdTracker();
-        if (argsEditors.size() > 0) {
-            edTracker.removeEditors(argsEditors);
-            argsEditors.clear();
-        }
-
-        // look for the predicate vocab element matching the current text
-        searchText = getText();
-        newPredID = DBIndex.INVALID_ID;
-        if (!isNullArg()) {
-            try {
-                Database db = this.getModel().getDB();
-                for (PredicateVocabElement pve : db.getPredVEs()) {
-                    if (pve.getName().equals(searchText)) {
-                        newPredID = pve.getID();
-                        break;
-                    }
-                }
-            } catch (SystemErrorException se) {
-                logger.error("Unable to search vocab.", se);
-            }
-        }
-
-        // set the new predicate
-        updateDatabase();
-
-        // Setting the predicate causes a reset of the predicate datavalue.
-        // Build the new arg editors and add to the editor tracker
-        argsEditors.addAll(buildArgEditors());
-
-        if (argsEditors.size() > 0) {
-            edTracker.addEditors(argsEditors);
-        }
-        matrixRootView.rebuildText();
-        setCaretPosition(caret);
     }
 
     /**
@@ -191,16 +128,53 @@ public final class PredicateNameEditor extends DataValueEditor {
     }
 
     /**
+     * Searches for a predicate in the database, whose name matches the supplied
+     * argument.
+     *
+     * @param text The name of the predicate you are looking for in the
+     * database.
+     */
+    public void searchForPredicate(final String text) {
+        try {
+            // reset the predicate argument editors
+            EditorTracker edTracker = matrixRootView.getEdTracker();
+            if (argsEditors.size() > 0) {
+                edTracker.removeEditors(argsEditors);
+                argsEditors.clear();
+            }
+
+            long newPredID = DBIndex.INVALID_ID;
+            Database db = this.getModel().getDB();
+            for (PredicateVocabElement pve : db.getPredVEs()) {
+                if (pve.getName().equals(getText())) {
+                    newPredID = pve.getID();
+                    updateModelValue(newPredID);
+                    break;
+                }
+            }
+
+            PredDataValue pdv = (PredDataValue) getModel();
+            if (!pdv.isEmpty() && newPredID == DBIndex.INVALID_ID) {
+                updateModelValue(newPredID);
+            }
+
+        } catch (SystemErrorException se) {
+            logger.error("Unable to search vocab.", se);
+        }
+    }
+
+    /**
      * Update the model to reflect the value represented by the
      * editor's text representation.
-    */
-    @Override
-    public void updateModelValue() {
+     *
+     * @param newPredID the id of the new predicate data value to use for this
+     * predicate.
+     */
+    public void updateModelValue(final long newPredID) {
         try {
-            PredDataValue pdv = (PredDataValue) getModel();
-            // make a new predicate data value
-            pdv = new PredDataValue(getCell().getDB());
-            if (!editing && newPredID == DBIndex.INVALID_ID) {
+            // Make a new predicate data value
+            PredDataValue pdv = new PredDataValue(getCell().getDB());
+            if (newPredID == DBIndex.INVALID_ID) {
                 pdv.clearValue();
             } else {
                 Predicate pred = pdv.getItsValue();
@@ -208,9 +182,26 @@ public final class PredicateNameEditor extends DataValueEditor {
                 pdv.setItsValue(pred);
             }
             setModel(pdv);
+
+            // Update database and arguments with latest model.
+            updateDatabase();
+            rebuildArgEditors();
         } catch (SystemErrorException e) {
             logger.error("Unable to edit value", e);
         }
+    }
+
+    /**
+     * Setting the predicate causes a reset of the predicate database. Build the
+     * new arg editors and add to the editor tracker.
+     */
+    public void rebuildArgEditors() {
+        argsEditors.addAll(buildArgEditors());
+
+        if (argsEditors.size() > 0) {
+            matrixRootView.getEdTracker().addEditors(argsEditors);
+        }
+        matrixRootView.rebuildText();
     }
 
     /**
@@ -226,16 +217,5 @@ public final class PredicateNameEditor extends DataValueEditor {
             logger.error("Unable to build new predicate arg editors", ex);
         }
         return eds;
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        return res;
     }
 }

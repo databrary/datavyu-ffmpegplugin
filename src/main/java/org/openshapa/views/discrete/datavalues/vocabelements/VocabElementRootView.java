@@ -107,7 +107,7 @@ public final class VocabElementRootView extends JTextArea  {
     public Vector<EditorComponent> getEditors() {
         return editors;
     }
-    
+
     /**
      * Process key events that have been dispatched to this component, pass
      * them through to all listeners, and then if they are not consumed pass

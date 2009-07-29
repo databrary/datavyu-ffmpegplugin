@@ -16,7 +16,7 @@ import org.openshapa.views.discrete.EditorTracker;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
-*/
+ */
 public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /** The selection (used for cells) for the parent spreadsheet. */
@@ -76,12 +76,20 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * @param m The Matrix to display.
      */
     public void setMatrix(final Matrix m) {
+        // Determine selected editor, and internal caret position.
+        int pos = this.getCaretPosition();
+        EditorComponent comp = edTracker.findEditor(pos);
+        int edPos = comp.getCaretPosition();
+
         try {
             if (editors.size() == 0) {
                 editors.addAll(DataValueEditorFactory.
                                              buildMatrix(this, parentCell, m));
             } else {
                 for (EditorComponent ed : editors) {
+                    // BugzID:503 - This needs to be refactored. Should not be
+                    // doing reflection to determine type. Should boil down to
+                    // a simple ed.resetValue(parentCell, m);
                     DataValueEditorFactory.resetValue(ed, parentCell, m);
                 }
             }
@@ -90,6 +98,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         }
 
         rebuildText();
+
+        // restore caret position inside current editor.
+        comp.setCaretPosition(edPos);
     }
 
     /**
@@ -162,7 +173,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * Pastes contents of the clipboard into the nominal data value view.
      */
     @Override
-    public final void paste() {
+    public void paste() {
         if (edTracker.prePasteCheck()) {
             super.paste();
         }
