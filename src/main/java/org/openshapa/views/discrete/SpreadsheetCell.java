@@ -10,15 +10,11 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.ReferenceCell;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.db.TimeStamp;
-import org.openshapa.db.TimeStampDataValue;
 import org.openshapa.Configuration;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
-import org.openshapa.views.discrete.datavalues.OffsetView;
-import org.openshapa.views.discrete.datavalues.OnsetView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,6 +25,8 @@ import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 
 /**
  * Visual representation of a spreadsheet cell.
@@ -52,10 +50,10 @@ implements ExternalDataCellListener, Selectable {
     private JLabel ord;
 
     /** The Onset display component. */
-    private OnsetView onset;
+    private TimeStampTextField onset;
 
     /** The Offset display component. */
-    private OffsetView offset;
+    private TimeStampTextField offset;
 
     /** The Database the cell belongs to. */
     private Database db;
@@ -161,23 +159,20 @@ implements ExternalDataCellListener, Selectable {
 
         setOrdinal(dc.getOrd());
 
-        onset = new OnsetView(selection,
+        onset = new TimeStampTextField(selection,
                               dc,
-                              new TimeStampDataValue(cellDB),
-                              true);
+                              TimeStampSource.Onset);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
-        onset.setValue(dc.getOnset());
 
-        offset = new OffsetView(selection,
-                                dc,
-                                new TimeStampDataValue(cellDB),
-                                true);
+        offset = new TimeStampTextField(selection,
+                              dc,
+                              TimeStampSource.Offset);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
-        offset.setValue(dc.getOffset());
 
         dataPanel = new MatrixRootView(selection, dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
+        dataPanel.setOpaque(false);
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
@@ -187,8 +182,7 @@ implements ExternalDataCellListener, Selectable {
 
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
-        topPanel.setBackground(Configuration.getInstance()
-                                                      .getSSBackgroundColour());
+        topPanel.setOpaque(false);
         topPanel.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         cellPanel.add(topPanel, BorderLayout.NORTH);
@@ -197,17 +191,14 @@ implements ExternalDataCellListener, Selectable {
         topPanel.add(strut1);
         Component glue = Box.createGlue();
         topPanel.add(glue);
-        onset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+
         topPanel.add(onset);
         Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
-       topPanel.add(strut2);
+        topPanel.add(strut2);
         topPanel.add(offset);
-        offset.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         // Set the apperance of the data panel - add elements for displaying the
         // actual data of the panel.
-        dataPanel.setBackground(Configuration.getInstance()
-                                             .getSSBackgroundColour());
         cellPanel.add(dataPanel, BorderLayout.CENTER);
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
@@ -224,14 +215,14 @@ implements ExternalDataCellListener, Selectable {
     /**
      * @return onset view
      */
-    public OnsetView getOnset() {
+    public TimeStampTextField getOnset() {
         return onset;
     }
 
     /**
      * @return offset view
      */
-    public OffsetView getOffset() {
+    public TimeStampTextField getOffset() {
         return offset;
     }
 
@@ -239,7 +230,6 @@ implements ExternalDataCellListener, Selectable {
      * Set the ordinal value.
      *
      * @param ord The new ordinal value to use with this cell.
-     * @deprecated The underlying IntDataValue should be altered, not the view.
      */
     private void setOrdinal(Integer ordInt) {
         ord.setText(ordInt.toString());
@@ -396,23 +386,22 @@ implements ExternalDataCellListener, Selectable {
             }
             dcell.setSelected(selected);
             cell.getDB().replaceCell(dcell);
+
+            if (selected) {
+            // method names don't reflect usage - we didn't really create this
+            // cell just now.
+                OpenSHAPA.setLastCreatedColId(cell.getItsColID());
+                OpenSHAPA.setLastCreatedCellId(cell.getID());
+            }
         } catch (SystemErrorException e) {
            logger.error("Failed clicking on SpreadsheetCell.", e);
         }
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
-            topPanel.setBackground(Configuration.getInstance()
-                                                .getSSSelectedColour());
-            dataPanel.setBackground(Configuration.getInstance()
-                                                 .getSSSelectedColour());
             cellPanel.setBackground(Configuration.getInstance()
                                                  .getSSSelectedColour());
         } else {
-            topPanel.setBackground(Configuration.getInstance()
-                                                .getSSBackgroundColour());
-            dataPanel.setBackground(Configuration.getInstance()
-                                                 .getSSBackgroundColour());
             cellPanel.setBackground(Configuration.getInstance()
                                                  .getSSBackgroundColour());
         }
@@ -458,11 +447,11 @@ implements ExternalDataCellListener, Selectable {
         }
 
         if (onsetChanged) {
-            onset.setValue(newOnset);
+            onset.setValue();
         }
 
         if (offsetChanged) {
-            offset.setValue(newOffset);
+            offset.setValue();
         }
 
         if (valChanged) {

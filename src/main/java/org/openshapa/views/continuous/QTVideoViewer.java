@@ -6,6 +6,7 @@ import org.openshapa.views.QTVideoController;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.controllers.SetNewCellStartTimeC;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
@@ -307,6 +308,8 @@ implements MovieDrawingComplete {
     public void setCellStartTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
+            curTime = curTime * SECONDS_TO_MILLI;
+            new SetNewCellStartTimeC((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
         }
@@ -319,6 +322,8 @@ implements MovieDrawingComplete {
     public void setCellStopTime() {
         try {
             double curTime = movie.getTime() / (double) movie.getTimeScale();
+            curTime = curTime * SECONDS_TO_MILLI;
+            new SetNewCellStopTimeC((long) curTime);
         } catch (QTException e) {
             logger.error("Unable to setCellStartTime", e);
         }

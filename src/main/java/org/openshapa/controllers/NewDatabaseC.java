@@ -15,7 +15,7 @@ public class NewDatabaseC {
     public NewDatabaseC() {
         // Create the view, register this controller with it and display it.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        NewDatabaseV view = new NewDatabaseV(mainFrame, false);
+        NewDatabaseV view = new NewDatabaseV(mainFrame, true);
         OpenSHAPA.getApplication().show(view);
     }
 }

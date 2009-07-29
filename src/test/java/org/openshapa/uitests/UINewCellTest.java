@@ -439,7 +439,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then.- x? 2",  /*BugzID422:"()12.3"*/};
+            "If x?7 then.- x? 2", "()12.3"};
 
         int numOfTests = testInput.length;
 
@@ -452,7 +452,7 @@ public final class UINewCellTest extends UISpecTestCase {
                 Key.LEFT, Key.LEFT}};
 
         double[] expectedTestOutput = {-43.21109, -43.28921, 2178.8, 708, -27,
-        -27};
+        -27.3};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -489,6 +489,12 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterEditorText(0, testInput[i], advancedInput[i],
                     testInput[i + 1]);
+
+            if (Double.parseDouble(t.getText())
+                    != expectedTestOutput[i]) {
+                System.out.println(t.getText());
+                System.out.println(expectedTestOutput[i]);
+            }
 
             assertTrue(Double.parseDouble(t.getText())
                     == expectedTestOutput[i]);
@@ -573,7 +579,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
-            "!289(", "178&", "If x?7. then x? 2", "17-8&", /*BugzID422:"()12.3"*/};
+            "!289(", "178&", "If x?7. then x? 2", "17-8&", "()12.3"};
 
         int numOfTests = testInput.length;
 

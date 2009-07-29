@@ -11,6 +11,7 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.Predicate;
+import org.openshapa.db.PredicateVocabElement;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 
@@ -191,11 +192,17 @@ public abstract class DataValueEditor extends EditorComponent {
     public final String getNullArg() {
         String t = "";
         try {
-            if (parentMatrix != null) {
+            if (parentMatrix != null && parentPredicate == null) {
                 long mveid = parentMatrix.getMveID();
                 MatrixVocabElement mve = parentMatrix.getDB()
                                                      .getMatrixVE(mveid);
                 FormalArgument fa = mve.getFormalArg(mIndex);
+                t = fa.toString();
+            } else if (parentMatrix != null && parentPredicate != null) {
+                Predicate p = parentPredicate.getItsValue();
+                PredicateVocabElement pve = parentMatrix.getDB()
+                                                    .getPredVE(p.getPveID());
+                FormalArgument fa = pve.getFormalArg(pIndex);
                 t = fa.toString();
             }
         } catch (SystemErrorException e) {
@@ -310,6 +317,14 @@ public abstract class DataValueEditor extends EditorComponent {
      * Update the database with the model value.
      */
     public final void updateDatabase() {
+        // reget the parentCell in case onset or offset have been changed.
+        try {
+            parentCell = (DataCell) parentCell.getDB()
+                                                   .getCell(parentCell.getID());
+        } catch (SystemErrorException e) {
+            logger.error("Unable to reget the cell data: ", e);
+        }
+
         // update the model.
         if (isNullArg()) {
             updateModelNull();

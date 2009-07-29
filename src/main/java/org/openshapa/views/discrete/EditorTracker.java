@@ -61,7 +61,7 @@ implements FocusListener, KeyListener, MouseListener {
      * Set the currentEditor.
      * @param newEd The new editor to set as the current.
      */
-    private void setEditor(final EditorComponent newEd) {
+    public final void setEditor(final EditorComponent newEd) {
         setEditor(newEd, 0, Integer.MAX_VALUE);
     }
 
@@ -71,7 +71,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param start Start character location to select.
      * @param end End character location to select.
      */
-    private void setEditor(final EditorComponent newEd,
+    public final void setEditor(final EditorComponent newEd,
                                               final int start, final int end) {
         // Tell currentEditor to store its value back in the database
         currentEditor.focusLost(null);
@@ -428,5 +428,13 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void mouseExited(final MouseEvent me) {
         // Currently we do nothing with the mouse exited event.
+    }
+
+    /**
+     * Call the currentEditor to sanitize the text in the clipboard.
+     * @return true if it is okay to call the JTextComponent's paste command.
+     */
+    public boolean prePasteCheck() {
+        return currentEditor.prePasteCheck();
     }
 }

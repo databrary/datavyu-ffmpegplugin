@@ -22,6 +22,6 @@ public class CSVFilter extends FileFilter {
      * @return true if the file is to be accepted, false otherwise.
      */
     public boolean accept(File file) {
-        return (file.getName().endsWith(".csv"));
+        return (file.getName().endsWith(".csv") || file.isDirectory());
     }
 }

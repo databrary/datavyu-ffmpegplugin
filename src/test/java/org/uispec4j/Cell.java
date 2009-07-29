@@ -1,17 +1,12 @@
 package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
-import org.openshapa.views.discrete.datavalues.DataValueElementV;
-import org.openshapa.views.discrete.datavalues.DataValueElementV.
-        DataValueEditorInner;
 import java.awt.Component;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
-import org.openshapa.views.discrete.Editor;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
-import org.openshapa.views.discrete.datavalues.OffsetView;
-import org.openshapa.views.discrete.datavalues.OnsetView;
 import org.uispec4j.utils.KeyUtils;
 
 /**
@@ -118,9 +113,7 @@ public class Cell extends AbstractUIComponent {
      * @return TextBox onset
      */
     public final TextBox getOnset() {
-        OnsetView v = ssCell.getOnset();
-        Editor e = ((DataValueElementV) v).getEditor();
-        return new TextBox(e);
+        return new TextBox(ssCell.getOnset());
     }
 
     /**
@@ -128,9 +121,7 @@ public class Cell extends AbstractUIComponent {
      * @return TextBox offset
      */
     public final TextBox getOffset() {
-        OffsetView v = ssCell.getOffset();
-        Editor e = ((DataValueElementV) v).getEditor();
-        return new TextBox(e);
+        return new TextBox(ssCell.getOffset());
     }
 
     /**
@@ -253,19 +244,16 @@ public class Cell extends AbstractUIComponent {
      * @param i Int of value part, if value
      */
     public final void requestEditorFocus(final int component) {
-        DataValueEditorInner e;
         switch (component) {
             case VALUE:
                 matrixRV.focusGained(null);
                 matrixRV.getEdTracker().focusGained(null);
                 break;
             case ONSET:
-		e = (DataValueEditorInner) ssCell.getOnset().getEditor();
-                e.focusGained(null);
+                ssCell.getOnset().focusGained(null);
                 break;
             case OFFSET:
-		e = (DataValueEditorInner) ssCell.getOffset().getEditor();
-                e.focusGained(null);
+                ssCell.getOffset().focusGained(null);
                 break;
         }
     }
@@ -277,36 +265,31 @@ public class Cell extends AbstractUIComponent {
      * @param k Key to type
      */
     public final void typeEditorKey(final int component, final Key k) {
-        DataValueEditorInner e;
         switch (component) {
             case VALUE:
                 KeyUtils.typeKey(this.getMatrixRootView(), k);
                 break;
             case ONSET:
-				e = (DataValueEditorInner) ssCell.getOnset().getEditor();
-                KeyUtils.typeKey(e, k);
+                KeyUtils.typeKey(ssCell.getOnset(), k);
                 break;
             case OFFSET:
-				e = (DataValueEditorInner) ssCell.getOffset().getEditor();
-                KeyUtils.typeKey(e, k);
+                KeyUtils.typeKey(ssCell.getOffset(), k);
                 break;
         }
     }
 
     /**
-     * returns the DataValueEditorInner of the component of the cell.
+     * returns the onset or offset component of the cell.
      * @param type cell component type
      * @param i int of value section if value
      * @return DataValueEditorInner of particular component of cell
      */
-    public final DataValueEditorInner getDVEditorByType(final int type, final int i) {
+    public final JTextComponent getDVEditorByType(final int type, final int i) {
         switch (type) {
             case ONSET:
-                return (DataValueEditorInner) ((DataValueElementV) ssCell.
-                        getOnset()).getEditor();
+                return ssCell.getOnset();
             case OFFSET:
-                return (DataValueEditorInner) ((DataValueElementV) ssCell.
-                        getOffset()).getEditor();
+                return ssCell.getOffset();
             default:
                 return null;
         }
@@ -334,10 +317,10 @@ public class Cell extends AbstractUIComponent {
                 KeyUtils.pressKey(this.getMatrixRootView(), k);
                 break;
             case ONSET:
-                KeyUtils.pressKey((DataValueEditorInner) ssCell.getOnset().getEditor(), k);
+                KeyUtils.pressKey(ssCell.getOnset(), k);
                 break;
             case OFFSET:
-                KeyUtils.pressKey((DataValueEditorInner) ssCell.getOffset().getEditor(), k);
+                KeyUtils.pressKey(ssCell.getOffset(), k);
                 break;
         }
     }
