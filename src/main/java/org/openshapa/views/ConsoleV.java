@@ -20,7 +20,7 @@ public class ConsoleV extends OpenSHAPADialog {
     private static ConsoleV instance;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param parent The parent of this dialog.
      * @param modal Is the scripting console modal or not?
@@ -40,7 +40,7 @@ public class ConsoleV extends OpenSHAPADialog {
     /**
      * @return The single instance of the console viewer.
      */
-    static public ConsoleV getInstance() {
+    public static ConsoleV getInstance() {
         if (instance == null) {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
             PipedInputStream stream = OpenSHAPA.getConsoleOutputStream();
@@ -62,6 +62,7 @@ public class ConsoleV extends OpenSHAPADialog {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
+        closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -73,27 +74,58 @@ public class ConsoleV extends OpenSHAPADialog {
         console.setName("console"); // NOI18N
         jScrollPane1.setViewportView(console);
 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(ConsoleV.class);
+        closeButton.setText(resourceMap.getString("closeButton.text")); // NOI18N
+        closeButton.setName("closeButton"); // NOI18N
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeButtonActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, closeButton))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(closeButton)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * The action to invoke when the user clicks on the close button.
+     *
+     * @param evt The event that triggered this action.
+     */
+    private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
+        try {
+            getInstance().dispose();
+            getInstance().finalize();
+            instance = null;
+
+        // Whoops, unable to destroy dialog correctly.
+        } catch (Throwable e) {
+            logger.error("Unable to release window NewVariableV.", e);
+        }
+}//GEN-LAST:event_closeButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton closeButton;
     private javax.swing.JTextArea console;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
@@ -105,7 +137,10 @@ public class ConsoleV extends OpenSHAPADialog {
      */
     class ReaderThread extends Thread {
         /** The output from the scripting engine. */
-        PipedInputStream output;
+        private PipedInputStream output;
+
+        /** The size of the buffer to use while ingesting data. */
+        private static final int BUFFER_SIZE = 1024;
 
         /**
          * Constructor.
@@ -122,9 +157,9 @@ public class ConsoleV extends OpenSHAPADialog {
          */
         @Override
         public void run() {
-            final byte[] buf = new byte[1024];
+            final byte[] buf = new byte[BUFFER_SIZE];
             try {
-                while(true) {
+                while (true) {
                     final int len = output.read(buf);
                     if (len > 0) {
                         console.append(new String(buf, 0, len));

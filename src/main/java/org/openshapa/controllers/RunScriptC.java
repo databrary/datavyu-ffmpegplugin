@@ -1,9 +1,6 @@
 package org.openshapa.controllers;
 
-import org.openshapa.OpenSHAPA;
-import org.openshapa.views.ConsoleV;
 import com.sun.script.jruby.JRubyScriptEngineManager;
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,7 +13,11 @@ import java.util.LinkedList;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.util.FileFilters.RBFilter;
+import org.openshapa.views.ConsoleV;
 
 /**
  * Controller for running scripts.
@@ -30,15 +31,13 @@ public final class RunScriptC {
      * Constructs and invokes the runscript controller.
      */
     public RunScriptC() {
-        FileDialog c = new FileDialog(OpenSHAPA.getApplication().getMainFrame(),
-                                      "Select ruby script file:",
-                                      FileDialog.LOAD);
-        c.setVisible(true);
+        JFileChooser jd = new JFileChooser();
+        jd.addChoosableFileFilter(new RBFilter());
+        int result = jd.showOpenDialog(OpenSHAPA.getApplication()
+                                                .getMainFrame());
 
-        if (c.getFile() != null && c.getDirectory() != null) {
-            File rubyFile = new File(c.getDirectory() + c.getFile());
-
-            runScript(rubyFile);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            runScript(jd.getSelectedFile());
         }
     }
 
@@ -93,8 +92,8 @@ public final class RunScriptC {
         }
         // Add the script to the list.
         if (!lastScripts.contains(rubyFile)) {
-        lastScripts.addFirst(rubyFile);
-        OpenSHAPA.setLastScriptsExecuted(lastScripts);
+            lastScripts.addFirst(rubyFile);
+            OpenSHAPA.setLastScriptsExecuted(lastScripts);
         }
 
         try {
