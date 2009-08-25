@@ -64,19 +64,18 @@ public class SpreadsheetPanel extends JPanel
      */
     private void buildColumns() {
         try {
-            Vector <DataColumn> dbColumns = getDatabase().getDataColumns();
+            Vector<Long> dbColIds = getDatabase().getColOrderVector();
 
             // setup a filler box if the sheet has no columns yet
             // size is relative to its parent for now
             filler = Box.createRigidArea(new Dimension(FILLER_WIDTH,
                                                        FILLER_WIDTH));
-            if (dbColumns.size() == 0) {
+            if (dbColIds.size() == 0) {
                 mainView.add(filler);
             }
 
-            for (int i = 0; i < dbColumns.size(); i++) {
-                DataColumn dbColumn = dbColumns.elementAt(i);
-                addColumn(getDatabase(), dbColumn.getID());
+            for (int i = 0; i < dbColIds.size(); i++) {
+                addColumn(getDatabase(), dbColIds.elementAt(i));
             }
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);

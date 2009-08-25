@@ -47,9 +47,11 @@ public final class SaveDatabaseC {
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
-            Vector<DataColumn> cols = db.getDataColumns();
-            for (int i = 0; i < cols.size(); i++) {
-                DataColumn dc = cols.get(i);
+            Vector<Long> colIds = db.getColOrderVector();
+
+            //Vector<DataColumn> cols = db.getDataColumns();
+            for (int i = 0; i < colIds.size(); i++) {
+                DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
 
                 out.write(dc.getName() + " (" + dc.getItsMveType() + ")");
