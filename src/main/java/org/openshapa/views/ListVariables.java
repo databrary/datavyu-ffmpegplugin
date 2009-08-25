@@ -137,8 +137,13 @@ implements ExternalColumnListListener {
      *
      * @param db The database that the column has been removed from.
      * @param colID The id of the freshley removed column.
+     * @param old_cov The column order vector prior to the deletion.
+     * @param new_cov The column order vector after to the deletion.
      */
-    public void colDeletion(final Database db, final long colID) {
+    public void colDeletion(final Database db, 
+                            final long colID,
+                            final Vector<Long> old_cov,
+                            final Vector<Long> new_cov) {
         int tableModelID = dbToTableMap.get(Long.valueOf(colID));
         tableModel.removeRow(tableModelID);
     }
@@ -148,8 +153,13 @@ implements ExternalColumnListListener {
      *
      * @param db The database that the column has been added to.
      * @param colID The id of the newly added column.
+     * @param old_cov The column order vector prior to the insertion.
+     * @param new_cov The column order vector after to the insertion.
      */
-    public void colInsertion(final Database db, final long colID) {
+    public void colInsertion(final Database db, 
+                             final long colID,
+                             final Vector<Long> old_cov,
+                             final Vector<Long> new_cov) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(ListVariables.class);
@@ -161,6 +171,21 @@ implements ExternalColumnListListener {
         } catch (SystemErrorException e) {
             logger.error("Unable to insert column into variable list", e);
         }
+    }
+
+    /**
+     * Action to invoke when the column order list is edited (i.e, the order
+     * of the columns is changed without any insertions or deletions).
+     *
+     * @param db The database that the column has been added to.
+     * @param old_cov The column order vector prior to the insertion.
+     * @param new_cov The column order vector after to the insertion.
+     */
+    public final void colOrderVectorEdited(final Database db,
+                                           final Vector<Long> old_cov,
+                                           final Vector<Long> new_cov) {
+        // do nothing for now
+        return;
     }
 
     /** This method is called from within the constructor to

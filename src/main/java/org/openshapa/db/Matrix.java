@@ -678,8 +678,9 @@ public class Matrix implements Cloneable {
                java.io.IOException
     {
         final String mName = "matrix::toMODBFile()";
-        int i = 0;
+        int i;
         int numArgs;
+        int numArgsToDisplay;
         FormalArgument farg;
         DataValue arg;
 
@@ -717,7 +718,44 @@ public class Matrix implements Cloneable {
             throw new SystemErrorException(mName + "numArgs <= 0");
         }
 
-        while ( i < numArgs )
+        if ( this.varLen )
+        {
+            numArgsToDisplay = 0;
+
+            i = 0;
+
+            /* scan the argument list to determine the number of the
+             * last defined argument in the argument list, as set
+             * numArgsToDisplay accordingly.
+             */
+            while ( i < numArgs )
+            {
+                arg = this.getArg(i);
+
+                if ( ! ( arg instanceof UndefinedDataValue ) )
+                {
+                    numArgsToDisplay = i;
+                }
+
+                i++;
+            }
+
+            numArgsToDisplay++;
+        }
+        else
+        {
+            numArgsToDisplay = numArgs;
+        }
+
+        if ( ( numArgsToDisplay < 1 ) || ( numArgsToDisplay > numArgs ) )
+        {
+            throw new SystemErrorException(mName +
+                    "numArgsToDisplay out of range.");
+        }
+
+        i = 0;
+
+        while ( i < numArgsToDisplay )
         {
             farg = mve.getFormalArg(i);
             arg = this.getArg(i);

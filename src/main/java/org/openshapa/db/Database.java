@@ -1273,6 +1273,8 @@ public abstract class Database
     /*      getColumn(id)                                                    */
     /*      getColumn(name)                                                  */
     /*                                                                       */
+    /*      getColOrderVector()                                              */
+    /*                                                                       */
     /*      getDataColumn(id)                                                */
     /*      getDataColumn(name)                                              */
     /*                                                                       */
@@ -1286,6 +1288,8 @@ public abstract class Database
     /*      removeColumn() -- target column must be empty                    */
     /*                                                                       */
     /*      replaceColumn()                                                  */
+    /*                                                                       */
+    /*      setColOrderVector()                                              */
     /*                                                                       */
     /*************************************************************************/
 
@@ -1656,6 +1660,33 @@ public abstract class Database
         return dc;
 
     } /* Database::getDataColumn(id) */
+
+
+    // getColOrderVector()
+    /**
+     * Obtain a copy of the column order vector from this.cl, and return it
+     * to the user.
+     *
+     * @return copy of this.cl.cov
+     *
+     * @throws org.openshapa.db.SystemErrorException if any errors are detected.
+     */
+    public java.util.Vector<Long> getColOrderVector()
+        throws SystemErrorException
+    {
+        final String mName = "Database::getColOrderVector(): ";
+        java.util.Vector<Long> cov_copy = null;
+
+        if ( this.cl == null )
+        {
+            throw new SystemErrorException(mName + "this.cl null on entry");
+        }
+
+        cov_copy = this.cl.getColOrderVector();
+
+        return cov_copy;
+
+    } /* Database::getColOrderVector() */
 
 
     // getDataColumn(name)
@@ -2074,6 +2105,36 @@ public abstract class Database
         return;
 
     } /* Database::replaceColumn(newCol) */
+
+
+
+    // setColOrderVector()
+    /**
+     * Verify that the supplied new column order vector is valid.  Throw a
+     * system error if it is not.
+     *
+     * Otherwise, replace the old column order vector with the new, and
+     * notify the listeners (all external).
+     *
+     * @param new_cov new column order vector
+     *
+     * @throws org.openshapa.db.SystemErrorException if any error is detected.
+     */
+    public void setColOrderVector(java.util.Vector<Long> new_cov)
+        throws SystemErrorException
+    {
+        final String mName = "Database::setColOrderVector(): ";
+
+        if ( this.cl == null )
+        {
+            throw new SystemErrorException(mName + "this.cl null on entry");
+        }
+
+        this.cl.setColOrderVector(new_cov);
+
+        return;
+
+    } /* Database::setColOrderVector() */
 
 
     // toMODBFile_includeDataColumnInUserSection()

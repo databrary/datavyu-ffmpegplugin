@@ -901,7 +901,7 @@ implements InternalMatrixVocabElementListener {
         final String mName = "ColPred::toMODBFile()";
         int i = 0;
         int numArgs;
-        FormalArgument farg;
+        int numArgsToDisplay;
         DataValue arg;
 
         if ( output == null )
@@ -935,9 +935,51 @@ implements InternalMatrixVocabElementListener {
                 throw new SystemErrorException(mName + "numArgs <= 3");
             }
 
+            if ( this.varLen )
+            {
+                numArgsToDisplay = 0;
+
+                i = 0;
+
+                /* scan the argument list to determine the number of the
+                 * last defined argument in the argument list, as set
+                 * numArgsToDisplay accordingly.
+                 */
+                while ( i < numArgs )
+                {
+                    arg = this.getArg(i);
+
+                    if ( ! ( arg instanceof UndefinedDataValue ) )
+                    {
+                        numArgsToDisplay = i;
+                    }
+
+                    i++;
+                }
+
+                numArgsToDisplay++;
+
+                if ( numArgsToDisplay < 4 )
+                {
+                    numArgsToDisplay = 4;
+                }
+            }
+            else
+            {
+                numArgsToDisplay = numArgs;
+            }
+
+            if ( ( numArgsToDisplay < 4 ) || ( numArgsToDisplay > numArgs ) )
+            {
+                throw new SystemErrorException(mName +
+                        "numArgsToDisplay out of range.");
+            }
+
             output.printf("( |%s| ", this.mveName);
 
-            while ( i < (numArgs - 1) )
+            i = 0;
+
+            while ( i < numArgsToDisplay )
             {
                 arg = this.getArg(i);
 

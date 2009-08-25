@@ -3635,13 +3635,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest085() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/13/09
     @Test
     public void parserTest086()
         throws SystemErrorException,
@@ -3786,13 +3779,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest089() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest090()
         throws SystemErrorException,
@@ -3829,13 +3815,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest090() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest091()
         throws SystemErrorException,
@@ -3872,13 +3851,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest091() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest092()
         throws SystemErrorException,
@@ -3915,13 +3887,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest092() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest093()
         throws SystemErrorException,
@@ -3958,13 +3923,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest093() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest094()
         throws SystemErrorException,
@@ -4001,18 +3959,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBRparser_test_094() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //
-    //       Note that this particular test has an error in the variable
-    //       length matrix, so don't be surprised if a new bug is uncovered
-    //       when the var len matrix clauses are uncommented.
-    //
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest095()
         throws SystemErrorException,
@@ -4085,18 +4031,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest096() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //
-    //       Note that this particular test has a lot of errors in the variable
-    //       length matrix, so don't be surprised if new bugs are uncovered
-    //       when the var len matrix clauses are uncommented.
-    //
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest097()
         throws SystemErrorException,
@@ -4169,13 +4103,6 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest098() */
 
 
-    // TODO: At present, OpenSHAPA doesn't handle variable length matricies
-    //       properly, so I commented out references to same in the target
-    //       test file.
-    //
-    //       Reverse this as soon as variable length matricies are handled
-    //       correctly.
-    //                                          JRM -- 7/23/09
     @Test
     public void parserTest099()
         throws SystemErrorException,

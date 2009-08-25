@@ -211,7 +211,7 @@
                     ( |<val>| () )
                   )
                 )
-                ( VOCAB> ( pred_2 pred_1 ) )
+                ( VOCAB> ( pred_1 pred_2 ) )
               )
             )
           )

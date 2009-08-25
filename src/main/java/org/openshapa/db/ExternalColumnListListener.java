@@ -22,10 +22,8 @@ package org.openshapa.db;
  */
 public interface ExternalColumnListListener
 {
-
+    // colDeletion()
     /**
-     * colDeletion()
-     *
      * Called when a Column is deleted from the column list.
      *
      * The db parameter is mainly for sanity checking, as it is unlikely that
@@ -35,20 +33,24 @@ public interface ExternalColumnListListener
      * The colID parameter contains the ID assigned the column that is
      * being deleted.
      *
+     * The old_cov and new_cov parameters contain copies of the column order
+     * vector before and after the insertion.
+     *
      *                                          -- 2/11/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Added old_cov and new_cov parameters.   -- 7/31/09
      */
 
     void colDeletion(final Database db,
-                     final long colID);
+                      final long colID,
+                      final java.util.Vector<Long> old_cov,
+                      final java.util.Vector<Long> new_cov);
 
 
+    // colInsertion()
     /**
-     * colInsertion()
-     *
      * Called when a Column is inserted in the column list.
      *
      * The db parameter is mainly for sanity checking, as it is unlikely that
@@ -57,6 +59,37 @@ public interface ExternalColumnListListener
      *
      * The colID parameter contains the ID assigned the column that is
      * being inserted.
+     * 
+     * The old_cov and new_cov parameters contain copies of the column order
+     * vector before and after the insertion.
+     *
+     *                                          -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - Added old_cov and new_cov parameters.   -- 7/31/09
+     */
+
+    void colInsertion(final Database db,
+                      final long colID,
+                      final java.util.Vector<Long> old_cov,
+                      final java.util.Vector<Long> new_cov);
+
+
+
+    // colOrderVectorEdited()
+    /**
+     * Called when the column order vector is changed for reasons other than
+     * column insertion or deletion.
+     *
+     * The db parameter is mainly for sanity checking, as it is unlikely that
+     * any listener will be interested in the column list of more than one
+     * Database.
+     *
+     * The old_cov parameter contains a copy of the column order vector before
+     * the change.
+     *
+     * The new_cov parameter contains a copy of the new column order vector.
      *
      *                                          -- 2/6/08
      *
@@ -65,7 +98,8 @@ public interface ExternalColumnListListener
      *    - None.
      */
 
-    void colInsertion(final Database db,
-                      final long colID);
+    void colOrderVectorEdited(final Database db,
+                              final java.util.Vector<Long> old_cov,
+                              final java.util.Vector<Long> new_cov);
 
 }

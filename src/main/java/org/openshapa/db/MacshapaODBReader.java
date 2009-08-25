@@ -25170,6 +25170,8 @@ public class MacshapaODBReader
         {
             if ( ((this.l1_tok).aux & PRED_FLAG) != 0 )
             {
+                // TODO:  need to expand this for column predicates -- do
+                //        this when we get to testing queries.
                 if ( this.db.vl.predInVocabList(this.l1_tok.str.toString()) )
                 {
                     pve = this.db.getPredVE(this.l1_tok.str.toString());
@@ -25399,8 +25401,16 @@ public class MacshapaODBReader
                          ( pve.getVarLen() ) &&
                          ( pve.getSystem() ) )
                     {
+                        /* note that addArgToPredVE() adds an argument
+                         * to the target variable length predicate vocab
+                         * element, and returns a copy of the revised PVE.
+                         */
                         pve = this.db.addArgToPredVE(pve.getID());
+
+                        /* we must also update numFargs */
                         num_fargs = pve.getNumFormalArgs();
+
+                        assert( num_fargs > arg_num );
                     }
                     
                     arg_num++;
@@ -25471,67 +25481,51 @@ public class MacshapaODBReader
 
 
             /* if we ran out of arguments before we ran out of formal arguments, 
-             * must issue a warning and insert formal arguments.  Note however 
+             * must issue a warning and insert undefined arguments.  Note however
              * that there is an exception in the case of variable length 
-             * predicates.  In this case, we simply make sure that there is at 
-             * least one argument, inserting a formal argument if there is not.
+             * predicates.  In this case, we simply insert undefined arguments
+             * for each of the remaining formal arguemnts.
+             *
+             * Note that even in the case of variable length predicates, we
+             * must still issue a warning message if there is not at least
+             * one (possibly undefined) argument.
              */
-            // TODO: Figure out how we will support variable length preds and 
-            //       and update this code accordingly.
             if ( ! this.abort_parse )
             {
                 if ( next_farg != null )
                 {
-                    if ( varLen )
-                    {
-                        /* make sure we have at least one argument */
-                        if ( arg_num == 0 )
-                        {
-                            post_warning_message(this.l0_tok,
-                                    REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
-                                    null);
-                        }
-                        
-                        // TODO:  Here we make sure that the argument list 
-                        //        contains at least one argument in the 
-                        //        case of a variable length predicate or 
-                        //        column predicate.
-                        //
-                        //        This may or may not be the right thing to 
-                        //        do.  Return to this when we have variable
-                        //        length arguments hammered out.
-                        
-                        next_arg = new UndefinedDataValue(this.db, 
-                                                          next_farg.getID(), 
-                                                          next_farg.getFargName());
-                        argList.add(next_arg);
-                        next_arg = null;
-                    }
-                    else /* fill in the missing arguments with formal arguments */
+                    /* if the predicate is fixed length and missing any of
+                     * its arguments, or variable length and missing all
+                     * arguments, issue a warning message.
+                     */
+                    if ( ( ! varLen ) || ( arg_num == 0 ) )
                     {
                         post_warning_message(this.l0_tok,
                                 REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
                                 null);
+                    }
 
-                        while ( ( ! this.abort_parse ) && 
-                                ( next_farg != null ) )
+                    /* in any case, go ahead and fill in the missing arguments
+                     * with with undefined values.
+                     */
+                    while ( ( ! this.abort_parse ) &&
+                            ( next_farg != null ) )
+                    {
+                        next_arg = new UndefinedDataValue(this.db,
+                                                      next_farg.getID(),
+                                                      next_farg.getFargName());
+                        argList.add(next_arg);
+                        next_arg = null;
+
+                        arg_num++;
+
+                        if ( num_fargs > arg_num )
                         {
-                            next_arg = new UndefinedDataValue(this.db, 
-                                                          next_farg.getID(), 
-                                                          next_farg.getFargName());
-                            argList.add(next_arg);
-                            next_arg = null;
-
-                            arg_num++;
-
-                            if ( num_fargs > arg_num )
-                            {
-                                next_farg = pve.getFormalArg(arg_num);
-                            }
-                            else
-                            {
-                                next_farg = null;
-                            }
+                            next_farg = pve.getFormalArg(arg_num);
+                        }
+                        else
+                        {
+                            next_farg = null;
                         }
                     }
                 }

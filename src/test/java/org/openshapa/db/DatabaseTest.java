@@ -883,6 +883,11 @@ public abstract class DatabaseTest {
             failures++;
         }
 
+        if ( ! TestGetSetColOrderVector(outStream, verbose) )
+        {
+            failures++;
+        }
+
 //        if ( ! AdHocTest(outStream, verbose) )
 //        {
 //            failures++;
@@ -9991,6 +9996,1399 @@ public abstract class DatabaseTest {
 
         return true;
     }
+
+
+    /*************************************************************************/
+    /********************* Column List Test Code: ****************************/
+    /*************************************************************************/
+
+    /**
+     * TestGetSetColOrderVector()
+     *
+     * Test the getColOrderVector() and setColOrderVector() methods.  The
+     * testing must be a bit more involved that usual, as this is the only
+     * test code directed at the underlying methods in ColumnList.
+     *
+     *                                               -- 8/02/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestGetSetColOrderVector(java.io.PrintStream outStream,
+                                                    boolean verbose)
+    throws SystemErrorException {
+        String testBanner =
+            "Testing getColOrderVector() and setColOrderVector()              ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        String systemErrorExceptionString;
+        boolean completed = false;
+        boolean pass = true;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long col_0_ID = DBIndex.INVALID_ID;
+        long col_1_ID = DBIndex.INVALID_ID;
+        long col_2_ID = DBIndex.INVALID_ID;
+        long col_3_ID = DBIndex.INVALID_ID;
+        long col_4_ID = DBIndex.INVALID_ID;
+        long col_5_ID = DBIndex.INVALID_ID;
+        long col_6_ID = DBIndex.INVALID_ID;
+        long col_7_ID = DBIndex.INVALID_ID;
+        long mve_0_ID = DBIndex.INVALID_ID;
+        long mve_1_ID = DBIndex.INVALID_ID;
+        long mve_2_ID = DBIndex.INVALID_ID;
+        long mve_3_ID = DBIndex.INVALID_ID;
+        long mve_4_ID = DBIndex.INVALID_ID;
+        long mve_5_ID = DBIndex.INVALID_ID;
+        long mve_6_ID = DBIndex.INVALID_ID;
+        long mve_7_ID = DBIndex.INVALID_ID;
+        Database db = null;
+        MatrixVocabElement mve_0 = null;
+        MatrixVocabElement mve_1 = null;
+        MatrixVocabElement mve_2 = null;
+        MatrixVocabElement mve_3 = null;
+        MatrixVocabElement mve_4 = null;
+        MatrixVocabElement mve_5 = null;
+        MatrixVocabElement mve_6 = null;
+        MatrixVocabElement mve_7 = null;
+        DataColumn col_0 = null;
+        DataColumn col_1 = null;
+        DataColumn col_2 = null;
+        DataColumn col_3 = null;
+        DataColumn col_4 = null;
+        DataColumn col_5 = null;
+        DataColumn col_6 = null;
+        DataColumn col_7 = null;
+        Vector<Long> cov_00 = null;
+        Vector<Long> cov_01 = null;
+        Vector<Long> cov_02 = null;
+        Vector<Long> cov_03 = null;
+        Vector<Long> cov_04 = null;
+        Vector<Long> cov_05 = null;
+        Vector<Long> cov_06 = null;
+        Vector<Long> cov_07 = null;
+        Vector<Long> cov_08 = null;
+        Vector<Long> cov_09 = null;
+        Vector<Long> cov_10 = null;
+        Vector<Long> cov_11 = null;
+        Vector<Long> cov_12 = null;
+        Vector<Long> cov_13 = null;
+        Vector<Long> cov_14 = null;
+        Vector<Long> cov_15 = null;
+        Vector<Long> cov_16 = null;
+        Vector<Long> cov_17 = null;
+        Vector<Long> cov_18 = null;
+        Vector<Long> cov_19 = null;
+        Vector<Long> cov_20 = null;
+        Vector<Long> cov_21 = null;
+        Vector<Long> cov_22 = null;
+        Vector<Long> cov_23 = null;
+        Vector<Long> cov_24 = null;
+        Vector<Long> cov_25 = null;
+        Vector<Long> cov_26 = null;
+        Vector<Long> cov_27 = null;
+
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        /* setup for test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            db = null;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db = new ODBCDatabase();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.print("test setup failed to complete.\n");
+                    }
+
+                    if ( db == null )
+                    {
+                        outStream.print("new ODBCDatabase() returned null.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+        /* test setup is complete. */
+
+         
+        /* Begin with a series of data column adds with interleaved calls to
+         * getColOrderVector()
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                cov_00 = db.getColOrderVector();
+
+
+                col_0 = new DataColumn(db,
+                                       "col_0",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_0_ID = db.addColumn(col_0);
+                col_0 = db.getDataColumn(col_0_ID);
+                mve_0_ID = col_0.getItsMveID();
+                mve_0 = db.getMatrixVE(mve_0_ID);
+
+
+                cov_01 = db.getColOrderVector();
+
+
+                col_1 = new DataColumn(db,
+                                       "col_1",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_1_ID = db.addColumn(col_1);
+                col_1 = db.getDataColumn(col_1_ID);
+                mve_1_ID = col_1.getItsMveID();
+                mve_1 = db.getMatrixVE(mve_1_ID);
+
+
+                cov_02 = db.getColOrderVector();
+
+
+                col_2 = new DataColumn(db,
+                                       "col_2",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_2_ID = db.addColumn(col_2);
+                col_2 = db.getDataColumn(col_2_ID);
+                mve_2_ID = col_2.getItsMveID();
+                mve_2 = db.getMatrixVE(mve_2_ID);
+
+
+                cov_03 = db.getColOrderVector();
+
+
+                col_3 = new DataColumn(db,
+                                       "col_3",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_3_ID = db.addColumn(col_3);
+                col_3 = db.getDataColumn(col_3_ID);
+                mve_3_ID = col_3.getItsMveID();
+                mve_3 = db.getMatrixVE(mve_3_ID);
+
+
+                cov_04 = db.getColOrderVector();
+
+
+                col_4 = new DataColumn(db,
+                                       "col_4",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_4_ID = db.addColumn(col_4);
+                col_4 = db.getDataColumn(col_4_ID);
+                mve_4_ID = col_4.getItsMveID();
+                mve_4 = db.getMatrixVE(mve_4_ID);
+
+
+                cov_05 = db.getColOrderVector();
+
+
+                col_5 = new DataColumn(db,
+                                       "col_5",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_5_ID = db.addColumn(col_5);
+                col_5 = db.getDataColumn(col_5_ID);
+                mve_5_ID = col_5.getItsMveID();
+                mve_5 = db.getMatrixVE(mve_5_ID);
+
+
+                cov_06 = db.getColOrderVector();
+
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( col_0 == null ) ||
+                 ( col_1 == null ) ||
+                 ( col_2 == null ) ||
+                 ( col_3 == null ) ||
+                 ( col_4 == null ) ||
+                 ( col_5 == null ) ||
+                 ( mve_0 == null ) ||
+                 ( mve_1 == null ) ||
+                 ( mve_2 == null ) ||
+                 ( mve_3 == null ) ||
+                 ( mve_4 == null ) ||
+                 ( mve_5 == null ) ||
+                 ( cov_00 == null ) ||
+                 ( cov_01 == null ) ||
+                 ( cov_02 == null ) ||
+                 ( cov_03 == null ) ||
+                 ( cov_04 == null ) ||
+                 ( cov_05 == null ) ||
+                 ( cov_06 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( col_0 == null )
+                    {
+                        outStream.print("col_0 == null.\n");
+                    }
+
+                    if ( col_1 == null )
+                    {
+                        outStream.print("col_1 == null.\n");
+                    }
+
+                    if ( col_2 == null )
+                    {
+                        outStream.print("col_2 == null.\n");
+                    }
+
+                    if ( col_3 == null )
+                    {
+                        outStream.print("col_3 == null.\n");
+                    }
+
+                    if ( col_4 == null )
+                    {
+                        outStream.print("col_4 == null.\n");
+                    }
+
+                    if ( col_5 == null )
+                    {
+                        outStream.print("col_5 == null.\n");
+                    }
+
+                    if ( mve_0 == null )
+                    {
+                        outStream.print("mve_0 == null.\n");
+                    }
+
+                    if ( mve_1 == null )
+                    {
+                        outStream.print("mve_1 == null.\n");
+                    }
+
+                    if ( mve_2 == null )
+                    {
+                        outStream.print("mve_2 == null.\n");
+                    }
+
+                    if ( mve_3 == null )
+                    {
+                        outStream.print("mve_3 == null.\n");
+                    }
+
+                    if ( mve_4 == null )
+                    {
+                        outStream.print("mve_4 == null.\n");
+                    }
+
+                    if ( mve_5 == null )
+                    {
+                        outStream.print("mve_5 == null.\n");
+                    }
+
+                    if ( cov_00 == null )
+                    {
+                        outStream.print("cov_00 == null.\n");
+                    }
+
+                    if ( cov_01 == null )
+                    {
+                        outStream.print("cov_01 == null.\n");
+                    }
+
+                    if ( cov_02 == null )
+                    {
+                        outStream.print("cov_02 == null.\n");
+                    }
+
+                    if ( cov_03 == null )
+                    {
+                        outStream.print("cov_03 == null.\n");
+                    }
+
+                    if ( cov_04 == null )
+                    {
+                        outStream.print("cov_04 == null.\n");
+                    }
+
+                    if ( cov_05 == null )
+                    {
+                        outStream.print("cov_05 == null.\n");
+                    }
+
+                    if ( cov_06 == null )
+                    {
+                        outStream.print("cov_06 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(1).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( cov_00.size() != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_00: \"%s\"\n",
+                                cov_00.toString());
+                    }
+                }
+
+                if ( ( cov_01.size() != 1 ) ||
+                     ( cov_01.get(0) != col_0_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_01: \"%s\"\n",
+                                cov_02.toString());
+                    }
+                }
+
+                if ( ( cov_02.size() != 2 ) ||
+                     ( cov_02.get(0) != col_0_ID ) ||
+                     ( cov_02.get(1) != col_1_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_02: \"%s\"\n",
+                                cov_02.toString());
+                    }
+                }
+
+                if ( ( cov_03.size() != 3 ) ||
+                     ( cov_03.get(0) != col_0_ID ) ||
+                     ( cov_03.get(1) != col_1_ID ) ||
+                     ( cov_03.get(2) != col_2_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_03: \"%s\"\n",
+                                cov_03.toString());
+                    }
+                }
+
+                if ( ( cov_04.size() != 4 ) ||
+                     ( cov_04.get(0) != col_0_ID ) ||
+                     ( cov_04.get(1) != col_1_ID ) ||
+                     ( cov_04.get(2) != col_2_ID ) ||
+                     ( cov_04.get(3) != col_3_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_04: \"%s\"\n",
+                                cov_04.toString());
+                    }
+                }
+
+                if ( ( cov_05.size() != 5 ) ||
+                     ( cov_05.get(0) != col_0_ID ) ||
+                     ( cov_05.get(1) != col_1_ID ) ||
+                     ( cov_05.get(2) != col_2_ID ) ||
+                     ( cov_05.get(3) != col_3_ID ) ||
+                     ( cov_05.get(4) != col_4_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_05: \"%s\"\n",
+                                cov_05.toString());
+                    }
+                }
+
+                if ( ( cov_06.size() != 6 ) ||
+                     ( cov_06.get(0) != col_0_ID ) ||
+                     ( cov_06.get(1) != col_1_ID ) ||
+                     ( cov_06.get(2) != col_2_ID ) ||
+                     ( cov_06.get(3) != col_3_ID ) ||
+                     ( cov_06.get(4) != col_4_ID ) ||
+                     ( cov_06.get(5) != col_5_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_06: \"%s\"\n",
+                                cov_06.toString());
+                    }
+                }
+            }
+        }
+
+        /* Now do several column deletions -- first, last, and one in the
+         * middle, all with interleaved calls to getColOrderVector().  Verify
+         * that we get the expected results.
+         *
+         * In passing, add a couple of new columns to keep the column list
+         * from getting too small.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.removeColumn(col_0_ID);
+
+                cov_07 = db.getColOrderVector();
+
+                db.removeColumn(col_5_ID);
+
+                cov_08 = db.getColOrderVector();
+
+                db.removeColumn(col_3_ID);
+
+                cov_09 = db.getColOrderVector();
+
+
+                col_6 = new DataColumn(db,
+                                       "col_6",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_6_ID = db.addColumn(col_6);
+                col_6 = db.getDataColumn(col_6_ID);
+                mve_6_ID = col_6.getItsMveID();
+                mve_6 = db.getMatrixVE(mve_6_ID);
+
+
+                cov_10 = db.getColOrderVector();
+
+
+                col_7 = new DataColumn(db,
+                                       "col_7",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_7_ID = db.addColumn(col_7);
+                col_7 = db.getDataColumn(col_7_ID);
+                mve_7_ID = col_7.getItsMveID();
+                mve_7 = db.getMatrixVE(mve_7_ID);
+
+
+                cov_11 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_07 == null ) ||
+                 ( cov_08 == null ) ||
+                 ( cov_09 == null ) ||
+                 ( cov_10 == null ) ||
+                 ( cov_11 == null ) ||
+                 ( col_6 == null ) ||
+                 ( col_7 == null ) ||
+                 ( mve_6 == null ) ||
+                 ( mve_7 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_07 == null )
+                    {
+                        outStream.print("cov_07 == null.\n");
+                    }
+
+                    if ( cov_08 == null )
+                    {
+                        outStream.print("cov_08 == null.\n");
+                    }
+
+                    if ( cov_09 == null )
+                    {
+                        outStream.print("cov_09 == null.\n");
+                    }
+
+                    if ( cov_10 == null )
+                    {
+                        outStream.print("cov_10 == null.\n");
+                    }
+
+                    if ( cov_11 == null )
+                    {
+                        outStream.print("cov_11 == null.\n");
+                    }
+
+                    if ( col_6 == null )
+                    {
+                        outStream.print("col_6 == null.\n");
+                    }
+
+                    if ( col_7 == null )
+                    {
+                        outStream.print("col_7 == null.\n");
+                    }
+
+                    if ( mve_6 == null )
+                    {
+                        outStream.print("mve_6 == null.\n");
+                    }
+
+                    if ( mve_7 == null )
+                    {
+                        outStream.print("mve_7 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(2).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(2): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_07.size() != 5 ) ||
+                     ( cov_07.get(0) != col_1_ID ) ||
+                     ( cov_07.get(1) != col_2_ID ) ||
+                     ( cov_07.get(2) != col_3_ID ) ||
+                     ( cov_07.get(3) != col_4_ID ) ||
+                     ( cov_07.get(4) != col_5_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_07: \"%s\"\n",
+                                cov_07.toString());
+                    }
+                }
+
+                if ( ( cov_08.size() != 4 ) ||
+                     ( cov_08.get(0) != col_1_ID ) ||
+                     ( cov_08.get(1) != col_2_ID ) ||
+                     ( cov_08.get(2) != col_3_ID ) ||
+                     ( cov_08.get(3) != col_4_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_08: \"%s\"\n",
+                                cov_08.toString());
+                    }
+                }
+
+                if ( ( cov_09.size() != 3 ) ||
+                     ( cov_09.get(0) != col_1_ID ) ||
+                     ( cov_09.get(1) != col_2_ID ) ||
+                     ( cov_09.get(2) != col_4_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_09: \"%s\"\n",
+                                cov_09.toString());
+                    }
+                }
+
+                if ( ( cov_10.size() != 4 ) ||
+                     ( cov_10.get(0) != col_1_ID ) ||
+                     ( cov_10.get(1) != col_2_ID ) ||
+                     ( cov_10.get(2) != col_4_ID ) ||
+                     ( cov_10.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_10: \"%s\"\n",
+                                cov_10.toString());
+                    }
+                }
+
+                if ( ( cov_11.size() != 5 ) ||
+                     ( cov_11.get(0) != col_1_ID ) ||
+                     ( cov_11.get(1) != col_2_ID ) ||
+                     ( cov_11.get(2) != col_4_ID ) ||
+                     ( cov_11.get(3) != col_6_ID ) ||
+                     ( cov_11.get(4) != col_7_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_11: \"%s\"\n",
+                                cov_11.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* Now try setting the column order list -- only valid settings for
+         * now.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                cov_12 = new Vector<Long>();
+                cov_12.add(col_7_ID);
+                cov_12.add(col_6_ID);
+                cov_12.add(col_4_ID);
+                cov_12.add(col_2_ID);
+                cov_12.add(col_1_ID);
+
+                db.setColOrderVector(cov_12);
+
+                cov_13 = db.getColOrderVector();
+
+                db.removeColumn(col_7_ID);
+
+                cov_14 = db.getColOrderVector();
+
+                cov_15 = new Vector<Long>();
+                cov_15.add(col_1_ID);
+                cov_15.add(col_4_ID);
+                cov_15.add(col_2_ID);
+                cov_15.add(col_6_ID);
+
+                db.setColOrderVector(cov_15);
+
+                cov_16 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_12 == null ) ||
+                 ( cov_13 == null ) ||
+                 ( cov_14 == null ) ||
+                 ( cov_15 == null ) ||
+                 ( cov_16 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_12 == null )
+                    {
+                        outStream.print("cov_12 == null.\n");
+                    }
+
+                    if ( cov_13 == null )
+                    {
+                        outStream.print("cov_13 == null.\n");
+                    }
+
+                    if ( cov_14 == null )
+                    {
+                        outStream.print("cov_14 == null.\n");
+                    }
+
+                    if ( cov_15 == null )
+                    {
+                        outStream.print("cov_15 == null.\n");
+                    }
+
+                    if ( cov_16 == null )
+                    {
+                        outStream.print("cov_16 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(3).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(3): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_12.size() != 5 ) ||
+                     ( cov_12.get(0) != col_7_ID ) ||
+                     ( cov_12.get(1) != col_6_ID ) ||
+                     ( cov_12.get(2) != col_4_ID ) ||
+                     ( cov_12.get(3) != col_2_ID ) ||
+                     ( cov_12.get(4) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_12: \"%s\"\n",
+                                cov_12.toString());
+                    }
+                }
+
+                if ( ( cov_13.size() != 5 ) ||
+                     ( cov_13.get(0) != col_7_ID ) ||
+                     ( cov_13.get(1) != col_6_ID ) ||
+                     ( cov_13.get(2) != col_4_ID ) ||
+                     ( cov_13.get(3) != col_2_ID ) ||
+                     ( cov_13.get(4) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_13: \"%s\"\n",
+                                cov_13.toString());
+                    }
+                }
+
+                if ( ( cov_14.size() != 4 ) ||
+                     ( cov_14.get(0) != col_6_ID ) ||
+                     ( cov_14.get(1) != col_4_ID ) ||
+                     ( cov_14.get(2) != col_2_ID ) ||
+                     ( cov_14.get(3) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_14: \"%s\"\n",
+                                cov_14.toString());
+                    }
+                }
+
+                if ( ( cov_15.size() != 4 ) ||
+                     ( cov_15.get(0) != col_1_ID ) ||
+                     ( cov_15.get(1) != col_4_ID ) ||
+                     ( cov_15.get(2) != col_2_ID ) ||
+                     ( cov_15.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_15: \"%s\"\n",
+                                cov_15.toString());
+                    }
+                }
+
+                if ( ( cov_16.size() != 4 ) ||
+                     ( cov_16.get(0) != col_1_ID ) ||
+                     ( cov_16.get(1) != col_4_ID ) ||
+                     ( cov_16.get(2) != col_2_ID ) ||
+                     ( cov_16.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_16: \"%s\"\n",
+                                cov_16.toString());
+                    }
+                }
+            }
+        }
+
+        /* pass a null to db.setColOrderVector() -- should fail */
+        if ( failures == 0 )
+        {
+            cov_17 = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_17);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                                "db.setColOrderVector(null) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(null) failed " +
+                                "to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_17 = db.getColOrderVector();
+
+                if ( cov_17 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(null).\n");
+                    }
+                }
+                else if ( ( cov_17.size() != 4 ) ||
+                          ( cov_17.get(0) != col_1_ID ) ||
+                          ( cov_17.get(1) != col_4_ID ) ||
+                          ( cov_17.get(2) != col_2_ID ) ||
+                          ( cov_17.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(null): \"%s\"\n",
+                                cov_17.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector of incorrect length to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_18 = new Vector<Long>();
+            cov_18.add(col_1_ID);
+            cov_18.add(col_4_ID);
+            cov_18.add(col_2_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_18);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(short vector) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(short vector) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_19 = db.getColOrderVector();
+
+                if ( cov_19 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(short vector).\n");
+                    }
+                }
+                else if ( ( cov_19.size() != 4 ) ||
+                          ( cov_19.get(0) != col_1_ID ) ||
+                          ( cov_19.get(1) != col_4_ID ) ||
+                          ( cov_19.get(2) != col_2_ID ) ||
+                          ( cov_19.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(short vector): " +
+                                "\"%s\"\n", cov_19.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector with a bad column id to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_20 = new Vector<Long>();
+            cov_20.add(col_1_ID);
+            cov_20.add(col_4_ID);
+            cov_20.add(col_2_ID);
+            cov_20.add(mve_6_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_20);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(bad id) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(bad id) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_21 = db.getColOrderVector();
+
+                if ( cov_21 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(bad id).\n");
+                    }
+                }
+                else if ( ( cov_21.size() != 4 ) ||
+                          ( cov_21.get(0) != col_1_ID ) ||
+                          ( cov_21.get(1) != col_4_ID ) ||
+                          ( cov_21.get(2) != col_2_ID ) ||
+                          ( cov_21.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(bad id): " +
+                                "\"%s\"\n", cov_21.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector with a dulicate column id to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_22 = new Vector<Long>();
+            cov_22.add(col_1_ID);
+            cov_22.add(col_4_ID);
+            cov_22.add(col_2_ID);
+            cov_22.add(mve_1_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_22);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(dup id) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(dup id) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_23 = db.getColOrderVector();
+
+                if ( cov_23 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(dup id).\n");
+                    }
+                }
+                else if ( ( cov_23.size() != 4 ) ||
+                          ( cov_23.get(0) != col_1_ID ) ||
+                          ( cov_23.get(1) != col_4_ID ) ||
+                          ( cov_23.get(2) != col_2_ID ) ||
+                          ( cov_23.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(dup id): " +
+                                "\"%s\"\n", cov_23.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* finally, delete all the columns, and verify that the
+         * getColOrderVector() returns the expected values.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.removeColumn(col_1_ID);
+
+                cov_24 = db.getColOrderVector();
+
+                db.removeColumn(col_4_ID);
+
+                cov_25 = db.getColOrderVector();
+
+                db.removeColumn(col_2_ID);
+
+                cov_26 = db.getColOrderVector();
+
+                db.removeColumn(col_6_ID);
+
+                cov_27 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_24 == null ) ||
+                 ( cov_25 == null ) ||
+                 ( cov_26 == null ) ||
+                 ( cov_27 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_24 == null )
+                    {
+                        outStream.print("cov_24 == null.\n");
+                    }
+
+                    if ( cov_25 == null )
+                    {
+                        outStream.print("cov_25 == null.\n");
+                    }
+
+                    if ( cov_26 == null )
+                    {
+                        outStream.print("cov_26 == null.\n");
+                    }
+
+                    if ( cov_27 == null )
+                    {
+                        outStream.print("cov_27 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(2).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(2): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_24.size() != 3 ) ||
+                     ( cov_24.get(0) != col_4_ID ) ||
+                     ( cov_24.get(1) != col_2_ID ) ||
+                     ( cov_24.get(2) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_24: \"%s\"\n",
+                                cov_24.toString());
+                    }
+                }
+
+                if ( ( cov_25.size() != 2 ) ||
+                     ( cov_25.get(0) != col_2_ID ) ||
+                     ( cov_25.get(1) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_25: \"%s\"\n",
+                                cov_25.toString());
+                    }
+                }
+
+                if ( ( cov_26.size() != 1 ) ||
+                     ( cov_26.get(0) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_26: \"%s\"\n",
+                                cov_26.toString());
+                    }
+                }
+
+                if ( cov_27.size() != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_27: \"%s\"\n",
+                                cov_27.toString());
+                    }
+                }
+            }
+        }
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestGetSetColOrderVector() */
 
 
     /*************************************************************************/

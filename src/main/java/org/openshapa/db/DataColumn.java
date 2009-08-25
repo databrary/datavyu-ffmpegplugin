@@ -1707,7 +1707,13 @@ public class DataColumn extends Column
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to sort the local vocab list before returning it.
+     *
+     *      This shouldn't be necessary, but different versions of java seem
+     *      to be constructing the local vocab list in different orders.  This
+     *      isn't a real problem, as neither MacSHAPA nor OpenSHAPA care, but
+     *      it does break our tests.
+     *                                              JRM - 8/5/09
      */
 
     private Vector<String>
@@ -1774,6 +1780,23 @@ public class DataColumn extends Column
                             "the ID of a vocab element.");
                 }
             }
+
+            // For reason or reason's unknown, the above while loop results
+            // in the elements of the vocab list appearing in different order
+            // under Linux and MacOS.
+            //
+            // This shouldn't be, as java is supposed to give the same results
+            // on any supported platform.  Thus I'm guessing that this is a
+            // bug in either the JVM, or more likely, a library.
+            //
+            // Be this as it may, it is causing spurious test failures, so we
+            // have to enforce consistant order across different platforms.
+            //
+            // Do this by sorting the lvl vector before returning it.
+            //
+            //                                          JRM -- 8/5/09
+
+            java.util.Collections.sort(lvl);
         }
 
         this.localVocabIDSet = null;

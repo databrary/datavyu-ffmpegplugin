@@ -966,7 +966,7 @@ public class Predicate extends DBElement
         final String mName = "Predicate::toMODBFile()";
         int i = 0;
         int numArgs;
-        FormalArgument farg;
+        int numArgsToDisplay;
         DataValue arg;
 
         if ( output == null )
@@ -1000,9 +1000,46 @@ public class Predicate extends DBElement
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
 
+            if ( this.varLen )
+            {
+                numArgsToDisplay = 0;
+
+                i = 0;
+
+                /* scan the argument list to determine the number of the
+                 * last defined argument in the argument list, as set
+                 * numArgsToDisplay accordingly.
+                 */
+                while ( i < numArgs )
+                {
+                    arg = this.getArg(i);
+
+                    if ( ! ( arg instanceof UndefinedDataValue ) )
+                    {
+                        numArgsToDisplay = i;
+                    }
+
+                    i++;
+                }
+
+                numArgsToDisplay++;
+            }
+            else
+            {
+                numArgsToDisplay = numArgs;
+            }
+
+            if ( ( numArgsToDisplay < 1 ) || ( numArgsToDisplay > numArgs ) )
+            {
+                throw new SystemErrorException(mName +
+                        "numArgsToDisplay out of range.");
+            }
+
             output.printf("( |%s| ", this.predName);
 
-            while ( i < numArgs )
+            i = 0;
+
+            while ( i < numArgsToDisplay )
             {
                 arg = this.getArg(i);
 
