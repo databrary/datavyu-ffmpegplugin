@@ -19,11 +19,16 @@ import org.openshapa.db.SystemErrorException;
  */
 public final class NominalDataValueEditor extends DataValueEditor {
 
-    /** String holding the reserved characters. */
-    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n";
+    /**
+     * String holding the reserved characters - these are characters that are
+     * users are unable to enter into a nominal field.
+     */
+    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n\"";
 
-    /** The reserved replacement is a character that replaces reserved
-     *  characters pasted into nominal views. */
+    /**
+     * The reserved replacement is a character that replaces reserved
+     * characters pasted into nominal views.
+     */
     private static final Character RESERVED_REPLACEMENT = '_';
 
     /** The logger for this class. */
@@ -66,18 +71,38 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
     /**
      * The action to invoke when a key is typed.
+     *
      * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyTyped(final KeyEvent e) {
         super.keyTyped(e);
 
-        if (!e.isConsumed()) {
+        // Just a regular vanilla keystroke - insert it into nominal field.
+        NominalDataValue ndv = (NominalDataValue) getModel();
+        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
+            && !isReserved(e.getKeyChar())) {
+            this.removeSelectedText();
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
 
-            if (isReserved(e.getKeyChar())) {
-                // Ignore reserved characters.
-                e.consume();
-            }
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // All other keystrokes are consumed.
+        } else {
+            e.consume();
+        }
+
+        // Push the character changes into the database.
+        try {
+            ndv.setItsValue(this.getText());
+            updateDatabase();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to edit text string", se);
         }
     }
 
@@ -87,31 +112,6 @@ public final class NominalDataValueEditor extends DataValueEditor {
      */
     public boolean isReserved(final char aChar) {
         return (NOMINAL_RESERVED_CHARS.indexOf(aChar) >= 0);
-    }
-
-    /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     */
-    @Override
-    public void updateModelValue() {
-        NominalDataValue dv = (NominalDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            logger.error("Unable to edit nominal value", e);
-        }
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        return res;
     }
 
     /**

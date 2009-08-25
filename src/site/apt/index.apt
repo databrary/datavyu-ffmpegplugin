@@ -4,7 +4,7 @@ About
   that's under active development.
 
   We're developing a cross platform, extensible research tool to assist people
-  around the world make observations of their digital data. There are serveral
+  around the world make observations of their digital data. There are several
   {{{features.html} features}} we are proud of, however some are still
   experimental or not yet implemented and we'd love your help to improve and
   create them!
@@ -13,6 +13,8 @@ About
 Download
 
   <<Latest Releases:>>
+
+    * 2009-07-31: <<0.9-Alpha>> ({{{http://openshapa.org/dev/download/openshapa-0.9-bin-20090731121243.zip}Download}}, {{{http://openshapa.org/dev/releases/Alpha-0.9_Release_Notes.pdf}Release Notes}})
 
     * 2009-07-10: <<0.8-Alpha>> ({{{http://openshapa.org/dev/download/openshapa-0.8-bin-20090710104844.zip}Download}}, {{{http://openshapa.org/dev/releases/Alpha-0.8_Release_Notes.pdf}Release Notes}})
 

@@ -36,9 +36,13 @@ public class DataValueEditorFactory {
      * @param m The matrix in the data cell.
      *
      * @return A vector of editor components to represent the matrix.
+     *
+     * @throws SystemErrorException If unable to build editor components from
+     * the supplied matrix.
      */
     public static Vector<EditorComponent> buildMatrix(JTextComponent ta,
-                                                           DataCell c, Matrix m)
+                                                      DataCell c,
+                                                      Matrix m)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -73,7 +77,9 @@ public class DataValueEditorFactory {
      * @return A vector of editor components to represent the matrix argument.
      */
     public static Vector<EditorComponent> buildMatrixArg(JTextComponent ta,
-                                                    DataCell c, Matrix m, int i)
+                                                         DataCell c,
+                                                         Matrix m,
+                                                         int i)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -110,7 +116,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildFloat(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                             DataCell c,
+                                             Matrix m,
+                                             int i) {
         return new FloatDataValueEditor(ta, c, m, i);
     }
 
@@ -125,7 +133,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildInt(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                           DataCell c,
+                                           Matrix m,
+                                           int i) {
         return new IntDataValueEditor(ta, c, m, i);
     }
 
@@ -140,7 +150,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildTextString(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                                  DataCell c,
+                                                  Matrix m,
+                                                  int i) {
         return new TextStringDataValueEditor(ta, c, m, i);
     }
 
@@ -155,7 +167,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildNominal(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                               DataCell c,
+                                               Matrix m,
+                                               int i) {
         return new NominalDataValueEditor(ta, c, m, i);
     }
 
@@ -170,7 +184,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildUndefined(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                                 DataCell c,
+                                                 Matrix m,
+                                                 int i) {
         return new UndefinedDataValueEditor(ta, c, m, i);
     }
 
@@ -185,7 +201,9 @@ public class DataValueEditorFactory {
      * @return A vector of editor components to represent the QuoteString.
      */
     public static Vector<EditorComponent> buildQuoteString(JTextComponent ta,
-                                                DataCell c, Matrix m, int i) {
+                                                           DataCell c,
+                                                           Matrix m,
+                                                           int i) {
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
         EditorComponent leftquote = new FixedText(ta, "\"");
         EditorComponent rightquote = new FixedText(ta, "\"");
@@ -208,7 +226,9 @@ public class DataValueEditorFactory {
      * @return A vector of editor components to represent the predicate.
      */
     public static Vector<EditorComponent> buildPredicate(JTextComponent ta,
-                                                DataCell c, Matrix m, int index)
+                                                         DataCell c,
+                                                         Matrix m,
+                                                         int index)
     throws SystemErrorException {
 
         Vector<EditorComponent> args = buildPredicateArgs(ta, c, m, index);
@@ -236,7 +256,9 @@ public class DataValueEditorFactory {
      * @return A vector of editor components to represent the predicate.
      */
     public static Vector<EditorComponent> buildPredicateArgs(JTextComponent ta,
-                                                DataCell c, Matrix m, int index)
+                                                             DataCell c,
+                                                             Matrix m,
+                                                             int index)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -276,7 +298,11 @@ public class DataValueEditorFactory {
      * @return A vector of editor components to represent the matrix argument.
      */
     public static Vector<EditorComponent> buildPredArg(JTextComponent ta,
-                          DataCell c, PredDataValue p, int pi, Matrix m, int mi)
+                                                       DataCell c,
+                                                       PredDataValue p,
+                                                       int pi,
+                                                       Matrix m,
+                                                       int mi)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -314,7 +340,11 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildFloat(JTextComponent ta,
-                        DataCell c, PredDataValue p, int pi, Matrix m, int i) {
+                                             DataCell c,
+                                             PredDataValue p,
+                                             int pi,
+                                             Matrix m,
+                                             int i) {
         return new FloatDataValueEditor(ta, c, p, pi, m, i);
     }
 
@@ -412,6 +442,7 @@ public class DataValueEditorFactory {
 
     /**
      * Reset the value of an Editor component.
+     *
      * @param ed The editor component.
      * @param c The parent data cell.
      * @param m The matrix.

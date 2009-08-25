@@ -13,9 +13,6 @@ import org.openshapa.db.PredDataValue;
  */
 public final class IntDataValueEditor extends DataValueEditor {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(IntDataValueEditor.class);
-
     /**
      * Constructor.
      *
@@ -56,116 +53,115 @@ public final class IntDataValueEditor extends DataValueEditor {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        super.keyTyped(e);
+        IntDataValue idv = (IntDataValue) getModel();
 
-        if (e.isConsumed()) {
-            return;
+        // Ensure that everything is selected if the value is empty.
+        if (idv.isEmpty()) {
+            this.selectAll();
         }
-
-        char ch = e.getKeyChar();
-
-        // consume characters that we do not use.
-        if (!Character.isDigit(ch) && ch != '-') {
-            e.consume();
-            return;
-        }
-
-        // Current text in the editor
-        String t = getText();
-        // the new text that will be set from this keystroke
-        String newStr = "";
-        // current selection start and end (start can equal end)
-        int selStart = getSelectionStart();
-        int selEnd = getSelectionEnd();
-        // the new position of the caret
-        int caret = 0;
 
         // '-' key toggles the state of a negative / positive number.
-        // ignores the current selection and resets the caret
-        if (ch == '-') {
-            if (isNullArg()) {
-                newStr = "-";
-                caret = 1;
-            } else if (t.startsWith("-")) {
-                // remove the '-'
-                newStr = t.substring(1);
-                caret = 0;
+        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
+            || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
+            && e.getKeyChar() == '-') {
+
+            // Move the caret to behind the - sign, or the front of the
+            // number.
+            if (idv.getItsValue() < 0) {
+                setCaretPosition(0);
             } else {
-                // add the '-'
-                newStr = "-" + t;
-                caret = 1;
+                setCaretPosition(1);
             }
 
-        // else handle digits
-        } else if (Character.isDigit(e.getKeyChar())) {
-            newStr = t.substring(0, selStart) + ch + t.substring(selEnd);
-            caret = selStart + 1;
-        }
-
-        // check if the new string is now a "null" value.
-        if (newStr.length() == 0) {
-            setText(newStr);
+            // Toggle state of a negative / positive number.
+            idv.setItsValue(-idv.getItsValue());
             e.consume();
-            return;
-        }
 
-        // reformat the value.
-        if (!allowedSpecial(newStr)) {
-            // set the datavalue and retrieve the string version of it
-            IntDataValue idv = (IntDataValue) getModel();
-            try {
-                idv.setItsValue(newStr);
-                newStr = idv.toString();
-            } catch (NumberFormatException ex) {
-                // whatever was typed is not allowed as a new integer.
-                // restore to previous text and caret
-                newStr = t;
-                caret = selStart;
+        // The backspace key removes digits from behind the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u0008') {
+
+            // Can't delete empty int datavalue.
+            if (!idv.isEmpty()) {
+                this.removeBehindCaret();
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Long newL = buildValue(this.getText());
+                if (newL != null) {
+                    idv.setItsValue(newL);
+                } else {
+                    idv.clearValue();
+                }
+                e.consume();
             }
+
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            // Can't delete empty int datavalue.
+            if (!idv.isEmpty()) {
+                this.removeAheadOfCaret();
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Long newL = buildValue(this.getText());
+                if (newL != null) {
+                    idv.setItsValue(newL);
+                } else {
+                    idv.clearValue();
+                }
+                e.consume();
+            }
+
+        // Key stoke is number - insert number at current caret position.
+        } else if (Character.isDigit(e.getKeyChar())) {
+            this.removeSelectedText();
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
+
+            // Only insert value into the database if it is well formed.
+            Long newValue = buildValue(currentValue.toString());
+            if (newValue != null) {
+                int pos = this.getCaretPosition() + 1;
+                this.setText(currentValue.toString());
+                this.setCaretPosition(pos);
+                idv.setItsValue(newValue);
+            }
+            e.consume();
+
+        // Every other key stroke is ignored by the float editor.
+        } else {
+            e.consume();
         }
 
-        // set the new text and caret location
-        setText(newStr);
-        setCaretPosition(caret);
-        e.consume();
+        updateDatabase();
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
+     * Builds a new Integer value from a string.
+     *
+     * @param textField The String that you want to create an Integer from.
+     *
+     * @return An Integer value that can be used setting the database, if
+     * unable to create an integer value, null is returned.
      */
-    @Override
-    public void updateModelValue() {
-        IntDataValue idv = (IntDataValue) getModel();
-        String str = getText();
-        if (allowedSpecial(str)) {
-            str = "0";
-        }
-        idv.setItsValue(str);
-        // special case for numeric - reget the text from the db if losing focus
-        // incase the user types characters that will not cause a change in the
-        // numeric data value - no notification of a change will be sent by db
-        // so we need to do this
-        setText(idv.toString());
-    }
+    public Long buildValue(final String textField) {
 
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        if (!allowedSpecial(getText())) {
-            IntDataValue idv = (IntDataValue) getModel();
+        // User has removed everything - return a null value.
+        if (textField == null || textField.equals("")) {
+            return null;
+
+        // User has _something_ attempt to build a value from it.
+        } else {
             try {
-                idv.setItsValue(getText());
-            } catch (NumberFormatException ex) {
-                res = false;
+                return new Long(textField);
+            } catch (NumberFormatException e) {
+                return null;
             }
+
         }
-        return res;
     }
 
     /**

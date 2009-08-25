@@ -52,7 +52,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param eds Vector of the EditorComponents.
      */
     public EditorTracker(final JTextComponent ta,
-                                            final Vector<EditorComponent> eds) {
+                         final Vector<EditorComponent> eds) {
         textArea = ta;
         editors = eds;
     }
@@ -61,7 +61,7 @@ implements FocusListener, KeyListener, MouseListener {
      * Set the currentEditor.
      * @param newEd The new editor to set as the current.
      */
-    public final void setEditor(final EditorComponent newEd) {
+    public void setEditor(final EditorComponent newEd) {
         setEditor(newEd, 0, Integer.MAX_VALUE);
     }
 
@@ -71,8 +71,9 @@ implements FocusListener, KeyListener, MouseListener {
      * @param start Start character location to select.
      * @param end End character location to select.
      */
-    public final void setEditor(final EditorComponent newEd,
-                                              final int start, final int end) {
+    public void setEditor(final EditorComponent newEd,
+                          final int start,
+                          final int end) {
         // Tell currentEditor to store its value back in the database
         currentEditor.focusLost(null);
 
@@ -135,7 +136,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param charPos Character position to search for
      * @return The editor closest to the character position.
      */
-    private EditorComponent findEditor(final int charPos) {
+    public EditorComponent findEditor(final int charPos) {
         // iterate over the editors and decide which one should get focus
         // based on a click at the charPos
         int preCount = 0;
@@ -437,4 +438,7 @@ implements FocusListener, KeyListener, MouseListener {
     public boolean prePasteCheck() {
         return currentEditor.prePasteCheck();
     }
+
+          
+
 }

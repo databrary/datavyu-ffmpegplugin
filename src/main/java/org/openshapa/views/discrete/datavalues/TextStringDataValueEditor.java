@@ -1,6 +1,8 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
@@ -11,6 +13,10 @@ import org.openshapa.db.TextStringDataValue;
  * This class is the character editor of a TextStringDataValue.
  */
 public final class TextStringDataValueEditor extends DataValueEditor {
+
+    /** The logger for this class. */
+    private static Logger logger = Logger
+                                   .getLogger(TextStringDataValueEditor.class);
 
     /**
      * Constructor.
@@ -49,27 +55,38 @@ public final class TextStringDataValueEditor extends DataValueEditor {
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
+     * The action to invoke when a key is typed.
+     *
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
-    public void updateModelValue() {
-        TextStringDataValue dv = (TextStringDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            // logger
-        }
-    }
+    public void keyTyped(final KeyEvent e) {
+        super.keyTyped(e);
 
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval?
-        return res;
+        TextStringDataValue tsdv = (TextStringDataValue) getModel();
+        // Just a regular vanilla keystroke - insert it into text field.
+        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()) {
+            this.removeSelectedText();
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
+
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // All other key strokes are consumed.
+        } else {
+            e.consume();
+        }
+
+        // Push the character changes into the database.
+        try {
+            tsdv.setItsValue(this.getText());
+            updateDatabase();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to edit text string", se);
+        }
     }
 }

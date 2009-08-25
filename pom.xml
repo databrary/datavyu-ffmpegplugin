@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.9</version>
+  <version>0.91</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -52,21 +52,21 @@
     </developer>
 
     <developer>
-      <id>felix</id>
-      <name>Felix Gill-Alvarez</name>
-      <email>felixalvarez@_no_spam_yahoo.com</email>
-      <roles>
-        <role>Former Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-
-    <developer>
       <id>Jesse</id>
       <name>Jesse Lingeman</name>
       <email>jml654@_no_spam_nyu.edu</email>
       <roles>
         <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+
+    <developer>
+      <id>felix</id>
+      <name>Felix Gill-Alvarez</name>
+      <email>felixalvarez@_no_spam_yahoo.com</email>
+      <roles>
+        <role>Former Developer</role>
       </roles>
       <timezone>-5</timezone>
     </developer>
