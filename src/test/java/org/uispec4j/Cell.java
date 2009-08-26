@@ -2,6 +2,7 @@ package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
+import java.awt.Font;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
@@ -111,8 +112,17 @@ public class Cell extends AbstractUIComponent {
      * @return String value
      */
     public final String getValueText() {
-        return getValue().getText();
+        return ssCell.getDataView().getText();
     }
+
+    /**
+     * returns the font of the value.
+     * @return Font font
+     */
+    public final Font getValueFont() {
+        return ssCell.getDataView().getFont();
+    }
+
 
     /**
      * types text into a cell element.

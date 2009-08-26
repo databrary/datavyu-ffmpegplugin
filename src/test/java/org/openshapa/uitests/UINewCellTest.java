@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
@@ -16,14 +15,9 @@ import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 
-
-
-
 /**
  * Test for the New Cells.
- *
  */
-
 public final class UINewCellTest extends UISpecTestCase {
 
     /**

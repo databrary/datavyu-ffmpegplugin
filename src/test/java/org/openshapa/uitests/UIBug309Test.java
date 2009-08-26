@@ -4,8 +4,6 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.awt.Component;
-import javax.swing.JDialog;
 import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
