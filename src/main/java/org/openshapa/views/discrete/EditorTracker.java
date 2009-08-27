@@ -438,7 +438,4 @@ implements FocusListener, KeyListener, MouseListener {
     public boolean prePasteCheck() {
         return currentEditor.prePasteCheck();
     }
-
-          
-
 }

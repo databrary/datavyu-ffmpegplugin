@@ -116,6 +116,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Used in the UISpec4j tests.
+     *
      * @return The editor tracker for this MatrixRootView.
      */
     public EditorTracker getEdTracker() {
@@ -160,7 +161,6 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      */
     @Override
     public void processKeyEvent(final KeyEvent ke) {
-
         super.processKeyEvent(ke);
 
         if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP

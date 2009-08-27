@@ -3,6 +3,7 @@ package org.openshapa.views.discrete.datavalues;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 import javax.swing.text.JTextComponent;
 import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.PredDataValue;
@@ -104,6 +105,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 Double newD = buildValue(this.getText());
                 if (newD != null) {
                     fdv.setItsValue(newD);
+
                 } else {
                     fdv.clearValue();
                 }
@@ -123,6 +125,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 Double newD = buildValue(this.getText());
                 if (newD != null) {
                     fdv.setItsValue(newD);
+                    this.setCaretPosition(this.getCaretPosition() + 1);
                 } else {
                     fdv.clearValue();
                 }
@@ -149,6 +152,31 @@ public final class FloatDataValueEditor extends DataValueEditor {
         }
 
         this.updateDatabase();
+    }
+
+    /**
+     * Recalculate the string for this editor.  In particular check if it
+     * is "null" and display the appropriate FormalArg.
+     */
+    @Override
+    public void updateStrings() {
+        String t = "";
+        if (!isNullArg()) {
+            FloatDataValue fdv = (FloatDataValue) getModel();
+            DecimalFormat formatter = new DecimalFormat("0.000000");
+
+            // BugzID:522 - Prevent overiding precision defined by user.
+            if (this.getText() != null && this.getText().length() > 0) {
+                int max = getText().length() - getText().indexOf('.') - 1;
+                formatter.setMaximumFractionDigits(max);
+            }
+
+            t = formatter.format(fdv.getItsValue());
+        } else {
+            t = getNullArg();
+        }
+
+        this.resetText(t);
     }
 
     /**
