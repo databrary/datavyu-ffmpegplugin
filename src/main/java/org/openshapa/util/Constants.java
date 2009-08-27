@@ -56,6 +56,9 @@ public final class Constants {
     /** Seed value for generating hash codes. */
     public static final int SEED15 = 59;
 
+    /** The format to use when outputing floating point values to a string. */
+    public static final String FLOAT_FORMAT = "0.000000";
+
     /**
      * Hidden Constructor - you can't create this - just a holder for global
      * constant values.

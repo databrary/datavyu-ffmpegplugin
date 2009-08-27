@@ -420,7 +420,7 @@ public final class UINewCellTest extends UISpecTestCase {
         }
     }
 
-/**
+    /**
      * Test creating a new FLOAT cell with advanced input.
      * @throws java.lang.Exception on any error
      */

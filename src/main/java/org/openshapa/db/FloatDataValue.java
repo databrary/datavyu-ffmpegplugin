@@ -239,7 +239,7 @@ public final class FloatDataValue extends DataValue {
 
     public String toString()
     {
-        DecimalFormat formatter = new DecimalFormat("0.000000");
+        DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
         return ("" + formatter.format(itsValue));
     }
 
