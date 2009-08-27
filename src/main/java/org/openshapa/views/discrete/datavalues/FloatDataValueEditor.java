@@ -17,6 +17,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
     /** The base of the number system we are using. */
     private static final int BASE = 10;
 
+    /** The maximum number of decimal places. */
+    private static final int MAX_DECIMAL_PLACES = 6;
+
     /**
      * Constructor.
      *
@@ -91,9 +94,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
             // Determine the precision to use - prevent the user from exceding
             // six decimal places.
             DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
-            int maxFrac = Math.min(6, getText().length()
-                                      - getText().indexOf('.')
-                                      - factor - 1);
+            int maxFrac = Math.min(MAX_DECIMAL_PLACES, getText().length()
+                                                       - getText().indexOf('.')
+                                                       - factor - 1);
             formatter.setMaximumFractionDigits(maxFrac);
             this.setText(formatter.format(fdv.getItsValue()));
 
@@ -133,7 +136,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 Double newD = buildValue(this.getText());
                 if (newD != null && !newD.equals(fdv.getItsValue())) {
                     fdv.setItsValue(newD);
-                    this.setCaretPosition(this.getCaretPosition() + 1);
+                    this.setCaretPosition(this.getCaretPosition());
                 } else if (newD == null) {
                     fdv.clearValue();
                 }
@@ -141,7 +144,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
             }
 
         // Key stoke is number - insert number at current caret position.
-        } else if (Character.isDigit(e.getKeyChar())) {
+        } else if (Character.isDigit(e.getKeyChar()) && !excedesPrecision()) {
             this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
@@ -160,6 +163,18 @@ public final class FloatDataValueEditor extends DataValueEditor {
         }
 
         this.updateDatabase();
+    }
+
+    public boolean excedesPrecision() {
+        this.getText().length();
+        if (this.getCaretPosition() < this.getText().indexOf('.')) {
+            return false;
+        } else if (this.getText().length()
+                   - this.getText().indexOf('.') > MAX_DECIMAL_PLACES) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

@@ -443,7 +443,7 @@ public final class UINewCellTest extends UISpecTestCase {
                 Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
                 Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21019, -43.28921, 2178.8, 7, -27,
+        double[] expectedTestOutput = {-43.21019, -43.282100, 2178.8, 7, -27,
         -27.3};
 
         // Retrieve the components
