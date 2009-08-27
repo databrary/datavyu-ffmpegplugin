@@ -165,6 +165,10 @@ public final class FloatDataValueEditor extends DataValueEditor {
         this.updateDatabase();
     }
 
+    /**
+     * @return True if adding another character at the current caret position
+     * will execde the allowed precision for a floating value, false otherwise.
+     */
     public boolean excedesPrecision() {
         this.getText().length();
         if (this.getCaretPosition() < this.getText().indexOf('.')) {
