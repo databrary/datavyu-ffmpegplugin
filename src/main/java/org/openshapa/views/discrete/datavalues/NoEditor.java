@@ -54,33 +54,4 @@ public final class NoEditor extends EditorComponent {
     @Override
     public void focusLost(final FocusEvent fe) {
     }
-
-    /**
-     * NoEditor overrides to stub behaviour.
-     */
-    @Override
-    public int getCaretPosition() {
-        return 0;
-    }
-
-    /**
-     * NoEditor overrides to stub behaviour.
-     */
-    @Override
-    public void setCaretPosition(int localPos) {
-    }
-
-    /**
-     * NoEditor overrides to stub behaviour.
-     */
-    @Override
-    public void selectAll() {
-    }
-
-    /**
-     * NoEditor overrides to stub behaviour.
-     */
-    @Override
-    public void select(int startClick, int endClick) {
-    }
 }

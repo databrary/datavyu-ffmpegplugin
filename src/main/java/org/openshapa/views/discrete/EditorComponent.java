@@ -187,9 +187,14 @@ public abstract class EditorComponent {
      * @return The caret location within the text segment, relative to the this
      * editor component.
      */
-    public int getCaretPosition() {
-        int pos = Math.max(0, parentComp.getCaretPosition() - startPos);
-        pos = Math.min(pos, editorText.length());
+    public final int getCaretPosition() {
+        int pos = 0;
+
+        if (parentComp != null) {
+            pos = Math.max(0, parentComp.getCaretPosition() - startPos);
+            pos = Math.min(pos, editorText.length());
+        }
+
         return pos;
     }
 
@@ -217,17 +222,21 @@ public abstract class EditorComponent {
      *
      * @param localPos Position of caret relative to the start of this editor.
      */
-    public void setCaretPosition(final int localPos) {
-        int pos = Math.max(0, localPos);
-        pos = Math.min(pos, editorText.length());
-        parentComp.setCaretPosition(startPos + pos);
+    public final void setCaretPosition(final int localPos) {
+        if (parentComp != null) {
+            int pos = Math.max(0, localPos);
+            pos = Math.min(pos, editorText.length());
+            parentComp.setCaretPosition(startPos + pos);
+        }
     }
 
     /**
      * Select all of this segments text in the JTextComponent.
      */
-    public void selectAll() {
-        parentComp.select(startPos, startPos + editorText.length());
+    public final void selectAll() {
+        if (parentComp != null) {
+            parentComp.select(startPos, startPos + editorText.length());
+        }
     }
 
     /**
@@ -238,12 +247,15 @@ public abstract class EditorComponent {
      * @param endClick character position of the end of the click.
      */
     public void select(final int startClick, final int endClick) {
-        int start = Math.max(startPos, startClick);
-        start = Math.min(startPos + editorText.length(), start);
-        int end = Math.max(startPos, endClick);
-        end = Math.min(startPos + editorText.length(), end);
-        parentComp.setCaretPosition(start);
-        parentComp.moveCaretPosition(end);
+        if (parentComp != null) {
+            int start = Math.max(startPos, startClick);
+            start = Math.min(startPos + editorText.length(), start);
+
+            int end = Math.max(startPos, endClick);
+            end = Math.min(startPos + editorText.length(), end);
+            parentComp.setCaretPosition(start);
+            parentComp.moveCaretPosition(end);
+        }
     }
 
     /**

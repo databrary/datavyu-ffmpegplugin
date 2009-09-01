@@ -4,7 +4,6 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.db.IntDataValue;
 import org.openshapa.db.PredDataValue;
 
