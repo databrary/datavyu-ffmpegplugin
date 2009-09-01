@@ -365,7 +365,7 @@ public final class OpenDatabaseC {
                 String[] vocabElement = vocabElems[i].split("\\|");
 
                 // Add text formal argument.
-                if (vocabElement[1].equalsIgnoreCase("text")) {
+                if (vocabElement[1].equalsIgnoreCase("quote_string")) {
                     fa = new QuoteStringFormalArg(db,
                                                   "<" + vocabElement[0] + ">");
 

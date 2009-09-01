@@ -53,5 +53,3 @@ matrix (MATRIX)-float|FLOAT,int|INTEGER,nominal|NOMINAL,qstring|QUOTE_STRING,unt
 00:00:57:000,00:00:58:000,(1.200000, 4, nm, "qs", <untyped>)
 00:00:59:000,00:01:00:000,(1.200000, 4, nm, "qs", <untyped>)
 00:01:01:000,00:01:02:000,(1.200000, 4, nm, "qs", <untyped>)
-
-

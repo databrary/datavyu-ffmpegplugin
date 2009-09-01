@@ -70,7 +70,7 @@ public final class SaveDatabaseC {
                         if (j < mve.getNumFormalArgs() - 1) {
                             out.write(",");
                         }
-                    }                
+                    }
                 }
 
                 out.newLine();

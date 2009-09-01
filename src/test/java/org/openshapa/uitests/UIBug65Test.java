@@ -39,7 +39,7 @@ public final class UIBug65Test extends UISpecTestCase {
     }
 
     /**
-     * Test saving a database to a CSV file.
+     * Test that the order of columns remains the same.
      *
      * @throws java.lang.Exception on any error
      */
