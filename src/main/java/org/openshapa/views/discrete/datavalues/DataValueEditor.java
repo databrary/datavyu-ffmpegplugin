@@ -39,9 +39,6 @@ public abstract class DataValueEditor extends EditorComponent {
     /** The index of the data value within its parent predicate. */
     private int pIndex;
 
-    /** Is the data value now null? */
-    private boolean argIsNull;
-
     /** Text when editor gained focus (became current editor). */
     private String textOnFocus;
 
@@ -123,8 +120,6 @@ public abstract class DataValueEditor extends EditorComponent {
             logger.error("Unable to create DataValueEditor: ", ex);
         }
 
-        argIsNull = (this.getModel() == null || this.getModel().isEmpty());
-
         updateStrings();
     }
 
@@ -148,8 +143,6 @@ public abstract class DataValueEditor extends EditorComponent {
             logger.error("Unable to create DataValue View: ", ex);
         }
 
-        argIsNull = (this.getModel() == null || this.getModel().isEmpty());
-
         updateStrings();
     }
 
@@ -159,7 +152,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     public void updateStrings() {
         String t = "";
-        if (!isNullArg()) {
+        if (!this.getModel().isEmpty()) {
             t = this.getModel().toString();
         } else {
             t = getNullArg();
@@ -219,8 +212,6 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        checkNullArgKeyTyped(e);
-
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
@@ -283,8 +274,6 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        checkNullArgKeyTyped(e);
-
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
             && e.getKeyChar() == '\u0008') {
@@ -313,81 +302,23 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyReleased(final KeyEvent e) {
+        boolean argIsNull = true;
+
         if (getText().length() == 0) {
-            argIsNull = true;
             setText(getNullArg());
         } else {
             argIsNull = (getText().equals(getNullArg()));
         }
+
         if (argIsNull) {
             selectAll();
-        } else {
-            /*
-            if (!sanityCheck()) {
-                setText(prevText);
-                setCaretPosition(prevCaret);
-            }*/
         }
-    }
-
-    /**
-     * Determine if the next key action is going to create a null arg or
-     * if the editor is already effectively a null arg.
-     * @param e KeyEvent
-     */
-    public final void checkNullArgKeyTyped(final KeyEvent e) {
-        // if we are a null arg already
-        // consume chars that do not make sense
-        // backspace, enter, tab and delete
-        if (isNullArg()) {
-            boolean consumeIfNull = false;
-            int type = e.getID();
-            int loc = e.getKeyLocation();
-            char ch = e.getKeyChar();
-            int code = e.getKeyCode();
-            if (type == KeyEvent.KEY_TYPED) {
-                consumeIfNull = ((ch == '\b')
-                                || (ch == '\t')
-                                || (ch == '\n')
-                                || (ch == '\u007f'));
-            } else {
-                consumeIfNull = ((code == KeyEvent.VK_BACK_SPACE)
-                                || (code == KeyEvent.VK_TAB)
-                                || ((code == KeyEvent.VK_ENTER
-                                        && loc != KeyEvent.KEY_LOCATION_NUMPAD))
-                                || (code == KeyEvent.VK_DELETE));
-            }
-            if (consumeIfNull) {
-                e.consume();
-            }
-        }
-    }
-
-    /**
-     * @return true if the editor is currently displaying a "null" arg.
-     */
-    public final boolean isNullArg() {
-        return argIsNull;
     }
 
     /**
      * Update the database with the model value.
      */
     public void updateDatabase() {
-        /*
-        try {            
-        } catch (SystemErrorException e) {
-            logger.error("Unable to reget the cell data: ", e);
-        }
-        
-        // update the model.
-        if (isNullArg()) {
-            updateModelNull();
-        } else {
-            // call the subclass (template pattern)
-            updateModelValue();
-        }*/
-
         try {
             // reget the parentCell in case onset or offset have been changed.
             parentCell = (DataCell) parentCell.getDB()
@@ -417,7 +348,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public final void select(final int startClick, final int endClick) {
-        if (!isNullArg()) {
+        if (!this.getModel().isEmpty()) {
             super.select(startClick, endClick);
         } else {
             super.select(0, Integer.MAX_VALUE);

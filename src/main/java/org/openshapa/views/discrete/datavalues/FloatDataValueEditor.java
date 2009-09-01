@@ -88,7 +88,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
             int factor = getCaretPosition() - getText().indexOf('.');
             if (factor > 0) {
                 factor--;
-            }           
+            }
             fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
 
             // Determine the precision to use - prevent the user from exceding
@@ -188,8 +188,8 @@ public final class FloatDataValueEditor extends DataValueEditor {
     @Override
     public void updateStrings() {
         String t = "";
-        if (!isNullArg()) {
-            FloatDataValue fdv = (FloatDataValue) getModel();
+        FloatDataValue fdv = (FloatDataValue) getModel();
+        if (!fdv.isEmpty()) {
             DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
 
             // BugzID:522 - Prevent overiding precision defined by user.

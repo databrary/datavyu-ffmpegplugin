@@ -5,7 +5,6 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.QuoteStringDataValue;
-import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -91,8 +90,9 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
      * Modify the text of the quote fixed texts if we are a null arg.
      */
     private void checkQuotes() {
+        QuoteStringDataValue qsdv = (QuoteStringDataValue) getModel();
         if (leftQuote != null && rightQuote != null) {
-            if (!isNullArg()) {
+            if (!qsdv.isEmpty()) {
                 leftQuote.setText("\"");
                 rightQuote.setText("\"");
                 String t = getText();
@@ -110,8 +110,9 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
      * But do not cause MatrixRootView to be called.
      */
     private void initQuotes() {
+        QuoteStringDataValue qsdv = (QuoteStringDataValue) getModel();
         if (leftQuote != null && rightQuote != null) {
-            if (!isNullArg()) {
+            if (!qsdv.isEmpty()) {
                 leftQuote.resetText("\"");
                 rightQuote.resetText("\"");
                 String t = getText();

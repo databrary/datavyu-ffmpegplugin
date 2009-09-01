@@ -184,7 +184,8 @@ public abstract class EditorComponent {
     }
 
     /**
-     * @return the caret location within the text segment as a local value.
+     * @return The caret location within the text segment, relative to the this
+     * editor component.
      */
     public int getCaretPosition() {
         int pos = Math.max(0, parentComp.getCaretPosition() - startPos);
