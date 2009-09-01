@@ -1,8 +1,14 @@
 package org.openshapa.views.discrete;
 
+import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 
 /**
  * EditorComponent - Abstract class for editing a segment of text within a
@@ -34,6 +40,10 @@ public abstract class EditorComponent {
 
     /** The character to use as a substitute if we are doing replacement. */
     private char replaceChar;
+
+    /** The logger for this class. */
+    private static Logger logger = Logger
+                                   .getLogger(EditorComponent.class);
 
     /**
      * Action to invoke when a key is pressed.
@@ -184,6 +194,13 @@ public abstract class EditorComponent {
     }
 
     /**
+     * @return The parent Swing component for this EditorComponent.
+     */
+    public final Component getParentComponent() {
+        return this.parentComp;
+    }
+
+    /**
      * @return The caret location within the text segment, relative to the this
      * editor component.
      */
@@ -259,14 +276,36 @@ public abstract class EditorComponent {
     }
 
     /**
-     * Sanitize the text in the clipboard. Subclasses that check for
-     * reserved chars override this method.
-     *
-     * @return true if it is okay to call the JTextComponent's paste command.
+     * Paste the contents of the clipboard into the contents of the
+     * EditorComponent.
      */
-    public boolean prePasteCheck() {
-        // default version assumes it is okay
-        return true;
+    public void paste() {
+        // Get the contents of the clipboard.
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clipboard.getContents(null);
+        boolean hasText = (contents != null)
+                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+
+        // No valid text in clipboard. Bail.
+        if (!hasText) {
+            return;
+        }
+
+        // Valid text in clipboard
+        try {
+            // Get the text from the clipboard
+            String text = (String) contents
+                                   .getTransferData(DataFlavor.stringFlavor);
+
+            for (int i = 0; i < text.length(); i++) {
+                KeyEvent ke = new KeyEvent(this.getParentComponent(), 0, 0,
+                                           0, 0, text.charAt(i));
+                this.keyTyped(ke);
+            }
+
+        } catch (Exception ex) {
+            logger.error("Unable to get clipboard contents", ex);
+        }
     }
 
     /**

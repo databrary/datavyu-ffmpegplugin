@@ -302,7 +302,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      * @return true if it is okay to call the JTextComponent's paste command.
      */
     @Override
-    public boolean prePasteCheck() {
+    public void paste() {
         // Get the contents of the clipboard.
         Clipboard clipboard = Toolkit.getDefaultToolkit()
                                      .getSystemClipboard();
@@ -312,7 +312,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
         // No valid text in clipboard. Bail.
         if (!hasText) {
-            return false;
+            return;
         }
 
         // Valid text in clipboard - attempt to copy it into timestamp.
@@ -389,7 +389,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             logger.error("Unable to get clipboard contents", ex);
         }
         // already handled so don't process any further
-        return false;
+        return;
     }
 
     /**

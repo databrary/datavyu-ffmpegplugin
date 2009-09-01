@@ -113,42 +113,4 @@ public final class NominalDataValueEditor extends DataValueEditor {
     public boolean isReserved(final char aChar) {
         return (NOMINAL_RESERVED_CHARS.indexOf(aChar) >= 0);
     }
-
-    /**
-     * Sanitize the text in the clipboard.
-     * @return true if it is okay to call the JTextComponent's paste command.
-     */
-    @Override
-    public boolean prePasteCheck() {
-        // Get the contents of the clipboard.
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        Transferable contents = clipboard.getContents(null);
-        boolean hasText = (contents != null)
-                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-
-        // No valid text in clipboard. Bail.
-        if (!hasText) {
-            return false;
-        }
-
-        // Valid text in clipboard
-        try {
-            // Get the text
-            String text = (String) contents
-                                  .getTransferData(DataFlavor.stringFlavor);
-
-            // Replace reserved characters with a suitable replacement.
-            for (Character reservedCh : NOMINAL_RESERVED_CHARS.toCharArray()) {
-                text = text.replace(reservedCh, RESERVED_REPLACEMENT);
-            }
-
-            // Put the modified text back into the clipboard
-            Transferable transferableText = new StringSelection(text);
-            clipboard.setContents(transferableText, null);
-        } catch (Exception ex) {
-            logger.error("Unable to get clipboard contents", ex);
-            return false;
-        }
-        return true;
-    }
 }

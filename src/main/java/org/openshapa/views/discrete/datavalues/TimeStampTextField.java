@@ -186,9 +186,7 @@ implements FocusListener, KeyListener {
      */
     @Override
     public void paste() {
-        if (myEditor.prePasteCheck()) {
-            super.paste();
-        }
+        myEditor.paste();
     }
 
     /**

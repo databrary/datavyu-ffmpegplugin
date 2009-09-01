@@ -106,7 +106,7 @@ public final class UINewCellTest extends UISpecTestCase {
             Clipboard.putText(testInput[j]);
             t.setText("");
             t.pasteFromClipboard();
-            //BugzID383: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 

@@ -390,5 +390,4 @@ public abstract class DataValueEditor extends EditorComponent {
     public final int getmIndex() {
         return this.mIndex;
     }
-
 }

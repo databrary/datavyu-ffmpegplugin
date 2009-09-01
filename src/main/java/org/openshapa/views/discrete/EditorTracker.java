@@ -48,6 +48,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Constructor.
+     *
      * @param ta JTextComponent containing the editors to track.
      * @param eds Vector of the EditorComponents.
      */
@@ -59,6 +60,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Set the currentEditor.
+     *
      * @param newEd The new editor to set as the current.
      */
     public void setEditor(final EditorComponent newEd) {
@@ -67,6 +69,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Set the currentEditor.
+     *
      * @param newEd The new editor to set as the current.
      * @param start Start character location to select.
      * @param end End character location to select.
@@ -113,6 +116,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Adds editors to the tracker on the end of the vector.
+     *
      * @param eds The editors to add.
      */
     public void addEditors(final Vector<EditorComponent> eds) {
@@ -123,6 +127,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Removes editors from the tracker.
+     *
      * @param eds The editors to remove.
      */
     public void removeEditors(final Vector<EditorComponent> eds) {
@@ -133,6 +138,7 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Find an editor given a character position of a mouse click.
+     *
      * @param charPos Character position to search for
      * @return The editor closest to the character position.
      */
@@ -433,9 +439,8 @@ implements FocusListener, KeyListener, MouseListener {
 
     /**
      * Call the currentEditor to sanitize the text in the clipboard.
-     * @return true if it is okay to call the JTextComponent's paste command.
      */
-    public boolean prePasteCheck() {
-        return currentEditor.prePasteCheck();
+    public void paste() {
+        currentEditor.paste();
     }
 }

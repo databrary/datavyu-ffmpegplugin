@@ -174,8 +174,6 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      */
     @Override
     public void paste() {
-        if (edTracker.prePasteCheck()) {
-            super.paste();
-        }
+        edTracker.paste();
     }
 }
