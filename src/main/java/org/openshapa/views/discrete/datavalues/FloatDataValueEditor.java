@@ -146,6 +146,16 @@ public final class FloatDataValueEditor extends DataValueEditor {
         // Key stoke is number - insert number at current caret position.
         } else if (Character.isDigit(e.getKeyChar()) && !excedesPrecision()) {
             this.removeSelectedText();
+
+            // BugzID: 565 - Reject keystroke if a leading zero.
+            if (e.getKeyChar() == '0') {
+                if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
+                    || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)) {
+                  e.consume();
+                  return;
+                }
+            }
+
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
 
