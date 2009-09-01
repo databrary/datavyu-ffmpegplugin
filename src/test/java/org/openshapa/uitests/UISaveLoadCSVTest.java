@@ -95,7 +95,6 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
-    /*
     public void testLoadingCSV() throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -120,6 +119,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                     .select(testCSV))
                 .run();
 
+
         // 2. Save contents as a seperate CSV file.
         WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save As...")
@@ -135,7 +135,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         //BugzID:541 - I am compensating for this bug because it is minor
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath() + ".csv");
         assertTrue(areFilesSame(testCSV, bug541SavedCSV));
-    }*/
+    }
 
 
     /**

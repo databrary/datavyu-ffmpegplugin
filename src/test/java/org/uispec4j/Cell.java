@@ -150,6 +150,14 @@ public class Cell extends AbstractUIComponent {
         KeyUtils.enterString(getComponentByType(element), s2);
     }
 
+    public final void selectAllAndTypeKey(final int element, final Key key) {
+        requestFocus(element);
+
+        getComponentByType(element).selectAll();
+
+        KeyUtils.typeKey(getComponentByType(element), key);
+    }
+
      /**
      * sets the focus to a particular element of cell.
      * @param element to gain focus
@@ -162,6 +170,10 @@ public class Cell extends AbstractUIComponent {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);
         }
+
+    }
+
+    public final void select(){
 
     }
 
