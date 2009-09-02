@@ -118,8 +118,9 @@ public final class UITimestampTest extends UISpecTestCase {
 
     /**
      * Test pasting the onset and offset timestamps.
+     *
      * @throws java.lang.Exception on any error
-     *//* BugzID:488
+     */
     public void testTimestampPasting() throws Exception {
         TextBox onset, offset;
 
@@ -129,7 +130,7 @@ public final class UITimestampTest extends UISpecTestCase {
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
-            "00:00:00:000", "12:34:56:789", "00:00:00:000", "13:19:33:999",
+            "13:00:00:000", "12:34:56:789", "44:30:00:000", "13:19:33:999",
             "13:19:33:999", "12:34:00:000", "12:34:56:000"};
 
         Vector<Cell> c = createNewCells(numOfTests);
@@ -139,7 +140,10 @@ public final class UITimestampTest extends UISpecTestCase {
             Clipboard.putText(testInput[i]);
 
             // Paste doesn't seem to request focus correctly.
+            onset.selectAll();
             onset.pasteFromClipboard();
+
+            offset.selectAll();
             offset.pasteFromClipboard();
 
             assertTrue(onset.getText().equalsIgnoreCase(
@@ -147,7 +151,7 @@ public final class UITimestampTest extends UISpecTestCase {
             assertTrue(offset.getText().equalsIgnoreCase(
                     expectedTestOutput[i]));
        }
-    }*/
+    }
 
     /**
      * Create a new cell.

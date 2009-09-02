@@ -272,7 +272,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // Key stoke is number - insert stroke at current caret position
             // but only if their is room in the editor for the new digit.
             } else if (Character.isDigit(e.getKeyChar())
-                       && this.getCaretPosition() < getText().length()) {
+                       && this.getCaretPosition() <= getText().length()) {
                 this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.deleteCharAt(getCaretPosition());
@@ -284,6 +284,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // Every other key stroke is ignored by the float editor.
             } else {
                 e.consume();
+
+                // Nothing has changed - skip updating the database.
+                return;
             }
 
             // Push the value back into the database.
@@ -301,6 +304,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      * Sanitize the text in the clipboard.
      * @return true if it is okay to call the JTextComponent's paste command.
      */
+    /*
     @Override
     public void paste() {
         // Get the contents of the clipboard.
@@ -390,7 +394,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
         }
         // already handled so don't process any further
         return;
-    }
+    }*/
 
     /**
      * Builds a new value from a string.

@@ -138,14 +138,14 @@ public final class UINewCellTest extends UISpecTestCase {
         //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-            {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                     Key.BACKSPACE, }};
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
+                Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE}};
 
 
         int numOfTests = testInput.length;
@@ -279,7 +279,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2 ", "99999999999999999999", "000389.5",/* BugzId:485 , "-", "-0" */};
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5"
+            /* BugzId:485 , "-", "-0" */};
 
         int numOfTests = testInput.length;
 
@@ -305,8 +306,8 @@ public final class UINewCellTest extends UISpecTestCase {
         //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-            {Key.LEFT, Key.RIGHT}};
+            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
+                Key.RIGHT}, {Key.LEFT, Key.RIGHT}};
 
 
         int numOfTests = testInput.length;
@@ -427,15 +428,31 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2 ", "589.138085638", "000389.5"
+            "If x?7 then. x? 2 ", "589.138085638", /*BugzID:565 "000389.5"*/
             /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
         int numOfTests = testInput.length;
 
         double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
         589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
+
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        createNewVariable(varName, varType, varRadio);
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
         //5. Check copy pasting
-        /*for (int i = 0; i < numOfTests; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             int j = i % numOfTests;
             Clipboard.putText(testInput[j]);
 
@@ -446,8 +463,9 @@ public final class UINewCellTest extends UISpecTestCase {
             // Paste new contents.
             TextBox t = c.getValue();
             t.pasteFromClipboard();
-            //BugzID:384 - assertTrue(Double.parseDouble(t.getText()) == (expectedTestOutput[j]));
-        }*/
+            assertTrue(Double.parseDouble(t.getText())
+                    == expectedTestOutput[j]);
+        }
     }
 
     /**
@@ -528,7 +546,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2 ", "99999999999999999999", "000389.5",/* BugzId:485 , "-", "-0" */};
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5"
+            /* BugzId:485 , "-", "-0" */};
 
         int numOfTests = testInput.length;
 
@@ -693,8 +712,19 @@ public final class UINewCellTest extends UISpecTestCase {
         newVarWindow.getButton("Ok").click();
     }
 
-    private void pasteTest(String varName, String varType, String varRadio,
-            int numOfTests, String[] testInput, String[] expectedTestOutput)
+    /**
+     * Tests for pasting.
+     * @param varName variable name
+     * @param varType variable type
+     * @param varRadio radio for variable
+     * @param numOfTests number of tests
+     * @param testInput test input values
+     * @param expectedTestOutput expected test output values
+     * @throws java.lang.Exception on any exception
+     */
+    private void pasteTest(final String varName, final String varType,
+            final String varRadio, final int numOfTests,
+            final String[] testInput, final String[] expectedTestOutput)
             throws Exception {
         // Retrieve the components
         Window window = getMainWindow();
@@ -702,7 +732,8 @@ public final class UINewCellTest extends UISpecTestCase {
         //1. Create new TEXT variable,
         //open spreadsheet and check that it's there
         createNewVariable(varName, varType, varRadio);
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
         //3. Create 6 new cell, check that they have been created
         for (int i = 0; i < numOfTests; i++) {
@@ -716,6 +747,9 @@ public final class UINewCellTest extends UISpecTestCase {
             // Delete existing cell contents.
             Cell c = cells.elementAt(i);
             c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+            //Check that it actually was deleted
+            assertTrue(c.getValueText().equals("<val>") ||
+                    c.getValueText().equals(""));
             // Paste new contents.
             TextBox t = c.getValue();
             t.pasteFromClipboard();
@@ -724,3 +758,4 @@ public final class UINewCellTest extends UISpecTestCase {
     }
 
 }
+
