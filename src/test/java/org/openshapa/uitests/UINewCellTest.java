@@ -98,21 +98,28 @@ public final class UINewCellTest extends UISpecTestCase {
 
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
+    }
 
-        //5. Check copy pasting
-        for (int i = 0; i < numOfTests; i++) {
-            int j = i % numOfTests;
-            Clipboard.putText(testInput[j]);
+     /**
+     * Test pasting in Nominal cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testNominalPasting() throws Exception {
+        String varName = "nomVar";
+        String varType = "NOMINAL";
+        String varRadio = "nominal";
 
-            // Delete existing cell contents.
-            Cell c = cells.elementAt(i);
-            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+        String[] testInput = {"Subject stands )up ", "$10,432",
+            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
+            "If x>7 then x|2"};
 
-            // Paste new contents.
-            TextBox t = c.getValue();
-            t.pasteFromClipboard();
-            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
-        }
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = {"Subject stands up ", "$10432",
+            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
+            "If x7 then x2"};
+        pasteTest(varName, varType, varRadio, numOfTests, testInput,
+                expectedTestOutput);
     }
 
      /**
@@ -242,10 +249,10 @@ public final class UINewCellTest extends UISpecTestCase {
     }
 
     /**
-     * Test creating a new TEXT cell.
+     * Test pasting in TEXT cell.
      * @throws java.lang.Exception on any error
      */
-    public void testNewTextPasting() throws Exception {
+    public void testTextPasting() throws Exception {
         String varName = "textVar";
         String varType = "TEXT";
         String varRadio = "text";
@@ -254,46 +261,33 @@ public final class UINewCellTest extends UISpecTestCase {
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
-
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = testInput;
-
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        //1. Create new TEXT variable,
-        //open spreadsheet and check that it's there
-        createNewVariable(varName, varType, varRadio);
-
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent())));
-
-        //3. Create 6 new cell, check that they have been created
-        for (int i = 0; i < numOfTests; i++) {
-            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-        }
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-
-
-        //5. Check copy pasting
-        for (int i = 0; i < numOfTests; i++) {
-            int j = i % numOfTests;
-            Clipboard.putText(testInput[j]);
-
-            // Delete existing cell contents.
-            Cell c = cells.elementAt(i);
-            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-
-            // Paste new contents.
-            TextBox t = c.getValue();
-            t.pasteFromClipboard();
-            assertTrue(t.getText().equalsIgnoreCase(testInput[j]));
-        }
+        pasteTest(varName, varType, varRadio, numOfTests, testInput,
+                expectedTestOutput);
     }
 
+     /**
+     * Test pasting in INTEGER cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testIntegerPasting() throws Exception {
+        String varName = "intVar";
+        String varType = "INTEGER";
+        String varRadio = "integer";
+
+        String[] testInput = {"1a9", "10-432",
+            "!28.9(", "178&", "~~~)",
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5",/* BugzId:485 , "-", "-0" */};
+
+        int numOfTests = testInput.length;
+
+        String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
+            "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
+        pasteTest(varName, varType, varRadio, numOfTests, testInput,
+                expectedTestOutput);
+    }
 
     /**
      * Test creating a new TEXT cell with more advanced input.
@@ -374,12 +368,13 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2 ", /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
+            "If x?7 then. x? 2 ", "589.138085638", /*BugzID:565 "000389.5"*/
+            /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
         int numOfTests = testInput.length;
 
-        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2, -0.1, 0.2,
-        0, 0, 0};
+        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
+        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -419,8 +414,26 @@ public final class UINewCellTest extends UISpecTestCase {
             assertTrue(Double.parseDouble(t.getText())
                     == (expectedTestOutput[i]));
         }
+    }
 
+     /**
+     * Test pasting with INTEGER cell.
+     * @throws java.lang.Exception on any error
+     */
+    public void testFloatPasting() throws Exception {
+       String varName = "floatVar";
+        String varType = "FLOAT";
+        String varRadio = "float";
 
+        String[] testInput = {"1a.9", "10-43.2",
+            "!289(", "178.&", "0~~~)",
+            "If x?7 then. x? 2 ", "589.138085638", "000389.5"
+            /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
+
+        int numOfTests = testInput.length;
+
+        double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
+        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
         //5. Check copy pasting
         /*for (int i = 0; i < numOfTests; i++) {
             int j = i % numOfTests;
@@ -448,7 +461,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then.- x? 2",  /*BugzID422:"()12.3"*/};
+            "If x?7 then.- x? 2",  "589.138085638"/*BugzID422:"()12.3"*/};
 
         int numOfTests = testInput.length;
 
@@ -457,11 +470,10 @@ public final class UINewCellTest extends UISpecTestCase {
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
             {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
                 Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
-                Key.LEFT, Key.LEFT}};
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT}};
 
         double[] expectedTestOutput = {-43.21019, -43.282100, 2178.8, 7, -27,
-        -27.3};
+        -27589.138080};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -516,12 +528,12 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2 ", "99999999999999999999"/* BugzId:485 , "-", "-0" */};
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5",/* BugzId:485 , "-", "-0" */};
 
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999"/* BugzID:485,  "0", "0" */};
+            "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -558,22 +570,6 @@ public final class UINewCellTest extends UISpecTestCase {
             c.enterText(Cell.VALUE, testInput[i]);
 
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
-        }
-
-
-        //5. Check copy pasting
-        for (int i = 0; i < numOfTests; i++) {
-            int j = i % numOfTests;
-            Clipboard.putText(testInput[j]);
-
-            // Delete existing cell contents.
-            Cell c = cells.elementAt(i);
-            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-
-            // Paste new contents.
-            TextBox t = c.getValue();
-            t.pasteFromClipboard();
-            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
     }
 
@@ -695,6 +691,36 @@ public final class UINewCellTest extends UISpecTestCase {
         newVarWindow.getTextBox("nameField").insertText(varName, 0);
         newVarWindow.getRadioButton(varRadio).click();
         newVarWindow.getButton("Ok").click();
+    }
+
+    private void pasteTest(String varName, String varType, String varRadio,
+            int numOfTests, String[] testInput, String[] expectedTestOutput)
+            throws Exception {
+        // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+        //1. Create new TEXT variable,
+        //open spreadsheet and check that it's there
+        createNewVariable(varName, varType, varRadio);
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+        //3. Create 6 new cell, check that they have been created
+        for (int i = 0; i < numOfTests; i++) {
+            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        }
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+        //5. Check copy pasting
+        for (int i = 0; i < numOfTests; i++) {
+            int j = i % numOfTests;
+            Clipboard.putText(testInput[j]);
+            // Delete existing cell contents.
+            Cell c = cells.elementAt(i);
+            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+            // Paste new contents.
+            TextBox t = c.getValue();
+            t.pasteFromClipboard();
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
+        }
     }
 
 }
