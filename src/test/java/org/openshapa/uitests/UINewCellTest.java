@@ -369,7 +369,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2 ", "589.138085638", /*BugzID:565 "000389.5"*/
+            "If x?7 then. x? 2 ", "589.138085638", "000389.5"
             /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
         int numOfTests = testInput.length;
@@ -428,7 +428,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2 ", "589.138085638", /*BugzID:565 "000389.5"*/
+            "If x?7 then. x? 2 ", "589.138085638", "000389.5"
             /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
         int numOfTests = testInput.length;
