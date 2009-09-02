@@ -100,11 +100,16 @@ public final class UINewCellTest extends UISpecTestCase {
         }
 
         //5. Check copy pasting
-         for (int i = 1; i < numOfTests + 1; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValue();
             Clipboard.putText(testInput[j]);
-            t.setText("");
+
+            // Delete existing cell contents.
+            Cell c = cells.elementAt(i);
+            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+
+            // Paste new contents.
+            TextBox t = c.getValue();
             t.pasteFromClipboard();
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
@@ -272,14 +277,20 @@ public final class UINewCellTest extends UISpecTestCase {
         }
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
+
         //5. Check copy pasting
-        for (int i = 1; i < numOfTests + 1; i++) {
+        for (int i = 0; i < numOfTests; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValue();
             Clipboard.putText(testInput[j]);
-            t.setText("");
+
+            // Delete existing cell contents.
+            Cell c = cells.elementAt(i);
+            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+
+            // Paste new contents.
+            TextBox t = c.getValue();
             t.pasteFromClipboard();
-            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+            assertTrue(t.getText().equalsIgnoreCase(testInput[j]));
         }
     }
 
@@ -409,15 +420,21 @@ public final class UINewCellTest extends UISpecTestCase {
                     == (expectedTestOutput[i]));
         }
 
-       //5. Check copy pasting
-        for (int i = 1; i < numOfTests + 1; i++) {
+
+        //5. Check copy pasting
+        /*for (int i = 0; i < numOfTests; i++) {
             int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValue();
             Clipboard.putText(testInput[j]);
-            t.setText("");
+
+            // Delete existing cell contents.
+            Cell c = cells.elementAt(i);
+            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+
+            // Paste new contents.
+            TextBox t = c.getValue();
             t.pasteFromClipboard();
-            //BugzID:384: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
-        }
+            //BugzID:384 - assertTrue(Double.parseDouble(t.getText()) == (expectedTestOutput[j]));
+        }*/
     }
 
     /**
@@ -543,7 +560,22 @@ public final class UINewCellTest extends UISpecTestCase {
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
 
-               //5. Check copy pasting
+
+        //5. Check copy pasting
+        for (int i = 0; i < numOfTests; i++) {
+            int j = i % numOfTests;
+            Clipboard.putText(testInput[j]);
+
+            // Delete existing cell contents.
+            Cell c = cells.elementAt(i);
+            c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
+
+            // Paste new contents.
+            TextBox t = c.getValue();
+            t.pasteFromClipboard();
+            assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
+        }
+        /*
         for (int i = 1; i < numOfTests + 1; i++) {
             int j = i % numOfTests;
             TextBox t = cells.elementAt(i - 1).getValue();
@@ -551,7 +583,7 @@ public final class UINewCellTest extends UISpecTestCase {
             t.setText("");
             t.pasteFromClipboard();
             //BugzID369: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
-        }
+        }*/
     }
 
     /**

@@ -68,7 +68,14 @@ public final class TextStringDataValueEditor extends DataValueEditor {
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()) {
             this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.insert(getCaretPosition(), e.getKeyChar());
+
+            // If we have a delete or backspace key - do not insert.
+            if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u007F') &&
+                !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u0008')) {
+                currentValue.insert(getCaretPosition(), e.getKeyChar());
+            }
 
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
