@@ -1,9 +1,5 @@
 package org.openshapa.views.discrete.datavalues;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.SystemErrorException;
@@ -299,102 +295,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             logger.error("Unable to update TimeStampDataValue", se);
         }
     }
-
-    /**
-     * Sanitize the text in the clipboard.
-     * @return true if it is okay to call the JTextComponent's paste command.
-     */
-    /*
-    @Override
-    public void paste() {
-        // Get the contents of the clipboard.
-        Clipboard clipboard = Toolkit.getDefaultToolkit()
-                                     .getSystemClipboard();
-        Transferable contents = clipboard.getContents(null);
-        boolean hasText = (contents != null)
-                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-
-        // No valid text in clipboard. Bail.
-        if (!hasText) {
-            return;
-        }
-
-        // Valid text in clipboard - attempt to copy it into timestamp.
-        try {
-            String text = (String) contents
-                                  .getTransferData(DataFlavor.stringFlavor);
-
-            // Validate clipboard contents - if it is invalid, don't attempt
-            // to paste it into the timestamp. 1234 1234
-            boolean reject = true;
-            for (int i = 0; i < text.length(); i++) {
-                if (Character.isDigit(text.charAt(i))
-                    || this.isPreserved(text.charAt(i))) {
-                    reject = false;
-                }
-            }
-
-            // Contents of clipboard contain valid value - attempt to paste
-            // it into this timestamp.
-            if (!reject) {
-                // Truncate any delimiters out of the timestamp datavalue.
-                // and treat it as a continous stream of digits.
-                TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
-                TimeStamp ts = tsdv.getItsValue();
-
-                // If the user has selected text - ensure that the paste
-                // location is the start of the selection.
-                if (getSelectionEnd() > getSelectionStart()) {
-                    setCaretPosition(getSelectionStart());
-                }
-
-                // For each digit in the clipboard - add it to the timestamp
-                // rebuilding the timestamp as we go (to get smart edits).
-                for (int i = 0; i < text.length(); i++) {
-                    // Build a string buffer for the timestamp we are
-                    // copying digits into.
-                    StringBuffer v = new StringBuffer(ts.toString());
-
-                    // If the character in the current caret position of the
-                    // destination time stamp is a preservedCharacter, skip
-                    // over it.
-                    if (this.isPreserved(v.charAt(getCaretPosition()))) {
-                        setCaretPosition(getCaretPosition() + 1);
-                    }
-
-                    // Replace the character in the current caret position
-                    // with one from our clipboard and rebuild the timestamp
-                    // to benefit from 'smart' edits.
-                    v.deleteCharAt(getCaretPosition());
-                    v.insert(getCaretPosition(), text.charAt(i));
-                    ts = new TimeStamp(v.toString());
-
-                    // If we have got no more room in the timestamp - stop
-                    // copying values.
-                    if (getCaretPosition() + 1 == ts.toString().length()) {
-                        setCaretPosition(getCaretPosition() + 1);
-                        break;
-                    }
-
-                    // Advance the caret position to the next available slot
-                    // in the destination timestamp.
-                    setCaretPosition(getCaretPosition() + 1);
-                }
-
-                // Push the value back into the database.
-                tsdv.setItsValue(ts);
-                updateDatabase();
-
-                // Update the strings if we don't change the value.
-                setText(this.getModel().toString());
-                restoreCaretPosition();
-            }
-        } catch (Exception ex) {
-            logger.error("Unable to get clipboard contents", ex);
-        }
-        // already handled so don't process any further
-        return;
-    }*/
 
     /**
      * Builds a new value from a string.
