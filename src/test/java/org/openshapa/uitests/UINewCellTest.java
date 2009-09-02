@@ -575,15 +575,6 @@ public final class UINewCellTest extends UISpecTestCase {
             t.pasteFromClipboard();
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
         }
-        /*
-        for (int i = 1; i < numOfTests + 1; i++) {
-            int j = i % numOfTests;
-            TextBox t = cells.elementAt(i - 1).getValue();
-            Clipboard.putText(testInput[j]);
-            t.setText("");
-            t.pasteFromClipboard();
-            //BugzID369: assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[j]));
-        }*/
     }
 
     /**
