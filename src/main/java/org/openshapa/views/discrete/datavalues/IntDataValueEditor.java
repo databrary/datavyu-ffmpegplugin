@@ -119,9 +119,10 @@ public final class IntDataValueEditor extends DataValueEditor {
             this.removeSelectedText();
 
             // BugzID: 565 - Reject keystroke if a leading zero.
-            if (e.getKeyChar() == '0') {
+            if (e.getKeyChar() == '0' && this.getText().length() > 0) {
                 if ((idv.getItsValue() > 0 && getCaretPosition() == 0)
-                    || (idv.getItsValue() < 0 && getCaretPosition() <= 1)) {
+                    || (idv.getItsValue() < 0 && getCaretPosition() <= 1)
+                    || this.getText().charAt(0) == '0') {
                   e.consume();
                   return;
                 }
