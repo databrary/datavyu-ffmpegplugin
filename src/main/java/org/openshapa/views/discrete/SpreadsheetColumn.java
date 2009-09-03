@@ -47,7 +47,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     private static final int DEFAULT_COLUMN_WIDTH = 230;
 
     /** Default column height. */
-    private static final int DEFAULT_HEADER_HEIGHT = 16;
+    public static final int DEFAULT_HEADER_HEIGHT = 16;
 
     /** Width of the column in pixels. */
     private int width = DEFAULT_COLUMN_WIDTH;

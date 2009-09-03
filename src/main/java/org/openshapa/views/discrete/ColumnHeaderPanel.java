@@ -42,7 +42,7 @@ implements Selectable, MouseListener {
 
         setOpaque(true);
         setHorizontalAlignment(JLabel.CENTER);
-        setBorder(BorderFactory.createLineBorder(Color.black));
+        setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
         backColor = getBackground();
         Dimension dim = col.getHeaderSize();
         setMinimumSize(dim);

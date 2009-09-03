@@ -9,10 +9,13 @@ import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.Vector;
-import javax.swing.Box;
+import javax.swing.BorderFactory;
+import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +26,7 @@ import org.apache.log4j.Logger;
  * OpenSHAPA database as a spreadsheet.
  */
 public class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener {
+    implements ExternalColumnListListener, ComponentListener {
 
     /**
      * Constructor.
@@ -42,21 +45,43 @@ public class SpreadsheetPanel extends JPanel
 
         headerView = new JPanel();
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
+        headerView.setBorder(
+                      BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
 
         columns = new Vector<SpreadsheetColumn>();
 
-        JScrollPane jScrollPane3 = new JScrollPane();
-        this.add(jScrollPane3, BorderLayout.CENTER);
-        jScrollPane3.setViewportView(mainView);
-        jScrollPane3.setColumnHeaderView(headerView);
+        scrollPane = new JScrollPane();
+        this.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setViewportView(mainView);
+        scrollPane.setColumnHeaderView(headerView);
         colSelector = new Selector(this);
         cellSelector = new Selector(this);
         colSelector.addOther(cellSelector);
         cellSelector.addOther(colSelector);
 
+        // setup strut for the mainView - used when scrollPane is resized
+        Dimension d = new Dimension(0, DEFAULT_HEIGHT);
+        viewportStrut = new Filler(d, d, d);
+        mainView.add(viewportStrut);
+
+        // set strut for headerView - necessary while there are no col headers
+        d = new Dimension(0, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        Filler headerStrut = new Filler(d, d, d);
+        headerView.add(headerStrut);
+
+        // Set a border for the top right corner
+        JPanel rightCorner = new JPanel();
+        rightCorner.setBorder(
+                      BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
+        scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, rightCorner);
+
+        // set the database and layout the columns
         this.setDatabase(db);
         this.buildColumns();
         setLayoutType(SheetLayoutType.Ordinal);
+
+        // add a listener for window resize events
+        scrollPane.addComponentListener(this);
     }
 
     /**
@@ -65,14 +90,6 @@ public class SpreadsheetPanel extends JPanel
     private void buildColumns() {
         try {
             Vector<Long> dbColIds = getDatabase().getColOrderVector();
-
-            // setup a filler box if the sheet has no columns yet
-            // size is relative to its parent for now
-            filler = Box.createRigidArea(new Dimension(FILLER_WIDTH,
-                                                       FILLER_WIDTH));
-            if (dbColIds.size() == 0) {
-                mainView.add(filler);
-            }
 
             for (int i = 0; i < dbColIds.size(); i++) {
                 addColumn(getDatabase(), dbColIds.elementAt(i));
@@ -89,7 +106,6 @@ public class SpreadsheetPanel extends JPanel
      * @param colID ID of the column to add.
      */
     private void addColumn(final Database db, final long colID) {
-        mainView.remove(filler);
         // make the SpreadsheetColumn
         SpreadsheetColumn col = new SpreadsheetColumn(this, db,
                                                       colID, colSelector);
@@ -115,9 +131,6 @@ public class SpreadsheetPanel extends JPanel
                 columns.remove(col);
                 break;
             }
-        }
-        if (columns.size() == 0) {
-            mainView.add(filler);
         }
     }
 
@@ -198,7 +211,7 @@ public class SpreadsheetPanel extends JPanel
      * @param old_cov The column order vector prior to the deletion.
      * @param new_cov The column order vector after to the deletion.
      */
-    public final void colDeletion(final Database db, 
+    public final void colDeletion(final Database db,
                                   final long colID,
                                   final Vector<Long> old_cov,
                                   final Vector<Long> new_cov) {
@@ -304,6 +317,44 @@ public class SpreadsheetPanel extends JPanel
         relayoutCells();
     }
 
+    /**
+     * Invoked when the component's size changes.
+     *
+     * @param e Component event.
+     */
+    public void componentResized(ComponentEvent e) {
+        // resize the strut height to at least the size of the viewport.
+        Dimension d = new Dimension(0,
+                                   scrollPane.getViewportBorderBounds().height);
+        viewportStrut.changeShape(d, d, d);
+        // force a validate of the contents.
+        this.revalidate();
+    }
+
+    /**
+     * Invoked when the component has been made invisible.
+     *
+     * @param e Component event.
+     */
+    public void componentHidden(ComponentEvent e) {
+    }
+
+    /**
+     * Invoked when the component's position changes.
+     *
+     * @param e Component event.
+     */
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    /**
+     * Invoked when the component has been made visible.
+     *
+     * @param e Component event.
+     */
+    public void componentShown(ComponentEvent e) {
+    }
+
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
 
@@ -322,15 +373,18 @@ public class SpreadsheetPanel extends JPanel
     /** Selector object for handling SpreadsheetCell selection. */
     private Selector cellSelector;
 
-    /** filler box for use when there are no datacells. */
-    private Component filler;
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetPanel.class);
 
-    /** The width in pixels of filler blocks for empty columns. */
-    private static final int FILLER_WIDTH = 50;
-
     /** Reference to the spreadsheet layout handler. */
     private SheetLayout sheetLayout;
+
+    /** Reference to the scrollPane. */
+    private JScrollPane scrollPane;
+
+    /** Strut used to expand the viewport to fill the scrollpane. */
+    private Filler viewportStrut;
+
+    /** Default height for the viewport if no cells yet. */
+    private static final int DEFAULT_HEIGHT = 50;
 }
