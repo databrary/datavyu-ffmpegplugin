@@ -37,7 +37,7 @@ public class ColumnDataPanel extends SpreadsheetElementPanel {
         bottomStrut = new Filler(d, d, d);
         boxLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
         setLayout(boxLayout);
-        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
+        setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
         this.add(bottomStrut, -1);
     }
 
