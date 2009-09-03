@@ -10,7 +10,6 @@ import org.openshapa.views.discrete.Selector;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.TimeStamp;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 /**

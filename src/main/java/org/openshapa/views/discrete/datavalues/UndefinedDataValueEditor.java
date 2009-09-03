@@ -4,8 +4,6 @@ import javax.swing.text.JTextComponent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.UndefinedDataValue;
 
 /**
  * This class is the character editor of a UndefinedDataValue.

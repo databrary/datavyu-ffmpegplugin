@@ -1,10 +1,5 @@
 package org.openshapa.views.discrete.datavalues;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
@@ -24,12 +19,6 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * users are unable to enter into a nominal field.
      */
     private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n\"";
-
-    /**
-     * The reserved replacement is a character that replaces reserved
-     * characters pasted into nominal views.
-     */
-    private static final Character RESERVED_REPLACEMENT = '_';
 
     /** The logger for this class. */
     private static Logger logger = Logger
