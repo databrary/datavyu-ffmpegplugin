@@ -18,7 +18,8 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * String holding the reserved characters - these are characters that are
      * users are unable to enter into a nominal field.
      */
-    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n\"";
+    // BugzID:524 - If Character is an escape key - ignore it.
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
     private static Logger logger = Logger
@@ -69,6 +70,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
         // Just a regular vanilla keystroke - insert it into nominal field.
         NominalDataValue ndv = (NominalDataValue) getModel();
+
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
             && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
@@ -107,6 +109,6 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * @return true if the character is a reserved character.
      */
     public boolean isReserved(final char aChar) {
-        return (NOMINAL_RESERVED_CHARS.indexOf(aChar) >= 0);
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }

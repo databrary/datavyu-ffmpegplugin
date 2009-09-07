@@ -14,6 +14,13 @@ import org.openshapa.db.TextStringDataValue;
  */
 public final class TextStringDataValueEditor extends DataValueEditor {
 
+    /**
+     * String holding the reserved characters - these are characters that are
+     * users are unable to enter into a text field.
+     */
+    // BugzID:524 - If Character is an escape key - ignore it.
+    private static final String RESERVED_CHARS = "\u001B";
+
     /** The logger for this class. */
     private static Logger logger = Logger
                                    .getLogger(TextStringDataValueEditor.class);
@@ -65,7 +72,8 @@ public final class TextStringDataValueEditor extends DataValueEditor {
 
         TextStringDataValue tsdv = (TextStringDataValue) getModel();
         // Just a regular vanilla keystroke - insert it into text field.
-        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()) {
+        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
+            && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
 
@@ -95,5 +103,13 @@ public final class TextStringDataValueEditor extends DataValueEditor {
         } catch (SystemErrorException se) {
             logger.error("Unable to edit text string", se);
         }
+    }
+
+    /**
+     * @param aChar Character to test
+     * @return true if the character is a reserved character.
+     */
+    public boolean isReserved(final char aChar) {
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }
