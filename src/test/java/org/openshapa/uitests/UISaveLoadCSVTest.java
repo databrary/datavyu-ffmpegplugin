@@ -84,9 +84,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 3. Check that CSV file is correct
         // Please note: This assumes that saving was working on 05-Aug-2009
-
-        // BugzID:541 - I am compensating for this bug because it is minor.
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath() + ".csv");
+        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
         assertTrue(areFilesSame(testCSV, bug541SavedCSV));
     }
 
@@ -107,7 +105,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         String tempFolder = System.getProperty("java.io.tmpdir");
         File savedCSV = new File(tempFolder + "/savedCSV.csv");
         savedCSV.deleteOnExit();
-        assertFalse(savedCSV.exists());
+        // The file already exists - created in the last test.
 
         // 1. Load CSV file
         WindowInterceptor
@@ -132,8 +130,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 3. Check that CSV file is correct
         // Please note: This assumes that saving was working on 05-Aug-2009
-        //BugzID:541 - I am compensating for this bug because it is minor
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath() + ".csv");
+        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
         assertTrue(areFilesSame(testCSV, bug541SavedCSV));
     }
 

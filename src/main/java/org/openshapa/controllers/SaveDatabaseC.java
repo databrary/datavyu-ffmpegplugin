@@ -32,8 +32,15 @@ public final class SaveDatabaseC {
      */
     public SaveDatabaseC(final String destinationFile,
                          final FileFilter fileFilter) {
+
+        // BugzID:541 - Don't append ".csv" if the path already contains it.
+        String outputFile = destinationFile.toLowerCase();
+        if (!outputFile.contains(".csv")) {
+            outputFile = destinationFile.concat(".csv");
+        }
+
         if (fileFilter.getClass() == CSVFilter.class) {
-            saveAsCSV(destinationFile + ".csv");
+            saveAsCSV(outputFile);
         }
     }
 
