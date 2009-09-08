@@ -17,10 +17,14 @@ import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
@@ -55,6 +59,15 @@ implements KeyEventDispatcher {
 
         // generated GUI builder code
         initComponents();
+
+        // BugzID:521 - Define accelerator keys based on Operating system
+        Toolkit t = Toolkit.getDefaultToolkit();
+        weakTemporalOrderMenuItem.setAccelerator(KeyStroke
+            .getKeyStroke(KeyEvent.VK_T, t.getMenuShortcutKeyMask()));
+        strongTemporalOrderMenuItem .setAccelerator(KeyStroke
+            .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK
+                                         | t.getMenuShortcutKeyMask()));
+        
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
@@ -349,7 +362,6 @@ implements KeyEventDispatcher {
         jSeparator3.setName("jSeparator3"); // NOI18N
         jMenu3.add(jSeparator3);
 
-        weakTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
         weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
         weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -358,7 +370,6 @@ implements KeyEventDispatcher {
         });
         jMenu3.add(weakTemporalOrderMenuItem);
 
-        strongTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
         strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
