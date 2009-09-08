@@ -60,14 +60,19 @@ implements KeyEventDispatcher {
         // generated GUI builder code
         initComponents();
 
-        // BugzID:521 - Define accelerator keys based on Operating system
+        // BugzID:521 + 468 - Define accelerator keys based on Operating system.
         Toolkit t = Toolkit.getDefaultToolkit();
         weakTemporalOrderMenuItem.setAccelerator(KeyStroke
             .getKeyStroke(KeyEvent.VK_T, t.getMenuShortcutKeyMask()));
         strongTemporalOrderMenuItem .setAccelerator(KeyStroke
             .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK
                                          | t.getMenuShortcutKeyMask()));
-        
+        zoomInMenuItem.setAccelerator(KeyStroke
+            .getKeyStroke(KeyEvent.VK_PLUS, t.getMenuShortcutKeyMask()));
+        zoomOutMenuItem.setAccelerator(KeyStroke
+            .getKeyStroke(KeyEvent.VK_MINUS, t.getMenuShortcutKeyMask()));
+        resetZoomMenuItem.setAccelerator(KeyStroke
+            .getKeyStroke(KeyEvent.VK_0, t.getMenuShortcutKeyMask()));
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
@@ -380,7 +385,6 @@ implements KeyEventDispatcher {
 
         zoomMenu.setName("zoomMenu"); // NOI18N
 
-        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.META_MASK));
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
         zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -389,7 +393,6 @@ implements KeyEventDispatcher {
         });
         zoomMenu.add(zoomInMenuItem);
 
-        zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.META_MASK));
         zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
         zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -401,7 +404,6 @@ implements KeyEventDispatcher {
         jSeparator5.setName("jSeparator5"); // NOI18N
         zoomMenu.add(jSeparator5);
 
-        resetZoomMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.META_MASK));
         resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
         resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

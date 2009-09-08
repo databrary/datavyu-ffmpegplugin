@@ -203,9 +203,6 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="zoomInMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+PLUS"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="zoomInMenuItem" noResource="true"/>
                   </Properties>
                   <Events>
@@ -214,9 +211,6 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="zoomOutMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+MINUS"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="zoomOutMenuItem" noResource="true"/>
                   </Properties>
                   <Events>
@@ -230,9 +224,6 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="resetZoomMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+0"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="resetZoomMenuItem" noResource="true"/>
                   </Properties>
                   <Events>
