@@ -10,7 +10,7 @@ import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.QTVideoController;
 import java.awt.KeyEventDispatcher;
-import java.awt.event.InputEvent;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +51,9 @@ implements KeyEventDispatcher {
         int modifiers = evt.getModifiers();
         if (evt.getID() == KeyEvent.KEY_PRESSED
                 && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+
+            // BugzID:468 - Define accelerator keys based on OS.
+            int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
             switch (evt.getKeyCode()) {
                 /**
                  * This case is because VK_PLUS is not linked to a key on the
@@ -61,12 +64,12 @@ implements KeyEventDispatcher {
                  * that there is nothing left to be done with these keys.
                  */
                 case KeyEvent.VK_EQUALS:
-                    if (modifiers == KeyEvent.META_MASK) {
+                    if (modifiers == keyMask) {
                         view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
                     }
                     return true;
                 case KeyEvent.VK_MINUS:
-                    if (modifiers == KeyEvent.META_MASK) {
+                    if (modifiers == keyMask) {
                         view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
                     }
                     return true;

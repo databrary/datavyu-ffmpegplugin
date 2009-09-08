@@ -61,18 +61,26 @@ implements KeyEventDispatcher {
         initComponents();
 
         // BugzID:521 + 468 - Define accelerator keys based on Operating system.
-        Toolkit t = Toolkit.getDefaultToolkit();
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
         weakTemporalOrderMenuItem.setAccelerator(KeyStroke
-            .getKeyStroke(KeyEvent.VK_T, t.getMenuShortcutKeyMask()));
+                .getKeyStroke(KeyEvent.VK_T, keyMask));
+
         strongTemporalOrderMenuItem .setAccelerator(KeyStroke
-            .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK
-                                         | t.getMenuShortcutKeyMask()));
+                .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
+
+        // This just sets the visual appearance of the accelerator - the actual
+        // short cut is handled in org.openshapa.OpenSHAPA.dispatchKeyEvent.
+        // Set zoom in to keyMask + '+'
         zoomInMenuItem.setAccelerator(KeyStroke
-            .getKeyStroke(KeyEvent.VK_PLUS, t.getMenuShortcutKeyMask()));
+                .getKeyStroke(KeyEvent.VK_PLUS, keyMask));
+
+        // Set zoom out to keyMask + '-'
         zoomOutMenuItem.setAccelerator(KeyStroke
-            .getKeyStroke(KeyEvent.VK_MINUS, t.getMenuShortcutKeyMask()));
+                .getKeyStroke(KeyEvent.VK_MINUS, keyMask));
+
+        // Set reset zoom to keyMask + '0'
         resetZoomMenuItem.setAccelerator(KeyStroke
-            .getKeyStroke(KeyEvent.VK_0, t.getMenuShortcutKeyMask()));
+                .getKeyStroke(KeyEvent.VK_0, keyMask));
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
