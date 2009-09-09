@@ -4,11 +4,11 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.views.continuous.QTVideoViewer;
 import java.awt.FileDialog;
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
+import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 
@@ -268,14 +268,12 @@ public final class QTVideoController extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
-        jfc = new FileDialog(this, "Select QuickTime Video File",
-                             FileDialog.LOAD);
-        jfc.setVisible(true);
+        JFileChooser jd = new JFileChooser();
+        int result = jd.showOpenDialog(this);
 
-        if (jfc.getFile() != null && jfc.getDirectory() != null) {
+        if (result == JFileChooser.APPROVE_OPTION) {
             QTVideoViewer viewer = new QTVideoViewer(this);
-            File f = new File(jfc.getDirectory(), jfc.getFile());
-            viewer.setVideoFile(f);
+            viewer.setVideoFile(jd.getSelectedFile());
             OpenSHAPA.getApplication().show(viewer);
 
             // Add the QTVideoViewer to the list of viewers we are controlling.
