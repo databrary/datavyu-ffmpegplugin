@@ -95,6 +95,7 @@ public class Column extends AbstractUIComponent {
      */
     public void requestFocus() {
         ssColumn.setSelected(true);
+        //ssColumn.requestFocus();
     }
 
 
