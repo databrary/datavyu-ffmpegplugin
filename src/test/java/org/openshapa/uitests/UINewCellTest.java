@@ -45,24 +45,39 @@ public final class UINewCellTest extends UISpecTestCase {
     /**
      * Test input and expected output.
      */
-     String[] nominalTestInput = {"Subject stands )up ", "$10,432",
+    /**
+      * Nominal test input.
+      */
+     private String[] nominalTestInput = {"Subject stands )up ", "$10,432",
             "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
             "If x>7 then x|2"};
 
-     String[] expectedNominalTestOutput = {"Subject stands up ", "$10432",
-            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
-            "If x7 then x2"};
+     /**
+      * Nominal expected output.
+      */
+     private String[] expectedNominalTestOutput = {"Subject stands up ",
+            "$10432", "Hand me the manual!", "Tote_that_bale",
+            "Jeune fille celebre", "If x7 then x2"};
 
-     String[] textTestInput = {"Subject stands up ", "$10,432",
+     /**
+      * Text test input.
+      */
+     private String[] textTestInput = {"Subject stands up ", "$10,432",
             "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
             "If x?7 then x? 2"};
 
-     String[] integerTestInput = {"1a9", "10-432",
+     /**
+      * Integer test input.
+      */
+     private String[] integerTestInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
             "If x?7 then x? 2 ", "99999999999999999999", "000389.5"
             /* BugzId:485 , "-", "-0" */};
 
-     String[] floatTestInput = {"1a.9", "10-43.2",
+     /**
+      * Float test input.
+      */
+     private String[] floatTestInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5"
             /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
@@ -143,7 +158,8 @@ public final class UINewCellTest extends UISpecTestCase {
         //open spreadsheet and check that it's there
         createNewVariable(varName, varType, varRadio);
 
-        runAdvancedTest(numOfTests, varName, testInput, advancedInput, expectedTestOutput);
+        runAdvancedTest(numOfTests, varName, testInput, advancedInput,
+                expectedTestOutput);
     }
 
     /**
@@ -192,7 +208,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "intVar";
         String varType = "INTEGER";
         String varRadio = "integer";
-        
+
         int numOfTests = integerTestInput.length;
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
@@ -229,7 +245,8 @@ public final class UINewCellTest extends UISpecTestCase {
         //open spreadsheet and check that it's there
         createNewVariable(varName, varType, varRadio);
 
-        runAdvancedTest(numOfTests, varName, testInput, advancedInput, advancedExpectedOutput);
+        runAdvancedTest(numOfTests, varName, testInput, advancedInput,
+                advancedExpectedOutput);
     }
 
     /**
@@ -447,7 +464,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
         //1. Create new variable
         createNewVariable(varName, varType, varRadio);
-        runAdvancedTest(numOfTests, varName, testInput, advancedInput, expectedTestOutput);
+        runAdvancedTest(numOfTests, varName, testInput, advancedInput,
+                expectedTestOutput);
     }
 
     /**
@@ -455,9 +473,6 @@ public final class UINewCellTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testNewMatrixCell() throws Exception {
-
-
-
         // Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -547,9 +562,43 @@ public final class UINewCellTest extends UISpecTestCase {
         runStandardTest(numOfTests, varName, testInput, expectedIntTestOutput,
                 "<int>");
 
-
-
         //3. Test all double cell types
+        //3a. Test nominal
+        varName = "matrixNominal2";
+
+        testInput = nominalTestInput;
+
+        expectedTestOutput = expectedNominalTestOutput;
+
+        numOfTests = nominalTestInput.length;
+
+        for (int i = 0; i < numOfTests; i++) {
+            expectedTestOutput[i] = "(" + expectedTestOutput[i] + ", <nominal2>)";
+        }
+
+        runStandardTest(numOfTests, varName, testInput, expectedTestOutput,
+                "(<nominal1>, <nominal2>)");
+
+        //Need to add test to cycle through tests for second argument
+        //3b. Test float
+        // Bit more complicated because have to convert argument to float
+
+        //2c. Test integer
+        varName = "matrixInteger2";
+
+        testInput = integerTestInput;
+
+        String [] expectedInt2TestOutput = {"19", "-43210", "289", "178", "<int1>",
+        "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
+
+        numOfTests = integerTestInput.length;
+
+         for (int i = 0; i < numOfTests; i++) {
+            expectedInt2TestOutput[i] = "(" + expectedInt2TestOutput[i] + ", <int2>)";
+        }
+
+        runStandardTest(numOfTests, varName, testInput, expectedInt2TestOutput,
+                "(<int1>, <int2>)");
 
         //4. Test mixed cell types
 
@@ -675,8 +724,8 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
             //Check that it actually was deleted
-            assertTrue(c.getValueText().equals("<val>") ||
-                    c.getValueText().equals(""));
+            assertTrue(c.getValueText().equals("<val>")
+                    || c.getValueText().equals(""));
             // Paste new contents.
             TextBox t = c.getValue();
             t.pasteFromClipboard();
@@ -684,11 +733,22 @@ public final class UINewCellTest extends UISpecTestCase {
         }
     }
 
-    private void runAdvancedTest(int numOfTests, String varName, String[] testInput, Key[][] advancedInput, String[] expectedTestOutput) {
+    /**
+     * Runs advanced tests.
+     * @param numOfTests number of test arguments
+     * @param varName name of variable and therefore column header name
+     * @param testInput array of test input
+     * @param advancedInput extra advanced input
+     * @param expectedTestOutput expected test output
+     */
+    private void runAdvancedTest(final int numOfTests, final String varName,
+            final String[] testInput, final Key[][] advancedInput,
+            final String[] expectedTestOutput) {
         // Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+                window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
         //2. Create new cells, check that they have been created
         for (int i = 0; i < numOfTests; i++) {
@@ -698,26 +758,49 @@ public final class UINewCellTest extends UISpecTestCase {
         assertTrue(cells.size() == numOfTests);
         for (int i = 0; i < numOfTests - 1; i++) {
             assertTrue(cells.elementAt(i).getOrd() == i + 1);
-            assertTrue((cells.elementAt(i).getOnset().getText()).equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffset().getText()).equals("00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOnset().getText()).equals(
+                    "00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffset().getText()).equals(
+                    "00:00:00:000"));
             assertTrue(cells.elementAt(i).getValue().getText().equals("<val>"));
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
-            c.enterText(Cell.VALUE, testInput[i], advancedInput[i], testInput[i + 1]);
+            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
+                    testInput[i + 1]);
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
 
-    private void runStandardTest(int numOfTests, String varName, String[] testInput, String[] expectedTestOutput) {
-runStandardTest(numOfTests, varName, testInput, expectedTestOutput, "<val>");
+    /**
+     * Runs standard tests without advanced input, default custom blank used.
+     * @param numOfTests number of test arguments
+     * @param varName name of variable and therefore column header name
+     * @param testInput array of test input
+     * @param expectedTestOutput expected test output
+     */
+    private void runStandardTest(final int numOfTests, final String varName,
+            final String[] testInput, final String[] expectedTestOutput) {
+        runStandardTest(numOfTests, varName, testInput, expectedTestOutput,
+                "<val>");
     }
 
-     private void runStandardTest(int numOfTests, String varName, String[] testInput, String[] expectedTestOutput, String customBlank) {
+    /**
+     * Runs standard tests without advanced input.
+     * @param numOfTests number of test arguments
+     * @param varName name of variable and therefore column header name
+     * @param testInput array of test input
+     * @param expectedTestOutput expected test output
+     * @param customBlank the placeholder if a value is blank
+     */
+     private void runStandardTest(final int numOfTests, final String varName,
+             final String[] testInput, final String[] expectedTestOutput,
+             final String customBlank) {
         // Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(Spreadsheet.class)[0]
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+                window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
         //2. Create new cell, check that they have been created
         ss.getSpreadsheetColumn(varName).requestFocus();
@@ -728,9 +811,12 @@ runStandardTest(numOfTests, varName, testInput, expectedTestOutput, "<val>");
         assertTrue(cells.size() == numOfTests);
         for (int i = 0; i < numOfTests; i++) {
             /*BugzID:578 assertTrue(cells.elementAt(i).getOrd() == i + 1);*/
-            assertTrue((cells.elementAt(i).getOnset().getText()).equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffset().getText()).equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValue().getText().equals(customBlank));
+            assertTrue((cells.elementAt(i).getOnset().getText()).equals(
+                    "00:00:00:000"));
+            assertTrue((cells.elementAt(i).getOffset().getText()).equals(
+                    "00:00:00:000"));
+            assertTrue(cells.elementAt(i).getValue().getText().equals(
+                    customBlank));
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
