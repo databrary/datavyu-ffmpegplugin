@@ -184,9 +184,6 @@ public final class UndefinedDataValue extends DataValue {
      * @return A String representation of the DBValue for display.
      *
      * @date 2007/08/15
-     * Changes:
-     *
-     *     - None.
      */
 
     public String toString()
@@ -223,6 +220,7 @@ public final class UndefinedDataValue extends DataValue {
      * The output of this method will an instantiation of <formal_arg>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
+     * Changes:
      * <ul>
      *   <li>
      *     None.
@@ -262,6 +260,7 @@ public final class UndefinedDataValue extends DataValue {
     /**
      * Update for a change in the formal argument name, and/or subrange.
      *
+     * Changes:
      * <ul>
      *   <li>
      *     None.
@@ -351,6 +350,7 @@ public final class UndefinedDataValue extends DataValue {
      * @param fa  A reference to the current representation of the
      * formal argument associated with the data value.
      *
+     * Changes:
      * <ul>
      *   <li>
      *     None.
@@ -401,6 +401,7 @@ public final class UndefinedDataValue extends DataValue {
      *
      * Thus, coerce to the name of the associated UnTypedFormalArg if defined.
      *
+     * Changes:
      * <ul>
      *   <li>
      *     None.
