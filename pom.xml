@@ -200,6 +200,7 @@
       <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
+        <version>2.6.0</version>
         <configuration>
           <licenseLocation>/var/clover/clover.license</licenseLocation>
           <historyDir>/var/clover/openshapa</historyDir>
