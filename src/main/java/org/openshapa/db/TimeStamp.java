@@ -1,10 +1,3 @@
-/*
- * TimeStamp.java
- *
- * Created on November 9, 2006, 3:41 PM
- *
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -14,8 +7,9 @@ import org.openshapa.util.HashUtils;
  * This is the timestamp primitive class.
  *
  * Changes:
- *
- *    - Changed the name of the class from Timestamp to TimeStamp and reworked
+ * <ul>
+ *   <li>
+ *      Changed the name of the class from Timestamp to TimeStamp and reworked
  *      it to refer to ticks per second instead of frames per second.  Neither
  *      of these changes were logically significant -- the first was to
  *      regularize the spelling with the rest of the database code, and the
@@ -23,30 +17,30 @@ import org.openshapa.util.HashUtils;
  *      in ticks.
  *
  *      Also added the MIN_TICKS, MAX_TICKS, MIN_TPS, and MAX_TPS class
- *      constants.
- *
- *                                               -- 2/12/07
- *
- *    - Added override of equals() method.  Added comparison methods
+ *      constants. --2007/02/12
+ *   </li>
+ *   <li>
+ *      Added override of equals() method.  Added comparison methods
  *      (gt(), ge(), lt(), le(), eq(), & ne()).  Added copy constructor.
- *
- *                                               -- 3/13/07
- *
- *    - Reworked the class again.  This time, I turned it into a proper
+ *      -- 2007/03/13
+ *   </li>
+ *   <li>
+ *      Reworked the class again.  This time, I turned it into a proper
  *      primative class, so it is no longer a subclass of DataValue.  Also
  *      removed all callback facilities -- supporting such callbacks as are
  *      necessary will now be the responsibility of the containing object.
  *      Similarly, advising the TimeStamp of changes in the number of ticks
  *      per second is also the responsibility of the containing object.
- *
- *                                               -- 8/18/07
- *
- *    - Added the insane_lt() insane_gt() methods -- needed because the Compare
+ *      -- 2007/08/18
+ *   </li>
+ *   <li>
+ *      Added the insane_lt() insane_gt() methods -- needed because the Compare
  *      interface specifies compareTo() without this exception, and insists
  *      that I do likewise in my implementation.  Bottom line -- must implement
  *      my own sort and bypass this crap.  But it will have to do for now.
- *
- *                                               -- 1/22/08
+ *      -- 2008/01/22
+ *   </li>
+ * </ul>
  */
 public class TimeStamp {
 
@@ -100,6 +94,7 @@ public class TimeStamp {
     /** The value of the timestamp in ticks. **/
     private long ticks = 0;
 
+
     /**
      * Creates a new instance of Timestamp with the given ticks per second
      * and the given time.
@@ -107,13 +102,14 @@ public class TimeStamp {
      * @param tps  Ticks per second.
      * @param ticks The value of the timestamp in ticks.
      *
-     * @throws SystemErroeXception If unable to build the timestamp from the
+     * @throws SystemErrorException If unable to build the timestamp from the
      * supplied parameters.
      */
     public TimeStamp(int tps, long ticks) throws SystemErrorException {
         this.setTPS(tps);
         this.setTime(ticks);
     }
+
 
     /**
      * Creates a timestamp from a string in the format HH:MM:SS:mmm, where
@@ -139,6 +135,7 @@ public class TimeStamp {
         this.setTime(parsedTicks);
     }
 
+
     /**
      * Copy constructor - creates a new timestamp from an existing timestamp.
      *
@@ -159,272 +156,291 @@ public class TimeStamp {
         this.setTime(t.getTime());
     }
 
-  /**
-   * Creates a new instance of Timestamp with the given ticks per second.
-   * Defaults timestamp to 0 ticks;
-   * @param tps Ticks per second.
-   */
-  public TimeStamp(int tps)
+
+    /**
+     * Creates a new instance of Timestamp with the given ticks per second.
+     * Defaults timestamp to 0 ticks;
+     * @param tps Ticks per second.
+     */
+    public TimeStamp(int tps)
         throws SystemErrorException
-  {
-    this(tps, 0);
-  } //End of TimeStamp() constructor
-
-  /**
-   * Returns the timestamp value in ticks.
-   * @return the timestamp value in ticks.
-   */
-   public long getTime()
-   {
-     return (this.ticks);
-   } //End of getTime() method
-
-   /**
-   * Sets the current timestamp value.
-    *
-   * @param time The timestamp value in ticks.
-   */
-   public void setTime(long ticks)
-        throws SystemErrorException
-   {
-     final String mName = "TimeStamp::setTime(): ";
-
-     if ( ( ticks < MIN_TICKS ) || ( ticks > MAX_TICKS ) )
-     {
-         throw new SystemErrorException(mName + "new ticks out of range.");
-     }
-
-     this.ticks = ticks;
-
-     // Notify the listeners of the value change
-     // this.notifyListeners(); -- now the responsibility of the containing object
-     // todo -- delete this eventually
-
-   } //End of setTime() method
-
-  /**
-   * Returns the timestamp timescale in ticks per second.
-   * @return the timescale in tps.
-   */
-   public int getTPS()
-   {
-     return (this.tps);
-   } //End of getTPS() method
-
-   /**
-   * Sets the timestamps timescale in ticks per second.
-   * <br/>
-   * This will also force a conversion of the current timestamp value
-   * to the new ticks per second scale.
-   * <br/><br/>
-   * <em><b>This could cause loss of precision or rounding errors!</b></em>
-   *
-   *  @param tps Ticks per second.
-    * @see #convertTime(long time, int origTPS, int newTPS)
-   */
-   public void setTPS(int tps)
-        throws SystemErrorException
-   {
-     final String mName = "TimeStamp::setTPS(): ";
-
-     if ( ( tps < MIN_TPS ) || ( tps > MAX_TPS ) )
-     {
-         throw new SystemErrorException(mName + "new tps out of range.");
-     }
-     long newTicks = convertTime(this.ticks, this.tps, tps);
-     this.setTime(newTicks);
-     this.tps = tps;
-     // Notify the listeners of the value change
-     // this.notifyListeners(); -- now the responsibility of the containing object
-     // todo -- delete the above eventually
-   } //End of setTPS() method
-
-  /**
-   * Converts the timestamp value from one timescale to another.
-   * <br/><br/>
-   * <em><b>This could cause loss of precision or rounding errors!</b></em>
-   *
-   *  @param ticks    TimeStamp value.
-   *  @param origTPS  Original timescale ticks per second.
-   *  @param newTPS   New timescale ticks per second.
-    * @return the converted timestamp value.
-   */
-   public final static long convertTime(long ticks, int origTPS, int newTPS)
-   {
-     double d = ((double)ticks*newTPS)/((double)origTPS);
-     return (Math.round(d));
-   } //End of convertTicks() method
-
-
-   /**
-    * Returns the number of whole hours.
-    *
-    * @param ticks The time in ticks.
-    * @param tps The clock rate in ticks per second.
-    * @return the number of whole hours.
-    */
-   public final static int getHours(int tps, long ticks)
-   {
-     return ((int)((ticks/tps)/3600));
-   } //End of getHours() method
-
-   /**
-    * Returns the number of whole hours.
-    * <br/>
-    * Uses static methods to compute values.
-    * @return the number of whole hours.
-    * @see #getHours(int tps, long ticks)
-    */
-   public int getHours()
-   {
-     return (getHours(this.tps, this.ticks));
-   } //End of getHours() method
-
-
-   /**
-    * Returns the number of whole minutes.
-    *
-    * @param ticks The time in ticks.
-    * @param tps The clock rate in ticks per second.
-    * @return the numbre of whole minutes
-    */
-   public final static int getMinutes(int tps, long ticks)
-   {
-     int hh = getHours(tps, ticks);
-     return ((int)(((ticks-(3600*hh*tps))/tps)/60));
-   } //End of getMinutes() method
-
-   /**
-    * Returns the number of whole minutes.
-    * <br/>
-    * Uses static methods to compute values.
-    * @return the number of whole minutes.
-    * @see #getMinutes(int tps, long ticks)
-    */
-   public int getMinutes()
-   {
-     return (getMinutes(this.tps, this.ticks));
-   } //End of getMinutes() method
-
-   /**
-    * Returns the number of whole seconds.
-    *
-    * @param ticks The time in ticks.
-    * @param tps The clock rate in ticks per second.
-    * @return the number of whole seconds.
-    */
-   public final static int getSeconds(int tps, long ticks)
-   {
-    int hh = getHours(tps, ticks);
-    int mm = getMinutes(tps, ticks);
-    return ((int)((ticks-(3600*hh*tps)-(60*mm*tps))/tps));
-   } //End of getSeconds() method
-
-   /**
-    * Returns the number of whole seconds.
-    * <br/>
-    * Uses static methods to compute values.
-    * @return the number of whole seconds.
-    * @see #getSeconds(int tps, long ticks)
-    */
-   public int getSeconds()
-   {
-     return (getSeconds(this.tps, this.ticks));
-   } //End of getSeconds() method
-
-   /**
-    * Returns the number of ticks to display in the ticks field of the text
-    * representation of the timestamp.  This is simply total ticks modulo
-    * the current ticks per second.  It will be a value in the closed
-    * interval [0-(tps-1)].
-    *
-    * @param time The time in ticks.
-    * @param tps The clock rate in ticks per second.
-    * @return ticks modulo tps.
-    */
-   public final static int getTicks(int tps, long ticks)
-   {
-     return ((int)(ticks%tps));
-
-   } //End of getTicks() method
-
-   /**
-    * Returns the number of ticks for purposes of displaying the timestamp
-    * in text format.  This is simply total ticks modulo ticks per second.  It
-    * will be a value in the closed interval [0-(tps-1)].
-    * <br/>
-    * Uses static methods to compute values.
-    * @return the number of ticks (0-(tps-1)).
-    * @see #getTicks(int tps, long time)
-    */
-   public int getTicks()
-   {
-     return (getTicks(this.tps, this.ticks));
-   } //End of getTicks() method
-
-
-   /**
-    * Returns a string representation of the timestamp in hh:mm:ss:ttt format.
-    *
-    * @param time The time in ticks.
-    * @param tps The clock rate in ticks per second.
-    * @return a string representation of the timestamp in hh:mm:ss:fff format.
-    */
-   public final static String toHMSFString(int tps, long time)
-   {
-     int hh  = getHours(tps, time);
-     int mm  = getMinutes(tps, time);
-     int ss  = getSeconds(tps, time);
-     int ttt = getTicks(tps, time);
-
-     return (NUMFORM.numF2.format(hh) + ":" + NUMFORM.numF2.format(mm) + ":" +
-         NUMFORM.numF2.format(ss) + ":" + NUMFORM.numF3.format(ttt));
-   } //End of toHMSFString() method
-
-
-   /**
-    * Returns a string representation of the timestamp in hh:mm:ss:ttt format.
-    * <br/>
-    * Uses static methods to compute values.
-    * @return a string representation of the timestamp in hh:mm:ss:ttt format.
-    * @see #toHMSFString(int tps, long time)
-    */
-   public String toHMSFString()
-   {
-     return (toHMSFString(this.tps, this.ticks));
-   } //End of toHMSFString() method
-
-
-   /**
-    * Overwrites default toString method.
-    *
-    * Calls toHMSFString()
-    * @see #toHMSFString()
-    */
-   public String toString()
-   {
-     return (toHMSFString());
-   }
-
-   /**
-    * Returns a string representation of the timestamp.
-    * @return string representation of timestamp
-    */
-   public String toTPSString()
-   {
-     return (this.ticks + " @ " + this.tps);
-   } // End of toString() method
+    {
+        this(tps, 0);
+    } //End of TimeStamp() constructor
 
 
     /**
-     * Returns a database String representation of the DBValue for comparison against
-     * the database's expected value.<br>
+     * @return the timestamp value in ticks.
+     */
+    public long getTime()
+    {
+        return (this.ticks);
+    } //End of getTime() method
+
+
+    /**
+     * Sets the current timestamp value.
+     *
+     * @param time The timestamp value in ticks.
+     *
+     * @throws SystemErrorException If the supplied ticks are outside the valid
+     * range.
+     */
+    public void setTime(long ticks)
+        throws SystemErrorException
+    {
+        final String mName = "TimeStamp::setTime(): ";
+
+        if ( ( ticks < MIN_TICKS ) || ( ticks > MAX_TICKS ) )
+        {
+            throw new SystemErrorException(mName + "new ticks out of range.");
+        }
+
+        this.ticks = ticks;
+    } //End of setTime() method
+
+
+    /**
+     * @return the timescale in timescale in ticks per second.
+     */
+    public int getTPS()
+    {
+        return (this.tps);
+    } //End of getTPS() method
+
+
+    /**
+     * Sets the timestamps timescale in ticks per second.
+     * <br/>
+     * This will also force a conversion of the current timestamp value to the
+     * new ticks per second scale.
+     * <br/><br/>
+     * <em><b>This could cause loss of precision or rounding errors!</b></em>
+     *
+     * @param tps Ticks per second.
+     *
+     * @throws SystemErrorException If the supplied ticks per second is outside
+     * the valid range.
+     *
+     * @see #convertTime(long time, int origTPS, int newTPS)
+     */
+    public void setTPS(int tps)
+        throws SystemErrorException
+    {
+        final String mName = "TimeStamp::setTPS(): ";
+
+        if ( ( tps < MIN_TPS ) || ( tps > MAX_TPS ) )
+        {
+            throw new SystemErrorException(mName + "new tps out of range.");
+        }
+        long newTicks = convertTime(this.ticks, this.tps, tps);
+        this.setTime(newTicks);
+        this.tps = tps;
+    } //End of setTPS() method
+
+
+    /**
+     * Converts the timestamp value from one timescale to another.
+     * <br/><br/>
+     * <em><b>This could cause loss of precision or rounding errors!</b></em>
+     *
+     * @param ticks TimeStamp value.
+     * @param origTPS Original timescale ticks per second.
+     * @param newTPS New timescale ticks per second.
+     *
+     * @return the converted timestamp value.
+     */
+    public final static long convertTime(long ticks, int origTPS, int newTPS)
+    {
+        double d = ((double)ticks*newTPS)/((double)origTPS);
+        return (Math.round(d));
+    } //End of convertTicks() method
+
+
+    /**
+     * Returns the number of whole hours.
+     *
+     * @param ticks The time in ticks.
+     * @param tps The clock rate in ticks per second.
+     *
+     * @return the number of whole hours.
+     */
+    public final static int getHours(int tps, long ticks)
+    {
+        return ((int)((ticks/tps)/3600));
+    } //End of getHours() method
+
+    /**
+     * Returns the number of whole hours.
+     * <br/>
+     * Uses static methods to compute values.
+     *
+     * @return the number of whole hours.
+     *
+     * @see #getHours(int tps, long ticks)
+     */
+    public int getHours()
+    {
+        return (getHours(this.tps, this.ticks));
+    } //End of getHours() method
+
+
+    /**
+     * Returns the number of whole minutes.
+     *
+     * @param ticks The time in ticks.
+     * @param tps The clock rate in ticks per second.
+     *
+     * @return the numbre of whole minutes
+     */
+    public final static int getMinutes(int tps, long ticks)
+    {
+        int hh = getHours(tps, ticks);
+        return ((int)(((ticks-(3600*hh*tps))/tps)/60));
+    } //End of getMinutes() method
+
+
+    /**
+     * Returns the number of whole minutes.
+     * <br/>
+     * Uses static methods to compute values.
+     * @return the number of whole minutes.
+     * @see #getMinutes(int tps, long ticks)
+     */
+    public int getMinutes()
+    {
+        return (getMinutes(this.tps, this.ticks));
+    } //End of getMinutes() method
+
+
+    /**
+     * Returns the number of whole seconds.
+     *
+     * @param ticks The time in ticks.
+     * @param tps The clock rate in ticks per second.
+     *
+     * @return the number of whole seconds.
+     */
+    public final static int getSeconds(int tps, long ticks)
+    {
+        int hh = getHours(tps, ticks);
+        int mm = getMinutes(tps, ticks);
+        return ((int)((ticks-(3600*hh*tps)-(60*mm*tps))/tps));
+    } //End of getSeconds() method
+
+
+    /**
+     * Returns the number of whole seconds.
+     * <br/>
+     * Uses static methods to compute values.
+     *
+     * @return the number of whole seconds.
+     * @see #getSeconds(int tps, long ticks)
+     */
+    public int getSeconds()
+    {
+        return (getSeconds(this.tps, this.ticks));
+    } //End of getSeconds() method
+
+
+    /**
+     * Returns the number of ticks to display in the ticks field of the text
+     * representation of the timestamp.  This is simply total ticks modulo
+     * the current ticks per second.  It will be a value in the closed
+     * interval [0-(tps-1)].
+     *
+     * @param time The time in ticks.
+     * @param tps The clock rate in ticks per second.
+     *
+     * @return ticks modulo tps.
+     */
+    public final static int getTicks(int tps, long ticks)
+    {
+        return ((int)(ticks%tps));
+    } //End of getTicks() method
+
+
+    /**
+     * Returns the number of ticks for purposes of displaying the timestamp
+     * in text format.  This is simply total ticks modulo ticks per second.  It
+     * will be a value in the closed interval [0-(tps-1)].
+     * <br/>
+     * Uses static methods to compute values.
+     *
+     * @return the number of ticks (0-(tps-1)).
+     * @see #getTicks(int tps, long time)
+     */
+    public int getTicks()
+    {
+        return (getTicks(this.tps, this.ticks));
+    } //End of getTicks() method
+
+
+    /**
+     * Returns a string representation of the timestamp in hh:mm:ss:ttt format.
+     *
+     * @param time The time in ticks.
+     * @param tps The clock rate in ticks per second.
+     * @return a string representation of the timestamp in hh:mm:ss:fff format.
+     */
+    public final static String toHMSFString(int tps, long time)
+    {
+        int hh  = getHours(tps, time);
+        int mm  = getMinutes(tps, time);
+        int ss  = getSeconds(tps, time);
+        int ttt = getTicks(tps, time);
+
+        return (NUMFORM.numF2.format(hh) + ":" + NUMFORM.numF2.format(mm)
+               + ":" + NUMFORM.numF2.format(ss) + ":"
+               + NUMFORM.numF3.format(ttt));
+    } //End of toHMSFString() method
+
+
+    /**
+     * Returns a string representation of the timestamp in hh:mm:ss:ttt format.
+     * <br/>
+     * Uses static methods to compute values.
+     * @return a string representation of the timestamp in hh:mm:ss:ttt format.
+     * @see #toHMSFString(int tps, long time)
+     */
+    public String toHMSFString()
+    {
+        return (toHMSFString(this.tps, this.ticks));
+    } //End of toHMSFString() method
+
+
+    /**
+     * Overwrites default toString method.
+     *
+     * Calls toHMSFString()
+     * @see #toHMSFString()
+     */
+    public String toString()
+    {
+        return (toHMSFString());
+    }
+
+
+    /**
+     * Returns a string representation of the timestamp.
+     * @return string representation of timestamp
+     */
+    public String toTPSString()
+    {
+        return (this.ticks + " @ " + this.tps);
+    } // End of toString() method
+
+
+    /**
+     * Returns a database String representation of the DBValue for comparison
+     * against the database's expected value.<br>
      * <i>This function is floatended for debugging purposses.</i>
      * @return the string value.
      */
     public String toDBString() {
         return ("("+this.tps+","+this.toHMSFString()+")");
     } //End of toDBString() method
+
 
     /**
      * @return A hash code value for the object.
@@ -437,6 +453,7 @@ public class TimeStamp {
         return hash;
     }
 
+
     /**
      * Compares this TimeStamp against another object.
      *
@@ -444,8 +461,8 @@ public class TimeStamp {
      *
      * @return true if the Object obj is logically equal.
      */
-     @Override
-     public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -456,131 +473,114 @@ public class TimeStamp {
         // Must be this class to be here
         TimeStamp t = (TimeStamp) obj;
         return tps == t.tps && ticks == t.ticks;
-     }
+    }
 
 
-    /*************************************************************************/
-    /************************* Comparison Methods: ***************************/
-    /*************************************************************************/
-
+    // eq()
     /**
-     * eq()
-     *
      * Equality testing method for TimeStamps.  Unlike equals(), this method
      * (and all the other TimeStamp comparison mthods) throws a system error
      * if the tps fields of the instances to be compared are not equal.
      *
-     *                                       -- 3/13/07
+     * @param t The timestamp that we are comparing this against.
      *
-     * Changes:
+     * @throws SystemErrorException If the supplied timestamp is null or if
+     * the ticks per second don't match.
      *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean eq(TimeStamp t)
+    public boolean eq(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::eq(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks == t.getTime() );
 
-     } /* TimeStamp::eq() */
+    } /* TimeStamp::eq() */
 
 
+    // ge()
     /**
-     * ge()
-     *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is greater than or equal to that of the
      * test TimeStamp
      *
-     * This method (and all the other TimeStamp comparison mthods) throws a
-     * system error if the tps fields of the instances to be compared are
-     * not equal.
+     * @param t The timestamp that we are comparing against.
      *
-     *                                       -- 3/13/07
+     * @throws SystemErrorException If the supplied timestamp is null if
+     * the ticks per second don't match.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean ge(TimeStamp t)
+    public boolean ge(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::ge(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks >= t.getTime() );
+    } /* TimeStamp::ge() */
 
-     } /* TimeStamp::ge() */
 
-
+    // gt()
     /**
-     * gt()
-     *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is greater than that of the test TimeStamp
      *
-     * This method (and all the other TimeStamp comparison mthods) throws a
-     * system error if the tps fields of the instances to be compared are
-     * not equal.
+     * @param t The timestamp that we are comparing against.
      *
-     *                                       -- 3/13/07
+     * @throws SystemsErrorException If the supplied timestamp is null of the
+     * ticks per second don't match.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean gt(TimeStamp t)
+    public boolean gt(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::gt(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks > t.getTime() );
 
-     } /* TimeStamp::gt() */
+    } /* TimeStamp::gt() */
 
 
+    // insane_gt()
     /**
-     * insane_gt()
-     *
      * Just like gt() but without the sanity checks -- needed to implement
      * Comparator.
      *
+     * @param t The timestamp we are comparing against.
      *
-     *                                       -- 1/22/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/01/22
      */
 
      public boolean insane_gt(TimeStamp t)
@@ -592,106 +592,92 @@ public class TimeStamp {
      } /* TimeStamp::insane_gt() */
 
 
+    // le()
     /**
-     * le()
-     *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is less than or equal to that of the
      * test TimeStamp
      *
-     * This method (and all the other TimeStamp comparison mthods) throws a
-     * system error if the tps fields of the instances to be compared are
-     * not equal.
+     * @param t The timestamp we are comparing this against.
      *
-     *                                       -- 3/13/07
+     * @throws SystemErrorException If the supplied timestamp is NULL or the
+     * ticks per second don't match.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean le(TimeStamp t)
+    public boolean le(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::le(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks <= t.getTime() );
 
-     } /* TimeStamp::le() */
+    } /* TimeStamp::le() */
 
 
+    // lt()
     /**
-     * lt()
-     *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is less than that of the test TimeStamp
      *
-     * This method (and all the other TimeStamp comparison mthods) throws a
-     * system error if the tps fields of the instances to be compared are
-     * not equal.
+     * @param t The timestamp we are comparing this agains.
      *
-     *                                       -- 3/13/07
+     * @throws SystemErrorException If the supplied timestamp is NULL, or the
+     * ticks per second don't match.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean lt(TimeStamp t)
+    public boolean lt(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::lt(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks < t.getTime() );
 
-     } /* TimeStamp::lt() */
+    } /* TimeStamp::lt() */
 
 
+    // insane_lt()
     /**
-     * insane_lt()
-     *
      * Just like lt(), but without the sanity checks.  Needed to implement
      * Comparator.
      *
+     * @param t The timestamp that we are comparing against.
      *
-     *                                       -- 1/22/08
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/01/22
      */
 
-     public boolean insane_lt(TimeStamp t)
-     {
+    public boolean insane_lt(TimeStamp t)
+    {
         final String mName = "TimeStamp::insane_lt(): ";
 
         return( this.ticks < t.getTime() );
 
-     } /* TimeStamp::insane_lt() */
+    } /* TimeStamp::insane_lt() */
 
 
-
+    // ne()
     /**
-     * ne()
-     *
      * Method comparing this TimeStamp with another.  Returns true iff the
      * value of this TimeStamp is not equal to that of the test TimeStamp
      *
@@ -699,26 +685,27 @@ public class TimeStamp {
      * system error if the tps fields of the instances to be compared are
      * not equal.
      *
-     *                                       -- 3/13/07
+     * @param t The timestamp that we are comparing this against.
      *
-     * Changes:
+     * @throws SystemErrorException If the supplied timestamp is NULL, or the
+     * ticks per second don't match.
      *
-     *    - None.
+     * @date 2007/03/13
      */
 
-     public boolean ne(TimeStamp t)
+    public boolean ne(TimeStamp t)
         throws SystemErrorException
-     {
+    {
         final String mName = "TimeStamp::ne(): ";
 
         if ( t == null )
-         {
+        {
             throw new SystemErrorException(mName + "t null on entry");
-         }
-         else if ( t.getTPS() != this.tps )
-         {
-            throw new SystemErrorException(mName + "t.getTPS() != this.getTPS()");
-         }
+        }
+        else if ( t.getTPS() != this.tps )
+        {
+            throw new SystemErrorException(mName + "t.getTPS()!=this.getTPS()");
+        }
 
         return( this.ticks != t.getTime() );
 
