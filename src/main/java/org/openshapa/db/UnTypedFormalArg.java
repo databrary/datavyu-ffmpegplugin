@@ -77,7 +77,7 @@ public class UnTypedFormalArg
 
     // constructArgWithSalvage()
     /**
-     * Builds a instance of DataValue initizlized from salvage.
+     * Builds a instance of DataValue initialized from salvage.
      *
      * Changes:
      * <ul>
