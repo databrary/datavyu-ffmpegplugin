@@ -16,7 +16,7 @@ public class TimeStampFormalArg extends FormalArgument
      * any time stamp, or only by some time stamp that lies within the closed
      * interval defined by the minVal and maxVal fields discussed below.
      */
-    private boolean subRange = false;
+    boolean subRange = false;
 
 
     /**
@@ -24,7 +24,7 @@ public class TimeStampFormalArg extends FormalArgument
      * to replace the formal argument if subRange is true. If subRange is false,
      * this field is ignored and should be set to null.
      */
-    private TimeStamp minVal = null;
+    TimeStamp minVal = null;
 
 
     /**
@@ -32,7 +32,7 @@ public class TimeStampFormalArg extends FormalArgument
      * to replace the formal argument if subRange is true.  If subRange is
      * false, this field is ignored and should be set to null.
      */
-    private TimeStamp maxVal = null;
+    TimeStamp maxVal = null;
 
 
     /**
