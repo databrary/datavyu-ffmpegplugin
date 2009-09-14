@@ -17,32 +17,24 @@ import org.openshapa.views.discrete.datavalues.NoEditor;
  * text displayed by the JTextComponent.
  */
 public final class EditorTracker
-implements FocusListener, KeyListener, MouseListener {
+        implements FocusListener, KeyListener, MouseListener {
 
     /** The JTextComponent that contains the EditorComponents. */
     private JTextComponent textArea;
-
     /** Vector of the EditorComponents. */
     private Vector<EditorComponent> editors;
-
     /** Current EditorComponent. */
     private EditorComponent currentEditor = NO_EDITOR;
-
     /** Number of characters before of the current editor. */
     private int preCharCount;
-
     /** Number of characters after the current editor. */
     private int postCharCount;
-
     /** Is the mouse down? */
     private boolean mouseDown = false;
-
     /** NoEditor used when there is no sensible current editor. */
     private static final EditorComponent NO_EDITOR = new NoEditor();
-
     /** Track the key up and down to avoid problem with key repeat. */
     private boolean gotKeyUp = true;
-
     /** How many clicks make up a triple click. */
     private static final int TRIPLE_CLICK_COUNT = 3;
 
@@ -53,7 +45,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param eds Vector of the EditorComponents.
      */
     public EditorTracker(final JTextComponent ta,
-                         final Vector<EditorComponent> eds) {
+            final Vector<EditorComponent> eds) {
         textArea = ta;
         editors = eds;
     }
@@ -75,8 +67,8 @@ implements FocusListener, KeyListener, MouseListener {
      * @param end End character location to select.
      */
     public void setEditor(final EditorComponent newEd,
-                          final int start,
-                          final int end) {
+            final int start,
+            final int end) {
         // Tell currentEditor to store its value back in the database
         currentEditor.focusLost(null);
 
@@ -276,9 +268,7 @@ implements FocusListener, KeyListener, MouseListener {
                 if (!gotKeyUp) {
                     resetEditorText();
                 }
-                if (currentEditor.getCaretPosition() == 0
-                    && currentEditor.getSelectionStart()
-                        == currentEditor.getSelectionEnd()) {
+                if (currentEditor.getCaretPosition() == 0 && currentEditor.getSelectionStart() == currentEditor.getSelectionEnd()) {
                     e.consume();
                 }
                 break;
@@ -287,21 +277,15 @@ implements FocusListener, KeyListener, MouseListener {
                 if (!gotKeyUp) {
                     resetEditorText();
                 }
-                if (currentEditor.getCaretPosition()
-                        == currentEditor.getText().length()
-                    && currentEditor.getSelectionStart()
-                        == currentEditor.getSelectionEnd()) {
+                if (currentEditor.getCaretPosition() == currentEditor.getText().length() && currentEditor.getSelectionStart() == currentEditor.getSelectionEnd()) {
                     e.consume();
                 }
                 break;
 
             case KeyEvent.VK_LEFT:
-                if ((currentEditor.getCaretPosition() == 0)
-                        || (currentEditor.getSelectionEnd()
-                            - currentEditor.getSelectionStart()
-                            == currentEditor.getText().length())) {
+                if ((currentEditor.getCaretPosition() == 0) || (currentEditor.getSelectionEnd() - currentEditor.getSelectionStart() == currentEditor.getText().length())) {
                     setEditor(prevEditor(), Integer.MAX_VALUE,
-                                                            Integer.MAX_VALUE);
+                            Integer.MAX_VALUE);
                     if (currentEditor == NO_EDITOR) {
                         // should jump to the cell above if there is one
                         // for now leaves caret at start of first editor
@@ -312,13 +296,12 @@ implements FocusListener, KeyListener, MouseListener {
                 break;
 
             case KeyEvent.VK_RIGHT:
-                if (currentEditor.getCaretPosition()
-                        == currentEditor.getText().length()) {
+                if (currentEditor.getCaretPosition() == currentEditor.getText().length()) {
                     setEditor(nextEditor(), 0, 0);
                     if (currentEditor == NO_EDITOR) {
                         // should jump to the cell below if there is one
                         setEditor(lastEditor(), Integer.MAX_VALUE,
-                                                            Integer.MAX_VALUE);
+                                Integer.MAX_VALUE);
                     }
                     e.consume();
                 }
@@ -346,9 +329,9 @@ implements FocusListener, KeyListener, MouseListener {
                 break;
             case KeyEvent.VK_TAB:
                 if (currentEditor.getSelectionEnd()
-                            - currentEditor.getSelectionStart()
-                            != currentEditor.getText().length()) {
-                    setEditor(currentEditor);
+                    - currentEditor.getSelectionStart()
+                    != currentEditor.getText().length()) {
+                    setEditor(nextEditor());
                 } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
                     setEditor(prevEditor());
                     if (currentEditor == NO_EDITOR) {
@@ -377,12 +360,9 @@ implements FocusListener, KeyListener, MouseListener {
      * Calculate the currentEditor's text and call it's resetText method.
      */
     public void resetEditorText() {
-        int newLength = textArea.getText().length()
-                                            - (preCharCount + postCharCount);
-        currentEditor.resetText(textArea.getText()
-                            .substring(preCharCount, preCharCount + newLength));
+        int newLength = textArea.getText().length() - (preCharCount + postCharCount);
+        currentEditor.resetText(textArea.getText().substring(preCharCount, preCharCount + newLength));
     }
-
 
     /**
      * The action to invoke when a mouse button is pressed.

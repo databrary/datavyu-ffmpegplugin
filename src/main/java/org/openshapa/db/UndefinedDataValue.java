@@ -129,44 +129,44 @@ public final class UndefinedDataValue extends DataValue {
         throws SystemErrorException
     {
         final String mName = "UndefinedDataValue::setItsValue(): ";
-        
+
         if ( this.itsFargID != DBIndex.INVALID_ID )
         {
             DBElement dbe;
             FormalArgument fa;
-            
+
             if ( itsFargType == FormalArgument.FArgType.UNDEFINED )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargType == UNDEFINED");
             }
-            
+
             dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if ( dbe == null )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
-            
+
             if ( ! ( dbe instanceof FormalArgument ) )
             {
                 throw new SystemErrorException(mName +
                         "itsFargID doesn't refer to a formal arg");
             }
-            
+
             fa = (FormalArgument)dbe;
-            
+
             if ( fa.getFargName().compareTo(value) != 0 )
             {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                         "value doesn't match farg name");
             }
         }
 
         this.valueSet();
         this.itsValue = new String(value);
-        
+
         return;
     }
 
@@ -178,42 +178,29 @@ public final class UndefinedDataValue extends DataValue {
         return true;
     }
 
+
+    // toString()
     /**
-     * toString()
+     * @return A String representation of the DBValue for display.
      *
-     * Returns a String representation of the DBValue for display.
-     *
-     *                                   -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *     - None.
+     * @date 2007/08/15
      */
-    
+
     public String toString()
     {
         return new String(this.itsValue);
     }
 
 
+    // toDBString()
     /**
-     * toDBString()
+     * @return a database String representation of the DBValue for comparison
+     * against the database's expected value.<br> <i>This function is intended
+     * for debugging purposses.</i>
      *
-     * Returns a database String representation of the DBValue for comparison 
-     * against the database's expected value.<br>
-     * <i>This function is intended for debugging purposses.</i>
-     *
-     *                                       -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/15
      */
-  
+
     public String toDBString()
     {
         return ("(UndefinedDataValue (id " + this.getID() +
@@ -225,20 +212,25 @@ public final class UndefinedDataValue extends DataValue {
     }
 
 
+    // toMODBFile()
     /**
-     * toMODBFile()
-     *
      * Write the MacSHAPA ODB file style definition of itsValue to the
      * supplied file in MacSHAPA ODB file format.
      *
      * The output of this method will an instantiation of <formal_arg>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              JRM -- 1/24/09
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param output The stream that that this UndefinedDataValue is being
+     * dumped too (in MacSHAPA ODB file format).
+     *
+     * @date 2009/24/01
      */
 
     protected void toMODBFile(java.io.PrintStream output)
@@ -262,20 +254,28 @@ public final class UndefinedDataValue extends DataValue {
         return;
 
     } /* UndefinedDataValue::toMODBFile() */
-    
-    
-    /** 
-     * updateForFargChange()
-     *
+
+
+    // updateForFargChange()
+    /**
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                           -- 3/22/08
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param fargNameChanged Has the formal argument name changed?
+     * @param fargSubRangeChanged Has the formal argument sub-range changed?
+     * @param fargRangeChanged Has the formal argument range changed?
+     * @param oldFA The old formal argument (pre change).
+     * @param newFA The new formal argument (post change).
+     *
+     * @date 2008/03/22
      */
-    
+
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -284,113 +284,116 @@ public final class UndefinedDataValue extends DataValue {
         throws SystemErrorException
     {
         final String mName = "TimeStampDataValue::updateForFargChange(): ";
-        
+
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
-            throw new SystemErrorException(mName + 
+            throw new SystemErrorException(mName +
                                            "null old and/or new FA on entry.");
         }
-        
+
         if ( oldFA.getID() != newFA.getID() )
         {
             throw new SystemErrorException(mName + "old/new FA ID mismatch.");
         }
-        
+
         if ( oldFA.getItsVocabElementID() != newFA.getItsVocabElementID() )
         {
             throw new SystemErrorException(mName + "old/new FA veID mismatch.");
         }
-        
+
         if ( oldFA.getFargType() != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "old/new FA type mismatch.");
         }
-        
+
         if ( this.itsFargID != newFA.getID() )
         {
             throw new SystemErrorException(mName + "FA/DV faID mismatch.");
         }
-        
+
         if ( this.itsFargType != newFA.getFargType() )
         {
             throw new SystemErrorException(mName + "FA/DV FA type mismatch.");
         }
-         
-        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) ) 
+
+        if ( ( fargSubRangeChanged ) || ( fargRangeChanged ) )
         {
             this.updateSubRange(newFA);
         }
-        
+
         if ( fargNameChanged )
         {
             this.setItsValue(newFA.getFargName());
         }
-        
+
         return;
-        
+
     } /* TimeStampDataValue::updateForFargChange() */
-    
-    
+
+    // updateSubRange()
     /**
      * updateSubRange()
      *
-     * Nominally, this function should determine if the formal argument 
+     * Nominally, this function should determine if the formal argument
      * associated with the data value is subranged, and if it is, update
-     * the data values representation of the subrange (if any) accordingly.  
-     * In passing, it would coerce the value ofthe datavalue into the subrange 
+     * the data values representation of the subrange (if any) accordingly.
+     * In passing, it would coerce the value ofthe datavalue into the subrange
      * if necessary.
      *
-     * This is meaningless for an undefine data value, as it never has a 
+     * This is meaningless for an undefine data value, as it never has a
      * value, and it is only associated with untyped formal arguments.
      *
      * Thus the method verifies that the supplied formal argument is an
      * UnTypedFormalArg, and that the value of the data value equals the
      * name of the formal argument.
      *
-     * The fa argument is a reference to the current representation of the
+     * @param fa  A reference to the current representation of the
      * formal argument associated with the data value.
      *
-     *                                           -- 8/16/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @date 2007/08/16
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "UndefinedDataValue::updateSubRange(): ";
         UnTypedFormalArg utfa;
-        
+
         if ( fa == null )
         {
-            throw new SystemErrorException(mName + "fa null on entry");    
+            throw new SystemErrorException(mName + "fa null on entry");
         }
-        
+
         if ( fa instanceof UnTypedFormalArg )
         {
              this.subRange = false;
         }
         else
         {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
+            throw new SystemErrorException(mName + "Unexpected fa type");
         }
-        
+
         utfa = (UnTypedFormalArg)fa;
-        
+
         if ( utfa.getFargName().compareTo(this.itsValue) != 0 )
         {
-            throw new SystemErrorException(mName + "farg name mismatch");    
+            throw new SystemErrorException(mName + "farg name mismatch");
         }
-        
+
         return;
-        
+
     } /* UndefinedDataValue::updateSubRange() */
-     
+
+
+    // coerceToRange()
     /**
-     * coerceToRange()
-     *
      * The value of an UndefinedDataValue must be a valid formal argument name.
      * In addition, if the data value is associated with a formal argument
      * (always an UnTypedFormalArgument), its value must be the name of the
@@ -398,39 +401,43 @@ public final class UndefinedDataValue extends DataValue {
      *
      * Thus, coerce to the name of the associated UnTypedFormalArg if defined.
      *
-     * Throw a system error if the value is not a valid formal argument name.
-     * 
-     *                                               -- 070815
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @throws SystemErrorException When the value is not a valid formal
+     * argument name.
+     *
+     * @date 2007/08/15
      */
-    
+
     public String coerceToRange(String value) throws SystemErrorException {
         final String mName = "UndefinedDataValue::coerceToRange(): ";
 
-        if (!getDB().IsValidFargName(value)) {
-            throw new SystemErrorException(mName + 
+        if (!Database.IsValidFargName(value)) {
+            throw new SystemErrorException(mName +
                     "value not a valid formal argument name");
         }
-        
+
         if (this.itsFargID != DBIndex.INVALID_ID) {
             DBElement dbe = this.getDB().idx.getElement(this.itsFargID);
 
             if (dbe == null) {
-                throw new SystemErrorException(mName + 
+                throw new SystemErrorException(mName +
                                                "itsFargID has no referent");
             }
 
             FormalArgument fa = (FormalArgument) dbe;
-            
+
             if (fa.getFargName().compareTo(value) != 0) {
                 return new String(fa.getFargName());
             }
         }
 
-        return value;        
+        return value;
     } /* UndefinedDataValue::coerceToRange() */
 
     /**

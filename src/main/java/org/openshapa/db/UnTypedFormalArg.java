@@ -1,52 +1,24 @@
-/*
- * UnTypedFormalArg.java
- *
+package org.openshapa.db;
+
+/**
  * Untyped formal argument in a matrix or predicate argument list.
  *
  * This is the old style MacSHAPA formal argument that can be replaced
  * with a value of integer, floating point, text, nominal, or predicate
  * type.
- *
- * Created on January 25, 2007, 4:50 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
-package org.openshapa.db;
-
-/**
- *
  */
 public class UnTypedFormalArg
         extends FormalArgument
 {
 
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-
-    // None.
-
-
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * UnTypedFormalArg()
+     * Constructor.
      *
-     * Constructors for un-typed formal arguments.
+     * @param db The database that this UnTypedFormalArg belongs too.
      *
-     * Three versions of this constructor -- one that takes a formal
-     * argument name, one that doesn't, and one that accepts another
-     * instance of UnTypedFormalArg and creates a copy.
+     * @throws SystemErrorException If the supplied database is null.
      *
-     * Changes:
-     *
-     *    - None.
-     *
-     *                                           -- 1/25/07
+     * @date 2007/01/25
      */
 
     public UnTypedFormalArg(Database db)
@@ -57,6 +29,18 @@ public class UnTypedFormalArg
         this.fargType = FArgType.UNTYPED;
 
     } /* UnTypedFormalArg() -- one argument */
+
+
+    /**
+     * Constructor.
+     *
+     * @param db The database that this UnTypedFormalArg belongs too.
+     * @param name The name of the UnTypedFormalArg.
+     *
+     * @throws SystemErrorException If the supplied database is null.
+     *
+     * @date 2007/01/25
+     */
 
     public UnTypedFormalArg(Database db,
                             String name)
@@ -69,12 +53,20 @@ public class UnTypedFormalArg
 
     } /* UnTypedFormalArg() -- two arguments */
 
+
+    /**
+     * Copy Constructor.
+     *
+     * @param fArg The UntypedFormalArg to copy.
+     *
+     * @throws SystemErrorException If the supplied UnTypedFormalArg is null or
+     * if the parent database of UnTypedFormalArg is null.
+     */
+
     public UnTypedFormalArg(UnTypedFormalArg fArg)
         throws SystemErrorException
     {
         super(fArg);
-
-        final String mName = "UnTypedFormalArg::UnTypedFormalArg(): ";
 
         this.fargType = FArgType.UNTYPED;
 
@@ -83,29 +75,27 @@ public class UnTypedFormalArg
     } /* UnTypedFormalArg() -- make copy */
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
-    // None.
-
-
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
+    // constructArgWithSalvage()
     /**
-     * constructArgWithSalvage()  Override of abstract method in FormalArgument
+     * Builds a instance of DataValue initialized from salvage.
      *
-     * Return an instance of DataValue initialized from salvage if
+     * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
+     *
+     * @param salvage The data value to salvage.
+     *
+     * @return An instance of DataValue initialized from salvage if
      * possible, and an instance UndefinedDataValue initialized with the
      * formal argument name otherwise.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If the Salvage is of unknown type.
      */
 
+    @Override
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
@@ -185,41 +175,38 @@ public class UnTypedFormalArg
     } /* UnTypedDataValue::constructArgWithSalvage(salvage) */
 
 
+    // constructEmptyArg()
     /**
-     * constructEmptyArg()  Override of abstract method in FormalArgument
-     *
-     * Return an instance of UndefinedDataValue initialized with the
+     * @return an instance of UndefinedDataValue initialized with the
      * formal argument name.
-     *
-     * Changes:
-     *
-     *    - None.
      */
 
-     public DataValue constructEmptyArg()
+    public DataValue constructEmptyArg()
         throws SystemErrorException
-     {
+    {
 
-         return new UndefinedDataValue(this.getDB(), this.getID(), this.getFargName());
+        return new UndefinedDataValue(this.getDB(), this.getID(), this.getFargName());
 
-     } /* UnTypedFormalArg::constructEmptyArg() */
+    } /* UnTypedFormalArg::constructEmptyArg() */
 
 
+    // toDBString()
     /**
-     * toDBString() -- Override of abstract method in DataValue
-     *
      * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
      *
-     * @return the string value.
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
-     *
+     * @return A database string representation of the UnTypedFormalArg.
      */
+
     public String toDBString() {
 
         return ("(UnTypedFormalArg " + getID() + " " + getFargName() + ")");
@@ -227,20 +214,27 @@ public class UnTypedFormalArg
     } /* UnTypedFormalArg::toDBString() */
 
 
+    // isValidValue()
     /**
-     * isValidValue() -- Overide abstract method in FormalArgument
-     *
-     * Boolean method that returns true iff the provided value is an acceptable
+     * Boolean method that returns true if the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
      * Note that the method will not accept valid text strings -- these can
      * only be used to replace instance of class TextStringFormalArg.
      *
-     *                                              -- 2/5/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param object to check if is valid value for this UnTypedFormalArg.
+     *
+     * @return true if the supplied argument can be used as a value for this
+     * formal argument.
+     *
+     * @date 2007/02/05
      */
 
     public boolean isValidValue(Object obj)
