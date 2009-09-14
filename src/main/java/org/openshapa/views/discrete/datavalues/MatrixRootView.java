@@ -43,8 +43,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * represent.
      */
     public MatrixRootView(final Selector cellSelection,
-                   final DataCell cell,
-                   final Matrix matrix) {
+                          final DataCell cell,
+                          final Matrix matrix) {
         super();
         setLineWrap(true);
         setWrapStyleWord(true);
