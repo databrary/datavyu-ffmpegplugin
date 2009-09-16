@@ -14,7 +14,7 @@ import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStam
 
 /**
  * JTextArea view of the Matrix (database cell) data.
-*/
+ */
 public final class TimeStampTextField extends JTextField
 implements FocusListener, KeyListener {
 
@@ -70,7 +70,9 @@ implements FocusListener, KeyListener {
      * Recalculates and sets the text to display.
      */
     public void rebuildText() {
+        int pos = this.getCaretPosition();
         setText(myEditor.getText());
+        this.setCaretPosition(pos);
     }
 
     /**
@@ -94,7 +96,6 @@ implements FocusListener, KeyListener {
         }
 
         myEditor.focusGained(fe);
-        // myEditor.select(0, 0);
     }
 
     /**
@@ -159,7 +160,6 @@ implements FocusListener, KeyListener {
                 }
                 break;
             case KeyEvent.VK_TAB:
-                // myEditor.focusGained(null);
                 myEditor.selectAll();
                 e.consume();
                 break;

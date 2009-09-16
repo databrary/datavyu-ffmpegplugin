@@ -328,7 +328,9 @@ implements KeyEventDispatcher {
         fileMenu.add(saveAsMenuItem);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
-        fileMenu.add(fileMenuSeparator);
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            fileMenu.add(fileMenuSeparator);
+        }
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
