@@ -42,7 +42,7 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
 
     /**
      * Creates a new ColumnDataPanel.
-     *
+     *0
      * @param width The width of the new column data panel in pixels.
      * @param model The Data Column that this panel represents.
      * @param parentCellSelector The cell selector to use with cells held in
