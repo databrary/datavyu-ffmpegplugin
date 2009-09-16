@@ -150,6 +150,21 @@ public class Cell extends AbstractUIComponent {
         KeyUtils.enterString(getComponentByType(element), s2);
     }
 
+    /**
+     * enters matrix text
+     * @param s array of strings for each argument in Matrix
+     */
+    public final void enterMatrixText(final String [] s) {
+        requestFocus(VALUE);
+
+        Key [] keys = {Key.TAB};
+
+        for (String item : s) {
+            KeyUtils.enterString(getComponentByType(VALUE), item);
+            KeyUtils.enterKeys(getComponentByType(VALUE), keys);
+        }
+    }
+
     public final void selectAllAndTypeKey(final int element, final Key key) {
         requestFocus(element);
 
