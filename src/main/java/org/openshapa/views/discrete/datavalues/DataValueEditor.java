@@ -2,6 +2,8 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.openshapa.db.DataCell;
@@ -258,10 +260,34 @@ public abstract class DataValueEditor extends EditorComponent {
                 e.consume();
                 break;
 
+            // Key stroke gets passed up a parent element to navigate
+            // cells up and down.
             case KeyEvent.VK_DOWN:
+                // BugzID: 519 - don't pass up and down into underlying
+                // JTextComponent. If should be thrown up to the ColumnDataPanel
+                // so that cells can be navigated up and down.
+//                try {
+//                    JTextArea a = (JTextArea) this.getParentComponent();
+//                    if (a.getLineOfOffset(a.getCaretPosition()) + 1 >= a.getLineCount()) {
+//                        e.consume();
+//                    }
+//                } catch (BadLocationException be) {
+//                    logger.error("BadLocation on down", be);
+//                    e.consume();
+//                }
+
+                break;
             case KeyEvent.VK_UP:
-                // Key stroke gets passed up a parent element to navigate
-                // cells up and down.
+//                try {
+//                    JTextArea a = (JTextArea) this.getParentComponent();
+//                    if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
+//                        e.consume();
+//                    }
+//                } catch (BadLocationException be) {
+//                    logger.error("BadLocation on up", be);
+//                    e.consume();
+//                }
+
                 break;
             default:
                 break;

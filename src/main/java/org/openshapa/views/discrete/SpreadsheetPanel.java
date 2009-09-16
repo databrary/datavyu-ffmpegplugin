@@ -107,8 +107,11 @@ public class SpreadsheetPanel extends JPanel
      */
     private void addColumn(final Database db, final long colID) {
         // make the SpreadsheetColumn
-        SpreadsheetColumn col = new SpreadsheetColumn(this, db,
-                                                      colID, colSelector);
+        SpreadsheetColumn col = new SpreadsheetColumn(this,
+                                                      db,
+                                                      colID,
+                                                      colSelector,
+                                                      cellSelector);
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport

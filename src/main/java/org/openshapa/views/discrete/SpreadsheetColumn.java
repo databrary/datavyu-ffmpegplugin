@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete;
 
-import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;
 import org.openshapa.db.ExternalCascadeListener;
@@ -33,9 +32,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** Spreadhseet panel this column belongs to. */
     private SpreadsheetPanel spreadsheetPanel;
-
-    /** Collection of the SpreadsheetCells in the column. */
-    private Vector<SpreadsheetCell> cells;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
@@ -94,17 +90,17 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param sheet Spreadsheet parent.
      * @param db Database reference.
      * @param colID the database colID this column displays.
-     * @param selector The selection for all columns.
+     * @param colSelector The selection for all columns.
+     * @param cellSelector The selection of all cells.
      */
     public SpreadsheetColumn(final SpreadsheetPanel sheet,
                              final Database db,
                              final long colID,
-                             final Selector selector) {
+                             final Selector colSelector,
+                             final Selector cellSelector) {
         this.database = db;
         this.dbColID = colID;
         this.spreadsheetPanel = sheet;
-
-        this.cells = new Vector<SpreadsheetCell>();
 
         try {
             database.registerDataColumnListener(dbColID, this);
@@ -112,39 +108,16 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
-            headerpanel = new ColumnHeaderPanel(this, dbColumn.getName()
-                            + "  (" + dbColumn.getItsMveType() + ")", selector);
+            headerpanel = new ColumnHeaderPanel(this,
+                dbColumn.getName() + "  (" + dbColumn.getItsMveType() + ")",
+                colSelector);
 
-            datapanel = new ColumnDataPanel(width);
-            buildDataPanelCells(dbColumn);
+            datapanel = new ColumnDataPanel(width, dbColumn, cellSelector);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
         }
         colChanges = new ColumnChanges();
-    }
-
-    /**
-     * Build the SpreadsheetCells and add to the DataPanel.
-     * @param dbColumn DataColumn to display.
-     */
-    private void buildDataPanelCells(final DataColumn dbColumn) {
-        try {
-            // traverse and build the cells
-            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                DataCell dc = (DataCell) dbColumn.getDB()
-                                    .getCell(dbColumn.getID(), j);
-
-                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
-                                            spreadsheetPanel.getCellSelector());
-                // add cell to the JPanel
-                datapanel.add(sc);
-                // and add it to our reference list
-                cells.add(sc);
-            }
-        } catch (SystemErrorException e) {
-           logger.error("Failed to populate Spreadsheet.", e);
-        }
     }
 
     /**
@@ -239,13 +212,13 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         }
         if (colChanges.cellDeleted.size() > 0) {
             for (Long cellID : colChanges.cellDeleted) {
-                deleteCellByID(cellID);
+                datapanel.deleteCellByID(cellID);
             }
             dirty = true;
         }
         if (colChanges.cellInserted.size() > 0) {
             for (Long cellID : colChanges.cellInserted) {
-                insertCellByID(cellID);
+                datapanel.insertCellByID(db, cellID);
             }
             dirty = true;
         }
@@ -268,43 +241,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             spreadsheetPanel.relayoutCells();
         }
         colChanges.reset();
-    }
-
-    /**
-     * Find and delete SpreadsheetCell by its ID.
-     * @param cellID ID of cell to find and delete.
-     */
-    private void deleteCellByID(final long cellID) {
-        for (SpreadsheetCell cell : cells) {
-            if (cell.getCellID() == cellID) {
-                cells.remove(cell);
-                datapanel.remove(cell);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Insert a new SpreadsheetCell given the cells ID.
-     * @param cellID ID of cell to create and insert.
-     */
-    private void insertCellByID(final long cellID) {
-        try {
-            DataCell dc = (DataCell) database.getCell(cellID);
-            SpreadsheetCell newCell = new SpreadsheetCell(database, dc,
-                                            spreadsheetPanel.getCellSelector());
-            Long newOrd = new Long(dc.getOrd());
-            if (cells.size() > newOrd.intValue()) {
-                cells.insertElementAt(newCell, newOrd.intValue() - 1);
-                datapanel.add(newCell, newOrd.intValue() - 1);
-            } else {
-                cells.add(newCell);
-                datapanel.add(newCell);
-            }
-            newCell.requestFocus();
-        } catch (SystemErrorException e) {
-            logger.error("Problem inserting a new SpreadsheetCell", e);
-        }
     }
 
     /**
@@ -408,7 +344,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @return The SpreadsheetCells in this column.
      */
     public Vector<SpreadsheetCell> getCells() {
-        return cells;
+        return datapanel.getCells();
     }
 
     /**
@@ -417,8 +353,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * will request focus for the datapanel of the column.
      */
     public void requestFocus() {
-        if (cells.size() > 0) {
-            cells.firstElement().requestFocusInWindow();
+        if (datapanel.getCells().size() > 0) {
+            datapanel.getCells().firstElement().requestFocusInWindow();
         } else {
             datapanel.requestFocusInWindow();
         }

@@ -160,7 +160,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * @param ke They keyboard event that was dispatched to this component.
      */
     @Override
-    public void processKeyEvent(final KeyEvent ke) {
+    public void processKeyEvent(KeyEvent ke) {
         super.processKeyEvent(ke);
 
         if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP

@@ -202,11 +202,16 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                 e.consume();
                 break;
 
+            // Key stroke gets passed up a parent element to navigate
+            // cells up and down.
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_UP:
-                // Key stroke gets passed up a parent element to navigate
-                // cells up and down.
+                // BugzID: 519 - don't pass up and down into underlying
+                // JTextComponent. If should be thrown up to the ColumnDataPanel
+                // so that cells can be navigated up and down.
+//                e.consume();
                 break;
+
             default:
                 break;
         }

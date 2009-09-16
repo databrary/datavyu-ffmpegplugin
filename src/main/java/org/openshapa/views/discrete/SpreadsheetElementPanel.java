@@ -95,7 +95,7 @@ implements MouseListener, KeyListener {
      * @param ke They keyboard event that was dispatched to this component.
      */
     @Override
-    public final void processKeyEvent(final KeyEvent ke) {
+    public final void processKeyEvent(KeyEvent ke) {
         super.processKeyEvent(ke);
 
         if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP

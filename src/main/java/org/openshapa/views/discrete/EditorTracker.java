@@ -17,7 +17,7 @@ import org.openshapa.views.discrete.datavalues.NoEditor;
  * text displayed by the JTextComponent.
  */
 public final class EditorTracker
-        implements FocusListener, KeyListener, MouseListener {
+implements FocusListener, KeyListener, MouseListener {
 
     /** The JTextComponent that contains the EditorComponents. */
     private JTextComponent textArea;
@@ -45,7 +45,7 @@ public final class EditorTracker
      * @param eds Vector of the EditorComponents.
      */
     public EditorTracker(final JTextComponent ta,
-            final Vector<EditorComponent> eds) {
+                         final Vector<EditorComponent> eds) {
         textArea = ta;
         editors = eds;
     }
@@ -223,6 +223,7 @@ public final class EditorTracker
     public void focusGained(final FocusEvent fe) {
         if (!mouseDown) {
             setEditor(findEditor(0), 0, 0);
+            //setEditor(currentEditor, currentEditor.getCaretPosition(), currentEditor.getCaretPosition());
         }
     }
 
@@ -328,9 +329,7 @@ public final class EditorTracker
                 }
                 break;
             case KeyEvent.VK_TAB:
-                if (currentEditor.getSelectionEnd()
-                    - currentEditor.getSelectionStart()
-                    != currentEditor.getText().length()) {
+                if (currentEditor.getSelectionEnd() - currentEditor.getSelectionStart() != currentEditor.getText().length()) {
                     setEditor(nextEditor());
                 } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
                     setEditor(prevEditor());
@@ -422,5 +421,12 @@ public final class EditorTracker
      */
     public void paste() {
         currentEditor.paste();
+    }
+
+    /**
+     * @return The current editor for this editor tracker.
+     */
+    public EditorComponent getCurrentEditor() {
+        return this.currentEditor;
     }
 }

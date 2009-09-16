@@ -145,7 +145,6 @@ implements KeyEventDispatcher {
                     qtVideoController.findAction();
                 break;
             case KeyEvent.VK_ENTER:
-                //this.createNewCell();
                 new CreateNewCellC();
                 break;
             default:

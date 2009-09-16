@@ -34,9 +34,9 @@ public final class TextStringDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public TextStringDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                     final DataCell cell,
+                                     final Matrix matrix,
+                                     final int matrixIndex) {
         super(ta, cell, matrix, matrixIndex);
         setAcceptReturnKey(true);
     }
@@ -52,11 +52,11 @@ public final class TextStringDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public TextStringDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final PredDataValue p,
-                            final int pi,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                     final DataCell cell,
+                                     final PredDataValue p,
+                                     final int pi,
+                                     final Matrix matrix,
+                                     final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
         setAcceptReturnKey(true);
     }
