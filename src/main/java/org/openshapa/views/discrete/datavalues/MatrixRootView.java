@@ -2,7 +2,6 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
@@ -150,23 +149,6 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      */
     public void focusLost(final FocusEvent fe) {
         // do nothing
-    }
-
-    /**
-     * Process key events that have been dispatched to this component, pass
-     * them through to all listeners, and then if they are not consumed pass
-     * it onto the parent of this component.
-     *
-     * @param ke They keyboard event that was dispatched to this component.
-     */
-    @Override
-    public void processKeyEvent(KeyEvent ke) {
-        super.processKeyEvent(ke);
-
-        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-            getParent().dispatchEvent(ke);
-        }
     }
 
     /**

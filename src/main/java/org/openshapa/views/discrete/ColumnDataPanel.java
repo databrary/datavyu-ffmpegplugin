@@ -3,12 +3,16 @@ package org.openshapa.views.discrete;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
@@ -42,7 +46,7 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
 
     /**
      * Creates a new ColumnDataPanel.
-     *0
+     *
      * @param width The width of the new column data panel in pixels.
      * @param model The Data Column that this panel represents.
      * @param parentCellSelector The cell selector to use with cells held in
@@ -68,6 +72,25 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
 
         // Populate the data column with spreadsheet cells.
         this.buildDataPanelCells(model);
+
+        KeyboardFocusManager manager = KeyboardFocusManager
+                                   .getCurrentKeyboardFocusManager();
+
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+                /**
+                 * Dispatches the key event to the desired components.
+                 *
+                 * @param evt The key event to dispatch.
+                 *
+                 * @return true if the event has been consumed by this dispatch,
+                 * false otherwise.
+                 */
+                public boolean dispatchKeyEvent(KeyEvent evt) {
+                    // Pass the keyevent onto the keyswitchboard so that it can
+                    // route it to the correct action.
+                    return dispatchKEvent(evt);
+                }
+        });
     }
 
     /**
@@ -207,58 +230,80 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
     }
 
     /**
-     * The action to invoke when a key is released on the keyboard.
+     * Dispatches the key event to the desired components.
      *
-     * @param ke The key event that triggered this action.
+     * @param e The key event to dispatch.
+     *
+     * @return true if the event has been consumed by this dispatch, false
+     * otherwise
      */
-    @Override
-    public void keyReleased(KeyEvent ke) {
+    public boolean dispatchKEvent(KeyEvent e) {
+
+        // Quick filter - if we aren't dealing with a key press or up and down
+        // arrow. Forget about it - just chuck it back to Java to deal with.
+        if (e.getID() != KeyEvent.KEY_PRESSED
+            && (e.getKeyCode() != KeyEvent.VK_UP
+                || e.getKeyCode() != KeyEvent.VK_DOWN)) {
+            return false;
+        }
+
         Component[] components = this.getComponents();
         int numCells = getComponentCount() - 1;
+
+        // For each of the cells in the column - see if one has focus.
         for (int i = 0; i < numCells; i++) {
-            if (components[i].isFocusOwner()) {
-                if (ke.getKeyCode() == KeyEvent.VK_UP && i > 0) {
-                    components[i - 1].requestFocus();
-                }
 
-                if (ke.getKeyCode() == KeyEvent.VK_DOWN && (i + 1) < numCells) {
-                    components[i + 1].requestFocus();
-                }
-            }
-
-
-            /*
+            // The current cell has focus.
             if (components[i].isFocusOwner()
                 && components[i].getClass().equals(SpreadsheetCell.class)) {
+
+                // Get the current editor tracker and component for the cell
+                // that has focus.
                 SpreadsheetCell sc = (SpreadsheetCell) components[i];
                 EditorTracker et = sc.getDataView().getEdTracker();
                 EditorComponent ec = et.getCurrentEditor();
+
+                // Get the caret position within the active editor component.
                 int relativePos = et.getCurrentEditor().getCaretPosition();
                 int absolutePos = sc.getDataView().getCaretPosition();
 
-                if (ke.getKeyCode() == KeyEvent.VK_UP && i > 0) {
+                // The key stroke is up - select the editor component in the
+                // cell above, setting the caret position to what we just found
+                // in the current cell.
+                if (e.getKeyCode() == KeyEvent.VK_UP && i > 0) {
                     try {
+                        // Determine if we are at the top of a multi-lined cell,
+                        // ff we are not on the top line - pressing up should
+                        // select the line above.
                         JTextArea a = (JTextArea) ec.getParentComponent();
-                        if (a.getLineOfOffset(a.getCaretPosition()) == 0 && ke.isConsumed()) {
-                            components[i - 1].requestFocus();
+                        if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
                             sc = (SpreadsheetCell) components[i - 1];
 
                             et = sc.getDataView().getEdTracker();
                             ec = et.findEditor(absolutePos);
                             et.setEditor(ec);
                             ec.setCaretPosition(relativePos);
+                            components[i - 1].requestFocus();
+
+                            e.consume();
+                            return true;
                         }
                     } catch (BadLocationException be) {
-                        //logger.warn("BadLocation on down", be);
-                        //components[i - 1].requestFocus();
-                        //sc = (SpreadsheetCell) components[i - 1];
+                        logger.error("BadLocation on arrow up", be);
                     }
                 }
 
-                if (ke.getKeyCode() == KeyEvent.VK_DOWN && (i + 1) < numCells) {
+                // The key stroke is down - select the editor component in the
+                // cell below, setting the caret position to what we found from
+                // the current cell.
+                if (e.getKeyCode() == KeyEvent.VK_DOWN && (i + 1) < numCells) {
                     try {
+                        // Determine if we are at the bottom of a multi-lined
+                        // cell, if we are not on the bottom line - pressing
+                        // down should select the line below.
                         JTextArea a = (JTextArea) ec.getParentComponent();
-                        if (a.getLineOfOffset(a.getCaretPosition()) + 1 >= a.getLineCount() && ke.isConsumed()) {
+                        if (a.getLineOfOffset(a.getCaretPosition()) + 1
+                            >= a.getLineCount()) {
                             components[i + 1].requestFocus();
                             sc = (SpreadsheetCell) components[i + 1];
 
@@ -266,15 +311,18 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
                             ec = et.findEditor(absolutePos);
                             et.setEditor(ec);
                             ec.setCaretPosition(relativePos);
+                            e.consume();
+                            return true;
                         }
                     } catch (BadLocationException be) {
-                        //logger.warn("BadLocation on up", be);
-                        //e.consume();
+                        logger.error("BadLocation on arrow down", be);
                     }
                 }
 
-                return;
-            }*/
+                return false;
+            }
         }
+
+        return false;
     }
 }

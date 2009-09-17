@@ -43,8 +43,7 @@ import org.openshapa.Configuration;
  * the main application class, DocumentEditorApp. For an overview of the
  * application see the comments for the DocumentEditorApp class.
  */
-public final class OpenSHAPAView extends FrameView
-implements KeyEventDispatcher {
+public final class OpenSHAPAView extends FrameView {
 
     /**
      * Constructor.
@@ -53,9 +52,24 @@ implements KeyEventDispatcher {
      */
     public OpenSHAPAView(SingleFrameApplication app) {
         super(app);
-        KeyboardFocusManager key = KeyboardFocusManager
+        KeyboardFocusManager manager = KeyboardFocusManager
                                    .getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);
+
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+                /**
+                 * Dispatches the keystroke to the correct action.
+                 *
+                 * @param evt The event that triggered this action.
+                 *
+                 * @return true if the KeyboardFocusManager should take no
+                 * further action with regard to the KeyEvent; false otherwise.
+                 */
+                public boolean dispatchKeyEvent(KeyEvent evt) {
+                    // Pass the keyevent onto the keyswitchboard so that it can
+                    // route it to the correct action.
+                    return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
+                }
+        });
 
         // generated GUI builder code
         initComponents();
@@ -84,24 +98,6 @@ implements KeyEventDispatcher {
 
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
-    }
-
-    public OpenSHAPAView getOpenSHAPAView(){
-        return this;
-    }
-
-    /**
-     * Dispatches the keystroke to the correct action.
-     *
-     * @param evt The event that triggered this action.
-     *
-     * @return true if the KeyboardFocusManager should take no further action
-     * with regard to the KeyEvent; false  otherwise
-     */
-    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
-        // Pass the keyevent onto the keyswitchboard so that it can route it
-        // to the correct action.
-        return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
     }
 
     /**

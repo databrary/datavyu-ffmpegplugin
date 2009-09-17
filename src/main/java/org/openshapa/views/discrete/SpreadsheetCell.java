@@ -388,8 +388,8 @@ implements ExternalDataCellListener, Selectable {
             cell.getDB().replaceCell(dcell);
 
             if (selected) {
-            // method names don't reflect usage - we didn't really create this
-            // cell just now.
+                // method names don't reflect usage - we didn't really create
+                // this cell just now.
                 OpenSHAPA.setLastCreatedColId(cell.getItsColID());
                 OpenSHAPA.setLastCreatedCellId(cell.getID());
             }

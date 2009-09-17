@@ -50,7 +50,7 @@ implements KeyEventDispatcher {
          */
         int modifiers = evt.getModifiers();
         if (evt.getID() == KeyEvent.KEY_PRESSED
-                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+            && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
 
             // BugzID:468 - Define accelerator keys based on OS.
             int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();

@@ -67,8 +67,8 @@ implements FocusListener, KeyListener, MouseListener {
      * @param end End character location to select.
      */
     public void setEditor(final EditorComponent newEd,
-            final int start,
-            final int end) {
+                          final int start,
+                          final int end) {
         // Tell currentEditor to store its value back in the database
         currentEditor.focusLost(null);
 
@@ -92,12 +92,12 @@ implements FocusListener, KeyListener, MouseListener {
         postCharCount = 0;
         if (currentEditor != NO_EDITOR) {
             for (EditorComponent ed : editors) {
-                if (ed == currentEditor) {
+                if (ed.equals(currentEditor)) {
                     foundEd = true;
                 }
                 if (!foundEd) {
                     preCharCount += ed.getText().length();
-                } else if (ed != currentEditor) {
+                } else if (!ed.equals(currentEditor)) {
                     postCharCount += ed.getText().length();
                 }
             }
@@ -176,7 +176,7 @@ implements FocusListener, KeyListener, MouseListener {
         EditorComponent foundEd = NO_EDITOR;
         boolean currFound = false;
         for (EditorComponent ed : editors) {
-            if (ed == currentEditor) {
+            if (ed.equals(currentEditor)) {
                 currFound = true;
             } else if (currFound && ed.isEditable()) {
                 foundEd = ed;
@@ -192,7 +192,7 @@ implements FocusListener, KeyListener, MouseListener {
     public EditorComponent prevEditor() {
         EditorComponent prevEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
-            if (ed == currentEditor) {
+            if (ed.equals(currentEditor)) {
                 break;
             }
             if (ed.isEditable()) {
@@ -222,8 +222,13 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void focusGained(final FocusEvent fe) {
         if (!mouseDown) {
-            setEditor(findEditor(0), 0, 0);
-            //setEditor(currentEditor, currentEditor.getCaretPosition(), currentEditor.getCaretPosition());
+            if (currentEditor.equals(NO_EDITOR)) {
+                setEditor(findEditor(0), 0, 0);
+            } else {
+                setEditor(currentEditor,
+                          currentEditor.getCaretPosition(),
+                          currentEditor.getCaretPosition());
+            }
         }
     }
 
@@ -359,8 +364,10 @@ implements FocusListener, KeyListener, MouseListener {
      * Calculate the currentEditor's text and call it's resetText method.
      */
     public void resetEditorText() {
-        int newLength = textArea.getText().length() - (preCharCount + postCharCount);
-        currentEditor.resetText(textArea.getText().substring(preCharCount, preCharCount + newLength));
+        int newLength = textArea.getText().length()
+                        - (preCharCount + postCharCount);
+        currentEditor.resetText(textArea.getText()
+                     .substring(preCharCount, preCharCount + newLength));
     }
 
     /**
