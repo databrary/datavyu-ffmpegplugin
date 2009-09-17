@@ -220,10 +220,12 @@ implements KeyEventDispatcher {
             // Initalise DB
             db = new MacshapaDatabase();
 
+            // BugzID:449 - Set default database name.
+            db.setName("Database1");
+
             // Initalise last created values
             lastCreatedCellID = 0;
             lastCreatedColID = 0;
-
 
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
@@ -243,6 +245,15 @@ implements KeyEventDispatcher {
         // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
+
+        // BugzID:449 - Update the name of the window to include the default
+        // name of the database.
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = OpenSHAPA.getApplication()
+                                    .getContext()
+                                    .getResourceMap(OpenSHAPA.class);
+        mainFrame.setTitle(rMap.getString("Application.title")
+                           + " - " + OpenSHAPA.getDatabase().getName());
     }
 
     /**

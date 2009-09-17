@@ -7,11 +7,14 @@ import org.openshapa.db.Database;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.FileFilters.CSVFilter;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.MatrixVocabElement.MatrixType;
@@ -40,6 +43,27 @@ public final class SaveDatabaseC {
         }
 
         if (fileFilter.getClass() == CSVFilter.class) {
+            // BugzID:449 - Set filename in spreadsheet window and database to
+            // be the same as the file specified.
+            try {
+                String dbName = new File(outputFile).getName();
+                dbName = dbName.substring(0, dbName.lastIndexOf('.'));
+                OpenSHAPA.getDatabase().setName(dbName);
+
+                // Update the name of the window to include the name we just
+                // set in the database.
+                JFrame mainFrame = OpenSHAPA.getApplication()
+                                   .getMainFrame();
+                ResourceMap rMap = OpenSHAPA.getApplication()
+                                   .getContext()
+                                   .getResourceMap(OpenSHAPA.class);
+
+                mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - " + OpenSHAPA.getDatabase().getName());
+            } catch (SystemErrorException se) {
+                logger.error("Can't set db name to specified file.", se);
+            }
+
             saveAsCSV(outputFile);
         }
     }
