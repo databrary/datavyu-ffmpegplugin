@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.FocusEvent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
@@ -47,6 +48,23 @@ public final class IntDataValueEditor extends DataValueEditor {
     }
 
     /**
+     * Action to take when focus is lost for this editor.
+     * @param fe Focus Event
+     */
+    @Override
+    public void focusLost(final FocusEvent fe) {
+        // BugzID:405 - If the user has entered "special" characters (i.e.
+        // currently transitioning from an invalid state to a valid one), but
+        // not completed the transition - i.e. the editor is in an invalid state
+        // set the text back to a null arg.
+        if (isSpecial(getText())) {
+            this.setText(this.getNullArg());
+        }
+
+        super.focusLost(fe);
+    }
+
+    /**
      * The action to invoke when a key is typed.
      * @param e The KeyEvent that triggered this action.
      */
@@ -54,27 +72,27 @@ public final class IntDataValueEditor extends DataValueEditor {
     public void keyTyped(final KeyEvent e) {
         IntDataValue idv = (IntDataValue) getModel();
 
-        // Ensure that everything is selected if the value is empty.
-        if (idv.isEmpty()) {
-            this.selectAll();
-        }
-
         // '-' key toggles the state of a negative / positive number.
         if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
             || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
             && e.getKeyChar() == '-') {
 
-            // Move the caret to behind the - sign, or the front of the
-            // number.
-            if (idv.getItsValue() < 0) {
-                setCaretPosition(0);
-            } else {
-                setCaretPosition(1);
-            }
+            // BugzID:405 - Only attempt to alter a valid int value, if an empty
+            // value, the character is "special" and should be pumped into the
+            // text field without altering the value.
+            if (!idv.isEmpty()) {
+                // Move the caret to behind the - sign, or the front of the
+                // number.
+                if (idv.getItsValue() < 0) {
+                    setCaretPosition(0);
+                } else {
+                    setCaretPosition(1);
+                }
 
-            // Toggle state of a negative / positive number.
-            idv.setItsValue(-idv.getItsValue());
-            e.consume();
+                // Toggle state of a negative / positive number.
+                idv.setItsValue(-idv.getItsValue());
+                e.consume();
+            }
 
         // The backspace key removes digits from behind the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
@@ -147,6 +165,7 @@ public final class IntDataValueEditor extends DataValueEditor {
             e.consume();
         }
 
+
         updateDatabase();
     }
 
@@ -178,11 +197,13 @@ public final class IntDataValueEditor extends DataValueEditor {
     /**
      * Check if the string supplied is one allowed while typing in an integer.
      * For when typing in the first characters '-'.
+     *
      * @param str the string to check
+     *
      * @return true if we allow this string to represent an integer even
      * though it would not pass a conversion operation.
      */
-    private boolean allowedSpecial(final String str) {
+    private boolean isSpecial(final String str) {
         return (str.equals("-"));
     }
 }

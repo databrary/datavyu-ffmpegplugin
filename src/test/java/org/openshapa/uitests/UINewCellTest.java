@@ -61,8 +61,8 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private String[] integerTestInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2 ", "99999999999999999999", "000389.5"
-            /* BugzId:485 , "-", "-0" */};
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0"
+            /*, "-123"*/};
 
      /**
       * Float test input.
@@ -82,7 +82,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewNominalCell() throws Exception {
         String varName = "nomVar";
-        String varType = "NOMINAL";
         String varRadio = "nominal";
 
         String[] expectedNominalTestOutput = {"Subject stands up ",
@@ -102,7 +101,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNominalPasting() throws Exception {
         String varName = "nomVar";
-        String varType = "NOMINAL";
         String varRadio = "nominal";
 
         String[] expectedNominalTestOutput = {"Subject stands up ",
@@ -118,7 +116,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewAdvancedNominalCell() throws Exception {
         String varName = "nomVar";
-        String varType = "NOMINAL";
         String varRadio = "nominal";
 
         //advanced Input will be provided between testInput
@@ -149,7 +146,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewTextCell() throws Exception {
         String varName = "textVar";
-        String varType = "TEXT";
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
@@ -167,7 +163,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testTextPasting() throws Exception {
         String varName = "textVar";
-        String varType = "TEXT";
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
@@ -180,11 +175,10 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testIntegerPasting() throws Exception {
         String varName = "intVar";
-        String varType = "INTEGER";
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
+            "72", "999999999999999999", "3895", "<val>", "0"};
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
 
@@ -194,7 +188,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewAdvancedTextCell() throws Exception {
         String varName = "textVar";
-        String varType = "TEXT";
         String varRadio = "text";
 
         //advanced Input will be provided between testInput
@@ -220,7 +213,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewFloatCell() throws Exception {
         String varName = "floatVar";
-        String varType = "FLOAT";
         String varRadio = "float";
 
         int numOfTests = floatTestInput.length;
@@ -274,7 +266,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testFloatPasting() throws Exception {
        String varName = "floatVar";
-        String varType = "FLOAT";
         String varRadio = "float";
 
         int numOfTests = floatTestInput.length;
@@ -320,7 +311,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewAdvancedFloatCell() throws Exception {
         String varName = "floatVar";
-        String varType = "FLOAT";
         String varRadio = "float";
 
         String[] testInput = {"1a.9", "10-43.2",
@@ -387,11 +377,10 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewIntegerCell() throws Exception {
         String varName = "intVar";
-        String varType = "INTEGER";
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
+            "72", "999999999999999999", "3895", "-", "-"};
 
         createNewVariable(varName, varRadio);
 
@@ -404,7 +393,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     public void testNewAdvancedIntegerCell() throws Exception {
         String varName = "intVar";
-        String varType = "INTEGER";
         String varRadio = "integer";
 
         String[] testInput = {"1a9", "10-432",
@@ -577,7 +565,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "matrixInteger1";
 
         String [] expectedIntTestOutput = {"19", "-43210", "289", "178", 
-        "<int>", "72", "999999999999999999", "3895"/* BugzID:485,  "0", "0" */};
+        "<int>", "72", "999999999999999999", "3895", "-", "-"};
 
         runStandardTest(varName, integerTestInput,
                 expectedIntTestOutput, "<int>");
@@ -621,7 +609,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2TestOutput = {"19", "-43210", "289", "178",
         "<int1>", "72", "999999999999999999",
-        "3895"/* BugzID:485,  "0", "0" */};
+        "3895", "-", "0"};
 
         int numOfTests = integerTestInput.length;
 
@@ -640,7 +628,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2bTempOutput = {"19", "-43210", "289", "178",
         "<int1>", "72", "999999999999999999",
-        "3895"/* BugzID:485,  "0", "0" */};
+        "3895", "<int1>", "0"};
 
         String [][] expectedInt2bTestOutput =
                 new String [expectedInt2TestOutput.length]
