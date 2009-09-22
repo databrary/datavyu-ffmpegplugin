@@ -62,7 +62,14 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        FloatDataValue fdv = (FloatDataValue) getModel();        
+        FloatDataValue fdv = (FloatDataValue) getModel();
+
+        // BugzID:422 - Disallow key presses if user is in front of -ve sign
+        if (getText().startsWith("-") && getCaretPosition() == 0
+            && e.getKeyChar() != '-') {
+            e.consume();
+            return;
+        }
 
         // '-' key toggles the state of a negative / positive number.
         if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
