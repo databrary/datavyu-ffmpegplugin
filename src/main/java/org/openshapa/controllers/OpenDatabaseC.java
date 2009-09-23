@@ -32,6 +32,7 @@ import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.UnTypedFormalArg;
 import org.openshapa.db.UndefinedDataValue;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  * Controller for opening a database from disk.
@@ -77,9 +78,16 @@ public final class OpenDatabaseC {
                 mainFrame.setTitle(rMap.getString("Application.title")
                                + " - " + OpenSHAPA.getDatabase().getName());
             }
+
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);
         }
+
+        // Display any changes.
+        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                                            .getMainView()
+                                                            .getComponent();
+        view.relayoutCells();
     }
 
     /**

@@ -8,6 +8,7 @@ import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.SystemErrorException;
 import org.apache.log4j.Logger;
 import org.openshapa.db.Column;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -213,6 +214,14 @@ public final class NewVariableV extends OpenSHAPADialog {
                                            this.getVariableName(),
                                            this.getVariableType());
             model.addColumn(dc);
+
+            // Display any changes.
+            SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA
+                                                       .getApplication()
+                                                       .getMainView()
+                                                       .getComponent();
+            view.relayoutCells();
+
             this.dispose();
             this.finalize();
 

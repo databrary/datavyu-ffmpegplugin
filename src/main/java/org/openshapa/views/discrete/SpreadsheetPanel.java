@@ -237,7 +237,6 @@ public class SpreadsheetPanel extends JPanel
                                    final Vector<Long> new_cov) {
         deselectAll();
         addColumn(db, colID);
-        relayoutCells();
     }
 
     /**
@@ -259,7 +258,7 @@ public class SpreadsheetPanel extends JPanel
      * Relayout the SpreadsheetCells in the spreadsheet.
      */
     public final void relayoutCells() {
-        sheetLayout.relayoutCells();
+        sheetLayout.relayoutCells(); 
         this.validate();
     }
 

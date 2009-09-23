@@ -181,6 +181,7 @@ public final class CreateNewCellC {
                 OpenSHAPA.setLastCreatedCellId(model.appendCell(cell));
             }
             view.deselectAll();
+            view.relayoutCells();
         } catch (SystemErrorException e) {
             logger.error("Unable to create a new cell.", e);
         }
