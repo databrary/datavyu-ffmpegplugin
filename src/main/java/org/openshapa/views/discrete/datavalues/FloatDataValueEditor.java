@@ -261,17 +261,4 @@ public final class FloatDataValueEditor extends DataValueEditor {
             return null;
         }
     }
-
-    /**
-     * Check if the string supplied is one allowed while typing in a float.
-     * For when typing in the first characters '-' and '.'.
-     *
-     * @param str the string to check
-     *
-     * @return true if we allow this string to represent a float even
-     * though it would not pass a conversion operation.
-     */
-    private boolean isSpecial(final String str) {
-        return (str.equals(".") || str.equals("-") || str.equals("-."));
-    }
 }
