@@ -69,8 +69,8 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private String[] floatTestInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then. x? 2 ", "589.138085638", "000389.5"
-            /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
+            "If x?7 then. x? 2 ", "589.138085638", "000389.5",
+            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34"};
 
     static {
       UISpec4J.init();
@@ -218,7 +218,7 @@ public final class UINewCellTest extends UISpecTestCase {
         int numOfTests = floatTestInput.length;
 
         double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
-        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
+        589.138085, 389.5, -0.1, 0.2, 0, 0, 0, -0.34, -23.34, 0.34, 12.34};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -271,7 +271,7 @@ public final class UINewCellTest extends UISpecTestCase {
         int numOfTests = floatTestInput.length;
 
         double[] expectedTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
-        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
+        589.138085, 389.5, -0.1, 0.2, 0, 0, 0, -0.34, -23.34, 0.34, 12.34};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -326,8 +326,8 @@ public final class UINewCellTest extends UISpecTestCase {
                 Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
                 Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT}};
 
-        double[] expectedTestOutput = {-43.21019, -43.282100, 2178.8, 7, -27,
-        -27589.138080};
+        double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -27,
+        -27589.138085};
 
         // Retrieve the components
         Window window = getMainWindow();

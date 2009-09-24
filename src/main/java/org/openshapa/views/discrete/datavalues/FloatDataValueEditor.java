@@ -20,6 +20,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
     /** The maximum number of decimal places. */
     private static final int MAX_DECIMAL_PLACES = 6;
 
+    /** 'Negative' zero - used for checking specials. */
+    private static final String NEGATIVE_ZERO = "-0.00000";
+
     /**
      * Constructor.
      *
@@ -96,14 +99,20 @@ public final class FloatDataValueEditor extends DataValueEditor {
             if (factor > 0) {
                 factor--;
             }
+
+            // Determine max fraction - if empty, use a default of 1.
+            int maxFrac = 1;
+            if (!fdv.isEmpty()) {
+                maxFrac = Math.min(MAX_DECIMAL_PLACES,
+                                   getText().length() - getText().indexOf('.')
+                                                      - factor - 1);
+            }
+
             fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
 
             // Determine the precision to use - prevent the user from exceding
             // six decimal places.
             DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
-            int maxFrac = Math.min(MAX_DECIMAL_PLACES, getText().length()
-                                                       - getText().indexOf('.')
-                                                       - factor - 1);
             formatter.setMaximumFractionDigits(maxFrac);
             this.setText(formatter.format(fdv.getItsValue()));
 
@@ -158,7 +167,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
             if (e.getKeyChar() == '0' && this.getText().length() > 0) {
                 if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
                     || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)
-                    || this.getText().charAt(0) == '0') {
+                    || fdv.getItsValue() == 0.0) {
                   e.consume();
                   return;
                 }
@@ -167,9 +176,25 @@ public final class FloatDataValueEditor extends DataValueEditor {
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
 
+            // Dealing with someone who has just entered in - remove trailing 0
+            // between the caret and decimal place.
+            if (getText().equals(NEGATIVE_ZERO) && getCaretPosition() == 1) {
+                currentValue.deleteCharAt(getCaretPosition() + 1);
+            }
+
+            String nText = currentValue.toString();
+            if (nText.length() - 1 - nText.indexOf('.') > MAX_DECIMAL_PLACES) {
+                nText = nText.substring(0, nText.length() - 1);
+            }
+
             // Advance caret over the top of the new char.
-            int pos = this.getCaretPosition() + 1;
-            this.setText(currentValue.toString());
+            int pos = this.getCaretPosition();
+            if (fdv.getItsValue() != 0.0
+                || getText().equals(NEGATIVE_ZERO)
+                || getCaretPosition() != 1) {
+                pos = pos + 1;
+            }
+            this.setText(nText);
             this.setCaretPosition(pos);
 
             fdv.setItsValue(buildValue(currentValue.toString()));
@@ -188,11 +213,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
      * will execde the allowed precision for a floating value, false otherwise.
      */
     public boolean excedesPrecision() {
-        this.getText().length();
-        if (this.getCaretPosition() < this.getText().indexOf('.')) {
-            return false;
-        } else if (this.getText().length()
-                   - this.getText().indexOf('.') > MAX_DECIMAL_PLACES) {
+        String text = getText();
+        if ((text.length() - text.indexOf('.') > MAX_DECIMAL_PLACES)
+            && (getCaretPosition() - text.indexOf('.') > MAX_DECIMAL_PLACES)) {
             return true;
         }
 
@@ -248,7 +271,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
      * @return true if we allow this string to represent a float even
      * though it would not pass a conversion operation.
      */
-    private boolean allowedSpecial(final String str) {
+    private boolean isSpecial(final String str) {
         return (str.equals(".") || str.equals("-") || str.equals("-."));
     }
 }
