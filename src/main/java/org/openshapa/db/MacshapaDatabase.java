@@ -246,7 +246,7 @@ public class MacshapaDatabase extends Database {
      *
      * Get the current MacSHAPA ODB file debug level.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -265,7 +265,7 @@ public class MacshapaDatabase extends Database {
      *
      * Set the MacSHAPA ODB file debug level.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -296,7 +296,7 @@ public class MacshapaDatabase extends Database {
      *
      * Get the current MacSHAPA ODB file max errors.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -315,7 +315,7 @@ public class MacshapaDatabase extends Database {
      *
      * Set the MacSHAPA ODB file max errors.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -346,7 +346,7 @@ public class MacshapaDatabase extends Database {
      *
      * Get the current MacSHAPA ODB file max warnings.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -365,7 +365,7 @@ public class MacshapaDatabase extends Database {
      *
      * Set the MacSHAPA ODB file max warnings.
      *
-     *               JRM -- 12/29/08
+     *               12/29/08
      *
      * Changes:
      *
@@ -557,7 +557,7 @@ public class MacshapaDatabase extends Database {
      *   <li>
      *      Modified the method to use addSystemPredVE() it the system
      *      parameter is true.
-     *                                              JRM -- 7/26/09
+     *                                              7/26/09
      *   </li>
      * </ul>
      */
@@ -1077,7 +1077,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1131,7 +1131,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1193,7 +1193,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1244,7 +1244,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1301,7 +1301,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1354,7 +1354,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1406,7 +1406,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *
@@ -1461,7 +1461,7 @@ public class MacshapaDatabase extends Database {
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/29/08
+     *                                              12/29/08
      *
      * Changes:
      *

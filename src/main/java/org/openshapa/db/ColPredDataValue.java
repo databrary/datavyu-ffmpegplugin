@@ -444,7 +444,7 @@ public final class ColPredDataValue extends DataValue {
      * The output of this method will an instantiation of <pred_cell_value>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              JRM -- 1/30/09
+     *                                              1/30/09
      *
      * Changes:
      *
@@ -486,7 +486,7 @@ public final class ColPredDataValue extends DataValue {
      * toMODBFile_update_local_vocab_list() message on to the instance of
      * colPred.  Otherwise do nothing.
      *
-     *                                      JRM -- 7/2/09
+     *                                      7/2/09
      *
      * Changes;
      *

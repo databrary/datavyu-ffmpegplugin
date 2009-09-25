@@ -1970,7 +1970,7 @@ public class VocabList {
      * Note that this method throws away a lot of information about each
      * predicate, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *

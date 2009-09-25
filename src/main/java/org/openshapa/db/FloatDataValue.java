@@ -284,7 +284,7 @@ public final class FloatDataValue extends DataValue {
      * the grammar defining the MacSHAPA ODB file format) depending on
      * context.
      *
-     *                                              JRM -- 1/18/09
+     *                                              1/18/09
      *
      * Changes:
      *

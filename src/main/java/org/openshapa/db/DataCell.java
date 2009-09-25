@@ -2517,7 +2517,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *
@@ -2580,7 +2580,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * Pass the toMODBFile_update_local_vocab_list() on to the instance of 
      * Matrix that comprises the value of the cell.
      * 
-     *                                                  JRM -- 7/22/09
+     *                                                  7/22/09
      * 
      * Changes:
      * 
