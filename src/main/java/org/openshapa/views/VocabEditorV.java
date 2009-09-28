@@ -59,7 +59,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param modal Is this dialog to be modal or not?
      */
     public VocabEditorV(final Frame parent,
-            final boolean modal) {
+                        final boolean modal) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
@@ -104,6 +104,16 @@ public final class VocabEditorV extends OpenSHAPADialog {
 //        jPanel1.add(verticalFrame, BorderLayout.NORTH);
         updateDialogState();
         this.getRootPane().setDefaultButton(okButton);
+
+        // Hide all the broken stuff.
+        this.deleteButton.setVisible(false);
+        this.moveArgLeftButton.setVisible(false);
+        this.moveArgRightButton.setVisible(false);
+        this.argTypeComboBox.setVisible(false);
+        this.varyArgCheckBox.setVisible(false);
+        this.addArgButton.setVisible(false);
+        this.addMatrixButton.setVisible(false);
+        this.addPredicateButton.setVisible(false);
     }
 
     /**

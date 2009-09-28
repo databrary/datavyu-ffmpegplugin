@@ -45,8 +45,10 @@ public final class FormalArgTypeEditor extends EditorComponent {
      * @param matrix Matrix holding the datavalue this editor will represent.
      * @param matrixIndex The index of the datavalue within the matrix.
      */
-    public FormalArgTypeEditor(final JTextComponent ta, final VocabElement ve,
-                                      final int index, final VocabElementV pv) {
+    public FormalArgTypeEditor(final JTextComponent ta,
+                               final VocabElement ve,
+                               final int index,
+                               final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;
